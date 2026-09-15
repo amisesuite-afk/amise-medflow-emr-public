@@ -148,6 +148,9 @@ struct ClinicalScoresView: View {
     // STOP-BANG
     @State private var sbangI = STOPBANGInput()
 
+    // Auto-population tracking
+    @State private var autoFill = ScoreAutoFill()
+
     var filteredScores: [ActiveScore] {
         guard selectedCategory != .all else { return ActiveScore.allCases }
         return ActiveScore.allCases.filter { $0.category == selectedCategory }
@@ -170,7 +173,10 @@ struct ClinicalScoresView: View {
                 scoreGrid
             }
         }
-        .onChange(of: selectedScore) { _, _ in recalculate() }
+        .onChange(of: selectedScore) { _, newScore in
+            if let score = newScore { autoPopulate(for: score) } else { autoFill = ScoreAutoFill() }
+            recalculate()
+        }
     }
 
     // MARK: - Category filter bar
@@ -316,6 +322,18 @@ struct ClinicalScoresView: View {
                 }
             }
 
+            if !autoFill.autoFieldKeys.isEmpty {
+                HStack(spacing: 4) {
+                    Image(systemName: "wand.and.stars")
+                        .font(.caption2)
+                        .foregroundStyle(.teal)
+                    Text("\(autoFill.autoFieldKeys.count) field\(autoFill.autoFieldKeys.count == 1 ? "" : "s") pre-filled from patient record — review teal toggles.")
+                        .font(.caption2)
+                        .foregroundStyle(.teal)
+                }
+                .padding(.top, 2)
+            }
+
             if let note = r.evidenceNote {
                 Text(note)
                     .font(.caption2)
@@ -348,6 +366,42 @@ struct ClinicalScoresView: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background(color.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
+    }
+
+    // MARK: - Auto-populate from patient data
+
+    private func autoPopulate(for score: ActiveScore) {
+        switch score {
+        case .caprini:
+            let (input, fill) = PatientScoreAutoPopulator.caprini(patient: patient)
+            cap = input; autoFill = fill
+        case .wellsDVT:
+            let (input, fill) = PatientScoreAutoPopulator.wellsDVT(patient: patient)
+            wDVT = input; autoFill = fill
+        case .wellsPE:
+            let (input, fill) = PatientScoreAutoPopulator.wellsPE(patient: patient)
+            wPE = input; autoFill = fill
+        case .rcri:
+            let (input, fill) = PatientScoreAutoPopulator.rcri(patient: patient)
+            rcriI = input; autoFill = fill
+        case .stopBang:
+            let (input, fill) = PatientScoreAutoPopulator.stopBang(patient: patient)
+            sbangI = input; autoFill = fill
+        case .cha2ds2vasc:
+            let (input, fill) = PatientScoreAutoPopulator.cha2ds2vasc(patient: patient)
+            cha2I = input; autoFill = fill
+        case .hasBled:
+            let (input, fill) = PatientScoreAutoPopulator.hasBled(patient: patient)
+            hblI = input; autoFill = fill
+        case .abcd2:
+            let (input, fill) = PatientScoreAutoPopulator.abcd2(patient: patient)
+            abcd = input; autoFill = fill
+        case .mews:
+            let (input, fill) = PatientScoreAutoPopulator.mews(patient: patient)
+            mewsI = input; autoFill = fill
+        default:
+            autoFill = ScoreAutoFill()
+        }
     }
 
     // MARK: - Recalculate
@@ -408,6 +462,7 @@ struct ClinicalScoresView: View {
 
     @ViewBuilder
     private func formBody(for score: ActiveScore) -> some View {
+        pendingVariablesPanel
         switch score {
         case .alvarado:     alvaradoForm
         case .tokyoChole:   tokyoCholecystitisForm
@@ -618,16 +673,16 @@ struct ClinicalScoresView: View {
 
     private var wellsDVTForm: some View {
         Group {
-            scoreToggle("Active cancer (treatment/palliation ≤6 months)", binding: $wDVT.activeCancer, points: "+1")
-            scoreToggle("Paralysis, paresis or plaster cast of lower limb", binding: $wDVT.paralysisParesisPlastercast, points: "+1")
-            scoreToggle("Bedridden ≥3 days or surgery within 12 weeks", binding: $wDVT.bedridden3dOrSurgery12w, points: "+1")
-            scoreToggle("Localised tenderness along deep vein distribution", binding: $wDVT.localizedTendernessDeepVein, points: "+1")
-            scoreToggle("Entire leg swollen", binding: $wDVT.entireLegSwollen, points: "+1")
-            scoreToggle("Calf swelling >3 cm vs asymptomatic leg", binding: $wDVT.calfSwellingOver3cm, points: "+1")
-            scoreToggle("Pitting oedema in symptomatic leg only", binding: $wDVT.pittingOedema, points: "+1")
-            scoreToggle("Collateral superficial veins (non-varicose)", binding: $wDVT.collateralSuperficialVeins, points: "+1")
-            scoreToggle("Alternative diagnosis at least as likely as DVT", binding: $wDVT.alternativeDiagnosisAsLikely, points: "−2")
-            scoreToggle("Previously documented DVT", binding: $wDVT.previousDVT, points: "+1")
+            scoreToggle("Active cancer (treatment/palliation ≤6 months)",     binding: $wDVT.activeCancer,                  points: "+1",  autoKey: "activeCancer")
+            scoreToggle("Paralysis, paresis or plaster cast of lower limb",   binding: $wDVT.paralysisParesisPlastercast,   points: "+1",  autoKey: "paralysisParesisPlastercast")
+            scoreToggle("Bedridden ≥3 days or surgery within 12 weeks",       binding: $wDVT.bedridden3dOrSurgery12w,       points: "+1",  autoKey: "bedridden3dOrSurgery12w")
+            scoreToggle("Localised tenderness along deep vein distribution",  binding: $wDVT.localizedTendernessDeepVein,  points: "+1",  autoKey: "localizedTendernessDeepVein")
+            scoreToggle("Entire leg swollen",                                  binding: $wDVT.entireLegSwollen,              points: "+1",  autoKey: "entireLegSwollen")
+            scoreToggle("Calf swelling >3 cm vs asymptomatic leg",            binding: $wDVT.calfSwellingOver3cm,           points: "+1",  autoKey: "calfSwellingOver3cm")
+            scoreToggle("Pitting oedema in symptomatic leg only",             binding: $wDVT.pittingOedema,                 points: "+1",  autoKey: "pittingOedema")
+            scoreToggle("Collateral superficial veins (non-varicose)",        binding: $wDVT.collateralSuperficialVeins,    points: "+1",  autoKey: "collateralSuperficialVeins")
+            scoreToggle("Alternative diagnosis at least as likely as DVT",    binding: $wDVT.alternativeDiagnosisAsLikely,  points: "−2")
+            scoreToggle("Previously documented DVT",                           binding: $wDVT.previousDVT,                   points: "+1",  autoKey: "previousDVT")
         }
         .onChange(of: wDVT) { _, _ in recalculate() }
     }
@@ -636,13 +691,13 @@ struct ClinicalScoresView: View {
 
     private var wellsPEForm: some View {
         Group {
-            scoreToggle("Clinical signs / symptoms of DVT", binding: $wPE.clinicalSignsDVT, points: "+3")
-            scoreToggle("Alternative Dx less likely than PE", binding: $wPE.alternativeDxLessLikely, points: "+3")
-            scoreToggle("Heart rate >100 bpm", binding: $wPE.hrOver100, points: "+1.5")
-            scoreToggle("Immobilisation ≥3 days or surgery within 4 weeks", binding: $wPE.immobilisationOrSurgery4w, points: "+1.5")
-            scoreToggle("Previous DVT or PE", binding: $wPE.previousDVTOrPE, points: "+1.5")
-            scoreToggle("Haemoptysis", binding: $wPE.haemoptysis, points: "+1")
-            scoreToggle("Malignancy (treatment ≤6 months or palliative)", binding: $wPE.malignancyActive, points: "+1")
+            scoreToggle("Clinical signs / symptoms of DVT",                    binding: $wPE.clinicalSignsDVT,           points: "+3",   autoKey: "clinicalSignsDVT")
+            scoreToggle("Alternative Dx less likely than PE",                  binding: $wPE.alternativeDxLessLikely,    points: "+3",   autoKey: "alternativeDxLessLikely")
+            scoreToggle("Heart rate >100 bpm",                                 binding: $wPE.hrOver100,                  points: "+1.5", autoKey: "hrOver100")
+            scoreToggle("Immobilisation ≥3 days or surgery within 4 weeks",   binding: $wPE.immobilisationOrSurgery4w,  points: "+1.5", autoKey: "immobilisationOrSurgery4w")
+            scoreToggle("Previous DVT or PE",                                  binding: $wPE.previousDVTOrPE,            points: "+1.5", autoKey: "previousDVTOrPE")
+            scoreToggle("Haemoptysis",                                         binding: $wPE.haemoptysis,                points: "+1",   autoKey: "haemoptysis")
+            scoreToggle("Malignancy (treatment ≤6 months or palliative)",     binding: $wPE.malignancyActive,           points: "+1",   autoKey: "malignancyActive")
         }
         .onChange(of: wPE) { _, _ in recalculate() }
     }
@@ -692,7 +747,7 @@ struct ClinicalScoresView: View {
                 recalculate()
             }
 
-            scoreToggle("Diabetes mellitus", binding: $abcd.diabetes, points: "+1")
+            scoreToggle("Diabetes mellitus", binding: $abcd.diabetes, points: "+1", autoKey: "diabetes")
         }
         .onChange(of: abcd) { _, _ in recalculate() }
     }
@@ -723,12 +778,12 @@ struct ClinicalScoresView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .padding(.bottom, 4)
-            scoreToggle("High-risk surgery (intrathoracic, intraabdominal or suprainguinal vascular)", binding: $rcriI.highRiskSurgery, points: "+1")
-            scoreToggle("History of ischaemic heart disease", binding: $rcriI.ischemicHeartDisease, points: "+1")
-            scoreToggle("History of congestive heart failure", binding: $rcriI.congestiveHeartFailure, points: "+1")
-            scoreToggle("History of cerebrovascular disease", binding: $rcriI.cerebrovascularDisease, points: "+1")
-            scoreToggle("Insulin-dependent diabetes mellitus", binding: $rcriI.insulinDependentDiabetes, points: "+1")
-            scoreToggle("Pre-op creatinine >177 μmol/L (>2 mg/dL)", binding: $rcriI.preopCreatinineOver2, points: "+1")
+            scoreToggle("High-risk surgery (intrathoracic, intraabdominal or suprainguinal vascular)", binding: $rcriI.highRiskSurgery,           points: "+1", autoKey: "highRiskSurgery")
+            scoreToggle("History of ischaemic heart disease",                                          binding: $rcriI.ischemicHeartDisease,        points: "+1", autoKey: "ischemicHeartDisease")
+            scoreToggle("History of congestive heart failure",                                         binding: $rcriI.congestiveHeartFailure,       points: "+1", autoKey: "congestiveHeartFailure")
+            scoreToggle("History of cerebrovascular disease",                                          binding: $rcriI.cerebrovascularDisease,       points: "+1", autoKey: "cerebrovascularDisease")
+            scoreToggle("Insulin-dependent diabetes mellitus",                                         binding: $rcriI.insulinDependentDiabetes,     points: "+1", autoKey: "insulinDependentDiabetes")
+            scoreToggle("Pre-op creatinine >177 μmol/L (>2 mg/dL)",                                  binding: $rcriI.preopCreatinineOver2,         points: "+1", autoKey: "preopCreatinineOver2")
         }
         .onChange(of: rcriI) { _, _ in recalculate() }
     }
@@ -746,9 +801,9 @@ struct ClinicalScoresView: View {
     @ViewBuilder private var capriniAgeSection: some View {
         Group {
             sectionHeader("Age")
-            scoreToggle("Age 41–59 years", binding: $cap.age41to59, points: "+1")
-            scoreToggle("Age 60–74 years", binding: $cap.age60to74, points: "+2")
-            scoreToggle("Age ≥75 years", binding: $cap.ageOver75, points: "+3")
+            scoreToggle("Age 41–59 years", binding: $cap.age41to59, points: "+1", autoKey: "age41to59")
+            scoreToggle("Age 60–74 years", binding: $cap.age60to74, points: "+2", autoKey: "age60to74")
+            scoreToggle("Age ≥75 years",   binding: $cap.ageOver75, points: "+3", autoKey: "ageOver75")
         }
         .onChange(of: cap) { _, _ in recalculate() }
     }
@@ -761,24 +816,24 @@ struct ClinicalScoresView: View {
     @ViewBuilder private var capriniRiskSectionA: some View {
         Group {
             sectionHeader("Risk Factors")
-            scoreToggle("Minor surgery (current)", binding: $cap.minorSurgery, points: "+1")
-            scoreToggle("Major surgery (>45 min)", binding: $cap.majorSurgery, points: "+2")
-            scoreToggle("Laparoscopic surgery >45 min", binding: $cap.laparoscopicSurgeryOver45min, points: "+2")
-            scoreToggle("Immobility / bed-rest", binding: $cap.immobilityBedridden, points: "+1")
-            scoreToggle("Central venous access", binding: $cap.centralVenousAccess, points: "+2")
-            scoreToggle("Active / prior malignancy", binding: $cap.activeOrPriorMalignancy, points: "+2")
+            scoreToggle("Minor surgery (current)",       binding: $cap.minorSurgery,                 points: "+1")
+            scoreToggle("Major surgery (>45 min)",       binding: $cap.majorSurgery,                 points: "+2", autoKey: "majorSurgery")
+            scoreToggle("Laparoscopic surgery >45 min",  binding: $cap.laparoscopicSurgeryOver45min, points: "+2", autoKey: "laparoscopicSurgeryOver45min")
+            scoreToggle("Immobility / bed-rest",         binding: $cap.immobilityBedridden,          points: "+1", autoKey: "immobilityBedridden")
+            scoreToggle("Central venous access",         binding: $cap.centralVenousAccess,          points: "+2", autoKey: "centralVenousAccess")
+            scoreToggle("Active / prior malignancy",     binding: $cap.activeOrPriorMalignancy,      points: "+2", autoKey: "activeOrPriorMalignancy")
         }
         .onChange(of: cap) { _, _ in recalculate() }
     }
 
     @ViewBuilder private var capriniRiskSectionB: some View {
         Group {
-            scoreToggle("Prior VTE", binding: $cap.priorVTE, points: "+3")
-            scoreToggle("Family history of VTE", binding: $cap.familyHistoryVTE, points: "+3")
-            scoreToggle("Thrombophilia", binding: $cap.thrombophilia, points: "+3")
-            scoreToggle("Hormonal therapy / OCP", binding: $cap.hormonalTherapy, points: "+1")
-            scoreToggle("Sepsis within 30 days", binding: $cap.sepsis30d, points: "+1")
-            scoreToggle("BMI ≥40 kg/m²", binding: $cap.bmi40Plus, points: "+1")
+            scoreToggle("Prior VTE",              binding: $cap.priorVTE,         points: "+3", autoKey: "priorVTE")
+            scoreToggle("Family history of VTE",  binding: $cap.familyHistoryVTE, points: "+3", autoKey: "familyHistoryVTE")
+            scoreToggle("Thrombophilia",           binding: $cap.thrombophilia,    points: "+3", autoKey: "thrombophilia")
+            scoreToggle("Hormonal therapy / OCP", binding: $cap.hormonalTherapy,  points: "+1", autoKey: "hormonalTherapy")
+            scoreToggle("Sepsis within 30 days",  binding: $cap.sepsis30d,        points: "+1", autoKey: "sepsis30d")
+            scoreToggle("BMI ≥40 kg/m²",          binding: $cap.bmi40Plus,        points: "+1", autoKey: "bmi40Plus")
         }
         .onChange(of: cap) { _, _ in recalculate() }
     }
@@ -786,11 +841,11 @@ struct ClinicalScoresView: View {
     @ViewBuilder private var capriniHighRiskSection: some View {
         Group {
             sectionHeader("High-Risk Events (+5 each)")
-            scoreToggle("Stroke", binding: $cap.stroke, points: "+5")
-            scoreToggle("Myocardial infarction", binding: $cap.mi, points: "+5")
-            scoreToggle("Spinal cord injury", binding: $cap.spinalCordInjury, points: "+5")
+            scoreToggle("Stroke",                                    binding: $cap.stroke,                           points: "+5", autoKey: "stroke")
+            scoreToggle("Myocardial infarction",                     binding: $cap.mi,                               points: "+5", autoKey: "mi")
+            scoreToggle("Spinal cord injury",                        binding: $cap.spinalCordInjury,                 points: "+5", autoKey: "spinalCordInjury")
             scoreToggle("Pelvis fracture / hip or knee replacement", binding: $cap.pelvisFractureOrHipKneeReplacement, points: "+5")
-            scoreToggle("Multiple trauma", binding: $cap.multipleTrauma, points: "+5")
+            scoreToggle("Multiple trauma",                           binding: $cap.multipleTrauma,                   points: "+5")
         }
         .onChange(of: cap) { _, _ in recalculate() }
     }
@@ -846,47 +901,39 @@ struct ClinicalScoresView: View {
 
     private var mewsForm: some View {
         VStack(alignment: .leading, spacing: 12) {
-            sectionHeader("Respiratory Rate (breaths/min)")
-            HStack {
-                Slider(value: Binding(get: { Double(mewsI.respiratoryRate) },
-                                      set: { mewsI.respiratoryRate = Int($0) }),
-                       in: 4...50, step: 1)
-                Text("\(mewsI.respiratoryRate)").font(.caption.monospacedDigit()).frame(width: 36, alignment: .trailing)
+            if autoFill.isAuto("respiratoryRate") || autoFill.isAuto("heartRate") || autoFill.isAuto("systolicBP") {
+                HStack(spacing: 4) {
+                    Image(systemName: "wand.and.stars").font(.caption2).foregroundStyle(.teal)
+                    Text("Pre-filled from most recent vitals — verify and adjust if needed.")
+                        .font(.caption2).foregroundStyle(.teal)
+                }
+                .padding(.horizontal, 8).padding(.vertical, 4)
+                .background(.teal.opacity(0.1), in: RoundedRectangle(cornerRadius: 6))
             }
-            sectionHeader("SpO₂ (%)")
-            HStack {
-                Slider(value: Binding(get: { Double(mewsI.oxygenSaturation) },
-                                      set: { mewsI.oxygenSaturation = Int($0) }),
-                       in: 70...100, step: 1)
-                Text("\(mewsI.oxygenSaturation)%").font(.caption.monospacedDigit()).frame(width: 44, alignment: .trailing)
+            mewsSlider(label: "Respiratory Rate (breaths/min)", autoKey: "respiratoryRate",
+                       value: Binding(get: { Double(mewsI.respiratoryRate) }, set: { mewsI.respiratoryRate = Int($0) }),
+                       in: 4...50, step: 1, display: "\(mewsI.respiratoryRate)")
+            mewsSlider(label: "SpO₂ (%)", autoKey: "oxygenSaturation",
+                       value: Binding(get: { Double(mewsI.oxygenSaturation) }, set: { mewsI.oxygenSaturation = Int($0) }),
+                       in: 70...100, step: 1, display: "\(mewsI.oxygenSaturation)%")
+            mewsSlider(label: "Heart Rate (bpm)", autoKey: "heartRate",
+                       value: Binding(get: { Double(mewsI.heartRate) }, set: { mewsI.heartRate = Int($0) }),
+                       in: 20...200, step: 1, display: "\(mewsI.heartRate)")
+            mewsSlider(label: "Systolic BP (mmHg)", autoKey: "systolicBP",
+                       value: Binding(get: { Double(mewsI.systolicBP) }, set: { mewsI.systolicBP = Int($0) }),
+                       in: 40...240, step: 2, display: "\(mewsI.systolicBP)")
+            mewsSlider(label: "Temperature (°C)", autoKey: "temperature",
+                       value: $mewsI.temperature, in: 33.0...42.0, step: 0.1,
+                       display: String(format: "%.1f°C", mewsI.temperature))
+            mewsPickerRow(label: "AVPU — Consciousness", autoKey: "consciousnessAVPU") {
+                Picker("AVPU", selection: $mewsI.consciousnessAVPU) {
+                    Text("Alert (0)").tag(MEWSInput.AVPULevel.alert)
+                    Text("Voice (1)").tag(MEWSInput.AVPULevel.voice)
+                    Text("Pain (2)").tag(MEWSInput.AVPULevel.pain)
+                    Text("Unresponsive (3)").tag(MEWSInput.AVPULevel.unresponsive)
+                }
+                .pickerStyle(.segmented)
             }
-            sectionHeader("Heart Rate (bpm)")
-            HStack {
-                Slider(value: Binding(get: { Double(mewsI.heartRate) },
-                                      set: { mewsI.heartRate = Int($0) }),
-                       in: 20...200, step: 1)
-                Text("\(mewsI.heartRate)").font(.caption.monospacedDigit()).frame(width: 36, alignment: .trailing)
-            }
-            sectionHeader("Systolic BP (mmHg)")
-            HStack {
-                Slider(value: Binding(get: { Double(mewsI.systolicBP) },
-                                      set: { mewsI.systolicBP = Int($0) }),
-                       in: 40...240, step: 2)
-                Text("\(mewsI.systolicBP)").font(.caption.monospacedDigit()).frame(width: 44, alignment: .trailing)
-            }
-            sectionHeader("Temperature (°C)")
-            HStack {
-                Slider(value: $mewsI.temperature, in: 33.0...42.0, step: 0.1)
-                Text(String(format: "%.1f°C", mewsI.temperature)).font(.caption.monospacedDigit()).frame(width: 54, alignment: .trailing)
-            }
-            sectionHeader("AVPU — Consciousness")
-            Picker("AVPU", selection: $mewsI.consciousnessAVPU) {
-                Text("Alert (0)").tag(MEWSInput.AVPULevel.alert)
-                Text("Voice (1)").tag(MEWSInput.AVPULevel.voice)
-                Text("Pain (2)").tag(MEWSInput.AVPULevel.pain)
-                Text("Unresponsive (3)").tag(MEWSInput.AVPULevel.unresponsive)
-            }
-            .pickerStyle(.segmented)
             sectionHeader("Urine Output")
             Picker("Urine", selection: $mewsI.urineOutput) {
                 Text("Normal (0)").tag(MEWSInput.UrineOutput.normal)
@@ -896,6 +943,48 @@ struct ClinicalScoresView: View {
             .pickerStyle(.segmented)
         }
         .onChange(of: mewsI) { _, _ in recalculate() }
+    }
+
+    private func mewsSlider(label: String, autoKey: String,
+                             value: Binding<Double>, in range: ClosedRange<Double>,
+                             step: Double.Stride, display: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 4) {
+                Text(label).font(.caption.weight(.semibold)).foregroundStyle(.secondary).textCase(.uppercase)
+                if autoFill.isAuto(autoKey) {
+                    HStack(spacing: 3) {
+                        Image(systemName: "wand.and.stars").font(.system(size: 8))
+                        Text("Auto").font(.system(size: 8, weight: .semibold))
+                    }
+                    .foregroundStyle(.teal)
+                    .padding(.horizontal, 4).padding(.vertical, 1)
+                    .background(.teal.opacity(0.12), in: Capsule())
+                }
+            }
+            HStack {
+                Slider(value: value, in: range, step: step)
+                    .tint(autoFill.isAuto(autoKey) ? .teal : AMColor.accent)
+                Text(display).font(.caption.monospacedDigit()).frame(width: 54, alignment: .trailing)
+            }
+        }
+    }
+
+    private func mewsPickerRow<C: View>(label: String, autoKey: String, @ViewBuilder content: () -> C) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 4) {
+                Text(label).font(.caption.weight(.semibold)).foregroundStyle(.secondary).textCase(.uppercase)
+                if autoFill.isAuto(autoKey) {
+                    HStack(spacing: 3) {
+                        Image(systemName: "wand.and.stars").font(.system(size: 8))
+                        Text("Auto").font(.system(size: 8, weight: .semibold))
+                    }
+                    .foregroundStyle(.teal)
+                    .padding(.horizontal, 4).padding(.vertical, 1)
+                    .background(.teal.opacity(0.12), in: Capsule())
+                }
+            }
+            content()
+        }
     }
 
     // MARK: - GCS
@@ -998,14 +1087,14 @@ struct ClinicalScoresView: View {
 
     private var cha2ds2vascForm: some View {
         Group {
-            scoreToggle("Congestive heart failure", binding: $cha2I.congestiveHeartFailure, points: "+1")
-            scoreToggle("Hypertension (treated or BP >140/90)", binding: $cha2I.hypertension, points: "+1")
-            scoreToggle("Age ≥75 years", binding: $cha2I.ageOver75, points: "+2")
-            scoreToggle("Age 65–74 years (if not ≥75)", binding: $cha2I.age65to74, points: "+1")
-            scoreToggle("Diabetes mellitus", binding: $cha2I.diabetes, points: "+1")
-            scoreToggle("Stroke / TIA / thromboembolism", binding: $cha2I.strokeOrTIA, points: "+2")
-            scoreToggle("Vascular disease (MI, PAD, aortic plaque)", binding: $cha2I.vascularDisease, points: "+1")
-            scoreToggle("Female sex", binding: $cha2I.femaleSex, points: "+1")
+            scoreToggle("Congestive heart failure",                  binding: $cha2I.congestiveHeartFailure, points: "+1", autoKey: "congestiveHeartFailure")
+            scoreToggle("Hypertension (treated or BP >140/90)",      binding: $cha2I.hypertension,           points: "+1", autoKey: "hypertension")
+            scoreToggle("Age ≥75 years",                             binding: $cha2I.ageOver75,              points: "+2", autoKey: "ageOver75")
+            scoreToggle("Age 65–74 years (if not ≥75)",              binding: $cha2I.age65to74,              points: "+1", autoKey: "age65to74")
+            scoreToggle("Diabetes mellitus",                         binding: $cha2I.diabetes,               points: "+1", autoKey: "diabetes")
+            scoreToggle("Stroke / TIA / thromboembolism",            binding: $cha2I.strokeOrTIA,            points: "+2", autoKey: "strokeOrTIA")
+            scoreToggle("Vascular disease (MI, PAD, aortic plaque)", binding: $cha2I.vascularDisease,        points: "+1", autoKey: "vascularDisease")
+            scoreToggle("Female sex",                                 binding: $cha2I.femaleSex,              points: "+1", autoKey: "femaleSex")
         }
         .onChange(of: cha2I) { _, _ in recalculate() }
     }
@@ -1014,15 +1103,15 @@ struct ClinicalScoresView: View {
 
     private var hasBledForm: some View {
         Group {
-            scoreToggle("H — Hypertension uncontrolled (SBP >160)", binding: $hblI.hypertensionUncontrolled, points: "+1")
-            scoreToggle("A — Abnormal renal function (dialysis / Cr >200 μmol/L)", binding: $hblI.renalDysfunction, points: "+1")
-            scoreToggle("A — Abnormal liver function (cirrhosis / bili ×2 / AST ×3)", binding: $hblI.liverDysfunction, points: "+1")
-            scoreToggle("S — Stroke history", binding: $hblI.strokeHistory, points: "+1")
-            scoreToggle("B — Bleeding (prior or predisposition)", binding: $hblI.priorBleeding, points: "+1")
-            scoreToggle("L — Labile INR (TTR <60%)", binding: $hblI.labileINR, points: "+1")
-            scoreToggle("E — Elderly (age >65)", binding: $hblI.ageOver65, points: "+1")
-            scoreToggle("D — Drugs (antiplatelets / NSAIDs)", binding: $hblI.drugsOrAlcohol, points: "+1")
-            scoreToggle("D — Alcohol (≥8 units/week)", binding: $hblI.alcoholUse, points: "+1")
+            scoreToggle("H — Hypertension uncontrolled (SBP >160)",                     binding: $hblI.hypertensionUncontrolled, points: "+1", autoKey: "hypertensionUncontrolled")
+            scoreToggle("A — Abnormal renal function (dialysis / Cr >200 μmol/L)",      binding: $hblI.renalDysfunction,         points: "+1", autoKey: "renalDysfunction")
+            scoreToggle("A — Abnormal liver function (cirrhosis / bili ×2 / AST ×3)",   binding: $hblI.liverDysfunction,         points: "+1", autoKey: "liverDysfunction")
+            scoreToggle("S — Stroke history",                                            binding: $hblI.strokeHistory,            points: "+1", autoKey: "strokeHistory")
+            scoreToggle("B — Bleeding (prior or predisposition)",                        binding: $hblI.priorBleeding,            points: "+1", autoKey: "priorBleeding")
+            scoreToggle("L — Labile INR (TTR <60%)",                                    binding: $hblI.labileINR,                points: "+1", autoKey: "labileINR")
+            scoreToggle("E — Elderly (age >65)",                                         binding: $hblI.ageOver65,                points: "+1", autoKey: "ageOver65")
+            scoreToggle("D — Drugs (antiplatelets / NSAIDs)",                            binding: $hblI.drugsOrAlcohol,           points: "+1", autoKey: "drugsOrAlcohol")
+            scoreToggle("D — Alcohol (≥8 units/week)",                                  binding: $hblI.alcoholUse,               points: "+1", autoKey: "alcoholUse")
         }
         .onChange(of: hblI) { _, _ in recalculate() }
     }
@@ -1084,33 +1173,78 @@ struct ClinicalScoresView: View {
 
     private var stopBangForm: some View {
         Group {
-            scoreToggle("S — Snoring loudly", binding: $sbangI.snoring, points: "+1")
-            scoreToggle("T — Tired / fatigued during day", binding: $sbangI.tired, points: "+1")
-            scoreToggle("O — Observed apnoea (partner / witness)", binding: $sbangI.observed, points: "+1")
-            scoreToggle("P — Pressure / hypertension (treated or >140/90)", binding: $sbangI.pressureTreated, points: "+1")
-            scoreToggle("B — BMI >35 kg/m²", binding: $sbangI.bmiOver35, points: "+1")
-            scoreToggle("A — Age >50 years", binding: $sbangI.ageOver50, points: "+1")
-            scoreToggle("N — Neck circumference >40 cm", binding: $sbangI.neckOver40cm, points: "+1")
-            scoreToggle("G — Gender: male", binding: $sbangI.male, points: "+1")
+            scoreToggle("S — Snoring loudly",                          binding: $sbangI.snoring,         points: "+1", autoKey: "snoring")
+            scoreToggle("T — Tired / fatigued during day",             binding: $sbangI.tired,           points: "+1", autoKey: "tired")
+            scoreToggle("O — Observed apnoea (partner / witness)",     binding: $sbangI.observed,        points: "+1", autoKey: "observed")
+            scoreToggle("P — Pressure / hypertension (treated or >140/90)", binding: $sbangI.pressureTreated, points: "+1", autoKey: "pressureTreated")
+            scoreToggle("B — BMI >35 kg/m²",                          binding: $sbangI.bmiOver35,       points: "+1", autoKey: "bmiOver35")
+            scoreToggle("A — Age >50 years",                          binding: $sbangI.ageOver50,       points: "+1", autoKey: "ageOver50")
+            scoreToggle("N — Neck circumference >40 cm",              binding: $sbangI.neckOver40cm,    points: "+1", autoKey: "neckOver40cm")
+            scoreToggle("G — Gender: male",                           binding: $sbangI.male,            points: "+1", autoKey: "male")
         }
         .onChange(of: sbangI) { _, _ in recalculate() }
     }
 
+    // MARK: - Pending variables panel
+
+    @ViewBuilder private var pendingVariablesPanel: some View {
+        if autoFill.hasPending {
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Variables to confirm", systemImage: "checklist.unchecked")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.orange)
+                ForEach(autoFill.pendingFields) { field in
+                    HStack(alignment: .top, spacing: 6) {
+                        Image(systemName: "questionmark.circle.fill")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(field.label)
+                                .font(.caption)
+                                .foregroundStyle(.primary)
+                            Text(field.source)
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                    }
+                }
+            }
+            .padding(10)
+            .background(.orange.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+            .overlay(RoundedRectangle(cornerRadius: 10).stroke(.orange.opacity(0.3), lineWidth: 1))
+            .padding(.bottom, 8)
+        }
+    }
+
     // MARK: - Shared helpers
 
-    private func scoreToggle(_ label: String, binding: Binding<Bool>, points: String) -> some View {
-        Toggle(isOn: binding) {
-            HStack {
+    private func scoreToggle(_ label: String, binding: Binding<Bool>, points: String, autoKey: String? = nil) -> some View {
+        let isAuto = autoKey.map { autoFill.isAuto($0) } ?? false
+        return Toggle(isOn: binding) {
+            HStack(spacing: 6) {
                 Text(label)
                     .font(.subheadline)
+                if isAuto {
+                    HStack(spacing: 3) {
+                        Image(systemName: "wand.and.stars")
+                            .font(.system(size: 9))
+                        Text("Auto")
+                            .font(.system(size: 9, weight: .semibold))
+                    }
+                    .foregroundStyle(.teal)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .background(.teal.opacity(0.12), in: Capsule())
+                }
                 Spacer()
                 Text(points)
                     .font(.caption.weight(.semibold).monospacedDigit())
-                    .foregroundStyle(binding.wrappedValue ? AMColor.accent : .secondary)
+                    .foregroundStyle(binding.wrappedValue ? (isAuto ? .teal : AMColor.accent) : .secondary)
             }
         }
         .toggleStyle(.switch)
-        .tint(AMColor.accent)
+        .tint(isAuto ? .teal : AMColor.accent)
         .padding(.vertical, 2)
     }
 
