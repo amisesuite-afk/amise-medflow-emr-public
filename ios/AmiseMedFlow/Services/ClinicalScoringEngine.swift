@@ -322,8 +322,7 @@ enum ClinicalScoringEngine {
         switch s {
         case ..<5:  return (.low,      "Score \(Int(s))/10 — appendicitis unlikely")
         case 5..<7: return (.moderate, "Score \(Int(s))/10 — appendicitis possible; imaging recommended")
-        case 7..<9: return (.high,     "Score \(Int(s))/10 — appendicitis probable; surgical review")
-        default:    return (.critical, "Score \(Int(s))/10 — very probable appendicitis; plan for theatre")
+        default:    return (.high,     "Score \(Int(s))/10 — appendicitis probable/very probable; surgical review")
         }
     }
 
@@ -892,7 +891,7 @@ enum ClinicalScoringEngine {
                     "Atorvastatin 80 mg", "Brain MRI/DWI within 24 h",
                     "Carotid duplex USS same day (carotid endarterectomy within 48 h if ≥50% stenosis)",
                     "24 h ECG / Holter (screen for paroxysmal AF)", "BP control"]
-        default:
+        case 6:
             risk = .high
             interpretation = "ABCD2 \(Int(score))/7 — High risk; 2-day stroke risk ~8%"
             redFlags = ["High stroke risk — requires urgent specialist assessment today",
@@ -900,6 +899,17 @@ enum ClinicalScoringEngine {
             recs = ["Admit or same-day specialist TIA assessment",
                     "Aspirin 300 mg stat + clopidogrel 300 mg stat (dual antiplatelet)",
                     "Atorvastatin 80 mg", "MRI brain / DWI within 24 h",
+                    "Carotid endarterectomy within 48 h if ≥50% ipsilateral stenosis",
+                    "Echocardiography + prolonged cardiac monitoring for AF",
+                    "BP target <130/80 mmHg long-term"]
+        default:
+            risk = .critical
+            interpretation = "ABCD2 \(Int(score))/7 — Maximum risk; 2-day stroke risk ~8%"
+            redFlags = ["Maximum ABCD2 score — very high early stroke risk",
+                        "If in AF → anticoagulate not antiplatelet"]
+            recs = ["Immediate specialist assessment / emergency admission",
+                    "Aspirin 300 mg stat + clopidogrel 300 mg stat (dual antiplatelet)",
+                    "Atorvastatin 80 mg", "MRI brain / DWI urgently",
                     "Carotid endarterectomy within 48 h if ≥50% ipsilateral stenosis",
                     "Echocardiography + prolonged cardiac monitoring for AF",
                     "BP target <130/80 mmHg long-term"]
@@ -1093,12 +1103,20 @@ enum ClinicalScoringEngine {
             recs = ["LMWH enoxaparin 40 mg OD subcutaneous (start 12 h post-op or pre-op)",
                     "Mechanical prophylaxis (IPC device)", "Continue for 28 days in high-risk surgery",
                     "Consider extended thromboprophylaxis if major abdominal / pelvic surgery"]
-        default:
+        case 6...7:
             risk = .high; vteRisk = "High (>6%)"
             recs = ["LMWH enoxaparin 40 mg OD (or 1.5 mg/kg OD) SC",
                     "Mechanical compression devices (IPC) throughout admission",
                     "Extended LMWH prophylaxis 28 d post-op (cancer surgery, colorectal, pelvic)",
                     "Consider fondaparinux if HIT history",
+                    "Ensure adequate hydration + early mobilisation"]
+        default:
+            risk = .critical; vteRisk = "Very High (>10%)"
+            recs = ["LMWH enoxaparin 40 mg OD (or 1.5 mg/kg OD) SC",
+                    "Mechanical compression devices (IPC) throughout admission",
+                    "Extended LMWH prophylaxis 28 d post-op mandatory",
+                    "Consider fondaparinux if HIT history",
+                    "Haematology review — consider direct oral anticoagulant if appropriate",
                     "Ensure adequate hydration + early mobilisation"]
         }
 
