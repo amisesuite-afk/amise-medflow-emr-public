@@ -996,6 +996,12 @@ struct ConsultationView: View {
             }
             pipeline.runNow(for: patient, socratesSelections: socratesSelections)
             MRNGenerator.backfillIfNeeded(patient)
+            // Pre-load popular drugs when landing directly on the meds tab (iPad nav path).
+            // On iPhone the focus onChange handles this, but on iPad the keyboard never
+            // auto-focuses so medSuggestions stays empty until the user taps.
+            if startingTab == .meds && medSuggestions.isEmpty {
+                medSuggestions = SurgicalDrug.popular
+            }
         }
         .navigationTitle("Consultation")
         .navigationBarTitleDisplayMode(.inline)
@@ -1003,6 +1009,10 @@ struct ConsultationView: View {
         .toolbarBackground(Color(.systemBackground), for: .navigationBar)
         .onChange(of: activeTab) { _, tab in
             if tab == .diagnosis { refreshBayesian() }
+            // Pre-load browse list when switching to meds tab (iPhone tab bar path).
+            if tab == .meds && medSuggestions.isEmpty && medQuery.isEmpty {
+                medSuggestions = SurgicalDrug.popular
+            }
         }
         .onChange(of: patient.workingDiagnosis) { _, _ in
             dismissedRadiation = false
@@ -1415,7 +1425,7 @@ struct ConsultationView: View {
         case .hpi:       hpiTab
         case .pmh:       pmhTab
         case .pshx:      pshxTab
-        case .meds:      List { medicationsSection }
+        case .meds:      embeddedInNav ? medsSplitPanel : List { medicationsSection }
         case .allergies: allergiesTab
         case .social:    socialTab
         case .exam:           examTab
@@ -1992,6 +2002,94 @@ struct ConsultationView: View {
     }
 
     // MARK: - PMH tab
+
+    // MARK: - iPad split-panel drug chart (embeddedInNav path)
+
+    private var medsSplitPanel: some View {
+        HStack(spacing: 0) {
+            // ── LEFT: drug search + browse ───────────────────────────────
+            List { medicationsSection }
+                .frame(minWidth: 320, maxWidth: 420)
+
+            Divider()
+
+            // ── RIGHT: current drug chart ────────────────────────────────
+            VStack(spacing: 0) {
+                HStack(spacing: 8) {
+                    Image(systemName: "pills.fill")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(AMColor.accent)
+                    Text("Current Drug Chart")
+                        .font(.system(size: 14, weight: .semibold))
+                    Spacer()
+                    Text("\(patient.prescriptions.count) item\(patient.prescriptions.count == 1 ? "" : "s")")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(Color(.systemBackground))
+
+                Divider()
+
+                if patient.prescriptions.isEmpty {
+                    ContentUnavailableView(
+                        "No Medications",
+                        systemImage: "pills",
+                        description: Text("Add medications using the search panel.")
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    List {
+                        let sorted = patient.prescriptions.sorted { $0.prescribedAt > $1.prescribedAt }
+                        ForEach(sorted) { rx in
+                            VStack(alignment: .leading, spacing: 6) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "pill.fill")
+                                        .font(.system(size: 11, weight: .bold))
+                                        .foregroundStyle(AMColor.accent)
+                                        .frame(width: 18)
+                                    Text(rx.drug)
+                                        .font(.system(size: 14, weight: .semibold))
+                                    Spacer()
+                                    Text(rx.prescribedAt.formatted(.dateTime.day().month(.abbreviated).year()))
+                                        .font(.caption2.monospacedDigit())
+                                        .foregroundStyle(.tertiary)
+                                }
+                                if !rx.displayLine.isEmpty {
+                                    Text(rx.displayLine)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                        .padding(.leading, 26)
+                                }
+                                let alerts = DrugInteractionService.check(drugs: [rx.drug] + patient.prescriptions.filter { $0.id != rx.id }.map { $0.drug })
+                                    .filter { $0.drugA == rx.drug || $0.drugB == rx.drug }
+                                ForEach(alerts) { alert in
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "exclamationmark.triangle.fill")
+                                            .font(.caption2)
+                                            .foregroundStyle(alert.interaction.severity.color)
+                                        Text("\(alert.interaction.severity.rawValue): \(alert.interaction.clinicalEffect)")
+                                            .font(.caption2)
+                                            .foregroundStyle(alert.interaction.severity.color)
+                                    }
+                                    .padding(.leading, 26)
+                                }
+                            }
+                            .padding(.vertical, 2)
+                        }
+                        .onDelete { idxSet in
+                            let sorted2 = patient.prescriptions.sorted { $0.prescribedAt > $1.prescribedAt }
+                            for i in idxSet { context.delete(sorted2[i]) }
+                            touch()
+                        }
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .background(AMColor.bg)
+        }
+    }
 
     // MARK: - PMH medications section
 
