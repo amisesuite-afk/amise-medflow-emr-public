@@ -192,13 +192,19 @@ struct ClinicalHubView: View {
                 let showDischarge    = vt == .postOp || vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
                 let showReferral     = vt == .newConsult || vt == .followUp || vt == .urgentReview || vt == .postOp
                 let showConsent      = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
+                let showPreOpChecklist = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
 
-                if showTrauma || showOGD || showColonoscopy || showSurgery || showERCP || showPostOp || showDischarge || showReferral || showConsent {
+                if showTrauma || showOGD || showColonoscopy || showSurgery || showERCP || showPostOp || showDischarge || showReferral || showConsent || showPreOpChecklist {
                     Section("Procedure Forms") {
                         if showTrauma {
                             NavigationLink { TraumaAssessmentView(patient: patient) } label: {
                                 Label("Trauma Assessment (ATLS)", systemImage: "cross.case.fill")
                                     .foregroundStyle(.red)
+                            }
+                        }
+                        if showPreOpChecklist {
+                            NavigationLink { PreOpChecklistView(patient: patient) } label: {
+                                Label("Pre-op Checklist (WHO)", systemImage: "checklist")
                             }
                         }
                         if showConsent {
