@@ -2075,6 +2075,12 @@ struct ConsultationView: View {
                                     }
                                     .padding(.leading, 26)
                                 }
+                                if let formularyDrug = SurgicalDrug.allDrugs.first(where: {
+                                    $0.name.lowercased() == rx.drug.lowercased() ||
+                                    $0.name.lowercased().hasPrefix(rx.drug.lowercased())
+                                }) {
+                                    formularyDetailRows(for: formularyDrug)
+                                }
                             }
                             .padding(.vertical, 2)
                         }
@@ -2088,6 +2094,42 @@ struct ConsultationView: View {
             }
             .frame(maxWidth: .infinity)
             .background(AMColor.bg)
+        }
+    }
+
+    @ViewBuilder
+    private func formularyDetailRows(for drug: SurgicalDrug) -> some View {
+        let fields: [(label: String, icon: String, value: String, color: Color)] = [
+            ("Monitoring", "waveform.path.ecg", drug.monitoring, .blue),
+            ("Contraindications", "exclamationmark.octagon", drug.contraindications, .red),
+            ("Renal dosing", "drop.triangle", drug.renalDosing, .orange),
+            ("Hepatic dosing", "arrow.triangle.2.circlepath", drug.hepaticDosing, .purple),
+        ].filter { !$0.value.isEmpty }
+
+        if !fields.isEmpty {
+            VStack(alignment: .leading, spacing: 3) {
+                ForEach(fields, id: \.label) { field in
+                    HStack(alignment: .top, spacing: 5) {
+                        Image(systemName: field.icon)
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundStyle(field.color)
+                            .frame(width: 14, alignment: .center)
+                            .padding(.top, 1)
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text(field.label.uppercased())
+                                .font(.system(size: 8.5, weight: .semibold))
+                                .foregroundStyle(field.color)
+                                .kerning(0.4)
+                            Text(field.value)
+                                .font(.system(size: 10.5))
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                }
+            }
+            .padding(.leading, 26)
+            .padding(.top, 2)
         }
     }
 
