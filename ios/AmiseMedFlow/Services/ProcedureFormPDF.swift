@@ -815,4 +815,188 @@ enum ProcedureFormPDF {
                                     .foregroundColor: UIColor.label])
         return y + 14
     }
+
+    // MARK: - Patient Instruction Sheet
+
+    static func patientInstructions(patient: Patient, data: PatientInstructionsData) -> Data {
+        let renderer = UIGraphicsPDFRenderer(bounds: page)
+        let df = DateFormatter(); df.dateStyle = .long
+        let standardWarnings = [
+            "Fever above 38.5°C (101.3°F)",
+            "Increasing pain not controlled by prescribed pain relief",
+            "Signs of wound infection: redness, swelling, warmth or discharge",
+            "Excessive bleeding from the wound or any body opening",
+            "Difficulty breathing or chest pain — call 911 immediately",
+            "Inability to pass urine for more than 6–8 hours",
+            "Persistent vomiting preventing fluid intake",
+        ]
+        return renderer.pdfData { ctx in
+            ctx.beginPage()
+
+            // Patient-facing header — larger, friendlier
+            teal.setFill()
+            UIRectFill(CGRect(x: 0, y: 0, width: page.width, height: 52))
+            "DISCHARGE INSTRUCTIONS".draw(
+                in: CGRect(x: lm, y: 8, width: bodyW, height: 18),
+                withAttributes: [.font: UIFont.systemFont(ofSize: 14, weight: .bold),
+                                 .foregroundColor: UIColor.white])
+            "Amise Medical Services · Saint Lucia".draw(
+                in: CGRect(x: lm, y: 28, width: bodyW, height: 14),
+                withAttributes: [.font: UIFont.systemFont(ofSize: 9),
+                                 .foregroundColor: UIColor.white.withAlphaComponent(0.85)])
+
+            // Patient strip — larger font than clinical forms
+            var y: CGFloat = 60
+            UIColor.secondarySystemBackground.setFill()
+            UIRectFill(CGRect(x: 0, y: y, width: page.width, height: 36))
+            let nameAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 12, weight: .semibold),
+                .foregroundColor: UIColor.label,
+            ]
+            let subAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 8.5),
+                .foregroundColor: UIColor.secondaryLabel,
+            ]
+            patient.fullName.draw(in: CGRect(x: lm, y: y + 4, width: bodyW * 0.6, height: 14),
+                                  withAttributes: nameAttrs)
+            let dob = patient.dateOfBirth.map { df.string(from: $0) } ?? "—"
+            "DOB: \(dob)  ·  MRN: \(patient.mrn ?? "—")".draw(
+                in: CGRect(x: lm, y: y + 20, width: bodyW, height: 12),
+                withAttributes: subAttrs)
+            "Date: \(df.string(from: data.dischargeDate))".draw(
+                in: CGRect(x: lm + bodyW * 0.6, y: y + 4, width: bodyW * 0.4, height: 12),
+                withAttributes: subAttrs)
+            y += 44
+
+            // Procedure performed
+            y = patientSection(ctx: ctx, title: "Procedure Performed", y: y)
+            y = patientBody(ctx: ctx, text: data.procedurePerformed.isEmpty ? "—" : data.procedurePerformed, y: y)
+            if !data.procedureExplanation.isEmpty {
+                y = patientBody(ctx: ctx, text: data.procedureExplanation, y: y)
+            }
+            "Surgeon: \(data.surgeonName)".draw(
+                in: CGRect(x: lm, y: y, width: bodyW, height: 12), withAttributes: subAttrs)
+            y += 16
+
+            // Wound care
+            if !data.woundCareInstructions.isEmpty {
+                y = maybeNewPage(ctx: ctx, y: y, minSpace: 50)
+                y = patientSection(ctx: ctx, title: "Wound / Site Care", y: y)
+                y = patientBody(ctx: ctx, text: data.woundCareInstructions, y: y)
+                if !data.sutureInfo.isEmpty {
+                    y = patientBody(ctx: ctx, text: data.sutureInfo, y: y)
+                }
+            }
+
+            // Diet
+            if !data.dietInstructions.isEmpty {
+                y = maybeNewPage(ctx: ctx, y: y, minSpace: 50)
+                y = patientSection(ctx: ctx, title: "Diet and Fluids", y: y)
+                y = patientBody(ctx: ctx, text: data.dietInstructions, y: y)
+            }
+
+            // Activity
+            if !data.activityInstructions.isEmpty || !data.drivingInstructions.isEmpty {
+                y = maybeNewPage(ctx: ctx, y: y, minSpace: 50)
+                y = patientSection(ctx: ctx, title: "Activity and Driving", y: y)
+                if !data.activityInstructions.isEmpty {
+                    y = patientBody(ctx: ctx, text: data.activityInstructions, y: y)
+                }
+                if !data.drivingInstructions.isEmpty {
+                    y = patientBody(ctx: ctx, text: data.drivingInstructions, y: y)
+                }
+            }
+
+            // Medications
+            if !data.medicationInstructions.isEmpty {
+                y = maybeNewPage(ctx: ctx, y: y, minSpace: 50)
+                y = patientSection(ctx: ctx, title: "Medications and Pain Relief", y: y)
+                y = patientBody(ctx: ctx, text: data.medicationInstructions, y: y)
+            }
+
+            // Follow-up
+            if !data.followUpInstructions.isEmpty {
+                y = maybeNewPage(ctx: ctx, y: y, minSpace: 40)
+                y = patientSection(ctx: ctx, title: "Your Follow-up Appointment", y: y)
+                y = patientBody(ctx: ctx, text: data.followUpInstructions, y: y)
+            }
+
+            // Additional notes
+            if !data.additionalNotes.isEmpty {
+                y = maybeNewPage(ctx: ctx, y: y, minSpace: 40)
+                y = patientSection(ctx: ctx, title: "Additional Information", y: y)
+                y = patientBody(ctx: ctx, text: data.additionalNotes, y: y)
+            }
+
+            // Warning signs — amber box
+            y = maybeNewPage(ctx: ctx, y: y, minSpace: 80)
+            y += 6
+            let allWarnings = data.additionalWarnings.isEmpty
+                ? standardWarnings
+                : standardWarnings + [data.additionalWarnings]
+            let warningH = CGFloat(allWarnings.count) * 14 + 30
+            UIColor.systemOrange.withAlphaComponent(0.10).setFill()
+            UIRectFill(CGRect(x: lm - 6, y: y, width: bodyW + 12, height: warningH))
+            UIColor.systemOrange.setStroke()
+            UIBezierPath(rect: CGRect(x: lm - 6, y: y, width: bodyW + 12, height: warningH)).stroke()
+            "⚠ WHEN TO SEEK URGENT HELP".draw(
+                in: CGRect(x: lm, y: y + 6, width: bodyW, height: 14),
+                withAttributes: [.font: UIFont.systemFont(ofSize: 9, weight: .bold),
+                                 .foregroundColor: UIColor.systemOrange])
+            var wy = y + 20
+            for warning in allWarnings {
+                "• \(warning)".draw(in: CGRect(x: lm, y: wy, width: bodyW, height: 14),
+                                    withAttributes: [.font: UIFont.systemFont(ofSize: 8.5),
+                                                     .foregroundColor: UIColor.label])
+                wy += 14
+            }
+            y = wy + 8
+
+            // Contact box
+            y = maybeNewPage(ctx: ctx, y: y, minSpace: 50)
+            y += 4
+            teal.withAlphaComponent(0.08).setFill()
+            UIRectFill(CGRect(x: lm - 6, y: y, width: bodyW + 12, height: 38))
+            "If you have any concerns, please contact us:".draw(
+                in: CGRect(x: lm, y: y + 4, width: bodyW, height: 12),
+                withAttributes: [.font: UIFont.systemFont(ofSize: 8.5, weight: .semibold),
+                                 .foregroundColor: UIColor.label])
+            "\(data.contactAddress)  ·  Tel: \(data.contactPhone)".draw(
+                in: CGRect(x: lm, y: y + 18, width: bodyW, height: 12),
+                withAttributes: [.font: UIFont.systemFont(ofSize: 8.5),
+                                 .foregroundColor: UIColor.label])
+            y += 44
+
+            drawFooter()
+        }
+    }
+
+    @discardableResult
+    private static func patientSection(ctx: UIGraphicsPDFRendererContext,
+                                       title: String, y: CGFloat) -> CGFloat {
+        var y = maybeNewPage(ctx: ctx, y: y, minSpace: 40)
+        teal.withAlphaComponent(0.12).setFill()
+        UIRectFill(CGRect(x: lm - 4, y: y, width: bodyW + 8, height: 18))
+        title.uppercased().draw(
+            in: CGRect(x: lm, y: y + 3, width: bodyW, height: 13),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 8, weight: .bold),
+                             .foregroundColor: teal])
+        return y + 22
+    }
+
+    @discardableResult
+    private static func patientBody(ctx: UIGraphicsPDFRendererContext,
+                                    text: String, y: CGFloat) -> CGFloat {
+        var y = maybeNewPage(ctx: ctx, y: y, minSpace: 20)
+        let attrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 9.5),
+            .foregroundColor: UIColor.label,
+        ]
+        let h = ceil(text.boundingRect(with: CGSize(width: bodyW, height: 3000),
+                                       options: .usesLineFragmentOrigin,
+                                       attributes: attrs, context: nil).height) + 4
+        if y + h > page.height - 60 { ctx.beginPage(); y = 40 }
+        text.draw(in: CGRect(x: lm, y: y, width: bodyW, height: h), withAttributes: attrs)
+        return y + h + 6
+    }
 }

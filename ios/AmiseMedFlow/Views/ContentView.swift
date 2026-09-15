@@ -251,6 +251,12 @@ struct ClinicalHubView: View {
                 }
             }
 
+            Section("Patient Communication") {
+                NavigationLink { PatientInstructionsView(patient: patient) } label: {
+                    Label("Patient Instructions Sheet", systemImage: "doc.text.fill")
+                }
+            }
+
             if unsignedDraftCount > 0 {
                 Section {
                     HStack(spacing: 8) {
