@@ -98,6 +98,11 @@ enum BayesianDiagnosisEngine {
             candidates = perianal
         case ccL.contains("weight loss") || ccL.contains("anorexia") || ccL.contains("cachexia"):
             candidates = weightLoss
+        case ccL.contains("reflux") || ccL.contains("heartburn") ||
+             ccL.contains("gerd") || ccL.contains("gord") ||
+             ccL.contains("bloating") || ccL.contains("indigestion") ||
+             ccL.contains("dyspepsia") || ccL.contains("regurgitat"):
+            candidates = refluxGERD
         case ccL.contains("groin pain") || ccL.contains("right iliac") || ccL.contains("inguinal pain"):
             candidates = groinPain
         case ccL.contains("abdom") || ccL.contains("belly") || ccL.contains("stomach") ||
@@ -2024,6 +2029,152 @@ enum BayesianDiagnosisEngine {
             .init(key: "age_over", value: "50", logLR: 10, evidenceLabel: "Older male"),
             .init(key: "sex_male", value: "", logLR: 6, evidenceLabel: "Male sex"),
             .init(key: "pmh", value: "smoking", logLR: 10, evidenceLabel: "Smoking history"),
+        ]),
+    ]
+
+    // ── Reflux / Heartburn / Dyspepsia ───────────────────────────────
+    // Pathognomonic features drive each candidate; CC = "Reflux / Heartburn"
+    // maps here directly rather than falling to the generic abdominalPain list.
+
+    private static let refluxGERD: [Candidate] = [
+
+        // 1. GERD / Oesophagitis — most prevalent in reflux CC context
+        .init(name: "GERD / Oesophagitis", icd: "K21.00",
+              logPrior: 55, features: [
+            // Pathognomonic: burning retrosternal heartburn
+            .init(key: "character",    value: "Burning",         logLR: 16, evidenceLabel: "Burning retrosternal / epigastric pain"),
+            .init(key: "associations", value: "Heartburn",       logLR: 16, evidenceLabel: "Heartburn (pathognomonic)"),
+            .init(key: "associations", value: "Regurgitation",   logLR: 14, evidenceLabel: "Acid regurgitation"),
+            .init(key: "exacerbating", value: "Lying flat",      logLR: 14, evidenceLabel: "Worse lying flat / nocturnal"),
+            .init(key: "exacerbating", value: "Eating",          logLR: 10, evidenceLabel: "Post-prandial worsening"),
+            .init(key: "timing",       value: "Post-prandial",   logLR: 10, evidenceLabel: "Post-prandial onset"),
+            .init(key: "relieving",    value: "Antacids",        logLR: 14, evidenceLabel: "Antacid relief"),
+            .init(key: "relieving",    value: "Sitting up",      logLR: 10, evidenceLabel: "Upright posture relieves"),
+            .init(key: "exacerbating", value: "Alcohol",         logLR:  8, evidenceLabel: "Alcohol exacerbates"),
+            .init(key: "exacerbating", value: "Coffee",          logLR:  8, evidenceLabel: "Caffeine exacerbates"),
+            .init(key: "associations", value: "Belching",        logLR:  8, evidenceLabel: "Frequent belching"),
+            .init(key: "timing",       value: "Nocturnal",       logLR: 10, evidenceLabel: "Nocturnal symptoms"),
+            .init(key: "pmh",          value: "gerd",            logLR: 12, evidenceLabel: "Known GERD history"),
+            .init(key: "pmh",          value: "reflux",          logLR: 12, evidenceLabel: "Reflux history"),
+            .init(key: "pmh",          value: "obese",           logLR:  6, evidenceLabel: "Obesity — GERD risk factor"),
+            .init(key: "inv",          value: "ogd",             logLR: 14, evidenceLabel: "OGD — oesophagitis"),
+            .init(key: "inv",          value: "oesophagitis",    logLR: 16, evidenceLabel: "Endoscopic oesophagitis confirmed"),
+        ]),
+
+        // 2. Hiatus Hernia — very common co-diagnosis with GERD
+        .init(name: "Hiatus Hernia", icd: "K44.9",
+              logPrior: 40, features: [
+            .init(key: "associations", value: "Heartburn",       logLR: 12, evidenceLabel: "Heartburn with positional component"),
+            .init(key: "associations", value: "Regurgitation",   logLR: 12, evidenceLabel: "Regurgitation"),
+            .init(key: "exacerbating", value: "Lying flat",      logLR: 12, evidenceLabel: "Worse lying flat"),
+            .init(key: "exacerbating", value: "Bending forward", logLR: 10, evidenceLabel: "Worse bending forward"),
+            .init(key: "timing",       value: "Post-prandial",   logLR:  8, evidenceLabel: "Post-prandial fullness"),
+            .init(key: "associations", value: "Bloating",        logLR:  8, evidenceLabel: "Epigastric bloating / fullness"),
+            .init(key: "age_over",     value: "50",              logLR:  8, evidenceLabel: "Age >50 (higher prevalence)"),
+            .init(key: "pmh",          value: "obese",           logLR:  8, evidenceLabel: "Obesity"),
+            .init(key: "pmh",          value: "hiatus",          logLR: 16, evidenceLabel: "Known hiatus hernia"),
+            .init(key: "inv",          value: "barium",          logLR: 16, evidenceLabel: "Barium swallow — hiatus hernia"),
+            .init(key: "inv",          value: "cxr",             logLR: 10, evidenceLabel: "CXR — retrocardiac gas shadow"),
+            .init(key: "inv",          value: "ogd",             logLR: 12, evidenceLabel: "OGD — proximal gastric mucosa above diaphragm"),
+        ]),
+
+        // 3. Functional Dyspepsia — post-prandial bloating/fullness without structural cause
+        .init(name: "Functional Dyspepsia", icd: "K30",
+              logPrior: 35, features: [
+            .init(key: "associations", value: "Bloating",        logLR: 14, evidenceLabel: "Post-prandial bloating / fullness (pathognomonic for FD)"),
+            .init(key: "associations", value: "Nausea",          logLR:  8, evidenceLabel: "Nausea"),
+            .init(key: "character",    value: "Fullness",        logLR: 12, evidenceLabel: "Early satiety / fullness"),
+            .init(key: "timing",       value: "Intermittent",    logLR:  8, evidenceLabel: "Intermittent, variable symptoms"),
+            .init(key: "exacerbating", value: "Stress",          logLR:  8, evidenceLabel: "Stress-related"),
+            .init(key: "age_under",    value: "45",              logLR:  8, evidenceLabel: "Younger patient (FD more common)"),
+            .init(key: "relieving",    value: "Antacids",        logLR:  6, evidenceLabel: "Partial antacid relief"),
+            .init(key: "inv",          value: "normal ogd",      logLR: 14, evidenceLabel: "Normal OGD (no structural cause)"),
+            .init(key: "associations", value: "Weight loss",     logLR:-10, evidenceLabel: "Weight loss argues against FD"),
+            .init(key: "timing",       value: "Progressive",     logLR: -8, evidenceLabel: "Progressive course argues against FD"),
+        ]),
+
+        // 4. H. Pylori Gastritis — very common in Caribbean / tropical regions
+        .init(name: "H. Pylori Gastritis", icd: "K29.30",
+              logPrior: 30, features: [
+            // CLO / urea breath test are pathognomonic
+            .init(key: "inv",          value: "clo",             logLR: 20, evidenceLabel: "CLO test positive (pathognomonic)"),
+            .init(key: "inv",          value: "urea breath",     logLR: 20, evidenceLabel: "Urea breath test positive"),
+            .init(key: "inv",          value: "h. pylori",       logLR: 18, evidenceLabel: "H. pylori detected"),
+            .init(key: "pmh",          value: "h. pylori",       logLR: 16, evidenceLabel: "Previous H. pylori infection"),
+            .init(key: "associations", value: "Nausea",          logLR:  8, evidenceLabel: "Nausea / vomiting"),
+            .init(key: "character",    value: "Gnawing",         logLR:  8, evidenceLabel: "Gnawing epigastric pain"),
+            .init(key: "timing",       value: "Post-prandial",   logLR:  6, evidenceLabel: "Post-prandial onset"),
+            .init(key: "exacerbating", value: "NSAIDs",          logLR: 10, evidenceLabel: "NSAIDs / aspirin use"),
+            .init(key: "pmh",          value: "nsaids",          logLR: 10, evidenceLabel: "NSAID use (gastritis risk factor)"),
+            .init(key: "inv",          value: "ogd antrum",      logLR: 14, evidenceLabel: "Antral erythema / nodularity on OGD"),
+        ]),
+
+        // 5. Peptic Ulcer Disease
+        .init(name: "Peptic Ulcer Disease", icd: "K27.9",
+              logPrior: 25, features: [
+            .init(key: "character",    value: "Gnawing",         logLR: 12, evidenceLabel: "Gnawing / burning epigastric pain"),
+            .init(key: "timing",       value: "Nocturnal",       logLR: 12, evidenceLabel: "Nocturnal pain (pathognomonic for duodenal ulcer)"),
+            .init(key: "relieving",    value: "Food",            logLR: 12, evidenceLabel: "Relief with food (duodenal) — pathognomonic"),
+            .init(key: "exacerbating", value: "Eating",          logLR: 10, evidenceLabel: "Worse with eating (gastric ulcer pattern)"),
+            .init(key: "pmh",          value: "nsaids",          logLR: 14, evidenceLabel: "NSAID / aspirin use"),
+            .init(key: "pmh",          value: "h. pylori",       logLR: 14, evidenceLabel: "H. pylori infection"),
+            .init(key: "pmh",          value: "ulcer",           logLR: 14, evidenceLabel: "Previous peptic ulcer"),
+            .init(key: "pmh",          value: "steroids",        logLR:  8, evidenceLabel: "Steroid use"),
+            .init(key: "associations", value: "Haematemesis",    logLR: 16, evidenceLabel: "Haematemesis (red flag — bleeding ulcer)"),
+            .init(key: "associations", value: "Melaena",         logLR: 16, evidenceLabel: "Melaena (red flag — upper GI bleed)"),
+            .init(key: "age_over",     value: "45",              logLR:  6, evidenceLabel: "Age >45"),
+            .init(key: "inv",          value: "ulcer",           logLR: 18, evidenceLabel: "OGD — ulcer confirmed"),
+            .init(key: "inv",          value: "h. pylori",       logLR: 14, evidenceLabel: "H. pylori positive"),
+        ]),
+
+        // 6. Barrett's Oesophagus — complication of chronic GERD; requires surveillance
+        .init(name: "Barrett's Oesophagus", icd: "K22.70",
+              logPrior: 10, features: [
+            .init(key: "pmh",          value: "gerd",            logLR: 16, evidenceLabel: "Chronic GERD >5 years (key risk factor)"),
+            .init(key: "pmh",          value: "reflux",          logLR: 14, evidenceLabel: "Long-standing reflux history"),
+            .init(key: "pmh",          value: "barrett",         logLR: 20, evidenceLabel: "Known Barrett's oesophagus"),
+            .init(key: "sex_male",     value: "",                logLR:  8, evidenceLabel: "Male sex (3:1 risk ratio)"),
+            .init(key: "age_over",     value: "50",              logLR: 10, evidenceLabel: "Age >50"),
+            .init(key: "pmh",          value: "obese",           logLR:  6, evidenceLabel: "Obesity"),
+            .init(key: "pmh",          value: "smoking",         logLR:  6, evidenceLabel: "Smoking history"),
+            .init(key: "inv",          value: "barrett",         logLR: 20, evidenceLabel: "OGD — columnar-lined oesophagus / intestinal metaplasia"),
+            .init(key: "inv",          value: "biopsy",          logLR: 14, evidenceLabel: "Biopsy — intestinal metaplasia confirmed"),
+        ]),
+
+        // 7. Eosinophilic Oesophagitis
+        .init(name: "Eosinophilic Oesophagitis", icd: "K20.0",
+              logPrior: 8, features: [
+            .init(key: "associations", value: "Dysphagia",       logLR: 14, evidenceLabel: "Dysphagia (frequently solid foods)"),
+            .init(key: "associations", value: "Food bolus",      logLR: 18, evidenceLabel: "Food bolus impaction (pathognomonic)"),
+            .init(key: "pmh",          value: "atop",            logLR: 12, evidenceLabel: "Atopy / eczema / asthma / allergic rhinitis"),
+            .init(key: "pmh",          value: "asthma",          logLR: 10, evidenceLabel: "Asthma"),
+            .init(key: "pmh",          value: "allerg",          logLR: 10, evidenceLabel: "Food or environmental allergies"),
+            .init(key: "age_under",    value: "40",              logLR:  8, evidenceLabel: "Younger patient (peak 20–40 yrs)"),
+            .init(key: "sex_male",     value: "",                logLR:  6, evidenceLabel: "Male sex (3:1 ratio)"),
+            .init(key: "inv",          value: "eosinophil",      logLR: 20, evidenceLabel: "Biopsy — ≥15 eosinophils/HPF (pathognomonic)"),
+            .init(key: "inv",          value: "rings",           logLR: 16, evidenceLabel: "OGD — oesophageal rings / furrows"),
+            .init(key: "relieving",    value: "Antacids",        logLR: -6, evidenceLabel: "Poor antacid response (argues against GERD)"),
+        ]),
+
+        // 8. Oesophageal Carcinoma — red flag; low prior but high LR features
+        .init(name: "Oesophageal Carcinoma", icd: "C15.9",
+              logPrior: 5, features: [
+            // Pathognomonic: progressive dysphagia (solids → liquids)
+            .init(key: "associations", value: "Dysphagia",       logLR: 18, evidenceLabel: "Progressive dysphagia — RED FLAG"),
+            .init(key: "timing",       value: "Progressive",     logLR: 16, evidenceLabel: "Relentlessly progressive symptoms"),
+            .init(key: "associations", value: "Weight loss",     logLR: 16, evidenceLabel: "Significant weight loss — RED FLAG"),
+            .init(key: "associations", value: "Anorexia",        logLR: 10, evidenceLabel: "Anorexia"),
+            .init(key: "age_over",     value: "55",              logLR: 12, evidenceLabel: "Age >55"),
+            .init(key: "pmh",          value: "barrett",         logLR: 16, evidenceLabel: "Barrett's oesophagus (major risk factor)"),
+            .init(key: "pmh",          value: "gerd",            logLR:  8, evidenceLabel: "Long-standing GERD"),
+            .init(key: "pmh",          value: "smoking",         logLR:  8, evidenceLabel: "Smoking history"),
+            .init(key: "exacerbating", value: "Alcohol",         logLR:  6, evidenceLabel: "Alcohol use"),
+            .init(key: "sex_male",     value: "",                logLR:  6, evidenceLabel: "Male sex"),
+            .init(key: "exam",         value: "cervical lymph",  logLR: 14, evidenceLabel: "Cervical lymphadenopathy"),
+            .init(key: "exam",         value: "mass",            logLR: 12, evidenceLabel: "Epigastric mass"),
+            .init(key: "inv",          value: "ogd",             logLR: 14, evidenceLabel: "OGD indicated"),
+            .init(key: "inv",          value: "biopsy",          logLR: 20, evidenceLabel: "Biopsy — carcinoma confirmed"),
+            .init(key: "inv",          value: "ct",              logLR: 10, evidenceLabel: "CT staging performed"),
         ]),
     ]
 }
