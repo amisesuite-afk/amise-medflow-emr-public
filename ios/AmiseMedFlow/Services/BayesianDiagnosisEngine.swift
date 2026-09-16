@@ -89,8 +89,11 @@ enum BayesianDiagnosisEngine {
             candidates = breastLump
         case ccL.contains("neck") && (ccL.contains("lump") || ccL.contains("swelling") || ccL.contains("mass")):
             candidates = neckLump
-        case ccL.contains("thyroid"):
-            candidates = neckLump
+        case ccL.contains("thyroid") || ccL.contains("hypothyroid") ||
+             ccL.contains("hyperthyroid") || ccL.contains("graves") ||
+             ccL.contains("goitre") || ccL.contains("hashimoto") ||
+             ccL.contains("thyrotoxic") || ccL.contains("tsh"):
+            candidates = thyroidPathology
         case ccL.contains("hernia") || (ccL.contains("groin") && ccL.contains("lump")):
             candidates = hernia
         case ccL.contains("perianal") || ccL.contains("haemorrhoid") ||
@@ -134,9 +137,22 @@ enum BayesianDiagnosisEngine {
         case ccL.contains("diabetes") || ccL.contains("diabetic") || ccL.contains("glucose") ||
              ccL.contains("hba1c") || ccL.contains("dm2") || ccL.contains("dm1"):
             candidates = diabetesReview
-        case ccL.contains("thyroid") || ccL.contains("hypothyroid") || ccL.contains("hyperthyroid") ||
-             ccL.contains("graves") || ccL.contains("goitre"):
-            candidates = neckLump    // existing thyroid candidates
+        case ccL.contains("nausea") || ccL.contains("vomiting") || ccL.contains("vomit") ||
+             ccL.contains("emesis") || ccL.contains("retching"):
+            candidates = nauseaVomiting
+        case ccL.contains("haematemesis") || ccL.contains("hematemesis") ||
+             ccL.contains("melaena") || ccL.contains("melena") ||
+             ccL.contains("coffee ground") || ccL.contains("upper gi bleed") ||
+             (ccL.contains("blood") && ccL.contains("vomit")):
+            candidates = upperGIBleed
+        case ccL.contains("post-op") || ccL.contains("post op") || ccL.contains("postop") ||
+             ccL.contains("post-operative") || ccL.contains("post operative") ||
+             ccL.contains("post surgery") || ccL.contains("post-surgery"):
+            candidates = postOpReview
+        case ccL.contains("adrenal") || ccL.contains("conn") || ccL.contains("cushing") ||
+             ccL.contains("pheochromocytoma") || ccL.contains("phaeochromocytoma") ||
+             ccL.contains("incidentaloma") || ccL.contains("hyperaldosterone"):
+            candidates = adrenalEndocrine
         case ccL.contains("vascular") || ccL.contains("mesenteric") ||
              ccL.contains("ischaemia") || ccL.contains("ischemia") ||
              ccL.contains("aortic") || ccL.contains("claudicat") ||
@@ -2175,6 +2191,351 @@ enum BayesianDiagnosisEngine {
             .init(key: "inv",          value: "ogd",             logLR: 14, evidenceLabel: "OGD indicated"),
             .init(key: "inv",          value: "biopsy",          logLR: 20, evidenceLabel: "Biopsy — carcinoma confirmed"),
             .init(key: "inv",          value: "ct",              logLR: 10, evidenceLabel: "CT staging performed"),
+        ]),
+    ]
+
+    // MARK: – Thyroid Pathology
+    private let thyroidPathology: [Candidate] = [
+        .init(name: "Papillary Thyroid Carcinoma", icd: "C73",
+              logPrior: 30, features: [
+            .init(key: "exam",       value: "thyroid nodule",   logLR: 18, evidenceLabel: "Solitary thyroid nodule — RED FLAG"),
+            .init(key: "exam",       value: "firm nodule",      logLR: 16, evidenceLabel: "Hard/firm nodule"),
+            .init(key: "exam",       value: "lymph node",       logLR: 16, evidenceLabel: "Cervical lymphadenopathy"),
+            .init(key: "timing",     value: "Progressive",      logLR: 12, evidenceLabel: "Progressive growth"),
+            .init(key: "associations", value: "Hoarseness",     logLR: 14, evidenceLabel: "Hoarseness — recurrent laryngeal nerve"),
+            .init(key: "associations", value: "Dysphagia",      logLR: 10, evidenceLabel: "Dysphagia"),
+            .init(key: "sex_female", value: "",                 logLR:  8, evidenceLabel: "Female sex (3:1 ratio)"),
+            .init(key: "pmh",        value: "radiation",        logLR: 16, evidenceLabel: "Prior neck radiation"),
+            .init(key: "inv",        value: "ultrasound",       logLR: 14, evidenceLabel: "USS thyroid — microcalcification, irregular margin"),
+            .init(key: "inv",        value: "fnac",             logLR: 20, evidenceLabel: "FNAC — malignant cells"),
+            .init(key: "inv",        value: "tsh",              logLR:  6, evidenceLabel: "TSH suppressed or normal"),
+        ]),
+        .init(name: "Benign Thyroid Nodule / Colloid Goitre", icd: "E04.1",
+              logPrior: 55, features: [
+            .init(key: "exam",       value: "thyroid nodule",   logLR: 14, evidenceLabel: "Smooth, soft thyroid nodule"),
+            .init(key: "exam",       value: "soft nodule",      logLR: 10, evidenceLabel: "Soft/cystic nodule"),
+            .init(key: "timing",     value: "Stable",           logLR: 10, evidenceLabel: "Slow / stable growth over years"),
+            .init(key: "sex_female", value: "",                 logLR:  6, evidenceLabel: "Female sex"),
+            .init(key: "inv",        value: "ultrasound",       logLR: 12, evidenceLabel: "USS — anechoic/cystic, no suspicious features"),
+            .init(key: "inv",        value: "tsh",              logLR:  8, evidenceLabel: "TSH — normal"),
+            .init(key: "inv",        value: "fnac",             logLR: 14, evidenceLabel: "FNAC — benign (Bethesda II)"),
+        ]),
+        .init(name: "Graves' Disease / Hyperthyroidism", icd: "E05.0",
+              logPrior: 35, features: [
+            .init(key: "associations", value: "Palpitations",   logLR: 14, evidenceLabel: "Palpitations — pathognomonic triad sign"),
+            .init(key: "associations", value: "Weight loss",    logLR: 14, evidenceLabel: "Weight loss despite good appetite"),
+            .init(key: "associations", value: "Tremor",         logLR: 12, evidenceLabel: "Fine tremor of hands"),
+            .init(key: "associations", value: "Sweating",       logLR: 12, evidenceLabel: "Heat intolerance, sweating"),
+            .init(key: "exam",         value: "exophthalmos",   logLR: 20, evidenceLabel: "Exophthalmos — pathognomonic for Graves'"),
+            .init(key: "exam",         value: "goitre",         logLR: 14, evidenceLabel: "Diffuse smooth goitre with bruit"),
+            .init(key: "exam",         value: "bruit",          logLR: 16, evidenceLabel: "Thyroid bruit — highly specific for Graves'"),
+            .init(key: "sex_female",   value: "",               logLR:  8, evidenceLabel: "Female sex (7:1)"),
+            .init(key: "inv",          value: "tsh",            logLR: 18, evidenceLabel: "TSH suppressed (<0.01)"),
+            .init(key: "inv",          value: "t4",             logLR: 16, evidenceLabel: "Free T4/T3 elevated"),
+            .init(key: "inv",          value: "trab",           logLR: 20, evidenceLabel: "TSH receptor antibodies positive"),
+        ]),
+        .init(name: "Hashimoto's Thyroiditis / Hypothyroidism", icd: "E06.3",
+              logPrior: 35, features: [
+            .init(key: "associations", value: "Fatigue",        logLR: 12, evidenceLabel: "Fatigue, lethargy"),
+            .init(key: "associations", value: "Weight gain",    logLR: 12, evidenceLabel: "Weight gain"),
+            .init(key: "associations", value: "Cold intolerance", logLR: 12, evidenceLabel: "Cold intolerance"),
+            .init(key: "associations", value: "Constipation",   logLR: 10, evidenceLabel: "Constipation"),
+            .init(key: "associations", value: "Bradycardia",    logLR: 10, evidenceLabel: "Bradycardia"),
+            .init(key: "exam",         value: "goitre",         logLR: 14, evidenceLabel: "Rubbery/firm goitre"),
+            .init(key: "sex_female",   value: "",               logLR: 10, evidenceLabel: "Female sex (10:1)"),
+            .init(key: "inv",          value: "tsh",            logLR: 18, evidenceLabel: "TSH elevated (>4.5)"),
+            .init(key: "inv",          value: "tpo",            logLR: 18, evidenceLabel: "Anti-TPO antibodies positive"),
+            .init(key: "inv",          value: "t4",             logLR: 14, evidenceLabel: "Free T4 low"),
+        ]),
+        .init(name: "Toxic Multinodular Goitre / Adenoma", icd: "E05.2",
+              logPrior: 25, features: [
+            .init(key: "exam",         value: "multinodular",   logLR: 16, evidenceLabel: "Multinodular goitre"),
+            .init(key: "age_over",     value: "50",             logLR: 10, evidenceLabel: "Typically age >50"),
+            .init(key: "associations", value: "Palpitations",   logLR: 12, evidenceLabel: "Palpitations / AF"),
+            .init(key: "associations", value: "Weight loss",    logLR: 10, evidenceLabel: "Weight loss"),
+            .init(key: "inv",          value: "tsh",            logLR: 14, evidenceLabel: "TSH suppressed"),
+            .init(key: "inv",          value: "scan",           logLR: 14, evidenceLabel: "Isotope scan — hot nodule(s)"),
+        ]),
+        .init(name: "De Quervain's Thyroiditis", icd: "E06.1",
+              logPrior: 15, features: [
+            .init(key: "character",    value: "Painful",        logLR: 18, evidenceLabel: "Painful thyroid — pathognomonic"),
+            .init(key: "onset",        value: "Acute",          logLR: 14, evidenceLabel: "Acute onset, weeks after URTI"),
+            .init(key: "pmh",          value: "viral",          logLR: 12, evidenceLabel: "Recent viral illness"),
+            .init(key: "associations", value: "Fever",          logLR: 10, evidenceLabel: "Fever, malaise"),
+            .init(key: "associations", value: "Palpitations",   logLR:  8, evidenceLabel: "Transient hyperthyroid phase"),
+            .init(key: "inv",          value: "esr",            logLR: 14, evidenceLabel: "ESR markedly elevated"),
+            .init(key: "inv",          value: "tsh",            logLR: 10, evidenceLabel: "TSH may be suppressed initially"),
+        ]),
+        .init(name: "Medullary Thyroid Carcinoma", icd: "C73",
+              logPrior: 8, features: [
+            .init(key: "associations", value: "Diarrhoea",      logLR: 16, evidenceLabel: "Secretory diarrhoea — pathognomonic"),
+            .init(key: "associations", value: "Flushing",       logLR: 14, evidenceLabel: "Flushing — calcitonin secretion"),
+            .init(key: "exam",         value: "firm nodule",    logLR: 14, evidenceLabel: "Hard thyroid nodule"),
+            .init(key: "exam",         value: "lymph node",     logLR: 14, evidenceLabel: "Cervical nodes"),
+            .init(key: "pmh",          value: "men2",           logLR: 20, evidenceLabel: "MEN2 syndrome / family history"),
+            .init(key: "inv",          value: "calcitonin",     logLR: 20, evidenceLabel: "Serum calcitonin elevated — specific"),
+            .init(key: "inv",          value: "fnac",           logLR: 18, evidenceLabel: "FNAC — amyloid stroma, C-cells"),
+        ]),
+        .init(name: "Anaplastic Thyroid Carcinoma", icd: "C73",
+              logPrior: 3, features: [
+            .init(key: "timing",       value: "Rapid",          logLR: 20, evidenceLabel: "Rapidly enlarging neck mass — hallmark"),
+            .init(key: "associations", value: "Stridor",        logLR: 18, evidenceLabel: "Stridor — tracheal compression — RED FLAG"),
+            .init(key: "associations", value: "Dysphagia",      logLR: 14, evidenceLabel: "Dysphagia"),
+            .init(key: "associations", value: "Hoarseness",     logLR: 14, evidenceLabel: "Hoarseness — RLN invasion"),
+            .init(key: "age_over",     value: "65",             logLR: 12, evidenceLabel: "Age >65"),
+            .init(key: "pmh",          value: "goitre",         logLR: 10, evidenceLabel: "Long-standing goitre"),
+            .init(key: "inv",          value: "ct",             logLR: 14, evidenceLabel: "CT — invasive mass, calcification"),
+            .init(key: "inv",          value: "biopsy",         logLR: 20, evidenceLabel: "Biopsy — undifferentiated carcinoma"),
+        ]),
+    ]
+
+    // MARK: – Nausea & Vomiting
+    private let nauseaVomiting: [Candidate] = [
+        .init(name: "Acute Gastroenteritis", icd: "K52.9",
+              logPrior: 55, features: [
+            .init(key: "onset",        value: "Acute",          logLR: 14, evidenceLabel: "Acute onset <72h"),
+            .init(key: "associations", value: "Diarrhoea",      logLR: 16, evidenceLabel: "Diarrhoea — gastroenteritis hallmark"),
+            .init(key: "associations", value: "Fever",          logLR: 10, evidenceLabel: "Low-grade fever"),
+            .init(key: "associations", value: "Cramps",         logLR: 10, evidenceLabel: "Colicky abdominal cramps"),
+            .init(key: "pmh",          value: "contact",        logLR: 14, evidenceLabel: "Sick contacts / recent travel"),
+            .init(key: "pmh",          value: "food",           logLR: 14, evidenceLabel: "Suspect food ingestion"),
+            .init(key: "exam",         value: "normal",         logLR:  8, evidenceLabel: "Benign abdominal exam"),
+        ]),
+        .init(name: "Gastroparesis", icd: "K31.84",
+              logPrior: 20, features: [
+            .init(key: "timing",       value: "Postprandial",   logLR: 16, evidenceLabel: "Vomiting of undigested food hours after meal"),
+            .init(key: "character",    value: "Undigested food", logLR: 18, evidenceLabel: "Vomitus contains undigested food — pathognomonic"),
+            .init(key: "associations", value: "Early satiety",  logLR: 14, evidenceLabel: "Early satiety, bloating"),
+            .init(key: "associations", value: "Weight loss",    logLR: 10, evidenceLabel: "Weight loss"),
+            .init(key: "pmh",          value: "diabetes",       logLR: 16, evidenceLabel: "Diabetes mellitus (autonomic neuropathy)"),
+            .init(key: "pmh",          value: "surgery",        logLR: 12, evidenceLabel: "Prior gastric surgery"),
+            .init(key: "inv",          value: "gastric empty",  logLR: 20, evidenceLabel: "Gastric emptying study — delayed"),
+        ]),
+        .init(name: "Gastric Outlet Obstruction", icd: "K31.1",
+              logPrior: 15, features: [
+            .init(key: "character",    value: "Projectile",     logLR: 18, evidenceLabel: "Projectile vomiting — classic"),
+            .init(key: "character",    value: "Non-bilious",    logLR: 16, evidenceLabel: "Non-bilious vomitus"),
+            .init(key: "timing",       value: "Progressive",    logLR: 14, evidenceLabel: "Progressive worsening"),
+            .init(key: "associations", value: "Weight loss",    logLR: 12, evidenceLabel: "Significant weight loss"),
+            .init(key: "associations", value: "Distension",     logLR: 14, evidenceLabel: "Epigastric distension / succussion splash"),
+            .init(key: "pmh",          value: "peptic ulcer",   logLR: 14, evidenceLabel: "History of peptic ulcer disease"),
+            .init(key: "pmh",          value: "malignancy",     logLR: 14, evidenceLabel: "Gastric malignancy"),
+            .init(key: "inv",          value: "ogd",            logLR: 18, evidenceLabel: "OGD — pyloric obstruction"),
+        ]),
+        .init(name: "Small Bowel Obstruction", icd: "K56.60",
+              logPrior: 25, features: [
+            .init(key: "character",    value: "Bilious",        logLR: 16, evidenceLabel: "Bilious vomiting — distal to pylorus"),
+            .init(key: "associations", value: "Distension",     logLR: 16, evidenceLabel: "Abdominal distension"),
+            .init(key: "associations", value: "Colicky pain",   logLR: 14, evidenceLabel: "Colicky central abdominal pain"),
+            .init(key: "associations", value: "Obstipation",    logLR: 16, evidenceLabel: "Absolute constipation — RED FLAG"),
+            .init(key: "pmh",          value: "surgery",        logLR: 16, evidenceLabel: "Prior abdominal surgery (adhesions)"),
+            .init(key: "exam",         value: "tinkling bowel", logLR: 14, evidenceLabel: "High-pitched / tinkling bowel sounds"),
+            .init(key: "inv",          value: "xray",           logLR: 16, evidenceLabel: "AXR — air-fluid levels, dilated loops"),
+            .init(key: "inv",          value: "ct",             logLR: 18, evidenceLabel: "CT abdomen — transition point"),
+        ]),
+        .init(name: "Appendicitis (with nausea)", icd: "K37",
+              logPrior: 20, features: [
+            .init(key: "onset",        value: "Acute",          logLR: 12, evidenceLabel: "Acute onset"),
+            .init(key: "associations", value: "RIF pain",       logLR: 18, evidenceLabel: "Migration to right iliac fossa — pathognomonic"),
+            .init(key: "associations", value: "Anorexia",       logLR: 14, evidenceLabel: "Anorexia"),
+            .init(key: "associations", value: "Fever",          logLR: 12, evidenceLabel: "Low-grade fever"),
+            .init(key: "exam",         value: "mcburney",       logLR: 18, evidenceLabel: "McBurney's point tenderness"),
+            .init(key: "exam",         value: "rebound",        logLR: 14, evidenceLabel: "Rebound tenderness"),
+            .init(key: "inv",          value: "wcc",            logLR: 12, evidenceLabel: "Raised WCC / neutrophilia"),
+            .init(key: "inv",          value: "crp",            logLR: 12, evidenceLabel: "Elevated CRP"),
+        ]),
+        .init(name: "Cyclic Vomiting Syndrome", icd: "G43.A0",
+              logPrior: 8, features: [
+            .init(key: "timing",       value: "Episodic",       logLR: 18, evidenceLabel: "Stereotyped episodes — pathognomonic"),
+            .init(key: "timing",       value: "Recurrent",      logLR: 16, evidenceLabel: "Recurrent with symptom-free intervals"),
+            .init(key: "onset",        value: "Rapid",          logLR: 12, evidenceLabel: "Rapid onset vomiting episodes"),
+            .init(key: "pmh",          value: "migraine",       logLR: 14, evidenceLabel: "Personal / family history of migraine"),
+            .init(key: "exam",         value: "normal",         logLR: 10, evidenceLabel: "Normal between episodes"),
+        ]),
+        .init(name: "Drug-Induced Nausea / Vomiting", icd: "R11.2",
+              logPrior: 25, features: [
+            .init(key: "pmh",          value: "medication",     logLR: 18, evidenceLabel: "New medication / opioids / chemotherapy"),
+            .init(key: "timing",       value: "Post-medication", logLR: 16, evidenceLabel: "Temporal relation to drug initiation"),
+            .init(key: "exam",         value: "normal",         logLR: 10, evidenceLabel: "Normal abdominal exam"),
+        ]),
+    ]
+
+    // MARK: – Upper GI Bleed
+    private let upperGIBleed: [Candidate] = [
+        .init(name: "Bleeding Peptic Ulcer", icd: "K27.4",
+              logPrior: 45, features: [
+            .init(key: "character",    value: "Melaena",        logLR: 16, evidenceLabel: "Melaena — digested blood from upper GI"),
+            .init(key: "associations", value: "Epigastric pain", logLR: 14, evidenceLabel: "Epigastric pain preceding bleed"),
+            .init(key: "onset",        value: "Acute",          logLR: 12, evidenceLabel: "Acute haematemesis"),
+            .init(key: "pmh",          value: "nsaid",          logLR: 16, evidenceLabel: "NSAID / aspirin use — major risk factor"),
+            .init(key: "pmh",          value: "h.pylori",       logLR: 14, evidenceLabel: "H. pylori infection"),
+            .init(key: "pmh",          value: "peptic ulcer",   logLR: 18, evidenceLabel: "Known peptic ulcer"),
+            .init(key: "pmh",          value: "anticoagulant",  logLR: 12, evidenceLabel: "Anticoagulant use"),
+            .init(key: "exam",         value: "epigastric tender", logLR: 12, evidenceLabel: "Epigastric tenderness"),
+            .init(key: "inv",          value: "ogd",            logLR: 20, evidenceLabel: "OGD — ulcer with stigmata of haemorrhage"),
+            .init(key: "inv",          value: "hb",             logLR: 14, evidenceLabel: "Haemoglobin drop"),
+        ]),
+        .init(name: "Oesophageal Varices Bleed", icd: "I85.01",
+              logPrior: 20, features: [
+            .init(key: "character",    value: "Haematemesis",   logLR: 20, evidenceLabel: "Massive haematemesis — RED FLAG / life-threatening"),
+            .init(key: "pmh",          value: "cirrhosis",      logLR: 20, evidenceLabel: "Liver cirrhosis — pathognomonic risk"),
+            .init(key: "pmh",          value: "alcohol",        logLR: 14, evidenceLabel: "Alcohol excess"),
+            .init(key: "pmh",          value: "hepatitis",      logLR: 14, evidenceLabel: "Chronic hepatitis B/C"),
+            .init(key: "exam",         value: "jaundice",       logLR: 12, evidenceLabel: "Jaundice, spider naevi"),
+            .init(key: "exam",         value: "ascites",        logLR: 16, evidenceLabel: "Ascites"),
+            .init(key: "exam",         value: "splenomegaly",   logLR: 14, evidenceLabel: "Splenomegaly"),
+            .init(key: "inv",          value: "ogd",            logLR: 20, evidenceLabel: "OGD — bleeding varices"),
+            .init(key: "inv",          value: "lft",            logLR: 14, evidenceLabel: "Deranged LFTs / coagulopathy"),
+        ]),
+        .init(name: "Mallory-Weiss Tear", icd: "K22.6",
+              logPrior: 20, features: [
+            .init(key: "onset",        value: "After retching", logLR: 20, evidenceLabel: "Haematemesis after forceful retching — pathognomonic"),
+            .init(key: "pmh",          value: "alcohol",        logLR: 14, evidenceLabel: "Alcohol excess"),
+            .init(key: "pmh",          value: "pregnancy",      logLR: 10, evidenceLabel: "Hyperemesis gravidarum"),
+            .init(key: "character",    value: "Bright red",     logLR: 14, evidenceLabel: "Bright red blood — arterial bleed"),
+            .init(key: "inv",          value: "ogd",            logLR: 20, evidenceLabel: "OGD — mucosal tear at GOJ"),
+        ]),
+        .init(name: "Dieulafoy Lesion", icd: "K31.82",
+              logPrior: 5, features: [
+            .init(key: "character",    value: "Massive",        logLR: 14, evidenceLabel: "Massive, painless haematemesis"),
+            .init(key: "onset",        value: "Recurrent",      logLR: 16, evidenceLabel: "Recurrent self-limiting bleeds"),
+            .init(key: "exam",         value: "normal",         logLR:  8, evidenceLabel: "No obvious upper GI cause on initial OGD"),
+            .init(key: "inv",          value: "ogd",            logLR: 20, evidenceLabel: "OGD — visible vessel without ulceration"),
+        ]),
+        .init(name: "Gastric / Oesophageal Malignancy Bleed", icd: "C16.9",
+              logPrior: 10, features: [
+            .init(key: "associations", value: "Weight loss",    logLR: 16, evidenceLabel: "Weight loss — RED FLAG"),
+            .init(key: "associations", value: "Dysphagia",      logLR: 14, evidenceLabel: "Dysphagia"),
+            .init(key: "timing",       value: "Progressive",    logLR: 14, evidenceLabel: "Progressive symptoms"),
+            .init(key: "age_over",     value: "55",             logLR: 12, evidenceLabel: "Age >55"),
+            .init(key: "exam",         value: "mass",           logLR: 16, evidenceLabel: "Epigastric mass"),
+            .init(key: "inv",          value: "ogd",            logLR: 20, evidenceLabel: "OGD + biopsy — malignancy"),
+            .init(key: "inv",          value: "ct",             logLR: 14, evidenceLabel: "CT staging"),
+        ]),
+    ]
+
+    // MARK: – Post-operative Review
+    private let postOpReview: [Candidate] = [
+        .init(name: "Surgical Site Infection", icd: "T81.40",
+              logPrior: 40, features: [
+            .init(key: "onset",        value: "3–7 days post-op", logLR: 16, evidenceLabel: "Onset 3–7 days post-operatively"),
+            .init(key: "associations", value: "Wound pain",     logLR: 14, evidenceLabel: "Increasing wound pain"),
+            .init(key: "associations", value: "Fever",          logLR: 14, evidenceLabel: "Fever >38°C"),
+            .init(key: "exam",         value: "erythema",       logLR: 16, evidenceLabel: "Wound erythema, warmth"),
+            .init(key: "exam",         value: "discharge",      logLR: 18, evidenceLabel: "Purulent wound discharge — diagnostic"),
+            .init(key: "exam",         value: "induration",     logLR: 12, evidenceLabel: "Periincisional induration"),
+            .init(key: "inv",          value: "wcc",            logLR: 12, evidenceLabel: "WCC raised / neutrophilia"),
+            .init(key: "inv",          value: "crp",            logLR: 12, evidenceLabel: "CRP elevated"),
+        ]),
+        .init(name: "Anastomotic Leak", icd: "K91.89",
+              logPrior: 10, features: [
+            .init(key: "onset",        value: "3–5 days post-op", logLR: 18, evidenceLabel: "Onset days 3–5 — peak anastomotic leak window"),
+            .init(key: "associations", value: "Fever",          logLR: 16, evidenceLabel: "Fever — sentinel sign"),
+            .init(key: "associations", value: "Peritonism",     logLR: 20, evidenceLabel: "Peritonism / sepsis — RED FLAG"),
+            .init(key: "associations", value: "Tachycardia",    logLR: 16, evidenceLabel: "Tachycardia / clinical deterioration"),
+            .init(key: "exam",         value: "peritonism",     logLR: 18, evidenceLabel: "Generalised peritonism"),
+            .init(key: "inv",          value: "ct",             logLR: 20, evidenceLabel: "CT abdomen — leak / free fluid / gas"),
+            .init(key: "inv",          value: "crp",            logLR: 16, evidenceLabel: "CRP >150 at day 3 — predictive"),
+        ]),
+        .init(name: "Post-operative Ileus", icd: "K56.0",
+              logPrior: 35, features: [
+            .init(key: "onset",        value: "0–5 days post-op", logLR: 14, evidenceLabel: "Expected in first 3–5 days post abdominal surgery"),
+            .init(key: "associations", value: "Distension",     logLR: 14, evidenceLabel: "Abdominal distension"),
+            .init(key: "associations", value: "No bowel sounds", logLR: 16, evidenceLabel: "Absent bowel sounds"),
+            .init(key: "associations", value: "No flatus",      logLR: 14, evidenceLabel: "No flatus / no stool"),
+            .init(key: "associations", value: "Nausea",         logLR: 12, evidenceLabel: "Nausea / vomiting"),
+            .init(key: "pmh",          value: "opioid",         logLR: 12, evidenceLabel: "Opioid use"),
+            .init(key: "inv",          value: "xray",           logLR: 12, evidenceLabel: "AXR — dilated loops, no transition point"),
+        ]),
+        .init(name: "Post-operative DVT / PE", icd: "I82.409",
+              logPrior: 15, features: [
+            .init(key: "associations", value: "Calf pain",      logLR: 14, evidenceLabel: "Calf pain / swelling (DVT)"),
+            .init(key: "associations", value: "Breathlessness", logLR: 16, evidenceLabel: "Breathlessness — PE RED FLAG"),
+            .init(key: "associations", value: "Chest pain",     logLR: 14, evidenceLabel: "Pleuritic chest pain — PE"),
+            .init(key: "associations", value: "Tachycardia",    logLR: 14, evidenceLabel: "Tachycardia"),
+            .init(key: "pmh",          value: "dvt",            logLR: 14, evidenceLabel: "Prior DVT / PE"),
+            .init(key: "pmh",          value: "immobile",       logLR: 12, evidenceLabel: "Post-op immobility"),
+            .init(key: "inv",          value: "doppler",        logLR: 18, evidenceLabel: "Duplex USS — DVT"),
+            .init(key: "inv",          value: "ctpa",           logLR: 20, evidenceLabel: "CTPA — pulmonary emboli"),
+            .init(key: "inv",          value: "d-dimer",        logLR: 12, evidenceLabel: "D-dimer elevated"),
+        ]),
+        .init(name: "Post-operative Haemorrhage", icd: "T81.0",
+              logPrior: 10, features: [
+            .init(key: "onset",        value: "0–24h",          logLR: 16, evidenceLabel: "Primary haemorrhage: first 24h"),
+            .init(key: "associations", value: "Tachycardia",    logLR: 16, evidenceLabel: "Tachycardia / hypotension — RED FLAG"),
+            .init(key: "associations", value: "Drain output",   logLR: 18, evidenceLabel: "Heavy drain output / haematoma expanding"),
+            .init(key: "associations", value: "Pallor",         logLR: 12, evidenceLabel: "Pallor / anaemia"),
+            .init(key: "exam",         value: "haematoma",      logLR: 16, evidenceLabel: "Expanding wound haematoma"),
+            .init(key: "inv",          value: "hb",             logLR: 14, evidenceLabel: "Falling haemoglobin"),
+        ]),
+        .init(name: "Incisional Hernia", icd: "K43.2",
+              logPrior: 15, features: [
+            .init(key: "timing",       value: "Weeks-months post-op", logLR: 16, evidenceLabel: "Develops weeks to months after laparotomy"),
+            .init(key: "exam",         value: "fascial defect",  logLR: 20, evidenceLabel: "Palpable fascial defect — diagnostic"),
+            .init(key: "exam",         value: "bulge",          logLR: 16, evidenceLabel: "Visible/palpable wound bulge on straining"),
+            .init(key: "associations", value: "Reducible",      logLR: 14, evidenceLabel: "Reducible on lying flat"),
+            .init(key: "pmh",          value: "obesity",        logLR: 12, evidenceLabel: "Obesity / poor nutrition"),
+            .init(key: "pmh",          value: "wound infection", logLR: 12, evidenceLabel: "Prior wound infection"),
+            .init(key: "inv",          value: "ultrasound",     logLR: 14, evidenceLabel: "USS or CT — hernia sac contents"),
+        ]),
+    ]
+
+    // MARK: – Adrenal & Endocrine
+    private let adrenalEndocrine: [Candidate] = [
+        .init(name: "Adrenal Incidentaloma (Benign)", icd: "D35.00",
+              logPrior: 50, features: [
+            .init(key: "exam",         value: "asymptomatic",   logLR: 14, evidenceLabel: "Incidentally found on imaging — most common presentation"),
+            .init(key: "inv",          value: "ct",             logLR: 18, evidenceLabel: "CT — well-defined, low HU (<10), <4 cm"),
+            .init(key: "inv",          value: "mri",            logLR: 16, evidenceLabel: "MRI — chemical shift loss of signal"),
+            .init(key: "inv",          value: "hormones",       logLR: 14, evidenceLabel: "Normal adrenal hormone screen"),
+            .init(key: "age_over",     value: "40",             logLR: 10, evidenceLabel: "More common age >40"),
+        ]),
+        .init(name: "Conn's Syndrome (Primary Hyperaldosteronism)", icd: "E26.01",
+              logPrior: 15, features: [
+            .init(key: "associations", value: "Hypertension",   logLR: 16, evidenceLabel: "Resistant hypertension — key presentation"),
+            .init(key: "associations", value: "Hypokalaemia",   logLR: 20, evidenceLabel: "Spontaneous hypokalaemia — pathognomonic"),
+            .init(key: "associations", value: "Weakness",       logLR: 12, evidenceLabel: "Muscle weakness / cramps (hypokalaemia)"),
+            .init(key: "associations", value: "Polyuria",       logLR: 10, evidenceLabel: "Polyuria / polydipsia (hypokalaemia)"),
+            .init(key: "inv",          value: "aldo:renin",     logLR: 20, evidenceLabel: "Aldosterone:renin ratio >30 — diagnostic"),
+            .init(key: "inv",          value: "ct",             logLR: 14, evidenceLabel: "CT adrenal — adenoma"),
+            .init(key: "inv",          value: "avs",            logLR: 18, evidenceLabel: "Adrenal vein sampling — lateralisation"),
+        ]),
+        .init(name: "Cushing's Syndrome", icd: "E24.9",
+              logPrior: 10, features: [
+            .init(key: "associations", value: "Weight gain",    logLR: 14, evidenceLabel: "Central obesity / weight gain"),
+            .init(key: "exam",         value: "moon face",      logLR: 18, evidenceLabel: "Moon face — Cushingoid features"),
+            .init(key: "exam",         value: "buffalo hump",   logLR: 18, evidenceLabel: "Buffalo hump"),
+            .init(key: "exam",         value: "striae",         logLR: 16, evidenceLabel: "Purple striae — pathognomonic"),
+            .init(key: "exam",         value: "hypertension",   logLR: 12, evidenceLabel: "Hypertension"),
+            .init(key: "associations", value: "Diabetes",       logLR: 12, evidenceLabel: "Hyperglycaemia / steroid diabetes"),
+            .init(key: "associations", value: "Hirsutism",      logLR: 12, evidenceLabel: "Hirsutism (women)"),
+            .init(key: "pmh",          value: "steroid",        logLR: 16, evidenceLabel: "Exogenous steroid use — most common cause"),
+            .init(key: "inv",          value: "cortisol",       logLR: 18, evidenceLabel: "24h UFC elevated / midnight salivary cortisol"),
+            .init(key: "inv",          value: "dexamethasone",  logLR: 18, evidenceLabel: "ODST — non-suppression"),
+            .init(key: "inv",          value: "acth",           logLR: 14, evidenceLabel: "ACTH to distinguish adrenal vs. pituitary"),
+        ]),
+        .init(name: "Phaeochromocytoma", icd: "D35.00",
+              logPrior: 5, features: [
+            .init(key: "associations", value: "Paroxysmal hypertension", logLR: 20, evidenceLabel: "Paroxysmal hypertension — classic triad"),
+            .init(key: "associations", value: "Headache",      logLR: 18, evidenceLabel: "Severe headache — triad component"),
+            .init(key: "associations", value: "Sweating",      logLR: 18, evidenceLabel: "Diaphoresis — triad component"),
+            .init(key: "associations", value: "Palpitations",  logLR: 18, evidenceLabel: "Palpitations — triad component"),
+            .init(key: "associations", value: "Pallor",        logLR: 14, evidenceLabel: "Pallor (not flushing in most)"),
+            .init(key: "pmh",          value: "men2",          logLR: 16, evidenceLabel: "MEN2 / VHL / NF1 syndrome"),
+            .init(key: "inv",          value: "metanephrines", logLR: 20, evidenceLabel: "Plasma/urine metanephrines — highly sensitive"),
+            .init(key: "inv",          value: "ct",            logLR: 14, evidenceLabel: "CT/MRI adrenal — hypervascular mass"),
+            .init(key: "inv",          value: "mibg",          logLR: 18, evidenceLabel: "MIBG scan — functional imaging"),
+        ]),
+        .init(name: "Adrenocortical Carcinoma", icd: "C74.00",
+              logPrior: 3, features: [
+            .init(key: "exam",         value: "large mass",    logLR: 18, evidenceLabel: "Large adrenal mass >4 cm — HIGH concern"),
+            .init(key: "timing",       value: "Progressive",   logLR: 14, evidenceLabel: "Progressive growth on follow-up imaging"),
+            .init(key: "associations", value: "Virilisation",  logLR: 18, evidenceLabel: "Virilisation / feminisation — autonomous steroid"),
+            .init(key: "associations", value: "Cushing features", logLR: 14, evidenceLabel: "Rapid-onset Cushing features"),
+            .init(key: "associations", value: "Weight loss",   logLR: 14, evidenceLabel: "Weight loss — RED FLAG"),
+            .init(key: "inv",          value: "ct",            logLR: 18, evidenceLabel: "CT — irregular, >10 HU, heterogeneous, >4 cm"),
+            .init(key: "inv",          value: "biopsy",        logLR: 20, evidenceLabel: "Biopsy (only if uncertain origin — not adrenal primary)"),
+            .init(key: "inv",          value: "steroids",      logLR: 14, evidenceLabel: "Mixed steroid hypersecretion profile"),
         ]),
     ]
 }
