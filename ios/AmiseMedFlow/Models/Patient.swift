@@ -6,7 +6,7 @@ import SwiftData
 @Model
 final class Patient {
     var id: UUID
-    var remoteId: String?
+    @Attribute(.unique) var remoteId: String?
     var syncCode: String = ""  // stable offline peer-sync ID, set in init()
     var fullName: String
     var dateOfBirth: Date?

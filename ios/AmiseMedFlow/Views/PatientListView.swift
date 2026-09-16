@@ -25,8 +25,12 @@ struct PatientListView: View {
 
     // MARK: – Deduplication
 
-    /// Stable identity key: MRN if assigned, otherwise canonicalised name + DOB.
+    /// Stable identity key, checked in priority order:
+    ///   1. remoteId — Supabase UUID, the canonical cross-device identifier
+    ///   2. mrn      — locally generated; reliable once assigned
+    ///   3. name+DOB — last-resort fallback for purely local records
     private func dedupKey(_ p: Patient) -> String {
+        if let rid = p.remoteId, !rid.isEmpty { return rid }
         if let mrn = p.mrn, !mrn.isEmpty { return mrn }
         let dob = p.dateOfBirth.map { Int($0.timeIntervalSinceReferenceDate) } ?? 0
         return "\(p.fullName.lowercased())|\(dob)"
