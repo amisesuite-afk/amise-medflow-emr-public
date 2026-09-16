@@ -152,6 +152,7 @@ struct ClinicalScoresView: View {
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
     @State private var mewsSaved = false
+    @State private var scoreSaved = false
 
     var filteredScores: [ActiveScore] {
         guard selectedCategory != .all else { return ActiveScore.allCases }
@@ -342,6 +343,24 @@ struct ClinicalScoresView: View {
                     .foregroundStyle(.tertiary)
                     .padding(.top, 4)
             }
+
+            Button(action: { saveScoreToAssessment(r) }) {
+                Label(
+                    scoreSaved ? "Saved to Assessment" : "Save score to Assessment",
+                    systemImage: scoreSaved ? "checkmark.circle.fill" : "note.text.badge.plus"
+                )
+                .font(.caption.weight(.medium))
+                .foregroundStyle(scoreSaved ? .green : AMColor.accent)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
+                .background(
+                    (scoreSaved ? Color.green : AMColor.accent).opacity(0.08),
+                    in: RoundedRectangle(cornerRadius: 8)
+                )
+            }
+            .buttonStyle(.plain)
+            .disabled(scoreSaved)
+            .animation(.easeInOut(duration: 0.2), value: scoreSaved)
         }
         .padding(16)
         .background(.background, in: RoundedRectangle(cornerRadius: 14))
@@ -374,6 +393,7 @@ struct ClinicalScoresView: View {
 
     private func autoPopulate(for score: ActiveScore) {
         mewsSaved = false
+        scoreSaved = false
         switch score {
         case .caprini:
             let (input, fill) = PatientScoreAutoPopulator.caprini(patient: patient)
@@ -426,9 +446,27 @@ struct ClinicalScoresView: View {
         mewsSaved = true
     }
 
+    // MARK: - Score write-back
+
+    private func saveScoreToAssessment(_ r: ClinicalScore) {
+        let fmt = DateFormatter()
+        fmt.dateStyle = .medium
+        fmt.timeStyle = .short
+        let scoreStr = r.score == Double(Int(r.score)) ? "\(Int(r.score))" : String(format: "%.1f", r.score)
+        let maxStr   = r.maxScore == Double(Int(r.maxScore)) ? "\(Int(r.maxScore))" : String(format: "%.1f", r.maxScore)
+        let line = "[\(fmt.string(from: .now))] \(r.systemName): \(scoreStr)/\(maxStr) — \(r.risk.rawValue) Risk. \(r.interpretation)"
+        if let existing = patient.assessmentText, !existing.isEmpty {
+            patient.assessmentText = existing + "\n" + line
+        } else {
+            patient.assessmentText = line
+        }
+        scoreSaved = true
+    }
+
     // MARK: - Recalculate
 
     private func recalculate() {
+        scoreSaved = false
         guard let score = selectedScore else { result = nil; return }
         result = switch score {
         case .alvarado:     ClinicalScoringEngine.alvarado(alv)
