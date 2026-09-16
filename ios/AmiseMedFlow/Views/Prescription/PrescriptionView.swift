@@ -528,6 +528,20 @@ struct AddPrescriptionSheet: View {
                                 Divider()
                             }
                         }
+
+                        if drugSuggestions.isEmpty && drugQuery.count >= 2 && selectedDrug == nil {
+                            Divider().padding(.top, 6)
+                            Button {
+                                CustomDrugStore.shared.add(drugQuery.trimmingCharacters(in: .whitespaces))
+                                drugSuggestions = ClinicalSearchService.searchDrugs(drugQuery)
+                            } label: {
+                                Label("Save \"\(drugQuery)\" to My Drug List", systemImage: "plus.circle")
+                                    .font(.caption)
+                                    .foregroundStyle(AMColor.accent)
+                            }
+                            .buttonStyle(.plain)
+                            .padding(.vertical, 4)
+                        }
                     }
 
                     if let drug = selectedDrug, !drug.commonDoses.isEmpty {
