@@ -425,6 +425,24 @@ struct ClinicalScoresView: View {
         case .meld:
             let (input, fill) = PatientScoreAutoPopulator.meld(patient: patient)
             meldI = input; autoFill = fill
+        case .sirs:
+            let (input, fill) = PatientScoreAutoPopulator.sirs(patient: patient)
+            sirsI = input; autoFill = fill
+        case .qsofa:
+            let (input, fill) = PatientScoreAutoPopulator.qsofa(patient: patient)
+            qsofaI = input; autoFill = fill
+        case .childPugh:
+            let (input, fill) = PatientScoreAutoPopulator.childPugh(patient: patient)
+            cp = input; autoFill = fill
+        case .lrinec:
+            let (input, fill) = PatientScoreAutoPopulator.lrinec(patient: patient)
+            lrin = input; autoFill = fill
+        case .ranson:
+            let (input, fill) = PatientScoreAutoPopulator.ranson(patient: patient)
+            ran = input; autoFill = fill
+        case .glasgow:
+            let (input, fill) = PatientScoreAutoPopulator.glasgowPancreatitis(patient: patient)
+            glas = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -629,16 +647,16 @@ struct ClinicalScoresView: View {
     private var ransonForm: some View {
         Group {
             sectionHeader("At Admission")
-            scoreToggle("Age >55 years", binding: $ran.ageOver55, points: "+1")
-            scoreToggle("WBC >16,000/μL", binding: $ran.wbcOver16k, points: "+1")
-            scoreToggle("Glucose >11 mmol/L (>200 mg/dL)", binding: $ran.glucoseOver200, points: "+1")
-            scoreToggle("LDH >350 IU/L", binding: $ran.ldhOver350, points: "+1")
-            scoreToggle("AST >250 IU/L", binding: $ran.astOver250, points: "+1")
+            scoreToggle("Age >55 years", binding: $ran.ageOver55, points: "+1", autoKey: "ageOver55")
+            scoreToggle("WBC >16,000/μL", binding: $ran.wbcOver16k, points: "+1", autoKey: "wbcOver16k")
+            scoreToggle("Glucose >11 mmol/L (>200 mg/dL)", binding: $ran.glucoseOver200, points: "+1", autoKey: "glucoseOver200")
+            scoreToggle("LDH >350 IU/L", binding: $ran.ldhOver350, points: "+1", autoKey: "ldhOver350")
+            scoreToggle("AST >250 IU/L", binding: $ran.astOver250, points: "+1", autoKey: "astOver250")
             sectionHeader("At 48 Hours")
-            scoreToggle("Haematocrit fall >10%", binding: $ran.hctFallOver10, points: "+1")
-            scoreToggle("BUN rise >1.8 mmol/L", binding: $ran.bunRiseOver5, points: "+1")
-            scoreToggle("Calcium <2 mmol/L", binding: $ran.calciumBelow8, points: "+1")
-            scoreToggle("PaO₂ <60 mmHg", binding: $ran.pao2Below60, points: "+1")
+            scoreToggle("Haematocrit fall >10%", binding: $ran.hctFallOver10, points: "+1", autoKey: "hctFallOver10")
+            scoreToggle("BUN rise >1.8 mmol/L", binding: $ran.bunRiseOver5, points: "+1", autoKey: "bunRiseOver5")
+            scoreToggle("Calcium <2 mmol/L", binding: $ran.calciumBelow8, points: "+1", autoKey: "calciumBelow8")
+            scoreToggle("PaO₂ <60 mmHg", binding: $ran.pao2Below60, points: "+1", autoKey: "pao2Below60")
         }
         .onChange(of: ran) { _, _ in recalculate() }
     }
@@ -649,14 +667,14 @@ struct ClinicalScoresView: View {
         Group {
             Text("Glasgow (PANCREAS) — all at 48 hours.")
                 .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
-            scoreToggle("Age >55 years", binding: $glas.ageOver55, points: "+1")
-            scoreToggle("WBC >15,000/μL", binding: $glas.wbcOver15k, points: "+1")
-            scoreToggle("Glucose >10 mmol/L", binding: $glas.glucoseOver10, points: "+1")
-            scoreToggle("Urea >16 mmol/L", binding: $glas.ureaOver16, points: "+1")
-            scoreToggle("PaO₂ <60 mmHg", binding: $glas.pao2Below60, points: "+1")
-            scoreToggle("Calcium <2 mmol/L", binding: $glas.calciumBelow2, points: "+1")
-            scoreToggle("Albumin <32 g/L", binding: $glas.albuminBelow32, points: "+1")
-            scoreToggle("LDH >600 IU/L or AST >200 IU/L", binding: $glas.ldhOver600OrAstOver200, points: "+1")
+            scoreToggle("Age >55 years", binding: $glas.ageOver55, points: "+1", autoKey: "ageOver55")
+            scoreToggle("WBC >15,000/μL", binding: $glas.wbcOver15k, points: "+1", autoKey: "wbcOver15k")
+            scoreToggle("Glucose >10 mmol/L", binding: $glas.glucoseOver10, points: "+1", autoKey: "glucoseOver10")
+            scoreToggle("Urea >16 mmol/L", binding: $glas.ureaOver16, points: "+1", autoKey: "ureaOver16")
+            scoreToggle("PaO₂ <60 mmHg", binding: $glas.pao2Below60, points: "+1", autoKey: "pao2Below60")
+            scoreToggle("Calcium <2 mmol/L", binding: $glas.calciumBelow2, points: "+1", autoKey: "calciumBelow2")
+            scoreToggle("Albumin <32 g/L", binding: $glas.albuminBelow32, points: "+1", autoKey: "albuminBelow32")
+            scoreToggle("LDH >600 IU/L or AST >200 IU/L", binding: $glas.ldhOver600OrAstOver200, points: "+1", autoKey: "ldhOver600OrAstOver200")
         }
         .onChange(of: glas) { _, _ in recalculate() }
     }
@@ -706,10 +724,10 @@ struct ClinicalScoresView: View {
 
     private var sirsForm: some View {
         Group {
-            scoreToggle("Temperature >38°C or <36°C", binding: $sirsI.tempAbove38OrBelow36, points: "+1")
-            scoreToggle("Heart rate >90 bpm", binding: $sirsI.heartRateOver90, points: "+1")
-            scoreToggle("RR >20 or PaCO₂ <32 mmHg", binding: $sirsI.rrOver20OrPaCO2Below32, points: "+1")
-            scoreToggle("WBC >12k, <4k, or >10% bands", binding: $sirsI.wbcOver12kOrBelow4kOr10PctBands, points: "+1")
+            scoreToggle("Temperature >38°C or <36°C", binding: $sirsI.tempAbove38OrBelow36, points: "+1", autoKey: "tempAbove38OrBelow36")
+            scoreToggle("Heart rate >90 bpm", binding: $sirsI.heartRateOver90, points: "+1", autoKey: "heartRateOver90")
+            scoreToggle("RR >20 or PaCO₂ <32 mmHg", binding: $sirsI.rrOver20OrPaCO2Below32, points: "+1", autoKey: "rrOver20OrPaCO2Below32")
+            scoreToggle("WBC >12k, <4k, or >10% bands", binding: $sirsI.wbcOver12kOrBelow4kOr10PctBands, points: "+1", autoKey: "wbcOver12kOrBelow4kOr10PctBands")
             scoreToggle("Suspected infection source", binding: $sirsI.suspectedInfection, points: "Req.")
             scoreToggle("Positive blood culture", binding: $sirsI.positiveBloodCulture, points: "Bacteraemia")
         }
@@ -720,14 +738,14 @@ struct ClinicalScoresView: View {
 
     private var qsofaForm: some View {
         Group {
-            Text("Quick SOFA — bedside assessment only. No lab values required.")
+            Text("Quick SOFA — bedside assessment. Values pre-filled from latest vitals where available.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .padding(.bottom, 4)
             scoreToggle("Suspected infection source", binding: $qsofaI.suspectedInfection, points: "Req.")
-            scoreToggle("Altered mentation (GCS <15)", binding: $qsofaI.alteredMentation, points: "+1")
-            scoreToggle("Respiratory rate >22/min", binding: $qsofaI.rrOver22, points: "+1")
-            scoreToggle("Systolic BP <100 mmHg", binding: $qsofaI.sbpUnder100, points: "+1")
+            scoreToggle("Altered mentation (GCS <15)", binding: $qsofaI.alteredMentation, points: "+1", autoKey: "alteredMentation")
+            scoreToggle("Respiratory rate >22/min", binding: $qsofaI.rrOver22, points: "+1", autoKey: "rrOver22")
+            scoreToggle("Systolic BP <100 mmHg", binding: $qsofaI.sbpUnder100, points: "+1", autoKey: "sbpUnder100")
         }
         .onChange(of: qsofaI) { _, _ in recalculate() }
     }
@@ -820,15 +838,15 @@ struct ClinicalScoresView: View {
     private var lrinecForm: some View {
         Group {
             sectionHeader("Laboratory Values")
-            scoreToggle("CRP >150 mg/L", binding: $lrin.crpOver150, points: "+4")
-            scoreToggle("WBC >25 ×10⁹/L", binding: $lrin.wbcOver25, points: "+2")
-            scoreToggle("WBC 15–25 ×10⁹/L", binding: $lrin.wbc15to25, points: "+1")
-            scoreToggle("Hb <11 g/dL", binding: $lrin.hbBelow11, points: "+2")
-            scoreToggle("Hb 11–13.5 g/dL", binding: $lrin.hb11to13_5, points: "+1")
-            scoreToggle("Sodium <135 mmol/L", binding: $lrin.sodiumBelow135, points: "+2")
-            scoreToggle("Creatinine >177 μmol/L", binding: $lrin.creatinineOver177, points: "+4")
-            scoreToggle("Creatinine 141–177 μmol/L", binding: $lrin.creatinine141to177, points: "+2")
-            scoreToggle("Glucose >10 mmol/L", binding: $lrin.glucoseOver10, points: "+1")
+            scoreToggle("CRP >150 mg/L",           binding: $lrin.crpOver150,        points: "+4", autoKey: "crpOver150")
+            scoreToggle("WBC >25 ×10⁹/L",          binding: $lrin.wbcOver25,         points: "+2", autoKey: "wbcOver25")
+            scoreToggle("WBC 15–25 ×10⁹/L",        binding: $lrin.wbc15to25,         points: "+1", autoKey: "wbc15to25")
+            scoreToggle("Hb <11 g/dL",             binding: $lrin.hbBelow11,         points: "+2", autoKey: "hbBelow11")
+            scoreToggle("Hb 11–13.5 g/dL",         binding: $lrin.hb11to13_5,        points: "+1", autoKey: "hb11to13_5")
+            scoreToggle("Sodium <135 mmol/L",       binding: $lrin.sodiumBelow135,    points: "+2", autoKey: "sodiumBelow135")
+            scoreToggle("Creatinine >177 μmol/L",   binding: $lrin.creatinineOver177, points: "+4", autoKey: "creatinineOver177")
+            scoreToggle("Creatinine 141–177 μmol/L",binding: $lrin.creatinine141to177,points: "+2", autoKey: "creatinine141to177")
+            scoreToggle("Glucose >10 mmol/L",       binding: $lrin.glucoseOver10,     points: "+1", autoKey: "glucoseOver10")
         }
         .onChange(of: lrin) { _, _ in recalculate() }
     }
@@ -917,6 +935,15 @@ struct ClinicalScoresView: View {
 
     private var childPughForm: some View {
         VStack(alignment: .leading, spacing: 12) {
+            if autoFill.isAuto("bilirubinUmolL") || autoFill.isAuto("albuminGdL") || autoFill.isAuto("ptINR") {
+                HStack(spacing: 4) {
+                    Image(systemName: "wand.and.stars").font(.caption2).foregroundStyle(.teal)
+                    Text("Bilirubin, albumin, and INR pre-filled from latest labs — review values.")
+                        .font(.caption2).foregroundStyle(.teal)
+                }
+                .padding(.horizontal, 8).padding(.vertical, 4)
+                .background(.teal.opacity(0.1), in: RoundedRectangle(cornerRadius: 6))
+            }
             sectionHeader("Ascites")
             Picker("Ascites", selection: $cp.ascites) {
                 Text("None (1)").tag(ChildPughInput.AscitesGrade.none)
@@ -933,29 +960,15 @@ struct ClinicalScoresView: View {
             }
             .pickerStyle(.segmented)
 
-            sectionHeader("Bilirubin (μmol/L)")
-            HStack {
-                Slider(value: $cp.bilirubinUmolL, in: 0...400, step: 5)
-                Text("\(Int(cp.bilirubinUmolL)) μmol/L")
-                    .font(.caption.monospacedDigit())
-                    .frame(width: 80, alignment: .trailing)
-            }
-
-            sectionHeader("Albumin (g/dL)")
-            HStack {
-                Slider(value: $cp.albuminGdL, in: 1.0...5.0, step: 0.1)
-                Text(String(format: "%.1f g/dL", cp.albuminGdL))
-                    .font(.caption.monospacedDigit())
-                    .frame(width: 80, alignment: .trailing)
-            }
-
-            sectionHeader("PT-INR")
-            HStack {
-                Slider(value: $cp.ptINR, in: 0.8...5.0, step: 0.1)
-                Text(String(format: "%.1f", cp.ptINR))
-                    .font(.caption.monospacedDigit())
-                    .frame(width: 80, alignment: .trailing)
-            }
+            mewsSlider(label: "Bilirubin (μmol/L)", autoKey: "bilirubinUmolL",
+                       value: $cp.bilirubinUmolL, in: 0...400, step: 5,
+                       display: "\(Int(cp.bilirubinUmolL)) μmol/L")
+            mewsSlider(label: "Albumin (g/dL)", autoKey: "albuminGdL",
+                       value: $cp.albuminGdL, in: 1.0...5.0, step: 0.1,
+                       display: String(format: "%.1f g/dL", cp.albuminGdL))
+            mewsSlider(label: "PT-INR", autoKey: "ptINR",
+                       value: $cp.ptINR, in: 0.8...5.0, step: 0.1,
+                       display: String(format: "%.1f", cp.ptINR))
         }
         .onChange(of: cp) { _, _ in recalculate() }
     }
@@ -1397,6 +1410,33 @@ struct ClinicalScoresView: View {
             case "speechWithoutWeakness": abcd.speechWithoutWeakness = true
             case "durationOver60min":     abcd.durationOver60min = true;  abcdDuration = 2
             case "duration10to59min":     abcd.duration10to59min = true;  abcdDuration = 1
+            default: break
+            }
+        case .sirs:
+            switch field.id {
+            case "suspectedInfection":              sirsI.suspectedInfection = true
+            case "wbcOver12kOrBelow4kOr10PctBands": sirsI.wbcOver12kOrBelow4kOr10PctBands = true
+            default: break
+            }
+        case .qsofa:
+            switch field.id {
+            case "suspectedInfection": qsofaI.suspectedInfection = true
+            case "alteredMentation":   qsofaI.alteredMentation = true
+            case "rrOver22":           qsofaI.rrOver22 = true
+            case "sbpUnder100":        qsofaI.sbpUnder100 = true
+            default: break
+            }
+        case .ranson:
+            switch field.id {
+            case "hctFallOver10": ran.hctFallOver10 = true
+            case "bunRiseOver5":  ran.bunRiseOver5 = true
+            case "calciumBelow8": ran.calciumBelow8 = true
+            case "pao2Below60":   ran.pao2Below60 = true
+            default: break
+            }
+        case .glasgow:
+            switch field.id {
+            case "pao2Below60": glas.pao2Below60 = true
             default: break
             }
         default: break
