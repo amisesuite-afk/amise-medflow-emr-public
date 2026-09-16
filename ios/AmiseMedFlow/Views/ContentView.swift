@@ -590,10 +590,10 @@ private struct RegularRootView: View {
 
     private func count(for section: AppSection) -> Int {
         switch section {
-        case .wardRounds:  allPatients.filter { $0.setting == .inpatient || $0.setting == .emergency }.count
-        case .theatre:     allPatients.filter { $0.setting == .theatre }.count
-        case .endoscopy:   allPatients.filter { $0.setting == .endoscopy }.count
-        case .outpatients: allPatients.filter { $0.setting == .outpatient }.count
+        case .wardRounds:  allPatients.filter { $0.setting == .inpatient || $0.setting == .emergency }.deduped().count
+        case .theatre:     allPatients.filter { $0.setting == .theatre }.deduped().count
+        case .endoscopy:   allPatients.filter { $0.setting == .endoscopy }.deduped().count
+        case .outpatients: allPatients.filter { $0.setting == .outpatient }.deduped().count
         case .schedule:    0
         }
     }

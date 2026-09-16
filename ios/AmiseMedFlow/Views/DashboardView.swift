@@ -9,12 +9,12 @@ struct DashboardView: View {
     @EnvironmentObject private var peerSync: PeerSyncService
     @Environment(\.dismiss) private var dismiss
 
-    // MARK: Derived counts
+    // MARK: Derived counts (deduped so badge numbers reflect real patients)
 
-    private var inpatients: [Patient]  { allPatients.filter { $0.setting == .inpatient || $0.setting == .emergency } }
-    private var theatreCases: [Patient] { allPatients.filter { $0.setting == .theatre } }
-    private var scopeCases: [Patient]  { allPatients.filter { $0.setting == .endoscopy } }
-    private var outpatients: [Patient] { allPatients.filter { $0.setting == .outpatient } }
+    private var inpatients: [Patient]   { allPatients.filter { $0.setting == .inpatient || $0.setting == .emergency }.deduped() }
+    private var theatreCases: [Patient] { allPatients.filter { $0.setting == .theatre }.deduped() }
+    private var scopeCases: [Patient]   { allPatients.filter { $0.setting == .endoscopy }.deduped() }
+    private var outpatients: [Patient]  { allPatients.filter { $0.setting == .outpatient }.deduped() }
 
     private var todayTheatre: [Patient] {
         let cal = Calendar.current
@@ -35,7 +35,7 @@ struct DashboardView: View {
     // MARK: Alert lists
 
     private var highNews2: [Patient] {
-        allPatients.filter { p in
+        allPatients.deduped().filter { p in
             guard let v = p.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
                   v.hasAnyValue else { return false }
             return v.news2Score >= 5
@@ -43,7 +43,7 @@ struct DashboardView: View {
     }
 
     private var emergencyAcuity: [Patient] {
-        allPatients.filter { $0.acuity == .emergency }
+        allPatients.filter { $0.acuity == .emergency }.deduped()
     }
 
     private var consentPending: [Patient] {
@@ -55,11 +55,11 @@ struct DashboardView: View {
     }
 
     private var unsignedNotes: Int {
-        allPatients.reduce(0) { $0 + $1.clinicalNotes.filter { $0.status == .draft && !$0.isEmpty }.count }
+        allPatients.deduped().reduce(0) { $0 + $1.clinicalNotes.filter { $0.status == .draft && !$0.isEmpty }.count }
     }
 
     private var pendingInvestigations: Int {
-        allPatients.reduce(0) { $0 + $1.investigations.filter { $0.status == .ordered || $0.status == .pending }.count }
+        allPatients.deduped().reduce(0) { $0 + $1.investigations.filter { $0.status == .ordered || $0.status == .pending }.count }
     }
 
     // MARK: Body

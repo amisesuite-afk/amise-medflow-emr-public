@@ -23,54 +23,19 @@ struct PatientListView: View {
         }
     }
 
-    // MARK: – Deduplication
+    // MARK: – Sections (deduped via PatientDeduplication.swift)
 
-    /// Stable identity key, checked in priority order:
-    ///   1. remoteId — Supabase UUID, the canonical cross-device identifier
-    ///   2. mrn      — locally generated; reliable once assigned
-    ///   3. name+DOB — last-resort fallback for purely local records
-    private func dedupKey(_ p: Patient) -> String {
-        if let rid = p.remoteId, !rid.isEmpty { return rid }
-        if let mrn = p.mrn, !mrn.isEmpty { return mrn }
-        let dob = p.dateOfBirth.map { Int($0.timeIntervalSinceReferenceDate) } ?? 0
-        return "\(p.fullName.lowercased())|\(dob)"
-    }
-
-    /// Richness score used to pick the "winner" when deduplicating.
-    private func richness(_ p: Patient) -> Int {
-        p.encounters.count * 10 +
-        p.vitalsEntries.count * 3 +
-        p.clinicalNotes.count * 2 +
-        p.prescriptions.count
-    }
-
-    /// Sections ordered by clinical priority (Emergency → Outpatient).
-    /// Within each section exactly one row per patient identity is shown —
-    /// the record with the most clinical data (or latest createdAt on a tie).
-    /// A patient who has both an Outpatient and an Inpatient record appears
-    /// in both sections; they do NOT appear twice in the same section.
     private static let settingOrder: [ClinicalSetting] = [
         .emergency, .inpatient, .theatre, .endoscopy, .outpatient
     ]
 
     private var sections: [(setting: ClinicalSetting, patients: [Patient])] {
-        var buckets: [ClinicalSetting: [String: Patient]] = [:]
-        for p in filtered {
-            let key = dedupKey(p)
-            if buckets[p.setting] == nil { buckets[p.setting] = [:] }
-            if let existing = buckets[p.setting]![key] {
-                let pR = richness(p); let eR = richness(existing)
-                if pR > eR || (pR == eR && p.createdAt > existing.createdAt) {
-                    buckets[p.setting]![key] = p
-                }
-            } else {
-                buckets[p.setting]![key] = p
-            }
-        }
-        return Self.settingOrder.compactMap { setting in
-            guard let dict = buckets[setting], !dict.isEmpty else { return nil }
-            let patients = dict.values.sorted { $0.createdAt > $1.createdAt }
-            return (setting: setting, patients: patients)
+        Self.settingOrder.compactMap { setting in
+            let patients = filtered
+                .filter { $0.setting == setting }
+                .sorted { $0.createdAt > $1.createdAt }
+                .deduped()
+            return patients.isEmpty ? nil : (setting: setting, patients: patients)
         }
     }
 
@@ -141,10 +106,9 @@ struct PatientListView: View {
     private func deleteWithDuplicates(from patients: [Patient], at offsets: IndexSet) {
         for i in offsets {
             let victim = patients[i]
-            let key = dedupKey(victim)
-            let setting = victim.setting
+            let key = victim.dedupKey
             allPatients
-                .filter { $0.setting == setting && dedupKey($0) == key }
+                .filter { $0.setting == victim.setting && $0.dedupKey == key }
                 .forEach { context.delete($0) }
         }
     }
