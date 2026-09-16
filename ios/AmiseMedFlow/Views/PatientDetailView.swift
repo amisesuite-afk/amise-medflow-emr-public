@@ -39,6 +39,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     case ogd            = "OGD Report"
     case colonoscopy    = "Colonoscopy Report"
     case surgery        = "Operative Note"
+    case patientInstructions = "Patient Instructions"
     case preOpChecklist = "Pre-Op Checklist"
     case consent        = "Surgical Consent"
     case ercp           = "ERCP Report"
@@ -75,6 +76,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .ogd:            "scope"
         case .colonoscopy:    "circle.dotted.and.circle"
         case .surgery:        "scissors"
+        case .patientInstructions: "doc.text.fill"
         case .preOpChecklist: "checklist"
         case .consent:        "signature"
         case .ercp:           "waveform.and.magnifyingglass"
@@ -111,6 +113,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .ogd:            "OGD"
         case .colonoscopy:    "Scope"
         case .surgery:        "Op Note"
+        case .patientInstructions: "Instruct."
         case .preOpChecklist: "Pre-Op"
         case .consent:        "Consent"
         case .ercp:           "ERCP"
@@ -163,6 +166,7 @@ struct PatientDetailPadView: View {
             case .ogd:          return patient.visitType == .ogd || patient.visitType == .dayOfSurgery
             case .colonoscopy:  return patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery
             case .surgery: return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
+            case .patientInstructions: return true
             case .preOpChecklist: return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
             case .consent: return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
             case .ercp:    return patient.visitType == .ercp || patient.visitType == .dayOfSurgery
@@ -401,6 +405,8 @@ struct PatientDetailPadView: View {
             ColonoscopyFormView(patient: patient)
         case .surgery:
             SurgeryNoteView(patient: patient)
+        case .patientInstructions:
+            PatientInstructionsView(patient: patient)
         case .preOpChecklist:
             PreOpChecklistView(patient: patient)
         case .consent:
@@ -1230,6 +1236,8 @@ struct PatientDetailView: View {
                     quickAction("Trauma ATLS", icon: "cross.case.fill", color: .red,
                                 destination: AnyView(TraumaAssessmentView(patient: patient)))
                 }
+                quickAction("Instructions", icon: "doc.text.fill", color: .mint,
+                            destination: AnyView(PatientInstructionsView(patient: patient)))
                 if patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery {
                     quickAction("Pre-Op", icon: "checklist", color: .teal,
                                 destination: AnyView(PreOpChecklistView(patient: patient)))
