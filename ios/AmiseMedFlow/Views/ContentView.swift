@@ -439,6 +439,13 @@ private struct CompactFrontDeskView: View {
     @State private var searchQuery = ""
     @State private var selectedTab = 0
 
+    private var theatreCount: Int {
+        allPatients.filter { $0.setting == .theatre }.deduped().count
+    }
+    private var endoscopyCount: Int {
+        allPatients.filter { $0.setting == .endoscopy }.deduped().count
+    }
+
     private var filteredPatients: [Patient] {
         let q = searchQuery.trimmingCharacters(in: .whitespaces).lowercased()
         if q.isEmpty {
@@ -471,13 +478,23 @@ private struct CompactFrontDeskView: View {
                 .badge(waitingPatients.count)
                 .tag(1)
 
+            NavigationStack { TheatreListView() }
+                .tabItem { Label("Theatre", systemImage: "scissors") }
+                .badge(theatreCount)
+                .tag(2)
+
+            NavigationStack { EndoscopyListView() }
+                .tabItem { Label("Scope", systemImage: "circle.dotted") }
+                .badge(endoscopyCount)
+                .tag(3)
+
             NavigationStack { ScheduleView() }
                 .tabItem { Label("Schedule", systemImage: "calendar") }
-                .tag(2)
+                .tag(4)
 
             SettingsView()
                 .tabItem { Label("Settings", systemImage: "gearshape") }
-                .tag(3)
+                .tag(5)
         }
     }
 
