@@ -207,10 +207,37 @@ router.post('/api/cron/daily-summary', async (req, res) => {
     `Pending replies: ${pending?.length ?? 0}`,
   ];
 
-  // Google Calendar is the source of truth for the day's schedule
-  if (calEvents.length) {
-    summaryLines.push('', "Today's schedule (Google Calendar):");
-    for (const ev of calEvents) {
+  // Google Calendar is the source of truth for the day's schedule.
+  // Business hours: 10:00–16:30 ECT. Outside that window only surgery/endoscopy/emergency events are shown.
+  const BUSINESS_START_MINS = 10 * 60;       // 10:00
+  const BUSINESS_END_MINS   = 16 * 60 + 30;  // 16:30
+
+  const isSurgicalOrEmergency = (type: string): boolean =>
+    ['theatre', 'endoscopy', 'emergency', 'surgery', 'ercp'].includes(type.toLowerCase());
+
+  const ectMinutesOf = (startISO: string): number | null => {
+    if (!startISO.includes('T')) return null; // all-day event
+    const ectStr = new Date(startISO).toLocaleTimeString('en-GB', {
+      timeZone: 'America/St_Lucia', hour: '2-digit', minute: '2-digit', hour12: false,
+    });
+    const [hh, mm] = ectStr.split(':').map(Number);
+    return hh * 60 + mm;
+  };
+
+  const withinBusinessHours = (startISO: string): boolean => {
+    const mins = ectMinutesOf(startISO);
+    if (mins === null) return true; // all-day events always pass through
+    return mins >= BUSINESS_START_MINS && mins <= BUSINESS_END_MINS;
+  };
+
+  const scheduleEvents = calEvents.filter(ev =>
+    withinBusinessHours(ev.start) || isSurgicalOrEmergency(ev.type ?? 'clinic'),
+  );
+  const afterHoursCount = calEvents.length - scheduleEvents.length;
+
+  if (scheduleEvents.length) {
+    summaryLines.push('', `Today's schedule (Google Calendar)${afterHoursCount > 0 ? ` — ${afterHoursCount} out-of-hours event${afterHoursCount === 1 ? '' : 's'} omitted` : ''}:`);
+    for (const ev of scheduleEvents) {
       const t = ev.start.includes('T') ? new Date(ev.start) : null;
       const timeStr = t
         ? t.toLocaleTimeString('en-GB', { timeZone: 'America/St_Lucia', hour: '2-digit', minute: '2-digit', hour12: false })
@@ -218,6 +245,8 @@ router.post('/api/cron/daily-summary', async (req, res) => {
       const typeTag = ev.type !== 'clinic' ? ` [${ev.type}]` : '';
       summaryLines.push(`  ${timeStr}${typeTag} — ${ev.summary}`);
     }
+  } else if (calEvents.length && !scheduleEvents.length) {
+    summaryLines.push('', `Today's schedule (Google Calendar): no events within business hours (10:00–16:30)`);
   } else if (appointments?.length) {
     // Fallback: Supabase confirmed appointments (Google Calendar unavailable)
     summaryLines.push('', "Today's schedule (intake system):");
