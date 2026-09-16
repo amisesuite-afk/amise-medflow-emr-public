@@ -794,6 +794,170 @@ enum PatientScoreAutoPopulator {
         return (i, f)
     }
 
+    // MARK: Alvarado (from vitals + labs)
+
+    static func alvarado(patient: Patient) -> (AlvaradoInput, ScoreAutoFill) {
+        var i = AlvaradoInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        // Temperature ≥37.3°C from latest vitals
+        if let t = patient.latestVitals?.temperatureCelsius, t >= 37.3 {
+            i.elevatedTemperature = true; f.autoFieldKeys.insert("elevatedTemperature")
+        }
+
+        // WBC >10 ×10⁹/L from labs
+        let wbcKw = ["wbc","white blood cell","white cell count","leucocyte","leukocyte"]
+        if let wbc = patient.latestLab(named: wbcKw) {
+            let val = wbc > 100 ? wbc / 1000 : wbc
+            if val > 10 { i.wbcElevated = true; f.autoFieldKeys.insert("wbcElevated") }
+        }
+
+        return (i, f)
+    }
+
+    // MARK: Tokyo Cholecystitis (from labs)
+
+    static func tokyoCholecystitis(patient: Patient) -> (TokyoCholecystitisInput, ScoreAutoFill) {
+        var i = TokyoCholecystitisInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        // WBC >18 ×10⁹/L (Grade I criterion)
+        let wbcKw = ["wbc","white blood cell","white cell count","leucocyte","leukocyte"]
+        if let wbc = patient.latestLab(named: wbcKw) {
+            let val = wbc > 100 ? wbc / 1000 : wbc
+            if val > 18 { i.wbcAbove18 = true; f.autoFieldKeys.insert("wbcAbove18") }
+        }
+
+        return (i, f)
+    }
+
+    // MARK: Tokyo Cholangitis (from vitals + labs)
+
+    static func tokyoCholangitis(patient: Patient) -> (TokyoCholangitisInput, ScoreAutoFill) {
+        var i = TokyoCholangitisInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        // Age >75
+        if patient.ageYears > 75 { i.ageAbove75 = true; f.autoFieldKeys.insert("ageAbove75") }
+
+        // Temperature >39°C from latest vitals
+        if let t = patient.latestVitals?.temperatureCelsius, t > 39.0 {
+            i.temperatureAbove39 = true; f.autoFieldKeys.insert("temperatureAbove39")
+        }
+
+        // WBC >12k or <4k ×10⁹/L from labs
+        let wbcKw = ["wbc","white blood cell","white cell count","leucocyte","leukocyte"]
+        if let wbc = patient.latestLab(named: wbcKw) {
+            let val = wbc > 100 ? wbc / 1000 : wbc
+            if val > 12 || val < 4 { i.wbcAbove12OrBelow4 = true; f.autoFieldKeys.insert("wbcAbove12OrBelow4") }
+        }
+
+        // Bilirubin >85 μmol/L (>5 mg/dL) — same unit inference as elsewhere
+        if let bili = patient.latestLab(named: ["bilirubin"]) {
+            let umol = bili < 5 ? bili * 17.1 : bili
+            if umol > 85 { i.bilirubinAbove5 = true; f.autoFieldKeys.insert("bilirubinAbove5") }
+        }
+
+        return (i, f)
+    }
+
+    // MARK: Blatchford (from vitals + labs + sex)
+
+    static func blatchford(patient: Patient) -> (BlatchfordInput, ScoreAutoFill) {
+        var i = BlatchfordInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        // Sex
+        if patient.sex == .male { i.isMale = true; f.autoFieldKeys.insert("isMale") }
+
+        // BUN / urea → mmol/L; values >50 treated as BUN mg/dL → ÷2.8
+        if let urea = patient.latestLab(named: ["urea","blood urea","bun","blood urea nitrogen"]) {
+            let mmol = urea > 50 ? urea / 2.8 : urea
+            let bun: BlatchfordInput.BlatchfordBUN
+            switch mmol {
+            case ..<6.5:    bun = .under6_5
+            case 6.5..<8.0: bun = .bun6_5to7_9
+            case 8.0..<10.0: bun = .bun8to9_9
+            case 10.0..<25.0: bun = .bun10to24_9
+            default:        bun = .bunOver25
+            }
+            i.bloodUreaNitrogen = bun; f.autoFieldKeys.insert("bloodUreaNitrogen")
+        }
+
+        // Hb (g/dL; values >20 = g/L → ÷10) — sex-aware band selection
+        if let hb = patient.latestLab(named: ["haemoglobin","hemoglobin","hgb","hb"]) {
+            let gdL = hb > 20 ? hb / 10 : hb
+            let isMale = patient.sex == .male
+            let hbEnum: BlatchfordInput.BlatchfordHb
+            if isMale {
+                switch gdL {
+                case 13...: hbEnum = .male13plus
+                case 12..<13: hbEnum = .male12to12_9
+                case 10..<12: hbEnum = .male10to11_9
+                default:    hbEnum = .maleSub10
+                }
+            } else {
+                switch gdL {
+                case 12...: hbEnum = .female12plus
+                case 10..<12: hbEnum = .female10to11_9
+                default:    hbEnum = .femaleSub10
+                }
+            }
+            i.haemoglobin = hbEnum; f.autoFieldKeys.insert("haemoglobin")
+        }
+
+        // SBP from latest vitals
+        if let sbp = patient.latestVitals?.bpSystolic {
+            let sbpEnum: BlatchfordInput.BlatchfordSBP
+            switch sbp {
+            case ..<90:    sbpEnum = .under90
+            case 90..<100: sbpEnum = .sbp90to99
+            case 100..<110: sbpEnum = .sbp100to109
+            default:       sbpEnum = .over109
+            }
+            i.sbp = sbpEnum; f.autoFieldKeys.insert("sbp")
+        }
+
+        // HR >100 from latest vitals
+        if let hr = patient.latestVitals?.heartRate, hr > 100 {
+            i.heartRateOver100 = true; f.autoFieldKeys.insert("heartRateOver100")
+        }
+
+        return (i, f)
+    }
+
+    // MARK: NEWS2 (from latest vitals)
+
+    static func news2(patient: Patient) -> (NEWS2Input, ScoreAutoFill) {
+        var i = NEWS2Input()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        guard let v = patient.latestVitals else {
+            f.addPending(key: "all",
+                label: "No vitals recorded — enter current readings",
+                source: "Measure at bedside")
+            return (i, f)
+        }
+
+        if let rr = v.respiratoryRate    { i.respiratoryRate    = rr;  f.autoFieldKeys.insert("respiratoryRate") }
+        if let spo = v.spo2              { i.spo2               = spo; f.autoFieldKeys.insert("spo2") }
+        if let sbp = v.bpSystolic        { i.systolicBP         = sbp; f.autoFieldKeys.insert("systolicBP") }
+        if let hr = v.heartRate          { i.heartRate          = hr;  f.autoFieldKeys.insert("heartRate") }
+        if let t = v.temperatureCelsius  { i.temperatureCelsius = t;   f.autoFieldKeys.insert("temperatureCelsius") }
+
+        // AVPU maps directly (same enum type)
+        i.avpu = v.avpu; f.autoFieldKeys.insert("avpu")
+
+        if v.respiratoryRate   == nil { f.addPending(key: "respiratoryRate",   label: "Respiratory rate (breaths/min)", source: "Measure at bedside") }
+        if v.spo2              == nil { f.addPending(key: "spo2",              label: "SpO₂ (%)",                       source: "Pulse oximetry") }
+        if v.bpSystolic        == nil { f.addPending(key: "systolicBP",        label: "Systolic blood pressure (mmHg)", source: "Measure BP") }
+        if v.heartRate         == nil { f.addPending(key: "heartRate",         label: "Heart rate (bpm)",               source: "Measure pulse") }
+        if v.temperatureCelsius == nil { f.addPending(key: "temperatureCelsius", label: "Temperature (°C)",             source: "Measure") }
+        f.addPending(key: "onSupplementalO2", label: "On supplemental oxygen?", source: "Clinical assessment")
+
+        return (i, f)
+    }
+
     // MARK: MEWS (from latest vitals)
 
     static func mews(patient: Patient) -> (MEWSInput, ScoreAutoFill) {

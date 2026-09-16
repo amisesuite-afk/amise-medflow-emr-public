@@ -11,7 +11,7 @@ struct AmiseMedFlowApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema([Patient.self, ClinicalNote.self, VitalsEntry.self, Prescription.self, PatientDocument.self, OperativePlan.self, BillingLineItem.self, Encounter.self])
+        let schema = Schema([Patient.self, ClinicalNote.self, VitalsEntry.self, Prescription.self, PatientDocument.self, OperativePlan.self, BillingLineItem.self, Encounter.self, ScoreHistoryEntry.self])
 
         // CloudKit sync requires iCloud entitlement — not configured, so use local store only.
         func makePersistentContainer() throws -> ModelContainer {

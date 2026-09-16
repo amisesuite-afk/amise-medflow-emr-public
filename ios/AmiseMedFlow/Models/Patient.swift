@@ -56,6 +56,9 @@ final class Patient {
     @Relationship(deleteRule: .cascade, inverse: \Encounter.patient)
     var encounters: [Encounter] = []
 
+    @Relationship(deleteRule: .cascade, inverse: \ScoreHistoryEntry.patient)
+    var scoreHistory: [ScoreHistoryEntry] = []
+
     // MARK: - Clinical intelligence fields
     var workingDiagnosis: String?
     var workingDiagnosisICD: String?
