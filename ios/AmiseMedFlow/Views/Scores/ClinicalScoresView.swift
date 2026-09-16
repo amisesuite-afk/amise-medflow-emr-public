@@ -1277,6 +1277,7 @@ struct ClinicalScoresView: View {
                         Image(systemName: "questionmark.circle.fill")
                             .font(.caption)
                             .foregroundStyle(.orange)
+                            .padding(.top, 1)
                         VStack(alignment: .leading, spacing: 1) {
                             Text(field.label)
                                 .font(.caption)
@@ -1286,6 +1287,19 @@ struct ClinicalScoresView: View {
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
+                        // Confirm button: sets toggle true + writes to PMH.
+                        // MEWS pending fields are vitals measurements — use Save to Vitals instead.
+                        if selectedScore != .mews {
+                            Button("Yes") {
+                                confirmPendingField(field)
+                            }
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(.orange, in: Capsule())
+                            .buttonStyle(.plain)
+                        }
                     }
                 }
             }
@@ -1294,6 +1308,98 @@ struct ClinicalScoresView: View {
             .overlay(RoundedRectangle(cornerRadius: 10).stroke(.orange.opacity(0.3), lineWidth: 1))
             .padding(.bottom, 8)
         }
+    }
+
+    // MARK: - Confirm pending variable
+
+    private func confirmPendingField(_ field: PendingScoreField) {
+        guard let score = selectedScore else { return }
+
+        // Append a dated audit line to PMH notes
+        let fmt = DateFormatter(); fmt.dateStyle = .medium
+        let line = "[\(fmt.string(from: .now))] \(field.label) — confirmed (\(score.rawValue))"
+        if let existing = patient.pmhNotes, !existing.isEmpty {
+            patient.pmhNotes = existing + "\n" + line
+        } else {
+            patient.pmhNotes = line
+        }
+
+        // Set the matching boolean toggle on the current score input
+        switch score {
+        case .caprini:
+            switch field.id {
+            case "priorVTE":            cap.priorVTE = true
+            case "thrombophilia":       cap.thrombophilia = true
+            case "familyHistoryVTE":    cap.familyHistoryVTE = true
+            case "centralVenousAccess": cap.centralVenousAccess = true
+            case "immobilityBedridden": cap.immobilityBedridden = true
+            case "sepsis30d":           cap.sepsis30d = true
+            default: break
+            }
+        case .wellsDVT:
+            switch field.id {
+            case "localizedTendernessDeepVein": wDVT.localizedTendernessDeepVein = true
+            case "entireLegSwollen":            wDVT.entireLegSwollen = true
+            case "calfSwellingOver3cm":         wDVT.calfSwellingOver3cm = true
+            case "pittingOedema":               wDVT.pittingOedema = true
+            case "collateralSuperficialVeins":  wDVT.collateralSuperficialVeins = true
+            case "paralysisParesisPlastercast": wDVT.paralysisParesisPlastercast = true
+            default: break
+            }
+        case .wellsPE:
+            switch field.id {
+            case "clinicalSignsDVT":        wPE.clinicalSignsDVT = true
+            case "hrOver100":               wPE.hrOver100 = true
+            case "haemoptysis":             wPE.haemoptysis = true
+            case "alternativeDxLessLikely": wPE.alternativeDxLessLikely = true
+            default: break
+            }
+        case .rcri:
+            switch field.id {
+            case "insulinDependentDiabetes": rcriI.insulinDependentDiabetes = true
+            case "preopCreatinineOver2":     rcriI.preopCreatinineOver2 = true
+            default: break
+            }
+        case .stopBang:
+            switch field.id {
+            case "snoring":      sbangI.snoring = true
+            case "tired":        sbangI.tired = true
+            case "observed":     sbangI.observed = true
+            case "neckOver40cm": sbangI.neckOver40cm = true
+            default: break
+            }
+        case .cha2ds2vasc:
+            switch field.id {
+            case "congestiveHeartFailure": cha2I.congestiveHeartFailure = true
+            case "vascularDisease":        cha2I.vascularDisease = true
+            default: break
+            }
+        case .hasBled:
+            switch field.id {
+            case "hypertensionUncontrolled": hblI.hypertensionUncontrolled = true
+            case "renalDysfunction":         hblI.renalDysfunction = true
+            case "liverDysfunction":         hblI.liverDysfunction = true
+            case "priorBleeding":            hblI.priorBleeding = true
+            case "labileINR":                hblI.labileINR = true
+            case "alcoholUse":              hblI.alcoholUse = true
+            default: break
+            }
+        case .abcd2:
+            switch field.id {
+            case "bpOver140_90":          abcd.bpOver140_90 = true
+            case "unilateralWeakness":    abcd.unilateralWeakness = true
+            case "speechWithoutWeakness": abcd.speechWithoutWeakness = true
+            case "durationOver60min":     abcd.durationOver60min = true;  abcdDuration = 2
+            case "duration10to59min":     abcd.duration10to59min = true;  abcdDuration = 1
+            default: break
+            }
+        default: break
+        }
+
+        // Promote field from pending to auto-confirmed (teal badge)
+        autoFill.autoFieldKeys.insert(field.id)
+        autoFill.pendingFields.removeAll { $0.id == field.id }
+        recalculate()
     }
 
     // MARK: - Shared helpers
