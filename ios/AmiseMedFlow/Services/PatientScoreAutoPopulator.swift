@@ -61,6 +61,34 @@ private extension Patient {
     var latestVitals: VitalsEntry? {
         vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
     }
+
+    func latestLab(named keywords: [String]) -> Double? {
+        let match = investigations
+            .filter { $0.status == .resulted }
+            .filter { inv in keywords.contains { inv.name.lowercased().contains($0) } }
+            .sorted { ($0.resultedAt ?? $0.orderedAt) < ($1.resultedAt ?? $1.orderedAt) }
+            .last
+        guard let entry = match else { return nil }
+        return parseLabNumber(entry.result)
+    }
+
+    func parseLabNumber(_ text: String) -> Double? {
+        var numStr = ""
+        var foundDigit = false
+        for scalar in text.unicodeScalars {
+            let c = Character(scalar)
+            if c.isNumber { numStr.append(c); foundDigit = true }
+            else if c == "." && foundDigit { numStr.append(c) }
+            else if foundDigit { break }
+        }
+        return foundDigit ? Double(numStr) : nil
+    }
+
+    // Returns creatinine in μmol/L, inferring units: value < 15 → mg/dL (×88.42), ≥ 15 → μmol/L
+    func creatinineUmolL() -> Double? {
+        guard let raw = latestLab(named: ["creatinine"]) else { return nil }
+        return raw < 15 ? raw * 88.42 : raw
+    }
 }
 
 // MARK: - Populator
@@ -268,9 +296,14 @@ enum PatientScoreAutoPopulator {
                 label: "Insulin-dependent diabetes mellitus",
                 source: "Ask patient / review medication list")
         }
-        f.addPending(key: "preopCreatinineOver2",
-            label: "Pre-op creatinine >177 μmol/L (>2 mg/dL)",
-            source: "Blood test results")
+        if let cr = patient.creatinineUmolL(), cr > 177 {
+            i.preopCreatinineOver2 = true; f.autoFieldKeys.insert("preopCreatinineOver2")
+        }
+        if !f.isAuto("preopCreatinineOver2") {
+            f.addPending(key: "preopCreatinineOver2",
+                label: "Pre-op creatinine >177 μmol/L (>2 mg/dL)",
+                source: "Blood test results")
+        }
 
         return (i, f)
     }
@@ -374,21 +407,54 @@ enum PatientScoreAutoPopulator {
             i.drugsOrAlcohol = true; f.autoFieldKeys.insert("drugsOrAlcohol")
         }
 
+        // Renal dysfunction from labs (Cr >200 μmol/L) or clinical history
+        if let cr = patient.creatinineUmolL(), cr > 200 {
+            i.renalDysfunction = true; f.autoFieldKeys.insert("renalDysfunction")
+        } else if patient.clinicalTextContains(["dialysis","haemodialysis","hemodialysis",
+                                                "esrd","renal failure","ckd stage 5"]) {
+            i.renalDysfunction = true; f.autoFieldKeys.insert("renalDysfunction")
+        }
+
+        // Labile INR from labs (outlier single reading as proxy)
+        if let inr = patient.latestLab(named: ["inr","pt-inr"]), inr > 3.5 || inr < 1.0 {
+            i.labileINR = true; f.autoFieldKeys.insert("labileINR")
+        }
+
+        // Liver dysfunction: bili >2×ULN (>34 μmol/L) or AST/ALT >3×ULN (>120 IU/L)
+        let biliRaw = patient.latestLab(named: ["bilirubin"])
+        let biliUmol = biliRaw.map { $0 < 5 ? $0 * 17.1 : $0 }
+        let ast = patient.latestLab(named: ["ast","aspartate aminotransferase"])
+        let alt = patient.latestLab(named: ["alt","alanine aminotransferase"])
+        if (biliUmol.map { $0 > 34 } ?? false)
+            || (ast.map { $0 > 120 } ?? false)
+            || (alt.map { $0 > 120 } ?? false) {
+            i.liverDysfunction = true; f.autoFieldKeys.insert("liverDysfunction")
+        } else if patient.clinicalTextContains(["cirrhosis","chronic liver disease",
+                                                "hepatic failure","liver failure"]) {
+            i.liverDysfunction = true; f.autoFieldKeys.insert("liverDysfunction")
+        }
+
         f.addPending(key: "hypertensionUncontrolled",
             label: "Uncontrolled hypertension (SBP >160 mmHg)",
             source: "Measure blood pressure")
-        f.addPending(key: "renalDysfunction",
-            label: "Renal dysfunction (dialysis or Cr >200 μmol/L)",
-            source: "Blood test results")
-        f.addPending(key: "liverDysfunction",
-            label: "Liver dysfunction (cirrhosis or bili ×2 + AST/ALT ×3)",
-            source: "LFTs / clinical history")
+        if !f.isAuto("renalDysfunction") {
+            f.addPending(key: "renalDysfunction",
+                label: "Renal dysfunction (dialysis or Cr >200 μmol/L)",
+                source: "Blood test results")
+        }
+        if !f.isAuto("liverDysfunction") {
+            f.addPending(key: "liverDysfunction",
+                label: "Liver dysfunction (cirrhosis or bili ×2 + AST/ALT ×3)",
+                source: "LFTs / clinical history")
+        }
         f.addPending(key: "priorBleeding",
             label: "Prior bleeding or known bleeding tendency",
             source: "Ask patient / review PMH")
-        f.addPending(key: "labileINR",
-            label: "Labile INR (time in therapeutic range <60%)",
-            source: "Review INR records")
+        if !f.isAuto("labileINR") {
+            f.addPending(key: "labileINR",
+                label: "Labile INR (time in therapeutic range <60%)",
+                source: "Review INR records")
+        }
         f.addPending(key: "alcoholUse",
             label: "Alcohol use ≥8 units/week",
             source: "Social history")
@@ -422,6 +488,46 @@ enum PatientScoreAutoPopulator {
         f.addPending(key: "duration10to59min",
             label: "Symptom duration 10–59 min",
             source: "Ask patient / history")
+
+        return (i, f)
+    }
+
+    // MARK: MELD-Na (from labs)
+
+    static func meld(patient: Patient) -> (MELDInput, ScoreAutoFill) {
+        var i = MELDInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        // Bilirubin → mg/dL. Values < 5 treated as mg/dL, ≥ 5 as μmol/L (÷17.1)
+        if let bili = patient.latestLab(named: ["bilirubin"]) {
+            let mgDL = bili < 5 ? bili : bili / 17.1
+            i.bilirubinMgDL = max(1.0, min(40.0, mgDL))
+            f.autoFieldKeys.insert("bilirubinMgDL")
+        }
+
+        // Creatinine: creatinineUmolL() returns μmol/L → convert to mg/dL (÷88.42)
+        if let cr = patient.creatinineUmolL() {
+            i.creatinineMgDL = max(1.0, min(4.0, cr / 88.42))
+            f.autoFieldKeys.insert("creatinineMgDL")
+        }
+
+        // INR
+        if let inr = patient.latestLab(named: ["inr","pt-inr"]) {
+            i.inrValue = max(1.0, min(8.0, inr))
+            f.autoFieldKeys.insert("inrValue")
+        }
+
+        // Sodium (lab result already in mmol/L)
+        if let na = patient.latestLab(named: ["sodium"]) {
+            i.sodiumMmolL = max(110.0, min(145.0, na))
+            f.autoFieldKeys.insert("sodiumMmolL")
+        }
+
+        // Dialysis from clinical history
+        if patient.clinicalTextContains(["dialysis","haemodialysis","hemodialysis",
+                                         "esrd","renal replacement therapy"]) {
+            i.onDialysis = true; f.autoFieldKeys.insert("onDialysis")
+        }
 
         return (i, f)
     }

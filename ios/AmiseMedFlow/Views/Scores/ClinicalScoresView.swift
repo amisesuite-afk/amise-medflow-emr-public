@@ -422,6 +422,9 @@ struct ClinicalScoresView: View {
         case .mews:
             let (input, fill) = PatientScoreAutoPopulator.mews(patient: patient)
             mewsI = input; autoFill = fill
+        case .meld:
+            let (input, fill) = PatientScoreAutoPopulator.meld(patient: patient)
+            meldI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -1137,27 +1140,30 @@ struct ClinicalScoresView: View {
 
     private var meldForm: some View {
         VStack(alignment: .leading, spacing: 12) {
-            sectionHeader("Bilirubin (mg/dL)")
-            HStack {
-                Slider(value: $meldI.bilirubinMgDL, in: 0.1...40.0, step: 0.1)
-                Text(String(format: "%.1f", meldI.bilirubinMgDL)).font(.caption.monospacedDigit()).frame(width: 44, alignment: .trailing)
+            if autoFill.isAuto("bilirubinMgDL") || autoFill.isAuto("creatinineMgDL")
+                || autoFill.isAuto("inrValue") || autoFill.isAuto("sodiumMmolL") {
+                HStack(spacing: 4) {
+                    Image(systemName: "wand.and.stars").font(.caption2).foregroundStyle(.teal)
+                    Text("Pre-filled from latest lab results — review values.")
+                        .font(.caption2).foregroundStyle(.teal)
+                }
+                .padding(.horizontal, 8).padding(.vertical, 4)
+                .background(.teal.opacity(0.1), in: RoundedRectangle(cornerRadius: 6))
             }
-            sectionHeader("Creatinine (mg/dL)")
-            HStack {
-                Slider(value: $meldI.creatinineMgDL, in: 0.1...10.0, step: 0.1)
-                Text(String(format: "%.1f", meldI.creatinineMgDL)).font(.caption.monospacedDigit()).frame(width: 44, alignment: .trailing)
-            }
-            sectionHeader("INR")
-            HStack {
-                Slider(value: $meldI.inrValue, in: 0.8...8.0, step: 0.1)
-                Text(String(format: "%.1f", meldI.inrValue)).font(.caption.monospacedDigit()).frame(width: 44, alignment: .trailing)
-            }
-            sectionHeader("Sodium (mmol/L)")
-            HStack {
-                Slider(value: $meldI.sodiumMmolL, in: 110.0...145.0, step: 1)
-                Text("\(Int(meldI.sodiumMmolL)) mmol/L").font(.caption.monospacedDigit()).frame(width: 80, alignment: .trailing)
-            }
-            scoreToggle("On dialysis (creatinine capped at 4.0)", binding: $meldI.onDialysis, points: "")
+            mewsSlider(label: "Bilirubin (mg/dL)", autoKey: "bilirubinMgDL",
+                       value: $meldI.bilirubinMgDL, in: 0.1...40.0, step: 0.1,
+                       display: String(format: "%.1f", meldI.bilirubinMgDL))
+            mewsSlider(label: "Creatinine (mg/dL)", autoKey: "creatinineMgDL",
+                       value: $meldI.creatinineMgDL, in: 0.1...10.0, step: 0.1,
+                       display: String(format: "%.1f", meldI.creatinineMgDL))
+            mewsSlider(label: "INR", autoKey: "inrValue",
+                       value: $meldI.inrValue, in: 0.8...8.0, step: 0.1,
+                       display: String(format: "%.1f", meldI.inrValue))
+            mewsSlider(label: "Sodium (mmol/L)", autoKey: "sodiumMmolL",
+                       value: $meldI.sodiumMmolL, in: 110.0...145.0, step: 1.0,
+                       display: "\(Int(meldI.sodiumMmolL)) mmol/L")
+            scoreToggle("On dialysis (creatinine capped at 4.0)", binding: $meldI.onDialysis,
+                        points: "", autoKey: "onDialysis")
         }
         .onChange(of: meldI) { _, _ in recalculate() }
     }
