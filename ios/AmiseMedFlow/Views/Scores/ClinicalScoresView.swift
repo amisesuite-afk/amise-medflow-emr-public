@@ -94,6 +94,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
 
 struct ClinicalScoresView: View {
     @Bindable var patient: Patient
+    @Environment(\.modelContext) private var modelContext
 
     @State private var selectedCategory: ScoreCategory = .all
     @State private var selectedScore: ActiveScore? = nil
@@ -150,6 +151,7 @@ struct ClinicalScoresView: View {
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
+    @State private var mewsSaved = false
 
     var filteredScores: [ActiveScore] {
         guard selectedCategory != .all else { return ActiveScore.allCases }
@@ -371,6 +373,7 @@ struct ClinicalScoresView: View {
     // MARK: - Auto-populate from patient data
 
     private func autoPopulate(for score: ActiveScore) {
+        mewsSaved = false
         switch score {
         case .caprini:
             let (input, fill) = PatientScoreAutoPopulator.caprini(patient: patient)
@@ -402,6 +405,25 @@ struct ClinicalScoresView: View {
         default:
             autoFill = ScoreAutoFill()
         }
+    }
+
+    // MARK: - MEWS write-back
+
+    private func saveMEWSToVitals() {
+        let entry = VitalsEntry(patient: patient)
+        entry.respiratoryRate    = mewsI.respiratoryRate
+        entry.spo2               = mewsI.oxygenSaturation
+        entry.heartRate          = mewsI.heartRate
+        entry.bpSystolic         = mewsI.systolicBP
+        entry.temperatureCelsius = mewsI.temperature
+        entry.avpu = switch mewsI.consciousnessAVPU {
+        case .alert:        .alert
+        case .voice:        .voice
+        case .pain:         .pain
+        case .unresponsive: .unresponsive
+        }
+        modelContext.insert(entry)
+        mewsSaved = true
     }
 
     // MARK: - Recalculate
@@ -941,8 +963,27 @@ struct ClinicalScoresView: View {
                 Text("Nil <10mL/hr (2)").tag(MEWSInput.UrineOutput.nil_)
             }
             .pickerStyle(.segmented)
+
+            Divider().padding(.vertical, 4)
+            Button(action: saveMEWSToVitals) {
+                Label(
+                    mewsSaved ? "Saved to vitals" : "Save readings to Vitals",
+                    systemImage: mewsSaved ? "checkmark.circle.fill" : "waveform.path.ecg.rectangle"
+                )
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(mewsSaved ? .green : .teal)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .background(
+                    (mewsSaved ? Color.green : Color.teal).opacity(0.1),
+                    in: RoundedRectangle(cornerRadius: 10)
+                )
+            }
+            .buttonStyle(.plain)
+            .disabled(mewsSaved)
+            .animation(.easeInOut(duration: 0.2), value: mewsSaved)
         }
-        .onChange(of: mewsI) { _, _ in recalculate() }
+        .onChange(of: mewsI) { _, _ in mewsSaved = false; recalculate() }
     }
 
     private func mewsSlider(label: String, autoKey: String,
