@@ -62,6 +62,8 @@ final class Patient {
     // MARK: - Clinical intelligence fields
     var workingDiagnosis: String?
     var workingDiagnosisICD: String?
+    // CC that was active when workingDiagnosis was last confirmed — used to detect staleness
+    var workingDiagnosisCC: String?
     var assessmentText: String?
 
     // MARK: - Visit type (structured)

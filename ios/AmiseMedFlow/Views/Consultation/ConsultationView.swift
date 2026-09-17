@@ -1072,6 +1072,15 @@ struct ConsultationView: View {
                 selectedSocialChips = parseSocialChipsFromHistory(social)
                 recomputeRisk()
             }
+            // Clear a working diagnosis that was confirmed under a different CC —
+            // guards against stale SwiftData values persisting across CC changes.
+            if patient.workingDiagnosis != nil,
+               patient.workingDiagnosisCC != patient.chiefComplaint {
+                patient.workingDiagnosis = nil
+                patient.workingDiagnosisICD = nil
+                patient.workingDiagnosisCC = nil
+                touch()
+            }
             pipeline.runNow(for: patient, socratesSelections: socratesSelections)
             refreshTextFeatures()
             MRNGenerator.backfillIfNeeded(patient)
@@ -3660,6 +3669,7 @@ struct ConsultationView: View {
                         BayesianDxRow(result: result) {
                             patient.workingDiagnosis = result.name
                             patient.workingDiagnosisICD = result.icdCode
+                            patient.workingDiagnosisCC = patient.chiefComplaint
                             touch()
                             icdQuery = "\(result.icdCode) \(result.name)"
                             icdSuggestions = []
@@ -3762,6 +3772,7 @@ struct ConsultationView: View {
                     Button {
                         patient.workingDiagnosis = icd.description
                         patient.workingDiagnosisICD = icd.code
+                        patient.workingDiagnosisCC = patient.chiefComplaint
                         touch()
                         icdQuery = "\(icd.code) \(icd.description)"
                         icdSuggestions = []
@@ -3940,6 +3951,7 @@ struct ConsultationView: View {
                                     Button("Use") {
                                         patient.workingDiagnosis = dx.name
                                         patient.workingDiagnosisICD = nil
+                                        patient.workingDiagnosisCC = patient.chiefComplaint
                                         touch()
                                         activeTab = .diagnosis
                                     }

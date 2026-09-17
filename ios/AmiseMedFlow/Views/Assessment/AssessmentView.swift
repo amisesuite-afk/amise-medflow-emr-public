@@ -49,6 +49,7 @@ struct AssessmentView: View {
                         Button {
                             patient.workingDiagnosis = icd.description
                             patient.workingDiagnosisICD = icd.code
+                            patient.workingDiagnosisCC = patient.chiefComplaint
                             patient.updatedAt = .now
                             patient.pendingSync = true
                             icdQuery = "\(icd.code) \(icd.description)"
