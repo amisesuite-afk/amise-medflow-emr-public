@@ -1425,7 +1425,8 @@ struct ConsultationView: View {
         case .hpi:       hpiTab
         case .pmh:       pmhTab
         case .pshx:      pshxTab
-        case .meds:      embeddedInNav ? medsSplitPanel : List { medicationsSection }
+        case .meds:
+            if embeddedInNav { medsSplitPanel } else { List { medicationsSection } }
         case .allergies: allergiesTab
         case .social:    socialTab
         case .exam:           examTab
@@ -1928,7 +1929,7 @@ struct ConsultationView: View {
         let sevDim   = dims.first(where: { $0.id == "severity" })
         let charLabel = charDim?.title.lowercased() ?? "character"
         let radLabel  = radDim?.title.lowercased() ?? "radiation"
-        let sevLabel  = sevDim?.title.lowercased() ?? "severity"
+        let _ = sevDim?.title.lowercased() ?? "severity"
         let isPainRad = radLabel == "radiation"
 
         var parts: [String] = []
