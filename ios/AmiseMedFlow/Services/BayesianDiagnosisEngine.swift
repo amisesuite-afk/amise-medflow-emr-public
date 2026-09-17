@@ -216,6 +216,13 @@ enum BayesianDiagnosisEngine {
         case ccL.contains("parotid") || ccL.contains("salivary") || ccL.contains("submandibular gland") ||
              ccL.contains("sublingual gland") || (ccL.contains("jaw") && ccL.contains("swelling")):
             candidates = parotidSalivary
+        case ccL.contains("follow-up") || ccL.contains("follow up") ||
+             (ccL.contains("follow") && ccL.contains("up")):
+            candidates = postOpReview
+        case ccL.contains("ercp") || (ccL.contains("biliary") && !ccL.contains("hernia")):
+            candidates = jaundice
+        case ccL.contains("screen"):
+            candidates = weightLoss
         default:
             candidates = abdominalPain   // safest surgical default
         }

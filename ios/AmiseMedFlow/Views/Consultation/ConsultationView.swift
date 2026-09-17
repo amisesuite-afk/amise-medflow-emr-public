@@ -280,6 +280,9 @@ let ccSurgicalChips: [CCSurgicalChip] = [
     CCSurgicalChip(label: "Skin lesion",           icon: "oval.lefthalf.filled"),
     CCSurgicalChip(label: "Anal pain",             icon: "figure.walk"),
     CCSurgicalChip(label: "Nausea / Vomiting",     icon: "arrow.up.circle"),
+    CCSurgicalChip(label: "Haematemesis / UGI bleed", icon: "drop.triangle"),
+    CCSurgicalChip(label: "Groin pain",            icon: "arrow.down.left.circle"),
+    CCSurgicalChip(label: "Renal colic",           icon: "bolt.fill"),
     // Medical / non-surgical
     CCSurgicalChip(label: "Chest pain",            icon: "heart.fill"),
     CCSurgicalChip(label: "Shortness of breath",   icon: "lungs.fill"),
@@ -680,6 +683,10 @@ func socrateDimensions(for cc: String) -> [SOCRATESDimension] {
     let isWeightLoss = lc.contains("weight loss") || lc.contains("weight_loss") || lc.contains("loss of weight")
     let isBowel     = lc.contains("bowel") || lc.contains("constipation") || lc.contains("diarrhoea") || lc.contains("diarrhea") || lc.contains("change in bowel")
     let isReflux    = lc.contains("reflux") || lc.contains("heartburn") || lc.contains("gerd") || lc.contains("gord") || lc.contains("indigestion") || lc.contains("dyspepsia") || lc.contains("regurgitat") || lc.contains("bloating") || lc.contains("belching") || lc.contains("waterbrash")
+    let isHaematemesis = lc.contains("haematemesis") || lc.contains("hematemesis") || lc.contains("ugi bleed") || lc.contains("upper gi bleed") || lc.contains("melaena") || lc.contains("melena") || lc.contains("coffee ground")
+    let isRenalColic   = lc.contains("renal colic") || lc.contains("kidney stone") || lc.contains("ureteric") || lc.contains("nephrolithiasis") || lc.contains("loin to groin")
+    let isFollowUp     = lc.contains("follow-up") || lc.contains("follow up") || (lc.contains("follow") && lc.contains("up"))
+    let isERCP         = lc.contains("ercp") || lc.contains("biliary")
 
     let site: [String], char: [String], rad: [String], assoc: [String], exc: [String], rel: [String]
     var charTitle = "Character",  charQ   = "What is it like?"
@@ -753,6 +760,54 @@ func socrateDimensions(for cc: String) -> [SOCRATESDimension] {
         exc = ["Sun exposure", "Trauma", "None"]
         rel = ["None", "Reducing sun exposure"]
         sevTitle = "Concern"; sevQ = "Level of concern?"; sevChips = SOCRATESChips.sevImpact
+
+    case isHaematemesis:
+        site  = ["Mouth / oesophageal source", "Epigastric", "No specific site", "Unknown source"]
+        char  = SOCRATESChips.charBleeding
+        charTitle = "Bleeding type";      charQ = "What did the blood look like?"
+        rad   = ["Dark / black tarry stool (melaena)", "Fresh red stool", "Normal stools", "Not yet opened bowels"]
+        radTitle = "Stool character";     radQ = "What are the stools like?"; radMulti = true
+        assoc = ["Epigastric pain", "Heartburn / reflux", "Dysphagia", "Nausea", "Dizziness / pre-syncope",
+                 "Syncope", "Abdominal pain", "Jaundice", "Weight loss", "Known liver disease / varices",
+                 "NSAIDs / aspirin use", "Alcohol excess"]
+        exc   = ["NSAIDs / aspirin", "Alcohol", "Stress", "None identified"]
+        rel   = ["PPI / antacids", "Fasting", "Nothing identified"]
+        sevTitle = "Volume / haemodynamic impact"; sevQ = "How much blood, how are you feeling?"; sevChips = SOCRATESChips.sevBleeding
+
+    case isRenalColic:
+        site  = SOCRATESChips.siteUrology
+        char  = ["Colicky (comes and goes in waves)", "Constant severe pain", "Sharp", "Dull ache", "Cramping", "Pressure"]
+        charTitle = "Pain character";     charQ = "What is the pain like?"
+        rad   = SOCRATESChips.radUrology; radMulti = false
+        assoc = ["Haematuria", "Nausea", "Vomiting", "Dysuria", "Frequency", "Fever / rigors",
+                 "Oliguria", "Urinary retention", "Known kidney stones", "Profuse sweating"]
+        exc   = ["Movement", "Deep breathing", "None — constant pain"]
+        rel   = ["Strong analgesics (IV/IM)", "Heat pad", "Vomiting", "Nothing"]
+        sevTitle = "Severity"; sevQ = "Pain severity (renal colic is typically severe)?"; sevChips = SOCRATESChips.severity
+
+    case isERCP:
+        site  = ["RUQ", "Epigastric", "Right shoulder / scapula tip", "Generalised abdomen", "Diffuse"]
+        char  = ["Colicky", "Constant dull ache", "Sharp", "Pressure", "Burning", "Post-procedural discomfort"]
+        charTitle = "Character";          charQ = "Describe the pain or discomfort?"
+        rad   = ["Dark urine + pale stools", "Dark urine only", "Pale stools only", "Normal urine and stools",
+                 "Right shoulder tip radiation", "Back radiation", "Pruritus (itch)"]
+        radTitle = "Jaundice features / radiation"; radQ = "Any biliary features?"; radMulti = true
+        assoc = SOCRATESChips.assocAbdominal
+        exc   = ["Fatty food", "Large meals", "Alcohol", "None identified"]
+        rel   = ["Fasting", "Antispasmodics", "Analgesics", "Nothing identified"]
+        sevTitle = "Severity"; sevQ = "Pain severity?"; sevChips = SOCRATESChips.severity
+
+    case isFollowUp:
+        site  = ["No specific site", "Prior operative / incision site", "Wound area", "Generalised"]
+        char  = ["Recovering well — routine review", "New symptoms since last visit",
+                 "Ongoing symptoms unchanged", "Concern about investigation result", "Medication query"]
+        charTitle = "Reason for return";  charQ = "What brings you back today?"
+        rad   = ["None", "Resolving", "Stable", "Worsening", "New development since last visit"]
+        radTitle = "Progress since last visit"; radQ = "How have you been since we last met?"; radMulti = false
+        assoc = SOCRATESChips.assocAbdominal
+        exc   = ["None currently identified"]
+        rel   = ["Ongoing treatment", "Nothing identified"]
+        sevTitle = "Overall wellbeing"; sevQ = "Overall, how are you feeling today?"; sevChips = SOCRATESChips.sevImpact
 
     case isUro:
         site = SOCRATESChips.siteUrology
