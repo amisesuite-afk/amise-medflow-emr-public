@@ -575,6 +575,12 @@ struct ClinicalScoresView: View {
         case .stopBang:     ClinicalScoringEngine.stopBang(sbangI)
         case .news2:        ClinicalScoringEngine.news2(news2I)
         }
+        // Feed Alvarado result back to Bayesian engine via patient model
+        if score == .alvarado, let r = result {
+            patient.alvaradoScore = Int(r.score)
+            patient.updatedAt = .now
+            patient.pendingSync = true
+        }
     }
 
     // MARK: - Input forms

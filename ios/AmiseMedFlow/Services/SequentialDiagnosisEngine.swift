@@ -290,7 +290,8 @@ final class SequentialDiagnosisEngine: ObservableObject {
         sex: Sex,
         medications: [String] = [],
         socialHistoryText: String? = nil,
-        bmi: Double? = nil
+        bmi: Double? = nil,
+        alvaradoScore: Int? = nil
     ) {
         let results = BayesianDiagnosisEngine.infer(
             chiefComplaint: chiefComplaint,
@@ -304,7 +305,8 @@ final class SequentialDiagnosisEngine: ObservableObject {
             sex: sex,
             medications: medications,
             socialHistoryText: socialHistoryText,
-            bmi: bmi
+            bmi: bmi,
+            alvaradoScore: alvaradoScore
         )
 
         guard !results.isEmpty else {

@@ -3638,7 +3638,8 @@ struct ConsultationView: View {
             longitudinal: patient.longitudinalContext,
             medications: patient.prescriptions.map { $0.displayLine },
             socialHistoryText: patient.socialHistory,
-            bmi: patient.latestBMI()
+            bmi: patient.latestBMI(),
+            alvaradoScore: patient.alvaradoScore
         )
     }
 

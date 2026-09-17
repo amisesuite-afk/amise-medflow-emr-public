@@ -65,6 +65,8 @@ final class Patient {
     // CC that was active when workingDiagnosis was last confirmed — used to detect staleness
     var workingDiagnosisCC: String?
     var assessmentText: String?
+    // Most recently computed Alvarado score (0–10); nil if not yet scored
+    var alvaradoScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

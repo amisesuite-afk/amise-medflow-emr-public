@@ -71,7 +71,8 @@ enum BayesianDiagnosisEngine {
         longitudinal: LongitudinalContext = .empty,
         medications: [String] = [],
         socialHistoryText: String? = nil,
-        bmi: Double? = nil
+        bmi: Double? = nil,
+        alvaradoScore: Int? = nil
     ) -> [DiagnosisResult] {
         guard let cc = chiefComplaint, !cc.isEmpty else { return [] }
         let ccL = cc.lowercased()
@@ -270,6 +271,24 @@ enum BayesianDiagnosisEngine {
                     scored[i].logPosterior += 20
                     scored[i].evidence.insert("Previously confirmed diagnosis", at: 0)
                 }
+            }
+        }
+
+        // Alvarado score feedback: adjust appendicitis log-posterior based on
+        // a computed Alvarado score (0–10) entered in the Clinical Scores tab.
+        // This is the POC for clinical score → Bayesian engine integration.
+        if let alv = alvaradoScore {
+            let adj: Int
+            let label: String
+            switch alv {
+            case 7...10: adj = 18; label = "Alvarado \(alv)/10 — high probability"
+            case 5...6:  adj = 8;  label = "Alvarado \(alv)/10 — compatible"
+            case 4:      adj = 2;  label = "Alvarado \(alv)/10 — borderline"
+            default:     adj = -8; label = "Alvarado \(alv)/10 — low probability"
+            }
+            for i in scored.indices where scored[i].candidate.name.lowercased().contains("appendicitis") {
+                scored[i].logPosterior += adj
+                if adj > 0 { scored[i].evidence.insert(label, at: 0) }
             }
         }
 
