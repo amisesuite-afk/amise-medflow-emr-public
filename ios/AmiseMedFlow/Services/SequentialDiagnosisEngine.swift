@@ -297,7 +297,12 @@ final class SequentialDiagnosisEngine: ObservableObject {
         tokyoCholecystitisGrade: Int? = nil,
         tokyoCholangitisGrade: Int? = nil,
         rockallScore: Int? = nil,
-        blatchfordScore: Int? = nil
+        blatchfordScore: Int? = nil,
+        wellsDVTScore: Double? = nil,
+        wellsPEScore: Double? = nil,
+        abcd2Score: Int? = nil,
+        lrinecScore: Int? = nil,
+        qsofaScore: Int? = nil
     ) {
         let results = BayesianDiagnosisEngine.infer(
             chiefComplaint: chiefComplaint,
@@ -318,7 +323,12 @@ final class SequentialDiagnosisEngine: ObservableObject {
             tokyoCholecystitisGrade: tokyoCholecystitisGrade,
             tokyoCholangitisGrade: tokyoCholangitisGrade,
             rockallScore: rockallScore,
-            blatchfordScore: blatchfordScore
+            blatchfordScore: blatchfordScore,
+            wellsDVTScore: wellsDVTScore,
+            wellsPEScore: wellsPEScore,
+            abcd2Score: abcd2Score,
+            lrinecScore: lrinecScore,
+            qsofaScore: qsofaScore
         )
 
         guard !results.isEmpty else {

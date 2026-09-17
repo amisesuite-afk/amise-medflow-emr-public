@@ -79,6 +79,16 @@ final class Patient {
     var rockallScore: Int?
     // Blatchford score (0–23); ≥6 = high-risk UGI bleed
     var blatchfordScore: Int?
+    // Wells DVT score (continuous); ≤0 low, 1–2 moderate, ≥3 high
+    var wellsDVTScore: Double?
+    // Wells PE score (continuous); ≤4 low, 5–6 moderate, ≥7 high
+    var wellsPEScore: Double?
+    // ABCD² score (0–7); ≥4 = higher 2-day stroke risk after TIA
+    var abcd2Score: Int?
+    // LRINEC score (0–13); ≥6 = moderate risk necrotising fasciitis
+    var lrinecScore: Int?
+    // qSOFA score (0–3); ≥2 with suspected infection = sepsis
+    var qsofaScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

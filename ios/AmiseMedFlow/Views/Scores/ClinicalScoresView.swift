@@ -588,6 +588,11 @@ struct ClinicalScoresView: View {
         case .tokyoCholang: patient.tokyoCholangitisGrade    = intScore
         case .rockall:      patient.rockallScore             = intScore
         case .blatchford:   patient.blatchfordScore          = intScore
+        case .wellsDVT:     patient.wellsDVTScore            = r.score
+        case .wellsPE:      patient.wellsPEScore             = r.score
+        case .abcd2:        patient.abcd2Score               = intScore
+        case .lrinec:       patient.lrinecScore              = intScore
+        case .qsofa:        patient.qsofaScore               = intScore
         default: break
         }
         patient.updatedAt = .now

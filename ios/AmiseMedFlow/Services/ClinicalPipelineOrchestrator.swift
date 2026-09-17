@@ -124,7 +124,12 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
             tokyoCholecystitisGrade:     patient.tokyoCholecystitisGrade,
             tokyoCholangitisGrade:       patient.tokyoCholangitisGrade,
             rockallScore:                patient.rockallScore,
-            blatchfordScore:             patient.blatchfordScore
+            blatchfordScore:             patient.blatchfordScore,
+            wellsDVTScore:               patient.wellsDVTScore,
+            wellsPEScore:                patient.wellsPEScore,
+            abcd2Score:                  patient.abcd2Score,
+            lrinecScore:                 patient.lrinecScore,
+            qsofaScore:                  patient.qsofaScore
         )
 
         let seeded = sequentialEngine.topDiagnoses(n: 10)

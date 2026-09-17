@@ -784,6 +784,431 @@
           ]
         }
       ]
+    },
+    "chestPain": {
+      "candidates": [
+        {
+          "name": "Acute Coronary Syndrome",
+          "icd": "I24.9",
+          "logPrior": 30,
+          "features": [
+            { "key": "character",   "value": "Pressure",    "logLR": 14, "evidenceLabel": "Pressure / crushing pain",                   "citation": "Swap AR. JAMA 2005;294:2623. Pressure-like pain LR+ 1.3 for ACS; crushing LR+ 1.7" },
+            { "key": "radiation",   "value": "Arm",         "logLR": 14, "evidenceLabel": "Radiation to arm / shoulder",                "citation": "Panju AA. JAMA 1998;280:1256. Arm radiation LR+ 2.3 (1.7–3.1) for AMI" },
+            { "key": "radiation",   "value": "Jaw",         "logLR": 12, "evidenceLabel": "Radiation to jaw",                           "citation": "Panju AA. Jaw radiation LR+ 2.7 (1.5–4.7) for AMI" },
+            { "key": "exacerbating","value": "Exertion",    "logLR": 10, "evidenceLabel": "Exertional — typical anginal pattern",       "citation": "Exertional onset LR+ 2.4 for ischaemic pain" },
+            { "key": "relieving",   "value": "Nitrates",    "logLR": 14, "evidenceLabel": "Relief with GTN spray",                      "citation": "GTN response LR+ 2.4 (1.5–3.8) for ACS in emergency setting" },
+            { "key": "pmh",         "value": "ischaemic heart","logLR": 12, "evidenceLabel": "Known IHD / previous MI",                "citation": "Previous IHD LR+ 2.4 for new ACS event" },
+            { "key": "pmh",         "value": "diabetes",    "logLR": 6,  "evidenceLabel": "Diabetes mellitus",                         "citation": "Diabetes doubles cardiovascular risk; atypical presentations common" },
+            { "key": "age_over",    "value": "55",          "logLR": 8,  "evidenceLabel": "Age >55",                                    "citation": "ACS incidence rises sharply with age >55" },
+            { "key": "sex_male",    "value": "",            "logLR": 4,  "evidenceLabel": "Male sex",                                   "citation": "Male sex RR ~2 for ACS before age 65" },
+            { "key": "inv",         "value": "troponin",    "logLR": 18, "evidenceLabel": "High-sensitivity troponin elevated",         "citation": "hs-Troponin sensitivity 99%; positive alone not sufficient without clinical context" },
+            { "key": "inv",         "value": "ecg",         "logLR": 10, "evidenceLabel": "ST elevation / new LBBB / ST depression on ECG", "citation": "ST elevation LR+ ~200 for STEMI; ST depression LR+ 3–5 for NSTEMI" }
+          ]
+        },
+        {
+          "name": "Stable Angina",
+          "icd": "I20.9",
+          "logPrior": 20,
+          "features": [
+            { "key": "timing",      "value": "Episodic",    "logLR": 10, "evidenceLabel": "Episodic, predictable effort pain",          "citation": "Classic stable angina: episodes predictable with exertion, resolved with rest" },
+            { "key": "exacerbating","value": "Exertion",    "logLR": 14, "evidenceLabel": "Consistently exertional",                   "citation": "Exertional pattern + relief with rest discriminates stable from unstable" },
+            { "key": "relieving",   "value": "Rest",        "logLR": 12, "evidenceLabel": "Prompt relief with rest (<5 min)",           "citation": "Relief within 5 minutes of rest LR+ ~3 for stable angina vs ACS" },
+            { "key": "character",   "value": "Pressure",    "logLR": 10, "evidenceLabel": "Pressure or tightness",                     "citation": "Typical anginal quality: pressure/tight/heavy" },
+            { "key": "pmh",         "value": "ischaemic heart","logLR": 12, "evidenceLabel": "Known IHD / previous angiography",       "citation": "Known coronary artery disease is the strongest predictor" },
+            { "key": "age_over",    "value": "50",          "logLR": 6,  "evidenceLabel": "Age >50",                                    "citation": "Age-related atherosclerosis burden" }
+          ]
+        },
+        {
+          "name": "Pulmonary Embolism",
+          "icd": "I26.99",
+          "logPrior": 12,
+          "features": [
+            { "key": "character",   "value": "Sharp",       "logLR": 10, "evidenceLabel": "Pleuritic chest pain — sharp, worse on inspiration", "citation": "Swap AR. Pleuritic pain LR+ 2.1 (1.4–3.1) for PE vs ACS" },
+            { "key": "associations","value": "Shortness of breath","logLR": 12, "evidenceLabel": "Acute onset dyspnoea",               "citation": "Wells PS. Dyspnoea present in 73% of PE" },
+            { "key": "onset",       "value": "Sudden",      "logLR": 10, "evidenceLabel": "Sudden onset dyspnoea + pleuritic pain",    "citation": "Sudden onset the hallmark of haemodynamically significant PE" },
+            { "key": "pmh",         "value": "dvt",         "logLR": 14, "evidenceLabel": "Previous DVT — highest single risk factor", "citation": "Previous DVT/PE LR+ 3.2 for new PE event" },
+            { "key": "pmh",         "value": "malignancy",  "logLR": 10, "evidenceLabel": "Active malignancy",                        "citation": "Active cancer increases PE risk 4–6×" },
+            { "key": "inv",         "value": "d-dimer",     "logLR": 12, "evidenceLabel": "D-dimer elevated (>500 ng/mL)",             "citation": "D-dimer sensitivity 96% for PE; NPV 99.5% if low probability. LR+ 1.6" },
+            { "key": "inv",         "value": "ctpa",        "logLR": 22, "evidenceLabel": "CTPA — PE confirmed",                      "citation": "CTPA sensitivity 83%, specificity 96%; gold standard for non-massive PE" }
+          ]
+        },
+        {
+          "name": "Aortic Dissection",
+          "icd": "I71.00",
+          "logPrior": 3,
+          "features": [
+            { "key": "character",   "value": "Tearing",     "logLR": 18, "evidenceLabel": "Tearing / ripping pain — pathognomonic",    "citation": "Nienaber CA. NEJM 1993. Tearing quality LR+ 10.8 (2.7–43) for aortic dissection" },
+            { "key": "radiation",   "value": "Back",        "logLR": 14, "evidenceLabel": "Radiation to back / interscapular area",    "citation": "Back radiation LR+ 3.4 for type A/B dissection" },
+            { "key": "onset",       "value": "Sudden",      "logLR": 10, "evidenceLabel": "Maximal at onset ('thunderclap')",          "citation": "Pain maximal immediately at onset — distinguishes from ACS crescendo" },
+            { "key": "pmh",         "value": "hypertension","logLR": 10, "evidenceLabel": "Long-standing hypertension",               "citation": "Hypertension present in 70–80% of aortic dissection" },
+            { "key": "exam",        "value": "pulse deficit","logLR": 20, "evidenceLabel": "Pulse deficit / BP discrepancy >20 mmHg", "citation": "Pulse deficit LR+ 6.6 (2.6–17) for aortic dissection" },
+            { "key": "pmh",         "value": "marfan",      "logLR": 16, "evidenceLabel": "Marfan's / connective tissue disorder",     "citation": "Marfan's syndrome: risk at younger age; intimal weakness" },
+            { "key": "inv",         "value": "ctangio",     "logLR": 22, "evidenceLabel": "CT angiography — dissection flap confirmed","citation": "CT angio sensitivity/specificity >95% for aortic dissection" }
+          ]
+        },
+        {
+          "name": "GERD / Oesophagitis",
+          "icd": "K21.00",
+          "logPrior": 25,
+          "features": [
+            { "key": "character",   "value": "Burning",     "logLR": 12, "evidenceLabel": "Burning sensation — 'heartburn'",           "citation": "Klauser AG. Arch IM 1990. Heartburn LR+ 2.2 (1.6–3.0) for GERD" },
+            { "key": "exacerbating","value": "Lying flat",  "logLR": 12, "evidenceLabel": "Worse lying flat / after meals",            "citation": "Postural worsening LR+ 1.9 for GERD" },
+            { "key": "relieving",   "value": "Antacids",    "logLR": 12, "evidenceLabel": "Relief with antacids / PPI",                "citation": "PPI trial (omeprazole test) sensitivity 78%, specificity 54% for GERD" },
+            { "key": "character",   "value": "Regurgitation","logLR": 10, "evidenceLabel": "Acid regurgitation",                       "citation": "Acid regurgitation LR+ 1.9 alongside heartburn" },
+            { "key": "pmh",         "value": "gerd",        "logLR": 12, "evidenceLabel": "Known GERD / previous endoscopy",           "citation": "Established GERD history most discriminating" }
+          ]
+        },
+        {
+          "name": "Musculoskeletal Chest Pain",
+          "icd": "M79.3",
+          "logPrior": 20,
+          "features": [
+            { "key": "exacerbating","value": "Movement",    "logLR": 14, "evidenceLabel": "Reproduced by chest wall movement",         "citation": "Swap AR. Movement-related LR+ 2.2 for MSK chest pain; excludes ACS" },
+            { "key": "exacerbating","value": "Deep breathing","logLR": 10, "evidenceLabel": "Worse on deep inspiration",               "citation": "Inspiratory worsening LR+ 1.4 for MSK; lower for PE (sharper)" },
+            { "key": "exam",        "value": "tender",      "logLR": 14, "evidenceLabel": "Chest wall tenderness on palpation — reproducible", "citation": "Chest wall tenderness LR+ 2.7 (1.8–4.0) for MSK; ACS LR− 0.3 if tenderness present" },
+            { "key": "character",   "value": "Sharp",       "logLR": 8,  "evidenceLabel": "Sharp, localised pain",                    "citation": "Localised sharp pain less typical of ischaemia" },
+            { "key": "inv",         "value": "troponin",    "logLR": -10, "evidenceLabel": "",                                        "citation": "Normal troponin strongly argues against ACS (LR− 0.04–0.15)" }
+          ]
+        }
+      ]
+    },
+    "dysphagia": {
+      "candidates": [
+        {
+          "name": "Oesophageal Carcinoma",
+          "icd": "C15.9",
+          "logPrior": 18,
+          "features": [
+            { "key": "timing",      "value": "Progressive",   "logLR": 16, "evidenceLabel": "Progressive dysphagia — solids then liquids", "citation": "Dakkak M. Gut 1993. Progressive dysphagia LR+ ~18 for malignancy" },
+            { "key": "associations","value": "Weight loss",   "logLR": 16, "evidenceLabel": "Weight loss — RED FLAG",                  "citation": "Weight loss with dysphagia: alarm feature for malignancy; UK alarm criteria" },
+            { "key": "character",   "value": "Progressive",   "logLR": 12, "evidenceLabel": "Solids → liquids progression",            "citation": "Mechanical obstruction pattern: initially solids only, then progressive" },
+            { "key": "age_over",    "value": "55",            "logLR": 12, "evidenceLabel": "Age >55",                                 "citation": "Oesophageal cancer: median age 68; incidence doubles >55" },
+            { "key": "pmh",         "value": "barrett",       "logLR": 14, "evidenceLabel": "Barrett's oesophagus — 40× increased risk","citation": "Barrett's oesophagus: annual progression to adenocarcinoma 0.1–0.3%/year" },
+            { "key": "pmh",         "value": "gerd",          "logLR": 8,  "evidenceLabel": "Longstanding GERD (Barrett's risk factor)", "citation": "Chronic GERD → Barrett's → adenocarcinoma pathway" },
+            { "key": "social",      "value": "alcohol",       "logLR": 6,  "evidenceLabel": "Alcohol / smoking (SCC risk factors)",     "citation": "SCC of oesophagus: smoking OR 3–6; alcohol OR 3–10 (dose-dependent)" },
+            { "key": "inv",         "value": "ogd",           "logLR": 22, "evidenceLabel": "OGD + biopsy — malignancy confirmed",     "citation": "OGD with biopsy gold standard; 4-quadrant biopsies for all suspicious lesions" }
+          ]
+        },
+        {
+          "name": "GERD / Oesophagitis",
+          "icd": "K21.00",
+          "logPrior": 32,
+          "features": [
+            { "key": "associations","value": "Heartburn",     "logLR": 16, "evidenceLabel": "Heartburn — primary symptom",             "citation": "Heartburn + dysphagia: oesophagitis probability 60–80% in primary care" },
+            { "key": "exacerbating","value": "Lying flat",    "logLR": 12, "evidenceLabel": "Worse lying flat",                       "citation": "Postural reflux worsening LR+ 1.9" },
+            { "key": "exacerbating","value": "Eating",        "logLR": 8,  "evidenceLabel": "Worse with meals / acidic food",         "citation": "Post-prandial trigger typical of reflux" },
+            { "key": "relieving",   "value": "Antacids",      "logLR": 12, "evidenceLabel": "Antacid / PPI response",                  "citation": "PPI trial sensitivity 78%, specificity 54% for GERD" },
+            { "key": "timing",      "value": "Variable",      "logLR": 6,  "evidenceLabel": "Intermittent dysphagia (not progressive)","citation": "Intermittent dysphagia less concerning than progressive" }
+          ]
+        },
+        {
+          "name": "Achalasia",
+          "icd": "K22.0",
+          "logPrior": 8,
+          "features": [
+            { "key": "character",   "value": "Both solids and liquids", "logLR": 16, "evidenceLabel": "Dysphagia to both solids and liquids from onset", "citation": "Richter JE. Am J Gastroenterol 2001. Dysphagia to both solids and liquids in 85% of achalasia" },
+            { "key": "onset",       "value": "Gradual",       "logLR": 8,  "evidenceLabel": "Gradual onset over months–years",        "citation": "Achalasia: insidious onset; average delay to diagnosis 2–3 years" },
+            { "key": "associations","value": "Regurgitation", "logLR": 14, "evidenceLabel": "Regurgitation of undigested food",       "citation": "Undigested regurgitation (not acid reflux) distinguishes achalasia" },
+            { "key": "associations","value": "Night cough",   "logLR": 10, "evidenceLabel": "Nocturnal cough / aspiration",           "citation": "Aspiration pneumonia complication of advanced achalasia" },
+            { "key": "inv",         "value": "ogd",           "logLR": 14, "evidenceLabel": "OGD — dilated oesophagus, retained food","citation": "Dilated oesophagus + tight LOS on OGD; manometry gold standard" }
+          ]
+        },
+        {
+          "name": "Oesophageal Stricture (Benign)",
+          "icd": "K22.2",
+          "logPrior": 12,
+          "features": [
+            { "key": "character",   "value": "Progressive",   "logLR": 10, "evidenceLabel": "Progressive to solids",                  "citation": "Mechanical stricture: progressive to solids similar to malignancy pattern" },
+            { "key": "pmh",         "value": "gerd",          "logLR": 12, "evidenceLabel": "Longstanding GERD / peptic stricture",   "citation": "Peptic stricture complicates ~10% of severe GERD" },
+            { "key": "pmh",         "value": "caustic",       "logLR": 16, "evidenceLabel": "Previous caustic ingestion",             "citation": "Corrosive oesophagitis → stricture in 20–30% within weeks" },
+            { "key": "age_under",   "value": "55",            "logLR": 6,  "evidenceLabel": "Younger age (benign more likely)",       "citation": "Age <55 favours benign aetiology; though malignancy cannot be excluded" }
+          ]
+        }
+      ]
+    },
+    "rectalBleeding": {
+      "candidates": [
+        {
+          "name": "Haemorrhoids",
+          "icd": "K64.9",
+          "logPrior": 45,
+          "features": [
+            { "key": "character",   "value": "Bright red",    "logLR": 12, "evidenceLabel": "Bright red blood on toilet paper / dripping", "citation": "Bright red BOFB most common presentation of haemorrhoids; LR+ ~2.4 vs other causes" },
+            { "key": "character",   "value": "Painless",      "logLR": 10, "evidenceLabel": "Painless rectal bleeding",                 "citation": "Painless bright red bleeding LR+ ~3 for haemorrhoids" },
+            { "key": "associations","value": "Perianal itch", "logLR": 10, "evidenceLabel": "Perianal pruritus",                       "citation": "Pruritus ani associated with prolapsing haemorrhoids" },
+            { "key": "associations","value": "Prolapse",      "logLR": 12, "evidenceLabel": "Prolapsing tissue per anum",              "citation": "Prolapse classifies Grade 3–4 haemorrhoids; high specificity" },
+            { "key": "exacerbating","value": "Straining",     "logLR": 10, "evidenceLabel": "Worse with straining at stool",           "citation": "Straining precipitates haemorrhoidal bleeding in constipated patients" },
+            { "key": "pmh",         "value": "constipation",  "logLR": 8,  "evidenceLabel": "Chronic constipation",                   "citation": "Constipation and straining: principal modifiable risk factor" }
+          ]
+        },
+        {
+          "name": "Colorectal Carcinoma",
+          "icd": "C20",
+          "logPrior": 10,
+          "features": [
+            { "key": "associations","value": "Weight loss",   "logLR": 16, "evidenceLabel": "Weight loss — RED FLAG",                  "citation": "Weight loss with rectal bleeding: alarm feature; 2-week wait referral criteria" },
+            { "key": "associations","value": "Change in bowel habit","logLR": 14, "evidenceLabel": "Change in bowel habit > 6 weeks", "citation": "Unexplained change in bowel habit LR+ ~4 for colorectal cancer" },
+            { "key": "character",   "value": "Mixed with stool","logLR": 12, "evidenceLabel": "Blood mixed with stool (not just on surface)", "citation": "Blood mixed with stool vs. on surface: higher proxy for left colon/rectal tumour" },
+            { "key": "age_over",    "value": "50",            "logLR": 12, "evidenceLabel": "Age >50",                                 "citation": "CRC incidence increases sharply after age 50; screening starts at 50 (NHS/ACS)" },
+            { "key": "pmh",         "value": "ibd",           "logLR": 12, "evidenceLabel": "Inflammatory bowel disease",             "citation": "IBD increases CRC risk 2–4× depending on extent and duration" },
+            { "key": "pmh",         "value": "polyp",         "logLR": 14, "evidenceLabel": "Previous adenomatous polyps",            "citation": "Adenoma history increases CRC risk ~3×; interval surveillance required" },
+            { "key": "exam",        "value": "mass",          "logLR": 16, "evidenceLabel": "Palpable abdominal or rectal mass",       "citation": "Palpable mass indicates locally advanced disease" },
+            { "key": "inv",         "value": "colonoscopy",   "logLR": 22, "evidenceLabel": "Colonoscopy + biopsy — malignancy",      "citation": "Colonoscopy gold standard; sensitivity 95% for CRC" }
+          ]
+        },
+        {
+          "name": "Anal Fissure",
+          "icd": "K60.2",
+          "logPrior": 20,
+          "features": [
+            { "key": "associations","value": "Severe anal pain","logLR": 16, "evidenceLabel": "Severe anal pain during/after defaecation", "citation": "Severe pain with defaecation — most discriminating feature for fissure" },
+            { "key": "character",   "value": "Bright red",    "logLR": 10, "evidenceLabel": "Bright red blood — small amount on paper", "citation": "Typical: small streak of blood on paper; much less than haemorrhoids" },
+            { "key": "exacerbating","value": "Defaecation",   "logLR": 14, "evidenceLabel": "Triggered by defaecation",               "citation": "Anismus / pain following defaecation highly specific for fissure" },
+            { "key": "pmh",         "value": "constipation",  "logLR": 10, "evidenceLabel": "Constipation / hard stools",             "citation": "Constipation: precipitant in acute fissures; Crohn's in chronic" },
+            { "key": "exam",        "value": "fissure",       "logLR": 22, "evidenceLabel": "Visible posterior midline fissure",      "citation": "Posterior midline in 90% of cases; lateral fissure raises Crohn's suspicion" }
+          ]
+        },
+        {
+          "name": "Diverticular Bleeding",
+          "icd": "K57.30",
+          "logPrior": 12,
+          "features": [
+            { "key": "onset",       "value": "Sudden",        "logLR": 12, "evidenceLabel": "Sudden, painless large-volume rectal bleed","citation": "Jensen DM. Gastroenterology 2000. Sudden painless bleed typical of diverticular haemorrhage" },
+            { "key": "character",   "value": "Painless",      "logLR": 12, "evidenceLabel": "Painless large-volume bleed",            "citation": "Absence of pain distinguishes diverticular bleed from ischaemic colitis" },
+            { "key": "age_over",    "value": "60",            "logLR": 10, "evidenceLabel": "Age >60 — diverticulosis prevalence",    "citation": "Diverticulosis prevalence 60% at age 60; 80% at age 80" },
+            { "key": "pmh",         "value": "diverticular",  "logLR": 14, "evidenceLabel": "Known diverticular disease",            "citation": "Known diverticulosis increases bleeding episode risk 15–30% lifetime" },
+            { "key": "pmh",         "value": "nsaid",         "logLR": 10, "evidenceLabel": "NSAID / antiplatelet use",              "citation": "NSAID use doubles risk of diverticular haemorrhage" },
+            { "key": "character",   "value": "Dark red",      "logLR": 8,  "evidenceLabel": "Dark red / maroon blood",               "citation": "Right-sided diverticular bleed → darker blood than left-sided haemorrhoids" }
+          ]
+        },
+        {
+          "name": "Inflammatory Bowel Disease",
+          "icd": "K51.90",
+          "logPrior": 10,
+          "features": [
+            { "key": "associations","value": "Diarrhoea",     "logLR": 12, "evidenceLabel": "Bloody diarrhoea — hallmark of UC",      "citation": "Truelove SC. BMJ 1955. Bloody diarrhoea central to UC diagnosis" },
+            { "key": "associations","value": "Urgency",       "logLR": 12, "evidenceLabel": "Faecal urgency / tenesmus",              "citation": "Tenesmus and urgency: rectal inflammation (UC > CD)" },
+            { "key": "timing",      "value": "Chronic",       "logLR": 10, "evidenceLabel": "Chronic/relapsing course",              "citation": "Relapsing-remitting pattern distinguishes IBD from infective colitis" },
+            { "key": "age_under",   "value": "40",            "logLR": 8,  "evidenceLabel": "Age <40 at onset (peak incidence)",      "citation": "IBD bimodal onset: peak 20–30s and 50–60s; younger more common" },
+            { "key": "pmh",         "value": "ibd",           "logLR": 14, "evidenceLabel": "Known IBD",                             "citation": "Established IBD diagnosis" }
+          ]
+        }
+      ]
+    },
+    "feverInfection": {
+      "candidates": [
+        {
+          "name": "Dengue Fever",
+          "icd": "A90",
+          "logPrior": 30,
+          "features": [
+            { "key": "onset",       "value": "Sudden",        "logLR": 10, "evidenceLabel": "Sudden high fever",                     "citation": "Dengue: abrupt onset fever >38.5°C in Caribbean; highly endemic Saint Lucia" },
+            { "key": "associations","value": "Retroorbital pain","logLR": 14, "evidenceLabel": "Retroorbital / retro-ocular pain",   "citation": "Retroorbital pain LR+ ~8 for dengue in endemic setting (WHO 2009 criteria)" },
+            { "key": "associations","value": "Rash",          "logLR": 12, "evidenceLabel": "Maculopapular rash (day 3–6)",          "citation": "Dengue rash: islands of white in sea of red; LR+ ~4 for dengue in endemic area" },
+            { "key": "associations","value": "Headache",      "logLR": 8,  "evidenceLabel": "Severe headache",                      "citation": "Headache universal in dengue; non-discriminating alone" },
+            { "key": "associations","value": "Myalgia",       "logLR": 12, "evidenceLabel": "Severe myalgia / arthralgia",           "citation": "'Breakbone fever' — myalgia/arthralgia LR+ ~3 vs malaria in Caribbean" },
+            { "key": "inv",         "value": "thrombocytopenia","logLR": 14, "evidenceLabel": "Thrombocytopenia <150×10⁹/L",       "citation": "Platelet nadir day 4–6; thrombocytopenia LR+ ~4 for dengue in febrile patients" },
+            { "key": "inv",         "value": "ns1",           "logLR": 18, "evidenceLabel": "NS1 antigen positive (days 1–5)",      "citation": "NS1 antigen sensitivity 60–90% in acute phase; specificity >99%" },
+            { "key": "inv",         "value": "dengue",        "logLR": 20, "evidenceLabel": "Dengue serology (IgM/IgG) positive",   "citation": "IgM ELISA sensitivity 90% after day 5 of illness" }
+          ]
+        },
+        {
+          "name": "Leptospirosis",
+          "icd": "A27.9",
+          "logPrior": 15,
+          "features": [
+            { "key": "associations","value": "Myalgia",       "logLR": 12, "evidenceLabel": "Severe myalgia (calf muscles)",         "citation": "Calf muscle tenderness on palpation highly specific for leptospirosis in Caribbean" },
+            { "key": "associations","value": "Jaundice",      "logLR": 12, "evidenceLabel": "Jaundice — Weil's disease severity marker","citation": "Weil's disease: jaundice + renal failure + haemorrhage; CFR 5–40%" },
+            { "key": "exam",        "value": "conjunctival",  "logLR": 14, "evidenceLabel": "Conjunctival suffusion",               "citation": "Conjunctival suffusion (not purulent) pathognomonic of leptospirosis" },
+            { "key": "pmh",         "value": "water exposure","logLR": 14, "evidenceLabel": "Water / soil / animal exposure",       "citation": "Post-flood, rat/livestock contact: highest risk occupations/exposures in Eastern Caribbean" },
+            { "key": "inv",         "value": "leptospira",    "logLR": 20, "evidenceLabel": "Leptospira serology / PCR positive",   "citation": "MAT gold standard; PCR more sensitive in first week" },
+            { "key": "inv",         "value": "creatinine",    "logLR": 10, "evidenceLabel": "Raised creatinine (renal involvement)", "citation": "Renal involvement in 40–60% of Weil's disease" }
+          ]
+        },
+        {
+          "name": "Community-Acquired Pneumonia",
+          "icd": "J18.9",
+          "logPrior": 22,
+          "features": [
+            { "key": "associations","value": "Cough",         "logLR": 10, "evidenceLabel": "Productive cough",                     "citation": "Cough present in 79% of CAP; specificity low alone" },
+            { "key": "associations","value": "Pleuritic pain","logLR": 8,  "evidenceLabel": "Pleuritic chest pain",                 "citation": "Pleuritic pain LR+ ~2.5 for pneumonia vs other infections" },
+            { "key": "exam",        "value": "crepitation",   "logLR": 12, "evidenceLabel": "Focal lung crepitations",             "citation": "Metlay JP. JAMA 1997. Focal creps LR+ 2.3 for CAP in febrile patients" },
+            { "key": "exam",        "value": "consolidation", "logLR": 14, "evidenceLabel": "Clinical / radiological consolidation","citation": "Consolidation signs: dullness to percussion + bronchial breathing" },
+            { "key": "inv",         "value": "cxr",           "logLR": 14, "evidenceLabel": "Chest X-ray — infiltrate confirmed",   "citation": "CXR consolidation gold standard for CAP diagnosis" },
+            { "key": "inv",         "value": "wbc",           "logLR": 8,  "evidenceLabel": "WBC >11×10⁹/L",                       "citation": "Leukocytosis in ~70% of bacterial CAP" }
+          ]
+        },
+        {
+          "name": "Urinary Tract Infection",
+          "icd": "N39.0",
+          "logPrior": 22,
+          "features": [
+            { "key": "associations","value": "Dysuria",       "logLR": 14, "evidenceLabel": "Dysuria — burning on urination",       "citation": "Bent S. JAMA 2002. Dysuria LR+ 1.5–2.5 for UTI in febrile women" },
+            { "key": "associations","value": "Frequency",     "logLR": 10, "evidenceLabel": "Urinary frequency",                    "citation": "Frequency LR+ 1.8 for uncomplicated UTI" },
+            { "key": "site",        "value": "Suprapubic",    "logLR": 8,  "evidenceLabel": "Suprapubic tenderness",               "citation": "Suprapubic tenderness LR+ 1.9 for UTI" },
+            { "key": "associations","value": "Loin pain",     "logLR": 10, "evidenceLabel": "Loin pain — pyelonephritis",          "citation": "Loin pain + fever indicates upper UTI (pyelonephritis)" },
+            { "key": "inv",         "value": "leucocyte",     "logLR": 14, "evidenceLabel": "Leucocytes + nitrites on dipstick",    "citation": "Leucocytes + nitrites together: LR+ 4.2 for UTI" },
+            { "key": "sex_female",  "value": "",              "logLR": 6,  "evidenceLabel": "Female sex (incidence 30× higher)",    "citation": "Annual UTI incidence: women 12–15% vs men <1%" }
+          ]
+        },
+        {
+          "name": "Typhoid Fever",
+          "icd": "A01.00",
+          "logPrior": 10,
+          "features": [
+            { "key": "onset",       "value": "Gradual",       "logLR": 8,  "evidenceLabel": "Gradual-onset fever building over days","citation": "Typhoid: incubation 7–21 days; step-ladder fever weeks 1–2" },
+            { "key": "associations","value": "Constipation",  "logLR": 8,  "evidenceLabel": "Relative bradycardia + early constipation","citation": "Relative bradycardia: temperature–pulse dissociation in ~25%" },
+            { "key": "exam",        "value": "rose spots",    "logLR": 16, "evidenceLabel": "Rose spots (transient salmon macules)",  "citation": "Rose spots: 20–30% of cases; LR+ ~8 for typhoid when present" },
+            { "key": "exam",        "value": "hepatosplenomegaly","logLR": 10, "evidenceLabel": "Hepatosplenomegaly",                "citation": "Hepatosplenomegaly in ~50% of typhoid; spleen enlargement from week 2" },
+            { "key": "inv",         "value": "widal",         "logLR": 12, "evidenceLabel": "Widal test positive (titre ≥1:160)",    "citation": "Widal sensitivity 47–77%; used in Caribbean as first-line; confirm with blood culture" }
+          ]
+        },
+        {
+          "name": "Cellulitis / SSTI",
+          "icd": "L03.90",
+          "logPrior": 15,
+          "features": [
+            { "key": "exam",        "value": "erythema",      "logLR": 14, "evidenceLabel": "Erythema — advancing edge",           "citation": "Eron LJ. Lancet 2003. Erythema + warmth + swelling: cardinal features of cellulitis" },
+            { "key": "exam",        "value": "warm",          "logLR": 10, "evidenceLabel": "Warmth and tenderness",               "citation": "Local warmth LR+ ~3 for bacterial vs viral skin infection" },
+            { "key": "exam",        "value": "swelling",      "logLR": 10, "evidenceLabel": "Local swelling / induration",        "citation": "Swelling distinguishes cellulitis from erysipelas (superficial)" },
+            { "key": "pmh",         "value": "diabetes",      "logLR": 10, "evidenceLabel": "Diabetes — impaired immune response", "citation": "Diabetes triples risk of serious SSTI; slower resolution" },
+            { "key": "inv",         "value": "crp",           "logLR": 10, "evidenceLabel": "CRP markedly elevated",               "citation": "CRP >100 mg/L indicates systemic response; guides antibiotic decision" }
+          ]
+        }
+      ]
+    },
+    "sepsisConditions": {
+      "candidates": [
+        {
+          "name": "Gram-Negative Sepsis / Bacteraemia",
+          "icd": "A41.50",
+          "logPrior": 35,
+          "features": [
+            { "key": "associations","value": "Rigors",        "logLR": 14, "evidenceLabel": "Rigors — bacteraemia hallmark",        "citation": "Shaking rigors LR+ ~5 for Gram-negative bacteraemia" },
+            { "key": "associations","value": "Fever",         "logLR": 12, "evidenceLabel": "Fever >38.3°C or hypothermia <36°C",   "citation": "Sepsis-3: temperature abnormality in >90% of bacteraemic patients" },
+            { "key": "exam",        "value": "hypotension",   "logLR": 14, "evidenceLabel": "Hypotension — SBP <90 mmHg",          "citation": "Septic shock: SBP <90 + lactate >2 mmol/L; 30-day mortality 30–50%" },
+            { "key": "associations","value": "Source",        "logLR": 12, "evidenceLabel": "Identifiable source (UTI / biliary / pneumonia)", "citation": "UTI, biliary sepsis, pneumonia: top 3 sources in surgical practice" },
+            { "key": "inv",         "value": "lactate",       "logLR": 16, "evidenceLabel": "Lactate >2 mmol/L — tissue hypoperfusion","citation": "Lactate >4 mmol/L: 50% mortality; >2 mmol/L triggers 1-hour bundle" },
+            { "key": "inv",         "value": "wbc",           "logLR": 10, "evidenceLabel": "WBC >12 or <4 ×10⁹/L",               "citation": "Leukocytosis or leukopenia both markers of systemic inflammation" },
+            { "key": "inv",         "value": "crp",           "logLR": 10, "evidenceLabel": "CRP markedly elevated (>100 mg/L)",   "citation": "CRP >100 mg/L — high-grade systemic inflammation" },
+            { "key": "inv",         "value": "cultures",      "logLR": 20, "evidenceLabel": "Blood cultures positive — organism identified", "citation": "Blood cultures before antibiotics: sensitivity 65–80% in bacteraemia" }
+          ]
+        },
+        {
+          "name": "Intra-Abdominal Sepsis",
+          "icd": "K65.1",
+          "logPrior": 25,
+          "features": [
+            { "key": "site",        "value": "Abdominal",     "logLR": 14, "evidenceLabel": "Abdominal source of sepsis",          "citation": "Intra-abdominal infection: 2nd most common source of sepsis after respiratory" },
+            { "key": "exam",        "value": "peritonism",    "logLR": 16, "evidenceLabel": "Peritonism — rigidity / rebound",      "citation": "Generalised peritonism indicates free perforation; surgical emergency" },
+            { "key": "exam",        "value": "distension",    "logLR": 10, "evidenceLabel": "Abdominal distension",                "citation": "Distension + peritonism: ileus from peritonitis or bowel obstruction" },
+            { "key": "inv",         "value": "ct",            "logLR": 16, "evidenceLabel": "CT abdomen — perforation / abscess",  "citation": "CT sensitivity 85–95% for intra-abdominal pathology as sepsis source" },
+            { "key": "associations","value": "Prior abdominal pain","logLR": 12, "evidenceLabel": "Preceding abdominal pain syndrome","citation": "Perforated viscus / anastomotic leak typically preceded by pain" }
+          ]
+        },
+        {
+          "name": "Urosepsis",
+          "icd": "A41.51",
+          "logPrior": 28,
+          "features": [
+            { "key": "associations","value": "Dysuria",       "logLR": 12, "evidenceLabel": "Dysuria / LUTS preceding sepsis",     "citation": "LUTS + fever: pyelonephritis progresses to urosepsis in 1–2%" },
+            { "key": "site",        "value": "Loin",          "logLR": 14, "evidenceLabel": "Loin pain / CVA tenderness",          "citation": "Loin pain + fever: pyelonephritis; rigors indicate upper tract bacteraemia" },
+            { "key": "pmh",         "value": "urinary obstruction","logLR": 16, "evidenceLabel": "Urinary obstruction (stone / BPH / stricture)", "citation": "Obstructed infected kidney: surgical emergency; rapid deterioration" },
+            { "key": "pmh",         "value": "diabetes",      "logLR": 10, "evidenceLabel": "Diabetes — impaired uro-immune defences","citation": "Diabetes doubles risk of urosepsis; emphysematous pyelonephritis" },
+            { "key": "inv",         "value": "urine",         "logLR": 14, "evidenceLabel": "Positive urine culture / pyuria",    "citation": "Pyuria >10 WBC/hpf sensitivity 84%, specificity 67% for UTI" }
+          ]
+        },
+        {
+          "name": "Pneumonia / Pulmonary Sepsis",
+          "icd": "J18.9",
+          "logPrior": 25,
+          "features": [
+            { "key": "associations","value": "Cough",         "logLR": 10, "evidenceLabel": "Productive cough",                   "citation": "Cough present in 79% of community-acquired pneumonia" },
+            { "key": "exam",        "value": "crepitation",   "logLR": 12, "evidenceLabel": "Focal crepitations",                 "citation": "Focal creps LR+ 2.3 for CAP in febrile patients" },
+            { "key": "exam",        "value": "consolidation", "logLR": 14, "evidenceLabel": "Radiological consolidation",         "citation": "Consolidation on CXR/CT gold standard for pneumonic sepsis" },
+            { "key": "inv",         "value": "cxr",           "logLR": 14, "evidenceLabel": "CXR — consolidation / effusion",     "citation": "CXR: parapneumonic effusion indicates complicated pneumonia" },
+            { "key": "associations","value": "Hypoxia",       "logLR": 14, "evidenceLabel": "Hypoxia SpO₂ <94% — respiratory failure","citation": "CURB-65: confusion, urea >7, RR ≥30, BP <90/60, age ≥65 — each point doubles mortality" }
+          ]
+        }
+      ]
+    },
+    "strokeTIA": {
+      "candidates": [
+        {
+          "name": "Ischaemic Stroke",
+          "icd": "I63.9",
+          "logPrior": 25,
+          "features": [
+            { "key": "onset",       "value": "Sudden",        "logLR": 16, "evidenceLabel": "Sudden onset neurological deficit (FAST)", "citation": "Goldstein LB. JAMA 2001. FAST criteria sensitivity 79%, specificity 53% for stroke" },
+            { "key": "associations","value": "Facial droop",  "logLR": 18, "evidenceLabel": "Facial droop — FAST F",                   "citation": "Facial palsy LR+ 3.5 (2.0–6.1) for stroke" },
+            { "key": "associations","value": "Arm weakness",  "logLR": 16, "evidenceLabel": "Arm weakness / drift — FAST A",           "citation": "Arm weakness LR+ 2.4 for stroke vs mimics" },
+            { "key": "associations","value": "Speech difficulty","logLR": 16, "evidenceLabel": "Dysarthria / aphasia — FAST S",       "citation": "Speech disturbance LR+ 2.6 for stroke; combine with arm weakness for ROSIER" },
+            { "key": "pmh",         "value": "atrial fibrillation","logLR": 14, "evidenceLabel": "Atrial fibrillation — cardioembolic source","citation": "AF increases stroke risk 5× (RR 4.6–5.0); 20% of all ischaemic strokes" },
+            { "key": "pmh",         "value": "hypertension",  "logLR": 8,  "evidenceLabel": "Hypertension — most modifiable risk factor","citation": "Hypertension accounts for 54% of population-attributable stroke risk" },
+            { "key": "age_over",    "value": "55",            "logLR": 8,  "evidenceLabel": "Age >55",                                 "citation": "Stroke incidence doubles each decade after 55" },
+            { "key": "inv",         "value": "mri",           "logLR": 20, "evidenceLabel": "MRI DWI — acute infarct confirmed",        "citation": "MRI DWI sensitivity 80% within 1h, 99% at 24h for ischaemic stroke" }
+          ]
+        },
+        {
+          "name": "Haemorrhagic Stroke",
+          "icd": "I61.9",
+          "logPrior": 10,
+          "features": [
+            { "key": "onset",       "value": "Sudden",        "logLR": 14, "evidenceLabel": "Sudden onset — may be maximal immediately","citation": "ICH often maximal at onset; NIHSS higher at onset than ischaemic" },
+            { "key": "associations","value": "Headache",      "logLR": 14, "evidenceLabel": "Severe headache at onset",               "citation": "Headache at onset more common in haemorrhagic than ischaemic stroke (40% vs 17%)" },
+            { "key": "associations","value": "Vomiting",      "logLR": 12, "evidenceLabel": "Vomiting — raised ICP sign",            "citation": "Vomiting at onset LR+ 1.6 for ICH vs ischaemic stroke" },
+            { "key": "pmh",         "value": "hypertension",  "logLR": 12, "evidenceLabel": "Severe hypertension — strongest risk factor","citation": "Hypertension accounts for 70–80% of ICH; BP >180/110 at presentation" },
+            { "key": "pmh",         "value": "anticoagulant", "logLR": 12, "evidenceLabel": "Anticoagulant use (warfarin / DOAC)",    "citation": "Warfarin increases ICH risk 7–10×; DOAC ~50% less than warfarin" },
+            { "key": "inv",         "value": "ct",            "logLR": 20, "evidenceLabel": "Non-contrast CT — hyperdense haematoma", "citation": "NCCT sensitivity ~90% for ICH in acute phase; declines with time" }
+          ]
+        },
+        {
+          "name": "Transient Ischaemic Attack",
+          "icd": "G45.9",
+          "logPrior": 20,
+          "features": [
+            { "key": "timing",      "value": "Resolved",      "logLR": 16, "evidenceLabel": "Full resolution within 24 h (usually <1 h)","citation": "TIA: focal neurological deficit resolving within 24h; modern definition ≤1h without infarct" },
+            { "key": "associations","value": "Facial droop",  "logLR": 14, "evidenceLabel": "Transient facial weakness",              "citation": "Transient FAST symptoms; risk of completed stroke 10–15% within 90 days" },
+            { "key": "associations","value": "Limb weakness", "logLR": 12, "evidenceLabel": "Transient limb weakness / paraesthesia", "citation": "ABCD2 score predicts early stroke risk post-TIA" },
+            { "key": "pmh",         "value": "atrial fibrillation","logLR": 14, "evidenceLabel": "AF — highest-risk TIA aetiology", "citation": "AF-related TIA: treat as stroke equivalent; anticoagulate urgently" },
+            { "key": "pmh",         "value": "hypertension",  "logLR": 8,  "evidenceLabel": "Hypertension",                         "citation": "Hypertension: most common modifiable risk factor for TIA/stroke" }
+          ]
+        }
+      ]
+    },
+    "venousThromboEmbolism": {
+      "candidates": [
+        {
+          "name": "Deep Vein Thrombosis",
+          "icd": "I82.409",
+          "logPrior": 25,
+          "features": [
+            { "key": "site",        "value": "Calf",          "logLR": 10, "evidenceLabel": "Calf / leg pain and swelling",           "citation": "Wells PS. NEJM 2003. Calf swelling + tenderness: key Wells DVT criteria" },
+            { "key": "associations","value": "Swelling",      "logLR": 12, "evidenceLabel": "Unilateral leg swelling",               "citation": "Entire leg swelling Wells DVT score +1; asymmetric swelling LR+ 2.0" },
+            { "key": "associations","value": "Pitting oedema","logLR": 10, "evidenceLabel": "Pitting oedema confined to symptomatic leg","citation": "Pitting oedema Wells DVT criterion; LR+ ~1.5" },
+            { "key": "pmh",         "value": "dvt",           "logLR": 14, "evidenceLabel": "Previous DVT — strongest risk factor",  "citation": "Previous DVT increases recurrence risk 2–5× over 10 years" },
+            { "key": "pmh",         "value": "malignancy",    "logLR": 12, "evidenceLabel": "Active malignancy",                    "citation": "Active cancer: 4–7× elevated VTE risk; includes treatment within 6 months" },
+            { "key": "pmh",         "value": "immobility",    "logLR": 10, "evidenceLabel": "Recent immobility / long-haul flight",  "citation": "Immobility >72h or flight >6h increases DVT risk 2–4×" },
+            { "key": "inv",         "value": "d-dimer",       "logLR": 10, "evidenceLabel": "D-dimer elevated >500 ng/mL",          "citation": "D-dimer NPV 99.5% in low-probability (useful to rule out); LR+ 1.6 for DVT" },
+            { "key": "inv",         "value": "doppler",       "logLR": 20, "evidenceLabel": "Duplex USS — non-compressible vein",   "citation": "Compression USS sensitivity 95%, specificity 96% for proximal DVT" }
+          ]
+        },
+        {
+          "name": "Pulmonary Embolism",
+          "icd": "I26.99",
+          "logPrior": 20,
+          "features": [
+            { "key": "onset",       "value": "Sudden",        "logLR": 12, "evidenceLabel": "Sudden onset dyspnoea ± pleuritic pain", "citation": "Wells PS. AIM 2001. Abrupt onset dyspnoea LR+ ~2 for PE" },
+            { "key": "associations","value": "Shortness of breath","logLR": 12, "evidenceLabel": "Dyspnoea — most common symptom (73%)", "citation": "Goldhaber SZ. Lancet 1999. Dyspnoea in 73%, pleuritic pain 44%, haemoptysis 13%" },
+            { "key": "character",   "value": "Pleuritic",     "logLR": 10, "evidenceLabel": "Pleuritic chest pain",                 "citation": "Pleuritic pain LR+ 2.1 for PE; often indicates peripheral infarct" },
+            { "key": "pmh",         "value": "dvt",           "logLR": 14, "evidenceLabel": "Clinical DVT signs (Wells criterion +3)","citation": "Clinical DVT signs Wells PE criterion +3; contributes most to pre-test probability" },
+            { "key": "pmh",         "value": "malignancy",    "logLR": 10, "evidenceLabel": "Active malignancy",                    "citation": "Malignancy Wells PE criterion +1; active cancer increases PE risk 4–6×" },
+            { "key": "pmh",         "value": "immobility",    "logLR": 10, "evidenceLabel": "Recent surgery / immobility (Wells criterion)","citation": "Surgery/immobilisation within 4 weeks: Wells +1.5" },
+            { "key": "inv",         "value": "d-dimer",       "logLR": 10, "evidenceLabel": "D-dimer elevated",                    "citation": "D-dimer sensitivity 96% for PE; used to rule out in low/moderate probability" },
+            { "key": "inv",         "value": "ctpa",          "logLR": 22, "evidenceLabel": "CTPA — filling defect confirmed",      "citation": "CTPA sensitivity 83–100%, specificity 89–97%; gold standard non-massive PE" }
+          ]
+        }
+      ]
     }
   }
 }

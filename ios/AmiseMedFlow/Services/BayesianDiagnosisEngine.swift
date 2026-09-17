@@ -81,7 +81,12 @@ enum BayesianDiagnosisEngine {
         tokyoCholecystitisGrade: Int? = nil,
         tokyoCholangitisGrade: Int? = nil,
         rockallScore: Int? = nil,
-        blatchfordScore: Int? = nil
+        blatchfordScore: Int? = nil,
+        wellsDVTScore: Double? = nil,
+        wellsPEScore: Double? = nil,
+        abcd2Score: Int? = nil,
+        lrinecScore: Int? = nil,
+        qsofaScore: Int? = nil
     ) -> [DiagnosisResult] {
         guard let cc = chiefComplaint, !cc.isEmpty else { return [] }
         let ccL = cc.lowercased()
@@ -91,10 +96,10 @@ enum BayesianDiagnosisEngine {
         case ccL.contains("jaundice") || ccL.contains("yellow"):
             candidates = externalPool("jaundice") ?? jaundice
         case ccL.contains("dysphagia") || ccL.contains("swallow"):
-            candidates = dysphagia
+            candidates = externalPool("dysphagia") ?? dysphagia
         case ccL.contains("rectal bleed") || ccL.contains("blood per rectum") ||
              ccL.contains("haematochezia") || ccL.contains("bpr"):
-            candidates = rectalBleeding
+            candidates = externalPool("rectalBleeding") ?? rectalBleeding
         case ccL.contains("bowel habit") || ccL.contains("change in stool") ||
              ccL.contains("constipation") || ccL.contains("diarrhoea") || ccL.contains("diarrhea"):
             candidates = bowelHabit
@@ -128,7 +133,7 @@ enum BayesianDiagnosisEngine {
             candidates = externalPool("abdominalPain") ?? abdominalPain
         case ccL.contains("chest pain") || ccL.contains("chest tightness") ||
              ccL.contains("chest heaviness") || ccL.contains("palpitation"):
-            candidates = chestPain
+            candidates = externalPool("chestPain") ?? chestPain
         case ccL.contains("short") && ccL.contains("breath") ||
              ccL.contains("dyspnoea") || ccL.contains("breathless") ||
              ccL.contains("sob") || ccL.contains("wheez"):
@@ -136,7 +141,7 @@ enum BayesianDiagnosisEngine {
         case ccL.contains("fever") || ccL.contains("infection") || ccL.contains("pyrexia") ||
              ccL.contains("dengue") || ccL.contains("leptospir") || ccL.contains("typhoid") ||
              ccL.contains("rigor") || ccL.contains("chills"):
-            candidates = feverInfection
+            candidates = externalPool("feverInfection") ?? feverInfection
         case ccL.contains("urinary") || ccL.contains("dysuria") || ccL.contains("haematuria") ||
              ccL.contains("frequency") || ccL.contains("urine") || ccL.contains("uti"):
             candidates = urinarySymptoms
@@ -183,7 +188,7 @@ enum BayesianDiagnosisEngine {
             candidates = externalPool("renalColic") ?? renalColic
         case ccL.contains("stroke") || ccL.contains("tia") || ccL.contains("transient ischaem") ||
              ccL.contains("facial droop") || ccL.contains("hemiplegia") || ccL.contains("hemiparesis"):
-            candidates = strokeTIA
+            candidates = externalPool("strokeTIA") ?? strokeTIA
         case ccL.contains("anaemia") || ccL.contains("anemia") ||
              (ccL.contains("fatigue") && ccL.contains("pallor")) ||
              ccL.contains("low haemoglobin") || ccL.contains("low hemoglobin"):
@@ -193,7 +198,7 @@ enum BayesianDiagnosisEngine {
             candidates = woundInfection
         case ccL.contains("sepsis") || ccL.contains("septic") || ccL.contains("bacteraemia") ||
              ccL.contains("sirs") || (ccL.contains("fever") && ccL.contains("shock")):
-            candidates = sepsisConditions
+            candidates = externalPool("sepsisConditions") ?? sepsisConditions
         case ccL.contains("necrotis") || ccL.contains("fasciitis") || ccL.contains("fournier") ||
              (ccL.contains("wound") && ccL.contains("necrot")) ||
              (ccL.contains("skin") && ccL.contains("infect") && ccL.contains("severe")):
@@ -390,6 +395,82 @@ enum BayesianDiagnosisEngine {
             }
             let ugiTargets = ["peptic ulcer", "varices", "mallory", "dieulafoy", "malignancy bleed"]
             for i in scored.indices where ugiTargets.contains(where: { scored[i].candidate.name.lowercased().contains($0) }) {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+
+        // Wells DVT → DVT candidates
+        if let dvt = wellsDVTScore {
+            let (adj, label): (Int, String) = dvt >= 3 ? (16, "Wells DVT \(Int(dvt)) — high probability (~53%)")
+                                              : dvt >= 1 ? (8, "Wells DVT \(Int(dvt)) — moderate probability (~17%)")
+                                              : (-6, "Wells DVT \(Int(dvt)) — low probability (~5%)")
+            for i in scored.indices where scored[i].candidate.name.lowercased().contains("deep vein") ||
+                                          scored[i].candidate.name.lowercased().contains("dvt") {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+
+        // Wells PE → PE candidates
+        if let pe = wellsPEScore {
+            let (adj, label): (Int, String) = pe >= 7 ? (16, "Wells PE \(pe) — high probability (~41%)")
+                                              : pe >= 5 ? (10, "Wells PE \(pe) — moderate probability (~16%)")
+                                              : (-6, "Wells PE \(pe) — low probability (~3%)")
+            for i in scored.indices where scored[i].candidate.name.lowercased().contains("pulmonary embol") ||
+                                          scored[i].candidate.name.lowercased().contains(" pe ") {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+
+        // ABCD² → TIA/stroke candidates
+        if let abcd = abcd2Score {
+            let (adj, label): (Int, String) = abcd >= 6 ? (16, "ABCD² \(abcd)/7 — high 2-day stroke risk (~8%)")
+                                              : abcd >= 4 ? (10, "ABCD² \(abcd)/7 — moderate risk (~4%)")
+                                              : (-4, "ABCD² \(abcd)/7 — lower risk (~1%)")
+            for i in scored.indices where scored[i].candidate.name.lowercased().contains("tia") ||
+                                          scored[i].candidate.name.lowercased().contains("transient") {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+
+        // LRINEC → necrotising soft tissue infection candidates
+        if let lr = lrinecScore {
+            let (adj, label): (Int, String) = lr >= 8 ? (18, "LRINEC \(lr) — high risk necrotising fasciitis (PPV 93%)")
+                                              : lr >= 6 ? (12, "LRINEC \(lr) — moderate risk (PPV 51%)")
+                                              : (-4, "LRINEC \(lr) — low risk")
+            for i in scored.indices where scored[i].candidate.name.lowercased().contains("necrotis") ||
+                                          scored[i].candidate.name.lowercased().contains("fasciitis") ||
+                                          scored[i].candidate.name.lowercased().contains("fournier") {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+
+        // qSOFA → sepsis candidates
+        if let qs = qsofaScore {
+            let (adj, label): (Int, String) = qs >= 2 ? (16, "qSOFA \(qs)/3 — high risk organ dysfunction (Sepsis-3)")
+                                              : qs == 1 ? (6,  "qSOFA \(qs)/3 — monitor closely")
+                                              : (-4, "qSOFA 0 — low risk")
+            for i in scored.indices where scored[i].candidate.name.lowercased().contains("sepsis") ||
+                                          scored[i].candidate.name.lowercased().contains("bacteraemia") {
                 scored[i].logPosterior += adj
                 if adj > 0 {
                     scored[i].evidence.insert(label, at: 0)
