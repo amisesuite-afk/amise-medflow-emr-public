@@ -57,7 +57,7 @@ final class SurgicalAlgorithmEngine {
     var systems: [SurgicalSystem] { SurgicalSystem.allCases }
 }
 
-private extension SurgicalUrgency {
+extension SurgicalUrgency {
     var sortOrder: Int {
         switch self {
         case .immediate:  return 0
