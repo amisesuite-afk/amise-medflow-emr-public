@@ -112,12 +112,20 @@ struct ScheduleView: View {
                     }
                     .buttonStyle(.plain)
 
-                    Button { anchor = cal.startOfDay(for: .now) } label: {
-                        Text("Today")
-                            .font(.system(size: 12, weight: .semibold))
-                            .padding(.horizontal, 12).padding(.vertical, 5)
-                            .background(Color.teal.opacity(0.12), in: Capsule())
-                            .foregroundStyle(.teal)
+                    Button {
+                        anchor = cal.startOfDay(for: .now)
+                        Task { await calSvc.sync() }
+                    } label: {
+                        HStack(spacing: 4) {
+                            if calSvc.isSyncing {
+                                ProgressView().controlSize(.mini).tint(.teal)
+                            }
+                            Text("Today")
+                                .font(.system(size: 12, weight: .semibold))
+                        }
+                        .padding(.horizontal, 12).padding(.vertical, 5)
+                        .background(Color.teal.opacity(0.12), in: Capsule())
+                        .foregroundStyle(.teal)
                     }
                     .buttonStyle(.plain)
 
@@ -174,14 +182,18 @@ struct ScheduleView: View {
             ToolbarItem(placement: .primaryAction) {
                 HStack {
                     Button { Task { await calSvc.sync() } } label: {
-                        if calSvc.isSyncing { ProgressView().controlSize(.small) }
-                        else { Image(systemName: "arrow.clockwise") }
+                        if calSvc.isSyncing {
+                            ProgressView().controlSize(.small)
+                        } else {
+                            Image(systemName: "arrow.clockwise")
+                        }
                     }
                     Button { showAdd = true } label: { Image(systemName: "plus") }
                 }
             }
         }
-        .task { await calSvc.fetch() }
+        .task { await calSvc.sync() }
+        .onAppear { anchor = cal.startOfDay(for: .now) }
         .sheet(isPresented: $showAdd) { AppointmentSchedulerView() }
         .sheet(item: $selectedPatient) { PatientDetailView(patient: $0) }
         .sheet(item: $selectedEntry) { entry in
