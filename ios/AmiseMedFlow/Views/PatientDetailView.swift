@@ -897,9 +897,11 @@ struct PatientOverviewContent: View {
 struct PatientDemographicsForm: View {
     @Bindable var patient: Patient
     @Environment(\.modelContext) private var context
+    @EnvironmentObject private var calSvc: CalendarService
 
     @State private var hasDOB: Bool = false
     @State private var heightStr: String = ""
+    @State private var calendarSavedFeedback = false
 
     var body: some View {
         Form {
