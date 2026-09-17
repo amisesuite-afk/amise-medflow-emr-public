@@ -231,7 +231,7 @@ enum ProcedureFormPDF {
             if data.antibiotic { pre.append(("Antibiotic", data.antibioticUsed)) }
             y = drawRowSection(ctx: ctx, title: "Procedure Details", rows: pre, y: y)
 
-            var access: [(String, String)] = [
+            let access: [(String, String)] = [
                 ("Ampulla",             data.ampullaAppearance),
                 ("Bile duct cannulated",     data.bileDuctCannulated ? "Yes" : "No"),
                 ("PD cannulated",            data.pancreaticDuctCannulated ? "Yes" : "No"),
@@ -394,7 +394,7 @@ enum ProcedureFormPDF {
                 if !data.woundNotes.isEmpty    { wound.append(("Notes", data.woundNotes)) }
                 y = drawRowSection(ctx: ctx, title: "Wound Assessment", rows: wound, y: y)
             }
-            var gi: [(String, String)] = [
+            let gi: [(String, String)] = [
                 ("Flatus", data.flatus ? "Yes" : "No"),
                 ("Bowels open", data.bowelsOpen ? "Yes" : "No"),
                 ("Diet tolerance", data.toleratingDiet ? data.dietType : "Nil/Not tolerating"),
@@ -804,7 +804,7 @@ enum ProcedureFormPDF {
     private static func drawChecklistItem(ctx: UIGraphicsPDFRendererContext,
                                           checked: Bool, label: String,
                                           accent: Bool, y: CGFloat) -> CGFloat {
-        var y = maybeNewPage(ctx: ctx, y: y, minSpace: 20)
+        let y = maybeNewPage(ctx: ctx, y: y, minSpace: 20)
         let symbol = checked ? "☑" : "☐"
         let symColor: UIColor = checked ? (accent ? .systemOrange : teal) : .secondaryLabel
         symbol.draw(at: CGPoint(x: lm, y: y),
@@ -974,7 +974,7 @@ enum ProcedureFormPDF {
     @discardableResult
     private static func patientSection(ctx: UIGraphicsPDFRendererContext,
                                        title: String, y: CGFloat) -> CGFloat {
-        var y = maybeNewPage(ctx: ctx, y: y, minSpace: 40)
+        let y = maybeNewPage(ctx: ctx, y: y, minSpace: 40)
         teal.withAlphaComponent(0.12).setFill()
         UIRectFill(CGRect(x: lm - 4, y: y, width: bodyW + 8, height: 18))
         title.uppercased().draw(

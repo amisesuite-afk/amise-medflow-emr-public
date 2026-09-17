@@ -442,7 +442,7 @@ struct PatientDetailPadView: View {
         encounter.isComplete = true
         patient.encounters.append(encounter)
         context.insert(encounter)
-        try? context.save()
+        _ = try? context.save()
         saveVisitFeedback = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { saveVisitFeedback = false }
     }
@@ -926,7 +926,7 @@ struct PatientDemographicsForm: View {
     private func touch() {
         patient.updatedAt = .now
         patient.pendingSync = true
-        try? context.save()
+        _ = try? context.save()
     }
 
     private static func generateMRN() -> String {
@@ -1410,7 +1410,7 @@ struct PatientDetailView: View {
                                 titleVisibility: .visible) {
                 Button("Delete Patient", role: .destructive) {
                     context.delete(patient)
-                    try? context.save()
+                    _ = try? context.save()
                     dismiss()
                 }
                 Button("Cancel", role: .cancel) {}
