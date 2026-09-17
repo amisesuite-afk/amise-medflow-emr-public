@@ -679,6 +679,7 @@ func socrateDimensions(for cc: String) -> [SOCRATESDimension] {
     let isBleeding  = lc.contains("bleeding") || lc.contains("rectal bleed") || lc.contains("pr bleed") || lc.contains("melaena")
     let isWeightLoss = lc.contains("weight loss") || lc.contains("weight_loss") || lc.contains("loss of weight")
     let isBowel     = lc.contains("bowel") || lc.contains("constipation") || lc.contains("diarrhoea") || lc.contains("diarrhea") || lc.contains("change in bowel")
+    let isReflux    = lc.contains("reflux") || lc.contains("heartburn") || lc.contains("gerd") || lc.contains("gord") || lc.contains("indigestion") || lc.contains("dyspepsia") || lc.contains("regurgitat") || lc.contains("bloating") || lc.contains("belching") || lc.contains("waterbrash")
 
     let site: [String], char: [String], rad: [String], assoc: [String], exc: [String], rel: [String]
     var charTitle = "Character",  charQ   = "What is it like?"
@@ -792,6 +793,25 @@ func socrateDimensions(for cc: String) -> [SOCRATESDimension] {
         exc = ["Certain foods", "Stress", "None identified"]
         rel = ["Dietary change", "Nothing identified"]
         sevTitle = "Impact"; sevQ = "How is it affecting daily life?"; sevChips = SOCRATESChips.sevBowel
+
+    case isReflux:
+        // Aligned to BayesianDiagnosisEngine refluxGERD candidate feature values
+        site  = ["Retrosternal", "Epigastric", "Throat / upper chest", "Left chest"]
+        char  = ["Burning", "Pressure", "Gnawing", "Aching", "Fullness", "Sour / bitter taste", "Sharp"]
+        charTitle = "Character"; charQ = "What is the discomfort like?"
+        rad   = ["No radiation", "Throat / neck", "Back", "Left arm / jaw"]
+        radTitle = "Radiation";  radQ = "Does it spread anywhere?"
+        assoc = ["Heartburn", "Regurgitation", "Belching", "Bloating", "Nausea",
+                 "Dysphagia", "Hoarseness / voice change", "Nocturnal cough / wheeze",
+                 "Sour taste in mouth", "Globus sensation", "Weight loss",
+                 "Haematemesis", "Anorexia"]
+        exc   = ["Lying flat", "Eating", "Fatty food", "Alcohol", "Coffee / caffeine",
+                 "NSAIDs / aspirin", "Bending forward", "Spicy food", "Stress", "Smoking"]
+        rel   = ["Antacids", "Sitting up", "Small meals", "Fasting", "Eating / food",
+                 "Milk / dairy", "Nothing"]
+        sevTitle = "Frequency"; sevQ = "How often do symptoms occur?"
+        sevChips = ["Occasional (≤1×/week)", "Frequent (>1×/week)", "Daily",
+                    "Constant / disabling", "Nocturnal symptoms disturbing sleep"]
 
     default:
         // Abdominal / general surgical pain presentation

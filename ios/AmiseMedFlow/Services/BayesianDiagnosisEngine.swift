@@ -2192,6 +2192,37 @@ enum BayesianDiagnosisEngine {
             .init(key: "inv",          value: "biopsy",          logLR: 20, evidenceLabel: "Biopsy — carcinoma confirmed"),
             .init(key: "inv",          value: "ct",              logLR: 10, evidenceLabel: "CT staging performed"),
         ]),
+
+        // 9. Laryngopharyngeal Reflux (LPR / Silent Reflux)
+        // Atypical GERD variant — hoarseness + globus without classic heartburn
+        .init(name: "Laryngopharyngeal Reflux", icd: "K21.00",
+              logPrior: 18, features: [
+            .init(key: "associations", value: "Hoarseness",          logLR: 16, evidenceLabel: "Hoarseness / voice change (LPR hallmark)"),
+            .init(key: "associations", value: "Globus",              logLR: 14, evidenceLabel: "Globus sensation (lump in throat)"),
+            .init(key: "associations", value: "Nocturnal cough",     logLR: 14, evidenceLabel: "Nocturnal cough / wheeze"),
+            .init(key: "exacerbating", value: "Lying flat",          logLR: 12, evidenceLabel: "Worse lying flat"),
+            .init(key: "associations", value: "Heartburn",           logLR: -4, evidenceLabel: "Absence of classic heartburn supports LPR over GERD"),
+            .init(key: "pmh",          value: "reflux",              logLR: 10, evidenceLabel: "Reflux history"),
+            .init(key: "pmh",          value: "asthma",              logLR:  6, evidenceLabel: "Asthma (reflux-triggered)"),
+            .init(key: "exacerbating", value: "Coffee",              logLR:  8, evidenceLabel: "Caffeine / coffee exacerbates"),
+            .init(key: "relieving",    value: "Antacids",            logLR:  8, evidenceLabel: "Partial antacid / PPI relief"),
+        ]),
+
+        // 10. NSAID / Aspirin Gastropathy
+        // Drug-induced gastric mucosal injury; key risk in Caribbean where NSAIDs are OTC
+        .init(name: "NSAID / Aspirin Gastropathy", icd: "K29.60",
+              logPrior: 18, features: [
+            .init(key: "pmh",          value: "nsaids",              logLR: 18, evidenceLabel: "NSAID / aspirin use (primary risk factor)"),
+            .init(key: "pmh",          value: "aspirin",             logLR: 16, evidenceLabel: "Regular aspirin use"),
+            .init(key: "exacerbating", value: "NSAIDs",              logLR: 18, evidenceLabel: "NSAIDs / aspirin directly worsen symptoms"),
+            .init(key: "character",    value: "Gnawing",             logLR: 10, evidenceLabel: "Gnawing epigastric pain"),
+            .init(key: "site",         value: "Epigastric",          logLR: 10, evidenceLabel: "Epigastric location"),
+            .init(key: "associations", value: "Nausea",              logLR:  8, evidenceLabel: "Nausea"),
+            .init(key: "associations", value: "Haematemesis",        logLR: 14, evidenceLabel: "Haematemesis — mucosal erosion (red flag)"),
+            .init(key: "inv",          value: "erosion",             logLR: 16, evidenceLabel: "OGD — gastric erosions confirmed"),
+            .init(key: "age_over",     value: "65",                  logLR:  8, evidenceLabel: "Age >65 (high-risk for NSAID gastropathy)"),
+            .init(key: "pmh",          value: "steroids",            logLR:  8, evidenceLabel: "Concurrent steroid use (additive risk)"),
+        ]),
     ]
 
     // MARK: – Thyroid Pathology
