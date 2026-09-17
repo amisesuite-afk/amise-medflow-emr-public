@@ -327,7 +327,7 @@ final class SequentialDiagnosisEngine: ObservableObject {
             return h
         }
 
-        observedKeys = Dictionary(uniqueKeysWithValues: hypotheses.map { ($0.name, []) })
+        observedKeys = Dictionary(uniqueKeysWithValues: hypotheses.map { ($0.name, [String]()) })
         seededLogPosteriors = Dictionary(uniqueKeysWithValues: hypotheses.map { ($0.name, $0.logPosterior) })
         recomputeProbabilities()
         isSeeded = true
@@ -406,7 +406,7 @@ final class SequentialDiagnosisEngine: ObservableObject {
             }
             hypotheses[i].contributingEvidence = hypotheses[i].contributingEvidence.filter { $0.logLR == 0.0 }
         }
-        observedKeys = Dictionary(uniqueKeysWithValues: hypotheses.map { ($0.name, []) })
+        observedKeys = Dictionary(uniqueKeysWithValues: hypotheses.map { ($0.name, [String]()) })
     }
 
     private func recomputeProbabilities() {
