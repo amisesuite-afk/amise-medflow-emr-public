@@ -1847,6 +1847,34 @@ enum ClinicalPathwayEngine {
                              .init(name: "Cholangiocarcinoma", probability: 22),
                              .init(name: "Post-ERCP pancreatitis", probability: 15)]
             confidence = 80
+        } else if cc.contains("reflux") || cc.contains("heartburn") || cc.contains("gerd") ||
+                  cc.contains("gord") || cc.contains("regurgitat") || cc.contains("indigestion") ||
+                  cc.contains("dyspepsia") || cc.contains("bloating") || cc.contains("oesophag") {
+            pathway = "Upper GI / Reflux Pathway"
+            differentials = [.init(name: "GERD / Oesophagitis", probability: 75),
+                             .init(name: "Hiatus Hernia", probability: 55),
+                             .init(name: "Peptic Ulcer Disease", probability: 38),
+                             .init(name: "Functional Dyspepsia", probability: 30),
+                             .init(name: "Barrett's Oesophagus", probability: 18),
+                             .init(name: "Oesophageal Carcinoma", probability: 10)]
+            confidence = 78
+            if cc.contains("dysphagia") || cc.contains("weight loss") || cc.contains("anaemia") ||
+               cc.contains("vomiting blood") || cc.contains("melaena") {
+                redFlags.append("⚠️ Red flag — urgent OGD within 2 weeks")
+                suggestedAcuity = .priority
+            }
+        } else if cc.contains("dysphagia") || cc.contains("difficulty swallow") {
+            pathway = "Upper GI / Dysphagia Pathway"
+            differentials = [.init(name: "Oesophageal Carcinoma", probability: 45),
+                             .init(name: "GERD / Oesophagitis", probability: 40),
+                             .init(name: "Oesophageal Stricture", probability: 35),
+                             .init(name: "Achalasia", probability: 28),
+                             .init(name: "Eosinophilic Oesophagitis", probability: 20)]
+            confidence = 70
+            if cc.contains("weight loss") || cc.contains("progressive") || cc.contains("solid") {
+                redFlags.append("⚠️ Progressive dysphagia + weight loss — urgent OGD")
+                suggestedAcuity = .priority
+            }
         }
 
         // Undifferentiated abdominal pain default
