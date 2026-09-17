@@ -575,7 +575,7 @@ enum ProcedureFormPDF {
     private static func drawRowSection(ctx: UIGraphicsPDFRendererContext, title: String,
                                        rows: [(String, String)], y: CGFloat) -> CGFloat {
         var y = maybeNewPage(ctx: ctx, y: y, minSpace: 40)
-        y = drawSectionHeader(title: title, y: y)
+        if !title.isEmpty { y = drawSectionHeader(title: title, y: y) }
         for (label, value) in rows where !value.isEmpty {
             y = maybeNewPage(ctx: ctx, y: y, minSpace: 18)
             label.draw(in: CGRect(x: lm, y: y, width: 140, height: 13),
@@ -644,12 +644,12 @@ enum ProcedureFormPDF {
         let renderer = UIGraphicsPDFRenderer(bounds: page)
         return renderer.pdfData { ctx in
             ctx.beginPage()
-            var y: CGFloat = drawHeader(title: "WHO SURGICAL SAFETY CHECKLIST", y: 0)
+            var y: CGFloat = drawHeader(type: "WHO SURGICAL SAFETY CHECKLIST")
             y = drawPatientStrip(patient: patient, y: y)
 
             // Team
             y = drawMeta(date: data.checklistDate, y: y)
-            y = drawRowSection(rows: [
+            y = drawRowSection(ctx: ctx, title: "Surgical Team", rows: [
                 ("Location / Theatre", data.location.isEmpty ? "—" : data.location),
                 ("Surgeon",            data.surgeonName),
                 ("Anaesthetist",       data.anaesthetistName.isEmpty ? "—" : data.anaesthetistName),
@@ -687,7 +687,7 @@ enum ProcedureFormPDF {
             }
             if data.si_timeRecorded {
                 let tf = DateFormatter(); tf.timeStyle = .short
-                y = drawRowSection(rows: [
+                y = drawRowSection(ctx: ctx, title: "", rows: [
                     ("Sign In time",  tf.string(from: data.si_time)),
                     ("Confirmed by",  data.si_confirmedBy.isEmpty ? "—" : data.si_confirmedBy),
                 ], y: y)
@@ -711,7 +711,7 @@ enum ProcedureFormPDF {
             ], y: y)
             if data.to_timeRecorded {
                 let tf = DateFormatter(); tf.timeStyle = .short
-                y = drawRowSection(rows: [
+                y = drawRowSection(ctx: ctx, title: "", rows: [
                     ("Time Out time", tf.string(from: data.to_time)),
                     ("Confirmed by",  data.to_confirmedBy.isEmpty ? "—" : data.to_confirmedBy),
                 ], y: y)
@@ -740,7 +740,7 @@ enum ProcedureFormPDF {
             }
             if data.so_timeRecorded {
                 let tf = DateFormatter(); tf.timeStyle = .short
-                y = drawRowSection(rows: [
+                y = drawRowSection(ctx: ctx, title: "", rows: [
                     ("Sign Out time", tf.string(from: data.so_time)),
                     ("Confirmed by",  data.so_confirmedBy.isEmpty ? "—" : data.so_confirmedBy),
                 ], y: y)
