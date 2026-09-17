@@ -2195,7 +2195,7 @@ enum BayesianDiagnosisEngine {
     ]
 
     // MARK: – Thyroid Pathology
-    private let thyroidPathology: [Candidate] = [
+    private static let thyroidPathology: [Candidate] = [
         .init(name: "Papillary Thyroid Carcinoma", icd: "C73",
               logPrior: 30, features: [
             .init(key: "exam",       value: "thyroid nodule",   logLR: 18, evidenceLabel: "Solitary thyroid nodule — RED FLAG"),
@@ -2290,7 +2290,7 @@ enum BayesianDiagnosisEngine {
     ]
 
     // MARK: – Nausea & Vomiting
-    private let nauseaVomiting: [Candidate] = [
+    private static let nauseaVomiting: [Candidate] = [
         .init(name: "Acute Gastroenteritis", icd: "K52.9",
               logPrior: 55, features: [
             .init(key: "onset",        value: "Acute",          logLR: 14, evidenceLabel: "Acute onset <72h"),
@@ -2361,7 +2361,7 @@ enum BayesianDiagnosisEngine {
     ]
 
     // MARK: – Upper GI Bleed
-    private let upperGIBleed: [Candidate] = [
+    private static let upperGIBleed: [Candidate] = [
         .init(name: "Bleeding Peptic Ulcer", icd: "K27.4",
               logPrior: 45, features: [
             .init(key: "character",    value: "Melaena",        logLR: 16, evidenceLabel: "Melaena — digested blood from upper GI"),
@@ -2415,7 +2415,7 @@ enum BayesianDiagnosisEngine {
     ]
 
     // MARK: – Post-operative Review
-    private let postOpReview: [Candidate] = [
+    private static let postOpReview: [Candidate] = [
         .init(name: "Surgical Site Infection", icd: "T81.40",
               logPrior: 40, features: [
             .init(key: "onset",        value: "3–7 days post-op", logLR: 16, evidenceLabel: "Onset 3–7 days post-operatively"),
@@ -2481,7 +2481,7 @@ enum BayesianDiagnosisEngine {
     ]
 
     // MARK: – Adrenal & Endocrine
-    private let adrenalEndocrine: [Candidate] = [
+    private static let adrenalEndocrine: [Candidate] = [
         .init(name: "Adrenal Incidentaloma (Benign)", icd: "D35.00",
               logPrior: 50, features: [
             .init(key: "exam",         value: "asymptomatic",   logLR: 14, evidenceLabel: "Incidentally found on imaging — most common presentation"),
