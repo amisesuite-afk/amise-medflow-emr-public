@@ -75,7 +75,13 @@ enum BayesianDiagnosisEngine {
         medications: [String] = [],
         socialHistoryText: String? = nil,
         bmi: Double? = nil,
-        alvaradoScore: Int? = nil
+        alvaradoScore: Int? = nil,
+        glasgowPancreatitisScore: Int? = nil,
+        ransonScore: Int? = nil,
+        tokyoCholecystitisGrade: Int? = nil,
+        tokyoCholangitisGrade: Int? = nil,
+        rockallScore: Int? = nil,
+        blatchfordScore: Int? = nil
     ) -> [DiagnosisResult] {
         guard let cc = chiefComplaint, !cc.isEmpty else { return [] }
         let ccL = cc.lowercased()
@@ -83,7 +89,7 @@ enum BayesianDiagnosisEngine {
         let candidates: [Candidate]
         switch true {
         case ccL.contains("jaundice") || ccL.contains("yellow"):
-            candidates = jaundice
+            candidates = externalPool("jaundice") ?? jaundice
         case ccL.contains("dysphagia") || ccL.contains("swallow"):
             candidates = dysphagia
         case ccL.contains("rectal bleed") || ccL.contains("blood per rectum") ||
@@ -151,7 +157,7 @@ enum BayesianDiagnosisEngine {
              ccL.contains("melaena") || ccL.contains("melena") ||
              ccL.contains("coffee ground") || ccL.contains("upper gi bleed") ||
              (ccL.contains("blood") && ccL.contains("vomit")):
-            candidates = upperGIBleed
+            candidates = externalPool("upperGIBleed") ?? upperGIBleed
         case ccL.contains("post-op") || ccL.contains("post op") || ccL.contains("postop") ||
              ccL.contains("post-operative") || ccL.contains("post operative") ||
              ccL.contains("post surgery") || ccL.contains("post-surgery"):
@@ -174,7 +180,7 @@ enum BayesianDiagnosisEngine {
         case ccL.contains("renal colic") || ccL.contains("kidney stone") ||
              ccL.contains("ureteric") || ccL.contains("nephrolithiasis") ||
              ccL.contains("loin to groin") || ccL.contains("renal calcul"):
-            candidates = renalColic
+            candidates = externalPool("renalColic") ?? renalColic
         case ccL.contains("stroke") || ccL.contains("tia") || ccL.contains("transient ischaem") ||
              ccL.contains("facial droop") || ccL.contains("hemiplegia") || ccL.contains("hemiparesis"):
             candidates = strokeTIA
@@ -291,6 +297,99 @@ enum BayesianDiagnosisEngine {
             default:     adj = -8; label = "Alvarado \(alv)/10 — low probability"
             }
             for i in scored.indices where scored[i].candidate.name.lowercased().contains("appendicitis") {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+
+        // Glasgow / Ranson → pancreatitis severity adjustment
+        // Both scores measure severity of acute pancreatitis; ≥3 = severe.
+        // Take the higher of the two to avoid double-penalising mild cases.
+        let pancreatitisAdj: (Int, String)? = {
+            func grade(_ val: Int, system: String) -> (Int, String) {
+                switch val {
+                case 3...: return (16, "\(system) \(val) — severe pancreatitis")
+                case 2:    return (8,  "\(system) \(val) — moderate pancreatitis")
+                default:   return (-4, "\(system) \(val) — mild pancreatitis")
+                }
+            }
+            if let g = glasgowPancreatitisScore, let r = ransonScore {
+                let gPair = grade(g, system: "Glasgow"); let rPair = grade(r, system: "Ranson")
+                return gPair.0 >= rPair.0 ? gPair : rPair
+            }
+            if let g = glasgowPancreatitisScore { return grade(g, system: "Glasgow") }
+            if let r = ransonScore              { return grade(r, system: "Ranson") }
+            return nil
+        }()
+        if let (adj, label) = pancreatitisAdj {
+            for i in scored.indices where scored[i].candidate.name.lowercased().contains("pancreatitis") {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+
+        // Tokyo Grade → cholecystitis / cholangitis adjustment
+        // Grade I (mild) → conservative management likely; Grade III (severe) → urgent intervention.
+        func tokyoAdj(_ grade: Int) -> (Int, String) {
+            switch grade {
+            case 3: return (16, "Tokyo Grade III — severe, urgent intervention")
+            case 2: return (8,  "Tokyo Grade II — moderate severity")
+            default: return (-4, "Tokyo Grade I — mild")
+            }
+        }
+        if let g = tokyoCholecystitisGrade {
+            let (adj, label) = tokyoAdj(g)
+            for i in scored.indices where scored[i].candidate.name.lowercased().contains("cholecystitis") {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+        if let g = tokyoCholangitisGrade {
+            let (adj, label) = tokyoAdj(g)
+            for i in scored.indices where scored[i].candidate.name.lowercased().contains("cholangitis") {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+
+        // Rockall / Blatchford → UGI bleed candidate weighting
+        // Rockall ≥5 = high rebleed mortality; Blatchford ≥6 = needs inpatient endoscopy.
+        if let rk = rockallScore {
+            let (adj, label): (Int, String) = switch rk {
+            case 8...: (18, "Rockall \(rk) — very high risk UGI bleed")
+            case 5...: (12, "Rockall \(rk) — high risk UGI bleed")
+            case 3...: (6,  "Rockall \(rk) — intermediate risk")
+            default:   (-4, "Rockall \(rk) — low risk")
+            }
+            let ugiTargets = ["peptic ulcer", "varices", "mallory", "dieulafoy", "malignancy bleed"]
+            for i in scored.indices where ugiTargets.contains(where: { scored[i].candidate.name.lowercased().contains($0) }) {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+        if let bf = blatchfordScore {
+            let (adj, label): (Int, String) = switch bf {
+            case 12...: (16, "Blatchford \(bf) — very high risk, admit + OGD")
+            case 6...:  (10, "Blatchford \(bf) — high risk, endoscopy required")
+            default:    (-4, "Blatchford \(bf) — possible outpatient management")
+            }
+            let ugiTargets = ["peptic ulcer", "varices", "mallory", "dieulafoy", "malignancy bleed"]
+            for i in scored.indices where ugiTargets.contains(where: { scored[i].candidate.name.lowercased().contains($0) }) {
                 scored[i].logPosterior += adj
                 if adj > 0 {
                     scored[i].evidence.insert(label, at: 0)

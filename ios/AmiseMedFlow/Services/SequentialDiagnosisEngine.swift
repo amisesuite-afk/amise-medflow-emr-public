@@ -291,7 +291,13 @@ final class SequentialDiagnosisEngine: ObservableObject {
         medications: [String] = [],
         socialHistoryText: String? = nil,
         bmi: Double? = nil,
-        alvaradoScore: Int? = nil
+        alvaradoScore: Int? = nil,
+        glasgowPancreatitisScore: Int? = nil,
+        ransonScore: Int? = nil,
+        tokyoCholecystitisGrade: Int? = nil,
+        tokyoCholangitisGrade: Int? = nil,
+        rockallScore: Int? = nil,
+        blatchfordScore: Int? = nil
     ) {
         let results = BayesianDiagnosisEngine.infer(
             chiefComplaint: chiefComplaint,
@@ -306,7 +312,13 @@ final class SequentialDiagnosisEngine: ObservableObject {
             medications: medications,
             socialHistoryText: socialHistoryText,
             bmi: bmi,
-            alvaradoScore: alvaradoScore
+            alvaradoScore: alvaradoScore,
+            glasgowPancreatitisScore: glasgowPancreatitisScore,
+            ransonScore: ransonScore,
+            tokyoCholecystitisGrade: tokyoCholecystitisGrade,
+            tokyoCholangitisGrade: tokyoCholangitisGrade,
+            rockallScore: rockallScore,
+            blatchfordScore: blatchfordScore
         )
 
         guard !results.isEmpty else {

@@ -575,12 +575,23 @@ struct ClinicalScoresView: View {
         case .stopBang:     ClinicalScoringEngine.stopBang(sbangI)
         case .news2:        ClinicalScoringEngine.news2(news2I)
         }
-        // Feed Alvarado result back to Bayesian engine via patient model
-        if score == .alvarado, let r = result {
-            patient.alvaradoScore = Int(r.score)
-            patient.updatedAt = .now
-            patient.pendingSync = true
+        // Feed score results back to Bayesian engine via patient model fields.
+        // Each score is stored once computed so the pipeline can apply post-hoc
+        // adjustments on every subsequent infer() call without re-entering the score.
+        guard let r = result else { return }
+        let intScore = Int(r.score)
+        switch score {
+        case .alvarado:     patient.alvaradoScore            = intScore
+        case .glasgow:      patient.glasgowPancreatitisScore = intScore
+        case .ranson:       patient.ransonScore              = intScore
+        case .tokyoChole:   patient.tokyoCholecystitisGrade  = intScore
+        case .tokyoCholang: patient.tokyoCholangitisGrade    = intScore
+        case .rockall:      patient.rockallScore             = intScore
+        case .blatchford:   patient.blatchfordScore          = intScore
+        default: break
         }
+        patient.updatedAt = .now
+        patient.pendingSync = true
     }
 
     // MARK: - Input forms

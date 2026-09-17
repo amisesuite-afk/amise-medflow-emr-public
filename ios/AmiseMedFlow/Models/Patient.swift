@@ -67,6 +67,18 @@ final class Patient {
     var assessmentText: String?
     // Most recently computed Alvarado score (0–10); nil if not yet scored
     var alvaradoScore: Int?
+    // Glasgow Pancreatitis score (0–8); ≥3 = severe
+    var glasgowPancreatitisScore: Int?
+    // Ranson score (0–11); ≥3 = severe
+    var ransonScore: Int?
+    // Tokyo Grade for acute cholecystitis (1–3); nil if not scored
+    var tokyoCholecystitisGrade: Int?
+    // Tokyo Grade for acute cholangitis (1–3); nil if not scored
+    var tokyoCholangitisGrade: Int?
+    // Rockall score (0–11); ≥5 = high rebleed risk
+    var rockallScore: Int?
+    // Blatchford score (0–23); ≥6 = high-risk UGI bleed
+    var blatchfordScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

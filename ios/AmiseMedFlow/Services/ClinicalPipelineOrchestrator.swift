@@ -118,7 +118,13 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
             medications:        patient.prescriptions.map { $0.displayLine },
             socialHistoryText:  patient.socialHistory,
             bmi:                patient.latestBMI(),
-            alvaradoScore:      patient.alvaradoScore
+            alvaradoScore:               patient.alvaradoScore,
+            glasgowPancreatitisScore:    patient.glasgowPancreatitisScore,
+            ransonScore:                 patient.ransonScore,
+            tokyoCholecystitisGrade:     patient.tokyoCholecystitisGrade,
+            tokyoCholangitisGrade:       patient.tokyoCholangitisGrade,
+            rockallScore:                patient.rockallScore,
+            blatchfordScore:             patient.blatchfordScore
         )
 
         let seeded = sequentialEngine.topDiagnoses(n: 10)

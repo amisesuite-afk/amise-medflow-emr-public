@@ -588,6 +588,202 @@
           ]
         }
       ]
+    },
+    "jaundice": {
+      "candidates": [
+        {
+          "name": "Choledocholithiasis",
+          "icd": "K80.50",
+          "logPrior": 35,
+          "features": [
+            { "key": "site",       "value": "RUQ",         "logLR": 10, "evidenceLabel": "RUQ pain",                        "citation": "Costi R. Hepatobiliary Pancreat Dis Int 2014. Biliary colic LR+ ~3.8 → logLR 7" },
+            { "key": "character",  "value": "Colicky",     "logLR": 8,  "evidenceLabel": "Colicky biliary-type pain",        "citation": "Williams EJ. Gut 2008;57:1004–21. Biliary colic LR+ 2.6" },
+            { "key": "pmh",        "value": "gallstone",   "logLR": 14, "evidenceLabel": "Known gallstones",                 "citation": "Costi R. Choledocholithiasis requires pre-existing stones in >90% of cases" },
+            { "key": "inv",        "value": "bilirubin",   "logLR": 12, "evidenceLabel": "Elevated bilirubin",               "citation": "Peng WK. Br J Surg 2005;92:1399–1401. Raised bilirubin LR+ 4.5" },
+            { "key": "inv",        "value": "alp",         "logLR": 8,  "evidenceLabel": "Raised ALP",                       "citation": "Peng WK. ALP >150 U/L LR+ 2.3" },
+            { "key": "inv",        "value": "cbd",         "logLR": 16, "evidenceLabel": "Dilated CBD on USS (>6 mm)",        "citation": "Costi R. USS CBD dilatation LR+ 9.6 (6.0–15.3)" },
+            { "key": "associations","value": "Fever",      "logLR": 6,  "evidenceLabel": "Fever (consider cholangitis)",      "citation": "Charcot's triad partial presentation" }
+          ]
+        },
+        {
+          "name": "Ascending Cholangitis",
+          "icd": "K83.09",
+          "logPrior": 22,
+          "features": [
+            { "key": "associations","value": "Fever",      "logLR": 14, "evidenceLabel": "Fever — Charcot's triad component", "citation": "Kiriyama S. J Hepatobiliary Pancreat Sci 2018. Fever LR+ ~8 for cholangitis" },
+            { "key": "associations","value": "Rigors",     "logLR": 14, "evidenceLabel": "Rigors",                            "citation": "Fever + rigors in biliary sepsis pathognomonic" },
+            { "key": "site",        "value": "RUQ",        "logLR": 10, "evidenceLabel": "RUQ pain",                         "citation": "RUQ pain part of Charcot's triad" },
+            { "key": "exam",        "value": "septic",     "logLR": 12, "evidenceLabel": "Septic appearance",                 "citation": "Reynolds' pentad (confusion + shock) LR+ >15" },
+            { "key": "inv",         "value": "wbc",        "logLR": 10, "evidenceLabel": "Raised WBC",                       "citation": "Leukocytosis LR+ ~5 for acute cholangitis" },
+            { "key": "inv",         "value": "cbd",        "logLR": 14, "evidenceLabel": "Dilated CBD on USS",                "citation": "Kiriyama S. Dilated CBD on imaging LR+ 7.2" },
+            { "key": "pmh",         "value": "gallstone",  "logLR": 10, "evidenceLabel": "Known gallstones / previous biliary procedure", "citation": "Precipitating stone in majority of cases" },
+            { "key": "age_over",    "value": "60",         "logLR": 4,  "evidenceLabel": "Age >60",                          "citation": "Older age increases incidence" }
+          ]
+        },
+        {
+          "name": "Carcinoma of Head of Pancreas",
+          "icd": "C25.0",
+          "logPrior": 14,
+          "features": [
+            { "key": "timing",      "value": "Progressive",   "logLR": 16, "evidenceLabel": "Progressive painless jaundice",  "citation": "Modolell I. Dig Dis Sci 1999. Progressive painless jaundice LR+ ~18" },
+            { "key": "associations","value": "Weight loss",   "logLR": 16, "evidenceLabel": "Weight loss — RED FLAG",         "citation": "Czito BG. Pancreatic adenocarcinoma weight loss LR+ ~14" },
+            { "key": "associations","value": "Anorexia",      "logLR": 10, "evidenceLabel": "Anorexia",                       "citation": "Symptom cluster for periampullary malignancy" },
+            { "key": "exam",        "value": "courvoisier",   "logLR": 18, "evidenceLabel": "Courvoisier's sign",             "citation": "Courvoisier's law: painless jaundice + palpable GB LR+ ~30" },
+            { "key": "radiation",   "value": "Back",          "logLR": 8,  "evidenceLabel": "Back pain — retroperitoneal invasion", "citation": "Back pain indicates local invasion, poor prognosis" },
+            { "key": "age_over",    "value": "55",            "logLR": 10, "evidenceLabel": "Age >55",                       "citation": "Median age at diagnosis 71 years" },
+            { "key": "inv",         "value": "ca 19",         "logLR": 14, "evidenceLabel": "CA 19-9 elevated",              "citation": "CA19-9 sensitivity 70–80%, specificity 80–90% for pancreatic cancer" },
+            { "key": "inv",         "value": "dilated pancreatic", "logLR": 14, "evidenceLabel": "Dilated pancreatic duct on CT/MRCP", "citation": "Double-duct sign on ERCP/MRCP LR+ ~14 for pancreatic head mass" }
+          ]
+        },
+        {
+          "name": "Viral Hepatitis",
+          "icd": "B17.9",
+          "logPrior": 18,
+          "features": [
+            { "key": "onset",       "value": "Gradual",     "logLR": 8,  "evidenceLabel": "Gradual onset over days–weeks",   "citation": "Gradual prodrome typical of viral hepatitis" },
+            { "key": "associations","value": "Fever",       "logLR": 6,  "evidenceLabel": "Fever + malaise prodrome",        "citation": "Prodromal fever in hepatitis A/E more than B/C" },
+            { "key": "exam",        "value": "hepatomegaly","logLR": 10, "evidenceLabel": "Hepatomegaly + tenderness",       "citation": "Tender hepatomegaly LR+ ~5 for acute hepatitis" },
+            { "key": "inv",         "value": "alt",         "logLR": 14, "evidenceLabel": "Markedly elevated ALT (>10× ULN)","citation": "ALT >10× ULN strongly favours hepatocellular injury vs cholestatic" },
+            { "key": "inv",         "value": "ast",         "logLR": 10, "evidenceLabel": "Raised AST",                     "citation": "AST elevation parallels ALT in viral hepatitis" },
+            { "key": "age_under",   "value": "40",          "logLR": 6,  "evidenceLabel": "Younger age — hepatitis A/E more common", "citation": "Hepatitis A commonest in younger adults and children" }
+          ]
+        },
+        {
+          "name": "Haemolytic Jaundice",
+          "icd": "D59.9",
+          "logPrior": 8,
+          "features": [
+            { "key": "associations","value": "Anaemia symptoms","logLR": 10, "evidenceLabel": "Fatigue, pallor, dyspnoea from haemolysis", "citation": "Haemolytic anaemia presents with jaundice + anaemia" },
+            { "key": "inv",         "value": "anaemia",         "logLR": 12, "evidenceLabel": "Haemolytic anaemia on FBC",    "citation": "Normocytic anaemia with raised reticulocytes" },
+            { "key": "inv",         "value": "reticulocyte",    "logLR": 12, "evidenceLabel": "Reticulocytosis",              "citation": "Reticulocytosis > 2% indicates haemolysis" },
+            { "key": "pmh",         "value": "sickle",          "logLR": 16, "evidenceLabel": "Sickle cell disease",         "citation": "Sickle cell crisis causes haemolytic jaundice in Caribbean population" },
+            { "key": "pmh",         "value": "thalassaemia",    "logLR": 12, "evidenceLabel": "Thalassaemia",                "citation": "Thalassaemia major/intermedia — chronic haemolytic jaundice" },
+            { "key": "site",        "value": "RUQ",             "logLR": -4, "evidenceLabel": "",                            "citation": "Absence of RUQ pain makes biliary obstruction less likely" }
+          ]
+        }
+      ]
+    },
+    "renalColic": {
+      "candidates": [
+        {
+          "name": "Renal Colic / Ureteric Calculus",
+          "icd": "N20.1",
+          "logPrior": 38,
+          "features": [
+            { "key": "onset",       "value": "Sudden",          "logLR": 12, "evidenceLabel": "Sudden onset severe pain",          "citation": "Teichman JMH. NEJM 2004;350:684. Sudden onset LR+ ~4.0" },
+            { "key": "character",   "value": "Colicky",         "logLR": 16, "evidenceLabel": "Colicky, wave-like pain",           "citation": "Colicky character highly specific for urinary stone" },
+            { "key": "radiation",   "value": "Loin to groin",   "logLR": 20, "evidenceLabel": "Loin-to-groin radiation",           "citation": "Teichman JMH. Loin-to-groin radiation LR+ >15 for ureteric calculus" },
+            { "key": "radiation",   "value": "Groin",           "logLR": 14, "evidenceLabel": "Radiation to groin / testicle",     "citation": "Lower ureteric stone radiates to ipsilateral groin / testis / labia" },
+            { "key": "associations","value": "Haematuria",      "logLR": 16, "evidenceLabel": "Haematuria (macro or micro)",       "citation": "Teichman JMH. Haematuria LR+ 6.0 (5.0–7.3) for urolithiasis" },
+            { "key": "associations","value": "Nausea",          "logLR": 6,  "evidenceLabel": "Nausea / vomiting",                 "citation": "Reflex nausea common with ureteric colic" },
+            { "key": "associations","value": "Restless",        "logLR": 10, "evidenceLabel": "Patient writhing, unable to lie still", "citation": "Ureteric colic — writhing distinguishes from peritonism (patient still)" },
+            { "key": "pmh",         "value": "kidney stone",    "logLR": 16, "evidenceLabel": "Previous kidney stones",           "citation": "Teichman JMH. Prior stone history LR+ 6.3 (4.7–8.5)" },
+            { "key": "inv",         "value": "haematuria",      "logLR": 14, "evidenceLabel": "Microscopic haematuria on dipstick","citation": "Dipstick haematuria sensitivity 85%, specificity 65% for urolithiasis" },
+            { "key": "inv",         "value": "ct kub",          "logLR": 22, "evidenceLabel": "Stone on non-contrast CT KUB",      "citation": "NCCT sensitivity 96–97%, specificity 96–99% — gold standard" }
+          ]
+        },
+        {
+          "name": "Pyelonephritis",
+          "icd": "N10",
+          "logPrior": 20,
+          "features": [
+            { "key": "site",        "value": "Loin",        "logLR": 12, "evidenceLabel": "Loin / flank pain",                   "citation": "Bent S. JAMA 2002;287:2701. Flank pain LR+ 2.5 for pyelonephritis" },
+            { "key": "associations","value": "Fever",       "logLR": 12, "evidenceLabel": "Fever >38°C",                        "citation": "Bent S. Fever LR+ 1.6–3.0; high fever more discriminating" },
+            { "key": "associations","value": "Dysuria",     "logLR": 10, "evidenceLabel": "Dysuria — lower urinary tract component", "citation": "Dysuria + fever predicts upper UTI" },
+            { "key": "associations","value": "Frequency",   "logLR": 8,  "evidenceLabel": "Urinary frequency / urgency",         "citation": "Frequency supports urinary tract infection" },
+            { "key": "exam",        "value": "renal angle", "logLR": 14, "evidenceLabel": "Renal angle tenderness (CVA punch)",  "citation": "Bent S. CVA tenderness LR+ 1.7–2.9 for upper UTI" },
+            { "key": "sex_female",  "value": "",            "logLR": 6,  "evidenceLabel": "Female sex — higher incidence",       "citation": "Pyelonephritis incidence 3–5× higher in women" },
+            { "key": "inv",         "value": "urine",       "logLR": 14, "evidenceLabel": "Pyuria / positive urine culture",     "citation": "Urine culture positive >10⁵ CFU/mL" }
+          ]
+        },
+        {
+          "name": "Renal Cell Carcinoma",
+          "icd": "C64.9",
+          "logPrior": 6,
+          "features": [
+            { "key": "associations","value": "Haematuria",  "logLR": 14, "evidenceLabel": "Painless haematuria — RED FLAG",      "citation": "Haematuria classical presentation; painless distinguishes from colic" },
+            { "key": "associations","value": "Weight loss", "logLR": 10, "evidenceLabel": "Weight loss — systemic feature",      "citation": "Paraneoplastic or cachexia; part of classic triad" },
+            { "key": "exam",        "value": "mass",        "logLR": 14, "evidenceLabel": "Palpable flank mass",                 "citation": "Classic triad (flank pain + haematuria + mass) present in <10% at diagnosis" },
+            { "key": "timing",      "value": "Progressive", "logLR": 8,  "evidenceLabel": "Progressive course",                  "citation": "Gradual progression typical" },
+            { "key": "age_over",    "value": "50",          "logLR": 6,  "evidenceLabel": "Age >50",                            "citation": "Peak incidence 60–70 years" },
+            { "key": "pmh",         "value": "smoking",     "logLR": 8,  "evidenceLabel": "Smoking — RR 2× for RCC",            "citation": "Chow WH. NEJM 1999;340:1407. Smoking RR 1.4–2.5" }
+          ]
+        }
+      ]
+    },
+    "upperGIBleed": {
+      "candidates": [
+        {
+          "name": "Bleeding Peptic Ulcer",
+          "icd": "K27.4",
+          "logPrior": 45,
+          "features": [
+            { "key": "character",   "value": "Melaena",          "logLR": 16, "evidenceLabel": "Melaena — digested blood, upper GI source",     "citation": "Srygley FD. JAMA IM 2012. Melaena LR+ 5.1–25 for upper GI bleed" },
+            { "key": "associations","value": "Epigastric pain",  "logLR": 14, "evidenceLabel": "Preceding epigastric pain",                     "citation": "Epigastric pain antedating bleed strongly suggests peptic ulcer" },
+            { "key": "onset",       "value": "Acute",            "logLR": 10, "evidenceLabel": "Acute haematemesis",                           "citation": "Haematemesis LR+ 1.8 (1.3–2.6) for upper vs lower GI bleed" },
+            { "key": "pmh",         "value": "nsaid",            "logLR": 16, "evidenceLabel": "NSAID / aspirin use — major risk factor",       "citation": "NSAIDs increase peptic ulcer risk 3–5×; antiplatelet agents 2–3×" },
+            { "key": "pmh",         "value": "h.pylori",         "logLR": 14, "evidenceLabel": "H. pylori infection — causative in ~70%",      "citation": "H. pylori eradication prevents recurrent peptic ulcer bleeding" },
+            { "key": "pmh",         "value": "peptic ulcer",     "logLR": 18, "evidenceLabel": "Known peptic ulcer disease",                   "citation": "Previous ulcer history strongest individual predictor of recurrence" },
+            { "key": "pmh",         "value": "anticoagulant",    "logLR": 12, "evidenceLabel": "Anticoagulant / antiplatelet use",              "citation": "Anticoagulation increases bleeding risk and severity" },
+            { "key": "exam",        "value": "epigastric tender","logLR": 10, "evidenceLabel": "Epigastric tenderness",                        "citation": "Epigastric tenderness LR+ ~2 for peptic ulcer" },
+            { "key": "inv",         "value": "ogd",              "logLR": 20, "evidenceLabel": "OGD — ulcer with stigmata of haemorrhage",      "citation": "Forrest Ia/Ib (active bleeding) rebleed rate >55% without endoscopic Rx" },
+            { "key": "inv",         "value": "hb",               "logLR": 12, "evidenceLabel": "Haemoglobin drop / iron deficiency",           "citation": "Degree of Hb drop correlates with chronicity and severity" }
+          ]
+        },
+        {
+          "name": "Oesophageal Varices Bleed",
+          "icd": "I85.01",
+          "logPrior": 20,
+          "features": [
+            { "key": "character",   "value": "Haematemesis",     "logLR": 18, "evidenceLabel": "Massive haematemesis — life-threatening",       "citation": "Variceal bleed: initial volume loss 1–2L common; 30-day mortality 15–20%" },
+            { "key": "pmh",         "value": "cirrhosis",        "logLR": 20, "evidenceLabel": "Liver cirrhosis — pathognomonic risk factor",   "citation": "50–60% of cirrhotic patients develop varices; 30% bleed" },
+            { "key": "pmh",         "value": "alcohol",          "logLR": 14, "evidenceLabel": "Alcohol excess / alcoholic liver disease",      "citation": "Alcoholic cirrhosis leading cause of variceal bleeding in Western practice" },
+            { "key": "pmh",         "value": "hepatitis",        "logLR": 14, "evidenceLabel": "Chronic hepatitis B/C",                         "citation": "Viral cirrhosis; hepatitis B prevalent in Caribbean" },
+            { "key": "exam",        "value": "jaundice",         "logLR": 12, "evidenceLabel": "Jaundice, spider naevi, caput medusae",         "citation": "Stigmata of chronic liver disease indicate portal hypertension" },
+            { "key": "exam",        "value": "ascites",          "logLR": 16, "evidenceLabel": "Ascites — portal hypertension",                 "citation": "Ascites LR+ ~8 for cirrhosis in jaundiced patient" },
+            { "key": "exam",        "value": "splenomegaly",     "logLR": 14, "evidenceLabel": "Splenomegaly — hypersplenism",                  "citation": "Congestive splenomegaly from portal hypertension" },
+            { "key": "inv",         "value": "lft",              "logLR": 14, "evidenceLabel": "Deranged LFTs, hypoalbuminaemia, coagulopathy", "citation": "Coagulopathy (INR >1.5) indicates synthetic liver failure" },
+            { "key": "inv",         "value": "ogd",              "logLR": 20, "evidenceLabel": "OGD — bleeding varices confirmed",              "citation": "Emergency OGD gold standard; band ligation or sclerotherapy" }
+          ]
+        },
+        {
+          "name": "Mallory-Weiss Tear",
+          "icd": "K22.6",
+          "logPrior": 18,
+          "features": [
+            { "key": "onset",       "value": "After retching",   "logLR": 20, "evidenceLabel": "Haematemesis after forceful retching — pathognomonic", "citation": "Forceful retching precedes haematemesis in >90% of Mallory-Weiss; LR+ ~30" },
+            { "key": "character",   "value": "Bright red",       "logLR": 14, "evidenceLabel": "Bright red blood — arterial bleed at GOJ",       "citation": "Arterial bleeding from mucosal tear at gastro-oesophageal junction" },
+            { "key": "pmh",         "value": "alcohol",          "logLR": 14, "evidenceLabel": "Alcohol excess — preceding binge",               "citation": "Alcohol is precipitant in ~40% of Mallory-Weiss cases" },
+            { "key": "pmh",         "value": "pregnancy",        "logLR": 10, "evidenceLabel": "Hyperemesis gravidarum",                         "citation": "Persistent vomiting in pregnancy can cause mucosal tears" },
+            { "key": "inv",         "value": "ogd",              "logLR": 20, "evidenceLabel": "OGD — longitudinal mucosal tear at GOJ",          "citation": "OGD diagnostic and therapeutic (adrenaline injection / haemostasis)" }
+          ]
+        },
+        {
+          "name": "Dieulafoy Lesion",
+          "icd": "K31.82",
+          "logPrior": 5,
+          "features": [
+            { "key": "character",   "value": "Massive",      "logLR": 14, "evidenceLabel": "Massive, painless haematemesis",          "citation": "Dieulafoy: large-calibre submucosal vessel erodes without ulceration" },
+            { "key": "onset",       "value": "Recurrent",    "logLR": 16, "evidenceLabel": "Recurrent self-limiting bleeds",          "citation": "Intermittent bleeding because vessel rebleeds without necrosis" },
+            { "key": "exam",        "value": "normal",       "logLR": 8,  "evidenceLabel": "No obvious upper GI abnormality initially","citation": "First OGD may miss lesion (0.3–2% of UGI bleeds)" },
+            { "key": "inv",         "value": "ogd",          "logLR": 20, "evidenceLabel": "OGD — visible vessel without ulceration",  "citation": "Requires experienced endoscopist; 2nd-look OGD or capsule may be needed" }
+          ]
+        },
+        {
+          "name": "Gastric / Oesophageal Malignancy Bleed",
+          "icd": "C16.9",
+          "logPrior": 10,
+          "features": [
+            { "key": "associations","value": "Weight loss",  "logLR": 16, "evidenceLabel": "Weight loss — RED FLAG for malignancy",   "citation": "Alarm symptoms (weight loss + dysphagia) mandate urgent OGD" },
+            { "key": "associations","value": "Dysphagia",    "logLR": 14, "evidenceLabel": "Dysphagia — oesophageal involvement",     "citation": "Progressive dysphagia LR+ ~18 for oesophageal malignancy" },
+            { "key": "timing",      "value": "Progressive",  "logLR": 14, "evidenceLabel": "Progressive symptoms over weeks–months",  "citation": "Insidious onset distinguishes from acute peptic ulcer bleed" },
+            { "key": "age_over",    "value": "55",           "logLR": 12, "evidenceLabel": "Age >55 — malignancy incidence rises sharply", "citation": "Gastric cancer incidence doubles per decade from age 50" },
+            { "key": "exam",        "value": "mass",         "logLR": 16, "evidenceLabel": "Epigastric mass",                        "citation": "Palpable mass indicates advanced (often inoperable) disease" },
+            { "key": "inv",         "value": "ogd",          "logLR": 20, "evidenceLabel": "OGD + biopsy — malignancy confirmed",    "citation": "OGD with biopsy gold standard; four-quadrant biopsies of any lesion" },
+            { "key": "inv",         "value": "ct",           "logLR": 14, "evidenceLabel": "CT staging — lymphadenopathy / metastases", "citation": "CT chest/abdomen/pelvis for TNM staging before treatment planning" }
+          ]
+        }
+      ]
     }
   }
 }
