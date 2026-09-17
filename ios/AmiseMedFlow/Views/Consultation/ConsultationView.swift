@@ -3622,9 +3622,14 @@ struct ConsultationView: View {
                         .buttonStyle(.plain)
                     }
                 } footer: {
-                    Text("Based on CC · SOCRATES · PMH · Meds · Social · BMI · Exam · Ix · Age/Sex. Apply to confirm.")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Based on CC · SOCRATES · PMH · Meds · Social · BMI · Exam · Ix · Age/Sex. Apply to confirm.")
+                        // Debug: confirm which CC value reached the engine
+                        Text("Engine CC: \(patient.chiefComplaint ?? "—")")
+                            .foregroundStyle(.orange)
+                    }
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
                 }
             }
 
