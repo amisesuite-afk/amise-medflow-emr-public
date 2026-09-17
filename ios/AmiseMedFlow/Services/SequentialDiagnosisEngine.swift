@@ -274,7 +274,7 @@ final class SequentialDiagnosisEngine: ObservableObject {
     // Evidence keys already observed per hypothesis (for correlation dampening)
     private var observedKeys: [String: [String]] = [:]   // hypothesisName → [evidenceKey]
     // Seeded log-posteriors — used by resetToSeeded() to restore the base before replaying
-    private var seededLogPosteriors: [String: Double] = []  // hypothesisName → logPosterior
+    private var seededLogPosteriors: [String: Double] = [:]  // hypothesisName → logPosterior
 
     // MARK: - Seed from Naive-Bayes snapshot
 
