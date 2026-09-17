@@ -1037,6 +1037,11 @@ struct ConsultationView: View {
             dismissedRadiation = false
         }
         .onChange(of: patient.chiefComplaint) { _, newCC in
+            // When CC changes, SOCRATES dimensions change entirely — old selections
+            // are semantically wrong and would pollute the Bayesian scoring for the
+            // new CC. Clear them so bayesianDx evaluates against a clean slate.
+            socratesSelections = [:]
+            socratesExpandedDim = "onset"
             guard let cc = newCC, !cc.isEmpty else { triageResult = nil; return }
             pathwayTask?.cancel()
             pathwayTask = Task {
