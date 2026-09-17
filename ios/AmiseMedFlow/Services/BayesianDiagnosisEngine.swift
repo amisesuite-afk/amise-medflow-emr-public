@@ -68,7 +68,10 @@ enum BayesianDiagnosisEngine {
         investigations: [InvestigationEntry],
         ageYears: Int,
         sex: Sex,
-        longitudinal: LongitudinalContext = .empty
+        longitudinal: LongitudinalContext = .empty,
+        medications: [String] = [],
+        socialHistoryText: String? = nil,
+        bmi: Double? = nil
     ) -> [DiagnosisResult] {
         guard let cc = chiefComplaint, !cc.isEmpty else { return [] }
         let ccL = cc.lowercased()
@@ -243,7 +246,10 @@ enum BayesianDiagnosisEngine {
             examOther: examOther ?? "",
             investigations: mergedInvestigations,
             age: ageYears,
-            sex: sex
+            sex: sex,
+            medications: medications,
+            socialText: socialHistoryText ?? "",
+            bmi: bmi
         )
 
         // Confirmed prior diagnoses boost the matching candidate's prior by 20 log
@@ -256,6 +262,26 @@ enum BayesianDiagnosisEngine {
                 if confirmedL.contains(where: { nameL.contains($0) || $0.contains(nameL) }) {
                     scored[i].logPosterior += 20
                     scored[i].evidence.insert("Previously confirmed diagnosis", at: 0)
+                }
+            }
+        }
+
+        // Surgical exclusion: if PSHx documents organ removal, that candidate
+        // is set to log-posterior −9999 (≈0 after softmax) so it does not appear.
+        let pshxCheckL = mergedPSHx.lowercased()
+        let exclusions: [(keywords: [String], fragments: [String])] = [
+            (["appendect"], ["appendicitis"]),
+            (["cholecystect"], ["cholecystitis", "biliary colic", "cholelithiasis", "gallstone"]),
+            (["gastrectomy", "total gastrect"], ["gastric cancer", "gastric ulcer"]),
+            (["colectomy", "hemicolectomy", "proctocolect"], ["colorectal cancer", "diverticular"]),
+        ]
+        for rule in exclusions {
+            guard rule.keywords.contains(where: { pshxCheckL.contains($0) }) else { continue }
+            for fragment in rule.fragments {
+                for i in scored.indices {
+                    if scored[i].candidate.name.lowercased().contains(fragment) {
+                        scored[i].logPosterior = -9999
+                    }
                 }
             }
         }
@@ -296,7 +322,10 @@ enum BayesianDiagnosisEngine {
         examNeuro: String = "", examMSK: String = "",
         examSkin: String = "", examOther: String = "",
         investigations: [InvestigationEntry],
-        age: Int, sex: Sex
+        age: Int, sex: Sex,
+        medications: [String] = [],
+        socialText: String = "",
+        bmi: Double? = nil
     ) -> [ScoredCandidate] {
         let pmhL = pmh.lowercased()
         let pshxL = pshx.lowercased()
@@ -305,6 +334,8 @@ enum BayesianDiagnosisEngine {
         let invNames = investigations.map { $0.name.lowercased() }
         let invResults = investigations.filter { $0.status == .resulted }
             .map { $0.name.lowercased() + " " + $0.result.lowercased() }
+        let medsL = medications.map { $0.lowercased() }
+        let socialL = socialText.lowercased()
 
         return candidates.map { c in
             var logP = c.logPrior
@@ -336,6 +367,14 @@ enum BayesianDiagnosisEngine {
                     triggered = sex == .female
                 case "sex_male":
                     triggered = sex == .male
+                case "med":
+                    triggered = medsL.contains(where: { $0.contains(f.value.lowercased()) })
+                case "social":
+                    triggered = socialL.contains(f.value.lowercased())
+                case "bmi_over":
+                    if let threshold = Double(f.value), let bmiVal = bmi { triggered = bmiVal >= threshold }
+                case "bmi_under":
+                    if let threshold = Double(f.value), let bmiVal = bmi { triggered = bmiVal > 0 && bmiVal < threshold }
                 default:
                     break
                 }
@@ -2075,6 +2114,11 @@ enum BayesianDiagnosisEngine {
             .init(key: "pmh",          value: "obese",           logLR:  6, evidenceLabel: "Obesity — GERD risk factor"),
             .init(key: "inv",          value: "ogd",             logLR: 14, evidenceLabel: "OGD — oesophagitis"),
             .init(key: "inv",          value: "oesophagitis",    logLR: 16, evidenceLabel: "Endoscopic oesophagitis confirmed"),
+            .init(key: "med",          value: "prazole",         logLR: 10, evidenceLabel: "PPI therapy prescribed (active acid suppression)"),
+            .init(key: "med",          value: "antacid",         logLR:  6, evidenceLabel: "Antacid use"),
+            .init(key: "bmi_over",     value: "30",              logLR:  8, evidenceLabel: "Obesity (BMI ≥30) — GERD risk factor"),
+            .init(key: "social",       value: "smok",            logLR:  4, evidenceLabel: "Smoking — reduces LOS tone"),
+            .init(key: "social",       value: "alcohol",         logLR:  6, evidenceLabel: "Alcohol use — precipitates reflux"),
         ]),
 
         // 2. Hiatus Hernia — very common co-diagnosis with GERD
@@ -2092,6 +2136,8 @@ enum BayesianDiagnosisEngine {
             .init(key: "inv",          value: "barium",          logLR: 16, evidenceLabel: "Barium swallow — hiatus hernia"),
             .init(key: "inv",          value: "cxr",             logLR: 10, evidenceLabel: "CXR — retrocardiac gas shadow"),
             .init(key: "inv",          value: "ogd",             logLR: 12, evidenceLabel: "OGD — proximal gastric mucosa above diaphragm"),
+            .init(key: "med",          value: "prazole",         logLR:  6, evidenceLabel: "PPI use — suggests acid-related pathology"),
+            .init(key: "bmi_over",     value: "30",              logLR:  8, evidenceLabel: "Obesity increases hiatus hernia risk"),
         ]),
 
         // 3. Functional Dyspepsia — post-prandial bloating/fullness without structural cause
@@ -2123,6 +2169,10 @@ enum BayesianDiagnosisEngine {
             .init(key: "exacerbating", value: "NSAIDs",          logLR: 10, evidenceLabel: "NSAIDs / aspirin use"),
             .init(key: "pmh",          value: "nsaids",          logLR: 10, evidenceLabel: "NSAID use (gastritis risk factor)"),
             .init(key: "inv",          value: "ogd antrum",      logLR: 14, evidenceLabel: "Antral erythema / nodularity on OGD"),
+            .init(key: "med",          value: "aspirin",         logLR: 10, evidenceLabel: "Aspirin use — gastric mucosal risk"),
+            .init(key: "med",          value: "ibuprofen",       logLR:  8, evidenceLabel: "NSAID use — gastritis risk factor"),
+            .init(key: "med",          value: "diclofenac",      logLR:  8, evidenceLabel: "NSAID use — gastritis risk factor"),
+            .init(key: "med",          value: "naproxen",        logLR:  8, evidenceLabel: "NSAID use — gastritis risk factor"),
         ]),
 
         // 5. Peptic Ulcer Disease
@@ -2141,6 +2191,13 @@ enum BayesianDiagnosisEngine {
             .init(key: "age_over",     value: "45",              logLR:  6, evidenceLabel: "Age >45"),
             .init(key: "inv",          value: "ulcer",           logLR: 18, evidenceLabel: "OGD — ulcer confirmed"),
             .init(key: "inv",          value: "h. pylori",       logLR: 14, evidenceLabel: "H. pylori positive"),
+            .init(key: "med",          value: "aspirin",         logLR: 14, evidenceLabel: "Aspirin — PUD risk factor"),
+            .init(key: "med",          value: "ibuprofen",       logLR: 10, evidenceLabel: "NSAID use — PUD risk factor"),
+            .init(key: "med",          value: "diclofenac",      logLR: 10, evidenceLabel: "NSAID use — PUD risk factor"),
+            .init(key: "med",          value: "naproxen",        logLR: 10, evidenceLabel: "NSAID use — PUD risk factor"),
+            .init(key: "med",          value: "warfarin",        logLR:  8, evidenceLabel: "Anticoagulation — bleeding risk"),
+            .init(key: "med",          value: "apixaban",        logLR:  8, evidenceLabel: "Anticoagulation — bleeding risk"),
+            .init(key: "med",          value: "rivaroxaban",     logLR:  8, evidenceLabel: "Anticoagulation — bleeding risk"),
         ]),
 
         // 6. Barrett's Oesophagus — complication of chronic GERD; requires surveillance
@@ -2155,6 +2212,9 @@ enum BayesianDiagnosisEngine {
             .init(key: "pmh",          value: "smoking",         logLR:  6, evidenceLabel: "Smoking history"),
             .init(key: "inv",          value: "barrett",         logLR: 20, evidenceLabel: "OGD — columnar-lined oesophagus / intestinal metaplasia"),
             .init(key: "inv",          value: "biopsy",          logLR: 14, evidenceLabel: "Biopsy — intestinal metaplasia confirmed"),
+            .init(key: "social",       value: "smok",            logLR:  8, evidenceLabel: "Smoking — independent Barrett's risk factor"),
+            .init(key: "bmi_over",     value: "30",              logLR:  6, evidenceLabel: "Obesity — abdominal pressure increases risk"),
+            .init(key: "med",          value: "prazole",         logLR:  8, evidenceLabel: "PPI therapy — suggests chronic GERD (Barrett's substrate)"),
         ]),
 
         // 7. Eosinophilic Oesophagitis

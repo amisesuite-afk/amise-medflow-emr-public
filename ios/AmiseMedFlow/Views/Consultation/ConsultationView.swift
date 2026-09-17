@@ -3572,7 +3572,10 @@ struct ConsultationView: View {
             investigations: patient.investigations,
             ageYears: patient.ageYears,
             sex: patient.sex,
-            longitudinal: patient.longitudinalContext
+            longitudinal: patient.longitudinalContext,
+            medications: patient.prescriptions.map { $0.displayLine },
+            socialHistoryText: patient.socialHistory,
+            bmi: patient.latestBMI()
         )
     }
 
