@@ -1126,7 +1126,7 @@ struct PatientDemographicsForm: View {
                     guard let opDate = patient.operationDate else { return }
                     let procedure = patient.appointmentType ?? patient.chiefComplaint ?? "Procedure"
                     Task {
-                        try? await calSvc.createTheatreBooking(
+                        _ = try? await calSvc.createTheatreBooking(
                             procedure: procedure,
                             patientName: patient.fullName,
                             date: opDate,
