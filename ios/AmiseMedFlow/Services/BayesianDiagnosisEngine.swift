@@ -351,7 +351,9 @@ enum BayesianDiagnosisEngine {
                         $0.lowercased().contains(f.value.lowercased())
                     })
                 case "exam":
-                    triggered = examL.contains(f.value.lowercased())
+                    // Space-separated value = all words must appear in exam text (AND logic).
+                    let words = f.value.lowercased().split(separator: " ").map(String.init)
+                    triggered = words.allSatisfy { examL.contains($0) }
                 case "pmh":
                     triggered = pmhL.contains(f.value.lowercased())
                 case "pshx":
@@ -457,7 +459,7 @@ enum BayesianDiagnosisEngine {
             .init(key: "associations", value: "Jaundice", logLR: 6, evidenceLabel: "Jaundice"),
             .init(key: "character", value: "Colicky", logLR: 5, evidenceLabel: "Colicky character"),
             .init(key: "exam", value: "murphy", logLR: 14, evidenceLabel: "Murphy's sign positive"),
-            .init(key: "exam", value: "tender.*ruq", logLR: 10, evidenceLabel: "RUQ tender"),
+            .init(key: "exam", value: "tender ruq", logLR: 10, evidenceLabel: "RUQ tender"),
             .init(key: "inv", value: "ultrasound", logLR: 6, evidenceLabel: "Abdominal USS ordered"),
             .init(key: "inv", value: "gallstone", logLR: 16, evidenceLabel: "Gallstones on USS"),
             .init(key: "pmh", value: "gallstone", logLR: 10, evidenceLabel: "Known gallstones"),
@@ -607,7 +609,7 @@ enum BayesianDiagnosisEngine {
             .init(key: "associations", value: "Fever", logLR: 6, evidenceLabel: "Fever"),
             .init(key: "timing", value: "Progressive", logLR: 4, evidenceLabel: "Progressive"),
             .init(key: "exam", value: "hepatomegaly", logLR: 10, evidenceLabel: "Hepatomegaly"),
-            .init(key: "exam", value: "tender.*liver", logLR: 8, evidenceLabel: "Tender liver"),
+            .init(key: "exam", value: "tender liver", logLR: 8, evidenceLabel: "Tender liver"),
             .init(key: "inv", value: "alt", logLR: 12, evidenceLabel: "Raised ALT"),
             .init(key: "inv", value: "ast", logLR: 10, evidenceLabel: "Raised AST"),
             .init(key: "age_under", value: "40", logLR: 6, evidenceLabel: "Younger age"),

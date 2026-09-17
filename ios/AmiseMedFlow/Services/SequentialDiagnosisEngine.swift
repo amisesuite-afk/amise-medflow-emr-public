@@ -273,6 +273,8 @@ final class SequentialDiagnosisEngine: ObservableObject {
 
     // Evidence keys already observed per hypothesis (for correlation dampening)
     private var observedKeys: [String: [String]] = [:]   // hypothesisName → [evidenceKey]
+    // Seeded log-posteriors — used by resetToSeeded() to restore the base before replaying
+    private var seededLogPosteriors: [String: Double] = []  // hypothesisName → logPosterior
 
     // MARK: - Seed from Naive-Bayes snapshot
 
@@ -285,7 +287,10 @@ final class SequentialDiagnosisEngine: ObservableObject {
         examGeneral: String?,
         investigations: [InvestigationEntry],
         ageYears: Int,
-        sex: Sex
+        sex: Sex,
+        medications: [String] = [],
+        socialHistoryText: String? = nil,
+        bmi: Double? = nil
     ) {
         let results = BayesianDiagnosisEngine.infer(
             chiefComplaint: chiefComplaint,
@@ -296,7 +301,10 @@ final class SequentialDiagnosisEngine: ObservableObject {
             examGeneral: examGeneral,
             investigations: investigations,
             ageYears: ageYears,
-            sex: sex
+            sex: sex,
+            medications: medications,
+            socialHistoryText: socialHistoryText,
+            bmi: bmi
         )
 
         guard !results.isEmpty else {
@@ -320,6 +328,7 @@ final class SequentialDiagnosisEngine: ObservableObject {
         }
 
         observedKeys = Dictionary(uniqueKeysWithValues: hypotheses.map { ($0.name, []) })
+        seededLogPosteriors = Dictionary(uniqueKeysWithValues: hypotheses.map { ($0.name, $0.logPosterior) })
         recomputeProbabilities()
         isSeeded = true
     }
@@ -372,6 +381,7 @@ final class SequentialDiagnosisEngine: ObservableObject {
         hypotheses = []
         evidenceLog = []
         observedKeys = [:]
+        seededLogPosteriors = [:]
         isSeeded = false
     }
 
@@ -388,8 +398,12 @@ final class SequentialDiagnosisEngine: ObservableObject {
     // MARK: - Private helpers
 
     private func resetToSeeded() {
-        // Re-seed from current hypotheses keeping names/ICDs but zero-ing incremental evidence
+        // Restore each hypothesis to its seeded log-posterior and clear incremental evidence.
         for i in hypotheses.indices {
+            let name = hypotheses[i].name
+            if let seededLP = seededLogPosteriors[name] {
+                hypotheses[i].logPosterior = seededLP
+            }
             hypotheses[i].contributingEvidence = hypotheses[i].contributingEvidence.filter { $0.logLR == 0.0 }
         }
         observedKeys = Dictionary(uniqueKeysWithValues: hypotheses.map { ($0.name, []) })
