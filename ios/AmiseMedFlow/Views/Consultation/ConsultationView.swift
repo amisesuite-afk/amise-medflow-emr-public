@@ -908,7 +908,7 @@ struct ConsultationView: View {
     @State private var aiMedSuggestions: [String] = []
     @State private var newInvName = ""
     @State private var newInvCategory: InvestigationEntry.InvCategory = .blood
-    @State private var bayesianDx: [BayesianDiagnosisEngine.DiagnosisResult] = []
+    @State private var textFeatures: [String: Set<String>] = [:]
     @State private var dismissedRadiation = false
     @State private var clinicalAlarms: [ClinicalTextParser.ClinicalAlarm] = []
     @State private var dismissedAlarmIds: Set<UUID> = []
@@ -1015,7 +1015,7 @@ struct ConsultationView: View {
                 recomputeRisk()
             }
             pipeline.runNow(for: patient, socratesSelections: socratesSelections)
-            refreshBayesian()
+            refreshTextFeatures()
             MRNGenerator.backfillIfNeeded(patient)
             // Pre-load popular drugs when landing directly on the meds tab (iPad nav path).
             // On iPhone the focus onChange handles this, but on iPad the keyboard never
@@ -1029,8 +1029,6 @@ struct ConsultationView: View {
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarBackground(Color(.systemBackground), for: .navigationBar)
         .onChange(of: activeTab) { _, tab in
-            if tab == .diagnosis { refreshBayesian() }
-            // Pre-load browse list when switching to meds tab (iPhone tab bar path).
             if tab == .meds && medSuggestions.isEmpty && medQuery.isEmpty {
                 medSuggestions = SurgicalDrug.popular
             }
@@ -1040,33 +1038,30 @@ struct ConsultationView: View {
         }
         .onChange(of: patient.chiefComplaint) { _, newCC in
             guard let cc = newCC, !cc.isEmpty else { triageResult = nil; return }
-            // Refresh immediately so Diagnosis tab always reflects the current CC
-            refreshBayesian()
             pathwayTask?.cancel()
             pathwayTask = Task {
                 try? await Task.sleep(nanoseconds: 800_000_000)
                 guard !Task.isCancelled else { return }
-                await MainActor.run { runPathway(); refreshBayesian() }
+                await MainActor.run { runPathway() }
             }
         }
         .onChange(of: patient.hpi) { _, _ in
-            refreshBayesian()
+            refreshTextFeatures()
             pipeline.schedule(for: patient, socratesSelections: socratesSelections)
         }
         .onChange(of: patient.examGeneral) { _, _ in
-            refreshBayesian()
+            refreshTextFeatures()
             pipeline.schedule(for: patient, socratesSelections: socratesSelections)
         }
         .onChange(of: patient.examAbdo) { _, _ in
-            refreshBayesian()
+            refreshTextFeatures()
             pipeline.schedule(for: patient, socratesSelections: socratesSelections)
         }
         .onChange(of: patient.investigationsJson) { _, _ in
-            refreshBayesian()
+            refreshTextFeatures()
             pipeline.schedule(for: patient, socratesSelections: socratesSelections)
         }
         .onChange(of: socratesSelections) { _, _ in
-            refreshBayesian()
             pipeline.schedule(for: patient, socratesSelections: socratesSelections)
         }
         .sheet(isPresented: $showAddAllergy) { addAllergySheet }
@@ -3536,34 +3531,20 @@ struct ConsultationView: View {
         return chips
     }
 
-    // MARK: - Bayesian engine refresh
-    // Augments SOCRATES selections with clinical features extracted from free text
-    // (HPI, exam findings, notes) so the engine fires from any typed data, not
-    // only structured chip selections.
+    // MARK: - Bayesian diagnosis (computed — reactive, no manual refresh needed)
+    // Recomputes automatically whenever patient model properties or socratesSelections
+    // change. textFeatures (from free-text parsing) are kept as @State so text
+    // parsing only runs when HPI / exam text actually changes.
 
-    private func refreshBayesian() {
-        let parsed = ClinicalTextParser.parse(
-            hpi: patient.hpi,
-            examGeneral: patient.examGeneral,
-            examAbdo: patient.examAbdo,
-            examOther: nil,
-            notes: nil
-        )
-
-        // Merge parser-extracted features into the chip-selection dict
-        var augmented = socratesSelections
-        for (dim, chips) in parsed.featureAugments {
-            augmented[dim, default: []].formUnion(chips)
+    private var bayesianDx: [BayesianDiagnosisEngine.DiagnosisResult] {
+        guard let cc = patient.chiefComplaint, !cc.isEmpty else { return [] }
+        var merged = socratesSelections
+        for (dim, chips) in textFeatures {
+            merged[dim, default: []].formUnion(chips)
         }
-
-        // Offer a CC hint only when no CC is set yet
-        if (patient.chiefComplaint ?? "").isEmpty, let hint = parsed.ccHint {
-            patient.chiefComplaint = hint
-        }
-
-        bayesianDx = BayesianDiagnosisEngine.infer(
-            chiefComplaint: patient.chiefComplaint,
-            socratesSelections: augmented,
+        return BayesianDiagnosisEngine.infer(
+            chiefComplaint: cc,
+            socratesSelections: merged,
             pmhNotes: patient.pmhNotes,
             surgicalHistory: patient.surgicalHistory,
             examAbdo: patient.examAbdo,
@@ -3579,9 +3560,23 @@ struct ConsultationView: View {
             sex: patient.sex,
             longitudinal: patient.longitudinalContext
         )
+    }
 
-        // Update alarm list (keep dismissed state across refreshes)
+    // MARK: - Text feature refresh (called only when HPI / exam text changes)
+
+    private func refreshTextFeatures() {
+        let parsed = ClinicalTextParser.parse(
+            hpi: patient.hpi,
+            examGeneral: patient.examGeneral,
+            examAbdo: patient.examAbdo,
+            examOther: nil,
+            notes: nil
+        )
+        textFeatures = parsed.featureAugments
         clinicalAlarms = parsed.clinicalAlarms
+        if (patient.chiefComplaint ?? "").isEmpty, let hint = parsed.ccHint {
+            patient.chiefComplaint = hint
+        }
     }
 
     // MARK: - Diagnosis tab
@@ -3606,7 +3601,7 @@ struct ConsultationView: View {
                             .font(.caption.weight(.semibold))
                         Spacer()
                         Button {
-                            refreshBayesian()
+                            refreshTextFeatures()
                         } label: {
                             Image(systemName: "arrow.clockwise")
                                 .font(.caption)
