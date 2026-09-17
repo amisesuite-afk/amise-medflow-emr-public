@@ -1066,6 +1066,7 @@ struct ConsultationView: View {
             pipeline.schedule(for: patient, socratesSelections: socratesSelections)
         }
         .onChange(of: socratesSelections) { _, _ in
+            refreshBayesian()
             pipeline.schedule(for: patient, socratesSelections: socratesSelections)
         }
         .sheet(isPresented: $showAddAllergy) { addAllergySheet }
