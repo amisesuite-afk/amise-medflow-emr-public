@@ -251,6 +251,25 @@ struct ClinicalHubView: View {
                 }
             }
 
+            Section("Reference") {
+                NavigationLink {
+                    SurgicalEncyclopediaView(
+                        preselectedDiagnosis: patient.workingDiagnosis
+                    )
+                } label: {
+                    HStack {
+                        Label("Surgical Encyclopedia", systemImage: "books.vertical")
+                        Spacer()
+                        if let dx = patient.workingDiagnosis,
+                           SurgicalAlgorithmEngine.shared.lookup(diagnosisName: dx) != nil {
+                            Text("Match")
+                                .font(.caption2)
+                                .foregroundStyle(.teal)
+                        }
+                    }
+                }
+            }
+
             Section("Patient Communication") {
                 NavigationLink { PatientInstructionsView(patient: patient) } label: {
                     Label("Patient Instructions Sheet", systemImage: "doc.text.fill")
