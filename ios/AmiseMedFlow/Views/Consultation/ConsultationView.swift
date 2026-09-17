@@ -975,6 +975,9 @@ struct ConsultationView: View {
     }
 
     var body: some View {
+        // Force SwiftUI to track chiefComplaint unconditionally on every body evaluation,
+        // regardless of which tab is active or whether completenessBar is in the hierarchy.
+        let _ = patient.chiefComplaint
         VStack(spacing: 0) {
             if !patient.allergies.isEmpty { allergyBanner }
             // Clinical alarm banner — fires from free text parsing
