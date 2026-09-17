@@ -4460,8 +4460,19 @@ private struct BayesianDxRow: View {
         }
     }
 
+    // Order determines display priority; only categories with evidence are shown.
+    private static let categoryConfig: [(key: String, icon: String, color: Color)] = [
+        ("score",         "gauge.with.dots.needle.67percent", .indigo),
+        ("longitudinal",  "clock.arrow.circlepath",           .gray),
+        ("exam",          "stethoscope",                      .orange),
+        ("symptoms",      "waveform.path",                    .teal),
+        ("history",       "doc.text",                         .purple),
+        ("investigation", "flask",                            .green),
+    ]
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
+            // ── Name / ICD / probability row ──────────────────────────
             HStack(spacing: 8) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(result.name)
@@ -4486,6 +4497,7 @@ private struct BayesianDxRow: View {
                     .tint(barColor)
             }
 
+            // ── Probability bar ───────────────────────────────────────
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 3)
@@ -4497,7 +4509,24 @@ private struct BayesianDxRow: View {
             }
             .frame(height: 5)
 
-            if !result.evidence.isEmpty {
+            // ── Categorised evidence ──────────────────────────────────
+            if !result.evidenceSources.isEmpty {
+                VStack(alignment: .leading, spacing: 3) {
+                    ForEach(Self.categoryConfig, id: \.key) { cat in
+                        if let labels = result.evidenceSources[cat.key], !labels.isEmpty {
+                            HStack(alignment: .firstTextBaseline, spacing: 5) {
+                                Image(systemName: cat.icon)
+                                    .font(.system(size: 9, weight: .medium))
+                                    .foregroundStyle(cat.color)
+                                    .frame(width: 12)
+                                Text(labels.joined(separator: " · "))
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                }
+            } else if !result.evidence.isEmpty {
                 Text(result.evidence.joined(separator: " · "))
                     .font(.caption2)
                     .foregroundStyle(.secondary)

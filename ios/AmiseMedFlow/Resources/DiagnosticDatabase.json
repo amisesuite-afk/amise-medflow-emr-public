@@ -1,0 +1,593 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2026-09-17",
+  "note": "Evidence-based logLR values derived from published systematic reviews and meta-analyses. logLR = round(ln(LR+) × 5) for positive features; round(ln(LR−) × 5) for negative features. LR values are from the cited source; where a range is given, the median is used. Update this file to recalibrate the engine without modifying Swift code.",
+  "conversionFormula": "logLR = round(ln(LR±) × 5)  [e.g. LR+ 3.0 → ln(3)×5 = 5.5 → 6; LR− 0.4 → ln(0.4)×5 = −4.6 → −5]",
+  "pools": {
+    "abdominalPain": {
+      "candidates": [
+        {
+          "name": "Acute Appendicitis",
+          "icd": "K37",
+          "logPrior": 30,
+          "features": [
+            {
+              "key": "site",
+              "value": "RLQ",
+              "logLR": 10,
+              "evidenceLabel": "RLQ / RIF tenderness",
+              "citation": "Andersson RE. The natural history and traditional management of appendicitis revisited. World J Surg 2007. RIF tenderness LR+ 7.31 (5.88–9.10)"
+            },
+            {
+              "key": "site",
+              "value": "Periumbilical",
+              "logLR": 6,
+              "evidenceLabel": "Periumbilical onset → migration",
+              "citation": "Andersson RE. Br J Surg 2004;91:28–37. Migration of pain LR+ 3.18 (2.41–4.21)"
+            },
+            {
+              "key": "onset",
+              "value": "Sudden",
+              "logLR": 5,
+              "evidenceLabel": "Acute onset",
+              "citation": "Wagner JM et al. Does this patient have appendicitis? JAMA 1996;276(19):1589–94"
+            },
+            {
+              "key": "associations",
+              "value": "Nausea",
+              "logLR": 2,
+              "evidenceLabel": "Nausea",
+              "citation": "Andersson RE 2004. Nausea/vomiting LR+ 1.61 (1.43–1.81)"
+            },
+            {
+              "key": "associations",
+              "value": "Fever",
+              "logLR": 3,
+              "evidenceLabel": "Fever",
+              "citation": "Andersson RE 2004. Fever >37.3°C LR+ 1.94 (1.62–2.32)"
+            },
+            {
+              "key": "associations",
+              "value": "Anorexia",
+              "logLR": 3,
+              "evidenceLabel": "Anorexia",
+              "citation": "Andersson RE 2004. Anorexia LR+ 1.96 (1.71–2.24)"
+            },
+            {
+              "key": "character",
+              "value": "Sharp",
+              "logLR": 4,
+              "evidenceLabel": "Sharp / constant pain",
+              "citation": "Andersson RE 2004"
+            },
+            {
+              "key": "exam",
+              "value": "rebound",
+              "logLR": 6,
+              "evidenceLabel": "Rebound tenderness",
+              "citation": "Andersson RE 2004. Rebound tenderness LR+ 3.01 (2.26–4.01)"
+            },
+            {
+              "key": "exam",
+              "value": "guarding",
+              "logLR": 7,
+              "evidenceLabel": "Abdominal guarding",
+              "citation": "Andersson RE 2004. Rigidity/guarding LR+ 3.76 (2.96–4.78)"
+            },
+            {
+              "key": "exam",
+              "value": "rovsing",
+              "logLR": 5,
+              "evidenceLabel": "Rovsing's sign",
+              "citation": "Andersson RE 2004. Rovsing sign LR+ 2.53 (1.87–3.41)"
+            },
+            {
+              "key": "exam",
+              "value": "mcburney",
+              "logLR": 9,
+              "evidenceLabel": "McBurney's point tenderness",
+              "citation": "Wagner JM et al. JAMA 1996. McBurney tenderness LR+ 6.0"
+            },
+            {
+              "key": "inv",
+              "value": "white cell",
+              "logLR": 4,
+              "evidenceLabel": "Leucocytosis",
+              "citation": "Andersson RE 2004. WBC >10 000 LR+ 2.35 (2.03–2.73)"
+            },
+            {
+              "key": "inv",
+              "value": "crp",
+              "logLR": 6,
+              "evidenceLabel": "CRP elevated",
+              "citation": "Andersson RE 2004. CRP >10 mg/L LR+ 3.04 (2.25–4.11)"
+            },
+            {
+              "key": "inv",
+              "value": "neutrophil",
+              "logLR": 4,
+              "evidenceLabel": "Neutrophilia",
+              "citation": "Andersson RE 2004. Left shift LR+ 2.50 (1.93–3.23)"
+            },
+            {
+              "key": "age_over",
+              "value": "15",
+              "logLR": 3,
+              "evidenceLabel": "Peak incidence age",
+              "citation": "Peak incidence 10–30 years; positive demographic prior"
+            },
+            {
+              "key": "age_over",
+              "value": "60",
+              "logLR": -5,
+              "evidenceLabel": "",
+              "citation": "Appendicitis less common in elderly; atypical presentation. LR− 0.37 for age >60"
+            },
+            {
+              "key": "site",
+              "value": "LLQ",
+              "logLR": -8,
+              "evidenceLabel": "",
+              "citation": "LLQ pain strongly against appendicitis"
+            },
+            {
+              "key": "site",
+              "value": "RUQ",
+              "logLR": -10,
+              "evidenceLabel": "",
+              "citation": "RUQ pain strongly against standard appendicitis"
+            }
+          ]
+        },
+        {
+          "name": "Acute Cholecystitis",
+          "icd": "K81.0",
+          "logPrior": 28,
+          "features": [
+            {
+              "key": "site",
+              "value": "RUQ",
+              "logLR": 5,
+              "evidenceLabel": "RUQ pain",
+              "citation": "Trowbridge RL et al. Does this patient have acute cholecystitis? JAMA 2003;289(1):80–6. RUQ tenderness LR+ 2.7"
+            },
+            {
+              "key": "radiation",
+              "value": "Right shoulder",
+              "logLR": 5,
+              "evidenceLabel": "Radiation to right shoulder",
+              "citation": "Trowbridge 2003. Right shoulder pain LR+ 2.5 (1.0–6.5)"
+            },
+            {
+              "key": "exacerbating",
+              "value": "Fatty food",
+              "logLR": 4,
+              "evidenceLabel": "Worse with fatty food",
+              "citation": "Trowbridge 2003. Fatty food intolerance"
+            },
+            {
+              "key": "associations",
+              "value": "Nausea",
+              "logLR": 2,
+              "evidenceLabel": "Nausea / vomiting",
+              "citation": "Trowbridge 2003. Nausea LR+ ~1.5"
+            },
+            {
+              "key": "associations",
+              "value": "Fever",
+              "logLR": 2,
+              "evidenceLabel": "Fever",
+              "citation": "Trowbridge 2003. Fever LR+ 1.5 (1.1–2.0)"
+            },
+            {
+              "key": "associations",
+              "value": "Jaundice",
+              "logLR": 5,
+              "evidenceLabel": "Jaundice (Mirizzi or common duct stone)",
+              "citation": "Tokyo Guidelines 2018. Jaundice raises suspicion of common duct involvement"
+            },
+            {
+              "key": "character",
+              "value": "Colicky",
+              "logLR": 4,
+              "evidenceLabel": "Colicky character",
+              "citation": "Trowbridge 2003"
+            },
+            {
+              "key": "exam",
+              "value": "murphy",
+              "logLR": 5,
+              "evidenceLabel": "Murphy's sign positive",
+              "citation": "Trowbridge 2003. Murphy sign LR+ 2.8 (0.8–8.6); ultrasonographic Murphy LR+ 6.1 (2.3–16.0)"
+            },
+            {
+              "key": "exam",
+              "value": "tender ruq",
+              "logLR": 5,
+              "evidenceLabel": "RUQ tenderness",
+              "citation": "Trowbridge 2003. RUQ tenderness LR+ 2.7 (1.4–5.1)"
+            },
+            {
+              "key": "inv",
+              "value": "ultrasound",
+              "logLR": 5,
+              "evidenceLabel": "Abdominal USS ordered",
+              "citation": "Diagnostic ultrasound is first-line for cholecystitis"
+            },
+            {
+              "key": "inv",
+              "value": "gallstone",
+              "logLR": 10,
+              "evidenceLabel": "Gallstones on USS",
+              "citation": "Ultrasonographic gallstones in RUQ pain: LR+ ~7.3. Soyer P et al. AJR 1996"
+            },
+            {
+              "key": "pmh",
+              "value": "gallstone",
+              "logLR": 5,
+              "evidenceLabel": "Known gallstones",
+              "citation": "Trowbridge 2003. History of gallstones LR+ 3.0"
+            },
+            {
+              "key": "sex_female",
+              "value": "",
+              "logLR": 4,
+              "evidenceLabel": "Female sex (higher prevalence)",
+              "citation": "Female sex: 4× higher lifetime risk of gallstones. 4F mnemonic"
+            },
+            {
+              "key": "age_over",
+              "value": "40",
+              "logLR": 4,
+              "evidenceLabel": "Age >40",
+              "citation": "Prevalence of gallstones increases markedly after 40 years"
+            }
+          ]
+        },
+        {
+          "name": "Biliary Colic",
+          "icd": "K80.20",
+          "logPrior": 25,
+          "features": [
+            {
+              "key": "site",
+              "value": "RUQ",
+              "logLR": 5,
+              "evidenceLabel": "RUQ pain",
+              "citation": "Berger MY et al. Abdominal symptoms: do they predict gallstones? Scand J Gastroenterol 2000"
+            },
+            {
+              "key": "character",
+              "value": "Colicky",
+              "logLR": 5,
+              "evidenceLabel": "Colicky pain",
+              "citation": "Colicky, severe, episodic pattern typical of biliary colic"
+            },
+            {
+              "key": "exacerbating",
+              "value": "Fatty food",
+              "logLR": 5,
+              "evidenceLabel": "Fatty food trigger",
+              "citation": "Berger 2000. Fatty food intolerance LR+ ~2.5"
+            },
+            {
+              "key": "radiation",
+              "value": "Right shoulder",
+              "logLR": 5,
+              "evidenceLabel": "Right shoulder radiation",
+              "citation": "Trowbridge 2003. Right shoulder radiation"
+            },
+            {
+              "key": "timing",
+              "value": "Episodic",
+              "logLR": 5,
+              "evidenceLabel": "Episodic",
+              "citation": "Episodic attacks lasting 30 min–6 h are characteristic of biliary colic"
+            },
+            {
+              "key": "timing",
+              "value": "Post-prandial",
+              "logLR": 5,
+              "evidenceLabel": "Post-prandial",
+              "citation": "Post-prandial onset (especially after fatty meals)"
+            },
+            {
+              "key": "associations",
+              "value": "Nausea",
+              "logLR": 3,
+              "evidenceLabel": "Nausea",
+              "citation": "Berger 2000"
+            },
+            {
+              "key": "associations",
+              "value": "Fever",
+              "logLR": -5,
+              "evidenceLabel": "",
+              "citation": "Fever shifts differential toward cholecystitis, not uncomplicated colic. LR− ~0.4"
+            },
+            {
+              "key": "pmh",
+              "value": "gallstone",
+              "logLR": 5,
+              "evidenceLabel": "Known gallstones",
+              "citation": "Strong prior for biliary colic in known gallstone disease"
+            },
+            {
+              "key": "inv",
+              "value": "gallstone",
+              "logLR": 10,
+              "evidenceLabel": "Gallstones on USS",
+              "citation": "Gallstones on USS in RUQ pain: LR+ ~7–10"
+            },
+            {
+              "key": "sex_female",
+              "value": "",
+              "logLR": 3,
+              "evidenceLabel": "Female sex",
+              "citation": "Higher prevalence of gallstones in females"
+            }
+          ]
+        },
+        {
+          "name": "Acute Pancreatitis",
+          "icd": "K85.90",
+          "logPrior": 20,
+          "features": [
+            {
+              "key": "site",
+              "value": "Epigastric",
+              "logLR": 5,
+              "evidenceLabel": "Epigastric pain",
+              "citation": "Acute pancreatitis: epigastric pain is the cardinal symptom in ~90% of cases"
+            },
+            {
+              "key": "radiation",
+              "value": "Back",
+              "logLR": 6,
+              "evidenceLabel": "Radiation to back",
+              "citation": "Yadav D, Lowenfels AB. Epidemiology of pancreatitis. Gastroenterology 2013. Back radiation LR+ ~3.6"
+            },
+            {
+              "key": "relieving",
+              "value": "Sitting forward",
+              "logLR": 5,
+              "evidenceLabel": "Relief sitting forward",
+              "citation": "Typical posture-relieved pattern in pancreatitis"
+            },
+            {
+              "key": "exacerbating",
+              "value": "Alcohol",
+              "logLR": 6,
+              "evidenceLabel": "Alcohol intake",
+              "citation": "Yadav 2013. Alcohol is responsible for ~30% of acute pancreatitis; LR+ ~3.5"
+            },
+            {
+              "key": "exacerbating",
+              "value": "Fatty food",
+              "logLR": 4,
+              "evidenceLabel": "Post-fatty meal",
+              "citation": "Gallstone pancreatitis typically precipitated by fatty meal"
+            },
+            {
+              "key": "associations",
+              "value": "Vomiting",
+              "logLR": 3,
+              "evidenceLabel": "Vomiting",
+              "citation": "Vomiting present in ~70% of acute pancreatitis cases"
+            },
+            {
+              "key": "associations",
+              "value": "Nausea",
+              "logLR": 2,
+              "evidenceLabel": "Nausea",
+              "citation": "Nausea present in ~90% of acute pancreatitis"
+            },
+            {
+              "key": "character",
+              "value": "Severe",
+              "logLR": 4,
+              "evidenceLabel": "Severe / constant pain",
+              "citation": "Acute pancreatitis typically presents as constant severe epigastric pain"
+            },
+            {
+              "key": "inv",
+              "value": "lipase",
+              "logLR": 17,
+              "evidenceLabel": "Lipase elevated (>3× ULN)",
+              "citation": "Corsetti JP et al. Clin Chem 2000. Lipase >3× ULN: LR+ 29.5 (21.1–41.2)"
+            },
+            {
+              "key": "inv",
+              "value": "amylase",
+              "logLR": 13,
+              "evidenceLabel": "Amylase elevated (>3× ULN)",
+              "citation": "Corsetti 2000. Amylase >3× ULN: LR+ 12.9 (8.5–19.6)"
+            },
+            {
+              "key": "pmh",
+              "value": "gallstone",
+              "logLR": 4,
+              "evidenceLabel": "Known gallstones (biliary cause)",
+              "citation": "Gallstones account for ~40% of acute pancreatitis"
+            },
+            {
+              "key": "pmh",
+              "value": "alcohol",
+              "logLR": 6,
+              "evidenceLabel": "Alcohol use disorder",
+              "citation": "Yadav 2013. Chronic alcohol use LR+ ~3.5"
+            },
+            {
+              "key": "social",
+              "value": "alcohol",
+              "logLR": 6,
+              "evidenceLabel": "Alcohol use (social history)",
+              "citation": "Social history of heavy alcohol use is significant risk factor"
+            }
+          ]
+        },
+        {
+          "name": "Acute Diverticulitis",
+          "icd": "K57.30",
+          "logPrior": 22,
+          "features": [
+            {
+              "key": "site",
+              "value": "LLQ",
+              "logLR": 10,
+              "evidenceLabel": "LLQ pain",
+              "citation": "Lameris W et al. Which clinical features help most in diagnosing acute diverticulitis? BMJ 2010. LLQ pain LR+ 10.4"
+            },
+            {
+              "key": "character",
+              "value": "Constant",
+              "logLR": 4,
+              "evidenceLabel": "Constant pain",
+              "citation": "Lameris 2010"
+            },
+            {
+              "key": "associations",
+              "value": "Fever",
+              "logLR": 4,
+              "evidenceLabel": "Fever",
+              "citation": "Lameris 2010. Fever LR+ 1.9"
+            },
+            {
+              "key": "associations",
+              "value": "Nausea",
+              "logLR": 2,
+              "evidenceLabel": "Nausea",
+              "citation": "Lameris 2010"
+            },
+            {
+              "key": "exam",
+              "value": "tender llq",
+              "logLR": 9,
+              "evidenceLabel": "LLQ tenderness on exam",
+              "citation": "Lameris 2010. Direct tenderness LLQ LR+ ~8–10"
+            },
+            {
+              "key": "exam",
+              "value": "guarding",
+              "logLR": 5,
+              "evidenceLabel": "Guarding",
+              "citation": "Lameris 2010"
+            },
+            {
+              "key": "inv",
+              "value": "crp",
+              "logLR": 6,
+              "evidenceLabel": "CRP elevated",
+              "citation": "Lameris 2010. CRP >50 mg/L: LR+ 4.0 for complicated diverticulitis"
+            },
+            {
+              "key": "inv",
+              "value": "white cell",
+              "logLR": 4,
+              "evidenceLabel": "Leucocytosis",
+              "citation": "Lameris 2010. WBC elevation LR+ ~2.5"
+            },
+            {
+              "key": "pmh",
+              "value": "diverticular",
+              "logLR": 8,
+              "evidenceLabel": "Known diverticular disease",
+              "citation": "Known diverticular disease greatly increases prior probability"
+            },
+            {
+              "key": "age_over",
+              "value": "50",
+              "logLR": 5,
+              "evidenceLabel": "Age >50 (higher prevalence)",
+              "citation": "Diverticular disease prevalence increases markedly with age"
+            },
+            {
+              "key": "site",
+              "value": "RLQ",
+              "logLR": -6,
+              "evidenceLabel": "",
+              "citation": "RLQ location uncommon for sigmoid diverticulitis (right-sided diverticular less common)"
+            }
+          ]
+        },
+        {
+          "name": "Perforated Peptic Ulcer",
+          "icd": "K27.1",
+          "logPrior": 15,
+          "features": [
+            {
+              "key": "onset",
+              "value": "Sudden",
+              "logLR": 8,
+              "evidenceLabel": "Sudden / catastrophic onset",
+              "citation": "Sudden onset is characteristic; patients often report the exact moment of perforation"
+            },
+            {
+              "key": "character",
+              "value": "Severe",
+              "logLR": 5,
+              "evidenceLabel": "Severe pain",
+              "citation": "Perforation causes sudden severe generalised abdominal pain"
+            },
+            {
+              "key": "site",
+              "value": "Epigastric",
+              "logLR": 6,
+              "evidenceLabel": "Epigastric origin",
+              "citation": "Pain usually starts epigastrically then becomes generalised as peritonitis develops"
+            },
+            {
+              "key": "exam",
+              "value": "rigidity",
+              "logLR": 10,
+              "evidenceLabel": "Board-like rigidity",
+              "citation": "Board-like rigidity is highly specific for generalised peritonitis / perforation. LR+ ~5–10"
+            },
+            {
+              "key": "exam",
+              "value": "guarding",
+              "logLR": 8,
+              "evidenceLabel": "Generalised guarding",
+              "citation": "Generalised peritonism indicates perforation until proven otherwise"
+            },
+            {
+              "key": "exam",
+              "value": "rebound",
+              "logLR": 6,
+              "evidenceLabel": "Rebound tenderness",
+              "citation": "Generalised rebound tenderness points to peritonitis"
+            },
+            {
+              "key": "pmh",
+              "value": "peptic ulcer",
+              "logLR": 8,
+              "evidenceLabel": "Known peptic ulcer disease",
+              "citation": "History of PUD significantly increases prior for perforation"
+            },
+            {
+              "key": "pmh",
+              "value": "nsaid",
+              "logLR": 6,
+              "evidenceLabel": "NSAID use",
+              "citation": "NSAIDs are a major risk factor for peptic ulcer and perforation"
+            },
+            {
+              "key": "med",
+              "value": "nsaid",
+              "logLR": 6,
+              "evidenceLabel": "NSAID prescription",
+              "citation": "Current NSAID use raises risk of peptic ulcer perforation"
+            },
+            {
+              "key": "inv",
+              "value": "free gas",
+              "logLR": 18,
+              "evidenceLabel": "Pneumoperitoneum on imaging",
+              "citation": "Free gas under diaphragm on erect CXR/CT has very high specificity for perforation"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

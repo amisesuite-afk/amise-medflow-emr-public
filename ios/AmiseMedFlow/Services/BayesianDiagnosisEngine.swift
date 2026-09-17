@@ -14,7 +14,10 @@ enum BayesianDiagnosisEngine {
         let name: String
         let icdCode: String
         let probability: Int          // 0–100 %
-        let evidence: [String]        // human-readable supporting features
+        let evidence: [String]        // flat list — kept for backwards compat
+        // Evidence grouped by input source.
+        // Keys: "symptoms" | "exam" | "history" | "investigation" | "score" | "longitudinal"
+        let evidenceSources: [String: [String]]
         let confidence: Confidence
 
         enum Confidence {
@@ -116,7 +119,7 @@ enum BayesianDiagnosisEngine {
              ccL.contains("upper abdom") || ccL.contains("epigast") ||
              ccL.contains("right upper") || ccL.contains("right lower") ||
              ccL.contains("ruq") || ccL.contains("llq") || ccL.contains("rlq"):
-            candidates = abdominalPain
+            candidates = externalPool("abdominalPain") ?? abdominalPain
         case ccL.contains("chest pain") || ccL.contains("chest tightness") ||
              ccL.contains("chest heaviness") || ccL.contains("palpitation"):
             candidates = chestPain
@@ -270,6 +273,7 @@ enum BayesianDiagnosisEngine {
                 if confirmedL.contains(where: { nameL.contains($0) || $0.contains(nameL) }) {
                     scored[i].logPosterior += 20
                     scored[i].evidence.insert("Previously confirmed diagnosis", at: 0)
+                    scored[i].evidenceSources["longitudinal", default: []].insert("Previously confirmed", at: 0)
                 }
             }
         }
@@ -288,7 +292,10 @@ enum BayesianDiagnosisEngine {
             }
             for i in scored.indices where scored[i].candidate.name.lowercased().contains("appendicitis") {
                 scored[i].logPosterior += adj
-                if adj > 0 { scored[i].evidence.insert(label, at: 0) }
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
             }
         }
 
@@ -337,6 +344,7 @@ enum BayesianDiagnosisEngine {
         let candidate: Candidate
         var logPosterior: Int
         var evidence: [String]
+        var evidenceSources: [String: [String]] = [:]
     }
 
     private static func score(
@@ -366,9 +374,11 @@ enum BayesianDiagnosisEngine {
         return candidates.map { c in
             var logP = c.logPrior
             var evidence: [String] = []
+            var evidenceSources: [String: [String]] = [:]
 
             for f in c.features {
                 var triggered = false
+                var sourceKey = "other"
                 switch f.key {
                 case "onset", "site", "character", "radiation", "associations",
                      "timing", "exacerbating", "relieving", "severity":
@@ -376,44 +386,63 @@ enum BayesianDiagnosisEngine {
                     triggered = sel.contains(where: {
                         $0.lowercased().contains(f.value.lowercased())
                     })
+                    sourceKey = "symptoms"
                 case "exam":
                     // Space-separated value = all words must appear in exam text (AND logic).
                     let words = f.value.lowercased().split(separator: " ").map(String.init)
                     triggered = words.allSatisfy { examL.contains($0) }
+                    sourceKey = "exam"
                 case "pmh":
                     triggered = pmhL.contains(f.value.lowercased())
+                    sourceKey = "history"
                 case "pshx":
                     triggered = pshxL.contains(f.value.lowercased())
+                    sourceKey = "history"
                 case "inv":
                     triggered = invNames.contains(where: { $0.contains(f.value.lowercased()) }) ||
                                 invResults.contains(where: { $0.contains(f.value.lowercased()) })
+                    sourceKey = "investigation"
                 case "age_over":
                     if let threshold = Int(f.value) { triggered = age >= threshold }
+                    sourceKey = "demographics"
                 case "age_under":
                     if let threshold = Int(f.value) { triggered = age > 0 && age < threshold }
+                    sourceKey = "demographics"
                 case "sex_female":
                     triggered = sex == .female
+                    sourceKey = "demographics"
                 case "sex_male":
                     triggered = sex == .male
+                    sourceKey = "demographics"
                 case "med":
                     triggered = medsL.contains(where: { $0.contains(f.value.lowercased()) })
+                    sourceKey = "history"
                 case "social":
                     triggered = socialL.contains(f.value.lowercased())
+                    sourceKey = "history"
                 case "bmi_over":
                     if let threshold = Double(f.value), let bmiVal = bmi { triggered = bmiVal >= threshold }
+                    sourceKey = "demographics"
                 case "bmi_under":
                     if let threshold = Double(f.value), let bmiVal = bmi { triggered = bmiVal > 0 && bmiVal < threshold }
+                    sourceKey = "demographics"
                 default:
                     break
                 }
 
                 if triggered {
                     logP += f.logLR
-                    if f.logLR > 0 { evidence.append(f.evidenceLabel) }
+                    if f.logLR > 0 && !f.evidenceLabel.isEmpty {
+                        evidence.append(f.evidenceLabel)
+                        // Suppress demographics from the evidence panel (age/sex are context, not findings)
+                        if sourceKey != "demographics" && sourceKey != "other" {
+                            evidenceSources[sourceKey, default: []].append(f.evidenceLabel)
+                        }
+                    }
                 }
             }
 
-            return ScoredCandidate(candidate: c, logPosterior: logP, evidence: evidence)
+            return ScoredCandidate(candidate: c, logPosterior: logP, evidence: evidence, evidenceSources: evidenceSources)
         }
     }
 
@@ -447,9 +476,54 @@ enum BayesianDiagnosisEngine {
                 icdCode: s.candidate.icd,
                 probability: prob,
                 evidence: Array(s.evidence.prefix(4)),
+                evidenceSources: s.evidenceSources.mapValues { Array($0.prefix(3)) },
                 confidence: conf
             )
         }
+    }
+
+    // MARK: - External diagnostic database (DiagnosticDatabase.json)
+    // JSON file in the app bundle; evidence-based LR values with citations.
+    // Engine prefers loaded pools; falls back to hardcoded arrays if absent.
+
+    struct CandidateSpec: Codable {
+        let name: String
+        let icd: String
+        let logPrior: Int
+        let features: [FeatureSpec]
+
+        struct FeatureSpec: Codable {
+            let key: String
+            let value: String
+            let logLR: Int
+            let evidenceLabel: String
+            let citation: String?
+        }
+
+        func toCandidate() -> Candidate {
+            Candidate(name: name, icd: icd, logPrior: logPrior,
+                      features: features.map { f in
+                          Candidate.Feature(key: f.key, value: f.value,
+                                            logLR: f.logLR, evidenceLabel: f.evidenceLabel)
+                      })
+        }
+    }
+
+    struct CandidateDatabase: Codable {
+        let version: String
+        let pools: [String: [CandidateSpec]]
+    }
+
+    // Lazy-loaded once at first access; nil if file absent or unparseable.
+    static let externalDatabase: CandidateDatabase? = {
+        guard let url = Bundle.main.url(forResource: "DiagnosticDatabase", withExtension: "json"),
+              let data = try? Data(contentsOf: url) else { return nil }
+        return try? JSONDecoder().decode(CandidateDatabase.self, from: data)
+    }()
+
+    // Convenience: load a candidate pool from the external database, or return nil.
+    private static func externalPool(_ name: String) -> [Candidate]? {
+        externalDatabase?.pools[name].map { $0.map { $0.toCandidate() } }
     }
 
     // MARK: - Candidate tables
