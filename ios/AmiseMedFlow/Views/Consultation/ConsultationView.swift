@@ -1040,10 +1040,14 @@ struct ConsultationView: View {
             dismissedRadiation = false
         }
         .onChange(of: patient.chiefComplaint) { _, newCC in
-            // When CC changes, SOCRATES dimensions change entirely — old selections
-            // are semantically wrong for the new CC. Clear them.
+            // When CC changes, SOCRATES dimensions and working diagnosis change entirely.
             socratesSelections = [:]
             socratesExpandedDim = "onset"
+            // Clear stored working diagnosis — it was set for the previous CC and is
+            // now clinically invalid. Doctor must re-confirm from the new differentials.
+            patient.workingDiagnosis = nil
+            patient.workingDiagnosisICD = nil
+            touch()
             guard let cc = newCC, !cc.isEmpty else { triageResult = nil; return }
             pathwayTask?.cancel()
             pathwayTask = Task {
@@ -3622,14 +3626,9 @@ struct ConsultationView: View {
                         .buttonStyle(.plain)
                     }
                 } footer: {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Based on CC · SOCRATES · PMH · Meds · Social · BMI · Exam · Ix · Age/Sex. Apply to confirm.")
-                        // Debug: confirm which CC value reached the engine
-                        Text("Engine CC: \(patient.chiefComplaint ?? "—")")
-                            .foregroundStyle(.orange)
-                    }
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    Text("Based on CC · SOCRATES · PMH · Meds · Social · BMI · Exam · Ix · Age/Sex. Apply to confirm.")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
                 }
             }
 
