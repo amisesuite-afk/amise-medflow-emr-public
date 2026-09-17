@@ -492,6 +492,268 @@ enum PatientScoreAutoPopulator {
         return (i, f)
     }
 
+    // MARK: SIRS (from vitals + WBC)
+
+    static func sirs(patient: Patient) -> (SIRSInput, ScoreAutoFill) {
+        var i = SIRSInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        if let v = patient.latestVitals {
+            if let t = v.temperatureCelsius, t > 38.0 || t < 36.0 {
+                i.tempAbove38OrBelow36 = true; f.autoFieldKeys.insert("tempAbove38OrBelow36")
+            }
+            if let hr = v.heartRate, hr > 90 {
+                i.heartRateOver90 = true; f.autoFieldKeys.insert("heartRateOver90")
+            }
+            if let rr = v.respiratoryRate, rr > 20 {
+                i.rrOver20OrPaCO2Below32 = true; f.autoFieldKeys.insert("rrOver20OrPaCO2Below32")
+            }
+        }
+
+        // WBC (×10⁹/L; values >100 assumed cells/μL → ÷1000)
+        let wbcKw = ["wbc","white blood cell","white cell count","leucocyte","leukocyte"]
+        if let wbc = patient.latestLab(named: wbcKw) {
+            let val = wbc > 100 ? wbc / 1000 : wbc
+            if val > 12 || val < 4 {
+                i.wbcOver12kOrBelow4kOr10PctBands = true
+                f.autoFieldKeys.insert("wbcOver12kOrBelow4kOr10PctBands")
+            }
+        }
+
+        f.addPending(key: "suspectedInfection",
+            label: "Suspected infection source identified",
+            source: "Clinical assessment")
+        if !f.isAuto("wbcOver12kOrBelow4kOr10PctBands") {
+            f.addPending(key: "wbcOver12kOrBelow4kOr10PctBands",
+                label: "WBC >12k, <4k, or >10% band neutrophils",
+                source: "Blood test results")
+        }
+
+        return (i, f)
+    }
+
+    // MARK: qSOFA (from vitals)
+
+    static func qsofa(patient: Patient) -> (QSOFAInput, ScoreAutoFill) {
+        var i = QSOFAInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        if let v = patient.latestVitals {
+            if v.avpu != .alert {
+                i.alteredMentation = true; f.autoFieldKeys.insert("alteredMentation")
+            }
+            if let rr = v.respiratoryRate, rr > 22 {
+                i.rrOver22 = true; f.autoFieldKeys.insert("rrOver22")
+            } else if v.respiratoryRate == nil {
+                f.addPending(key: "rrOver22",
+                    label: "Respiratory rate >22/min",
+                    source: "Measure at bedside")
+            }
+            if let sbp = v.bpSystolic, sbp < 100 {
+                i.sbpUnder100 = true; f.autoFieldKeys.insert("sbpUnder100")
+            } else if v.bpSystolic == nil {
+                f.addPending(key: "sbpUnder100",
+                    label: "Systolic BP <100 mmHg",
+                    source: "Measure blood pressure")
+            }
+        } else {
+            f.addPending(key: "alteredMentation",
+                label: "Altered mentation (GCS <15)",
+                source: "Assess patient")
+            f.addPending(key: "rrOver22",
+                label: "Respiratory rate >22/min",
+                source: "Measure at bedside")
+            f.addPending(key: "sbpUnder100",
+                label: "Systolic BP <100 mmHg",
+                source: "Measure blood pressure")
+        }
+        f.addPending(key: "suspectedInfection",
+            label: "Suspected infection source identified",
+            source: "Clinical assessment")
+
+        return (i, f)
+    }
+
+    // MARK: Child-Pugh (from labs)
+
+    static func childPugh(patient: Patient) -> (ChildPughInput, ScoreAutoFill) {
+        var i = ChildPughInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        // Bilirubin → μmol/L (< 5 = mg/dL ×17.1, ≥ 5 = μmol/L)
+        if let bili = patient.latestLab(named: ["bilirubin"]) {
+            let umol = bili < 5 ? bili * 17.1 : bili
+            i.bilirubinUmolL = max(0, min(400, umol))
+            f.autoFieldKeys.insert("bilirubinUmolL")
+        }
+
+        // Albumin → g/dL (values > 10 treated as g/L → ÷10)
+        if let alb = patient.latestLab(named: ["albumin"]) {
+            let gdL = alb > 10 ? alb / 10 : alb
+            i.albuminGdL = max(1.0, min(5.0, gdL))
+            f.autoFieldKeys.insert("albuminGdL")
+        }
+
+        // INR
+        if let inr = patient.latestLab(named: ["inr","pt-inr"]) {
+            i.ptINR = max(0.8, min(5.0, inr))
+            f.autoFieldKeys.insert("ptINR")
+        }
+
+        // Ascites and encephalopathy require clinical examination — no auto
+        return (i, f)
+    }
+
+    // MARK: LRINEC (from labs)
+
+    static func lrinec(patient: Patient) -> (LRINECInput, ScoreAutoFill) {
+        var i = LRINECInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        let wbcKw = ["wbc","white blood cell","white cell count","leucocyte","leukocyte"]
+
+        // CRP (mg/L)
+        if let crp = patient.latestLab(named: ["crp","c-reactive protein","c reactive protein"]) {
+            if crp > 150 { i.crpOver150 = true; f.autoFieldKeys.insert("crpOver150") }
+        }
+
+        // WBC (×10⁹/L)
+        if let wbc = patient.latestLab(named: wbcKw) {
+            let val = wbc > 100 ? wbc / 1000 : wbc
+            if val > 25      { i.wbcOver25  = true; f.autoFieldKeys.insert("wbcOver25") }
+            else if val >= 15 { i.wbc15to25 = true; f.autoFieldKeys.insert("wbc15to25") }
+        }
+
+        // Hb (g/dL; values >20 treated as g/L → ÷10)
+        if let hb = patient.latestLab(named: ["haemoglobin","hemoglobin","hgb","hb"]) {
+            let gdL = hb > 20 ? hb / 10 : hb
+            if gdL < 11        { i.hbBelow11   = true; f.autoFieldKeys.insert("hbBelow11") }
+            else if gdL <= 13.5 { i.hb11to13_5 = true; f.autoFieldKeys.insert("hb11to13_5") }
+        }
+
+        // Sodium
+        if let na = patient.latestLab(named: ["sodium"]) {
+            if na < 135 { i.sodiumBelow135 = true; f.autoFieldKeys.insert("sodiumBelow135") }
+        }
+
+        // Creatinine (via unit-inferred μmol/L)
+        if let cr = patient.creatinineUmolL() {
+            if cr > 177       { i.creatinineOver177   = true; f.autoFieldKeys.insert("creatinineOver177") }
+            else if cr >= 141 { i.creatinine141to177  = true; f.autoFieldKeys.insert("creatinine141to177") }
+        }
+
+        // Glucose (mmol/L; values >30 treated as mg/dL → ÷18)
+        if let glu = patient.latestLab(named: ["glucose","blood glucose","rbs","fasting glucose"]) {
+            let mmol = glu > 30 ? glu / 18.0 : glu
+            if mmol > 10 { i.glucoseOver10 = true; f.autoFieldKeys.insert("glucoseOver10") }
+        }
+
+        return (i, f)
+    }
+
+    // MARK: Ranson (at-admission criteria from labs; 48 h criteria as pending)
+
+    static func ranson(patient: Patient) -> (RansonInput, ScoreAutoFill) {
+        var i = RansonInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        if patient.ageYears > 55 { i.ageOver55 = true; f.autoFieldKeys.insert("ageOver55") }
+
+        let wbcKw = ["wbc","white blood cell","white cell count","leucocyte","leukocyte"]
+
+        // WBC (×10⁹/L)
+        if let wbc = patient.latestLab(named: wbcKw) {
+            let val = wbc > 100 ? wbc / 1000 : wbc
+            if val > 16 { i.wbcOver16k = true; f.autoFieldKeys.insert("wbcOver16k") }
+        }
+
+        // Glucose >11.1 mmol/L (= >200 mg/dL); values >30 = mg/dL
+        if let glu = patient.latestLab(named: ["glucose","blood glucose","rbs"]) {
+            let mmol = glu > 30 ? glu / 18.0 : glu
+            if mmol > 11.1 { i.glucoseOver200 = true; f.autoFieldKeys.insert("glucoseOver200") }
+        }
+
+        // LDH >350 IU/L
+        if let ldh = patient.latestLab(named: ["ldh","lactate dehydrogenase"]) {
+            if ldh > 350 { i.ldhOver350 = true; f.autoFieldKeys.insert("ldhOver350") }
+        }
+
+        // AST >250 IU/L
+        if let ast = patient.latestLab(named: ["ast","aspartate aminotransferase","aspartate transaminase"]) {
+            if ast > 250 { i.astOver250 = true; f.autoFieldKeys.insert("astOver250") }
+        }
+
+        // 48 h serial criteria — cannot auto-detect from a single time-point reading
+        f.addPending(key: "hctFallOver10",
+            label: "Haematocrit fall >10% from admission value (48 h)",
+            source: "Serial FBC — compare to admission Hct")
+        f.addPending(key: "bunRiseOver5",
+            label: "BUN rise >1.8 mmol/L from admission (48 h)",
+            source: "Serial U&E — compare to admission BUN")
+        f.addPending(key: "calciumBelow8",
+            label: "Calcium <2.0 mmol/L (<8 mg/dL) at 48 h",
+            source: "Electrolyte panel at 48 h")
+        f.addPending(key: "pao2Below60",
+            label: "PaO₂ <60 mmHg at 48 h",
+            source: "Arterial blood gas")
+
+        return (i, f)
+    }
+
+    // MARK: Glasgow Pancreatitis (from labs)
+
+    static func glasgowPancreatitis(patient: Patient) -> (GlasgowPancreatitisInput, ScoreAutoFill) {
+        var i = GlasgowPancreatitisInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        if patient.ageYears > 55 { i.ageOver55 = true; f.autoFieldKeys.insert("ageOver55") }
+
+        let wbcKw = ["wbc","white blood cell","white cell count","leucocyte","leukocyte"]
+
+        // WBC (×10⁹/L)
+        if let wbc = patient.latestLab(named: wbcKw) {
+            let val = wbc > 100 ? wbc / 1000 : wbc
+            if val > 15 { i.wbcOver15k = true; f.autoFieldKeys.insert("wbcOver15k") }
+        }
+
+        // Glucose >10 mmol/L; values >30 = mg/dL
+        if let glu = patient.latestLab(named: ["glucose","blood glucose","rbs"]) {
+            let mmol = glu > 30 ? glu / 18.0 : glu
+            if mmol > 10 { i.glucoseOver10 = true; f.autoFieldKeys.insert("glucoseOver10") }
+        }
+
+        // Urea >16 mmol/L; values >50 treated as BUN mg/dL → ÷2.8
+        if let urea = patient.latestLab(named: ["urea","blood urea","bun","blood urea nitrogen"]) {
+            let mmol = urea > 50 ? urea / 2.8 : urea
+            if mmol > 16 { i.ureaOver16 = true; f.autoFieldKeys.insert("ureaOver16") }
+        }
+
+        // Calcium <2 mmol/L; values ≥5 treated as mg/dL → ÷4.0
+        if let ca = patient.latestLab(named: ["calcium"]) {
+            let mmol = ca >= 5 ? ca / 4.0 : ca
+            if mmol < 2.0 { i.calciumBelow2 = true; f.autoFieldKeys.insert("calciumBelow2") }
+        }
+
+        // Albumin <32 g/L; values <10 treated as g/dL → ×10
+        if let alb = patient.latestLab(named: ["albumin"]) {
+            let gL = alb < 10 ? alb * 10 : alb
+            if gL < 32 { i.albuminBelow32 = true; f.autoFieldKeys.insert("albuminBelow32") }
+        }
+
+        // LDH >600 IU/L or AST >200 IU/L
+        let ldh = patient.latestLab(named: ["ldh","lactate dehydrogenase"])
+        let ast = patient.latestLab(named: ["ast","aspartate aminotransferase"])
+        if (ldh.map { $0 > 600 } ?? false) || (ast.map { $0 > 200 } ?? false) {
+            i.ldhOver600OrAstOver200 = true; f.autoFieldKeys.insert("ldhOver600OrAstOver200")
+        }
+
+        f.addPending(key: "pao2Below60",
+            label: "PaO₂ <60 mmHg",
+            source: "Arterial blood gas")
+
+        return (i, f)
+    }
+
     // MARK: MELD-Na (from labs)
 
     static func meld(patient: Patient) -> (MELDInput, ScoreAutoFill) {
@@ -528,6 +790,170 @@ enum PatientScoreAutoPopulator {
                                          "esrd","renal replacement therapy"]) {
             i.onDialysis = true; f.autoFieldKeys.insert("onDialysis")
         }
+
+        return (i, f)
+    }
+
+    // MARK: Alvarado (from vitals + labs)
+
+    static func alvarado(patient: Patient) -> (AlvaradoInput, ScoreAutoFill) {
+        var i = AlvaradoInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        // Temperature ≥37.3°C from latest vitals
+        if let t = patient.latestVitals?.temperatureCelsius, t >= 37.3 {
+            i.elevatedTemperature = true; f.autoFieldKeys.insert("elevatedTemperature")
+        }
+
+        // WBC >10 ×10⁹/L from labs
+        let wbcKw = ["wbc","white blood cell","white cell count","leucocyte","leukocyte"]
+        if let wbc = patient.latestLab(named: wbcKw) {
+            let val = wbc > 100 ? wbc / 1000 : wbc
+            if val > 10 { i.wbcElevated = true; f.autoFieldKeys.insert("wbcElevated") }
+        }
+
+        return (i, f)
+    }
+
+    // MARK: Tokyo Cholecystitis (from labs)
+
+    static func tokyoCholecystitis(patient: Patient) -> (TokyoCholecystitisInput, ScoreAutoFill) {
+        var i = TokyoCholecystitisInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        // WBC >18 ×10⁹/L (Grade I criterion)
+        let wbcKw = ["wbc","white blood cell","white cell count","leucocyte","leukocyte"]
+        if let wbc = patient.latestLab(named: wbcKw) {
+            let val = wbc > 100 ? wbc / 1000 : wbc
+            if val > 18 { i.wbcAbove18 = true; f.autoFieldKeys.insert("wbcAbove18") }
+        }
+
+        return (i, f)
+    }
+
+    // MARK: Tokyo Cholangitis (from vitals + labs)
+
+    static func tokyoCholangitis(patient: Patient) -> (TokyoCholangitisInput, ScoreAutoFill) {
+        var i = TokyoCholangitisInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        // Age >75
+        if patient.ageYears > 75 { i.ageAbove75 = true; f.autoFieldKeys.insert("ageAbove75") }
+
+        // Temperature >39°C from latest vitals
+        if let t = patient.latestVitals?.temperatureCelsius, t > 39.0 {
+            i.temperatureAbove39 = true; f.autoFieldKeys.insert("temperatureAbove39")
+        }
+
+        // WBC >12k or <4k ×10⁹/L from labs
+        let wbcKw = ["wbc","white blood cell","white cell count","leucocyte","leukocyte"]
+        if let wbc = patient.latestLab(named: wbcKw) {
+            let val = wbc > 100 ? wbc / 1000 : wbc
+            if val > 12 || val < 4 { i.wbcAbove12OrBelow4 = true; f.autoFieldKeys.insert("wbcAbove12OrBelow4") }
+        }
+
+        // Bilirubin >85 μmol/L (>5 mg/dL) — same unit inference as elsewhere
+        if let bili = patient.latestLab(named: ["bilirubin"]) {
+            let umol = bili < 5 ? bili * 17.1 : bili
+            if umol > 85 { i.bilirubinAbove5 = true; f.autoFieldKeys.insert("bilirubinAbove5") }
+        }
+
+        return (i, f)
+    }
+
+    // MARK: Blatchford (from vitals + labs + sex)
+
+    static func blatchford(patient: Patient) -> (BlatchfordInput, ScoreAutoFill) {
+        var i = BlatchfordInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        // Sex
+        if patient.sex == .male { i.isMale = true; f.autoFieldKeys.insert("isMale") }
+
+        // BUN / urea → mmol/L; values >50 treated as BUN mg/dL → ÷2.8
+        if let urea = patient.latestLab(named: ["urea","blood urea","bun","blood urea nitrogen"]) {
+            let mmol = urea > 50 ? urea / 2.8 : urea
+            let bun: BlatchfordInput.BlatchfordBUN
+            switch mmol {
+            case ..<6.5:    bun = .under6_5
+            case 6.5..<8.0: bun = .bun6_5to7_9
+            case 8.0..<10.0: bun = .bun8to9_9
+            case 10.0..<25.0: bun = .bun10to24_9
+            default:        bun = .bunOver25
+            }
+            i.bloodUreaNitrogen = bun; f.autoFieldKeys.insert("bloodUreaNitrogen")
+        }
+
+        // Hb (g/dL; values >20 = g/L → ÷10) — sex-aware band selection
+        if let hb = patient.latestLab(named: ["haemoglobin","hemoglobin","hgb","hb"]) {
+            let gdL = hb > 20 ? hb / 10 : hb
+            let isMale = patient.sex == .male
+            let hbEnum: BlatchfordInput.BlatchfordHb
+            if isMale {
+                switch gdL {
+                case 13...: hbEnum = .male13plus
+                case 12..<13: hbEnum = .male12to12_9
+                case 10..<12: hbEnum = .male10to11_9
+                default:    hbEnum = .maleSub10
+                }
+            } else {
+                switch gdL {
+                case 12...: hbEnum = .female12plus
+                case 10..<12: hbEnum = .female10to11_9
+                default:    hbEnum = .femaleSub10
+                }
+            }
+            i.haemoglobin = hbEnum; f.autoFieldKeys.insert("haemoglobin")
+        }
+
+        // SBP from latest vitals
+        if let sbp = patient.latestVitals?.bpSystolic {
+            let sbpEnum: BlatchfordInput.BlatchfordSBP
+            switch sbp {
+            case ..<90:    sbpEnum = .under90
+            case 90..<100: sbpEnum = .sbp90to99
+            case 100..<110: sbpEnum = .sbp100to109
+            default:       sbpEnum = .over109
+            }
+            i.sbp = sbpEnum; f.autoFieldKeys.insert("sbp")
+        }
+
+        // HR >100 from latest vitals
+        if let hr = patient.latestVitals?.heartRate, hr > 100 {
+            i.heartRateOver100 = true; f.autoFieldKeys.insert("heartRateOver100")
+        }
+
+        return (i, f)
+    }
+
+    // MARK: NEWS2 (from latest vitals)
+
+    static func news2(patient: Patient) -> (NEWS2Input, ScoreAutoFill) {
+        var i = NEWS2Input()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        guard let v = patient.latestVitals else {
+            f.addPending(key: "all",
+                label: "No vitals recorded — enter current readings",
+                source: "Measure at bedside")
+            return (i, f)
+        }
+
+        if let rr = v.respiratoryRate    { i.respiratoryRate    = rr;  f.autoFieldKeys.insert("respiratoryRate") }
+        if let spo = v.spo2              { i.spo2               = spo; f.autoFieldKeys.insert("spo2") }
+        if let sbp = v.bpSystolic        { i.systolicBP         = sbp; f.autoFieldKeys.insert("systolicBP") }
+        if let hr = v.heartRate          { i.heartRate          = hr;  f.autoFieldKeys.insert("heartRate") }
+        if let t = v.temperatureCelsius  { i.temperatureCelsius = t;   f.autoFieldKeys.insert("temperatureCelsius") }
+
+        // AVPU maps directly (same enum type)
+        i.avpu = v.avpu; f.autoFieldKeys.insert("avpu")
+
+        if v.respiratoryRate   == nil { f.addPending(key: "respiratoryRate",   label: "Respiratory rate (breaths/min)", source: "Measure at bedside") }
+        if v.spo2              == nil { f.addPending(key: "spo2",              label: "SpO₂ (%)",                       source: "Pulse oximetry") }
+        if v.bpSystolic        == nil { f.addPending(key: "systolicBP",        label: "Systolic blood pressure (mmHg)", source: "Measure BP") }
+        if v.heartRate         == nil { f.addPending(key: "heartRate",         label: "Heart rate (bpm)",               source: "Measure pulse") }
+        if v.temperatureCelsius == nil { f.addPending(key: "temperatureCelsius", label: "Temperature (°C)",             source: "Measure") }
+        f.addPending(key: "onSupplementalO2", label: "On supplemental oxygen?", source: "Clinical assessment")
 
         return (i, f)
     }

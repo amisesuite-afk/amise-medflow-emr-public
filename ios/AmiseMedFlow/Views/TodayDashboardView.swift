@@ -12,30 +12,34 @@ struct TodayDashboardView: View {
 
     private let cal = Calendar.current
 
-    // MARK: - Patient groups
+    // MARK: - Patient groups (deduped via PatientDeduplication.swift)
 
     private var wardPatients: [Patient] {
         allPatients
             .filter { $0.setting == .inpatient || $0.setting == .emergency }
             .sorted { $0.acuity < $1.acuity }
+            .deduped()
     }
 
     private var theatreToday: [Patient] {
         allPatients
             .filter { $0.setting == .theatre && isToday($0.operationDate) }
             .sorted { ($0.operationDate ?? .now) < ($1.operationDate ?? .now) }
+            .deduped()
     }
 
     private var endoscopyToday: [Patient] {
         allPatients
             .filter { $0.setting == .endoscopy && isToday($0.operationDate) }
             .sorted { ($0.operationDate ?? .now) < ($1.operationDate ?? .now) }
+            .deduped()
     }
 
     private var clinicToday: [Patient] {
         allPatients
             .filter { $0.setting == .outpatient && isToday($0.operationDate) }
             .sorted { ($0.operationDate ?? .now) < ($1.operationDate ?? .now) }
+            .deduped()
     }
 
     private var highAcuityWard: [Patient] {
@@ -50,6 +54,7 @@ struct TodayDashboardView: View {
         allPatients
             .filter { $0.encounterStatus == .waiting && isToday($0.checkInTime) }
             .sorted { ($0.checkInTime ?? .distantPast) < ($1.checkInTime ?? .distantPast) }
+            .deduped()
     }
 
     // Calendar events from iOS EventKit (syncs with Google Calendar when

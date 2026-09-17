@@ -32,7 +32,10 @@ enum UserRole: String, Codable {
     var visiblePatientSections: Set<PatientDetailSection> {
         switch self {
         case .frontDesk:
-            return [.demographics]
+            return [
+                .overview, .demographics,
+                .preOpChecklist, .consent, .patientInstructions,
+            ]
         case .nurse:
             return [
                 .overview, .demographics,

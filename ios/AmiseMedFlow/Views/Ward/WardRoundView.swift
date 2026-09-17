@@ -28,7 +28,7 @@ struct WardRoundView: View {
         if let loc = locationFilter {
             results = results.filter { $0.location == loc }
         }
-        return results.sorted { $0.acuity < $1.acuity }
+        return results.sorted { $0.acuity < $1.acuity }.deduped()
     }
 
     private var grouped: [(ClinicalLocation, [Patient])] {

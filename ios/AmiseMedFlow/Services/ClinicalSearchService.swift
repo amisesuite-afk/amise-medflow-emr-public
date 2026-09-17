@@ -185,10 +185,15 @@ struct SurgicalDrug: Identifiable, Equatable, Hashable {
     static func search(_ query: String) -> [SurgicalDrug] {
         guard query.count >= 1 else { return [] }
         let q = query.lowercased()
-        return allDrugs.filter {
+        let formularyHits = allDrugs.filter {
             $0.name.lowercased().contains(q) ||
             $0.category.lowercased().contains(q)
-        }.prefix(20).map { $0 }
+        }
+        let formularyNames = Set(formularyHits.map { $0.name.lowercased() })
+        let customHits = CustomDrugStore.shared.asDrugs.filter {
+            $0.name.lowercased().contains(q) && !formularyNames.contains($0.name.lowercased())
+        }
+        return (formularyHits + customHits).prefix(20).map { $0 }
     }
 
     // Curated subset shown when the search field is focused but empty — the
@@ -232,7 +237,7 @@ struct SurgicalDrug: Identifiable, Equatable, Hashable {
 
     // Split into private sub-arrays to avoid Swift type-checker timeout on large literals.
     static let allDrugs: [SurgicalDrug] =
-        _drugs1 + _drugs2 + _drugs3 + _drugs4 + _drugs5 + _drugs6 + _drugs7 + _drugs8
+        _drugs1 + _drugs2 + _drugs3 + _drugs4 + _drugs5 + _drugs6 + _drugs7 + _drugs8 + _drugs9
 
     private static let _drugs1: [SurgicalDrug] = [
 
@@ -1366,6 +1371,310 @@ struct SurgicalDrug: Identifiable, Equatable, Hashable {
               hepaticDosing: "Not applicable",
               monitoring: "Ensure conjugate (not plain polysaccharide) for long-term protection; post-splenectomy: give ≥2 weeks before elective splenectomy if possible; document on patient's record"),
     ]
+
+    // ─── ONCOLOGY / CHEMOTHERAPY ─────────────────────────────────────────────
+    private static let _drugs9: [SurgicalDrug] = [
+
+        // Platinum agents
+        .init(name: "Cisplatin",         category: "Chemotherapy — Platinum Agent",
+              commonDoses: "75–100 mg/m² IV q3 weeks (in 0.9% NaCl with aggressive hydration)",
+              route: "IV infusion",
+              notes: "Testicular, bladder, ovarian, lung, oesophageal, gastric, H&N cancers; pre- and post-hydration mandatory (1–2 L NS); antiemetics essential (NK1 + 5-HT3 + dex); cumulative nephrotoxicity",
+              sideEffects: "Nephrotoxicity (dose-limiting — hydration mandatory), ototoxicity (irreversible high-frequency hearing loss), neuropathy (cumulative), severe nausea/vomiting, myelosuppression, electrolyte wasting (Mg²⁺, K⁺, Na⁺), alopecia",
+              contraindications: "eGFR <60 mL/min (relative — consider carboplatin), pre-existing neuropathy/hearing loss, pregnancy, breastfeeding",
+              renalDosing: "eGFR 50–60: use with caution. eGFR <50: switch to carboplatin. eGFR <30: contraindicated",
+              hepaticDosing: "No standard dose adjustment; use with caution in severe hepatic impairment",
+              monitoring: "U&E, Mg²⁺, Cr before each cycle; audiogram at baseline and after cumulative dose; neuropathy assessment; urine output ≥100 mL/h during infusion"),
+
+        .init(name: "Carboplatin",       category: "Chemotherapy — Platinum Agent",
+              commonDoses: "AUC 5–6 IV q3 weeks (Calvert formula: dose (mg) = AUC × [GFR + 25])",
+              route: "IV infusion",
+              notes: "Ovarian, lung, testicular, endometrial cancers; less nephrotoxic and emetogenic than cisplatin; dose by Calvert formula using eGFR (cap at 125 mL/min per ASCO); preferred in renal impairment",
+              sideEffects: "Myelosuppression (dose-limiting — especially thrombocytopenia), nausea/vomiting (less severe than cisplatin), nephrotoxicity (less common), peripheral neuropathy, ototoxicity (less than cisplatin), hypersensitivity (>6 cycles — carboplatin allergy)",
+              contraindications: "Severe bone marrow suppression, history of severe platinum hypersensitivity, pregnancy",
+              renalDosing: "Dose by Calvert formula (GFR-based); reduce GFR cap to 125 mL/min (ASCO); eGFR <15: avoid",
+              hepaticDosing: "No standard adjustment; use with caution",
+              monitoring: "FBC, renal function, Mg²⁺ before each cycle; Calvert formula requires accurate eGFR; allergy protocol after ≥6 cycles"),
+
+        .init(name: "Oxaliplatin",       category: "Chemotherapy — Platinum Agent",
+              commonDoses: "85 mg/m² IV q2 weeks (FOLFOX) or 130 mg/m² IV q3 weeks (CAPOX)",
+              route: "IV infusion over 2–6h",
+              notes: "Colorectal cancer (metastatic and adjuvant); in 5% dextrose ONLY (not NaCl — precipitates); two neuropathy syndromes: acute cold-triggered and cumulative sensory",
+              sideEffects: "Acute neuropathy (cold-triggered paraesthesiae — avoid cold after infusion), cumulative sensory peripheral neuropathy (dose-limiting), nausea, myelosuppression, fatigue, laryngopharyngeal dysaesthesia (acute — benign)",
+              contraindications: "Severe neuropathy at baseline, pregnancy; avoid cold exposure immediately post-infusion",
+              renalDosing: "eGFR 30–59: consider dose reduction. eGFR <30: avoid",
+              hepaticDosing: "No standard adjustment; use with caution in severe impairment",
+              monitoring: "FBC, renal function before each cycle; neuropathy grading; advise re cold avoidance for 3–5 days post-infusion"),
+
+        .init(name: "Ifosfamide",        category: "Chemotherapy — Alkylating Agent",
+              commonDoses: "1.2–2.5 g/m²/day IV × 5 days q3 weeks (with MESNA)",
+              route: "IV infusion",
+              notes: "Sarcoma, testicular, cervical cancers; ALWAYS give MESNA (prevents haemorrhagic cystitis); aggressive hydration required; encephalopathy risk — discontinue if confusion/hallucinations; methylene blue for ifosfamide encephalopathy",
+              sideEffects: "Haemorrhagic cystitis (MESNA mandatory), CNS toxicity/encephalopathy (confusion, hallucinations — stop drug immediately), myelosuppression, nausea/vomiting, alopecia, nephrotoxicity (Fanconi syndrome — tubular)",
+              contraindications: "Severe bone marrow suppression, renal impairment (nephrotoxicity risk), urinary tract obstruction, prior cisplatin-induced nephrotoxicity (increases CNS toxicity)",
+              renalDosing: "Dose reduction required; avoid eGFR <30 mL/min",
+              hepaticDosing: "Reduce dose in severe hepatic impairment (prodrug requiring hepatic activation)",
+              monitoring: "FBC, renal function, urinalysis (blood — stop if haemorrhagic cystitis despite MESNA); neurological status throughout infusion"),
+
+        // Antimetabolites / Fluoropyrimidines
+        .init(name: "5-Fluorouracil (5-FU)", category: "Chemotherapy — Fluoropyrimidine",
+              commonDoses: "400 mg/m² IV bolus then 2400 mg/m² CI over 46h q2 weeks (FOLFOX/FOLFIRI); 500–1000 mg/m² CI over 5 days q4 weeks",
+              route: "IV bolus / continuous infusion",
+              notes: "Colorectal, gastric, oesophageal, pancreatic, breast, H&N cancers; dose-limiting toxicity differs — bolus: myelosuppression/mucositis; infusion: palmar-plantar erythrodysaesthesia (PPE); DPD deficiency → fatal toxicity (test before starting)",
+              sideEffects: "Mucositis/stomatitis, diarrhoea, myelosuppression, PPE (hand-foot syndrome with infusion regimens), cardiotoxicity (vasospasm — chest pain, ECG changes; stop immediately), DPD deficiency → severe toxicity",
+              contraindications: "DPD deficiency (DPYD genotyping recommended before treatment — severe/fatal toxicity risk), recent MI, current coronary artery disease (relative), pregnancy",
+              renalDosing: "No standard dose reduction; however renal failure reduces drug clearance — use with caution",
+              hepaticDosing: "Reduce dose in severe hepatic impairment (bilirubin >3× ULN: reduce by 50%)",
+              monitoring: "FBC, LFTs before each cycle; mucositis assessment; DPD/DPYD testing before starting; cardiotoxicity monitoring (ECG if symptoms)"),
+
+        .init(name: "Capecitabine (Xeloda)", category: "Chemotherapy — Fluoropyrimidine (Oral)",
+              commonDoses: "1250 mg/m² BD PO (days 1–14, q3 weeks); adjuvant CRC: 1250 mg/m² BD × 14 days; hepatic metastases: 1000 mg/m² BD",
+              route: "PO (with food, 30 min after meals)",
+              notes: "Oral prodrug of 5-FU; colorectal, gastric, breast cancers; warfarin interaction (↑ INR significantly — frequent monitoring); renal dosing essential; DPD deficiency testing recommended",
+              sideEffects: "PPE/hand-foot syndrome (dose-limiting — moisturise, dose reduce; inform patient early), diarrhoea, mucositis, nausea, fatigue, hyperbilirubinaemia, cardiotoxicity (same as 5-FU), warfarin interaction",
+              contraindications: "DPD deficiency, eGFR <30 mL/min, warfarin (relative — use LMWH instead), pregnancy",
+              renalDosing: "eGFR 30–50: 75% dose. eGFR <30: contraindicated",
+              hepaticDosing: "Mild–moderate: no adjustment. Severe: avoid (limited data)",
+              monitoring: "FBC, renal function, LFTs before each cycle; PPE assessment; INR if on warfarin (check weekly); DPD testing before starting"),
+
+        .init(name: "Gemcitabine (Gemzar)", category: "Chemotherapy — Antimetabolite (Nucleoside Analogue)",
+              commonDoses: "1000–1250 mg/m² IV over 30 min on days 1, 8 (q3 weeks) or days 1, 8, 15 (q4 weeks); pancreatic: 1000 mg/m² weekly × 7 then weekly × 3 q4 weeks",
+              route: "IV infusion over 30 min",
+              notes: "Pancreatic, NSCLC, bladder, ovarian, breast cancers; infusion over 30 min (longer infusion ↑ toxicity); flu-like syndrome common first 24h; radiation sensitiser — avoid concurrent radiotherapy",
+              sideEffects: "Myelosuppression (especially thrombocytopenia), flu-like syndrome (fever, myalgia, headache — within 24h), nausea, transaminitis, peripheral oedema, pulmonary toxicity (rare — pneumonitis), haemolytic uraemic syndrome (rare)",
+              contraindications: "Concurrent radiation therapy (increased toxicity), severe hepatic impairment, pregnancy",
+              renalDosing: "No standard dose adjustment; use with caution; gemcitabine-associated HUS risk higher in renal impairment",
+              hepaticDosing: "Mild: no adjustment. Severe hepatic impairment: avoid or use with caution",
+              monitoring: "FBC and LFTs before each dose; renal function (HUS — microangiopathic haemolysis); pulmonary symptoms"),
+
+        // Anthracyclines
+        .init(name: "Doxorubicin (Adriamycin)", category: "Chemotherapy — Anthracycline",
+              commonDoses: "60–75 mg/m² IV q3 weeks (single agent); 40–50 mg/m² IV (combination); liposomal (Caelyx): 40–50 mg/m² q4 weeks",
+              route: "IV bolus / infusion (vesicant — central line preferred)",
+              notes: "Breast, lymphoma (CHOP), sarcoma, gastric, hepatocellular cancers; VESICANT — extravasation causes severe tissue necrosis (use central line or secure peripheral, give antidote dexrazoxane); cumulative cardiotoxicity — lifetime max dose 450–550 mg/m²",
+              sideEffects: "Cardiotoxicity (dilated cardiomyopathy — cumulative; lifetime dose limit 450–550 mg/m²), myelosuppression, alopecia, nausea/vomiting, mucositis, red discolouration of urine (benign — warn patient), extravasation necrosis (vesicant)",
+              contraindications: "LVEF <45–50% (baseline echo mandatory), prior anthracycline to cumulative maximum, uncontrolled cardiac failure, pregnancy",
+              renalDosing: "No standard dose adjustment for conventional doxorubicin",
+              hepaticDosing: "Bilirubin 1.2–3 mg/dL: 50% dose. Bilirubin >3 mg/dL: 25% dose",
+              monitoring: "LVEF by echo before, during (q3 cycles ≥300 mg/m²) and after; FBC before each cycle; cumulative dose tracking; cardiac symptoms"),
+
+        .init(name: "Epirubicin",        category: "Chemotherapy — Anthracycline",
+              commonDoses: "60–100 mg/m² IV q3 weeks (breast — EC/FEC regimen); up to 120 mg/m² (dose-intense); lifetime maximum 900–1000 mg/m²",
+              route: "IV bolus / infusion (vesicant)",
+              notes: "Breast, gastric cancers; FEC-T/EC-T regimens; same mechanism as doxorubicin but different toxicity profile; higher lifetime dose limit (900 mg/m²); VESICANT",
+              sideEffects: "Cardiotoxicity (cumulative — lower risk per mg than doxorubicin), myelosuppression, alopecia, nausea/vomiting, mucositis, red discolouration of urine (benign), amenorrhoea",
+              contraindications: "LVEF <50%, prior anthracycline at cumulative limit, uncontrolled cardiac failure, pregnancy",
+              renalDosing: "No dose adjustment for conventional doses",
+              hepaticDosing: "Bilirubin 1.2–3 mg/dL: 50% dose. Bilirubin >3 mg/dL: 25% dose; AST 2–4× ULN: 50% dose",
+              monitoring: "LVEF by echo before and during treatment; FBC before each cycle; cumulative dose tracking"),
+
+        // Taxanes
+        .init(name: "Paclitaxel (Taxol)", category: "Chemotherapy — Taxane",
+              commonDoses: "175 mg/m² IV over 3h q3 weeks; or 80 mg/m² IV weekly (dose-dense); nab-paclitaxel (Abraxane): 100–125 mg/m² IV weekly or 260 mg/m² q3 weeks",
+              route: "IV infusion (premedication with dex + antihistamine required)",
+              notes: "Breast, ovarian, NSCLC, endometrial, H&N cancers; Cremophor-based vehicle (solvent) → premedication mandatory (dexamethasone 8 mg IV + diphenhydramine + H2 blocker); hypersensitivity reactions common without premedication",
+              sideEffects: "Peripheral sensory neuropathy (dose-limiting cumulative), myelosuppression (nadir day 8), alopecia, arthralgia/myalgia (D2–3 post-infusion), hypersensitivity reactions (prevent with premedication), bradycardia",
+              contraindications: "Pre-existing grade ≥2 neuropathy, neutrophils <1500/µL, Cremophor hypersensitivity (use nab-paclitaxel instead), pregnancy",
+              renalDosing: "No standard dose adjustment",
+              hepaticDosing: "Bilirubin >1.25× ULN: dose reduce 25–50% depending on LFTs; AST >10× ULN: avoid",
+              monitoring: "Neuropathy grading; FBC; LFTs; hypersensitivity monitoring during infusion (first 15 min); pre-medication check"),
+
+        .init(name: "Docetaxel (Taxotere)", category: "Chemotherapy — Taxane",
+              commonDoses: "75–100 mg/m² IV q3 weeks (single agent/combination); 75 mg/m² (combination with carboplatin); dexamethasone premedication 8 mg BD × 3 days",
+              route: "IV infusion over 1h (premedication required)",
+              notes: "Breast, NSCLC, prostate, gastric, H&N cancers; dexamethasone premedication × 3 days mandatory (prevents fluid retention and hypersensitivity); cumulative fluid retention syndrome (weight gain, oedema)",
+              sideEffects: "Myelosuppression (dose-limiting — febrile neutropenia risk higher than paclitaxel), alopecia, fluid retention/oedema (cumulative — steroid premedication reduces), nail changes, peripheral neuropathy, hypersensitivity, fatigue",
+              contraindications: "Neutrophils <1500/µL, severe hepatic impairment, polysorbate-80 hypersensitivity, pregnancy",
+              renalDosing: "No dose adjustment required",
+              hepaticDosing: "Bilirubin >ULN or AST/ALT >3.5× ULN (with elevated bilirubin): avoid; AST/ALT >1.5× ULN + bilirubin normal: 25% dose reduction",
+              monitoring: "FBC before each cycle; liver function; fluid retention assessment (weight weekly, oedema); neuropathy grading"),
+
+        // Vinca Alkaloids
+        .init(name: "Vincristine",       category: "Chemotherapy — Vinca Alkaloid",
+              commonDoses: "1.4 mg/m² IV (max 2 mg per dose) weekly (CHOP) or q3 weeks",
+              route: "IV bolus only (FATAL if intrathecal — intrathecal vincristine is absolutely fatal)",
+              notes: "Lymphoma (CHOP/CHVPP), leukaemia, paediatric solid tumours; NEVER give intrathecal (invariably fatal — safety measures mandatory); dose-cap 2 mg regardless of BSA; severe constipation — prophylactic laxatives mandatory",
+              sideEffects: "Peripheral neuropathy (dose-limiting — sensory then motor; stockings-and-gloves distribution), severe constipation (ileus risk — prophylactic laxatives mandatory), alopecia, jaw pain, SIADH",
+              contraindications: "INTRATHECAL ADMINISTRATION (ABSOLUTELY FATAL), demyelinating Charcot-Marie-Tooth disease, pre-existing severe neuropathy, pregnancy",
+              renalDosing: "No dose adjustment",
+              hepaticDosing: "Bilirubin >3 mg/dL: 50% dose; severe impairment: 75% dose reduction",
+              monitoring: "Neuropathy assessment; constipation/bowel function (prophylactic laxatives); SIADH (sodium); dose cap 2 mg — document clearly"),
+
+        .init(name: "Vinorelbine (Navelbine)", category: "Chemotherapy — Vinca Alkaloid",
+              commonDoses: "IV: 25–30 mg/m² weekly; oral: 60 mg/m² weekly × 3 then 80 mg/m² weekly if tolerated",
+              route: "IV infusion over 6–10 min (vesicant) / PO capsule",
+              notes: "NSCLC, breast cancer; IV is a VESICANT — central line strongly preferred; oral formulation available (no IV extravasation risk, but GI toxicity); granulocyte nadir day 7–10",
+              sideEffects: "Myelosuppression (neutropenia — dose-limiting), peripheral neuropathy, nausea/vomiting, constipation, alopecia (less than other vinca alkaloids), phlebitis/extravasation necrosis (IV — vesicant)",
+              contraindications: "Neutrophils <1000/µL, bowel obstruction (PO only), intrathecal use (fatal), pregnancy",
+              renalDosing: "No standard dose adjustment",
+              hepaticDosing: "Bilirubin 2–3 mg/dL: 50% dose. Bilirubin >3 mg/dL: 25% dose",
+              monitoring: "FBC weekly; neuropathy assessment; constipation; extravasation precautions"),
+
+        // Targeted therapies — Small molecule inhibitors
+        .init(name: "Imatinib (Gleevec/Glivec)", category: "Chemotherapy — Tyrosine Kinase Inhibitor",
+              commonDoses: "CML: 400 mg OD PO (chronic phase); 600–800 mg OD (accelerated/blast); GIST: 400 mg OD; c-Kit exon 9 mutation: 800 mg OD",
+              route: "PO (with food and large glass of water)",
+              notes: "CML, GIST, Ph+ ALL; taken with food to reduce GI upset; multiple drug interactions (CYP3A4 substrate/inhibitor); first-line TKI for CML; monitor for fluid retention",
+              sideEffects: "Nausea/vomiting (take with food), oedema/fluid retention, myelosuppression, muscle cramps (common — tonic water/quinine), transaminitis, rash, fatigue",
+              contraindications: "Pregnancy (teratogen), breastfeeding; relative: severe cardiac failure",
+              renalDosing: "eGFR 20–39: 50% starting dose; eGFR <20: not recommended",
+              hepaticDosing: "Mild–moderate: use with caution; severe: 25% dose reduction",
+              monitoring: "FBC weekly × 1 month, biweekly × 2 months, then monthly; LFTs monthly × 3 then q3 months; cytogenetic response (BCR-ABL PCR monitoring)"),
+
+        .init(name: "Erlotinib (Tarceva)", category: "Chemotherapy — EGFR Tyrosine Kinase Inhibitor",
+              commonDoses: "NSCLC: 150 mg OD PO (1h before or 2h after meals); pancreatic: 100 mg OD PO (with gemcitabine)",
+              route: "PO (fasting — food significantly increases absorption → toxicity)",
+              notes: "NSCLC with EGFR mutation (exon 19 del/L858R), pancreatic cancer; MUST be taken fasting; smoking reduces efficacy by 50% — discourage smoking; rash correlates with response",
+              sideEffects: "Rash/acneiform eruption (80–90% — correlates with efficacy; treat with tetracycline), diarrhoea (dose-limiting), interstitial lung disease (rare but serious — stop drug), hepatotoxicity, fatigue",
+              contraindications: "Interstitial lung disease (contraindicated), pregnancy; caution smoking (reduces levels significantly)",
+              renalDosing: "No standard adjustment (minimal renal excretion)",
+              hepaticDosing: "Use with caution; hold if bilirubin >3× ULN or transaminases >5× ULN",
+              monitoring: "Rash management; LFTs; pulmonary symptoms (ILD — stop immediately); smoking cessation counselling"),
+
+        .init(name: "Sorafenib (Nexavar)", category: "Chemotherapy — Multi-Kinase Inhibitor",
+              commonDoses: "400 mg BD PO (without food — 1h before or 2h after meals)",
+              route: "PO",
+              notes: "Hepatocellular carcinoma (first-line advanced), renal cell carcinoma, thyroid cancer; Raf/VEGFR/PDGFR inhibitor; hand-foot skin reaction (HFSR) very common — active skin care essential from day 1",
+              sideEffects: "HFSR/hand-foot skin reaction (dose-limiting — painful blisters on pressure points; prophylactic urea cream), diarrhoea, hypertension (monitor BP from day 1), fatigue, alopecia, bleeding, QT prolongation, cardiac ischaemia",
+              contraindications: "Pregnancy, squamous NSCLC (increased bleeding risk), severe hepatic impairment",
+              renalDosing: "No dose adjustment (eGFR >30); eGFR <30: limited data — caution",
+              hepaticDosing: "Child-Pugh A/B: full dose. Child-Pugh C: not recommended",
+              monitoring: "BP weekly × 6 weeks then monthly; HFSR grading; LFTs; ECG (QT prolongation)"),
+
+        .init(name: "Sunitinib (Sutent)",  category: "Chemotherapy — Multi-Kinase Inhibitor",
+              commonDoses: "GIST/RCC: 50 mg OD PO × 4 weeks, 2 weeks off (4/2 schedule); pNET: 37.5 mg OD continuous",
+              route: "PO (with or without food)",
+              notes: "Renal cell carcinoma, GIST (imatinib-resistant), pancreatic NET; VEGFR/PDGFR/c-Kit inhibitor; thyroid function testing mandatory (hypothyroidism); yellow skin discolouration (benign — warn patient)",
+              sideEffects: "Hypertension (treat proactively — poor control → drug hold), hypothyroidism (cumulative — check TSH monthly), HFSR, diarrhoea, mucositis, fatigue, yellow skin/hair (benign), myelosuppression, hepatotoxicity, cardiac toxicity",
+              contraindications: "Pregnancy, uncontrolled hypertension",
+              renalDosing: "No dose adjustment required",
+              hepaticDosing: "Child-Pugh A/B: no adjustment. Child-Pugh C: not recommended",
+              monitoring: "BP weekly × 6 weeks; TSH monthly; FBC and LFTs every 2 cycles; ECG (QT prolongation); LVEF at baseline and periodically"),
+
+        // Monoclonal antibodies — Targeted
+        .init(name: "Trastuzumab (Herceptin)", category: "Chemotherapy — HER2 Monoclonal Antibody",
+              commonDoses: "8 mg/kg IV loading (q3 weekly), 6 mg/kg IV maintenance q3 weeks; or 4 mg/kg loading, 2 mg/kg weekly; SC formulation: 600 mg SC q3 weeks (fixed dose)",
+              route: "IV infusion / SC injection",
+              notes: "HER2+ breast cancer (early and metastatic), HER2+ gastric/gastro-oesophageal cancer; requires HER2 3+ IHC or FISH amplification; LVEF monitoring mandatory; first infusion reaction common; avoid concurrent anthracyclines (cardiac risk additive)",
+              sideEffects: "Cardiotoxicity (cardiomyopathy — particularly with anthracyclines; hold if LVEF drops ≥10% or below 50%), infusion reactions (first infusion — chills, fever — pre-medicate), myelosuppression (mild), ILD (rare), diarrhoea",
+              contraindications: "LVEF <50% (relative — hold and reassess), pregnancy (HPW after completion before conception), concurrent anthracyclines (cardiac)",
+              renalDosing: "No dose adjustment (not renally cleared)",
+              hepaticDosing: "No dose adjustment",
+              monitoring: "LVEF by echo before, every 3 months during and after treatment; LVEF hold protocol: drop ≥16% absolute or to below 50% → hold 4 weeks → recheck; FBC"),
+
+        .init(name: "Bevacizumab (Avastin)", category: "Chemotherapy — VEGF Monoclonal Antibody",
+              commonDoses: "CRC: 5 mg/kg IV q2 weeks (with FOLFOX/FOLFIRI) or 7.5 mg/kg q3 weeks; NSCLC/RCC: 15 mg/kg IV q3 weeks; hold 4–8 weeks before/after surgery",
+              route: "IV infusion (initial 90 min; subsequent 60 then 30 min if tolerated)",
+              notes: "CRC, NSCLC, RCC, ovarian, cervical, glioblastoma; MUST withhold 4–6 weeks pre-surgery and 4 weeks post-surgery (impaired wound healing); arterial thrombotic events, GI perforation risk",
+              sideEffects: "Hypertension (monitor closely; treat with antihypertensives), proteinuria (check U-PCR), arterial thromboembolism (ATE — MI, stroke), GI perforation (1–3% — stop permanently), wound healing impairment, bleeding (epistaxis, haemoptysis), fistula formation",
+              contraindications: "Recent haemoptysis, recent arterial thrombotic event, GI perforation history, uncontrolled hypertension, wound healing (surgical — hold peri-operatively), pregnancy",
+              renalDosing: "No dose adjustment (not renally cleared); proteinuria monitoring essential",
+              hepaticDosing: "No dose adjustment",
+              monitoring: "BP every 2–3 weeks; U-PCR before each cycle (hold for >2 g/24h); ATE symptoms; GI symptoms (perforation risk)"),
+
+        .init(name: "Cetuximab (Erbitux)",  category: "Chemotherapy — EGFR Monoclonal Antibody",
+              commonDoses: "400 mg/m² IV loading over 2h, then 250 mg/m² weekly over 1h; or 500 mg/m² IV q2 weeks",
+              route: "IV infusion (premedication with antihistamine)",
+              notes: "RAS wild-type CRC, H&N squamous cell carcinoma; ONLY effective in KRAS/NRAS/BRAF wild-type CRC — mandatory RAS/BRAF testing before prescribing; acneiform rash correlates with efficacy; first infusion reactions common",
+              sideEffects: "Acneiform rash (80–90% — correlates with efficacy; treat with tetracycline + topical), hypomagnesaemia (supplement Mg²⁺ throughout), first-infusion hypersensitivity/anaphylaxis (pre-medicate), diarrhoea, fatigue",
+              contraindications: "KRAS mutant CRC (no benefit), pregnancy",
+              renalDosing: "No dose adjustment",
+              hepaticDosing: "No dose adjustment",
+              monitoring: "RAS/BRAF status before prescribing; Mg²⁺ weekly (supplement to maintain ≥0.7 mmol/L); rash management protocol; infusion reaction monitoring"),
+
+        // Immunotherapy (ICIs)
+        .init(name: "Pembrolizumab (Keytruda)", category: "Chemotherapy — PD-1 Immune Checkpoint Inhibitor",
+              commonDoses: "200 mg IV q3 weeks or 400 mg IV q6 weeks (fixed dose, all indications)",
+              route: "IV infusion over 30 min",
+              notes: "NSCLC (PD-L1+), melanoma, HNSCC, urothelial, CRC (MSI-H/dMMR), gastric, oesophageal, cervical, endometrial, TNBC, TMB-H solid tumours; PD-L1/MSI/TMB testing for indication-specific use; immune-mediated adverse events affect every organ",
+              sideEffects: "Immune-related adverse events (irAEs — any organ): pneumonitis, colitis/diarrhoea, hepatitis, endocrinopathies (hypothyroidism, hypophysitis, adrenal insufficiency — permanent), rash, nephritis, myocarditis (rare but potentially fatal); fatigue",
+              contraindications: "Active autoimmune disease requiring immunosuppression (relative — assess risk/benefit), organ transplant (risk of graft rejection), pregnancy; caution: prior severe irAE",
+              renalDosing: "No dose adjustment",
+              hepaticDosing: "No dose adjustment for mild–moderate; limited data in severe impairment",
+              monitoring: "TFTs, LFTs, renal function, glucose, cortisol at baseline and each cycle; CXR/CT if respiratory symptoms (pneumonitis); early steroid treatment for irAEs (prednisolone 1–2 mg/kg); permanent endocrinopathies require lifelong hormone replacement"),
+
+        .init(name: "Nivolumab (Opdivo)",   category: "Chemotherapy — PD-1 Immune Checkpoint Inhibitor",
+              commonDoses: "240 mg IV q2 weeks or 480 mg IV q4 weeks (flat dose); in combination with ipilimumab: 1 mg/kg IV q3 or q6 weeks",
+              route: "IV infusion over 30 min",
+              notes: "Melanoma, NSCLC, RCC, urothelial, HNSCC, CRC (MSI-H), oesophageal, gastric, HCC; similar irAE profile to pembrolizumab; combination with ipilimumab increases efficacy AND irAE frequency",
+              sideEffects: "irAEs (same spectrum as pembrolizumab — pneumonitis, colitis, hepatitis, endocrinopathies, rash, nephritis, myocarditis); fatigue; combination with ipilimumab → significantly higher grade 3–4 irAE rate",
+              contraindications: "Active autoimmune disease, organ transplant, pregnancy; prior severe irAE with any ICI (relative)",
+              renalDosing: "No dose adjustment",
+              hepaticDosing: "No dose adjustment for mild–moderate",
+              monitoring: "Same as pembrolizumab; TFTs, LFTs, renal function, cortisol, glucose; higher vigilance with ipilimumab combination"),
+
+        .init(name: "Ipilimumab (Yervoy)",  category: "Chemotherapy — CTLA-4 Immune Checkpoint Inhibitor",
+              commonDoses: "Melanoma: 3 mg/kg IV q3 weeks × 4 doses; adjuvant melanoma: 10 mg/kg q3 weeks × 4, then q12 weeks × 3 years; combination with nivolumab: 1 mg/kg IV q6 weeks",
+              route: "IV infusion over 30 min–3h",
+              notes: "Melanoma (CTLA-4 blockade); higher dose/combination → superior efficacy but significantly more severe irAEs; permanently discontinue for grade 3–4 irAE (except endocrinopathy); CTLA-4 blockade irAEs typically later-onset and more severe than PD-1",
+              sideEffects: "irAEs (more severe than PD-1 inhibitors): colitis/diarrhoea (dose-limiting — grade 3–4 in ~20% at 3 mg/kg), hepatitis, rash/dermatitis, hypophysitis, pneumonitis, nephritis, uveitis; grade 3–4 irAE in >50% at 10 mg/kg",
+              contraindications: "Active autoimmune disease, organ transplant, pregnancy; grade 3–4 prior irAE",
+              renalDosing: "No dose adjustment",
+              hepaticDosing: "No dose adjustment for mild–moderate",
+              monitoring: "LFTs, renal function, TFTs, cortisol, ACTH before each cycle; early high-dose steroids for grade 2+ colitis/hepatitis; infliximab for steroid-refractory colitis; mycophenolate for steroid-refractory hepatitis"),
+
+        // Hormonal therapies
+        .init(name: "Tamoxifen",           category: "Chemotherapy — SERM (Oestrogen Receptor Modulator)",
+              commonDoses: "20 mg OD PO × 5–10 years (breast cancer); 5 mg OD (prevention/risk reduction)",
+              route: "PO",
+              notes: "ER+ breast cancer (pre- and post-menopausal); adjuvant 5–10 years significantly improves overall survival; switch to aromatase inhibitor (post-menopausal) after 2–5 years; CYP2D6 metaboliser status affects efficacy (avoid CYP2D6 inhibitors: paroxetine, fluoxetine)",
+              sideEffects: "Hot flushes, vaginal discharge/dryness, menstrual irregularities, endometrial cancer risk (1–2-fold increase — annual gynaecological review; report abnormal bleeding), thromboembolic events (DVT/PE — hold surgery), mood changes, cataracts",
+              contraindications: "Pregnancy (teratogen), active thromboembolic disease, avoid concurrent CYP2D6 inhibitors (reduce active metabolite endoxifen — reduced efficacy)",
+              renalDosing: "No dose adjustment",
+              hepaticDosing: "Use with caution in severe hepatic impairment",
+              monitoring: "Annual gynaecological review + any abnormal uterine bleeding investigated (transvaginal US/biopsy); ophthalmological review; bone density (may improve in post-menopausal); annual smear"),
+
+        .init(name: "Anastrozole (Arimidex)", category: "Chemotherapy — Aromatase Inhibitor",
+              commonDoses: "1 mg OD PO × 5–10 years (post-menopausal)",
+              route: "PO",
+              notes: "ER+ breast cancer (post-menopausal only — oestrogen suppression requires menopause; ineffective in pre-menopausal); adjuvant 5–10 years; superior to tamoxifen in post-menopausal women; no uterine cancer risk",
+              sideEffects: "Hot flushes, joint pain/stiffness (arthralgias — very common; consider switching to letrozole), bone loss (osteoporosis — DEXA scan, calcium/Vit D, bisphosphonate if high risk), vaginal dryness, headache",
+              contraindications: "Pre-menopausal patients (ineffective), pregnancy, osteoporosis (relative — use with bone protection)",
+              renalDosing: "No dose adjustment",
+              hepaticDosing: "Mild–moderate: no adjustment. Severe: avoid",
+              monitoring: "DEXA scan at baseline and 1–2 yearly; calcium/Vit D supplementation; joint symptoms; lipid profile"),
+
+        .init(name: "Letrozole (Femara)",  category: "Chemotherapy — Aromatase Inhibitor",
+              commonDoses: "2.5 mg OD PO × 5–10 years (adjuvant); 2.5 mg OD (metastatic)",
+              route: "PO",
+              notes: "ER+ breast cancer (post-menopausal); alternative to anastrozole — similar efficacy; often used when intolerant of anastrozole arthralgias; also used for ovulation induction (off-label); may have fewer joint side effects than anastrozole for some patients",
+              sideEffects: "Hot flushes, bone loss/osteoporosis (DEXA monitoring), arthralgias (common but may be less than anastrozole), fatigue, hypercholesterolaemia, headache",
+              contraindications: "Pre-menopausal patients, pregnancy",
+              renalDosing: "eGFR >10: no adjustment. Severe: no recommendation",
+              hepaticDosing: "Mild–moderate: no adjustment. Severe (Child-Pugh C): 50% dose (2.5 mg alternate days)",
+              monitoring: "DEXA scan; lipid profile; joint symptoms"),
+
+        .init(name: "Fulvestrant (Faslodex)", category: "Chemotherapy — Oestrogen Receptor Degrader (SERD)",
+              commonDoses: "500 mg IM monthly (two 250 mg injections on day 1, then day 15 of cycle 1, then monthly); slow IM injection into buttock — not IV",
+              route: "IM injection (gluteal)",
+              notes: "ER+ HER2- advanced/metastatic breast cancer (post-menopausal and pre-menopausal with ovarian suppression); CDK4/6 inhibitor combinations; no cross-resistance with tamoxifen; injection site reactions common",
+              sideEffects: "Injection site reactions (pain, inflammation, warmth — common), hot flushes, nausea, fatigue, hepatotoxicity, thromboembolism (less than tamoxifen), arthralgia",
+              contraindications: "Pregnancy, coagulopathy/anticoagulation (relative — IM injection risk), severe hepatic impairment",
+              renalDosing: "No dose adjustment",
+              hepaticDosing: "Mild–moderate (Child-Pugh A/B): no adjustment. Severe (Child-Pugh C): not recommended",
+              monitoring: "LFTs; injection site assessment; response assessment by imaging"),
+
+        // Anti-nausea (chemo-specific)
+        .init(name: "Granisetron (Kytril)", category: "Antiemetic — 5-HT3 Antagonist",
+              commonDoses: "1–2 mg IV before chemotherapy; 1 mg BD PO × 5 days (or 2 mg OD); 3 mg patch (Sancuso — apply 24–48h before chemo, replace q7 days)",
+              route: "IV/PO/transdermal patch",
+              notes: "Prevention and treatment of chemotherapy-induced nausea/vomiting (CINV); highly emetogenic regimens (HEC) require combination with NK1 antagonist + dexamethasone (3-drug regimen); once daily dosing (long half-life)",
+              sideEffects: "Headache, constipation, QT prolongation (less than older agents); transdermal patch: application-site reactions",
+              contraindications: "Known QT prolongation/concurrent QT-prolonging drugs (caution); serotonin syndrome risk with serotonergic drugs",
+              renalDosing: "No dose adjustment required",
+              hepaticDosing: "Use with caution in severe hepatic impairment",
+              monitoring: "QT interval if risk factors; bowel function (constipation); CINV assessment"),
+
+        .init(name: "Aprepitant/Fosaprepitant (Emend)", category: "Antiemetic — NK1 Receptor Antagonist",
+              commonDoses: "PO: 125 mg day 1, 80 mg days 2–3 (with ondansetron + dex for HEC); IV fosaprepitant: 150 mg single dose day 1 (alternative to 3-day PO course)",
+              route: "PO/IV",
+              notes: "Prevention of acute and delayed CINV from highly emetogenic chemotherapy (HEC: cisplatin, anthracycline-cyclophosphamide combinations); triple therapy with 5-HT3 antagonist + dexamethasone; CYP3A4 substrate AND moderate inhibitor",
+              sideEffects: "Hiccoughs, fatigue, constipation, diarrhoea; increases dexamethasone levels (reduce dex dose by 50%); reduces warfarin effect; CYP3A4 interactions",
+              contraindications: "Concurrent pimozide or terfenadine; pregnancy (limited data); severe hepatic impairment",
+              renalDosing: "No dose adjustment",
+              hepaticDosing: "Mild–moderate: no adjustment. Severe (Child-Pugh >9): use with caution — limited data",
+              monitoring: "CINV response; INR if on warfarin; drug interactions (CYP3A4)"),
+    ]
 }
 
 // MARK: - Bayesian Triage / Pathway Engine
@@ -1538,6 +1847,34 @@ enum ClinicalPathwayEngine {
                              .init(name: "Cholangiocarcinoma", probability: 22),
                              .init(name: "Post-ERCP pancreatitis", probability: 15)]
             confidence = 80
+        } else if cc.contains("reflux") || cc.contains("heartburn") || cc.contains("gerd") ||
+                  cc.contains("gord") || cc.contains("regurgitat") || cc.contains("indigestion") ||
+                  cc.contains("dyspepsia") || cc.contains("bloating") || cc.contains("oesophag") {
+            pathway = "Upper GI / Reflux Pathway"
+            differentials = [.init(name: "GERD / Oesophagitis", probability: 75),
+                             .init(name: "Hiatus Hernia", probability: 55),
+                             .init(name: "Peptic Ulcer Disease", probability: 38),
+                             .init(name: "Functional Dyspepsia", probability: 30),
+                             .init(name: "Barrett's Oesophagus", probability: 18),
+                             .init(name: "Oesophageal Carcinoma", probability: 10)]
+            confidence = 78
+            if cc.contains("dysphagia") || cc.contains("weight loss") || cc.contains("anaemia") ||
+               cc.contains("vomiting blood") || cc.contains("melaena") {
+                redFlags.append("⚠️ Red flag — urgent OGD within 2 weeks")
+                suggestedAcuity = .priority
+            }
+        } else if cc.contains("dysphagia") || cc.contains("difficulty swallow") {
+            pathway = "Upper GI / Dysphagia Pathway"
+            differentials = [.init(name: "Oesophageal Carcinoma", probability: 45),
+                             .init(name: "GERD / Oesophagitis", probability: 40),
+                             .init(name: "Oesophageal Stricture", probability: 35),
+                             .init(name: "Achalasia", probability: 28),
+                             .init(name: "Eosinophilic Oesophagitis", probability: 20)]
+            confidence = 70
+            if cc.contains("weight loss") || cc.contains("progressive") || cc.contains("solid") {
+                redFlags.append("⚠️ Progressive dysphagia + weight loss — urgent OGD")
+                suggestedAcuity = .priority
+            }
         }
 
         // Undifferentiated abdominal pain default

@@ -251,6 +251,25 @@ struct ClinicalHubView: View {
                 }
             }
 
+            Section("Reference") {
+                NavigationLink {
+                    SurgicalEncyclopediaView(
+                        preselectedDiagnosis: patient.workingDiagnosis
+                    )
+                } label: {
+                    HStack {
+                        Label("Surgical Encyclopedia", systemImage: "books.vertical")
+                        Spacer()
+                        if let dx = patient.workingDiagnosis,
+                           SurgicalAlgorithmEngine.shared.lookup(diagnosisName: dx) != nil {
+                            Text("Match")
+                                .font(.caption2)
+                                .foregroundStyle(.teal)
+                        }
+                    }
+                }
+            }
+
             Section("Patient Communication") {
                 NavigationLink { PatientInstructionsView(patient: patient) } label: {
                     Label("Patient Instructions Sheet", systemImage: "doc.text.fill")
@@ -439,6 +458,13 @@ private struct CompactFrontDeskView: View {
     @State private var searchQuery = ""
     @State private var selectedTab = 0
 
+    private var theatreCount: Int {
+        allPatients.filter { $0.setting == .theatre }.deduped().count
+    }
+    private var endoscopyCount: Int {
+        allPatients.filter { $0.setting == .endoscopy }.deduped().count
+    }
+
     private var filteredPatients: [Patient] {
         let q = searchQuery.trimmingCharacters(in: .whitespaces).lowercased()
         if q.isEmpty {
@@ -471,13 +497,23 @@ private struct CompactFrontDeskView: View {
                 .badge(waitingPatients.count)
                 .tag(1)
 
+            NavigationStack { TheatreListView() }
+                .tabItem { Label("Theatre", systemImage: "scissors") }
+                .badge(theatreCount)
+                .tag(2)
+
+            NavigationStack { EndoscopyListView() }
+                .tabItem { Label("Scope", systemImage: "circle.dotted") }
+                .badge(endoscopyCount)
+                .tag(3)
+
             NavigationStack { ScheduleView() }
                 .tabItem { Label("Schedule", systemImage: "calendar") }
-                .tag(2)
+                .tag(4)
 
             SettingsView()
                 .tabItem { Label("Settings", systemImage: "gearshape") }
-                .tag(3)
+                .tag(5)
         }
     }
 
@@ -590,10 +626,10 @@ private struct RegularRootView: View {
 
     private func count(for section: AppSection) -> Int {
         switch section {
-        case .wardRounds:  allPatients.filter { $0.setting == .inpatient || $0.setting == .emergency }.count
-        case .theatre:     allPatients.filter { $0.setting == .theatre }.count
-        case .endoscopy:   allPatients.filter { $0.setting == .endoscopy }.count
-        case .outpatients: allPatients.filter { $0.setting == .outpatient }.count
+        case .wardRounds:  allPatients.filter { $0.setting == .inpatient || $0.setting == .emergency }.deduped().count
+        case .theatre:     allPatients.filter { $0.setting == .theatre }.deduped().count
+        case .endoscopy:   allPatients.filter { $0.setting == .endoscopy }.deduped().count
+        case .outpatients: allPatients.filter { $0.setting == .outpatient }.deduped().count
         case .schedule:    0
         }
     }

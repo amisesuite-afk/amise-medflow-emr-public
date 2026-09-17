@@ -155,6 +155,8 @@ struct PatientDetailPadView: View {
     @State private var saveVisitFeedback = false
     @Environment(\.modelContext) private var context
     @EnvironmentObject private var sync: SyncService
+    @EnvironmentObject private var calSvc: CalendarService
+    @State private var calendarSavedFeedback = false
 
     // Clinical sections — filtered by role and visit type
     private var rightSections: [PatientDetailSection] {
@@ -1117,6 +1119,28 @@ struct PatientDemographicsForm: View {
                            set: { patient.operationDate = $0; touch() }
                        ),
                        displayedComponents: [.date, .hourAndMinute])
+            if patient.operationDate != nil {
+                Button {
+                    guard let opDate = patient.operationDate else { return }
+                    let procedure = patient.appointmentType ?? patient.chiefComplaint ?? "Procedure"
+                    Task {
+                        try? await calSvc.createTheatreBooking(
+                            procedure: procedure,
+                            patientName: patient.fullName,
+                            date: opDate,
+                            duration: 5400,
+                            notes: patient.workingDiagnosis.map { "Indication: \($0)" } ?? ""
+                        )
+                        await MainActor.run { calendarSavedFeedback = true }
+                        try? await Task.sleep(nanoseconds: 2_000_000_000)
+                        await MainActor.run { calendarSavedFeedback = false }
+                    }
+                } label: {
+                    Label(calendarSavedFeedback ? "Saved to Calendar" : "Save to Calendar",
+                          systemImage: calendarSavedFeedback ? "checkmark.circle.fill" : "calendar.badge.plus")
+                        .foregroundStyle(calendarSavedFeedback ? .green : .accentColor)
+                }
+            }
             if let days = patient.postOpDays {
                 LabeledContent("Post-op day", value: "POD \(days)")
             }

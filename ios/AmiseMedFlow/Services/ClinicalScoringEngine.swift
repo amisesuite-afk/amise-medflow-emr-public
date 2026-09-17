@@ -280,6 +280,17 @@ struct MEWSInput: Equatable {
     enum UrineOutput: Int { case normal = 0, low = 1, nil_ = 2 } // nil = <10 mL/hr
 }
 
+struct NEWS2Input: Equatable {
+    // National Early Warning Score 2 (RCP 2017)
+    var respiratoryRate: Int = 14
+    var spo2: Int = 97
+    var onSupplementalO2: Bool = false
+    var systolicBP: Int = 120
+    var heartRate: Int = 75
+    var temperatureCelsius: Double = 36.8
+    var avpu: AVPU = .alert
+}
+
 struct GCSInput: Equatable {
     // Glasgow Coma Scale
     var eyeOpening: EyeScore = .spontaneous      // 4 = spontaneous, 3 = to voice, 2 = to pain, 1 = none
@@ -1405,6 +1416,119 @@ enum ClinicalScoringEngine {
         case 2...3: return (.moderate, "MEWS \(Int(s))/14 — Increased risk: enhanced monitoring", ["Increase obs to 1–2 hourly", "Inform nurse in charge", "Review hydration and medications"])
         case 4...5: return (.high, "MEWS \(Int(s))/14 — Urgent: senior review needed", ["Immediate nursing review", "Contact junior doctor", "Consider bloods + ABG", "Increase obs to hourly"])
         default:    return (.critical, "MEWS \(Int(s))/14 — Critical: immediate intervention required", ["Immediate senior/ICU review", "Activate rapid response/MET", "IV access, bloods, ABG now", "Consider resuscitation protocol"])
+        }
+    }
+
+    // MARK: NEWS2 (National Early Warning Score 2, RCP 2017)
+
+    static func news2(_ i: NEWS2Input) -> ClinicalScore {
+        // Respiratory rate
+        let rrPoints: Int
+        switch i.respiratoryRate {
+        case ..<9:    rrPoints = 3
+        case 9...11:  rrPoints = 1
+        case 12...20: rrPoints = 0
+        case 21...24: rrPoints = 2
+        default:      rrPoints = 3
+        }
+
+        // SpO2 scoring — Scale 2 when on supplemental O2, Scale 1 otherwise
+        let spo2Points: Int
+        if i.onSupplementalO2 {
+            // Scale 2
+            switch i.spo2 {
+            case ..<88:   spo2Points = 3
+            case 88...92: spo2Points = 0
+            case 93...94: spo2Points = 1
+            case 95...96: spo2Points = 2
+            default:      spo2Points = 3
+            }
+        } else {
+            // Scale 1
+            switch i.spo2 {
+            case ..<92:   spo2Points = 3
+            case 92...93: spo2Points = 2
+            case 94...95: spo2Points = 1
+            default:      spo2Points = 0
+            }
+        }
+
+        let o2Points = i.onSupplementalO2 ? 2 : 0
+
+        let sbpPoints: Int
+        switch i.systolicBP {
+        case ..<91:     sbpPoints = 3
+        case 91...100:  sbpPoints = 2
+        case 101...110: sbpPoints = 1
+        case 111...219: sbpPoints = 0
+        default:        sbpPoints = 3
+        }
+
+        let hrPoints: Int
+        switch i.heartRate {
+        case ..<41:     hrPoints = 3
+        case 41...50:   hrPoints = 1
+        case 51...90:   hrPoints = 0
+        case 91...110:  hrPoints = 1
+        case 111...130: hrPoints = 2
+        default:        hrPoints = 3
+        }
+
+        let tempPoints: Int
+        switch i.temperatureCelsius {
+        case ..<35.1:  tempPoints = 3
+        case 35.1..<36.1: tempPoints = 1
+        case 36.1..<38.1: tempPoints = 0
+        case 38.1..<39.1: tempPoints = 1
+        default:       tempPoints = 2
+        }
+
+        let avpuPoints = i.avpu.news2Points
+        let hasRedFlag = rrPoints >= 3 || spo2Points >= 3 || sbpPoints >= 3 || hrPoints >= 3 || tempPoints >= 3 || avpuPoints >= 3
+
+        let total = Double(rrPoints + spo2Points + o2Points + sbpPoints + hrPoints + tempPoints + avpuPoints)
+
+        let (risk, interp, recs) = news2Risk(total, hasRedFlag: hasRedFlag)
+        let items: [ScoredItem] = [
+            .init(label: "Respiratory rate", points: Double(rrPoints), present: rrPoints > 0),
+            .init(label: "SpO₂ (\(i.onSupplementalO2 ? "Scale 2" : "Scale 1"))", points: Double(spo2Points), present: spo2Points > 0),
+            .init(label: "Supplemental O₂", points: Double(o2Points), present: o2Points > 0),
+            .init(label: "Systolic BP", points: Double(sbpPoints), present: sbpPoints > 0),
+            .init(label: "Heart rate", points: Double(hrPoints), present: hrPoints > 0),
+            .init(label: "Temperature", points: Double(tempPoints), present: tempPoints > 0),
+            .init(label: "AVPU consciousness", points: Double(avpuPoints), present: avpuPoints > 0),
+        ]
+        var redFlags: [String] = []
+        if total >= 7 { redFlags.append("NEWS2 ≥7: continuous monitoring, immediate senior review") }
+        if hasRedFlag { redFlags.append("Single parameter score 3: escalate per local protocol") }
+        return ClinicalScore(
+            systemName: "National Early Warning Score 2",
+            abbreviation: "NEWS2 \(Int(total))",
+            score: total, maxScore: 20,
+            risk: risk, interpretation: interp,
+            recommendations: recs, items: items, redFlags: redFlags,
+            evidenceNote: "Royal College of Physicians 2017. NEWS2 validated for acutely ill adults."
+        )
+    }
+
+    private static func news2Risk(_ s: Double, hasRedFlag: Bool) -> (ScoreRisk, String, [String]) {
+        switch s {
+        case 0:
+            return (.low, "NEWS2 0/20 — Minimum: routine monitoring",
+                    ["Routine obs (minimum 12-hourly)"])
+        case 1...4 where !hasRedFlag:
+            return (.low, "NEWS2 \(Int(s))/20 — Low: ward-level response",
+                    ["Minimum 4–6 hourly obs", "Inform nurse in charge if deteriorating"])
+        case 1...4 where hasRedFlag, 5...6:
+            return (.moderate, "NEWS2 \(Int(s))/20 — Medium: urgent review",
+                    ["Increase obs to 1 hourly", "Inform bedside nurse immediately",
+                     "Urgent review by competent clinician within 30 min",
+                     "Consider ABG, bloods, ECG"])
+        default:
+            return (.critical, "NEWS2 \(Int(s))/20 — High: emergency response",
+                    ["Continuous monitoring", "Immediate senior review or emergency response",
+                     "Consider HDU/ICU transfer", "IV access, bloods, ABG, ECG now",
+                     "Escalate to registrar or consultant"])
         }
     }
 

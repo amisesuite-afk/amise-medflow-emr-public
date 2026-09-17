@@ -734,7 +734,7 @@ final class SyncService: ObservableObject {
 
             struct RxRow: Encodable {
                 let patient_id: String
-                let drug: String
+                let drug_name: String   // Supabase column is drug_name not drug
                 let dose: String?
                 let route: String?
                 let frequency: String?
@@ -745,7 +745,7 @@ final class SyncService: ObservableObject {
             }
             let row = RxRow(
                 patient_id: patientId,
-                drug: rx.drug,
+                drug_name: rx.drug,
                 dose: rx.dose.isEmpty ? nil : rx.dose,
                 route: rx.route.isEmpty ? nil : rx.route,
                 frequency: rx.frequency.isEmpty ? nil : rx.frequency,
@@ -773,7 +773,7 @@ final class SyncService: ObservableObject {
     private struct RemotePrescription: Decodable {
         let id: String
         let patient_id: String
-        let drug: String
+        let drug_name: String   // Supabase column is drug_name
         let dose: String?
         let route: String?
         let frequency: String?
@@ -786,7 +786,7 @@ final class SyncService: ObservableObject {
     private func pullPrescriptions(context: ModelContext) async throws {
         let rows: [RemotePrescription] = try await SupabaseConfig.client
             .from("prescriptions")
-            .select("id, patient_id, drug, dose, route, frequency, duration, indication, instructions, prescribed_at")
+            .select("id, patient_id, drug_name, dose, route, frequency, duration, indication, instructions, prescribed_at")
             .order("prescribed_at", ascending: false)
             .limit(500)
             .execute()
@@ -800,7 +800,7 @@ final class SyncService: ObservableObject {
             guard allLocal.first(where: { $0.remoteId == row.id }) == nil else { continue }
             guard let patient = allPatients.first(where: { $0.remoteId == row.patient_id }) else { continue }
 
-            let rx = Prescription(drug: row.drug,
+            let rx = Prescription(drug: row.drug_name,
                                   dose: row.dose ?? "",
                                   route: row.route ?? "Oral",
                                   frequency: row.frequency ?? "",

@@ -9,17 +9,30 @@ import PhotosUI
 struct FrontDeskPadView: View {
     @EnvironmentObject private var sync: SyncService
     @EnvironmentObject private var calendarService: CalendarService
+    @Query private var allPatients: [Patient]
     @State private var selectedTab: FDTab = .checkIn
+
+    private func badge(for tab: FDTab) -> Int {
+        switch tab {
+        case .theatre:   return allPatients.filter { $0.setting == .theatre }.deduped().count
+        case .endoscopy: return allPatients.filter { $0.setting == .endoscopy }.deduped().count
+        default:         return 0
+        }
+    }
 
     enum FDTab: String, CaseIterable {
         case checkIn       = "Check-In"
         case questionnaire = "Questionnaire"
+        case theatre       = "Theatre"
+        case endoscopy     = "Scope"
         case schedule      = "Schedule"
 
         var icon: String {
             switch self {
             case .checkIn:       "person.badge.plus"
             case .questionnaire: "list.clipboard"
+            case .theatre:       "scissors"
+            case .endoscopy:     "circle.dotted"
             case .schedule:      "calendar"
             }
         }
@@ -39,18 +52,30 @@ struct FrontDeskPadView: View {
 
                 ForEach(FDTab.allCases, id: \.self) { tab in
                     let sel = selectedTab == tab
+                    let n   = badge(for: tab)
                     Button { selectedTab = tab } label: {
-                        VStack(spacing: 4) {
-                            Image(systemName: tab.icon)
-                                .font(.system(size: 20, weight: sel ? .semibold : .regular))
-                            Text(tab.rawValue)
-                                .font(.system(size: 8, weight: sel ? .bold : .semibold))
-                                .lineLimit(1)
+                        ZStack(alignment: .topTrailing) {
+                            VStack(spacing: 4) {
+                                Image(systemName: tab.icon)
+                                    .font(.system(size: 20, weight: sel ? .semibold : .regular))
+                                Text(tab.rawValue)
+                                    .font(.system(size: 8, weight: sel ? .bold : .semibold))
+                                    .lineLimit(1)
+                            }
+                            .foregroundStyle(sel ? AMColor.accent : AMColor.sidebarText)
+                            .frame(width: 80, height: 60)
+                            .background { sel ? AMColor.accent.opacity(0.12) : Color.clear }
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                            if n > 0 {
+                                Text("\(n)")
+                                    .font(.system(size: 9, weight: .bold))
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 5).padding(.vertical, 2)
+                                    .background(Color.red, in: Capsule())
+                                    .offset(x: -6, y: 6)
+                            }
                         }
-                        .foregroundStyle(sel ? AMColor.accent : AMColor.sidebarText)
-                        .frame(width: 80, height: 60)
-                        .background { sel ? AMColor.accent.opacity(0.12) : Color.clear }
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                     .buttonStyle(.plain)
                     .padding(.bottom, 4)
@@ -83,6 +108,10 @@ struct FrontDeskPadView: View {
                     FDCheckInView()
                 case .questionnaire:
                     FDQuestionnaireView()
+                case .theatre:
+                    NavigationStack { TheatreListView() }
+                case .endoscopy:
+                    NavigationStack { EndoscopyListView() }
                 case .schedule:
                     NavigationStack { ScheduleView() }
                 }

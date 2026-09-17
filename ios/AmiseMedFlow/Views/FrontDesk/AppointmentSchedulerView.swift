@@ -45,6 +45,7 @@ private let durations: [(label: String, seconds: TimeInterval)] = [
 
 struct AppointmentSchedulerView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var context
     @Query(sort: \Patient.createdAt, order: .reverse) private var allPatients: [Patient]
 
     @EnvironmentObject private var calendarService: CalendarService
@@ -73,6 +74,7 @@ struct AppointmentSchedulerView: View {
     @State private var showMailComposer = false
     @State private var showSMSComposer = false
     @State private var showQuestionnaire = false
+    @State private var showAddPatient = false
 
     // Feedback
     @State private var isSaving = false
@@ -81,6 +83,16 @@ struct AppointmentSchedulerView: View {
 
     private var effectiveDuration: TimeInterval {
         usesCustomDuration ? customDuration : apptType.ekDuration
+    }
+
+    /// Maps appointment type to the corresponding clinical setting so the
+    /// patient record is updated when a procedure or endoscopy is scheduled.
+    private var impliedSetting: ClinicalSetting? {
+        switch apptType {
+        case .procedure:  return .theatre
+        case .endoscopy:  return .endoscopy
+        default:          return nil
+        }
     }
 
     private var filteredPatients: [Patient] {
@@ -148,6 +160,13 @@ struct AppointmentSchedulerView: View {
             .sheet(isPresented: $showQuestionnaire) {
                 AdaptiveQuestionnaireSheet(patient: selectedPatient)
             }
+            .sheet(isPresented: $showAddPatient) {
+                AddPatientView(
+                    initialSetting: impliedSetting ?? .outpatient,
+                    initialProcedure: apptType == .procedure || apptType == .endoscopy ? apptType.rawValue : "",
+                    operationDate: apptDate
+                )
+            }
         }
     }
 
@@ -195,6 +214,13 @@ struct AppointmentSchedulerView: View {
                         }
                         .buttonStyle(.plain)
                     }
+                }
+
+                Button {
+                    showAddPatient = true
+                } label: {
+                    Label("Register New Patient", systemImage: "person.badge.plus")
+                        .foregroundStyle(AMColor.accent)
                 }
             }
         }
@@ -302,6 +328,18 @@ struct AppointmentSchedulerView: View {
                 calendar: selectedCalendar
             )
             savedEvent = event
+
+            // Update patient record so they appear in the correct clinical list
+            if let setting = impliedSetting {
+                patient.setting = setting
+                patient.operationDate = apptDate
+                if patient.appointmentType == nil || patient.appointmentType?.isEmpty == true {
+                    patient.appointmentType = apptType.rawValue
+                }
+                patient.updatedAt = .now
+                patient.pendingSync = true
+                try? context.save()
+            }
 
             if scheduleReminder {
                 let notifService = NotificationService()

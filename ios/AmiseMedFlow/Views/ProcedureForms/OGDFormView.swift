@@ -145,6 +145,14 @@ struct OGDFormView: View {
         .onAppear {
             data = patient.ogdData
             hasProcedureDate = data.dateOfProcedure != nil
+            if data.dateOfProcedure == nil, let opDate = patient.operationDate {
+                data.dateOfProcedure = opDate
+                hasProcedureDate = true
+            }
+            if data.indication.isEmpty, let cc = patient.chiefComplaint, !cc.isEmpty {
+                let matched = indications.filter { cc.lowercased().contains($0.lowercased()) }
+                if !matched.isEmpty { data.indication = matched }
+            }
         }
         .alert("AI Error", isPresented: Binding(
             get: { aiError != nil },
@@ -261,10 +269,8 @@ struct OGDFormView: View {
             }
             Toggle("Consent obtained", isOn: $data.consent)
                 .onChange(of: data.consent) { _, _ in save() }
-            TextField("Operator", text: $data.operator_)
-                .onChange(of: data.operator_) { _, _ in save() }
-            TextField("Assistant", text: $data.assistant)
-                .onChange(of: data.assistant) { _, _ in save() }
+            staffField("Operator", text: $data.operator_, role: .surgeon)
+            staffField("Assistant", text: $data.assistant, role: .assistant)
 
             Toggle("Date of procedure", isOn: $hasProcedureDate)
                 .onChange(of: hasProcedureDate) { _, on in
@@ -462,10 +468,41 @@ struct OGDFormView: View {
     // MARK: Helpers
 
     private func save() {
+        if data.operator_.count >= 4 { StaffRegistry.shared.add(data.operator_, to: .surgeon) }
+        if data.assistant.count >= 4  { StaffRegistry.shared.add(data.assistant,  to: .assistant) }
         patient.ogdData = data
         patient.updatedAt = .now
         patient.pendingSync = true
         try? context.save()
+    }
+
+    @ViewBuilder
+    private func staffField(_ label: String, text: Binding<String>, role: StaffRegistry.Role) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            TextField(label, text: text).onChange(of: text.wrappedValue) { _, _ in save() }
+            let q = text.wrappedValue.lowercased()
+            let names = StaffRegistry.shared.names(for: role).filter { q.isEmpty || $0.lowercased().contains(q) }
+            let showSuggestions = !names.isEmpty && !names.contains(text.wrappedValue)
+            if showSuggestions {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach(names, id: \.self) { name in
+                            Button {
+                                text.wrappedValue = name
+                                save()
+                            } label: {
+                                Text(name)
+                                    .font(.system(size: 11))
+                                    .padding(.horizontal, 8).padding(.vertical, 3)
+                                    .background(Color.secondary.opacity(0.12), in: Capsule())
+                                    .foregroundStyle(.secondary)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @ViewBuilder

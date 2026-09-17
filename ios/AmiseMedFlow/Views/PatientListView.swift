@@ -9,6 +9,8 @@ struct PatientListView: View {
     @State private var searchText = ""
     @State private var selectedPatient: Patient?
 
+    // MARK: – Filter
+
     private var filtered: [Patient] {
         guard !searchText.isEmpty else { return allPatients }
         let q = searchText.lowercased()
@@ -21,27 +23,63 @@ struct PatientListView: View {
         }
     }
 
+    // MARK: – Sections (deduped via PatientDeduplication.swift)
+
+    private static let settingOrder: [ClinicalSetting] = [
+        .emergency, .inpatient, .theatre, .endoscopy, .outpatient
+    ]
+
+    private var sections: [(setting: ClinicalSetting, patients: [Patient])] {
+        Self.settingOrder.compactMap { setting in
+            let patients = filtered
+                .filter { $0.setting == setting }
+                .sorted { $0.createdAt > $1.createdAt }
+                .deduped()
+            return patients.isEmpty ? nil : (setting: setting, patients: patients)
+        }
+    }
+
+    // MARK: – Body
+
     var body: some View {
         NavigationStack {
             List {
-                if filtered.isEmpty {
+                if allPatients.isEmpty {
                     ContentUnavailableView(
                         "No patients",
                         systemImage: "person.crop.circle",
                         description: Text("Add a patient to get started.")
                     )
+                } else if sections.isEmpty {
+                    ContentUnavailableView(
+                        "No results",
+                        systemImage: "magnifyingglass",
+                        description: Text("No patients match "\(searchText)".")
+                    )
                 } else {
-                    ForEach(filtered) { patient in
-                        Button { selectedPatient = patient } label: {
-                            PatientRow(patient: patient)
+                    ForEach(sections, id: \.setting) { section in
+                        Section {
+                            ForEach(section.patients) { patient in
+                                Button { selectedPatient = patient } label: {
+                                    PatientRow(patient: patient)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                            .onDelete { offsets in
+                                deleteWithDuplicates(from: section.patients, at: offsets)
+                            }
+                        } header: {
+                            Label(section.setting.rawValue,
+                                  systemImage: section.setting.icon)
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(Color(hex: section.setting.accentHex))
+                                .textCase(nil)
                         }
-                        .buttonStyle(.plain)
                     }
-                    .onDelete(perform: delete)
                 }
             }
             .navigationTitle("Patients")
-            .searchable(text: $searchText, prompt: "Search name or complaint")
+            .searchable(text: $searchText, prompt: "Search name, MRN, or complaint")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     HStack {
@@ -59,8 +97,20 @@ struct PatientListView: View {
         }
     }
 
-    private func delete(at offsets: IndexSet) {
-        for i in offsets { context.delete(filtered[i]) }
+    // MARK: – Actions
+
+    /// Deletes the tapped row and any hidden duplicates of the same patient
+    /// in the same setting (same dedupKey). Clinical data is intentionally
+    /// preserved on the winner; duplicates with no encounters/vitals/notes
+    /// are safe to remove.
+    private func deleteWithDuplicates(from patients: [Patient], at offsets: IndexSet) {
+        for i in offsets {
+            let victim = patients[i]
+            let key = victim.dedupKey
+            allPatients
+                .filter { $0.setting == victim.setting && $0.dedupKey == key }
+                .forEach { context.delete($0) }
+        }
     }
 }
 

@@ -43,6 +43,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case cha2ds2vasc      = "CHA₂DS₂-VASc (AF Stroke)"
     case hasBled          = "HAS-BLED (Bleeding)"
     case stopBang         = "STOP-BANG (OSA)"
+    case news2            = "NEWS2 (National Early Warning)"
 
     var category: ScoreCategory {
         switch self {
@@ -60,7 +61,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .neuro
         case .cha2ds2vasc, .hasBled:
             return .cardiac
-        case .mews:
+        case .mews, .news2:
             return .monitoring
         }
     }
@@ -75,6 +76,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .blatchford:     return "drop.triangle"
         case .sirs, .qsofa:   return "thermometer.medium"
         case .mews:           return "waveform.path.ecg.rectangle"
+        case .news2:          return "waveform.path.ecg.rectangle.fill"
         case .wellsDVT, .wellsPE, .caprini: return "heart.fill"
         case .abcd2:          return "brain.head.profile"
         case .gcs:            return "eye"
@@ -148,10 +150,13 @@ struct ClinicalScoresView: View {
     @State private var blatchI = BlatchfordInput()
     // STOP-BANG
     @State private var sbangI = STOPBANGInput()
+    // NEWS2
+    @State private var news2I = NEWS2Input()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
     @State private var mewsSaved = false
+    @State private var news2Saved = false
     @State private var scoreSaved = false
 
     var filteredScores: [ActiveScore] {
@@ -344,6 +349,35 @@ struct ClinicalScoresView: View {
                     .padding(.top, 4)
             }
 
+            // Score history for current system
+            let history = patient.scoreHistory
+                .filter { $0.scoreName == r.systemName }
+                .sorted { $0.recordedAt > $1.recordedAt }
+                .prefix(5)
+            if !history.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Recent saves")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    ForEach(Array(history), id: \.id) { entry in
+                        HStack {
+                            Text(entry.abbreviation)
+                                .font(.caption.monospacedDigit())
+                                .foregroundStyle(scoreHistoryColor(entry.riskRaw))
+                            Text("— \(entry.riskRaw)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Text(entry.recordedAt, style: .date)
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                }
+                .padding(10)
+                .background(Color.secondary.opacity(0.07), in: RoundedRectangle(cornerRadius: 8))
+            }
+
             Button(action: { saveScoreToAssessment(r) }) {
                 Label(
                     scoreSaved ? "Saved to Assessment" : "Save score to Assessment",
@@ -393,8 +427,24 @@ struct ClinicalScoresView: View {
 
     private func autoPopulate(for score: ActiveScore) {
         mewsSaved = false
+        news2Saved = false
         scoreSaved = false
         switch score {
+        case .alvarado:
+            let (input, fill) = PatientScoreAutoPopulator.alvarado(patient: patient)
+            alv = input; autoFill = fill
+        case .tokyoChole:
+            let (input, fill) = PatientScoreAutoPopulator.tokyoCholecystitis(patient: patient)
+            tkyC = input; autoFill = fill
+        case .tokyoCholang:
+            let (input, fill) = PatientScoreAutoPopulator.tokyoCholangitis(patient: patient)
+            tkyG = input; autoFill = fill
+        case .blatchford:
+            let (input, fill) = PatientScoreAutoPopulator.blatchford(patient: patient)
+            blatchI = input; autoFill = fill
+        case .news2:
+            let (input, fill) = PatientScoreAutoPopulator.news2(patient: patient)
+            news2I = input; autoFill = fill
         case .caprini:
             let (input, fill) = PatientScoreAutoPopulator.caprini(patient: patient)
             cap = input; autoFill = fill
@@ -425,6 +475,24 @@ struct ClinicalScoresView: View {
         case .meld:
             let (input, fill) = PatientScoreAutoPopulator.meld(patient: patient)
             meldI = input; autoFill = fill
+        case .sirs:
+            let (input, fill) = PatientScoreAutoPopulator.sirs(patient: patient)
+            sirsI = input; autoFill = fill
+        case .qsofa:
+            let (input, fill) = PatientScoreAutoPopulator.qsofa(patient: patient)
+            qsofaI = input; autoFill = fill
+        case .childPugh:
+            let (input, fill) = PatientScoreAutoPopulator.childPugh(patient: patient)
+            cp = input; autoFill = fill
+        case .lrinec:
+            let (input, fill) = PatientScoreAutoPopulator.lrinec(patient: patient)
+            lrin = input; autoFill = fill
+        case .ranson:
+            let (input, fill) = PatientScoreAutoPopulator.ranson(patient: patient)
+            ran = input; autoFill = fill
+        case .glasgow:
+            let (input, fill) = PatientScoreAutoPopulator.glasgowPancreatitis(patient: patient)
+            glas = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -463,6 +531,16 @@ struct ClinicalScoresView: View {
         } else {
             patient.assessmentText = line
         }
+        // Persist to score history
+        let entry = ScoreHistoryEntry(
+            scoreName: r.systemName,
+            abbreviation: r.abbreviation,
+            scoreValue: r.score,
+            maxScore: r.maxScore,
+            riskRaw: r.risk.rawValue
+        )
+        entry.patient = patient
+        modelContext.insert(entry)
         scoreSaved = true
     }
 
@@ -495,6 +573,7 @@ struct ClinicalScoresView: View {
         case .cha2ds2vasc:  ClinicalScoringEngine.cha2ds2vasc(cha2I)
         case .hasBled:      ClinicalScoringEngine.hasBled(hblI)
         case .stopBang:     ClinicalScoringEngine.stopBang(sbangI)
+        case .news2:        ClinicalScoringEngine.news2(news2I)
         }
     }
 
@@ -550,6 +629,7 @@ struct ClinicalScoresView: View {
         case .cha2ds2vasc:  cha2ds2vascForm
         case .hasBled:      hasBledForm
         case .stopBang:     stopBangForm
+        case .news2:        news2Form
         }
     }
 
@@ -562,8 +642,8 @@ struct ClinicalScoresView: View {
             scoreToggle("Nausea / vomiting", binding: $alv.nauseaVomiting, points: "+1")
             scoreToggle("Tenderness in RIF", binding: $alv.tendernessRIF, points: "+2")
             scoreToggle("Rebound tenderness", binding: $alv.reboundTenderness, points: "+1")
-            scoreToggle("Elevated temperature ≥37.3°C", binding: $alv.elevatedTemperature, points: "+1")
-            scoreToggle("WBC >10,000/μL", binding: $alv.wbcElevated, points: "+2")
+            scoreToggle("Elevated temperature ≥37.3°C", binding: $alv.elevatedTemperature, points: "+1", autoKey: "elevatedTemperature")
+            scoreToggle("WBC >10,000/μL", binding: $alv.wbcElevated, points: "+2", autoKey: "wbcElevated")
             scoreToggle("Neutrophilia >75%", binding: $alv.neutrophiliaShift, points: "+1")
         }
         .onChange(of: alv) { _, _ in recalculate() }
@@ -575,7 +655,7 @@ struct ClinicalScoresView: View {
         Group {
             sectionHeader("Local Inflammation")
             scoreToggle("Local inflammation signs (mild)", binding: $tkyC.localInflammationSignsMild, points: "Grade I")
-            scoreToggle("WBC >18,000/μL", binding: $tkyC.wbcAbove18, points: "Grade I")
+            scoreToggle("WBC >18,000/μL", binding: $tkyC.wbcAbove18, points: "Grade I", autoKey: "wbcAbove18")
             scoreToggle("Symptoms >72 hours", binding: $tkyC.durationOver72h, points: "Grade II")
             scoreToggle("Marked local inflammation", binding: $tkyC.markedLocalInflammation, points: "Grade II")
             sectionHeader("Organ Dysfunction (Grade III)")
@@ -602,10 +682,10 @@ struct ClinicalScoresView: View {
         Group {
             scoreToggle("Cholangitis confirmed (Charcot's / imaging)", binding: $tkyG.cholangitisConfirmed, points: "Req.")
             sectionHeader("Grade II Criteria (any = at least Grade II)")
-            scoreToggle("WBC >12k or <4k", binding: $tkyG.wbcAbove12OrBelow4, points: "II")
-            scoreToggle("Temperature >39°C", binding: $tkyG.temperatureAbove39, points: "II")
-            scoreToggle("Age >75 years", binding: $tkyG.ageAbove75, points: "II")
-            scoreToggle("Bilirubin >85 μmol/L (>5 mg/dL)", binding: $tkyG.bilirubinAbove5, points: "II")
+            scoreToggle("WBC >12k or <4k", binding: $tkyG.wbcAbove12OrBelow4, points: "II", autoKey: "wbcAbove12OrBelow4")
+            scoreToggle("Temperature >39°C", binding: $tkyG.temperatureAbove39, points: "II", autoKey: "temperatureAbove39")
+            scoreToggle("Age >75 years", binding: $tkyG.ageAbove75, points: "II", autoKey: "ageAbove75")
+            scoreToggle("Bilirubin >85 μmol/L (>5 mg/dL)", binding: $tkyG.bilirubinAbove5, points: "II", autoKey: "bilirubinAbove5")
             scoreToggle("Albumin <0.7 × LLN", binding: $tkyG.albuminBelow0_7xLLN, points: "II")
         }
         .onChange(of: tkyG) { _, _ in recalculate() }
@@ -629,16 +709,16 @@ struct ClinicalScoresView: View {
     private var ransonForm: some View {
         Group {
             sectionHeader("At Admission")
-            scoreToggle("Age >55 years", binding: $ran.ageOver55, points: "+1")
-            scoreToggle("WBC >16,000/μL", binding: $ran.wbcOver16k, points: "+1")
-            scoreToggle("Glucose >11 mmol/L (>200 mg/dL)", binding: $ran.glucoseOver200, points: "+1")
-            scoreToggle("LDH >350 IU/L", binding: $ran.ldhOver350, points: "+1")
-            scoreToggle("AST >250 IU/L", binding: $ran.astOver250, points: "+1")
+            scoreToggle("Age >55 years", binding: $ran.ageOver55, points: "+1", autoKey: "ageOver55")
+            scoreToggle("WBC >16,000/μL", binding: $ran.wbcOver16k, points: "+1", autoKey: "wbcOver16k")
+            scoreToggle("Glucose >11 mmol/L (>200 mg/dL)", binding: $ran.glucoseOver200, points: "+1", autoKey: "glucoseOver200")
+            scoreToggle("LDH >350 IU/L", binding: $ran.ldhOver350, points: "+1", autoKey: "ldhOver350")
+            scoreToggle("AST >250 IU/L", binding: $ran.astOver250, points: "+1", autoKey: "astOver250")
             sectionHeader("At 48 Hours")
-            scoreToggle("Haematocrit fall >10%", binding: $ran.hctFallOver10, points: "+1")
-            scoreToggle("BUN rise >1.8 mmol/L", binding: $ran.bunRiseOver5, points: "+1")
-            scoreToggle("Calcium <2 mmol/L", binding: $ran.calciumBelow8, points: "+1")
-            scoreToggle("PaO₂ <60 mmHg", binding: $ran.pao2Below60, points: "+1")
+            scoreToggle("Haematocrit fall >10%", binding: $ran.hctFallOver10, points: "+1", autoKey: "hctFallOver10")
+            scoreToggle("BUN rise >1.8 mmol/L", binding: $ran.bunRiseOver5, points: "+1", autoKey: "bunRiseOver5")
+            scoreToggle("Calcium <2 mmol/L", binding: $ran.calciumBelow8, points: "+1", autoKey: "calciumBelow8")
+            scoreToggle("PaO₂ <60 mmHg", binding: $ran.pao2Below60, points: "+1", autoKey: "pao2Below60")
         }
         .onChange(of: ran) { _, _ in recalculate() }
     }
@@ -649,14 +729,14 @@ struct ClinicalScoresView: View {
         Group {
             Text("Glasgow (PANCREAS) — all at 48 hours.")
                 .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
-            scoreToggle("Age >55 years", binding: $glas.ageOver55, points: "+1")
-            scoreToggle("WBC >15,000/μL", binding: $glas.wbcOver15k, points: "+1")
-            scoreToggle("Glucose >10 mmol/L", binding: $glas.glucoseOver10, points: "+1")
-            scoreToggle("Urea >16 mmol/L", binding: $glas.ureaOver16, points: "+1")
-            scoreToggle("PaO₂ <60 mmHg", binding: $glas.pao2Below60, points: "+1")
-            scoreToggle("Calcium <2 mmol/L", binding: $glas.calciumBelow2, points: "+1")
-            scoreToggle("Albumin <32 g/L", binding: $glas.albuminBelow32, points: "+1")
-            scoreToggle("LDH >600 IU/L or AST >200 IU/L", binding: $glas.ldhOver600OrAstOver200, points: "+1")
+            scoreToggle("Age >55 years", binding: $glas.ageOver55, points: "+1", autoKey: "ageOver55")
+            scoreToggle("WBC >15,000/μL", binding: $glas.wbcOver15k, points: "+1", autoKey: "wbcOver15k")
+            scoreToggle("Glucose >10 mmol/L", binding: $glas.glucoseOver10, points: "+1", autoKey: "glucoseOver10")
+            scoreToggle("Urea >16 mmol/L", binding: $glas.ureaOver16, points: "+1", autoKey: "ureaOver16")
+            scoreToggle("PaO₂ <60 mmHg", binding: $glas.pao2Below60, points: "+1", autoKey: "pao2Below60")
+            scoreToggle("Calcium <2 mmol/L", binding: $glas.calciumBelow2, points: "+1", autoKey: "calciumBelow2")
+            scoreToggle("Albumin <32 g/L", binding: $glas.albuminBelow32, points: "+1", autoKey: "albuminBelow32")
+            scoreToggle("LDH >600 IU/L or AST >200 IU/L", binding: $glas.ldhOver600OrAstOver200, points: "+1", autoKey: "ldhOver600OrAstOver200")
         }
         .onChange(of: glas) { _, _ in recalculate() }
     }
@@ -706,10 +786,10 @@ struct ClinicalScoresView: View {
 
     private var sirsForm: some View {
         Group {
-            scoreToggle("Temperature >38°C or <36°C", binding: $sirsI.tempAbove38OrBelow36, points: "+1")
-            scoreToggle("Heart rate >90 bpm", binding: $sirsI.heartRateOver90, points: "+1")
-            scoreToggle("RR >20 or PaCO₂ <32 mmHg", binding: $sirsI.rrOver20OrPaCO2Below32, points: "+1")
-            scoreToggle("WBC >12k, <4k, or >10% bands", binding: $sirsI.wbcOver12kOrBelow4kOr10PctBands, points: "+1")
+            scoreToggle("Temperature >38°C or <36°C", binding: $sirsI.tempAbove38OrBelow36, points: "+1", autoKey: "tempAbove38OrBelow36")
+            scoreToggle("Heart rate >90 bpm", binding: $sirsI.heartRateOver90, points: "+1", autoKey: "heartRateOver90")
+            scoreToggle("RR >20 or PaCO₂ <32 mmHg", binding: $sirsI.rrOver20OrPaCO2Below32, points: "+1", autoKey: "rrOver20OrPaCO2Below32")
+            scoreToggle("WBC >12k, <4k, or >10% bands", binding: $sirsI.wbcOver12kOrBelow4kOr10PctBands, points: "+1", autoKey: "wbcOver12kOrBelow4kOr10PctBands")
             scoreToggle("Suspected infection source", binding: $sirsI.suspectedInfection, points: "Req.")
             scoreToggle("Positive blood culture", binding: $sirsI.positiveBloodCulture, points: "Bacteraemia")
         }
@@ -720,14 +800,14 @@ struct ClinicalScoresView: View {
 
     private var qsofaForm: some View {
         Group {
-            Text("Quick SOFA — bedside assessment only. No lab values required.")
+            Text("Quick SOFA — bedside assessment. Values pre-filled from latest vitals where available.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .padding(.bottom, 4)
             scoreToggle("Suspected infection source", binding: $qsofaI.suspectedInfection, points: "Req.")
-            scoreToggle("Altered mentation (GCS <15)", binding: $qsofaI.alteredMentation, points: "+1")
-            scoreToggle("Respiratory rate >22/min", binding: $qsofaI.rrOver22, points: "+1")
-            scoreToggle("Systolic BP <100 mmHg", binding: $qsofaI.sbpUnder100, points: "+1")
+            scoreToggle("Altered mentation (GCS <15)", binding: $qsofaI.alteredMentation, points: "+1", autoKey: "alteredMentation")
+            scoreToggle("Respiratory rate >22/min", binding: $qsofaI.rrOver22, points: "+1", autoKey: "rrOver22")
+            scoreToggle("Systolic BP <100 mmHg", binding: $qsofaI.sbpUnder100, points: "+1", autoKey: "sbpUnder100")
         }
         .onChange(of: qsofaI) { _, _ in recalculate() }
     }
@@ -820,15 +900,15 @@ struct ClinicalScoresView: View {
     private var lrinecForm: some View {
         Group {
             sectionHeader("Laboratory Values")
-            scoreToggle("CRP >150 mg/L", binding: $lrin.crpOver150, points: "+4")
-            scoreToggle("WBC >25 ×10⁹/L", binding: $lrin.wbcOver25, points: "+2")
-            scoreToggle("WBC 15–25 ×10⁹/L", binding: $lrin.wbc15to25, points: "+1")
-            scoreToggle("Hb <11 g/dL", binding: $lrin.hbBelow11, points: "+2")
-            scoreToggle("Hb 11–13.5 g/dL", binding: $lrin.hb11to13_5, points: "+1")
-            scoreToggle("Sodium <135 mmol/L", binding: $lrin.sodiumBelow135, points: "+2")
-            scoreToggle("Creatinine >177 μmol/L", binding: $lrin.creatinineOver177, points: "+4")
-            scoreToggle("Creatinine 141–177 μmol/L", binding: $lrin.creatinine141to177, points: "+2")
-            scoreToggle("Glucose >10 mmol/L", binding: $lrin.glucoseOver10, points: "+1")
+            scoreToggle("CRP >150 mg/L",           binding: $lrin.crpOver150,        points: "+4", autoKey: "crpOver150")
+            scoreToggle("WBC >25 ×10⁹/L",          binding: $lrin.wbcOver25,         points: "+2", autoKey: "wbcOver25")
+            scoreToggle("WBC 15–25 ×10⁹/L",        binding: $lrin.wbc15to25,         points: "+1", autoKey: "wbc15to25")
+            scoreToggle("Hb <11 g/dL",             binding: $lrin.hbBelow11,         points: "+2", autoKey: "hbBelow11")
+            scoreToggle("Hb 11–13.5 g/dL",         binding: $lrin.hb11to13_5,        points: "+1", autoKey: "hb11to13_5")
+            scoreToggle("Sodium <135 mmol/L",       binding: $lrin.sodiumBelow135,    points: "+2", autoKey: "sodiumBelow135")
+            scoreToggle("Creatinine >177 μmol/L",   binding: $lrin.creatinineOver177, points: "+4", autoKey: "creatinineOver177")
+            scoreToggle("Creatinine 141–177 μmol/L",binding: $lrin.creatinine141to177,points: "+2", autoKey: "creatinine141to177")
+            scoreToggle("Glucose >10 mmol/L",       binding: $lrin.glucoseOver10,     points: "+1", autoKey: "glucoseOver10")
         }
         .onChange(of: lrin) { _, _ in recalculate() }
     }
@@ -917,6 +997,15 @@ struct ClinicalScoresView: View {
 
     private var childPughForm: some View {
         VStack(alignment: .leading, spacing: 12) {
+            if autoFill.isAuto("bilirubinUmolL") || autoFill.isAuto("albuminGdL") || autoFill.isAuto("ptINR") {
+                HStack(spacing: 4) {
+                    Image(systemName: "wand.and.stars").font(.caption2).foregroundStyle(.teal)
+                    Text("Bilirubin, albumin, and INR pre-filled from latest labs — review values.")
+                        .font(.caption2).foregroundStyle(.teal)
+                }
+                .padding(.horizontal, 8).padding(.vertical, 4)
+                .background(.teal.opacity(0.1), in: RoundedRectangle(cornerRadius: 6))
+            }
             sectionHeader("Ascites")
             Picker("Ascites", selection: $cp.ascites) {
                 Text("None (1)").tag(ChildPughInput.AscitesGrade.none)
@@ -933,29 +1022,15 @@ struct ClinicalScoresView: View {
             }
             .pickerStyle(.segmented)
 
-            sectionHeader("Bilirubin (μmol/L)")
-            HStack {
-                Slider(value: $cp.bilirubinUmolL, in: 0...400, step: 5)
-                Text("\(Int(cp.bilirubinUmolL)) μmol/L")
-                    .font(.caption.monospacedDigit())
-                    .frame(width: 80, alignment: .trailing)
-            }
-
-            sectionHeader("Albumin (g/dL)")
-            HStack {
-                Slider(value: $cp.albuminGdL, in: 1.0...5.0, step: 0.1)
-                Text(String(format: "%.1f g/dL", cp.albuminGdL))
-                    .font(.caption.monospacedDigit())
-                    .frame(width: 80, alignment: .trailing)
-            }
-
-            sectionHeader("PT-INR")
-            HStack {
-                Slider(value: $cp.ptINR, in: 0.8...5.0, step: 0.1)
-                Text(String(format: "%.1f", cp.ptINR))
-                    .font(.caption.monospacedDigit())
-                    .frame(width: 80, alignment: .trailing)
-            }
+            mewsSlider(label: "Bilirubin (μmol/L)", autoKey: "bilirubinUmolL",
+                       value: $cp.bilirubinUmolL, in: 0...400, step: 5,
+                       display: "\(Int(cp.bilirubinUmolL)) μmol/L")
+            mewsSlider(label: "Albumin (g/dL)", autoKey: "albuminGdL",
+                       value: $cp.albuminGdL, in: 1.0...5.0, step: 0.1,
+                       display: String(format: "%.1f g/dL", cp.albuminGdL))
+            mewsSlider(label: "PT-INR", autoKey: "ptINR",
+                       value: $cp.ptINR, in: 0.8...5.0, step: 0.1,
+                       display: String(format: "%.1f", cp.ptINR))
         }
         .onChange(of: cp) { _, _ in recalculate() }
     }
@@ -1067,6 +1142,79 @@ struct ClinicalScoresView: View {
             }
             content()
         }
+    }
+
+    // MARK: - NEWS2
+
+    private var news2Form: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            if autoFill.isAuto("respiratoryRate") || autoFill.isAuto("heartRate") || autoFill.isAuto("systolicBP") {
+                HStack(spacing: 4) {
+                    Image(systemName: "wand.and.stars").font(.caption2).foregroundStyle(.teal)
+                    Text("Pre-filled from most recent vitals — verify and adjust if needed.")
+                        .font(.caption2).foregroundStyle(.teal)
+                }
+                .padding(.horizontal, 8).padding(.vertical, 4)
+                .background(.teal.opacity(0.1), in: RoundedRectangle(cornerRadius: 6))
+            }
+            mewsSlider(label: "Respiratory Rate (breaths/min)", autoKey: "respiratoryRate",
+                       value: Binding(get: { Double(news2I.respiratoryRate) }, set: { news2I.respiratoryRate = Int($0) }),
+                       in: 4...50, step: 1, display: "\(news2I.respiratoryRate)")
+            mewsSlider(label: "SpO₂ (%)", autoKey: "spo2",
+                       value: Binding(get: { Double(news2I.spo2) }, set: { news2I.spo2 = Int($0) }),
+                       in: 70...100, step: 1, display: "\(news2I.spo2)%")
+            scoreToggle("On supplemental oxygen", binding: $news2I.onSupplementalO2, points: "+2", autoKey: "onSupplementalO2")
+            mewsSlider(label: "Systolic BP (mmHg)", autoKey: "systolicBP",
+                       value: Binding(get: { Double(news2I.systolicBP) }, set: { news2I.systolicBP = Int($0) }),
+                       in: 40...260, step: 2, display: "\(news2I.systolicBP)")
+            mewsSlider(label: "Heart Rate (bpm)", autoKey: "heartRate",
+                       value: Binding(get: { Double(news2I.heartRate) }, set: { news2I.heartRate = Int($0) }),
+                       in: 20...200, step: 1, display: "\(news2I.heartRate)")
+            mewsSlider(label: "Temperature (°C)", autoKey: "temperatureCelsius",
+                       value: $news2I.temperatureCelsius, in: 33.0...42.0, step: 0.1,
+                       display: String(format: "%.1f°C", news2I.temperatureCelsius))
+            mewsPickerRow(label: "AVPU — Consciousness", autoKey: "avpu") {
+                Picker("AVPU", selection: $news2I.avpu) {
+                    Text("Alert (0)").tag(AVPU.alert)
+                    Text("Confused (3)").tag(AVPU.confused)
+                    Text("Voice (3)").tag(AVPU.voice)
+                    Text("Pain (3)").tag(AVPU.pain)
+                    Text("Unresponsive (3)").tag(AVPU.unresponsive)
+                }
+                .pickerStyle(.segmented)
+            }
+            Divider().padding(.vertical, 4)
+            Button(action: saveNEWS2ToVitals) {
+                Label(
+                    news2Saved ? "Saved to vitals" : "Save readings to Vitals",
+                    systemImage: news2Saved ? "checkmark.circle.fill" : "waveform.path.ecg"
+                )
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(news2Saved ? .green : .teal)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .background(
+                    (news2Saved ? Color.green : Color.teal).opacity(0.1),
+                    in: RoundedRectangle(cornerRadius: 10)
+                )
+            }
+            .buttonStyle(.plain)
+            .disabled(news2Saved)
+            .animation(.easeInOut(duration: 0.2), value: news2Saved)
+        }
+        .onChange(of: news2I) { _, _ in news2Saved = false; recalculate() }
+    }
+
+    private func saveNEWS2ToVitals() {
+        let entry = VitalsEntry(patient: patient)
+        entry.respiratoryRate    = news2I.respiratoryRate
+        entry.spo2               = news2I.spo2
+        entry.bpSystolic         = news2I.systolicBP
+        entry.heartRate          = news2I.heartRate
+        entry.temperatureCelsius = news2I.temperatureCelsius
+        entry.avpu               = news2I.avpu
+        modelContext.insert(entry)
+        news2Saved = true
     }
 
     // MARK: - GCS
@@ -1205,7 +1353,17 @@ struct ClinicalScoresView: View {
 
     private var blatchfordForm: some View {
         VStack(alignment: .leading, spacing: 12) {
-            scoreToggle("Patient is male", binding: $blatchI.isMale, points: "")
+            if autoFill.isAuto("isMale") || autoFill.isAuto("bloodUreaNitrogen")
+                || autoFill.isAuto("haemoglobin") || autoFill.isAuto("sbp") {
+                HStack(spacing: 4) {
+                    Image(systemName: "wand.and.stars").font(.caption2).foregroundStyle(.teal)
+                    Text("Sex, BUN, Hb, and SBP pre-filled from patient record — review values.")
+                        .font(.caption2).foregroundStyle(.teal)
+                }
+                .padding(.horizontal, 8).padding(.vertical, 4)
+                .background(.teal.opacity(0.1), in: RoundedRectangle(cornerRadius: 6))
+            }
+            scoreToggle("Patient is male", binding: $blatchI.isMale, points: "", autoKey: "isMale")
 
             sectionHeader("Blood Urea Nitrogen")
             Picker("BUN", selection: $blatchI.bloodUreaNitrogen) {
@@ -1245,7 +1403,7 @@ struct ClinicalScoresView: View {
             }
             .pickerStyle(.segmented)
 
-            scoreToggle("Heart rate >100 bpm", binding: $blatchI.heartRateOver100, points: "+1")
+            scoreToggle("Heart rate >100 bpm", binding: $blatchI.heartRateOver100, points: "+1", autoKey: "heartRateOver100")
             scoreToggle("Melaena on presentation", binding: $blatchI.melaena, points: "+1")
             scoreToggle("Syncope", binding: $blatchI.syncope, points: "+2")
             scoreToggle("Hepatic disease", binding: $blatchI.hepaticDisease, points: "+2")
@@ -1294,8 +1452,8 @@ struct ClinicalScoresView: View {
                         }
                         Spacer()
                         // Confirm button: sets toggle true + writes to PMH.
-                        // MEWS pending fields are vitals measurements — use Save to Vitals instead.
-                        if selectedScore != .mews {
+                        // MEWS/NEWS2 pending fields are vitals measurements — use Save to Vitals instead.
+                        if selectedScore != .mews && selectedScore != .news2 {
                             Button("Yes") {
                                 confirmPendingField(field)
                             }
@@ -1399,6 +1557,33 @@ struct ClinicalScoresView: View {
             case "duration10to59min":     abcd.duration10to59min = true;  abcdDuration = 1
             default: break
             }
+        case .sirs:
+            switch field.id {
+            case "suspectedInfection":              sirsI.suspectedInfection = true
+            case "wbcOver12kOrBelow4kOr10PctBands": sirsI.wbcOver12kOrBelow4kOr10PctBands = true
+            default: break
+            }
+        case .qsofa:
+            switch field.id {
+            case "suspectedInfection": qsofaI.suspectedInfection = true
+            case "alteredMentation":   qsofaI.alteredMentation = true
+            case "rrOver22":           qsofaI.rrOver22 = true
+            case "sbpUnder100":        qsofaI.sbpUnder100 = true
+            default: break
+            }
+        case .ranson:
+            switch field.id {
+            case "hctFallOver10": ran.hctFallOver10 = true
+            case "bunRiseOver5":  ran.bunRiseOver5 = true
+            case "calciumBelow8": ran.calciumBelow8 = true
+            case "pao2Below60":   ran.pao2Below60 = true
+            default: break
+            }
+        case .glasgow:
+            switch field.id {
+            case "pao2Below60": glas.pao2Below60 = true
+            default: break
+            }
         default: break
         }
 
@@ -1445,5 +1630,14 @@ struct ClinicalScoresView: View {
             .foregroundStyle(.secondary)
             .textCase(.uppercase)
             .padding(.top, 8)
+    }
+
+    private func scoreHistoryColor(_ riskRaw: String) -> Color {
+        switch riskRaw {
+        case ScoreRisk.low.rawValue:      return .green
+        case ScoreRisk.moderate.rawValue: return .orange
+        case ScoreRisk.high.rawValue:     return Color(red: 0.9, green: 0.4, blue: 0.1)
+        default:                          return .red
+        }
     }
 }

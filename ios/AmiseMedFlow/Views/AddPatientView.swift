@@ -4,6 +4,7 @@ import SwiftData
 struct AddPatientView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var calSvc: CalendarService
 
     var initialSetting: ClinicalSetting
 
@@ -393,6 +394,21 @@ struct AddPatientView: View {
         }
         context.insert(p)
         try? context.save()
+
+        // Mirror to iOS Calendar (syncs to Google Calendar via account settings)
+        if showProcedure && hasOperationDate {
+            let procedure = appointmentType.isEmpty ? chiefComplaint : appointmentType
+            Task {
+                try? await calSvc.createTheatreBooking(
+                    procedure: procedure,
+                    patientName: p.fullName,
+                    date: operationDate,
+                    duration: 5400, // 90 min default
+                    notes: p.workingDiagnosis.map { "Indication: \($0)" } ?? ""
+                )
+            }
+        }
+
         dismiss()
     }
 }

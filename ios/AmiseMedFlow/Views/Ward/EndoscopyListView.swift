@@ -9,15 +9,17 @@ struct EndoscopyListView: View {
     @State private var selectedPatient: Patient?
 
     private var endoscopyPatients: [Patient] {
-        let base = allPatients.filter { $0.setting == .endoscopy }
-        return base.sorted {
-            switch ($0.operationDate, $1.operationDate) {
-            case let (a?, b?): return a < b
-            case (_?, nil):    return true
-            case (nil, _?):    return false
-            default:           return $0.acuity < $1.acuity
+        allPatients
+            .filter { $0.setting == .endoscopy }
+            .sorted {
+                switch ($0.operationDate, $1.operationDate) {
+                case let (a?, b?): return a < b
+                case (_?, nil):    return true
+                case (nil, _?):    return false
+                default:           return $0.acuity < $1.acuity
+                }
             }
-        }
+            .deduped()
     }
 
     var body: some View {

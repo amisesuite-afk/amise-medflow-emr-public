@@ -150,6 +150,16 @@ struct SurgeryNoteView: View {
             hasSurgeryDate = data.dateOfSurgery != nil
             hasStartTime = data.startTime != nil
             hasEndTime = data.endTime != nil
+            if data.dateOfSurgery == nil, let opDate = patient.operationDate {
+                data.dateOfSurgery = opDate
+                hasSurgeryDate = true
+            }
+            if data.procedureName.isEmpty {
+                data.procedureName = patient.appointmentType ?? patient.chiefComplaint ?? ""
+            }
+            if data.indication.isEmpty, let cc = patient.chiefComplaint, !cc.isEmpty {
+                data.indication = cc
+            }
         }
         .alert("AI Error", isPresented: Binding(
             get: { aiError != nil },
@@ -271,11 +281,11 @@ struct SurgeryNoteView: View {
                     set: { data.dateOfSurgery = $0; save() }
                 ), displayedComponents: [.date, .hourAndMinute])
             }
-            TextField("Surgeon", text: $data.surgeon).onChange(of: data.surgeon) { _, _ in save() }
-            TextField("Assistant(s)", text: $data.assistant).onChange(of: data.assistant) { _, _ in save() }
-            TextField("Anaesthetist", text: $data.anaesthetist).onChange(of: data.anaesthetist) { _, _ in save() }
-            TextField("Scrub nurse", text: $data.scrubNurse).onChange(of: data.scrubNurse) { _, _ in save() }
-            TextField("Circulating nurse", text: $data.circNurse).onChange(of: data.circNurse) { _, _ in save() }
+            staffField("Surgeon", text: $data.surgeon, role: .surgeon)
+            staffField("Assistant(s)", text: $data.assistant, role: .assistant)
+            staffField("Anaesthetist", text: $data.anaesthetist, role: .anaesthetist)
+            staffField("Scrub nurse", text: $data.scrubNurse, role: .nurse)
+            staffField("Circulating nurse", text: $data.circNurse, role: .nurse)
         }
     }
 
@@ -491,6 +501,11 @@ struct SurgeryNoteView: View {
     // MARK: Helpers
 
     private func save() {
+        if data.surgeon.count >= 4      { StaffRegistry.shared.add(data.surgeon,       to: .surgeon) }
+        if data.assistant.count >= 4    { StaffRegistry.shared.add(data.assistant,     to: .assistant) }
+        if data.anaesthetist.count >= 4 { StaffRegistry.shared.add(data.anaesthetist,  to: .anaesthetist) }
+        if data.scrubNurse.count >= 4   { StaffRegistry.shared.add(data.scrubNurse,    to: .nurse) }
+        if data.circNurse.count >= 4    { StaffRegistry.shared.add(data.circNurse,     to: .nurse) }
         patient.surgeryData = data
         patient.updatedAt = .now
         patient.pendingSync = true
@@ -517,6 +532,35 @@ struct SurgeryNoteView: View {
                 .multilineTextAlignment(.trailing)
                 .frame(width: 80)
                 .onChange(of: value.wrappedValue) { _, _ in save() }
+        }
+    }
+
+    @ViewBuilder
+    private func staffField(_ label: String, text: Binding<String>, role: StaffRegistry.Role) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            TextField(label, text: text).onChange(of: text.wrappedValue) { _, _ in save() }
+            let q = text.wrappedValue.lowercased()
+            let names = StaffRegistry.shared.names(for: role).filter { q.isEmpty || $0.lowercased().contains(q) }
+            let showSuggestions = !names.isEmpty && !names.contains(text.wrappedValue)
+            if showSuggestions {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach(names, id: \.self) { name in
+                            Button {
+                                text.wrappedValue = name
+                                save()
+                            } label: {
+                                Text(name)
+                                    .font(.system(size: 11))
+                                    .padding(.horizontal, 8).padding(.vertical, 3)
+                                    .background(Color.secondary.opacity(0.12), in: Capsule())
+                                    .foregroundStyle(.secondary)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+            }
         }
     }
 
