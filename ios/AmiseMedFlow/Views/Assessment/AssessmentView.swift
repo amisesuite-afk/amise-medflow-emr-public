@@ -4,14 +4,13 @@ import SwiftData
 struct AssessmentView: View {
     @Bindable var patient: Patient
     @Environment(\.modelContext) private var context
-    @StateObject private var ai = AIService()
 
     @State private var icdQuery = ""
     @State private var icdSuggestions: [ICDCode] = []
     @State private var showIcdDropdown = false
     @State private var triageResult: TriageResult?
     @State private var isAssessing = false
-    @State private var showAIError = false
+    @State private var isDrafting = false
 
     var body: some View {
         List {
@@ -22,11 +21,6 @@ struct AssessmentView: View {
         }
         .navigationTitle("Assessment")
         .navigationBarTitleDisplayMode(.inline)
-        .alert("AI Error", isPresented: $showAIError) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(ai.error ?? "Unknown error")
-        }
     }
 
     // MARK: - Diagnosis search
@@ -212,30 +206,21 @@ struct AssessmentView: View {
             }
 
             Button {
-                Task {
-                    do {
-                        let draft = try await ai.generateSOAP(patient: patient, noteType: .soap)
-                        let combined = """
-                        A: \(draft.a)
-
-                        P: \(draft.p)
-                        """
-                        patient.assessmentText = combined
-                        patient.updatedAt = .now
-                        patient.pendingSync = true
-                    } catch {
-                        showAIError = true
-                    }
-                }
+                isDrafting = true
+                let draft = SOAPDraftEngine.draft(patient: patient, triageResult: triageResult)
+                patient.assessmentText = draft.assessmentAndPlan
+                patient.updatedAt = .now
+                patient.pendingSync = true
+                isDrafting = false
             } label: {
                 HStack {
-                    Label("AI Draft Assessment", systemImage: "sparkles")
+                    Label("Draft Assessment & Plan", systemImage: "doc.text.fill")
                     Spacer()
-                    if ai.isGenerating { ProgressView() }
+                    if isDrafting { ProgressView() }
                 }
             }
-            .disabled(ai.isGenerating)
-            .foregroundStyle(.purple)
+            .disabled(isDrafting)
+            .foregroundStyle(.teal)
         } header: {
             Label("Assessment Notes", systemImage: "doc.text.magnifyingglass")
         }
