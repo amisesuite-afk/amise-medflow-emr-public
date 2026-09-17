@@ -1015,6 +1015,7 @@ struct ConsultationView: View {
                 recomputeRisk()
             }
             pipeline.runNow(for: patient, socratesSelections: socratesSelections)
+            refreshBayesian()
             MRNGenerator.backfillIfNeeded(patient)
             // Pre-load popular drugs when landing directly on the meds tab (iPad nav path).
             // On iPhone the focus onChange handles this, but on iPad the keyboard never
@@ -1039,6 +1040,8 @@ struct ConsultationView: View {
         }
         .onChange(of: patient.chiefComplaint) { _, newCC in
             guard let cc = newCC, !cc.isEmpty else { triageResult = nil; return }
+            // Refresh immediately so Diagnosis tab always reflects the current CC
+            refreshBayesian()
             pathwayTask?.cancel()
             pathwayTask = Task {
                 try? await Task.sleep(nanoseconds: 800_000_000)
