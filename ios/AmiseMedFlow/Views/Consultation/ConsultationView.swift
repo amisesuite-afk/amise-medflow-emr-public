@@ -890,9 +890,6 @@ struct ConsultationView: View {
     @State private var generatedLetterText = ""
     @State private var socratesSelections: [String: Set<String>] = [:]
     @State private var socratesExpandedDim: String? = "onset"
-    // Mirror of patient.chiefComplaint as @State so SwiftUI tracks it
-    // reliably regardless of SwiftData observation timing.
-    @State private var bayesianCC: String = ""
     @State private var pmhChipSelections: Set<String> = []
     @State private var pmhBypassConfirmed = false
     @State private var pshxChipSelections: Set<String> = []
@@ -1017,7 +1014,6 @@ struct ConsultationView: View {
                 selectedSocialChips = parseSocialChipsFromHistory(social)
                 recomputeRisk()
             }
-            bayesianCC = patient.chiefComplaint ?? ""
             pipeline.runNow(for: patient, socratesSelections: socratesSelections)
             refreshTextFeatures()
             MRNGenerator.backfillIfNeeded(patient)
@@ -1041,12 +1037,8 @@ struct ConsultationView: View {
             dismissedRadiation = false
         }
         .onChange(of: patient.chiefComplaint) { _, newCC in
-            // Mirror to @State so SwiftUI re-evaluates bayesianDx immediately,
-            // independent of SwiftData observation timing.
-            bayesianCC = newCC ?? ""
             // When CC changes, SOCRATES dimensions change entirely — old selections
-            // are semantically wrong and would pollute the Bayesian scoring for the
-            // new CC. Clear them so bayesianDx evaluates against a clean slate.
+            // are semantically wrong for the new CC. Clear them.
             socratesSelections = [:]
             socratesExpandedDim = "onset"
             guard let cc = newCC, !cc.isEmpty else { triageResult = nil; return }
@@ -3549,15 +3541,15 @@ struct ConsultationView: View {
     // parsing only runs when HPI / exam text actually changes.
 
     private var bayesianDx: [BayesianDiagnosisEngine.DiagnosisResult] {
-        // Use bayesianCC (@State) so SwiftUI's dependency tracking is guaranteed
-        // to fire a body re-evaluation whenever the CC changes.
-        guard !bayesianCC.isEmpty else { return [] }
+        // Read patient.chiefComplaint directly — SwiftUI already tracks this property
+        // via completenessBar (always visible), so body re-evaluates on every CC change.
+        guard let cc = patient.chiefComplaint, !cc.isEmpty else { return [] }
         var merged = socratesSelections
         for (dim, chips) in textFeatures {
             merged[dim, default: []].formUnion(chips)
         }
         return BayesianDiagnosisEngine.infer(
-            chiefComplaint: bayesianCC,
+            chiefComplaint: cc,
             socratesSelections: merged,
             pmhNotes: patient.pmhNotes,
             surgicalHistory: patient.surgicalHistory,
@@ -3627,7 +3619,7 @@ struct ConsultationView: View {
                         .buttonStyle(.plain)
                     }
                 } footer: {
-                    Text("Based on CC · SOCRATES · PMH · Exam · Ix · Age/Sex. Apply to confirm.")
+                    Text("Based on CC · SOCRATES · PMH · Meds · Social · BMI · Exam · Ix · Age/Sex. Apply to confirm.")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                 }
