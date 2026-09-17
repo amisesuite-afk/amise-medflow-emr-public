@@ -54,7 +54,7 @@ struct PatientListView: View {
                     ContentUnavailableView(
                         "No results",
                         systemImage: "magnifyingglass",
-                        description: Text("No patients match "\(searchText)".")
+                        description: Text("No patients match \"\(searchText)\".")
                     )
                 } else {
                     ForEach(sections, id: \.setting) { section in
