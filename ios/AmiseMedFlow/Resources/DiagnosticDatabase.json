@@ -4863,6 +4863,1108 @@
           ]
         }
       ]
+    },
+    "refluxGERD": {
+      "candidates": [
+        {
+          "name": "Gastro-oesophageal reflux disease",
+          "icd": "K21.0",
+          "logPrior": 35,
+          "features": [
+            { "key": "character", "value": "burning", "logLR": 10, "evidenceLabel": "Burning quality (heartburn)", "citation": "Dent J. Lancet 1999." },
+            { "key": "site", "value": "epigastric", "logLR": 8, "evidenceLabel": "Epigastric/retrosternal location", "citation": "Dent J. Lancet 1999." },
+            { "key": "radiation", "value": "chest", "logLR": 8, "evidenceLabel": "Radiation to chest", "citation": "Dent J. Lancet 1999." },
+            { "key": "timing", "value": "lying", "logLR": 12, "evidenceLabel": "Worse lying flat", "citation": "Dent J. Lancet 1999." },
+            { "key": "exacerbating", "value": "food", "logLR": 8, "evidenceLabel": "Worse after meals", "citation": "Dent J. Lancet 1999." },
+            { "key": "relieving", "value": "antacid", "logLR": 14, "evidenceLabel": "Relieved by antacids", "citation": "Numans ME. Ann Intern Med 2004." },
+            { "key": "associations", "value": "regurgitation", "logLR": 12, "evidenceLabel": "Acid regurgitation", "citation": "Numans ME. Ann Intern Med 2004." },
+            { "key": "bmi_over", "value": "30", "logLR": 5, "evidenceLabel": "BMI > 30 (obesity — risk factor)", "citation": "Hampel H. Ann Intern Med 2005." },
+            { "key": "pmh", "value": "hiatus hernia", "logLR": 10, "evidenceLabel": "Known hiatus hernia", "citation": "Hampel H. Ann Intern Med 2005." }
+          ]
+        },
+        {
+          "name": "Barrett's oesophagus",
+          "icd": "K22.10",
+          "logPrior": 15,
+          "features": [
+            { "key": "character", "value": "burning", "logLR": 8, "evidenceLabel": "Chronic heartburn (main risk factor)", "citation": "Ronkainen J. Gastroenterology 2005." },
+            { "key": "timing", "value": "years", "logLR": 12, "evidenceLabel": "Symptoms > 5 years duration", "citation": "Ronkainen J. Gastroenterology 2005." },
+            { "key": "sex_male", "value": "true", "logLR": 5, "evidenceLabel": "Male sex (3× higher risk)", "citation": "Ronkainen J. Gastroenterology 2005." },
+            { "key": "bmi_over", "value": "30", "logLR": 5, "evidenceLabel": "Obesity", "citation": "Ronkainen J. Gastroenterology 2005." },
+            { "key": "pmh", "value": "reflux", "logLR": 10, "evidenceLabel": "Long-standing GERD history", "citation": "Ronkainen J. Gastroenterology 2005." },
+            { "key": "social", "value": "smoking", "logLR": 5, "evidenceLabel": "Smoking history", "citation": "Ronkainen J. Gastroenterology 2005." }
+          ]
+        },
+        {
+          "name": "Peptic ulcer disease",
+          "icd": "K27.9",
+          "logPrior": 20,
+          "features": [
+            { "key": "character", "value": "gnawing", "logLR": 8, "evidenceLabel": "Gnawing or aching epigastric pain", "citation": "Meineche-Schmidt V. Eur J Gen Pract 1999." },
+            { "key": "timing", "value": "empty", "logLR": 12, "evidenceLabel": "Pain relieved by eating (duodenal pattern)", "citation": "Meineche-Schmidt V. Eur J Gen Pract 1999." },
+            { "key": "associations", "value": "nausea", "logLR": 5, "evidenceLabel": "Associated nausea", "citation": "Meineche-Schmidt V. Eur J Gen Pract 1999." },
+            { "key": "med", "value": "nsaid", "logLR": 12, "evidenceLabel": "NSAID / aspirin use", "citation": "Huang JQ. Lancet 2002." },
+            { "key": "inv", "value": "h pylori", "logLR": 15, "evidenceLabel": "H. pylori positive", "citation": "Huang JQ. Lancet 2002." }
+          ]
+        },
+        {
+          "name": "Functional dyspepsia",
+          "icd": "K30",
+          "logPrior": 25,
+          "features": [
+            { "key": "character", "value": "fullness", "logLR": 8, "evidenceLabel": "Postprandial fullness / early satiety", "citation": "Tack J. Gastroenterology 2006." },
+            { "key": "site", "value": "epigastric", "logLR": 6, "evidenceLabel": "Epigastric location", "citation": "Tack J. Gastroenterology 2006." },
+            { "key": "timing", "value": "meal", "logLR": 8, "evidenceLabel": "Triggered by meals", "citation": "Tack J. Gastroenterology 2006." },
+            { "key": "pmh", "value": "anxiety", "logLR": 6, "evidenceLabel": "Anxiety / functional disorder history", "citation": "Tack J. Gastroenterology 2006." },
+            { "key": "inv", "value": "h pylori", "logLR": -5, "evidenceLabel": "H. pylori negative (functional more likely)", "citation": "Tack J. Gastroenterology 2006." }
+          ]
+        }
+      ]
+    },
+    "groinPain": {
+      "candidates": [
+        {
+          "name": "Inguinal hernia",
+          "icd": "K40.90",
+          "logPrior": 35,
+          "features": [
+            { "key": "site", "value": "groin", "logLR": 10, "evidenceLabel": "Groin / inguinal location", "citation": "Simons MP. Hernia 2009." },
+            { "key": "exam", "value": "lump groin", "logLR": 18, "evidenceLabel": "Reducible lump in groin", "citation": "Simons MP. Hernia 2009." },
+            { "key": "associations", "value": "cough impulse", "logLR": 15, "evidenceLabel": "Expansile cough impulse", "citation": "Simons MP. Hernia 2009." },
+            { "key": "exacerbating", "value": "standing", "logLR": 12, "evidenceLabel": "Worse on standing / straining", "citation": "Simons MP. Hernia 2009." },
+            { "key": "sex_male", "value": "true", "logLR": 8, "evidenceLabel": "Male sex (9× higher risk)", "citation": "Simons MP. Hernia 2009." },
+            { "key": "pshx", "value": "hernia", "logLR": 10, "evidenceLabel": "Previous hernia repair", "citation": "Simons MP. Hernia 2009." }
+          ]
+        },
+        {
+          "name": "Femoral hernia",
+          "icd": "K41.90",
+          "logPrior": 20,
+          "features": [
+            { "key": "site", "value": "groin", "logLR": 8, "evidenceLabel": "Groin lump below inguinal ligament", "citation": "Simons MP. Hernia 2009." },
+            { "key": "sex_female", "value": "true", "logLR": 8, "evidenceLabel": "Female sex (femoral proportionally commoner)", "citation": "Simons MP. Hernia 2009." },
+            { "key": "exam", "value": "lump medial", "logLR": 14, "evidenceLabel": "Lump medial to femoral pulse", "citation": "Simons MP. Hernia 2009." },
+            { "key": "associations", "value": "irreducible", "logLR": 12, "evidenceLabel": "Irreducible / tender lump", "citation": "Simons MP. Hernia 2009." }
+          ]
+        },
+        {
+          "name": "Athletic pubalgia (sports hernia)",
+          "icd": "M79.89",
+          "logPrior": 18,
+          "features": [
+            { "key": "site", "value": "groin", "logLR": 6, "evidenceLabel": "Deep groin / pubic pain", "citation": "Meyers WC. Am J Sports Med 2000." },
+            { "key": "exacerbating", "value": "exertion", "logLR": 14, "evidenceLabel": "Pain with athletic exertion / kicking", "citation": "Meyers WC. Am J Sports Med 2000." },
+            { "key": "relieving", "value": "rest", "logLR": 10, "evidenceLabel": "Relieved by rest", "citation": "Meyers WC. Am J Sports Med 2000." },
+            { "key": "exam", "value": "no lump", "logLR": 10, "evidenceLabel": "No palpable lump", "citation": "Meyers WC. Am J Sports Med 2000." },
+            { "key": "sex_male", "value": "true", "logLR": 8, "evidenceLabel": "Male sex (predominant)", "citation": "Meyers WC. Am J Sports Med 2000." }
+          ]
+        },
+        {
+          "name": "Inguinal lymphadenopathy",
+          "icd": "R59.0",
+          "logPrior": 25,
+          "features": [
+            { "key": "exam", "value": "lymph node", "logLR": 14, "evidenceLabel": "Discrete palpable lymph nodes", "citation": "Leung AK. Can Fam Physician 2016." },
+            { "key": "associations", "value": "fever", "logLR": 8, "evidenceLabel": "Systemic fever", "citation": "Leung AK. Can Fam Physician 2016." },
+            { "key": "pmh", "value": "skin infection lower limb", "logLR": 12, "evidenceLabel": "Lower limb skin infection", "citation": "Leung AK. Can Fam Physician 2016." },
+            { "key": "exam", "value": "tender mobile", "logLR": 10, "evidenceLabel": "Tender mobile nodes (reactive pattern)", "citation": "Leung AK. Can Fam Physician 2016." }
+          ]
+        }
+      ]
+    },
+    "hernia": {
+      "candidates": [
+        {
+          "name": "Inguinal hernia",
+          "icd": "K40.90",
+          "logPrior": 35,
+          "features": [
+            { "key": "exam", "value": "lump groin", "logLR": 18, "evidenceLabel": "Reducible lump at inguinal region", "citation": "Simons MP. Hernia 2009." },
+            { "key": "associations", "value": "cough impulse", "logLR": 15, "evidenceLabel": "Expansile cough impulse", "citation": "Simons MP. Hernia 2009." },
+            { "key": "exacerbating", "value": "standing", "logLR": 12, "evidenceLabel": "Worse on standing", "citation": "Simons MP. Hernia 2009." },
+            { "key": "sex_male", "value": "true", "logLR": 8, "evidenceLabel": "Male sex", "citation": "Simons MP. Hernia 2009." },
+            { "key": "associations", "value": "pain", "logLR": 5, "evidenceLabel": "Associated groin discomfort", "citation": "Simons MP. Hernia 2009." }
+          ]
+        },
+        {
+          "name": "Femoral hernia",
+          "icd": "K41.90",
+          "logPrior": 18,
+          "features": [
+            { "key": "exam", "value": "lump below inguinal", "logLR": 18, "evidenceLabel": "Lump below inguinal ligament", "citation": "Simons MP. Hernia 2009." },
+            { "key": "sex_female", "value": "true", "logLR": 8, "evidenceLabel": "Female sex (higher femoral proportion)", "citation": "Simons MP. Hernia 2009." },
+            { "key": "associations", "value": "irreducible", "logLR": 12, "evidenceLabel": "Irreducible / high strangulation risk", "citation": "Simons MP. Hernia 2009." }
+          ]
+        },
+        {
+          "name": "Umbilical hernia",
+          "icd": "K42.9",
+          "logPrior": 22,
+          "features": [
+            { "key": "exam", "value": "lump umbilicus", "logLR": 20, "evidenceLabel": "Lump at umbilicus / paraumbilical", "citation": "Simons MP. Hernia 2009." },
+            { "key": "exacerbating", "value": "cough straining", "logLR": 12, "evidenceLabel": "Worse with Valsalva", "citation": "Simons MP. Hernia 2009." },
+            { "key": "pmh", "value": "cirrhosis ascites", "logLR": 10, "evidenceLabel": "Ascites / portal hypertension", "citation": "Simons MP. Hernia 2009." }
+          ]
+        },
+        {
+          "name": "Incisional hernia",
+          "icd": "K43.2",
+          "logPrior": 20,
+          "features": [
+            { "key": "pshx", "value": "laparotomy abdominal", "logLR": 20, "evidenceLabel": "Previous abdominal incision", "citation": "Bosanquet DC. Hernia 2015." },
+            { "key": "exam", "value": "lump scar", "logLR": 20, "evidenceLabel": "Lump through abdominal scar", "citation": "Bosanquet DC. Hernia 2015." },
+            { "key": "pmh", "value": "obesity", "logLR": 8, "evidenceLabel": "Obesity (risk factor)", "citation": "Bosanquet DC. Hernia 2015." }
+          ]
+        },
+        {
+          "name": "Strangulated hernia",
+          "icd": "K46.0",
+          "logPrior": 12,
+          "features": [
+            { "key": "exam", "value": "tender irreducible", "logLR": 18, "evidenceLabel": "Tender irreducible hernia", "citation": "Simons MP. Hernia 2009." },
+            { "key": "onset", "value": "sudden", "logLR": 12, "evidenceLabel": "Sudden onset pain / change in symptoms", "citation": "Simons MP. Hernia 2009." },
+            { "key": "associations", "value": "vomiting obstruction", "logLR": 14, "evidenceLabel": "Vomiting / obstructive features", "citation": "Simons MP. Hernia 2009." }
+          ]
+        }
+      ]
+    },
+    "perianal": {
+      "candidates": [
+        {
+          "name": "Haemorrhoids",
+          "icd": "K64.9",
+          "logPrior": 40,
+          "features": [
+            { "key": "character", "value": "bright red blood", "logLR": 12, "evidenceLabel": "Bright red rectal bleeding (on paper/pan)", "citation": "Johanson JF. Dis Colon Rectum 1990." },
+            { "key": "associations", "value": "pruritus ani", "logLR": 10, "evidenceLabel": "Perianal itch", "citation": "Johanson JF. Dis Colon Rectum 1990." },
+            { "key": "associations", "value": "prolapse", "logLR": 14, "evidenceLabel": "Perianal tissue prolapse", "citation": "Johanson JF. Dis Colon Rectum 1990." },
+            { "key": "exacerbating", "value": "straining", "logLR": 10, "evidenceLabel": "Straining at stool", "citation": "Johanson JF. Dis Colon Rectum 1990." },
+            { "key": "pmh", "value": "constipation", "logLR": 8, "evidenceLabel": "Chronic constipation", "citation": "Johanson JF. Dis Colon Rectum 1990." }
+          ]
+        },
+        {
+          "name": "Anal fissure",
+          "icd": "K60.2",
+          "logPrior": 28,
+          "features": [
+            { "key": "character", "value": "tearing cutting", "logLR": 15, "evidenceLabel": "Sharp tearing pain with defaecation", "citation": "Lund JN. Colorectal Dis 2003." },
+            { "key": "timing", "value": "defaecation after", "logLR": 14, "evidenceLabel": "Pain worst after bowel movement (spasm)", "citation": "Lund JN. Colorectal Dis 2003." },
+            { "key": "associations", "value": "small amount blood", "logLR": 8, "evidenceLabel": "Small amount fresh blood on paper", "citation": "Lund JN. Colorectal Dis 2003." },
+            { "key": "pmh", "value": "constipation", "logLR": 8, "evidenceLabel": "Constipation / hard stool history", "citation": "Lund JN. Colorectal Dis 2003." },
+            { "key": "exam", "value": "fissure posterior midline", "logLR": 20, "evidenceLabel": "Visible fissure at posterior midline", "citation": "Lund JN. Colorectal Dis 2003." }
+          ]
+        },
+        {
+          "name": "Perianal abscess",
+          "icd": "K61.0",
+          "logPrior": 22,
+          "features": [
+            { "key": "character", "value": "throbbing constant", "logLR": 12, "evidenceLabel": "Constant throbbing perianal pain", "citation": "Ommer A. Colorectal Dis 2011." },
+            { "key": "associations", "value": "fever swelling", "logLR": 14, "evidenceLabel": "Fever with perianal swelling", "citation": "Ommer A. Colorectal Dis 2011." },
+            { "key": "exam", "value": "fluctuant tender perianal", "logLR": 20, "evidenceLabel": "Fluctuant tender perianal mass", "citation": "Ommer A. Colorectal Dis 2011." },
+            { "key": "onset", "value": "days", "logLR": 8, "evidenceLabel": "Short progressive course (days)", "citation": "Ommer A. Colorectal Dis 2011." }
+          ]
+        },
+        {
+          "name": "Fistula-in-ano",
+          "icd": "K60.3",
+          "logPrior": 18,
+          "features": [
+            { "key": "associations", "value": "discharge pus", "logLR": 15, "evidenceLabel": "Chronic purulent perianal discharge", "citation": "Ommer A. Colorectal Dis 2011." },
+            { "key": "pmh", "value": "abscess", "logLR": 14, "evidenceLabel": "Previous perianal abscess (60% develop fistula)", "citation": "Ommer A. Colorectal Dis 2011." },
+            { "key": "exam", "value": "external opening", "logLR": 18, "evidenceLabel": "External skin opening visible", "citation": "Ommer A. Colorectal Dis 2011." },
+            { "key": "pmh", "value": "crohn", "logLR": 12, "evidenceLabel": "Crohn's disease (complex fistula risk)", "citation": "Ommer A. Colorectal Dis 2011." }
+          ]
+        },
+        {
+          "name": "Anal canal carcinoma",
+          "icd": "C21.1",
+          "logPrior": 8,
+          "features": [
+            { "key": "character", "value": "persistent bleeding", "logLR": 10, "evidenceLabel": "Persistent perianal bleeding", "citation": "Eng C. Lancet Oncol 2010." },
+            { "key": "associations", "value": "mass anal", "logLR": 15, "evidenceLabel": "Palpable anal mass", "citation": "Eng C. Lancet Oncol 2010." },
+            { "key": "associations", "value": "weight loss", "logLR": 12, "evidenceLabel": "Unexplained weight loss", "citation": "Eng C. Lancet Oncol 2010." },
+            { "key": "pmh", "value": "hpv hiv", "logLR": 12, "evidenceLabel": "HPV / HIV history (risk factors)", "citation": "Eng C. Lancet Oncol 2010." },
+            { "key": "exam", "value": "indurated ulcer", "logLR": 18, "evidenceLabel": "Indurated irregular anal margin lesion", "citation": "Eng C. Lancet Oncol 2010." }
+          ]
+        }
+      ]
+    },
+    "breastLump": {
+      "candidates": [
+        {
+          "name": "Fibroadenoma",
+          "icd": "N60.20",
+          "logPrior": 35,
+          "features": [
+            { "key": "sex_female", "value": "true", "logLR": 5, "evidenceLabel": "Female sex", "citation": "Greenberg R. Am J Surg 1998." },
+            { "key": "age_under", "value": "35", "logLR": 12, "evidenceLabel": "Age < 35 (peak fibroadenoma age)", "citation": "Greenberg R. Am J Surg 1998." },
+            { "key": "exam", "value": "smooth mobile firm", "logLR": 14, "evidenceLabel": "Smooth, mobile, firm (breast mouse)", "citation": "Greenberg R. Am J Surg 1998." },
+            { "key": "character", "value": "non-tender", "logLR": 8, "evidenceLabel": "Painless lump", "citation": "Greenberg R. Am J Surg 1998." },
+            { "key": "associations", "value": "fluctuates cycle", "logLR": 8, "evidenceLabel": "Slight variation with menstrual cycle", "citation": "Greenberg R. Am J Surg 1998." }
+          ]
+        },
+        {
+          "name": "Breast cyst",
+          "icd": "N60.09",
+          "logPrior": 28,
+          "features": [
+            { "key": "age_over", "value": "35", "logLR": 10, "evidenceLabel": "Age > 35 (peak cyst age)", "citation": "Dixon JM. BMJ 1999." },
+            { "key": "exam", "value": "smooth tense", "logLR": 12, "evidenceLabel": "Smooth tense lump", "citation": "Dixon JM. BMJ 1999." },
+            { "key": "character", "value": "tender", "logLR": 8, "evidenceLabel": "Tender cyclically", "citation": "Dixon JM. BMJ 1999." },
+            { "key": "sex_female", "value": "true", "logLR": 5, "evidenceLabel": "Female sex", "citation": "Dixon JM. BMJ 1999." }
+          ]
+        },
+        {
+          "name": "Breast cancer (invasive)",
+          "icd": "C50.911",
+          "logPrior": 15,
+          "features": [
+            { "key": "age_over", "value": "40", "logLR": 10, "evidenceLabel": "Age > 40 (rising incidence)", "citation": "NICE CG164 2014." },
+            { "key": "exam", "value": "hard irregular fixed", "logLR": 18, "evidenceLabel": "Hard, irregular, fixed lump", "citation": "NICE CG164 2014." },
+            { "key": "exam", "value": "skin tethering dimpling", "logLR": 18, "evidenceLabel": "Skin tethering / dimpling", "citation": "NICE CG164 2014." },
+            { "key": "exam", "value": "nipple inversion", "logLR": 15, "evidenceLabel": "New nipple inversion / retraction", "citation": "NICE CG164 2014." },
+            { "key": "associations", "value": "axillary lymph node", "logLR": 14, "evidenceLabel": "Palpable ipsilateral axillary nodes", "citation": "NICE CG164 2014." },
+            { "key": "pmh", "value": "brca family", "logLR": 12, "evidenceLabel": "BRCA1/2 or strong family history", "citation": "NICE CG164 2014." },
+            { "key": "character", "value": "non-tender", "logLR": 5, "evidenceLabel": "Painless (most breast cancers)", "citation": "NICE CG164 2014." }
+          ]
+        },
+        {
+          "name": "Mastitis / breast abscess",
+          "icd": "N61.0",
+          "logPrior": 18,
+          "features": [
+            { "key": "exam", "value": "erythema warm breast", "logLR": 16, "evidenceLabel": "Erythema, warmth, breast tenderness", "citation": "Amir LH. BMJ 2014." },
+            { "key": "associations", "value": "fever", "logLR": 12, "evidenceLabel": "Fever / systemic illness", "citation": "Amir LH. BMJ 2014." },
+            { "key": "pmh", "value": "lactating breastfeeding", "logLR": 14, "evidenceLabel": "Lactating / breastfeeding", "citation": "Amir LH. BMJ 2014." },
+            { "key": "exam", "value": "fluctuant", "logLR": 15, "evidenceLabel": "Fluctuant area (abscess formed)", "citation": "Amir LH. BMJ 2014." }
+          ]
+        }
+      ]
+    },
+    "neckLump": {
+      "candidates": [
+        {
+          "name": "Reactive cervical lymphadenopathy",
+          "icd": "R59.0",
+          "logPrior": 40,
+          "features": [
+            { "key": "exam", "value": "tender mobile", "logLR": 12, "evidenceLabel": "Tender, mobile, soft lymph nodes", "citation": "Leung AK. Can Fam Physician 2016." },
+            { "key": "associations", "value": "sore throat infection", "logLR": 14, "evidenceLabel": "Recent URTI / pharyngitis", "citation": "Leung AK. Can Fam Physician 2016." },
+            { "key": "associations", "value": "fever", "logLR": 10, "evidenceLabel": "Fever (reactive)", "citation": "Leung AK. Can Fam Physician 2016." },
+            { "key": "onset", "value": "days weeks", "logLR": 8, "evidenceLabel": "Short onset (days to weeks)", "citation": "Leung AK. Can Fam Physician 2016." }
+          ]
+        },
+        {
+          "name": "Lymphoma (Hodgkin / non-Hodgkin)",
+          "icd": "C85.90",
+          "logPrior": 12,
+          "features": [
+            { "key": "exam", "value": "rubbery non-tender enlarged", "logLR": 14, "evidenceLabel": "Firm rubbery non-tender lymph nodes", "citation": "NICE NG52 2016." },
+            { "key": "associations", "value": "night sweats", "logLR": 14, "evidenceLabel": "Drenching night sweats (B-symptom)", "citation": "NICE NG52 2016." },
+            { "key": "associations", "value": "weight loss", "logLR": 12, "evidenceLabel": "Unexplained weight loss > 10% (B-symptom)", "citation": "NICE NG52 2016." },
+            { "key": "associations", "value": "pruritus", "logLR": 10, "evidenceLabel": "Unexplained itch (Hodgkin feature)", "citation": "NICE NG52 2016." },
+            { "key": "exam", "value": "splenomegaly", "logLR": 12, "evidenceLabel": "Splenomegaly", "citation": "NICE NG52 2016." },
+            { "key": "associations", "value": "alcohol pain", "logLR": 18, "evidenceLabel": "Pain in nodes after alcohol (Hodgkin pathognomonic)", "citation": "NICE NG52 2016." }
+          ]
+        },
+        {
+          "name": "Thyroid nodule / goitre",
+          "icd": "E04.9",
+          "logPrior": 20,
+          "features": [
+            { "key": "exam", "value": "midline lump moves swallowing", "logLR": 20, "evidenceLabel": "Midline mass moves with swallowing", "citation": "Hegedüs L. NEJM 2004." },
+            { "key": "sex_female", "value": "true", "logLR": 5, "evidenceLabel": "Female sex (5× higher nodule prevalence)", "citation": "Hegedüs L. NEJM 2004." }
+          ]
+        },
+        {
+          "name": "Metastatic squamous cell carcinoma (neck)",
+          "icd": "C77.0",
+          "logPrior": 10,
+          "features": [
+            { "key": "exam", "value": "hard fixed node", "logLR": 16, "evidenceLabel": "Hard, fixed, non-tender node", "citation": "Mehanna H. NEJM 2016." },
+            { "key": "age_over", "value": "50", "logLR": 10, "evidenceLabel": "Age > 50 (peak for SCC metastasis)", "citation": "Mehanna H. NEJM 2016." },
+            { "key": "social", "value": "smoking alcohol", "logLR": 12, "evidenceLabel": "Smoking + alcohol (head & neck SCC risk)", "citation": "Mehanna H. NEJM 2016." },
+            { "key": "associations", "value": "hoarseness dysphagia", "logLR": 12, "evidenceLabel": "Hoarseness or dysphagia (primary site clue)", "citation": "Mehanna H. NEJM 2016." }
+          ]
+        },
+        {
+          "name": "Branchial cyst",
+          "icd": "Q18.0",
+          "logPrior": 12,
+          "features": [
+            { "key": "age_under", "value": "40", "logLR": 10, "evidenceLabel": "Age < 40 (congenital, presents young adults)", "citation": "Glosser JW. J Oral Maxillofac Surg 2003." },
+            { "key": "exam", "value": "smooth fluctuant anterior triangle", "logLR": 16, "evidenceLabel": "Smooth fluctuant lump anterior triangle", "citation": "Glosser JW. J Oral Maxillofac Surg 2003." },
+            { "key": "character", "value": "non-tender", "logLR": 8, "evidenceLabel": "Usually painless unless infected", "citation": "Glosser JW. J Oral Maxillofac Surg 2003." }
+          ]
+        }
+      ]
+    },
+    "thyroidPathology": {
+      "candidates": [
+        {
+          "name": "Benign thyroid nodule / multinodular goitre",
+          "icd": "E04.2",
+          "logPrior": 35,
+          "features": [
+            { "key": "exam", "value": "smooth nodule moves swallowing", "logLR": 14, "evidenceLabel": "Smooth nodule moves with swallowing", "citation": "Gharib H. Endocr Pract 2016." },
+            { "key": "sex_female", "value": "true", "logLR": 5, "evidenceLabel": "Female sex (5× higher prevalence)", "citation": "Gharib H. Endocr Pract 2016." },
+            { "key": "inv", "value": "ultrasound benign", "logLR": 14, "evidenceLabel": "Ultrasound: benign features (TIRADS 2–3)", "citation": "Gharib H. Endocr Pract 2016." },
+            { "key": "inv", "value": "tsh normal", "logLR": 5, "evidenceLabel": "Normal TSH (euthyroid)", "citation": "Gharib H. Endocr Pract 2016." }
+          ]
+        },
+        {
+          "name": "Graves' disease (hyperthyroidism)",
+          "icd": "E05.00",
+          "logPrior": 15,
+          "features": [
+            { "key": "associations", "value": "palpitations tremor sweating", "logLR": 12, "evidenceLabel": "Palpitations, tremor, sweating (hyperthyroid triad)", "citation": "Smith TJ. NEJM 2016." },
+            { "key": "exam", "value": "exophthalmos proptosis", "logLR": 20, "evidenceLabel": "Exophthalmos / proptosis (Graves' ophthalmopathy)", "citation": "Smith TJ. NEJM 2016." },
+            { "key": "associations", "value": "weight loss despite appetite", "logLR": 12, "evidenceLabel": "Weight loss with increased appetite", "citation": "Smith TJ. NEJM 2016." },
+            { "key": "inv", "value": "tsh suppressed", "logLR": 15, "evidenceLabel": "Suppressed TSH + raised T4/T3", "citation": "Smith TJ. NEJM 2016." },
+            { "key": "sex_female", "value": "true", "logLR": 5, "evidenceLabel": "Female sex (7× higher risk)", "citation": "Smith TJ. NEJM 2016." }
+          ]
+        },
+        {
+          "name": "Hashimoto's thyroiditis (hypothyroidism)",
+          "icd": "E06.3",
+          "logPrior": 15,
+          "features": [
+            { "key": "associations", "value": "fatigue cold intolerance weight gain", "logLR": 12, "evidenceLabel": "Fatigue, cold intolerance, weight gain (hypothyroid triad)", "citation": "Garber JR. Thyroid 2012." },
+            { "key": "exam", "value": "goitre firm", "logLR": 10, "evidenceLabel": "Firm, non-tender goitre", "citation": "Garber JR. Thyroid 2012." },
+            { "key": "inv", "value": "tsh elevated", "logLR": 15, "evidenceLabel": "Elevated TSH", "citation": "Garber JR. Thyroid 2012." },
+            { "key": "inv", "value": "tpo antibodies", "logLR": 18, "evidenceLabel": "Positive anti-TPO antibodies", "citation": "Garber JR. Thyroid 2012." },
+            { "key": "sex_female", "value": "true", "logLR": 5, "evidenceLabel": "Female sex (7× higher risk)", "citation": "Garber JR. Thyroid 2012." }
+          ]
+        },
+        {
+          "name": "Papillary thyroid carcinoma",
+          "icd": "C73",
+          "logPrior": 10,
+          "features": [
+            { "key": "exam", "value": "hard irregular fixed", "logLR": 15, "evidenceLabel": "Hard, fixed, irregular thyroid nodule", "citation": "Haugen BR. Thyroid 2016." },
+            { "key": "exam", "value": "cervical lymph node", "logLR": 15, "evidenceLabel": "Ipsilateral cervical lymphadenopathy", "citation": "Haugen BR. Thyroid 2016." },
+            { "key": "inv", "value": "ultrasound suspicious", "logLR": 14, "evidenceLabel": "Ultrasound: TIRADS 4–5 features", "citation": "Haugen BR. Thyroid 2016." },
+            { "key": "associations", "value": "dysphonia hoarseness", "logLR": 14, "evidenceLabel": "Hoarseness (RLN involvement)", "citation": "Haugen BR. Thyroid 2016." },
+            { "key": "pmh", "value": "radiation neck childhood", "logLR": 14, "evidenceLabel": "Neck irradiation history", "citation": "Haugen BR. Thyroid 2016." }
+          ]
+        }
+      ]
+    },
+    "urinarySymptoms": {
+      "candidates": [
+        {
+          "name": "Urinary tract infection",
+          "icd": "N39.0",
+          "logPrior": 35,
+          "features": [
+            { "key": "character", "value": "dysuria burning", "logLR": 12, "evidenceLabel": "Dysuria / burning micturition", "citation": "Bent S. JAMA 2002." },
+            { "key": "associations", "value": "frequency urgency", "logLR": 12, "evidenceLabel": "Frequency and urgency", "citation": "Bent S. JAMA 2002." },
+            { "key": "exam", "value": "suprapubic tenderness", "logLR": 10, "evidenceLabel": "Suprapubic tenderness", "citation": "Bent S. JAMA 2002." },
+            { "key": "inv", "value": "nitrites leucocytes urine", "logLR": 14, "evidenceLabel": "Positive urine dipstick (nitrites + leucocytes)", "citation": "Bent S. JAMA 2002." },
+            { "key": "sex_female", "value": "true", "logLR": 8, "evidenceLabel": "Female sex (50× higher UTI risk)", "citation": "Bent S. JAMA 2002." }
+          ]
+        },
+        {
+          "name": "Benign prostatic hyperplasia",
+          "icd": "N40.1",
+          "logPrior": 30,
+          "features": [
+            { "key": "character", "value": "hesitancy weak stream", "logLR": 14, "evidenceLabel": "Hesitancy / weak urinary stream", "citation": "Roehrborn CG. Am J Med 2005." },
+            { "key": "associations", "value": "nocturia frequency", "logLR": 10, "evidenceLabel": "Nocturia and frequency", "citation": "Roehrborn CG. Am J Med 2005." },
+            { "key": "sex_male", "value": "true", "logLR": 10, "evidenceLabel": "Male sex (BPH exclusively male)", "citation": "Roehrborn CG. Am J Med 2005." },
+            { "key": "age_over", "value": "50", "logLR": 12, "evidenceLabel": "Age > 50 (prevalence rises steeply)", "citation": "Roehrborn CG. Am J Med 2005." },
+            { "key": "exam", "value": "enlarged prostate smooth", "logLR": 16, "evidenceLabel": "Smooth enlarged prostate on DRE", "citation": "Roehrborn CG. Am J Med 2005." }
+          ]
+        },
+        {
+          "name": "Bladder cancer",
+          "icd": "C67.9",
+          "logPrior": 12,
+          "features": [
+            { "key": "character", "value": "painless haematuria", "logLR": 16, "evidenceLabel": "Painless macroscopic haematuria", "citation": "Chou R. Ann Intern Med 2017." },
+            { "key": "age_over", "value": "50", "logLR": 10, "evidenceLabel": "Age > 50", "citation": "Chou R. Ann Intern Med 2017." },
+            { "key": "social", "value": "smoking", "logLR": 12, "evidenceLabel": "Smoking (3× risk)", "citation": "Chou R. Ann Intern Med 2017." },
+            { "key": "sex_male", "value": "true", "logLR": 8, "evidenceLabel": "Male sex (3× risk)", "citation": "Chou R. Ann Intern Med 2017." },
+            { "key": "associations", "value": "recurrent uti", "logLR": 8, "evidenceLabel": "Recurrent UTI symptoms without confirmed infection", "citation": "Chou R. Ann Intern Med 2017." }
+          ]
+        },
+        {
+          "name": "Prostate cancer",
+          "icd": "C61",
+          "logPrior": 12,
+          "features": [
+            { "key": "exam", "value": "hard irregular prostate", "logLR": 16, "evidenceLabel": "Hard, irregular nodular prostate on DRE", "citation": "Gosselaar C. Eur Urol 2008." },
+            { "key": "inv", "value": "psa elevated", "logLR": 14, "evidenceLabel": "Elevated PSA > 4 ng/mL", "citation": "Gosselaar C. Eur Urol 2008." },
+            { "key": "age_over", "value": "60", "logLR": 10, "evidenceLabel": "Age > 60", "citation": "Gosselaar C. Eur Urol 2008." },
+            { "key": "sex_male", "value": "true", "logLR": 10, "evidenceLabel": "Male sex", "citation": "Gosselaar C. Eur Urol 2008." },
+            { "key": "associations", "value": "bone pain back", "logLR": 14, "evidenceLabel": "Bone pain / back pain (metastatic)", "citation": "Gosselaar C. Eur Urol 2008." }
+          ]
+        }
+      ]
+    },
+    "jointPain": {
+      "candidates": [
+        {
+          "name": "Osteoarthritis",
+          "icd": "M19.90",
+          "logPrior": 35,
+          "features": [
+            { "key": "age_over", "value": "50", "logLR": 12, "evidenceLabel": "Age > 50 (rising prevalence)", "citation": "Zhang W. Ann Rheum Dis 2010." },
+            { "key": "character", "value": "aching deep", "logLR": 8, "evidenceLabel": "Deep aching joint pain", "citation": "Zhang W. Ann Rheum Dis 2010." },
+            { "key": "exacerbating", "value": "activity weight bearing", "logLR": 10, "evidenceLabel": "Worse with weight-bearing activity", "citation": "Zhang W. Ann Rheum Dis 2010." },
+            { "key": "relieving", "value": "rest", "logLR": 8, "evidenceLabel": "Relieved by rest", "citation": "Zhang W. Ann Rheum Dis 2010." },
+            { "key": "exam", "value": "crepitus bony swelling", "logLR": 12, "evidenceLabel": "Crepitus / bony swelling on exam", "citation": "Zhang W. Ann Rheum Dis 2010." },
+            { "key": "bmi_over", "value": "30", "logLR": 8, "evidenceLabel": "Obesity (mechanical loading)", "citation": "Zhang W. Ann Rheum Dis 2010." }
+          ]
+        },
+        {
+          "name": "Gout",
+          "icd": "M10.9",
+          "logPrior": 22,
+          "features": [
+            { "key": "onset", "value": "sudden overnight", "logLR": 14, "evidenceLabel": "Sudden onset (often overnight)", "citation": "Janssens HJ. Ann Intern Med 2010." },
+            { "key": "character", "value": "severe burning", "logLR": 12, "evidenceLabel": "Severe burning pain", "citation": "Janssens HJ. Ann Intern Med 2010." },
+            { "key": "site", "value": "first metatarsal big toe", "logLR": 18, "evidenceLabel": "First MTP joint involvement (podagra)", "citation": "Janssens HJ. Ann Intern Med 2010." },
+            { "key": "exam", "value": "erythema warm swollen joint", "logLR": 14, "evidenceLabel": "Erythema, warmth, swelling (acute attack)", "citation": "Janssens HJ. Ann Intern Med 2010." },
+            { "key": "sex_male", "value": "true", "logLR": 8, "evidenceLabel": "Male sex (4× higher risk)", "citation": "Janssens HJ. Ann Intern Med 2010." },
+            { "key": "inv", "value": "uric acid elevated", "logLR": 10, "evidenceLabel": "Elevated serum urate > 360 µmol/L", "citation": "Janssens HJ. Ann Intern Med 2010." },
+            { "key": "pmh", "value": "previous gout attack", "logLR": 15, "evidenceLabel": "Previous gout attack (recurrence common)", "citation": "Janssens HJ. Ann Intern Med 2010." }
+          ]
+        },
+        {
+          "name": "Reactive arthritis",
+          "icd": "M02.9",
+          "logPrior": 15,
+          "features": [
+            { "key": "onset", "value": "days weeks after infection", "logLR": 16, "evidenceLabel": "Arthritis 1–4 weeks after GI/GU infection", "citation": "Carter JD. Arthritis Rheum 2009." },
+            { "key": "character", "value": "asymmetric", "logLR": 12, "evidenceLabel": "Asymmetric oligoarthritis", "citation": "Carter JD. Arthritis Rheum 2009." },
+            { "key": "associations", "value": "urethritis conjunctivitis", "logLR": 18, "evidenceLabel": "Urethritis + conjunctivitis (Reiter's triad)", "citation": "Carter JD. Arthritis Rheum 2009." },
+            { "key": "pmh", "value": "diarrhoea urethritis", "logLR": 14, "evidenceLabel": "Recent diarrhoea or urethritis", "citation": "Carter JD. Arthritis Rheum 2009." },
+            { "key": "sex_male", "value": "true", "logLR": 5, "evidenceLabel": "Male sex (GU-triggered form predominant)", "citation": "Carter JD. Arthritis Rheum 2009." }
+          ]
+        },
+        {
+          "name": "Septic arthritis",
+          "icd": "M00.9",
+          "logPrior": 12,
+          "features": [
+            { "key": "character", "value": "severe single joint", "logLR": 12, "evidenceLabel": "Severe monoarthritis", "citation": "Margaretten ME. JAMA 2007." },
+            { "key": "associations", "value": "fever", "logLR": 12, "evidenceLabel": "Fever (systemic sepsis)", "citation": "Margaretten ME. JAMA 2007." },
+            { "key": "exam", "value": "hot swollen restricted range", "logLR": 14, "evidenceLabel": "Hot, swollen joint with restricted movement", "citation": "Margaretten ME. JAMA 2007." },
+            { "key": "inv", "value": "wbc elevated crp elevated", "logLR": 12, "evidenceLabel": "Elevated WBC and CRP", "citation": "Margaretten ME. JAMA 2007." },
+            { "key": "pmh", "value": "prosthetic joint immunosuppressed", "logLR": 12, "evidenceLabel": "Prosthetic joint / immunosuppression", "citation": "Margaretten ME. JAMA 2007." }
+          ]
+        },
+        {
+          "name": "Dengue arthralgia",
+          "icd": "A90",
+          "logPrior": 28,
+          "features": [
+            { "key": "associations", "value": "fever rash myalgia", "logLR": 14, "evidenceLabel": "Fever + rash + severe myalgia (dengue triad)", "citation": "WHO Dengue Guidelines 2009." },
+            { "key": "character", "value": "severe bone joint pain", "logLR": 16, "evidenceLabel": "Severe bone pain (breakbone fever)", "citation": "WHO Dengue Guidelines 2009." },
+            { "key": "onset", "value": "acute", "logLR": 8, "evidenceLabel": "Acute onset in dengue-endemic region", "citation": "WHO Dengue Guidelines 2009." },
+            { "key": "inv", "value": "dengue ns1 igm", "logLR": 20, "evidenceLabel": "Positive dengue NS1 antigen or IgM", "citation": "WHO Dengue Guidelines 2009." },
+            { "key": "inv", "value": "low platelet leucopenia", "logLR": 12, "evidenceLabel": "Thrombocytopenia + leucopenia", "citation": "WHO Dengue Guidelines 2009." }
+          ]
+        }
+      ]
+    },
+    "hypertensionReview": {
+      "candidates": [
+        {
+          "name": "Essential hypertension",
+          "icd": "I10",
+          "logPrior": 50,
+          "features": [
+            { "key": "pmh", "value": "hypertension family", "logLR": 8, "evidenceLabel": "Family history of hypertension", "citation": "Whelton PK. Hypertension 2018." },
+            { "key": "bmi_over", "value": "30", "logLR": 8, "evidenceLabel": "Obesity (BMI > 30)", "citation": "Whelton PK. Hypertension 2018." },
+            { "key": "social", "value": "salt diet alcohol sedentary", "logLR": 6, "evidenceLabel": "Lifestyle risk factors (salt, alcohol, inactivity)", "citation": "Whelton PK. Hypertension 2018." },
+            { "key": "inv", "value": "bp elevated", "logLR": 15, "evidenceLabel": "BP ≥ 140/90 on repeated measurement", "citation": "Whelton PK. Hypertension 2018." }
+          ]
+        },
+        {
+          "name": "Phaeochromocytoma",
+          "icd": "D35.00",
+          "logPrior": 5,
+          "features": [
+            { "key": "associations", "value": "episodic headache sweating palpitations", "logLR": 18, "evidenceLabel": "Episodic triad: headache, sweating, palpitations", "citation": "Lenders JW. Lancet 2005." },
+            { "key": "character", "value": "episodic paroxysmal", "logLR": 14, "evidenceLabel": "Paroxysmal blood pressure spikes", "citation": "Lenders JW. Lancet 2005." },
+            { "key": "inv", "value": "metanephrines urine plasma", "logLR": 22, "evidenceLabel": "Elevated plasma/urine metanephrines", "citation": "Lenders JW. Lancet 2005." },
+            { "key": "pmh", "value": "men2 vhl neurofibromatosis", "logLR": 14, "evidenceLabel": "MEN2 / VHL / NF1 syndrome", "citation": "Lenders JW. Lancet 2005." }
+          ]
+        },
+        {
+          "name": "Primary hyperaldosteronism (Conn's)",
+          "icd": "E26.0",
+          "logPrior": 8,
+          "features": [
+            { "key": "inv", "value": "hypokalaemia", "logLR": 12, "evidenceLabel": "Spontaneous hypokalaemia (K < 3.5)", "citation": "Funder JW. JCEM 2016." },
+            { "key": "inv", "value": "aldosterone renin ratio elevated", "logLR": 20, "evidenceLabel": "Elevated aldosterone:renin ratio (> 30)", "citation": "Funder JW. JCEM 2016." },
+            { "key": "character", "value": "resistant hypertension", "logLR": 12, "evidenceLabel": "Resistant hypertension (≥ 3 drugs)", "citation": "Funder JW. JCEM 2016." },
+            { "key": "pmh", "value": "adrenal incidentaloma", "logLR": 10, "evidenceLabel": "Adrenal incidentaloma on imaging", "citation": "Funder JW. JCEM 2016." }
+          ]
+        },
+        {
+          "name": "Renovascular hypertension",
+          "icd": "I15.0",
+          "logPrior": 6,
+          "features": [
+            { "key": "character", "value": "resistant refractory", "logLR": 12, "evidenceLabel": "Resistant / refractory hypertension", "citation": "Hirsch AT. JACC 2006." },
+            { "key": "onset", "value": "sudden age", "logLR": 10, "evidenceLabel": "Hypertension onset < 30 or > 55 years", "citation": "Hirsch AT. JACC 2006." },
+            { "key": "exam", "value": "renal bruit", "logLR": 14, "evidenceLabel": "Abdominal bruit over renal area", "citation": "Hirsch AT. JACC 2006." },
+            { "key": "pmh", "value": "atherosclerosis peripheral vascular", "logLR": 10, "evidenceLabel": "Generalised atherosclerosis", "citation": "Hirsch AT. JACC 2006." }
+          ]
+        }
+      ]
+    },
+    "diabetesReview": {
+      "candidates": [
+        {
+          "name": "Type 2 diabetes mellitus",
+          "icd": "E11.9",
+          "logPrior": 45,
+          "features": [
+            { "key": "age_over", "value": "40", "logLR": 10, "evidenceLabel": "Age > 40 (peak T2DM onset)", "citation": "ADA Standards of Care 2024." },
+            { "key": "bmi_over", "value": "27", "logLR": 12, "evidenceLabel": "Overweight / obese (BMI > 27)", "citation": "ADA Standards of Care 2024." },
+            { "key": "pmh", "value": "family diabetes", "logLR": 8, "evidenceLabel": "First-degree relative with T2DM", "citation": "ADA Standards of Care 2024." },
+            { "key": "inv", "value": "hba1c elevated glucose", "logLR": 20, "evidenceLabel": "HbA1c ≥ 48 mmol/mol or fasting glucose ≥ 7.0", "citation": "ADA Standards of Care 2024." },
+            { "key": "associations", "value": "polyuria polydipsia", "logLR": 10, "evidenceLabel": "Polyuria and polydipsia", "citation": "ADA Standards of Care 2024." },
+            { "key": "pmh", "value": "gestational diabetes", "logLR": 12, "evidenceLabel": "Previous gestational diabetes", "citation": "ADA Standards of Care 2024." }
+          ]
+        },
+        {
+          "name": "Type 1 diabetes mellitus",
+          "icd": "E10.9",
+          "logPrior": 12,
+          "features": [
+            { "key": "age_under", "value": "40", "logLR": 8, "evidenceLabel": "Age < 40 (T1DM more common under 40)", "citation": "ADA Standards of Care 2024." },
+            { "key": "character", "value": "rapid onset", "logLR": 12, "evidenceLabel": "Rapid onset of symptoms", "citation": "ADA Standards of Care 2024." },
+            { "key": "associations", "value": "weight loss ketosis", "logLR": 14, "evidenceLabel": "Weight loss / ketonuria", "citation": "ADA Standards of Care 2024." },
+            { "key": "inv", "value": "c-peptide low gad antibodies", "logLR": 20, "evidenceLabel": "Low C-peptide / positive GAD antibodies", "citation": "ADA Standards of Care 2024." }
+          ]
+        },
+        {
+          "name": "Prediabetes (impaired glucose tolerance)",
+          "icd": "R73.09",
+          "logPrior": 30,
+          "features": [
+            { "key": "bmi_over", "value": "27", "logLR": 10, "evidenceLabel": "Overweight", "citation": "ADA Standards of Care 2024." },
+            { "key": "inv", "value": "hba1c borderline", "logLR": 18, "evidenceLabel": "HbA1c 39–47 mmol/mol (prediabetes range)", "citation": "ADA Standards of Care 2024." },
+            { "key": "pmh", "value": "family diabetes hypertension", "logLR": 8, "evidenceLabel": "Cardiometabolic risk factors", "citation": "ADA Standards of Care 2024." }
+          ]
+        }
+      ]
+    },
+    "postOpReview": {
+      "candidates": [
+        {
+          "name": "Surgical site infection",
+          "icd": "T81.41",
+          "logPrior": 30,
+          "features": [
+            { "key": "exam", "value": "wound erythema warmth discharge", "logLR": 18, "evidenceLabel": "Wound erythema, warmth, purulent discharge", "citation": "CDC NHSN SSI Criteria 2023." },
+            { "key": "associations", "value": "fever", "logLR": 10, "evidenceLabel": "Post-op fever > 38°C", "citation": "CDC NHSN SSI Criteria 2023." },
+            { "key": "timing", "value": "day 3 5 post", "logLR": 10, "evidenceLabel": "Onset day 3–7 post-op (typical SSI window)", "citation": "CDC NHSN SSI Criteria 2023." },
+            { "key": "inv", "value": "wbc elevated crp elevated", "logLR": 10, "evidenceLabel": "Elevated WBC / CRP post-op", "citation": "CDC NHSN SSI Criteria 2023." }
+          ]
+        },
+        {
+          "name": "Anastomotic leak",
+          "icd": "K91.89",
+          "logPrior": 12,
+          "features": [
+            { "key": "associations", "value": "fever abdominal pain day 4 7", "logLR": 14, "evidenceLabel": "Fever + pain day 4–7 post bowel surgery", "citation": "Hyman N. Dis Colon Rectum 2007." },
+            { "key": "pshx", "value": "colectomy bowel anastomosis", "logLR": 15, "evidenceLabel": "Recent bowel resection with anastomosis", "citation": "Hyman N. Dis Colon Rectum 2007." },
+            { "key": "associations", "value": "tachycardia hypotension", "logLR": 12, "evidenceLabel": "Haemodynamic instability (peritonitis)", "citation": "Hyman N. Dis Colon Rectum 2007." },
+            { "key": "inv", "value": "ct leak free air fluid", "logLR": 20, "evidenceLabel": "CT: leak, free air or collection", "citation": "Hyman N. Dis Colon Rectum 2007." }
+          ]
+        },
+        {
+          "name": "Post-operative DVT / PE",
+          "icd": "T81.72",
+          "logPrior": 18,
+          "features": [
+            { "key": "pshx", "value": "major surgery", "logLR": 12, "evidenceLabel": "Recent major surgery (key risk factor)", "citation": "Geerts WH. Chest 2008." },
+            { "key": "associations", "value": "leg swelling calf pain", "logLR": 12, "evidenceLabel": "Unilateral leg swelling / calf tenderness (DVT)", "citation": "Geerts WH. Chest 2008." },
+            { "key": "character", "value": "sudden dyspnoea pleuritic pain", "logLR": 12, "evidenceLabel": "Sudden dyspnoea / pleuritic chest pain (PE)", "citation": "Geerts WH. Chest 2008." },
+            { "key": "inv", "value": "d-dimer elevated", "logLR": 8, "evidenceLabel": "Elevated D-dimer (sensitive, not specific)", "citation": "Geerts WH. Chest 2008." }
+          ]
+        },
+        {
+          "name": "Post-operative ileus",
+          "icd": "K91.89",
+          "logPrior": 25,
+          "features": [
+            { "key": "pshx", "value": "abdominal surgery bowel", "logLR": 12, "evidenceLabel": "Post-abdominal / bowel surgery", "citation": "Bauer AJ. Gastroenterology 2004." },
+            { "key": "associations", "value": "no bowel sounds flatus absent", "logLR": 14, "evidenceLabel": "Absent flatus / bowel sounds on day 3+", "citation": "Bauer AJ. Gastroenterology 2004." },
+            { "key": "associations", "value": "distension nausea vomiting", "logLR": 10, "evidenceLabel": "Abdominal distension + vomiting", "citation": "Bauer AJ. Gastroenterology 2004." },
+            { "key": "med", "value": "opioid", "logLR": 8, "evidenceLabel": "Opioid analgesia (prolongs ileus)", "citation": "Bauer AJ. Gastroenterology 2004." }
+          ]
+        },
+        {
+          "name": "Intra-abdominal abscess",
+          "icd": "K68.11",
+          "logPrior": 12,
+          "features": [
+            { "key": "associations", "value": "persistent fever swinging", "logLR": 14, "evidenceLabel": "Persistent / swinging fever day 5+ post-op", "citation": "Rotstein OD. Crit Care Clin 1993." },
+            { "key": "pshx", "value": "bowel surgery contaminated", "logLR": 12, "evidenceLabel": "Contaminated / emergency bowel surgery", "citation": "Rotstein OD. Crit Care Clin 1993." },
+            { "key": "inv", "value": "ct collection abscess", "logLR": 20, "evidenceLabel": "CT: intra-abdominal collection", "citation": "Rotstein OD. Crit Care Clin 1993." },
+            { "key": "inv", "value": "wbc elevated persistently", "logLR": 10, "evidenceLabel": "Persistently elevated WBC", "citation": "Rotstein OD. Crit Care Clin 1993." }
+          ]
+        }
+      ]
+    },
+    "adrenalEndocrine": {
+      "candidates": [
+        {
+          "name": "Benign adrenal incidentaloma",
+          "icd": "D44.10",
+          "logPrior": 40,
+          "features": [
+            { "key": "inv", "value": "adrenal incidentaloma imaging", "logLR": 20, "evidenceLabel": "Incidental adrenal mass on imaging", "citation": "Fassnacht M. Eur J Endocrinol 2016." },
+            { "key": "inv", "value": "hu 10 lipid rich", "logLR": 18, "evidenceLabel": "< 10 HU (lipid-rich — benign adenoma pattern)", "citation": "Fassnacht M. Eur J Endocrinol 2016." },
+            { "key": "inv", "value": "metanephrines normal aldosterone renin normal", "logLR": 10, "evidenceLabel": "Normal hormone screen (non-functioning)", "citation": "Fassnacht M. Eur J Endocrinol 2016." }
+          ]
+        },
+        {
+          "name": "Phaeochromocytoma",
+          "icd": "D35.00",
+          "logPrior": 8,
+          "features": [
+            { "key": "associations", "value": "episodic headache sweating palpitations", "logLR": 18, "evidenceLabel": "Episodic headache + sweating + palpitations", "citation": "Lenders JW. Lancet 2005." },
+            { "key": "inv", "value": "metanephrines elevated", "logLR": 22, "evidenceLabel": "Elevated plasma/urine metanephrines", "citation": "Lenders JW. Lancet 2005." },
+            { "key": "inv", "value": "adrenal mass imaging", "logLR": 12, "evidenceLabel": "Adrenal mass on CT/MRI", "citation": "Lenders JW. Lancet 2005." }
+          ]
+        },
+        {
+          "name": "Primary hyperaldosteronism (Conn's adenoma)",
+          "icd": "E26.0",
+          "logPrior": 10,
+          "features": [
+            { "key": "inv", "value": "hypokalaemia spontaneous", "logLR": 12, "evidenceLabel": "Spontaneous hypokalaemia", "citation": "Funder JW. JCEM 2016." },
+            { "key": "inv", "value": "aldosterone renin ratio elevated", "logLR": 20, "evidenceLabel": "Raised aldosterone:renin ratio", "citation": "Funder JW. JCEM 2016." },
+            { "key": "pmh", "value": "hypertension resistant", "logLR": 10, "evidenceLabel": "Resistant hypertension", "citation": "Funder JW. JCEM 2016." }
+          ]
+        },
+        {
+          "name": "Cushing's syndrome",
+          "icd": "E24.9",
+          "logPrior": 6,
+          "features": [
+            { "key": "exam", "value": "central obesity buffalo hump striae", "logLR": 18, "evidenceLabel": "Central obesity + buffalo hump + purple striae", "citation": "Nieman LK. JCEM 2008." },
+            { "key": "inv", "value": "overnight dexamethasone suppression", "logLR": 20, "evidenceLabel": "Failed overnight dexamethasone suppression test", "citation": "Nieman LK. JCEM 2008." },
+            { "key": "associations", "value": "proximal myopathy hypertension diabetes", "logLR": 14, "evidenceLabel": "Proximal myopathy + HTN + hyperglycaemia", "citation": "Nieman LK. JCEM 2008." }
+          ]
+        },
+        {
+          "name": "Adrenocortical carcinoma",
+          "icd": "C74.00",
+          "logPrior": 4,
+          "features": [
+            { "key": "exam", "value": "large abdominal mass", "logLR": 12, "evidenceLabel": "Large palpable abdominal mass", "citation": "Fassnacht M. Eur J Endocrinol 2018." },
+            { "key": "inv", "value": "adrenal mass large cm", "logLR": 15, "evidenceLabel": "Adrenal mass > 4 cm on imaging", "citation": "Fassnacht M. Eur J Endocrinol 2018." },
+            { "key": "inv", "value": "hu >10 washout poor", "logLR": 14, "evidenceLabel": "> 10 HU / poor washout on CT (suspicious)", "citation": "Fassnacht M. Eur J Endocrinol 2018." },
+            { "key": "associations", "value": "virilisation cushingoid rapid", "logLR": 16, "evidenceLabel": "Rapid onset virilisation or cushingoid features", "citation": "Fassnacht M. Eur J Endocrinol 2018." }
+          ]
+        }
+      ]
+    },
+    "vascularSurgical": {
+      "candidates": [
+        {
+          "name": "Abdominal aortic aneurysm",
+          "icd": "I71.4",
+          "logPrior": 18,
+          "features": [
+            { "key": "sex_male", "value": "true", "logLR": 8, "evidenceLabel": "Male sex (6× higher risk)", "citation": "Kent KC. NEJM 2014." },
+            { "key": "age_over", "value": "65", "logLR": 12, "evidenceLabel": "Age > 65 (prevalence 4–8%)", "citation": "Kent KC. NEJM 2014." },
+            { "key": "social", "value": "smoking", "logLR": 12, "evidenceLabel": "Smoking history (major modifiable risk)", "citation": "Kent KC. NEJM 2014." },
+            { "key": "exam", "value": "pulsatile abdominal mass", "logLR": 20, "evidenceLabel": "Pulsatile expansile abdominal mass", "citation": "Kent KC. NEJM 2014." },
+            { "key": "inv", "value": "aortic dilation ultrasound", "logLR": 25, "evidenceLabel": "Aortic diameter ≥ 3 cm on ultrasound", "citation": "Kent KC. NEJM 2014." }
+          ]
+        },
+        {
+          "name": "Peripheral arterial disease",
+          "icd": "I73.9",
+          "logPrior": 20,
+          "features": [
+            { "key": "character", "value": "claudication calf buttock", "logLR": 16, "evidenceLabel": "Reproducible calf / buttock claudication", "citation": "Hirsch AT. JACC 2006." },
+            { "key": "relieving", "value": "rest 10 minutes", "logLR": 14, "evidenceLabel": "Relieved by rest within 10 minutes", "citation": "Hirsch AT. JACC 2006." },
+            { "key": "exam", "value": "absent pedal pulse", "logLR": 16, "evidenceLabel": "Absent or diminished pedal pulses", "citation": "Hirsch AT. JACC 2006." },
+            { "key": "inv", "value": "abi less 0.9", "logLR": 20, "evidenceLabel": "ABI < 0.9 (ankle-brachial index)", "citation": "Hirsch AT. JACC 2006." },
+            { "key": "social", "value": "smoking", "logLR": 10, "evidenceLabel": "Smoking history", "citation": "Hirsch AT. JACC 2006." }
+          ]
+        },
+        {
+          "name": "Varicose veins",
+          "icd": "I83.90",
+          "logPrior": 30,
+          "features": [
+            { "key": "exam", "value": "tortuous dilated veins leg", "logLR": 20, "evidenceLabel": "Visible tortuous dilated superficial veins", "citation": "Gloviczki P. J Vasc Surg 2011." },
+            { "key": "associations", "value": "aching heaviness leg", "logLR": 10, "evidenceLabel": "Leg aching / heaviness", "citation": "Gloviczki P. J Vasc Surg 2011." },
+            { "key": "sex_female", "value": "true", "logLR": 5, "evidenceLabel": "Female sex (2× higher prevalence)", "citation": "Gloviczki P. J Vasc Surg 2011." },
+            { "key": "exacerbating", "value": "prolonged standing", "logLR": 10, "evidenceLabel": "Worse after prolonged standing", "citation": "Gloviczki P. J Vasc Surg 2011." }
+          ]
+        },
+        {
+          "name": "Carotid stenosis",
+          "icd": "I65.2",
+          "logPrior": 10,
+          "features": [
+            { "key": "pmh", "value": "tia stroke", "logLR": 18, "evidenceLabel": "History of TIA or stroke (ipsilateral territory)", "citation": "Kernan WN. Stroke 2014." },
+            { "key": "exam", "value": "carotid bruit", "logLR": 12, "evidenceLabel": "Carotid bruit on auscultation", "citation": "Kernan WN. Stroke 2014." },
+            { "key": "pmh", "value": "hypertension atherosclerosis", "logLR": 8, "evidenceLabel": "Hypertension / generalized atherosclerosis", "citation": "Kernan WN. Stroke 2014." },
+            { "key": "inv", "value": "carotid ultrasound stenosis", "logLR": 20, "evidenceLabel": "Carotid ultrasound: ≥ 50% stenosis", "citation": "Kernan WN. Stroke 2014." }
+          ]
+        }
+      ]
+    },
+    "pilonidalDisease": {
+      "candidates": [
+        {
+          "name": "Pilonidal abscess",
+          "icd": "L05.01",
+          "logPrior": 25,
+          "features": [
+            { "key": "site", "value": "natal cleft sacrococcygeal", "logLR": 20, "evidenceLabel": "Midline sacrococcygeal location", "citation": "Doll D. Tech Coloproctol 2008." },
+            { "key": "exam", "value": "fluctuant tender swelling midline", "logLR": 18, "evidenceLabel": "Tender fluctuant midline swelling", "citation": "Doll D. Tech Coloproctol 2008." },
+            { "key": "associations", "value": "acute pain fever", "logLR": 12, "evidenceLabel": "Acute pain with systemic features", "citation": "Doll D. Tech Coloproctol 2008." },
+            { "key": "sex_male", "value": "true", "logLR": 8, "evidenceLabel": "Male sex (3× higher risk)", "citation": "Doll D. Tech Coloproctol 2008." }
+          ]
+        },
+        {
+          "name": "Pilonidal sinus / cyst",
+          "icd": "L05.91",
+          "logPrior": 22,
+          "features": [
+            { "key": "site", "value": "natal cleft sacrococcygeal", "logLR": 20, "evidenceLabel": "Midline pit(s) in natal cleft", "citation": "Doll D. Tech Coloproctol 2008." },
+            { "key": "associations", "value": "chronic discharge hair", "logLR": 16, "evidenceLabel": "Chronic intermittent discharge with hair tufts", "citation": "Doll D. Tech Coloproctol 2008." },
+            { "key": "sex_male", "value": "true", "logLR": 8, "evidenceLabel": "Male sex, hirsute body habitus", "citation": "Doll D. Tech Coloproctol 2008." },
+            { "key": "pmh", "value": "previous pilonidal abscess", "logLR": 14, "evidenceLabel": "Previous pilonidal abscess drainage", "citation": "Doll D. Tech Coloproctol 2008." }
+          ]
+        },
+        {
+          "name": "Hidradenitis suppurativa",
+          "icd": "L73.2",
+          "logPrior": 10,
+          "features": [
+            { "key": "site", "value": "axilla groin intertriginous", "logLR": 14, "evidenceLabel": "Axillary / groin / intertriginous distribution", "citation": "Jemec GB. NEJM 2012." },
+            { "key": "character", "value": "recurrent nodules tunnels", "logLR": 18, "evidenceLabel": "Recurrent nodules, sinuses and scarring", "citation": "Jemec GB. NEJM 2012." },
+            { "key": "sex_female", "value": "true", "logLR": 5, "evidenceLabel": "Female sex (3× more common)", "citation": "Jemec GB. NEJM 2012." },
+            { "key": "pmh", "value": "smoking obesity", "logLR": 8, "evidenceLabel": "Obesity and smoking (risk factors)", "citation": "Jemec GB. NEJM 2012." }
+          ]
+        }
+      ]
+    },
+    "woundInfection": {
+      "candidates": [
+        {
+          "name": "Superficial surgical site infection",
+          "icd": "T81.41",
+          "logPrior": 30,
+          "features": [
+            { "key": "exam", "value": "wound erythema warmth discharge", "logLR": 18, "evidenceLabel": "Wound erythema, warmth, purulent discharge", "citation": "CDC NHSN SSI Criteria 2023." },
+            { "key": "timing", "value": "within 30 days surgery", "logLR": 12, "evidenceLabel": "Within 30 days of surgery", "citation": "CDC NHSN SSI Criteria 2023." },
+            { "key": "associations", "value": "fever", "logLR": 10, "evidenceLabel": "Systemic fever", "citation": "CDC NHSN SSI Criteria 2023." }
+          ]
+        },
+        {
+          "name": "Deep surgical site infection",
+          "icd": "T81.42",
+          "logPrior": 14,
+          "features": [
+            { "key": "exam", "value": "deep wound dehiscence", "logLR": 16, "evidenceLabel": "Wound dehiscence exposing deep tissue", "citation": "CDC NHSN SSI Criteria 2023." },
+            { "key": "associations", "value": "severe fever pain", "logLR": 14, "evidenceLabel": "Severe pain + high fever (deep infection)", "citation": "CDC NHSN SSI Criteria 2023." },
+            { "key": "inv", "value": "ct deep collection", "logLR": 20, "evidenceLabel": "CT: deep collection around incision", "citation": "CDC NHSN SSI Criteria 2023." }
+          ]
+        },
+        {
+          "name": "Necrotising fasciitis",
+          "icd": "M72.6",
+          "logPrior": 6,
+          "features": [
+            { "key": "exam", "value": "crepitus tracking erythema", "logLR": 20, "evidenceLabel": "Crepitus / tracking erythema beyond wound", "citation": "Wong CH. J Bone Joint Surg 2004." },
+            { "key": "character", "value": "severe pain out of proportion", "logLR": 18, "evidenceLabel": "Pain disproportionate to appearance", "citation": "Wong CH. J Bone Joint Surg 2004." },
+            { "key": "associations", "value": "rapid progression fever toxicity", "logLR": 16, "evidenceLabel": "Rapid progression + systemic toxicity", "citation": "Wong CH. J Bone Joint Surg 2004." },
+            { "key": "inv", "value": "lrinec score high", "logLR": 14, "evidenceLabel": "LRINEC score ≥ 6 (high risk)", "citation": "Wong CH. J Bone Joint Surg 2004." },
+            { "key": "exam", "value": "bullae skin necrosis", "logLR": 20, "evidenceLabel": "Skin bullae or frank necrosis", "citation": "Wong CH. J Bone Joint Surg 2004." }
+          ]
+        },
+        {
+          "name": "Cellulitis / SSTI",
+          "icd": "L03.90",
+          "logPrior": 28,
+          "features": [
+            { "key": "exam", "value": "erythema warmth spreading", "logLR": 14, "evidenceLabel": "Spreading erythema and warmth", "citation": "Stevens DL. CID 2014." },
+            { "key": "exam", "value": "no fluctuance crepitus", "logLR": 10, "evidenceLabel": "No fluctuance or crepitus (superficial)", "citation": "Stevens DL. CID 2014." },
+            { "key": "associations", "value": "fever", "logLR": 8, "evidenceLabel": "Low-grade fever", "citation": "Stevens DL. CID 2014." },
+            { "key": "pmh", "value": "portal entry trauma skin break", "logLR": 10, "evidenceLabel": "Portal of entry (trauma, skin break)", "citation": "Stevens DL. CID 2014." }
+          ]
+        }
+      ]
+    },
+    "acuteLimbIschaemia": {
+      "candidates": [
+        {
+          "name": "Acute arterial embolism",
+          "icd": "I74.3",
+          "logPrior": 22,
+          "features": [
+            { "key": "onset", "value": "sudden", "logLR": 14, "evidenceLabel": "Sudden onset (embolic pattern)", "citation": "Norgren L. Eur J Vasc Endovasc Surg 2007." },
+            { "key": "character", "value": "6Ps pain pale pulseless paralysis paraesthesia poikilothermia", "logLR": 20, "evidenceLabel": "Classical 6Ps of acute limb ischaemia", "citation": "Norgren L. Eur J Vasc Endovasc Surg 2007." },
+            { "key": "pmh", "value": "atrial fibrillation", "logLR": 14, "evidenceLabel": "Atrial fibrillation (embolic source)", "citation": "Norgren L. Eur J Vasc Endovasc Surg 2007." },
+            { "key": "exam", "value": "absent pulse mottling", "logLR": 18, "evidenceLabel": "Absent pulses + mottled limb", "citation": "Norgren L. Eur J Vasc Endovasc Surg 2007." }
+          ]
+        },
+        {
+          "name": "Acute arterial thrombosis (in-situ)",
+          "icd": "I74.3",
+          "logPrior": 18,
+          "features": [
+            { "key": "onset", "value": "gradual hours", "logLR": 10, "evidenceLabel": "More gradual onset (thrombotic pattern)", "citation": "Norgren L. Eur J Vasc Endovasc Surg 2007." },
+            { "key": "pmh", "value": "peripheral arterial disease claudication", "logLR": 16, "evidenceLabel": "Background PAD / claudication", "citation": "Norgren L. Eur J Vasc Endovasc Surg 2007." },
+            { "key": "exam", "value": "absent pulse diminished", "logLR": 16, "evidenceLabel": "Absent or diminished pulse", "citation": "Norgren L. Eur J Vasc Endovasc Surg 2007." }
+          ]
+        },
+        {
+          "name": "Compartment syndrome",
+          "icd": "M79.3",
+          "logPrior": 14,
+          "features": [
+            { "key": "character", "value": "pain out of proportion", "logLR": 16, "evidenceLabel": "Pain out of proportion to injury", "citation": "McQueen MM. JBJS 1996." },
+            { "key": "exacerbating", "value": "passive stretch", "logLR": 18, "evidenceLabel": "Pain on passive muscle stretch", "citation": "McQueen MM. JBJS 1996." },
+            { "key": "exam", "value": "tense compartment swelling", "logLR": 16, "evidenceLabel": "Tense, woody compartment on palpation", "citation": "McQueen MM. JBJS 1996." },
+            { "key": "pmh", "value": "trauma fracture", "logLR": 14, "evidenceLabel": "Recent trauma / fracture (precipitant)", "citation": "McQueen MM. JBJS 1996." }
+          ]
+        }
+      ]
+    },
+    "skinLesion": {
+      "candidates": [
+        {
+          "name": "Basal cell carcinoma",
+          "icd": "C44.91",
+          "logPrior": 28,
+          "features": [
+            { "key": "exam", "value": "pearly rolled edge telangiectasia", "logLR": 18, "evidenceLabel": "Pearly nodule with rolled edge and telangiectasia", "citation": "Lim AS. Aust Fam Physician 2013." },
+            { "key": "site", "value": "sun exposed head neck", "logLR": 12, "evidenceLabel": "Sun-exposed site (head/neck)", "citation": "Lim AS. Aust Fam Physician 2013." },
+            { "key": "age_over", "value": "50", "logLR": 10, "evidenceLabel": "Age > 50", "citation": "Lim AS. Aust Fam Physician 2013." },
+            { "key": "social", "value": "sun exposure outdoor", "logLR": 10, "evidenceLabel": "Cumulative sun exposure history", "citation": "Lim AS. Aust Fam Physician 2013." }
+          ]
+        },
+        {
+          "name": "Squamous cell carcinoma",
+          "icd": "C44.92",
+          "logPrior": 18,
+          "features": [
+            { "key": "exam", "value": "indurated ulcer keratotic", "logLR": 16, "evidenceLabel": "Indurated keratotic ulcerated lesion", "citation": "Lim AS. Aust Fam Physician 2013." },
+            { "key": "character", "value": "fast growing", "logLR": 12, "evidenceLabel": "Rapidly growing lesion", "citation": "Lim AS. Aust Fam Physician 2013." },
+            { "key": "site", "value": "sun exposed lip ear", "logLR": 12, "evidenceLabel": "Sun-exposed site / lip / ear", "citation": "Lim AS. Aust Fam Physician 2013." },
+            { "key": "social", "value": "immunosuppressed", "logLR": 12, "evidenceLabel": "Immunosuppression (transplant, HIV)", "citation": "Lim AS. Aust Fam Physician 2013." }
+          ]
+        },
+        {
+          "name": "Melanoma",
+          "icd": "C43.9",
+          "logPrior": 12,
+          "features": [
+            { "key": "exam", "value": "asymmetry irregular border colour variation", "logLR": 16, "evidenceLabel": "ABCDE: asymmetry, irregular border, colour variation, diameter > 6mm", "citation": "Abbasi NR. JAMA 2004." },
+            { "key": "character", "value": "changing growing", "logLR": 14, "evidenceLabel": "Changing pigmented lesion", "citation": "Abbasi NR. JAMA 2004." },
+            { "key": "social", "value": "sun exposure fair skin", "logLR": 10, "evidenceLabel": "Sun exposure history / fair skin phototype", "citation": "Abbasi NR. JAMA 2004." },
+            { "key": "pmh", "value": "previous melanoma family", "logLR": 12, "evidenceLabel": "Previous melanoma or family history", "citation": "Abbasi NR. JAMA 2004." },
+            { "key": "exam", "value": "satellite nodule ulceration", "logLR": 16, "evidenceLabel": "Ulceration or satellite nodules", "citation": "Abbasi NR. JAMA 2004." }
+          ]
+        },
+        {
+          "name": "Lipoma",
+          "icd": "D17.9",
+          "logPrior": 32,
+          "features": [
+            { "key": "exam", "value": "soft mobile subcutaneous", "logLR": 14, "evidenceLabel": "Soft, mobile, subcutaneous, lobulated lump", "citation": "Bancroft LW. AJR 2006." },
+            { "key": "character", "value": "non-tender slow growing", "logLR": 10, "evidenceLabel": "Painless / slow-growing", "citation": "Bancroft LW. AJR 2006." },
+            { "key": "character", "value": "years present", "logLR": 8, "evidenceLabel": "Long-standing (months to years)", "citation": "Bancroft LW. AJR 2006." }
+          ]
+        }
+      ]
+    },
+    "scrotalTesticular": {
+      "candidates": [
+        {
+          "name": "Testicular torsion",
+          "icd": "N44.00",
+          "logPrior": 18,
+          "features": [
+            { "key": "onset", "value": "sudden severe", "logLR": 16, "evidenceLabel": "Sudden onset severe scrotal pain", "citation": "Sharp VJ. Am Fam Physician 2013." },
+            { "key": "age_under", "value": "25", "logLR": 12, "evidenceLabel": "Age < 25 (bimodal peak: neonates, adolescents)", "citation": "Sharp VJ. Am Fam Physician 2013." },
+            { "key": "exam", "value": "high riding horizontal testis", "logLR": 18, "evidenceLabel": "High-riding horizontally lying testis", "citation": "Sharp VJ. Am Fam Physician 2013." },
+            { "key": "exam", "value": "absent cremasteric reflex", "logLR": 18, "evidenceLabel": "Absent cremasteric reflex (ipsilateral)", "citation": "Sharp VJ. Am Fam Physician 2013." },
+            { "key": "associations", "value": "nausea vomiting", "logLR": 10, "evidenceLabel": "Nausea / vomiting", "citation": "Sharp VJ. Am Fam Physician 2013." }
+          ]
+        },
+        {
+          "name": "Epididymo-orchitis",
+          "icd": "N45.3",
+          "logPrior": 25,
+          "features": [
+            { "key": "onset", "value": "gradual days", "logLR": 10, "evidenceLabel": "Gradual onset over days", "citation": "Trojian TH. Am Fam Physician 2009." },
+            { "key": "exam", "value": "epididymis tender swollen", "logLR": 16, "evidenceLabel": "Epididymis tender and swollen", "citation": "Trojian TH. Am Fam Physician 2009." },
+            { "key": "associations", "value": "fever dysuria discharge", "logLR": 12, "evidenceLabel": "Fever + dysuria / urethral discharge", "citation": "Trojian TH. Am Fam Physician 2009." },
+            { "key": "exam", "value": "cremasteric reflex present", "logLR": 12, "evidenceLabel": "Cremasteric reflex present (vs torsion)", "citation": "Trojian TH. Am Fam Physician 2009." }
+          ]
+        },
+        {
+          "name": "Testicular cancer",
+          "icd": "C62.90",
+          "logPrior": 10,
+          "features": [
+            { "key": "exam", "value": "hard painless testicular mass", "logLR": 18, "evidenceLabel": "Hard, painless testicular mass", "citation": "Albers P. Eur Urol 2011." },
+            { "key": "age_over", "value": "15", "logLR": 5, "evidenceLabel": "Age 15–40 (peak incidence)", "citation": "Albers P. Eur Urol 2011." },
+            { "key": "age_under", "value": "40", "logLR": 5, "evidenceLabel": "Age < 40 (germ cell tumour predominant)", "citation": "Albers P. Eur Urol 2011." },
+            { "key": "inv", "value": "afp hcg ldh elevated", "logLR": 18, "evidenceLabel": "Elevated AFP, hCG or LDH (tumour markers)", "citation": "Albers P. Eur Urol 2011." },
+            { "key": "pmh", "value": "cryptorchidism undescended testis", "logLR": 12, "evidenceLabel": "History of cryptorchidism", "citation": "Albers P. Eur Urol 2011." }
+          ]
+        },
+        {
+          "name": "Hydrocele",
+          "icd": "N43.3",
+          "logPrior": 28,
+          "features": [
+            { "key": "exam", "value": "transilluminates scrotal swelling", "logLR": 18, "evidenceLabel": "Transilluminates (fluid-filled)", "citation": "Evers JL. NEJM 2003." },
+            { "key": "character", "value": "non-tender", "logLR": 10, "evidenceLabel": "Painless swelling", "citation": "Evers JL. NEJM 2003." },
+            { "key": "exam", "value": "smooth cystic", "logLR": 12, "evidenceLabel": "Smooth cystic scrotal swelling", "citation": "Evers JL. NEJM 2003." }
+          ]
+        }
+      ]
+    },
+    "urinaryRetention": {
+      "candidates": [
+        {
+          "name": "Benign prostatic hyperplasia (urinary retention)",
+          "icd": "N40.1",
+          "logPrior": 35,
+          "features": [
+            { "key": "sex_male", "value": "true", "logLR": 10, "evidenceLabel": "Male sex (BPH exclusively male)", "citation": "Roehrborn CG. Am J Med 2005." },
+            { "key": "age_over", "value": "60", "logLR": 12, "evidenceLabel": "Age > 60 (high BPH prevalence)", "citation": "Roehrborn CG. Am J Med 2005." },
+            { "key": "character", "value": "inability to void", "logLR": 14, "evidenceLabel": "Acute inability to void", "citation": "Roehrborn CG. Am J Med 2005." },
+            { "key": "exam", "value": "enlarged smooth prostate", "logLR": 16, "evidenceLabel": "Enlarged smooth prostate on DRE", "citation": "Roehrborn CG. Am J Med 2005." },
+            { "key": "pmh", "value": "luts hesitancy nocturia", "logLR": 12, "evidenceLabel": "Pre-existing LUTS (hesitancy, nocturia)", "citation": "Roehrborn CG. Am J Med 2005." }
+          ]
+        },
+        {
+          "name": "Urethral stricture",
+          "icd": "N35.9",
+          "logPrior": 18,
+          "features": [
+            { "key": "character", "value": "weak stream splitting", "logLR": 14, "evidenceLabel": "Weak, split or spraying stream", "citation": "Stein DM. J Urol 2014." },
+            { "key": "pmh", "value": "previous urethritis sti catheter trauma", "logLR": 14, "evidenceLabel": "Previous urethritis / catheterisation / trauma", "citation": "Stein DM. J Urol 2014." },
+            { "key": "sex_male", "value": "true", "logLR": 8, "evidenceLabel": "Male sex (urethral length risk)", "citation": "Stein DM. J Urol 2014." }
+          ]
+        },
+        {
+          "name": "Prostate cancer (with retention)",
+          "icd": "C61",
+          "logPrior": 14,
+          "features": [
+            { "key": "exam", "value": "hard irregular nodular prostate", "logLR": 16, "evidenceLabel": "Hard, irregular or nodular prostate on DRE", "citation": "Gosselaar C. Eur Urol 2008." },
+            { "key": "inv", "value": "psa elevated", "logLR": 14, "evidenceLabel": "Elevated PSA > 4 ng/mL", "citation": "Gosselaar C. Eur Urol 2008." },
+            { "key": "associations", "value": "bone pain weight loss", "logLR": 14, "evidenceLabel": "Bone pain or unexplained weight loss (advanced)", "citation": "Gosselaar C. Eur Urol 2008." }
+          ]
+        },
+        {
+          "name": "Neurogenic bladder",
+          "icd": "N31.9",
+          "logPrior": 12,
+          "features": [
+            { "key": "pmh", "value": "spinal cord injury ms diabetes neuropathy", "logLR": 16, "evidenceLabel": "Spinal cord injury / MS / diabetic neuropathy", "citation": "Wein AJ. J Urol 2012." },
+            { "key": "associations", "value": "overflow incontinence", "logLR": 12, "evidenceLabel": "Overflow dribbling incontinence", "citation": "Wein AJ. J Urol 2012." },
+            { "key": "exam", "value": "reduced perineal sensation absent reflexes", "logLR": 14, "evidenceLabel": "Reduced perineal sensation or absent reflexes", "citation": "Wein AJ. J Urol 2012." }
+          ]
+        }
+      ]
+    },
+    "rectalProlapse": {
+      "candidates": [
+        {
+          "name": "Complete rectal prolapse",
+          "icd": "K62.3",
+          "logPrior": 22,
+          "features": [
+            { "key": "exam", "value": "concentric rings prolapsing mucosa", "logLR": 22, "evidenceLabel": "Concentric mucosal rings on prolapse exam", "citation": "Bordeianou L. Dis Colon Rectum 2017." },
+            { "key": "exacerbating", "value": "defaecation straining", "logLR": 14, "evidenceLabel": "Protrusion with defaecation / straining", "citation": "Bordeianou L. Dis Colon Rectum 2017." },
+            { "key": "sex_female", "value": "true", "logLR": 8, "evidenceLabel": "Female sex (6× higher risk)", "citation": "Bordeianou L. Dis Colon Rectum 2017." },
+            { "key": "age_over", "value": "60", "logLR": 8, "evidenceLabel": "Age > 60 (peak incidence)", "citation": "Bordeianou L. Dis Colon Rectum 2017." },
+            { "key": "associations", "value": "incontinence soiling", "logLR": 10, "evidenceLabel": "Faecal incontinence", "citation": "Bordeianou L. Dis Colon Rectum 2017." }
+          ]
+        },
+        {
+          "name": "Haemorrhoidal prolapse",
+          "icd": "K64.2",
+          "logPrior": 30,
+          "features": [
+            { "key": "exam", "value": "radial haemorrhoidal columns", "logLR": 16, "evidenceLabel": "Radially arranged haemorrhoidal columns (vs rectal)", "citation": "Johanson JF. Dis Colon Rectum 1990." },
+            { "key": "associations", "value": "bright red bleeding", "logLR": 12, "evidenceLabel": "Bright red rectal bleeding", "citation": "Johanson JF. Dis Colon Rectum 1990." }
+          ]
+        },
+        {
+          "name": "Rectocele",
+          "icd": "N81.6",
+          "logPrior": 18,
+          "features": [
+            { "key": "sex_female", "value": "true", "logLR": 12, "evidenceLabel": "Female sex (posterior compartment defect)", "citation": "Dietz HP. Ultrasound Obstet Gynecol 2004." },
+            { "key": "character", "value": "incomplete evacuation", "logLR": 14, "evidenceLabel": "Incomplete evacuation / splinting needed", "citation": "Dietz HP. Ultrasound Obstet Gynecol 2004." },
+            { "key": "pmh", "value": "vaginal delivery multiparous", "logLR": 10, "evidenceLabel": "Previous vaginal deliveries", "citation": "Dietz HP. Ultrasound Obstet Gynecol 2004." }
+          ]
+        }
+      ]
+    },
+    "parotidSalivary": {
+      "candidates": [
+        {
+          "name": "Pleomorphic adenoma",
+          "icd": "D11.0",
+          "logPrior": 35,
+          "features": [
+            { "key": "exam", "value": "slow growing painless parotid lump", "logLR": 14, "evidenceLabel": "Slow-growing painless pre-auricular lump", "citation": "Bradley PJ. Head Neck 2016." },
+            { "key": "exam", "value": "firm mobile rubbery", "logLR": 12, "evidenceLabel": "Firm, mobile, rubbery consistency", "citation": "Bradley PJ. Head Neck 2016." },
+            { "key": "character", "value": "years present", "logLR": 10, "evidenceLabel": "Long-standing (years)", "citation": "Bradley PJ. Head Neck 2016." },
+            { "key": "exam", "value": "facial nerve intact", "logLR": 10, "evidenceLabel": "Facial nerve function intact", "citation": "Bradley PJ. Head Neck 2016." }
+          ]
+        },
+        {
+          "name": "Acute suppurative parotitis",
+          "icd": "K11.20",
+          "logPrior": 18,
+          "features": [
+            { "key": "onset", "value": "sudden days", "logLR": 12, "evidenceLabel": "Acute onset with rapid swelling", "citation": "Brook I. J Oral Maxillofac Surg 1992." },
+            { "key": "exam", "value": "erythema tender parotid swelling", "logLR": 16, "evidenceLabel": "Erythema and tender parotid swelling", "citation": "Brook I. J Oral Maxillofac Surg 1992." },
+            { "key": "associations", "value": "fever", "logLR": 10, "evidenceLabel": "Systemic fever", "citation": "Brook I. J Oral Maxillofac Surg 1992." },
+            { "key": "exam", "value": "pus stensens duct", "logLR": 18, "evidenceLabel": "Pus expressible from Stensen's duct", "citation": "Brook I. J Oral Maxillofac Surg 1992." }
+          ]
+        },
+        {
+          "name": "Obstructive sialadenitis (salivary calculus)",
+          "icd": "K11.5",
+          "logPrior": 22,
+          "features": [
+            { "key": "timing", "value": "meal related", "logLR": 18, "evidenceLabel": "Swelling and pain precipitated by eating", "citation": "Zenk J. Laryngoscope 2004." },
+            { "key": "exam", "value": "calculus duct palpable", "logLR": 18, "evidenceLabel": "Palpable calculus in duct", "citation": "Zenk J. Laryngoscope 2004." },
+            { "key": "character", "value": "colicky intermittent", "logLR": 14, "evidenceLabel": "Colicky, meal-time pain", "citation": "Zenk J. Laryngoscope 2004." },
+            { "key": "site", "value": "submandibular more common", "logLR": 10, "evidenceLabel": "Submandibular more common than parotid", "citation": "Zenk J. Laryngoscope 2004." }
+          ]
+        },
+        {
+          "name": "Parotid malignancy (mucoepidermoid carcinoma)",
+          "icd": "C07",
+          "logPrior": 8,
+          "features": [
+            { "key": "exam", "value": "hard fixed parotid mass", "logLR": 16, "evidenceLabel": "Hard, fixed parotid mass", "citation": "Bradley PJ. Head Neck 2016." },
+            { "key": "associations", "value": "facial palsy weakness", "logLR": 20, "evidenceLabel": "Facial nerve palsy (VII invasion)", "citation": "Bradley PJ. Head Neck 2016." },
+            { "key": "character", "value": "rapid growth", "logLR": 14, "evidenceLabel": "Rapid growth", "citation": "Bradley PJ. Head Neck 2016." },
+            { "key": "exam", "value": "cervical lymph node", "logLR": 14, "evidenceLabel": "Cervical lymphadenopathy", "citation": "Bradley PJ. Head Neck 2016." }
+          ]
+        }
+      ]
     }
   }
 }

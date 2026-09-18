@@ -114,28 +114,28 @@ enum BayesianDiagnosisEngine {
              ccL.contains("constipation") || ccL.contains("diarrhoea") || ccL.contains("diarrhea"):
             candidates = externalPool("bowelHabit") ?? bowelHabit
         case ccL.contains("breast") && (ccL.contains("lump") || ccL.contains("mass")):
-            candidates = breastLump
+            candidates = externalPool("breastLump") ?? breastLump
         case ccL.contains("neck") && (ccL.contains("lump") || ccL.contains("swelling") || ccL.contains("mass")):
-            candidates = neckLump
+            candidates = externalPool("neckLump") ?? neckLump
         case ccL.contains("thyroid") || ccL.contains("hypothyroid") ||
              ccL.contains("hyperthyroid") || ccL.contains("graves") ||
              ccL.contains("goitre") || ccL.contains("hashimoto") ||
              ccL.contains("thyrotoxic") || ccL.contains("tsh"):
-            candidates = thyroidPathology
+            candidates = externalPool("thyroidPathology") ?? thyroidPathology
         case ccL.contains("hernia") || (ccL.contains("groin") && ccL.contains("lump")):
-            candidates = hernia
+            candidates = externalPool("hernia") ?? hernia
         case ccL.contains("perianal") || ccL.contains("haemorrhoid") ||
              ccL.contains("hemorrhoid") || ccL.contains("anal pain") || ccL.contains("piles"):
-            candidates = perianal
+            candidates = externalPool("perianal") ?? perianal
         case ccL.contains("weight loss") || ccL.contains("anorexia") || ccL.contains("cachexia"):
             candidates = externalPool("weightLoss") ?? weightLoss
         case ccL.contains("reflux") || ccL.contains("heartburn") ||
              ccL.contains("gerd") || ccL.contains("gord") ||
              ccL.contains("bloating") || ccL.contains("indigestion") ||
              ccL.contains("dyspepsia") || ccL.contains("regurgitat"):
-            candidates = refluxGERD
+            candidates = externalPool("refluxGERD") ?? refluxGERD
         case ccL.contains("groin pain") || ccL.contains("right iliac") || ccL.contains("inguinal pain"):
-            candidates = groinPain
+            candidates = externalPool("groinPain") ?? groinPain
         case ccL.contains("abdom") || ccL.contains("belly") || ccL.contains("stomach") ||
              ccL.contains("upper abdom") || ccL.contains("epigast") ||
              ccL.contains("right upper") || ccL.contains("right lower") ||
@@ -154,17 +154,17 @@ enum BayesianDiagnosisEngine {
             candidates = externalPool("feverInfection") ?? feverInfection
         case ccL.contains("urinary") || ccL.contains("dysuria") || ccL.contains("haematuria") ||
              ccL.contains("frequency") || ccL.contains("urine") || ccL.contains("uti"):
-            candidates = urinarySymptoms
+            candidates = externalPool("urinarySymptoms") ?? urinarySymptoms
         case ccL.contains("joint") || ccL.contains("arthrit") || ccL.contains("gout") ||
              ccL.contains("musculoskelet") || ccL.contains("swollen joint") ||
              ccL.contains("joint pain") || ccL.contains("arthralgia"):
-            candidates = jointPain
+            candidates = externalPool("jointPain") ?? jointPain
         case ccL.contains("hypertension") || ccL.contains("high blood pressure") ||
              ccL.contains("htn") || ccL.contains("bp review") || ccL.contains("blood pressure"):
-            candidates = hypertensionReview
+            candidates = externalPool("hypertensionReview") ?? hypertensionReview
         case ccL.contains("diabetes") || ccL.contains("diabetic") || ccL.contains("glucose") ||
              ccL.contains("hba1c") || ccL.contains("dm2") || ccL.contains("dm1"):
-            candidates = diabetesReview
+            candidates = externalPool("diabetesReview") ?? diabetesReview
         case ccL.contains("nausea") || ccL.contains("vomiting") || ccL.contains("vomit") ||
              ccL.contains("emesis") || ccL.contains("retching"):
             candidates = externalPool("nauseaVomiting") ?? nauseaVomiting
@@ -176,22 +176,22 @@ enum BayesianDiagnosisEngine {
         case ccL.contains("post-op") || ccL.contains("post op") || ccL.contains("postop") ||
              ccL.contains("post-operative") || ccL.contains("post operative") ||
              ccL.contains("post surgery") || ccL.contains("post-surgery"):
-            candidates = postOpReview
+            candidates = externalPool("postOpReview") ?? postOpReview
         case ccL.contains("adrenal") || ccL.contains("conn") || ccL.contains("cushing") ||
              ccL.contains("pheochromocytoma") || ccL.contains("phaeochromocytoma") ||
              ccL.contains("incidentaloma") || ccL.contains("hyperaldosterone"):
-            candidates = adrenalEndocrine
+            candidates = externalPool("adrenalEndocrine") ?? adrenalEndocrine
         case ccL.contains("vascular") || ccL.contains("mesenteric") ||
              ccL.contains("ischaemia") || ccL.contains("ischemia") ||
              ccL.contains("aortic") || ccL.contains("claudicat") ||
              ccL.contains("limb ischaemia") || ccL.contains("peripheral arterial"):
-            candidates = vascularSurgical
+            candidates = externalPool("vascularSurgical") ?? vascularSurgical
         case ccL.contains("bowel obstruct") || ccL.contains("small bowel") ||
              ccL.contains("volvulus") || ccL.contains("intussuscep") ||
              (ccL.contains("obstruction") && (ccL.contains("bowel") || ccL.contains("intesti"))):
             candidates = externalPool("smallBowelObstruction") ?? smallBowelObstruction
         case ccL.contains("pilonidal") || ccL.contains("coccyx") || ccL.contains("sacrococcygeal"):
-            candidates = pilonidalDisease
+            candidates = externalPool("pilonidalDisease") ?? pilonidalDisease
         case ccL.contains("renal colic") || ccL.contains("kidney stone") ||
              ccL.contains("ureteric") || ccL.contains("nephrolithiasis") ||
              ccL.contains("loin to groin") || ccL.contains("renal calcul"):
@@ -205,7 +205,7 @@ enum BayesianDiagnosisEngine {
             candidates = externalPool("anaemia") ?? anaemia
         case (ccL.contains("wound") || ccL.contains("surgical site")) &&
              (ccL.contains("infect") || ccL.contains("discharge") || ccL.contains("dehisc")):
-            candidates = woundInfection
+            candidates = externalPool("woundInfection") ?? woundInfection
         case ccL.contains("sepsis") || ccL.contains("septic") || ccL.contains("bacteraemia") ||
              ccL.contains("sirs") || (ccL.contains("fever") && ccL.contains("shock")):
             candidates = externalPool("sepsisConditions") ?? sepsisConditions
@@ -220,30 +220,30 @@ enum BayesianDiagnosisEngine {
         case ccL.contains("limb ischaem") || ccL.contains("acute ischaem") ||
              ccL.contains("cold leg") || ccL.contains("cold foot") || ccL.contains("cold limb") ||
              (ccL.contains("limb") && (ccL.contains("pale") || ccL.contains("pulseless"))):
-            candidates = acuteLimbIschaemia
+            candidates = externalPool("acuteLimbIschaemia") ?? acuteLimbIschaemia
         case ccL.contains("skin") && (ccL.contains("lump") || ccL.contains("lesion") || ccL.contains("mole") || ccL.contains("growth")) ||
              ccL.contains("melanoma") || ccL.contains("bcc") || ccL.contains("scc") ||
              ccL.contains("sebaceous") || ccL.contains("lipoma") ||
              (ccL.contains("lump") && (ccL.contains("back") || ccL.contains("arm") || ccL.contains("scalp") || ccL.contains("face"))):
-            candidates = skinLesion
+            candidates = externalPool("skinLesion") ?? skinLesion
         case ccL.contains("scrotum") || ccL.contains("testicular") || ccL.contains("testicle") ||
              ccL.contains("orchit") || ccL.contains("hydrocele") || ccL.contains("varicocele") ||
              ccL.contains("epididym") || (ccL.contains("scrotal") && ccL.contains("lump")):
-            candidates = scrotalTesticular
+            candidates = externalPool("scrotalTesticular") ?? scrotalTesticular
         case ccL.contains("urinary retention") || ccL.contains("unable to void") ||
              ccL.contains("acute retention") || ccL.contains("retention of urine") ||
              (ccL.contains("prostate") && !ccL.contains("cancer")) ||
              ccL.contains("bph") || ccL.contains("urethral stricture") || ccL.contains("lower urinary"):
-            candidates = urinaryRetention
+            candidates = externalPool("urinaryRetention") ?? urinaryRetention
         case ccL.contains("rectal prolapse") || ccL.contains("prolapse") && ccL.contains("rectum") ||
              (ccL.contains("protrusion") && ccL.contains("anus")):
-            candidates = rectalProlapse
+            candidates = externalPool("rectalProlapse") ?? rectalProlapse
         case ccL.contains("parotid") || ccL.contains("salivary") || ccL.contains("submandibular gland") ||
              ccL.contains("sublingual gland") || (ccL.contains("jaw") && ccL.contains("swelling")):
-            candidates = parotidSalivary
+            candidates = externalPool("parotidSalivary") ?? parotidSalivary
         case ccL.contains("follow-up") || ccL.contains("follow up") ||
              (ccL.contains("follow") && ccL.contains("up")):
-            candidates = postOpReview
+            candidates = externalPool("postOpReview") ?? postOpReview
         case ccL.contains("ercp") || (ccL.contains("biliary") && !ccL.contains("hernia")):
             candidates = jaundice
         case ccL.contains("screen"):
