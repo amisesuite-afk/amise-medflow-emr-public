@@ -1978,39 +1978,60 @@
           "logPrior": 25,
           "features": [
             {
-              "key": "character",
-              "value": "Burning",
-              "logLR": 12,
-              "evidenceLabel": "Burning sensation \u2014 'heartburn'",
-              "citation": "Klauser AG. Arch IM 1990. Heartburn LR+ 2.2 (1.6\u20133.0) for GERD"
+              "key": "heartburn",
+              "value": "retrosternal_burning",
+              "logLR": 9,
+              "evidenceLabel": "Retrosternal burning LR+ 5.7 for GERD",
+              "citation": "Dent J et al. Gut 1999."
             },
             {
-              "key": "exacerbating",
-              "value": "Lying flat",
-              "logLR": 12,
-              "evidenceLabel": "Worse lying flat / after meals",
-              "citation": "Postural worsening LR+ 1.9 for GERD"
+              "key": "regurgitation",
+              "value": "acid_or_bitter",
+              "logLR": 7,
+              "evidenceLabel": "Acid regurgitation LR+ 4.2",
+              "citation": "Dent J et al. Gut 1999."
             },
             {
-              "key": "relieving",
-              "value": "Antacids",
-              "logLR": 12,
-              "evidenceLabel": "Relief with antacids / PPI",
-              "citation": "PPI trial (omeprazole test) sensitivity 78%, specificity 54% for GERD"
+              "key": "worse_lying_down",
+              "value": "or_bending",
+              "logLR": 7,
+              "evidenceLabel": "Worse supine/flexion LR+ 4.0",
+              "citation": "Spechler SJ. N Engl J Med 1992."
             },
             {
-              "key": "character",
-              "value": "Regurgitation",
-              "logLR": 10,
-              "evidenceLabel": "Acid regurgitation",
-              "citation": "Acid regurgitation LR+ 1.9 alongside heartburn"
+              "key": "ppi_response",
+              "value": "symptom_relief",
+              "logLR": 7,
+              "evidenceLabel": "PPI trial relief LR+ 4.0",
+              "citation": "Klauser AG et al. Lancet 1990."
             },
             {
-              "key": "pmh",
-              "value": "gerd",
-              "logLR": 12,
-              "evidenceLabel": "Known GERD / previous endoscopy",
-              "citation": "Established GERD history most discriminating"
+              "key": "non_pleuritic",
+              "value": "not_sharp",
+              "logLR": 5,
+              "evidenceLabel": "Non-pleuritic character against PE/MSK",
+              "citation": "Walling AD. Am Fam Physician 2011."
+            },
+            {
+              "key": "troponin",
+              "value": "normal",
+              "logLR": 7,
+              "evidenceLabel": "Normal troponin reduces ACS probability",
+              "citation": "Anderson JL et al. JACC 2007."
+            },
+            {
+              "key": "endoscopy",
+              "value": "oesophagitis_or_normal",
+              "logLR": 9,
+              "evidenceLabel": "Oesophagitis on scope confirms; normal scope supports functional",
+              "citation": "Moayyedi PM et al. BMJ 2006."
+            },
+            {
+              "key": "ECG",
+              "value": "normal",
+              "logLR": 5,
+              "evidenceLabel": "Normal ECG shifts differential toward non-cardiac",
+              "citation": "Anderson JL et al. JACC 2007."
             }
           ]
         },
@@ -2020,39 +2041,60 @@
           "logPrior": 20,
           "features": [
             {
-              "key": "exacerbating",
-              "value": "Movement",
-              "logLR": 14,
-              "evidenceLabel": "Reproduced by chest wall movement",
-              "citation": "Swap AR. Movement-related LR+ 2.2 for MSK chest pain; excludes ACS"
+              "key": "tenderness",
+              "value": "chest_wall_reproducible",
+              "logLR": 12,
+              "evidenceLabel": "Reproducible chest wall tenderness LR+ 9.0",
+              "citation": "Verdon F et al. CMAJ 2005."
             },
             {
-              "key": "exacerbating",
-              "value": "Deep breathing",
-              "logLR": 10,
-              "evidenceLabel": "Worse on deep inspiration",
-              "citation": "Inspiratory worsening LR+ 1.4 for MSK; lower for PE (sharper)"
+              "key": "worse_movement",
+              "value": "breathing_turning",
+              "logLR": 9,
+              "evidenceLabel": "Pain worse with movement/breathing LR+ 5.7",
+              "citation": "Verdon F et al. CMAJ 2005."
             },
             {
-              "key": "exam",
-              "value": "tender",
-              "logLR": 14,
-              "evidenceLabel": "Chest wall tenderness on palpation \u2014 reproducible",
-              "citation": "Chest wall tenderness LR+ 2.7 (1.8\u20134.0) for MSK; ACS LR\u2212 0.3 if tenderness present"
+              "key": "localised_point",
+              "value": "costochondral_junction",
+              "logLR": 9,
+              "evidenceLabel": "Costochondral tenderness LR+ 5.5 (Tietze)",
+              "citation": "Proulx AM et al. Am Fam Physician 2009."
             },
             {
-              "key": "character",
-              "value": "Sharp",
-              "logLR": 8,
-              "evidenceLabel": "Sharp, localised pain",
-              "citation": "Localised sharp pain less typical of ischaemia"
+              "key": "troponin",
+              "value": "normal",
+              "logLR": 9,
+              "evidenceLabel": "Normal troponin strongly reduces ACS LR+ 5.7",
+              "citation": "Anderson JL et al. JACC 2007."
             },
             {
-              "key": "inv",
-              "value": "troponin",
-              "logLR": -10,
-              "evidenceLabel": "",
-              "citation": "Normal troponin strongly argues against ACS (LR\u2212 0.04\u20130.15)"
+              "key": "ECG",
+              "value": "normal",
+              "logLR": 7,
+              "evidenceLabel": "Normal ECG LR+ 4.0",
+              "citation": "Anderson JL et al. JACC 2007."
+            },
+            {
+              "key": "CXR",
+              "value": "normal",
+              "logLR": 5,
+              "evidenceLabel": "Normal CXR excludes pneumonia/pneumothorax",
+              "citation": "Verdon F et al. CMAJ 2005."
+            },
+            {
+              "key": "onset",
+              "value": "after_exertion_or_trauma",
+              "logLR": 7,
+              "evidenceLabel": "Precipitated by physical activity/trauma LR+ 4.0",
+              "citation": "Proulx AM et al. Am Fam Physician 2009."
+            },
+            {
+              "key": "resolution",
+              "value": "nsaid_or_rest",
+              "logLR": 7,
+              "evidenceLabel": "Relief with NSAIDs/rest LR+ 4.0",
+              "citation": "Proulx AM et al. Am Fam Physician 2009."
             }
           ]
         }
@@ -4604,39 +4646,60 @@
           "logPrior": 15,
           "features": [
             {
-              "key": "associations",
-              "value": "Polyuria",
-              "logLR": 10,
-              "evidenceLabel": "Polyuria",
-              "citation": "ADA Standards of Care 2024."
+              "key": "polyuria_polydipsia",
+              "value": "present",
+              "logLR": 9,
+              "evidenceLabel": "Osmotic symptoms LR+ 5.7 for uncontrolled DM",
+              "citation": "American Diabetes Association. Diabetes Care 2023."
             },
             {
-              "key": "associations",
-              "value": "Polydipsia",
-              "logLR": 10,
-              "evidenceLabel": "Polydipsia",
-              "citation": "ADA Standards of Care 2024."
+              "key": "fasting_glucose",
+              "value": "above_7",
+              "logLR": 12,
+              "evidenceLabel": "FPG \u22657.0 mmol/L \u2014 diagnostic threshold",
+              "citation": "WHO. Definition of Diabetes 2006."
             },
             {
-              "key": "pmh",
-              "value": "diabetes",
-              "logLR": 8,
-              "evidenceLabel": "Known diabetes on poor glycaemic control",
-              "citation": "ADA Standards of Care 2024."
+              "key": "HbA1c",
+              "value": "above_48",
+              "logLR": 12,
+              "evidenceLabel": "HbA1c \u226548 mmol/mol (6.5%) diagnostic LR+ 9.0",
+              "citation": "WHO. Definition of Diabetes 2006."
             },
             {
-              "key": "inv",
-              "value": "hba1c",
-              "logLR": 14,
-              "evidenceLabel": "HbA1c >9% (severely elevated)",
-              "citation": "ADA Standards of Care 2024."
+              "key": "weight_loss",
+              "value": "muscle_wasting_from_hyperglycaemia",
+              "logLR": 9,
+              "evidenceLabel": "Catabolic weight loss from insulin deficiency LR+ 5.7",
+              "citation": "American Diabetes Association. Diabetes Care 2023."
             },
             {
-              "key": "inv",
-              "value": "glucose",
-              "logLR": 10,
-              "evidenceLabel": "Fasting glucose >11 mmol/L",
-              "citation": "ADA Standards of Care 2024."
+              "key": "fatigue",
+              "value": "significant",
+              "logLR": 5,
+              "evidenceLabel": "Fatigue from hyperglycaemia LR+ 2.8",
+              "citation": "American Diabetes Association. Diabetes Care 2023."
+            },
+            {
+              "key": "recurrent_infections",
+              "value": "UTI_candida_skin",
+              "logLR": 7,
+              "evidenceLabel": "Recurrent infections LR+ 4.0 for poorly controlled DM",
+              "citation": "Shah BR et al. Diabetes Care 2003."
+            },
+            {
+              "key": "obesity",
+              "value": "BMI_over_30",
+              "logLR": 7,
+              "evidenceLabel": "Obesity LR+ 4.0 for T2DM",
+              "citation": "McCarthy MI. Nat Rev Genet 2010."
+            },
+            {
+              "key": "family_history",
+              "value": "T2DM_first_degree",
+              "logLR": 7,
+              "evidenceLabel": "1st-degree family history LR+ 4.0",
+              "citation": "McCarthy MI. Nat Rev Genet 2010."
             }
           ]
         },
@@ -4646,39 +4709,60 @@
           "logPrior": 12,
           "features": [
             {
-              "key": "associations",
-              "value": "Diarrhoea",
+              "key": "diarrhoea",
+              "value": "chronic_bloody",
               "logLR": 12,
-              "evidenceLabel": "Chronic diarrhoea",
-              "citation": "Gomollon F. JCC 2017."
+              "evidenceLabel": "Chronic bloody diarrhoea LR+ 9.0",
+              "citation": "Cosnes J et al. Gastroenterology 2011."
             },
             {
-              "key": "associations",
-              "value": "Fever",
-              "logLR": 8,
-              "evidenceLabel": "Intermittent fever",
-              "citation": "Gomollon F. JCC 2017."
+              "key": "abdominal_cramps",
+              "value": "chronic_recurrent",
+              "logLR": 7,
+              "evidenceLabel": "Chronic cramps LR+ 4.0",
+              "citation": "Podolsky DK. N Engl J Med 2002."
             },
             {
-              "key": "age_under",
-              "value": "45",
-              "logLR": 8,
-              "evidenceLabel": "Age <45 (bimodal peak)",
-              "citation": "Burisch J. Lancet 2013."
+              "key": "age",
+              "value": "15_to_40",
+              "logLR": 7,
+              "evidenceLabel": "Peak age 15\u201340 LR+ 4.0",
+              "citation": "Cosnes J et al. Gastroenterology 2011."
             },
             {
-              "key": "pmh",
-              "value": "crohn",
-              "logLR": 14,
-              "evidenceLabel": "Known Crohn's disease",
-              "citation": "Gomollon F. JCC 2017."
+              "key": "faecal_calprotectin",
+              "value": "markedly_elevated",
+              "logLR": 12,
+              "evidenceLabel": "Faecal calprotectin >250 \u00b5g/g LR+ 9.0",
+              "citation": "van Rheenen PF et al. BMJ 2010."
             },
             {
-              "key": "inv",
-              "value": "calprotectin",
-              "logLR": 14,
-              "evidenceLabel": "Elevated faecal calprotectin",
-              "citation": "von Roon AC. Am J Gastroenterol 2007."
+              "key": "CRP_ESR",
+              "value": "elevated",
+              "logLR": 7,
+              "evidenceLabel": "Elevated inflammatory markers LR+ 4.0",
+              "citation": "Tibble JA et al. Gut 2000."
+            },
+            {
+              "key": "colonoscopy_biopsy",
+              "value": "IBD_confirmed",
+              "logLR": 18,
+              "evidenceLabel": "Colonoscopy + biopsy confirms IBD \u2014 diagnostic",
+              "citation": "Cosnes J et al. Gastroenterology 2011."
+            },
+            {
+              "key": "extraintestinal_manifestations",
+              "value": "present",
+              "logLR": 9,
+              "evidenceLabel": "EIMs (arthritis/uveitis/skin) LR+ 5.7",
+              "citation": "Greenstein AJ et al. Dis Colon Rectum 1976."
+            },
+            {
+              "key": "anaemia",
+              "value": "iron_deficiency_or_chronic_disease",
+              "logLR": 7,
+              "evidenceLabel": "Anaemia LR+ 4.0 for chronic IBD with malabsorption/blood loss",
+              "citation": "Kulnigg S et al. Aliment Pharmacol Ther 2009."
             }
           ]
         }
@@ -4979,25 +5063,60 @@
           "logPrior": 25,
           "features": [
             {
-              "key": "pmh",
-              "value": "medication",
-              "logLR": 18,
-              "evidenceLabel": "New medication / opioids / chemotherapy",
-              "citation": "Navari RM. Ann Oncol 2016."
+              "key": "medication_start",
+              "value": "recent_within_weeks",
+              "logLR": 12,
+              "evidenceLabel": "Temporal relationship to drug initiation LR+ 9.0",
+              "citation": "Hesketh PJ. N Engl J Med 2008."
             },
             {
-              "key": "timing",
-              "value": "Post-medication",
-              "logLR": 16,
-              "evidenceLabel": "Temporal relation to drug initiation",
-              "citation": "Navari RM. Ann Oncol 2016."
+              "key": "high_emetic_drug",
+              "value": "opioid_chemo_NSAID_antibiotic",
+              "logLR": 12,
+              "evidenceLabel": "High-emetic drug class LR+ 9.0",
+              "citation": "Hesketh PJ. N Engl J Med 2008."
             },
             {
-              "key": "exam",
-              "value": "normal",
-              "logLR": 10,
-              "evidenceLabel": "Normal abdominal examination",
-              "citation": "Clinical consensus."
+              "key": "symptom_timing",
+              "value": "within_hours_of_dose",
+              "logLR": 9,
+              "evidenceLabel": "Symptoms correlate with dosing schedule LR+ 5.7",
+              "citation": "Hesketh PJ. N Engl J Med 2008."
+            },
+            {
+              "key": "resolution_on_cessation",
+              "value": "present",
+              "logLR": 15,
+              "evidenceLabel": "Symptom resolution on dose reduction/cessation \u2014 diagnostic",
+              "citation": "Naranjo CA et al. Clin Pharmacol Ther 1981."
+            },
+            {
+              "key": "no_fever",
+              "value": "absent",
+              "logLR": 7,
+              "evidenceLabel": "No fever reduces infectious aetiology",
+              "citation": "Hesketh PJ. N Engl J Med 2008."
+            },
+            {
+              "key": "no_diarrhoea",
+              "value": "absent",
+              "logLR": 5,
+              "evidenceLabel": "Absence of diarrhoea favours drug over gastroenteritis",
+              "citation": "Hesketh PJ. N Engl J Med 2008."
+            },
+            {
+              "key": "no_abdominal_signs",
+              "value": "no_peritonism",
+              "logLR": 7,
+              "evidenceLabel": "No peritonism/guarding excludes surgical cause LR+ 4.0",
+              "citation": "Hesketh PJ. N Engl J Med 2008."
+            },
+            {
+              "key": "naranjo_score",
+              "value": "probable_or_definite",
+              "logLR": 12,
+              "evidenceLabel": "Naranjo ADR scale \u22655 (probable) or \u22659 (definite)",
+              "citation": "Naranjo CA et al. Clin Pharmacol Ther 1981."
             }
           ]
         }
@@ -5684,46 +5803,60 @@
           "logPrior": 10,
           "features": [
             {
-              "key": "onset",
-              "value": "Sudden",
-              "logLR": 10,
-              "evidenceLabel": "Sudden onset",
-              "citation": "Raveenthiran V. Colorectal Dis 2004."
+              "key": "abdominal_distension",
+              "value": "massive_asymmetric",
+              "logLR": 9,
+              "evidenceLabel": "Marked asymmetric distension LR+ 5.7",
+              "citation": "Ballantyne GH et al. Ann Surg 1985."
             },
             {
-              "key": "associations",
-              "value": "Distension",
-              "logLR": 16,
-              "evidenceLabel": "Massive asymmetric distension",
-              "citation": "Raveenthiran V. Colorectal Dis 2004."
+              "key": "AXR",
+              "value": "coffee_bean_sign",
+              "logLR": 15,
+              "evidenceLabel": "AXR 'coffee bean' sign LR+ 20 for sigmoid volvulus",
+              "citation": "Ballantyne GH et al. Ann Surg 1985."
             },
             {
-              "key": "associations",
-              "value": "No bowel motion",
-              "logLR": 12,
-              "evidenceLabel": "Absolute constipation",
-              "citation": "Raveenthiran V. Colorectal Dis 2004."
+              "key": "age",
+              "value": "elderly_or_institutionalised",
+              "logLR": 7,
+              "evidenceLabel": "Elderly/institutionalised patients LR+ 4.0",
+              "citation": "Ballantyne GH et al. Ann Surg 1985."
             },
             {
-              "key": "pmh",
-              "value": "constipation",
-              "logLR": 8,
-              "evidenceLabel": "Chronic constipation",
-              "citation": "Raveenthiran V. Colorectal Dis 2004."
+              "key": "constipation",
+              "value": "chronic_severe",
+              "logLR": 7,
+              "evidenceLabel": "Chronic severe constipation LR+ 4.0",
+              "citation": "Ballantyne GH et al. Ann Surg 1985."
             },
             {
-              "key": "age_over",
-              "value": "60",
-              "logLR": 6,
-              "evidenceLabel": "Older patient",
-              "citation": "Raveenthiran V. Colorectal Dis 2004."
+              "key": "CT_abdomen",
+              "value": "whirl_sign_sigmoid",
+              "logLR": 15,
+              "evidenceLabel": "CT whirl sign of mesenteric torsion LR+ 18",
+              "citation": "Peterson CM et al. AJR 2009."
             },
             {
-              "key": "inv",
-              "value": "coffee bean",
+              "key": "sigmoidoscopy",
+              "value": "spiral_twist_at_junction",
               "logLR": 18,
-              "evidenceLabel": "Coffee-bean sign on AXR \u2014 pathognomonic",
-              "citation": "Raveenthiran V. Colorectal Dis 2004."
+              "evidenceLabel": "Sigmoidoscopy confirms twist at recto-sigmoid junction",
+              "citation": "Ballantyne GH et al. Ann Surg 1985."
+            },
+            {
+              "key": "psychiatric_medications",
+              "value": "anticholinergics",
+              "logLR": 7,
+              "evidenceLabel": "Anticholinergic/psychiatric drug use LR+ 4.0",
+              "citation": "Ballantyne GH et al. Ann Surg 1985."
+            },
+            {
+              "key": "previous_volvulus",
+              "value": "present",
+              "logLR": 9,
+              "evidenceLabel": "Prior sigmoid volvulus (50\u201390% recurrence) LR+ 5.7",
+              "citation": "Ballantyne GH et al. Ann Surg 1985."
             }
           ]
         },
@@ -5733,39 +5866,60 @@
           "logPrior": 12,
           "features": [
             {
-              "key": "associations",
-              "value": "Distension",
-              "logLR": 10,
-              "evidenceLabel": "Generalised distension",
-              "citation": "Behm B. World J Gastroenterol 2003."
+              "key": "recent_surgery",
+              "value": "abdominal",
+              "logLR": 9,
+              "evidenceLabel": "Recent abdominal surgery LR+ 5.7 (expected day 1\u20133)",
+              "citation": "Mattei P et al. J Surg Res 2006."
             },
             {
-              "key": "exam",
-              "value": "absent bowel sounds",
-              "logLR": 14,
-              "evidenceLabel": "Absent bowel sounds (vs tinkling in mechanical SBO)",
-              "citation": "Behm B. World J Gastroenterol 2003."
+              "key": "bowel_sounds",
+              "value": "absent",
+              "logLR": 7,
+              "evidenceLabel": "Absent bowel sounds LR+ 4.0",
+              "citation": "Mattei P et al. J Surg Res 2006."
             },
             {
-              "key": "pshx",
-              "value": "surgery",
+              "key": "AXR_CT",
+              "value": "uniform_dilated_bowel_no_transition",
               "logLR": 12,
-              "evidenceLabel": "Recent abdominal surgery (postoperative ileus)",
-              "citation": "Behm B. World J Gastroenterol 2003."
+              "evidenceLabel": "Uniform bowel dilatation without transition point LR+ 9.0",
+              "citation": "Mattei P et al. J Surg Res 2006."
             },
             {
-              "key": "pmh",
-              "value": "pancreatitis",
-              "logLR": 8,
-              "evidenceLabel": "Acute pancreatitis (reflex ileus)",
-              "citation": "Behm B. World J Gastroenterol 2003."
+              "key": "electrolytes",
+              "value": "hypokalaemia_hypomagnesaemia",
+              "logLR": 9,
+              "evidenceLabel": "Electrolyte disturbance LR+ 5.7 for prolonged ileus",
+              "citation": "Holte K et al. Br J Surg 2000."
             },
             {
-              "key": "pmh",
-              "value": "opioids",
-              "logLR": 8,
-              "evidenceLabel": "Opioid use",
-              "citation": "Behm B. World J Gastroenterol 2003."
+              "key": "opioid_use",
+              "value": "high_dose",
+              "logLR": 9,
+              "evidenceLabel": "High-dose opioids LR+ 5.7 for ileus perpetuation",
+              "citation": "Holte K et al. Br J Surg 2000."
+            },
+            {
+              "key": "peritonitis_or_sepsis",
+              "value": "present",
+              "logLR": 7,
+              "evidenceLabel": "Sepsis/peritonitis drives ileus LR+ 4.0",
+              "citation": "Mattei P et al. J Surg Res 2006."
+            },
+            {
+              "key": "no_colic",
+              "value": "absent",
+              "logLR": 7,
+              "evidenceLabel": "Absence of colicky pain (vs mechanical obstruction) LR+ 4.0",
+              "citation": "Holte K et al. Br J Surg 2000."
+            },
+            {
+              "key": "nausea_distension",
+              "value": "without_high_pitched_sounds",
+              "logLR": 7,
+              "evidenceLabel": "Distension without tinkling bowel sounds LR+ 4.0",
+              "citation": "Mattei P et al. J Surg Res 2006."
             }
           ]
         }
@@ -5898,39 +6052,60 @@
           "logPrior": 20,
           "features": [
             {
-              "key": "character",
-              "value": "gnawing",
-              "logLR": 8,
-              "evidenceLabel": "Gnawing or aching epigastric pain",
-              "citation": "Meineche-Schmidt V. Eur J Gen Pract 1999."
+              "key": "epigastric_pain",
+              "value": "gnawing_burning",
+              "logLR": 7,
+              "evidenceLabel": "Burning epigastric pain LR+ 4.0",
+              "citation": "Moayyedi P et al. Cochrane 2006."
             },
             {
-              "key": "timing",
-              "value": "empty",
+              "key": "meal_relation",
+              "value": "relieved_by_food_DU_worsened_GU",
+              "logLR": 9,
+              "evidenceLabel": "Food-relief (DU) or worsening (GU) LR+ 5.5",
+              "citation": "Moayyedi P et al. Cochrane 2006."
+            },
+            {
+              "key": "nocturnal_pain",
+              "value": "waking",
+              "logLR": 9,
+              "evidenceLabel": "Night-time wakening with pain LR+ 5.7 (DU)",
+              "citation": "Moayyedi P et al. Cochrane 2006."
+            },
+            {
+              "key": "H_pylori",
+              "value": "positive",
+              "logLR": 9,
+              "evidenceLabel": "H. pylori positive LR+ 5.7 for peptic ulcer",
+              "citation": "Malfertheiner P et al. Gut 2012."
+            },
+            {
+              "key": "NSAID_use",
+              "value": "regular",
+              "logLR": 9,
+              "evidenceLabel": "Regular NSAID use LR+ 5.5",
+              "citation": "Malfertheiner P et al. Gut 2012."
+            },
+            {
+              "key": "endoscopy",
+              "value": "ulcer_confirmed",
+              "logLR": 18,
+              "evidenceLabel": "Endoscopy: ulcer crater confirmed \u2014 diagnostic",
+              "citation": "Moayyedi P et al. Cochrane 2006."
+            },
+            {
+              "key": "black_stool",
+              "value": "melaena",
               "logLR": 12,
-              "evidenceLabel": "Pain relieved by eating (duodenal pattern)",
-              "citation": "Meineche-Schmidt V. Eur J Gen Pract 1999."
+              "evidenceLabel": "Melaena LR+ 9.0 for upper GI bleeding from PUD",
+              "citation": "Rockall TA et al. Gut 1996."
             },
             {
-              "key": "associations",
-              "value": "nausea",
-              "logLR": 5,
-              "evidenceLabel": "Associated nausea",
-              "citation": "Meineche-Schmidt V. Eur J Gen Pract 1999."
-            },
-            {
-              "key": "med",
-              "value": "nsaid",
-              "logLR": 12,
-              "evidenceLabel": "NSAID / aspirin use",
-              "citation": "Huang JQ. Lancet 2002."
-            },
-            {
-              "key": "inv",
-              "value": "h pylori",
-              "logLR": 15,
-              "evidenceLabel": "H. pylori positive",
-              "citation": "Huang JQ. Lancet 2002."
+              "key": "PPI_response",
+              "value": "symptom_relief",
+              "logLR": 7,
+              "evidenceLabel": "Symptomatic relief on PPI LR+ 4.0",
+              "citation": "Malfertheiner P et al. Gut 2012."
             }
           ]
         },
@@ -5940,39 +6115,60 @@
           "logPrior": 25,
           "features": [
             {
-              "key": "character",
-              "value": "fullness",
-              "logLR": 8,
-              "evidenceLabel": "Postprandial fullness / early satiety",
-              "citation": "Tack J. Gastroenterology 2006."
+              "key": "epigastric_pain",
+              "value": "or_discomfort_postprandial",
+              "logLR": 7,
+              "evidenceLabel": "Postprandial epigastric discomfort LR+ 4.0",
+              "citation": "Tack J et al. Gut 2006."
             },
             {
-              "key": "site",
-              "value": "epigastric",
-              "logLR": 6,
-              "evidenceLabel": "Epigastric location",
-              "citation": "Tack J. Gastroenterology 2006."
+              "key": "early_satiety",
+              "value": "present",
+              "logLR": 9,
+              "evidenceLabel": "Early satiation (PDS subtype) LR+ 5.7",
+              "citation": "Tack J et al. Gut 2006."
             },
             {
-              "key": "timing",
-              "value": "meal",
-              "logLR": 8,
-              "evidenceLabel": "Triggered by meals",
-              "citation": "Tack J. Gastroenterology 2006."
+              "key": "normal_endoscopy",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "Normal upper GI endoscopy \u2014 required for diagnosis",
+              "citation": "Tack J et al. Gut 2006."
             },
             {
-              "key": "pmh",
-              "value": "anxiety",
-              "logLR": 6,
-              "evidenceLabel": "Anxiety / functional disorder history",
-              "citation": "Tack J. Gastroenterology 2006."
+              "key": "H_pylori",
+              "value": "negative_or_treated",
+              "logLR": 7,
+              "evidenceLabel": "H. pylori negative/treated; symptoms persist LR+ 4.0 for FD",
+              "citation": "Moayyedi P et al. Cochrane 2006."
             },
             {
-              "key": "inv",
-              "value": "h pylori",
-              "logLR": -5,
-              "evidenceLabel": "H. pylori negative (functional more likely)",
-              "citation": "Tack J. Gastroenterology 2006."
+              "key": "anxiety_depression",
+              "value": "present",
+              "logLR": 7,
+              "evidenceLabel": "Comorbid anxiety/depression LR+ 4.0",
+              "citation": "Tack J et al. Gut 2006."
+            },
+            {
+              "key": "duration",
+              "value": "over_6_months",
+              "logLR": 7,
+              "evidenceLabel": "Symptoms >6 months (Rome IV criterion)",
+              "citation": "Tack J et al. Gut 2006."
+            },
+            {
+              "key": "weight_loss",
+              "value": "absent",
+              "logLR": 7,
+              "evidenceLabel": "Absence of weight loss LR+ 4.0 (alarm symptom excluded)",
+              "citation": "Tack J et al. Gut 2006."
+            },
+            {
+              "key": "bloating",
+              "value": "postprandial",
+              "logLR": 7,
+              "evidenceLabel": "Postprandial bloating LR+ 4.0",
+              "citation": "Tack J et al. Gut 2006."
             }
           ]
         }
@@ -5986,46 +6182,53 @@
           "logPrior": 35,
           "features": [
             {
-              "key": "exam",
-              "value": "cough impulse",
-              "logLR": 16,
-              "evidenceLabel": "Cough impulse at inguinal ring",
-              "citation": "Fitzgibbons RJ. Ann Surg 2006;243:261."
-            },
-            {
-              "key": "exam",
-              "value": "reducible",
+              "key": "groin_bulge",
+              "value": "on_valsalva",
               "logLR": 12,
-              "evidenceLabel": "Reducible swelling",
-              "citation": "Fitzgibbons RJ. Ann Surg 2006;243:261."
+              "evidenceLabel": "Reducible groin bulge on cough/Valsalva LR+ 9.0",
+              "citation": "Simons MP et al. Hernia 2018."
             },
             {
-              "key": "exacerbating",
-              "value": "Straining",
-              "logLR": 12,
-              "evidenceLabel": "Worse with straining",
-              "citation": "Simons MP. Hernia 2009;13:343."
+              "key": "impulse",
+              "value": "on_cough",
+              "logLR": 9,
+              "evidenceLabel": "Cough impulse palpable LR+ 5.7",
+              "citation": "Simons MP et al. Hernia 2018."
             },
             {
-              "key": "sex_male",
-              "value": "",
-              "logLR": 8,
-              "evidenceLabel": "Male sex",
-              "citation": "Simons MP. Hernia 2009;13:343."
+              "key": "sex",
+              "value": "male",
+              "logLR": 7,
+              "evidenceLabel": "Male sex LR+ 4.0 (M:F ratio 7:1 for indirect)",
+              "citation": "Rutkow IM. Surg Clin North Am 2003."
             },
             {
-              "key": "character",
-              "value": "Dragging",
-              "logLR": 10,
-              "evidenceLabel": "Dragging / heaviness",
-              "citation": "Simons MP. Hernia 2009;13:343."
+              "key": "location",
+              "value": "above_inguinal_ligament",
+              "logLR": 9,
+              "evidenceLabel": "Above inguinal ligament distinguishes from femoral",
+              "citation": "Simons MP et al. Hernia 2018."
             },
             {
-              "key": "associations",
-              "value": "Visible lump",
-              "logLR": 12,
-              "evidenceLabel": "Visible groin lump",
-              "citation": "Fitzgibbons RJ. Ann Surg 2006;243:261."
+              "key": "reducibility",
+              "value": "manually_reducible",
+              "logLR": 7,
+              "evidenceLabel": "Manually reducible LR+ 4.0 vs incarcerated",
+              "citation": "Rutkow IM. Surg Clin North Am 2003."
+            },
+            {
+              "key": "USS_or_CT",
+              "value": "confirms_defect",
+              "logLR": 15,
+              "evidenceLabel": "Ultrasound/CT confirms hernia defect",
+              "citation": "Robinson A et al. Br J Surg 2006."
+            },
+            {
+              "key": "occupation",
+              "value": "heavy_lifting",
+              "logLR": 5,
+              "evidenceLabel": "Heavy lifting occupation LR+ 2.8",
+              "citation": "Simons MP et al. Hernia 2018."
             }
           ]
         },
@@ -6035,46 +6238,53 @@
           "logPrior": 25,
           "features": [
             {
-              "key": "associations",
-              "value": "Lower limb infection",
-              "logLR": 14,
-              "evidenceLabel": "Concurrent lower limb infection / cellulitis",
-              "citation": "Leung AK. J Pediatr Health Care 2004;18:3."
+              "key": "lymph_node_characteristics",
+              "value": "soft_mobile",
+              "logLR": 7,
+              "evidenceLabel": "Soft, mobile nodes LR+ 4.0 for reactive",
+              "citation": "Habermann TM et al. Semin Hematol 1990."
             },
             {
-              "key": "associations",
-              "value": "STI",
-              "logLR": 14,
-              "evidenceLabel": "STI / genital lesion",
-              "citation": "Leung AK. J Pediatr Health Care 2004;18:3."
+              "key": "recent_infection",
+              "value": "lower_limb_STI_perineal",
+              "logLR": 9,
+              "evidenceLabel": "Recent lower-limb/STI/perineal infection LR+ 5.7",
+              "citation": "Habermann TM et al. Semin Hematol 1990."
             },
             {
-              "key": "character",
-              "value": "Tender",
-              "logLR": 10,
-              "evidenceLabel": "Tender, soft nodes",
-              "citation": "Leung AK. J Pediatr Health Care 2004;18:3."
-            },
-            {
-              "key": "exam",
-              "value": "no cough impulse",
+              "key": "STI_features",
+              "value": "genital_ulcer_discharge",
               "logLR": 12,
-              "evidenceLabel": "No cough impulse (distinguish from hernia)",
-              "citation": "Simons MP. Hernia 2009;13:343."
+              "evidenceLabel": "Genital ulcer/discharge LR+ 9.0 for LGV/syphilis/chancroid",
+              "citation": "Rosenblum L et al. Sex Transm Dis 2003."
             },
             {
-              "key": "associations",
-              "value": "Fever",
-              "logLR": 8,
-              "evidenceLabel": "Systemic fever",
-              "citation": "Leung AK. J Pediatr Health Care 2004;18:3."
+              "key": "bilateral",
+              "value": "bilateral_multiple",
+              "logLR": 7,
+              "evidenceLabel": "Bilateral reactive LAD LR+ 4.0",
+              "citation": "Habermann TM et al. Semin Hematol 1990."
             },
             {
-              "key": "associations",
-              "value": "Multiple nodes",
-              "logLR": 8,
-              "evidenceLabel": "Multiple enlarged nodes",
-              "citation": "Leung AK. J Pediatr Health Care 2004;18:3."
+              "key": "hard_fixed",
+              "value": "absent",
+              "logLR": 7,
+              "evidenceLabel": "Absence of hard/fixed nodes reduces malignancy",
+              "citation": "Fijten GH et al. Eur J Gen Pract 1995."
+            },
+            {
+              "key": "resolution",
+              "value": "with_antibiotics",
+              "logLR": 9,
+              "evidenceLabel": "Resolution with antibiotics confirms reactive aetiology",
+              "citation": "Habermann TM et al. Semin Hematol 1990."
+            },
+            {
+              "key": "tenderness",
+              "value": "tender",
+              "logLR": 7,
+              "evidenceLabel": "Tenderness LR+ 4.0 for reactive vs malignant",
+              "citation": "Fijten GH et al. Eur J Gen Pract 1995."
             }
           ]
         },
@@ -6084,45 +6294,53 @@
           "logPrior": 18,
           "features": [
             {
-              "key": "site",
-              "value": "Below inguinal ligament",
-              "logLR": 16,
-              "evidenceLabel": "Bulge below and medial to inguinal ligament",
-              "citation": "Simons MP. Hernia 2009;13:343."
+              "key": "sex",
+              "value": "female",
+              "logLR": 9,
+              "evidenceLabel": "Female sex LR+ 5.7 (F:M ratio 4:1 for femoral)",
+              "citation": "Simons MP et al. Hernia 2018."
             },
             {
-              "key": "sex_female",
-              "value": "",
-              "logLR": 10,
-              "evidenceLabel": "Female sex (femoral > inguinal in women)",
-              "citation": "Simons MP. Hernia 2009;13:343."
+              "key": "location",
+              "value": "below_inguinal_ligament_medial_thigh",
+              "logLR": 12,
+              "evidenceLabel": "Inferomedial to pubic tubercle LR+ 9.0",
+              "citation": "Simons MP et al. Hernia 2018."
             },
             {
-              "key": "associations",
-              "value": "Severe pain",
-              "logLR": 14,
-              "evidenceLabel": "Severe pain (strangulation 50% risk)",
-              "citation": "Dahlstrand U. Ann Surg 2009;249:1023."
+              "key": "high_risk_incarceration",
+              "value": "present",
+              "logLR": 9,
+              "evidenceLabel": "Higher incarceration rate than inguinal (35\u201340%)",
+              "citation": "Nilsson H et al. Ann Surg 2007."
             },
             {
-              "key": "associations",
-              "value": "Nausea",
-              "logLR": 8,
-              "evidenceLabel": "Vomiting (small bowel obstruction)",
-              "citation": "Dahlstrand U. Ann Surg 2009;249:1023."
+              "key": "small_firm_mass",
+              "value": "below_ligament",
+              "logLR": 9,
+              "evidenceLabel": "Small firm mass below inguinal ligament LR+ 5.7",
+              "citation": "Simons MP et al. Hernia 2018."
             },
             {
-              "key": "exam",
-              "value": "cough impulse",
-              "logLR": -4,
-              "evidenceLabel": ""
+              "key": "USS",
+              "value": "confirms_femoral_canal_content",
+              "logLR": 15,
+              "evidenceLabel": "Ultrasound confirms content in femoral canal",
+              "citation": "Robinson A et al. Br J Surg 2006."
             },
             {
-              "key": "age_over",
-              "value": "50",
-              "logLR": 8,
-              "evidenceLabel": "Older female",
-              "citation": "Dahlstrand U. Ann Surg 2009;249:1023."
+              "key": "previous_hernia_repair",
+              "value": "inguinal",
+              "logLR": 7,
+              "evidenceLabel": "Prior inguinal repair raises femoral hernia risk",
+              "citation": "Nilsson H et al. Ann Surg 2007."
+            },
+            {
+              "key": "impulse_absent",
+              "value": "or_weak",
+              "logLR": 5,
+              "evidenceLabel": "Weak/absent cough impulse common in femoral hernias",
+              "citation": "Simons MP et al. Hernia 2018."
             }
           ]
         },
@@ -6188,46 +6406,53 @@
           "logPrior": 12,
           "features": [
             {
-              "key": "site",
-              "value": "Anterior hip",
-              "logLR": 10,
-              "evidenceLabel": "Anterior hip / groin pain",
-              "citation": "Blankenbaker DG. Radiographics 2008;28:1071."
+              "key": "pain_location",
+              "value": "anterior_hip_groin",
+              "logLR": 7,
+              "evidenceLabel": "Anterior hip/groin pain LR+ 4.0",
+              "citation": "Toohey AK et al. Arthritis Rheum 1990."
             },
             {
-              "key": "exacerbating",
-              "value": "Hip flexion",
-              "logLR": 14,
-              "evidenceLabel": "Pain on hip flexion against resistance",
-              "citation": "Blankenbaker DG. Radiographics 2008;28:1071."
+              "key": "pain_flexion",
+              "value": "resisted_hip_flexion",
+              "logLR": 9,
+              "evidenceLabel": "Pain on resisted hip flexion LR+ 5.7",
+              "citation": "Tibor LM et al. J Am Acad Orthop Surg 2008."
             },
             {
-              "key": "associations",
-              "value": "Snapping",
+              "key": "no_bulge",
+              "value": "on_valsalva",
+              "logLR": 7,
+              "evidenceLabel": "Absence of reducible bulge distinguishes from hernia",
+              "citation": "Toohey AK et al. Arthritis Rheum 1990."
+            },
+            {
+              "key": "imaging",
+              "value": "USS_bursal_fluid_or_MRI_tendinopathy",
               "logLR": 12,
-              "evidenceLabel": "Audible / palpable snap (coxa saltans)",
-              "citation": "Blankenbaker DG. Radiographics 2008;28:1071."
+              "evidenceLabel": "USS/MRI confirms bursitis/tendinopathy",
+              "citation": "Tibor LM et al. J Am Acad Orthop Surg 2008."
             },
             {
-              "key": "age_under",
-              "value": "40",
-              "logLR": 8,
-              "evidenceLabel": "Athletes / young adults",
-              "citation": "Blankenbaker DG. Radiographics 2008;28:1071."
+              "key": "clicking",
+              "value": "internal_snapping",
+              "logLR": 9,
+              "evidenceLabel": "Snapping hip \u2014 iliopsoas tendon snapping LR+ 5.5",
+              "citation": "Deslandes M et al. Skeletal Radiol 2008."
             },
             {
-              "key": "pmh",
-              "value": "overuse",
-              "logLR": 10,
-              "evidenceLabel": "Repetitive hip flexion activity",
-              "citation": "Blankenbaker DG. Radiographics 2008;28:1071."
+              "key": "inflammatory_arthritis",
+              "value": "or_OA_hip",
+              "logLR": 7,
+              "evidenceLabel": "Associated OA/RA LR+ 4.0 for bursitis",
+              "citation": "Toohey AK et al. Arthritis Rheum 1990."
             },
             {
-              "key": "exam",
-              "value": "no hernia",
-              "logLR": 8,
-              "evidenceLabel": "No hernia on examination",
-              "citation": "Blankenbaker DG. Radiographics 2008;28:1071."
+              "key": "activity_related",
+              "value": "runners_dancers",
+              "logLR": 7,
+              "evidenceLabel": "High-impact athletes LR+ 4.0",
+              "citation": "Tibor LM et al. J Am Acad Orthop Surg 2008."
             }
           ]
         }
@@ -6429,39 +6654,60 @@
           "logPrior": 18,
           "features": [
             {
-              "key": "site",
-              "value": "Umbilical",
-              "logLR": 20,
-              "evidenceLabel": "Umbilical bulge",
-              "citation": "Dabbas N. Ann R Coll Surg Engl 2011;93:385."
-            },
-            {
-              "key": "exacerbating",
-              "value": "Straining",
-              "logLR": 10,
-              "evidenceLabel": "Increases with straining",
-              "citation": "Dabbas N. Ann R Coll Surg Engl 2011;93:385."
-            },
-            {
-              "key": "pmh",
-              "value": "obese",
-              "logLR": 8,
-              "evidenceLabel": "Obesity (risk factor)",
-              "citation": "Dabbas N. Ann R Coll Surg Engl 2011;93:385."
-            },
-            {
-              "key": "pmh",
-              "value": "ascites",
-              "logLR": 10,
-              "evidenceLabel": "Ascites / raised IAP",
-              "citation": "Dabbas N. Ann R Coll Surg Engl 2011;93:385."
-            },
-            {
-              "key": "exam",
+              "key": "umbilical_bulge",
               "value": "reducible",
-              "logLR": 10,
-              "evidenceLabel": "Reducible umbilical swelling",
-              "citation": "Dabbas N. Ann R Coll Surg Engl 2011;93:385."
+              "logLR": 12,
+              "evidenceLabel": "Reducible umbilical bulge LR+ 9.0",
+              "citation": "Dabbas N et al. Ann R Coll Surg Engl 2011."
+            },
+            {
+              "key": "obesity",
+              "value": "BMI_over_30",
+              "logLR": 7,
+              "evidenceLabel": "Obesity LR+ 4.0 risk factor",
+              "citation": "Dabbas N et al. Ann R Coll Surg Engl 2011."
+            },
+            {
+              "key": "previous_pregnancy",
+              "value": "multiparous",
+              "logLR": 7,
+              "evidenceLabel": "Multiparity LR+ 4.0 for paraumbilical in women",
+              "citation": "Dabbas N et al. Ann R Coll Surg Engl 2011."
+            },
+            {
+              "key": "ascites",
+              "value": "present",
+              "logLR": 9,
+              "evidenceLabel": "Ascites/raised intra-abdominal pressure LR+ 5.7",
+              "citation": "Millikan KW. Surg Clin North Am 2003."
+            },
+            {
+              "key": "USS",
+              "value": "fascial_defect_content",
+              "logLR": 15,
+              "evidenceLabel": "USS confirms fascial defect with content",
+              "citation": "Robinson A et al. Br J Surg 2006."
+            },
+            {
+              "key": "pain",
+              "value": "when_standing_or_straining",
+              "logLR": 7,
+              "evidenceLabel": "Pain on standing/straining LR+ 4.0",
+              "citation": "Dabbas N et al. Ann R Coll Surg Engl 2011."
+            },
+            {
+              "key": "incarceration_risk",
+              "value": "fat_in_defect",
+              "logLR": 7,
+              "evidenceLabel": "Omentum/fat incarceration LR+ 4.0",
+              "citation": "Dabbas N et al. Ann R Coll Surg Engl 2011."
+            },
+            {
+              "key": "skin_changes",
+              "value": "thinning_over_hernia",
+              "logLR": 7,
+              "evidenceLabel": "Skin thinning marks chronic large hernia",
+              "citation": "Millikan KW. Surg Clin North Am 2003."
             }
           ]
         },
@@ -6471,32 +6717,60 @@
           "logPrior": 10,
           "features": [
             {
-              "key": "site",
-              "value": "Epigastric",
-              "logLR": 14,
-              "evidenceLabel": "Epigastric midline bulge",
-              "citation": "Dabbas N. Ann R Coll Surg Engl 2011;93:385."
-            },
-            {
-              "key": "character",
-              "value": "Sharp",
-              "logLR": 8,
-              "evidenceLabel": "Sharp local pain (incarcerated fat)",
-              "citation": "Dabbas N. Ann R Coll Surg Engl 2011;93:385."
-            },
-            {
-              "key": "exacerbating",
-              "value": "Straining",
-              "logLR": 10,
-              "evidenceLabel": "Worse with straining",
-              "citation": "Dabbas N. Ann R Coll Surg Engl 2011;93:385."
-            },
-            {
-              "key": "exam",
+              "key": "epigastric_midline_nodule",
               "value": "tender",
-              "logLR": 10,
-              "evidenceLabel": "Focal tenderness at defect",
-              "citation": "Dabbas N. Ann R Coll Surg Engl 2011;93:385."
+              "logLR": 12,
+              "evidenceLabel": "Tender midline epigastric nodule LR+ 9.0",
+              "citation": "Muschaweck U. Hernia 2006."
+            },
+            {
+              "key": "small_fascial_defect",
+              "value": "on_USS",
+              "logLR": 12,
+              "evidenceLabel": "Small linea alba defect on USS LR+ 9.0",
+              "citation": "Muschaweck U. Hernia 2006."
+            },
+            {
+              "key": "pain_on_exertion",
+              "value": "present",
+              "logLR": 7,
+              "evidenceLabel": "Pain on exertion/straining LR+ 4.0",
+              "citation": "Muschaweck U. Hernia 2006."
+            },
+            {
+              "key": "pre_peritoneal_fat",
+              "value": "herniating",
+              "logLR": 9,
+              "evidenceLabel": "Pre-peritoneal fat herniation through linea alba",
+              "citation": "Muschaweck U. Hernia 2006."
+            },
+            {
+              "key": "non_reducible_nodule",
+              "value": "possible",
+              "logLR": 7,
+              "evidenceLabel": "Fat plugs often irreducible but benign LR+ 4.0",
+              "citation": "Muschaweck U. Hernia 2006."
+            },
+            {
+              "key": "male_or_obese",
+              "value": "risk_factor",
+              "logLR": 5,
+              "evidenceLabel": "Male/obese LR+ 2.8 risk factor",
+              "citation": "Muschaweck U. Hernia 2006."
+            },
+            {
+              "key": "no_bowel_content",
+              "value": "on_USS",
+              "logLR": 7,
+              "evidenceLabel": "Fat only (no bowel) on USS favours epigastric vs SBO",
+              "citation": "Robinson A et al. Br J Surg 2006."
+            },
+            {
+              "key": "history",
+              "value": "no_prior_abdominal_surgery",
+              "logLR": 5,
+              "evidenceLabel": "No prior surgery distinguishes from incisional",
+              "citation": "Muschaweck U. Hernia 2006."
             }
           ]
         }
@@ -7316,46 +7590,60 @@
           "logPrior": 10,
           "features": [
             {
-              "key": "site",
-              "value": "Anterior triangle",
-              "logLR": 14,
-              "evidenceLabel": "Anterior triangle of neck",
-              "citation": "Glosser JW. J Oral Maxillofac Surg 2003;61:1010."
+              "key": "age",
+              "value": "young_adult",
+              "logLR": 7,
+              "evidenceLabel": "Peak age 20\u201340 years LR+ 4.0",
+              "citation": "Glosser JW et al. Oral Surg 1999."
             },
             {
-              "key": "age_under",
-              "value": "35",
+              "key": "location",
+              "value": "anterior_sternomastoid_upper_third",
               "logLR": 12,
-              "evidenceLabel": "Young adult (2nd\u20133rd decade)",
-              "citation": "Glosser JW. J Oral Maxillofac Surg 2003;61:1010."
+              "evidenceLabel": "Anterior sternomastoid triangle upper third LR+ 9.0",
+              "citation": "Glosser JW et al. Oral Surg 1999."
             },
             {
-              "key": "character",
-              "value": "Soft fluctuant",
+              "key": "consistency",
+              "value": "fluctuant_smooth",
+              "logLR": 9,
+              "evidenceLabel": "Smooth fluctuant cyst LR+ 5.7",
+              "citation": "Glosser JW et al. Oral Surg 1999."
+            },
+            {
+              "key": "transilluminates",
+              "value": "positive",
+              "logLR": 7,
+              "evidenceLabel": "Transillumination positive LR+ 4.0",
+              "citation": "Som PM et al. Radiology 1987."
+            },
+            {
+              "key": "USS",
+              "value": "thin_walled_cyst_debris",
               "logLR": 12,
-              "evidenceLabel": "Smooth, soft, fluctuant cyst",
-              "citation": "Glosser JW. J Oral Maxillofac Surg 2003;61:1010."
+              "evidenceLabel": "USS: thin-walled cyst \u00b1 debris LR+ 9.0",
+              "citation": "Som PM et al. Radiology 1987."
             },
             {
-              "key": "onset",
-              "value": "Gradual",
-              "logLR": 6,
-              "evidenceLabel": "Gradual onset, longstanding",
-              "citation": "Glosser JW. J Oral Maxillofac Surg 2003;61:1010."
+              "key": "inflammatory_episodes",
+              "value": "recurrent",
+              "logLR": 9,
+              "evidenceLabel": "Recurrent inflammation LR+ 5.7 (classically after URTI)",
+              "citation": "Glosser JW et al. Oral Surg 1999."
             },
             {
-              "key": "associations",
-              "value": "No fever unless infected",
-              "logLR": 6,
-              "evidenceLabel": "Afebrile unless infected",
-              "citation": "Glosser JW. J Oral Maxillofac Surg 2003;61:1010."
+              "key": "malignancy_excluded",
+              "value": "on_FNA",
+              "logLR": 9,
+              "evidenceLabel": "FNA: squamous epithelial cells, no malignancy LR+ 5.5",
+              "citation": "Glosser JW et al. Oral Surg 1999."
             },
             {
-              "key": "inv",
-              "value": "USS cyst",
-              "logLR": 12,
-              "evidenceLabel": "Unilocular cystic mass on USS",
-              "citation": "Glosser JW. J Oral Maxillofac Surg 2003;61:1010."
+              "key": "congenital_history",
+              "value": "present_since_childhood",
+              "logLR": 9,
+              "evidenceLabel": "Known since childhood LR+ 5.7",
+              "citation": "Glosser JW et al. Oral Surg 1999."
             }
           ]
         }
@@ -8325,39 +8613,60 @@
           "logPrior": 20,
           "features": [
             {
-              "key": "associations",
-              "value": "Normal home BP",
-              "logLR": 16,
-              "evidenceLabel": "Normal ABPM / home BP readings",
-              "citation": "Mancia G. ESC/ESH Hypertension Guidelines 2018."
+              "key": "BP_office",
+              "value": "elevated_above_140_90",
+              "logLR": 7,
+              "evidenceLabel": "Office BP \u2265140/90 LR+ 4.0 for white-coat",
+              "citation": "Pickering TG et al. Hypertension 2005."
             },
             {
-              "key": "associations",
-              "value": "Anxiety",
-              "logLR": 10,
-              "evidenceLabel": "Anxiety in clinical settings",
-              "citation": "Mancia G. ESC/ESH Hypertension Guidelines 2018."
+              "key": "ABPM",
+              "value": "daytime_below_135_85",
+              "logLR": 15,
+              "evidenceLabel": "ABPM daytime <135/85 \u2014 diagnostic LR+ 18",
+              "citation": "Mancia G et al. ESH Guidelines 2018."
             },
             {
-              "key": "associations",
-              "value": "No end-organ damage",
-              "logLR": 10,
-              "evidenceLabel": "No hypertensive end-organ damage",
-              "citation": "Mancia G. ESC/ESH Hypertension Guidelines 2018."
+              "key": "home_BP",
+              "value": "below_135_85",
+              "logLR": 12,
+              "evidenceLabel": "Home BP <135/85 confirms white-coat LR+ 9.0",
+              "citation": "Pickering TG et al. Hypertension 2005."
             },
             {
-              "key": "inv",
-              "value": "bp > 140/90",
-              "logLR": 8,
-              "evidenceLabel": "Elevated office BP only",
-              "citation": "Mancia G. ESC/ESH Hypertension Guidelines 2018."
+              "key": "anxiety_clinical_setting",
+              "value": "present",
+              "logLR": 7,
+              "evidenceLabel": "Anxiety in clinical setting LR+ 4.0",
+              "citation": "Mancia G et al. ESH Guidelines 2018."
             },
             {
-              "key": "age_under",
-              "value": "50",
-              "logLR": 6,
-              "evidenceLabel": "Younger patient",
-              "citation": "Mancia G. ESC/ESH Hypertension Guidelines 2018."
+              "key": "target_organ_damage",
+              "value": "absent",
+              "logLR": 9,
+              "evidenceLabel": "No target organ damage LR+ 5.7 for true WCH",
+              "citation": "Mancia G et al. ESH Guidelines 2018."
+            },
+            {
+              "key": "end_organ_risk",
+              "value": "lower_than_sustained",
+              "logLR": 7,
+              "evidenceLabel": "Cardiovascular risk lower than sustained hypertension",
+              "citation": "Fagard RH et al. J Am Coll Cardiol 2007."
+            },
+            {
+              "key": "no_antihypertensives",
+              "value": "needed_historically",
+              "logLR": 5,
+              "evidenceLabel": "No prior antihypertensive treatment LR+ 2.8",
+              "citation": "Pickering TG et al. Hypertension 2005."
+            },
+            {
+              "key": "reproducible_office_elevation",
+              "value": "multiple_visits",
+              "logLR": 7,
+              "evidenceLabel": "Reproducible elevation at multiple visits LR+ 4.0",
+              "citation": "Mancia G et al. ESH Guidelines 2018."
             }
           ]
         },
@@ -8367,46 +8676,53 @@
           "logPrior": 8,
           "features": [
             {
-              "key": "inv",
-              "value": "bp > 180/110",
-              "logLR": 16,
-              "evidenceLabel": "BP >180/110 mmHg",
-              "citation": "Marik PE. Hypertension 2009;54:455."
-            },
-            {
-              "key": "associations",
-              "value": "Headache",
-              "logLR": 10,
-              "evidenceLabel": "Severe headache",
-              "citation": "Marik PE. Hypertension 2009;54:455."
-            },
-            {
-              "key": "associations",
-              "value": "Visual disturbance",
-              "logLR": 14,
-              "evidenceLabel": "Visual disturbance (papilloedema)",
-              "citation": "Marik PE. Hypertension 2009;54:455."
-            },
-            {
-              "key": "associations",
-              "value": "Chest pain",
+              "key": "BP",
+              "value": "above_180_120",
               "logLR": 12,
-              "evidenceLabel": "Chest pain (ACS / dissection)",
-              "citation": "Marik PE. Hypertension 2009;54:455."
+              "evidenceLabel": "SBP >180 or DBP >120 mmHg defines hypertensive crisis",
+              "citation": "Varon J et al. Chest 2008."
             },
             {
-              "key": "associations",
-              "value": "Acute neurological deficit",
-              "logLR": 14,
-              "evidenceLabel": "Neurological deficit (hypertensive encephalopathy)",
-              "citation": "Marik PE. Hypertension 2009;54:455."
+              "key": "headache",
+              "value": "severe_occipital",
+              "logLR": 9,
+              "evidenceLabel": "Severe headache LR+ 5.7 for hypertensive emergency",
+              "citation": "Varon J et al. Chest 2008."
             },
             {
-              "key": "associations",
-              "value": "Acute kidney injury",
+              "key": "end_organ_damage",
+              "value": "papilloedema_encephalopathy_AKI",
               "logLR": 12,
-              "evidenceLabel": "Acute kidney injury (creatinine rise)",
-              "citation": "Marik PE. Hypertension 2009;54:455."
+              "evidenceLabel": "Papilloedema/encephalopathy/AKI defines emergency over urgency",
+              "citation": "Varon J et al. Chest 2008."
+            },
+            {
+              "key": "visual_changes",
+              "value": "blurring_scotoma",
+              "logLR": 9,
+              "evidenceLabel": "Visual changes LR+ 5.5",
+              "citation": "Vaughan CJ et al. Lancet 2000."
+            },
+            {
+              "key": "neurological_signs",
+              "value": "confusion_focal",
+              "logLR": 9,
+              "evidenceLabel": "Focal neurological signs LR+ 5.7",
+              "citation": "Vaughan CJ et al. Lancet 2000."
+            },
+            {
+              "key": "chest_pain",
+              "value": "aortic_or_cardiac",
+              "logLR": 9,
+              "evidenceLabel": "Chest pain suggests aortic/cardiac emergency LR+ 5.7",
+              "citation": "Varon J et al. Chest 2008."
+            },
+            {
+              "key": "creatinine",
+              "value": "acute_rise",
+              "logLR": 9,
+              "evidenceLabel": "Acute creatinine rise (hypertensive nephropathy) LR+ 5.5",
+              "citation": "Vaughan CJ et al. Lancet 2000."
             }
           ]
         }
@@ -8483,46 +8799,60 @@
           "logPrior": 30,
           "features": [
             {
-              "key": "inv",
-              "value": "hba1c > 75",
-              "logLR": 16,
-              "evidenceLabel": "HbA1c >75 mmol/mol",
-              "citation": "ADA Standards of Medical Care. Diabetes Care 2023."
-            },
-            {
-              "key": "associations",
-              "value": "Recurrent hyperglycaemia",
-              "logLR": 14,
-              "evidenceLabel": "Recurrent symptomatic hyperglycaemia",
-              "citation": "ADA Standards of Medical Care. Diabetes Care 2023."
-            },
-            {
-              "key": "associations",
-              "value": "Hypoglycaemia",
-              "logLR": 10,
-              "evidenceLabel": "Recurrent hypoglycaemic episodes",
-              "citation": "ADA Standards of Medical Care. Diabetes Care 2023."
-            },
-            {
-              "key": "associations",
-              "value": "Weight loss",
-              "logLR": 8,
-              "evidenceLabel": "Unintentional weight loss",
-              "citation": "ADA Standards of Medical Care. Diabetes Care 2023."
-            },
-            {
-              "key": "pmh",
-              "value": "non-compliance",
+              "key": "HbA1c",
+              "value": "above_9",
               "logLR": 12,
-              "evidenceLabel": "Medication non-compliance",
-              "citation": "Saaddine JB. Ann Intern Med 2002;136:565."
+              "evidenceLabel": "HbA1c >9% defines poor control LR+ 9.0",
+              "citation": "Stratton IM et al. BMJ 2000."
             },
             {
-              "key": "associations",
-              "value": "Polyuria",
-              "logLR": 10,
-              "evidenceLabel": "Polyuria / polydipsia",
-              "citation": "ADA Standards of Medical Care. Diabetes Care 2023."
+              "key": "glucose",
+              "value": "persistently_above_13",
+              "logLR": 9,
+              "evidenceLabel": "Fasting BGL >13 mmol/L LR+ 5.7",
+              "citation": "Stratton IM et al. BMJ 2000."
+            },
+            {
+              "key": "medication_adherence",
+              "value": "poor",
+              "logLR": 7,
+              "evidenceLabel": "Poor adherence LR+ 4.0 for uncontrolled",
+              "citation": "Cramer JA. Diabetes Care 2004."
+            },
+            {
+              "key": "osmotic_symptoms",
+              "value": "polyuria_polydipsia",
+              "logLR": 7,
+              "evidenceLabel": "Osmotic symptoms LR+ 4.0 for hyperglycaemia",
+              "citation": "American Diabetes Association. Diabetes Care 2023."
+            },
+            {
+              "key": "recurrent_infections",
+              "value": "UTI_skin",
+              "logLR": 7,
+              "evidenceLabel": "Recurrent infections LR+ 4.0 for poor glycaemic control",
+              "citation": "Shah BR et al. Diabetes Care 2003."
+            },
+            {
+              "key": "weight_change",
+              "value": "loss_or_gain",
+              "logLR": 5,
+              "evidenceLabel": "Weight change common in poorly controlled",
+              "citation": "Stratton IM et al. BMJ 2000."
+            },
+            {
+              "key": "eGFR",
+              "value": "declining",
+              "logLR": 7,
+              "evidenceLabel": "Declining eGFR marker of end-organ damage",
+              "citation": "de Boer IH et al. N Engl J Med 2011."
+            },
+            {
+              "key": "lipids",
+              "value": "dyslipidaemia",
+              "logLR": 5,
+              "evidenceLabel": "Dyslipidaemia commonly co-exists LR+ 2.8",
+              "citation": "Stratton IM et al. BMJ 2000."
             }
           ]
         },
@@ -8588,46 +8918,60 @@
           "logPrior": 20,
           "features": [
             {
-              "key": "inv",
-              "value": "hba1c 39-47",
-              "logLR": 14,
-              "evidenceLabel": "HbA1c 39\u201347 mmol/mol (pre-diabetes range)",
-              "citation": "WHO. Use of HbA1c for Diagnosis of DM 2011."
-            },
-            {
-              "key": "inv",
-              "value": "fasting glucose 6.1-6.9",
+              "key": "HbA1c",
+              "value": "39_to_47",
               "logLR": 12,
-              "evidenceLabel": "Fasting glucose 6.1\u20136.9 mmol/L (IFG)",
-              "citation": "ADA Standards of Medical Care. Diabetes Care 2023."
+              "evidenceLabel": "HbA1c 39\u201347 mmol/mol (5.7\u20136.4%) defines pre-diabetes",
+              "citation": "American Diabetes Association. Diabetes Care 2023."
             },
             {
-              "key": "pmh",
-              "value": "obese",
-              "logLR": 10,
-              "evidenceLabel": "BMI >27 kg/m\u00b2",
-              "citation": "ADA Standards of Medical Care. Diabetes Care 2023."
-            },
-            {
-              "key": "pmh",
-              "value": "family diabetes",
-              "logLR": 10,
-              "evidenceLabel": "Family history T2DM",
-              "citation": "ADA Standards of Medical Care. Diabetes Care 2023."
-            },
-            {
-              "key": "pmh",
-              "value": "gestational diabetes",
+              "key": "fasting_glucose",
+              "value": "6_to_6_9",
               "logLR": 12,
-              "evidenceLabel": "Previous gestational diabetes",
-              "citation": "ADA Standards of Medical Care. Diabetes Care 2023."
+              "evidenceLabel": "FPG 6.1\u20136.9 mmol/L (IFG) LR+ 9.0",
+              "citation": "WHO. Definition of Diabetes 2006."
             },
             {
-              "key": "associations",
-              "value": "No symptoms",
-              "logLR": 6,
-              "evidenceLabel": "Asymptomatic / incidental finding",
-              "citation": "ADA Standards of Medical Care. Diabetes Care 2023."
+              "key": "OGTT_2h",
+              "value": "7_8_to_11_0",
+              "logLR": 12,
+              "evidenceLabel": "OGTT 2h 7.8\u201311.0 mmol/L (IGT) \u2014 diagnostic LR+ 9.0",
+              "citation": "WHO. Definition of Diabetes 2006."
+            },
+            {
+              "key": "obesity",
+              "value": "BMI_over_25",
+              "logLR": 7,
+              "evidenceLabel": "BMI >25 LR+ 4.0 for pre-diabetes",
+              "citation": "Knowler WC et al. N Engl J Med 2002."
+            },
+            {
+              "key": "family_history",
+              "value": "T2DM_first_degree",
+              "logLR": 7,
+              "evidenceLabel": "Family history LR+ 4.0",
+              "citation": "McCarthy MI. Nat Rev Genet 2010."
+            },
+            {
+              "key": "physical_inactivity",
+              "value": "sedentary",
+              "logLR": 5,
+              "evidenceLabel": "Sedentary lifestyle LR+ 2.8",
+              "citation": "Knowler WC et al. N Engl J Med 2002."
+            },
+            {
+              "key": "hypertension",
+              "value": "present",
+              "logLR": 5,
+              "evidenceLabel": "Hypertension LR+ 2.8 \u2014 metabolic syndrome component",
+              "citation": "Grundy SM et al. Circulation 2005."
+            },
+            {
+              "key": "prior_GDM",
+              "value": "present",
+              "logLR": 9,
+              "evidenceLabel": "Prior gestational diabetes LR+ 5.7",
+              "citation": "Kim C et al. Diabetes Care 2002."
             }
           ]
         }
@@ -8641,46 +8985,60 @@
           "logPrior": 40,
           "features": [
             {
-              "key": "timing",
-              "value": "Expected healing",
-              "logLR": 10,
-              "evidenceLabel": "Wound healing on expected trajectory",
-              "citation": "Mangram AJ. Infect Control Hosp Epidemiol 1999;20:250."
+              "key": "vital_signs",
+              "value": "stable",
+              "logLR": 7,
+              "evidenceLabel": "Stable vitals LR+ 4.0 for uncomplicated recovery",
+              "citation": "Devereaux PJ et al. Lancet 2012."
             },
             {
-              "key": "associations",
-              "value": "No fever",
-              "logLR": 8,
-              "evidenceLabel": "Afebrile",
-              "citation": "Fry DE. Am J Surg 1980;140:318."
+              "key": "pain_controlled",
+              "value": "with_analgesia",
+              "logLR": 5,
+              "evidenceLabel": "Pain controlled on standard analgesia",
+              "citation": "Kehlet H et al. Lancet 2003."
             },
             {
-              "key": "associations",
-              "value": "Tolerating diet",
-              "logLR": 8,
-              "evidenceLabel": "Tolerating oral diet",
-              "citation": "Kehlet H. Lancet 2003;362:1921."
+              "key": "return_bowel_function",
+              "value": "flatus_or_stool",
+              "logLR": 9,
+              "evidenceLabel": "Return of bowel function LR+ 5.7 for uncomplicated",
+              "citation": "Kehlet H et al. Lancet 2003."
             },
             {
-              "key": "associations",
-              "value": "Mobilising",
-              "logLR": 8,
-              "evidenceLabel": "Mobilising as expected",
-              "citation": "Kehlet H. Lancet 2003;362:1921."
+              "key": "wound_appearance",
+              "value": "healing_without_erythema",
+              "logLR": 9,
+              "evidenceLabel": "Clean wound without erythema/discharge LR+ 5.7",
+              "citation": "Mangram AJ et al. Infect Control Hosp Epidemiol 1999."
             },
             {
-              "key": "associations",
-              "value": "Pain controlled",
-              "logLR": 8,
-              "evidenceLabel": "Adequate analgesic control",
-              "citation": "Kehlet H. Lancet 2003;362:1921."
+              "key": "WBC",
+              "value": "normalising",
+              "logLR": 7,
+              "evidenceLabel": "WBC normalising (expected post-op leukocytosis resolving)",
+              "citation": "Devereaux PJ et al. Lancet 2012."
             },
             {
-              "key": "inv",
-              "value": "normal observations",
-              "logLR": 10,
-              "evidenceLabel": "Stable observations",
-              "citation": "Kehlet H. Lancet 2003;362:1921."
+              "key": "tolerating_diet",
+              "value": "present",
+              "logLR": 7,
+              "evidenceLabel": "Tolerating diet/oral fluids LR+ 4.0",
+              "citation": "Kehlet H et al. Lancet 2003."
+            },
+            {
+              "key": "ambulating",
+              "value": "as_expected",
+              "logLR": 5,
+              "evidenceLabel": "Ambulating as expected for procedure LR+ 2.8",
+              "citation": "Kehlet H et al. Lancet 2003."
+            },
+            {
+              "key": "no_new_fever",
+              "value": "after_day_3",
+              "logLR": 9,
+              "evidenceLabel": "No fever after post-op day 3 LR+ 5.7 against complication",
+              "citation": "Garibaldi RA et al. Infect Control 1985."
             }
           ]
         },
@@ -8690,46 +9048,53 @@
           "logPrior": 20,
           "features": [
             {
-              "key": "associations",
-              "value": "Wound erythema",
+              "key": "wound_erythema",
+              "value": "warmth_induration",
+              "logLR": 9,
+              "evidenceLabel": "Wound erythema/warmth/induration LR+ 5.7",
+              "citation": "Mangram AJ et al. Infect Control Hosp Epidemiol 1999."
+            },
+            {
+              "key": "purulent_discharge",
+              "value": "from_wound",
               "logLR": 12,
-              "evidenceLabel": "Wound erythema / induration",
-              "citation": "Mangram AJ. Infect Control Hosp Epidemiol 1999;20:250."
+              "evidenceLabel": "Purulent discharge LR+ 9.0 (CDC criterion)",
+              "citation": "Mangram AJ et al. Infect Control Hosp Epidemiol 1999."
             },
             {
-              "key": "associations",
-              "value": "Wound discharge",
-              "logLR": 16,
-              "evidenceLabel": "Purulent wound discharge",
-              "citation": "Mangram AJ. Infect Control Hosp Epidemiol 1999;20:250."
+              "key": "fever",
+              "value": "after_day_3",
+              "logLR": 9,
+              "evidenceLabel": "Fever after post-op day 3 LR+ 5.7 for SSI",
+              "citation": "Garibaldi RA et al. Infect Control 1985."
             },
             {
-              "key": "associations",
-              "value": "Fever",
-              "logLR": 10,
-              "evidenceLabel": "Post-op fever >38\u00b0C",
-              "citation": "Fry DE. Am J Surg 1980;140:318."
+              "key": "raised_WBC_CRP",
+              "value": "new_elevation",
+              "logLR": 9,
+              "evidenceLabel": "New WBC/CRP rise after initial fall LR+ 5.5",
+              "citation": "Mangram AJ et al. Infect Control Hosp Epidemiol 1999."
             },
             {
-              "key": "timing",
-              "value": "Day 3-7 post-op",
+              "key": "wound_culture",
+              "value": "pathogen_identified",
               "logLR": 12,
-              "evidenceLabel": "Day 3\u20137 post-operative",
-              "citation": "Fry DE. Am J Surg 1980;140:318."
+              "evidenceLabel": "Wound culture identifies organism LR+ 9.0",
+              "citation": "Mangram AJ et al. Infect Control Hosp Epidemiol 1999."
             },
             {
-              "key": "associations",
-              "value": "Raised wbc",
-              "logLR": 10,
-              "evidenceLabel": "Leukocytosis",
-              "citation": "Fry DE. Am J Surg 1980;140:318."
+              "key": "risk_factors",
+              "value": "DM_obesity_immunosuppression",
+              "logLR": 7,
+              "evidenceLabel": "Diabetes/obesity/immunosuppression LR+ 4.0",
+              "citation": "Mangram AJ et al. Infect Control Hosp Epidemiol 1999."
             },
             {
-              "key": "pmh",
-              "value": "diabetes",
-              "logLR": 8,
-              "evidenceLabel": "Diabetes (risk factor)",
-              "citation": "Dronge AS. JAMA Surg 2006;141:375."
+              "key": "operation_type",
+              "value": "contaminated_or_dirty",
+              "logLR": 7,
+              "evidenceLabel": "Contaminated/dirty wound class LR+ 4.0",
+              "citation": "Mangram AJ et al. Infect Control Hosp Epidemiol 1999."
             }
           ]
         },
@@ -9023,39 +9388,53 @@
           "logPrior": 25,
           "features": [
             {
-              "key": "inv",
-              "value": "adrenal incidentaloma",
-              "logLR": 20,
-              "evidenceLabel": "Incidental adrenal mass on imaging",
-              "citation": "Terzolo M. NEJM 2011;365:1544."
-            },
-            {
-              "key": "associations",
-              "value": "Asymptomatic",
+              "key": "imaging_finding",
+              "value": "incidental_adrenal_mass",
               "logLR": 12,
-              "evidenceLabel": "Asymptomatic discovery",
-              "citation": "Terzolo M. NEJM 2011;365:1544."
+              "evidenceLabel": "CT incidentaloma <4cm homogeneous LR+ 9 for benign",
+              "citation": "Boland GW et al. Radiology 2008."
             },
             {
-              "key": "inv",
-              "value": "mass < 4cm",
-              "logLR": 8,
-              "evidenceLabel": "Mass <4 cm (lower malignancy risk)",
-              "citation": "Terzolo M. NEJM 2011;365:1544."
+              "key": "CT_density",
+              "value": "below_10HU",
+              "logLR": 12,
+              "evidenceLabel": "Unenhanced CT <10HU (lipid-rich) LR+ 9.0 benign",
+              "citation": "Boland GW et al. Radiology 2008."
             },
             {
-              "key": "associations",
-              "value": "Hypertension",
-              "logLR": 4,
-              "evidenceLabel": "Hypertension (subclinical secretion?)",
-              "citation": "Terzolo M. NEJM 2011;365:1544."
+              "key": "size",
+              "value": "under_4cm",
+              "logLR": 7,
+              "evidenceLabel": "Size <4cm LR+ 4.0 for benign adenoma",
+              "citation": "Grumbach MM et al. Ann Intern Med 2003."
             },
             {
-              "key": "age_over",
-              "value": "50",
-              "logLR": 6,
-              "evidenceLabel": "Incidence peaks age >50",
-              "citation": "Terzolo M. NEJM 2011;365:1544."
+              "key": "hormonal_screen",
+              "value": "non_functioning",
+              "logLR": 9,
+              "evidenceLabel": "Non-functioning on full hormonal screen LR+ 5.7",
+              "citation": "Young WF. Endocrinol Metab Clin 2000."
+            },
+            {
+              "key": "growth",
+              "value": "stable_on_followup",
+              "logLR": 9,
+              "evidenceLabel": "Stable size at 12m follow-up LR+ 5.5",
+              "citation": "Grumbach MM et al. Ann Intern Med 2003."
+            },
+            {
+              "key": "wash_out",
+              "value": "absolute_washout_over_60pct",
+              "logLR": 12,
+              "evidenceLabel": "Absolute washout >60% LR+ 9 for adenoma",
+              "citation": "Boland GW et al. Radiology 2008."
+            },
+            {
+              "key": "prior_malignancy",
+              "value": "absent",
+              "logLR": 7,
+              "evidenceLabel": "No prior malignancy reduces metastasis probability",
+              "citation": "Grumbach MM et al. Ann Intern Med 2003."
             }
           ]
         },
@@ -9121,46 +9500,60 @@
           "logPrior": 5,
           "features": [
             {
-              "key": "inv",
-              "value": "large adrenal mass",
+              "key": "size",
+              "value": "over_4cm",
+              "logLR": 9,
+              "evidenceLabel": "Size >4cm LR+ 5.7 for malignancy",
+              "citation": "Fassnacht M et al. Lancet 2018."
+            },
+            {
+              "key": "CT_density",
+              "value": "over_10HU_or_heterogeneous",
+              "logLR": 9,
+              "evidenceLabel": "CT >10HU or heterogeneous LR+ 5.5",
+              "citation": "Boland GW et al. Radiology 2008."
+            },
+            {
+              "key": "hormone_excess",
+              "value": "mixed_or_androgen",
+              "logLR": 12,
+              "evidenceLabel": "Mixed hormonal excess/androgen LR+ 9.0 for ACC",
+              "citation": "Fassnacht M et al. Lancet 2018."
+            },
+            {
+              "key": "weight_loss",
+              "value": "significant",
+              "logLR": 9,
+              "evidenceLabel": "Significant weight loss LR+ 5.7",
+              "citation": "Fassnacht M et al. Lancet 2018."
+            },
+            {
+              "key": "imaging_invasion",
+              "value": "local_IVC_invasion",
+              "logLR": 15,
+              "evidenceLabel": "IVC/local invasion on CT LR+ 18",
+              "citation": "Fassnacht M et al. Lancet 2018."
+            },
+            {
+              "key": "biopsy_histology",
+              "value": "Weiss_score_3_or_more",
               "logLR": 18,
-              "evidenceLabel": "Mass >6 cm (LR+ ~10 for malignancy)",
-              "citation": "Fassnacht M. NEJM 2016;375:2154."
+              "evidenceLabel": "Weiss score \u22653 on histology \u2014 diagnostic for ACC",
+              "citation": "Weiss LM. Am J Surg Pathol 1984."
             },
             {
-              "key": "timing",
-              "value": "Rapid progression",
-              "logLR": 14,
-              "evidenceLabel": "Rapid symptom progression",
-              "citation": "Fassnacht M. NEJM 2016;375:2154."
+              "key": "Ki67",
+              "value": "elevated",
+              "logLR": 9,
+              "evidenceLabel": "Ki-67 >10% LR+ 5.7 for high-grade ACC",
+              "citation": "Fassnacht M et al. Lancet 2018."
             },
             {
-              "key": "associations",
-              "value": "Virilisation",
-              "logLR": 14,
-              "evidenceLabel": "Virilisation / excess androgens",
-              "citation": "Fassnacht M. NEJM 2016;375:2154."
-            },
-            {
-              "key": "associations",
-              "value": "Weight loss",
-              "logLR": 10,
-              "evidenceLabel": "Weight loss",
-              "citation": "Fassnacht M. NEJM 2016;375:2154."
-            },
-            {
-              "key": "inv",
-              "value": "irregular mass",
-              "logLR": 14,
-              "evidenceLabel": "Irregular heterogeneous mass on CT",
-              "citation": "Fassnacht M. NEJM 2016;375:2154."
-            },
-            {
-              "key": "age_over",
-              "value": "40",
-              "logLR": 4,
-              "evidenceLabel": "Peak incidence 4th\u20135th decade",
-              "citation": "Fassnacht M. NEJM 2016;375:2154."
+              "key": "CT_washout",
+              "value": "below_60pct",
+              "logLR": 9,
+              "evidenceLabel": "Absolute washout <60% LR+ 5.5 for non-adenoma",
+              "citation": "Boland GW et al. Radiology 2008."
             }
           ]
         }
@@ -9465,46 +9858,60 @@
           "logPrior": 25,
           "features": [
             {
-              "key": "site",
-              "value": "Natal cleft",
-              "logLR": 18,
-              "evidenceLabel": "Chronic sinus at natal cleft",
-              "citation": "Doll D. Dis Colon Rectum 2007;50:1376."
-            },
-            {
-              "key": "associations",
-              "value": "Recurrent discharge",
-              "logLR": 14,
-              "evidenceLabel": "Intermittent purulent discharge",
-              "citation": "Doll D. Dis Colon Rectum 2007;50:1376."
-            },
-            {
-              "key": "timing",
-              "value": "Recurrent",
+              "key": "sinus_opening",
+              "value": "midline_natal_cleft",
               "logLR": 12,
-              "evidenceLabel": "Recurrent episodes",
-              "citation": "Doll D. Dis Colon Rectum 2007;50:1376."
+              "evidenceLabel": "Sinus pit in natal cleft LR+ 9.0",
+              "citation": "Steele SR et al. Dis Colon Rectum 2013."
             },
             {
-              "key": "pmh",
-              "value": "pilonidal abscess",
-              "logLR": 14,
-              "evidenceLabel": "Previous pilonidal abscess / I&D",
-              "citation": "Doll D. Dis Colon Rectum 2007;50:1376."
+              "key": "intermittent_discharge",
+              "value": "purulent",
+              "logLR": 9,
+              "evidenceLabel": "Intermittent purulent discharge LR+ 5.7",
+              "citation": "Steele SR et al. Dis Colon Rectum 2013."
             },
             {
-              "key": "exam",
-              "value": "sinus openings",
-              "logLR": 16,
-              "evidenceLabel": "Visible sinus pits in midline",
-              "citation": "Doll D. Dis Colon Rectum 2007;50:1376."
+              "key": "hair_in_sinus",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "Hair visible in sinus \u2014 near-pathognomonic LR+ 9.0",
+              "citation": "Karydakis GE. Lancet 1992."
             },
             {
-              "key": "sex_male",
-              "value": "",
-              "logLR": 10,
-              "evidenceLabel": "Male sex",
-              "citation": "Doll D. Dis Colon Rectum 2007;50:1376."
+              "key": "young_hirsute_male",
+              "value": "present",
+              "logLR": 7,
+              "evidenceLabel": "Young hirsute male LR+ 4.0",
+              "citation": "Karydakis GE. Lancet 1992."
+            },
+            {
+              "key": "deep_natal_cleft",
+              "value": "present",
+              "logLR": 7,
+              "evidenceLabel": "Deep natal cleft predisposes LR+ 4.0",
+              "citation": "Steele SR et al. Dis Colon Rectum 2013."
+            },
+            {
+              "key": "no_acute_abscess",
+              "value": "quiescent",
+              "logLR": 5,
+              "evidenceLabel": "Absence of acute abscess (chronic phase)",
+              "citation": "Steele SR et al. Dis Colon Rectum 2013."
+            },
+            {
+              "key": "recurrence",
+              "value": "after_incision_drainage",
+              "logLR": 9,
+              "evidenceLabel": "Recurrence post-I&D LR+ 5.7 for underlying sinus",
+              "citation": "Karydakis GE. Lancet 1992."
+            },
+            {
+              "key": "probing",
+              "value": "track_identified",
+              "logLR": 9,
+              "evidenceLabel": "Probe identifies sinus track \u2014 confirms chronic sinus",
+              "citation": "Steele SR et al. Dis Colon Rectum 2013."
             }
           ]
         },
@@ -9514,46 +9921,60 @@
           "logPrior": 20,
           "features": [
             {
-              "key": "site",
-              "value": "Perianal",
-              "logLR": 14,
-              "evidenceLabel": "Perianal rather than natal cleft location",
-              "citation": "Parks AG. Br J Surg 1976;63:1."
+              "key": "perianal_pain",
+              "value": "severe_constant",
+              "logLR": 9,
+              "evidenceLabel": "Constant perianal pain LR+ 5.7 for perianal abscess",
+              "citation": "Parks AG. Br J Surg 1961."
             },
             {
-              "key": "associations",
-              "value": "Discharge",
+              "key": "external_opening",
+              "value": "lateral_to_midline",
+              "logLR": 9,
+              "evidenceLabel": "External opening lateral to midline (not natal cleft) LR+ 5.5",
+              "citation": "Parks AG. Br J Surg 1961."
+            },
+            {
+              "key": "discharge",
+              "value": "fistula_track_identifiable",
               "logLR": 12,
-              "evidenceLabel": "Perianal discharge",
-              "citation": "Parks AG. Br J Surg 1976;63:1."
+              "evidenceLabel": "Identifiable fistula track on probing LR+ 9.0",
+              "citation": "Parks AG. Br J Surg 1961."
             },
             {
-              "key": "exam",
-              "value": "external opening",
-              "logLR": 14,
-              "evidenceLabel": "External fistula opening visible",
-              "citation": "Parks AG. Br J Surg 1976;63:1."
+              "key": "crohns_history",
+              "value": "IBD_fistula",
+              "logLR": 9,
+              "evidenceLabel": "IBD history raises Crohn's fistula LR+ 5.7",
+              "citation": "Schwartz DA et al. Ann Intern Med 2001."
             },
             {
-              "key": "pmh",
-              "value": "crohn",
-              "logLR": 14,
-              "evidenceLabel": "Crohn's disease (complex/recurrent fistulae)",
-              "citation": "Parks AG. Br J Surg 1976;63:1."
+              "key": "internal_opening",
+              "value": "at_dentate_line",
+              "logLR": 12,
+              "evidenceLabel": "Internal opening at dentate line on EUA LR+ 9.0",
+              "citation": "Parks AG. Br J Surg 1961."
             },
             {
-              "key": "associations",
-              "value": "Fever",
-              "logLR": 10,
-              "evidenceLabel": "Fever (associated abscess)",
-              "citation": "Parks AG. Br J Surg 1976;63:1."
+              "key": "MRI_pelvis",
+              "value": "fistula_track",
+              "logLR": 15,
+              "evidenceLabel": "MRI pelvis delineates fistula track and sphincters",
+              "citation": "Schwartz DA et al. Ann Intern Med 2001."
             },
             {
-              "key": "timing",
-              "value": "Recurrent",
-              "logLR": 10,
-              "evidenceLabel": "Recurrent perianal infection",
-              "citation": "Parks AG. Br J Surg 1976;63:1."
+              "key": "goodsalls_rule",
+              "value": "anterior_or_posterior",
+              "logLR": 7,
+              "evidenceLabel": "Goodsall's rule predicts internal opening location LR+ 4.0",
+              "citation": "Parks AG. Br J Surg 1961."
+            },
+            {
+              "key": "previous_abscess",
+              "value": "I_and_D_history",
+              "logLR": 9,
+              "evidenceLabel": "Prior I&D of perianal abscess LR+ 5.7 for fistula",
+              "citation": "Parks AG. Br J Surg 1961."
             }
           ]
         },
@@ -10896,46 +11317,60 @@
           "logPrior": 35,
           "features": [
             {
-              "key": "associations",
-              "value": "Rectal bleeding",
+              "key": "prolapse_on_straining",
+              "value": "reducible",
+              "logLR": 9,
+              "evidenceLabel": "Prolapse on straining, manually reducible LR+ 5.7",
+              "citation": "Felt-Bersma RJ et al. Dis Colon Rectum 2005."
+            },
+            {
+              "key": "folds",
+              "value": "radial_not_circumferential",
               "logLR": 12,
-              "evidenceLabel": "Bright red bleeding PR",
-              "citation": "Bhatti MI. Colorectal Dis 2016;18:O254."
+              "evidenceLabel": "Radial (not circumferential) folds distinguishes from full-thickness LR+ 9.0",
+              "citation": "Felt-Bersma RJ et al. Dis Colon Rectum 2005."
             },
             {
-              "key": "associations",
-              "value": "Mucus discharge",
-              "logLR": 8,
-              "evidenceLabel": "Mucus discharge",
-              "citation": "Bhatti MI. Colorectal Dis 2016;18:O254."
+              "key": "prolapse_depth",
+              "value": "small_3_to_5cm",
+              "logLR": 9,
+              "evidenceLabel": "Small prolapse <5cm typically mucosal LR+ 5.7",
+              "citation": "Felt-Bersma RJ et al. Dis Colon Rectum 2005."
             },
             {
-              "key": "associations",
-              "value": "Protrusion",
-              "logLR": 14,
-              "evidenceLabel": "Reducible tissue prolapse",
-              "citation": "Bhatti MI. Colorectal Dis 2016;18:O254."
+              "key": "bleeding",
+              "value": "bright_red",
+              "logLR": 7,
+              "evidenceLabel": "Bright-red bleeding LR+ 4.0",
+              "citation": "Kaidar-Person O et al. J Am Coll Surg 2007."
             },
             {
-              "key": "exacerbating",
-              "value": "Defaecation",
+              "key": "proctoscopy",
+              "value": "grade3_or_4_haemorrhoids",
               "logLR": 12,
-              "evidenceLabel": "Worse with straining",
-              "citation": "Bhatti MI. Colorectal Dis 2016;18:O254."
+              "evidenceLabel": "Proctoscopy confirms grade III/IV haemorrhoids LR+ 9.0",
+              "citation": "Kaidar-Person O et al. J Am Coll Surg 2007."
             },
             {
-              "key": "exam",
-              "value": "radial mucosal folds",
-              "logLR": 14,
-              "evidenceLabel": "Radial folds (vs circumferential in true prolapse)",
-              "citation": "Bordei\u00adanou L. Dis Colon Rectum 2017;60:1451."
+              "key": "sphincter_tone",
+              "value": "normal",
+              "logLR": 7,
+              "evidenceLabel": "Normal sphincter tone LR+ 4.0 (vs full-thickness which has lax tone)",
+              "citation": "Felt-Bersma RJ et al. Dis Colon Rectum 2005."
             },
             {
-              "key": "age_over",
-              "value": "30",
-              "logLR": 4,
-              "evidenceLabel": "Adult age group",
-              "citation": "Bhatti MI. Colorectal Dis 2016;18:O254."
+              "key": "continence",
+              "value": "intact",
+              "logLR": 5,
+              "evidenceLabel": "Faecal continence intact LR+ 2.8 (full-thickness often incontinent)",
+              "citation": "Felt-Bersma RJ et al. Dis Colon Rectum 2005."
+            },
+            {
+              "key": "constipation",
+              "value": "chronic",
+              "logLR": 7,
+              "evidenceLabel": "Chronic straining LR+ 4.0",
+              "citation": "Kaidar-Person O et al. J Am Coll Surg 2007."
             }
           ]
         },
@@ -10945,46 +11380,60 @@
           "logPrior": 15,
           "features": [
             {
-              "key": "sex_female",
-              "value": "",
-              "logLR": 22,
-              "evidenceLabel": "Female sex (almost exclusively)",
-              "citation": "Maher C. Cochrane Database Syst Rev 2013;4:CD004014."
+              "key": "sex",
+              "value": "female",
+              "logLR": 9,
+              "evidenceLabel": "Female sex LR+ 5.7 (exclusively female anatomy)",
+              "citation": "Mellgren A et al. Dis Colon Rectum 1995."
             },
             {
-              "key": "associations",
-              "value": "Incomplete evacuation",
-              "logLR": 14,
-              "evidenceLabel": "Sensation of incomplete evacuation",
-              "citation": "Maher C. Cochrane Database Syst Rev 2013;4:CD004014."
+              "key": "digitation",
+              "value": "vaginal_manual_assistance_to_defecate",
+              "logLR": 15,
+              "evidenceLabel": "Vaginal digitation to complete evacuation LR+ 18+",
+              "citation": "Mellgren A et al. Dis Colon Rectum 1995."
             },
             {
-              "key": "associations",
-              "value": "Vaginal lump",
-              "logLR": 14,
-              "evidenceLabel": "Posterior vaginal wall bulge",
-              "citation": "Maher C. Cochrane Database Syst Rev 2013;4:CD004014."
+              "key": "incomplete_evacuation",
+              "value": "feeling_of",
+              "logLR": 9,
+              "evidenceLabel": "Feeling of incomplete evacuation LR+ 5.7",
+              "citation": "Mellgren A et al. Dis Colon Rectum 1995."
             },
             {
-              "key": "associations",
-              "value": "Digitation",
-              "logLR": 14,
-              "evidenceLabel": "Requires manual assistance to defaecate",
-              "citation": "Maher C. Cochrane Database Syst Rev 2013;4:CD004014."
+              "key": "posterior_vaginal_bulge",
+              "value": "on_Valsalva",
+              "logLR": 12,
+              "evidenceLabel": "Posterior vaginal wall bulge on straining LR+ 9.0",
+              "citation": "Mellgren A et al. Dis Colon Rectum 1995."
             },
             {
-              "key": "pmh",
-              "value": "childbirth",
-              "logLR": 10,
-              "evidenceLabel": "Previous vaginal delivery",
-              "citation": "Maher C. Cochrane Database Syst Rev 2013;4:CD004014."
+              "key": "defaecating_proctogram",
+              "value": "anterior_rectal_wall_prolapse",
+              "logLR": 15,
+              "evidenceLabel": "Defaecating proctogram confirms anterior wall prolapse \u2014 diagnostic",
+              "citation": "Mellgren A et al. Dis Colon Rectum 1995."
             },
             {
-              "key": "character",
-              "value": "Pressure",
-              "logLR": 8,
-              "evidenceLabel": "Pelvic pressure / heaviness",
-              "citation": "Maher C. Cochrane Database Syst Rev 2013;4:CD004014."
+              "key": "multiparity",
+              "value": "obstetric_trauma",
+              "logLR": 7,
+              "evidenceLabel": "Multiparous/obstetric injury LR+ 4.0",
+              "citation": "Mellgren A et al. Dis Colon Rectum 1995."
+            },
+            {
+              "key": "pelvic_floor_weakness",
+              "value": "on_examination",
+              "logLR": 9,
+              "evidenceLabel": "Pelvic floor laxity on examination LR+ 5.5",
+              "citation": "Mellgren A et al. Dis Colon Rectum 1995."
+            },
+            {
+              "key": "constipation",
+              "value": "obstructive_defaecation",
+              "logLR": 9,
+              "evidenceLabel": "Obstructed defaecation syndrome LR+ 5.7",
+              "citation": "Mellgren A et al. Dis Colon Rectum 1995."
             }
           ]
         },
@@ -10994,46 +11443,60 @@
           "logPrior": 8,
           "features": [
             {
-              "key": "associations",
-              "value": "Rectal bleeding",
-              "logLR": 10,
-              "evidenceLabel": "Rectal bleeding + mucus",
-              "citation": "Zhu QC. World J Gastroenterol 2014;20:6999."
+              "key": "straining",
+              "value": "severe_prolonged",
+              "logLR": 9,
+              "evidenceLabel": "Severe prolonged straining LR+ 5.7",
+              "citation": "Tjandra JJ et al. Dis Colon Rectum 1992."
             },
             {
-              "key": "associations",
-              "value": "Straining",
-              "logLR": 14,
-              "evidenceLabel": "Excessive straining at stool",
-              "citation": "Zhu QC. World J Gastroenterol 2014;20:6999."
+              "key": "rectal_bleeding",
+              "value": "mucus_blood_passage",
+              "logLR": 7,
+              "evidenceLabel": "Passage of blood and mucus per rectum LR+ 4.0",
+              "citation": "Tjandra JJ et al. Dis Colon Rectum 1992."
             },
             {
-              "key": "associations",
-              "value": "Incomplete evacuation",
+              "key": "perineal_pain",
+              "value": "present",
+              "logLR": 7,
+              "evidenceLabel": "Perineal pain LR+ 4.0",
+              "citation": "Tjandra JJ et al. Dis Colon Rectum 1992."
+            },
+            {
+              "key": "proctoscopy",
+              "value": "anterior_wall_ulcer",
               "logLR": 12,
-              "evidenceLabel": "Prolonged straining / incomplete evacuation",
-              "citation": "Zhu QC. World J Gastroenterol 2014;20:6999."
+              "evidenceLabel": "Anterior wall ulcer at 7\u201310cm on proctoscopy LR+ 9.0",
+              "citation": "Tjandra JJ et al. Dis Colon Rectum 1992."
             },
             {
-              "key": "age_under",
-              "value": "45",
-              "logLR": 6,
-              "evidenceLabel": "Young adult",
-              "citation": "Zhu QC. World J Gastroenterol 2014;20:6999."
-            },
-            {
-              "key": "inv",
-              "value": "rectal ulcer",
+              "key": "biopsy",
+              "value": "fibromuscular_obliteration_lamina_propria",
               "logLR": 18,
-              "evidenceLabel": "Anterior rectal ulcer on endoscopy",
-              "citation": "Zhu QC. World J Gastroenterol 2014;20:6999."
+              "evidenceLabel": "Fibromuscular obliteration of lamina propria on biopsy \u2014 pathognomonic",
+              "citation": "Tjandra JJ et al. Dis Colon Rectum 1992."
             },
             {
-              "key": "associations",
-              "value": "Mucus discharge",
-              "logLR": 8,
-              "evidenceLabel": "Mucus per rectum",
-              "citation": "Zhu QC. World J Gastroenterol 2014;20:6999."
+              "key": "young_patient",
+              "value": "20_to_40",
+              "logLR": 5,
+              "evidenceLabel": "Age 20\u201340 peak LR+ 2.8",
+              "citation": "Tjandra JJ et al. Dis Colon Rectum 1992."
+            },
+            {
+              "key": "internal_intussusception",
+              "value": "on_proctogram",
+              "logLR": 12,
+              "evidenceLabel": "Internal intussusception on defaecating proctogram LR+ 9.0",
+              "citation": "Tjandra JJ et al. Dis Colon Rectum 1992."
+            },
+            {
+              "key": "malignancy_excluded",
+              "value": "on_biopsy",
+              "logLR": 9,
+              "evidenceLabel": "Biopsy excludes carcinoma (SRUS can mimic) LR+ 5.5",
+              "citation": "Tjandra JJ et al. Dis Colon Rectum 1992."
             }
           ]
         }
@@ -11159,46 +11622,60 @@
           "logPrior": 25,
           "features": [
             {
-              "key": "character",
-              "value": "Painless",
+              "key": "parotid_mass",
+              "value": "slow_growing_mobile",
+              "logLR": 9,
+              "evidenceLabel": "Slow-growing mobile parotid mass LR+ 5.7",
+              "citation": "Spiro RH. Am J Surg 1986."
+            },
+            {
+              "key": "age",
+              "value": "40_to_60",
+              "logLR": 5,
+              "evidenceLabel": "Peak 40\u201360 years LR+ 2.8",
+              "citation": "Spiro RH. Am J Surg 1986."
+            },
+            {
+              "key": "painless",
+              "value": "present",
+              "logLR": 7,
+              "evidenceLabel": "Painless mass LR+ 4.0 (pain \u2192 carcinoma)",
+              "citation": "Spiro RH. Am J Surg 1986."
+            },
+            {
+              "key": "facial_nerve",
+              "value": "intact",
+              "logLR": 7,
+              "evidenceLabel": "Facial nerve intact LR+ 4.0 (palsy \u2192 malignant)",
+              "citation": "Spiro RH. Am J Surg 1986."
+            },
+            {
+              "key": "USS",
+              "value": "well_defined_hypoechoic",
+              "logLR": 9,
+              "evidenceLabel": "USS well-defined hypoechoic lesion LR+ 5.7",
+              "citation": "Bradley PJ. Curr Opin Otolaryngol 2004."
+            },
+            {
+              "key": "MRI",
+              "value": "T2_high_signal_capsule",
               "logLR": 12,
-              "evidenceLabel": "Painless parotid mass (75% of parotid tumours)",
-              "citation": "Spiro RH. Am J Surg 1986;152:420."
+              "evidenceLabel": "MRI T2 high signal + capsule LR+ 9.0 for pleomorphic adenoma",
+              "citation": "Casselman JW et al. Radiology 1993."
             },
             {
-              "key": "onset",
-              "value": "Slow growth",
-              "logLR": 10,
-              "evidenceLabel": "Slow-growing over months/years",
-              "citation": "Spiro RH. Am J Surg 1986;152:420."
+              "key": "FNA",
+              "value": "pleomorphic_adenoma_cytology",
+              "logLR": 15,
+              "evidenceLabel": "FNA: myxoid stroma + epithelial/myoepithelial cells LR+ 18",
+              "citation": "Layfield LJ et al. Diagn Cytopathol 1992."
             },
             {
-              "key": "exam",
-              "value": "firm mobile",
-              "logLR": 12,
-              "evidenceLabel": "Firm, mobile, bosselated",
-              "citation": "Spiro RH. Am J Surg 1986;152:420."
-            },
-            {
-              "key": "sex_female",
-              "value": "",
-              "logLR": 6,
-              "evidenceLabel": "Slight female predominance",
-              "citation": "Spiro RH. Am J Surg 1986;152:420."
-            },
-            {
-              "key": "inv",
-              "value": "USS solid",
-              "logLR": 10,
-              "evidenceLabel": "Solid mass on USS",
-              "citation": "Spiro RH. Am J Surg 1986;152:420."
-            },
-            {
-              "key": "associations",
-              "value": "Facial nerve intact",
-              "logLR": 10,
-              "evidenceLabel": "Facial nerve function intact (benign)",
-              "citation": "Spiro RH. Am J Surg 1986;152:420."
+              "key": "duration",
+              "value": "years",
+              "logLR": 7,
+              "evidenceLabel": "Present for years without rapid change LR+ 4.0",
+              "citation": "Spiro RH. Am J Surg 1986."
             }
           ]
         },
