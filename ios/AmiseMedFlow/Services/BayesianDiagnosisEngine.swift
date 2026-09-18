@@ -716,7 +716,7 @@ enum BayesianDiagnosisEngine {
             let citation: String?
         }
 
-        private func toCandidate() -> Candidate {
+        func toCandidate() -> Candidate {
             Candidate(name: name, icd: icd, logPrior: logPrior,
                       features: features.map { f in
                           Candidate.Feature(key: f.key, value: f.value,

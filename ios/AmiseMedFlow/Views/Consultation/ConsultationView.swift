@@ -585,7 +585,7 @@ struct SOCRATESDimension: Identifiable {
 }
 
 // CC-adaptive chip sets — shared across SOCRATES dimensions
-private enum SOCRATESChips {
+enum SOCRATESChips {
     // Stable across all complaint types
     static let onset    = ["Today", "Yesterday", "2–3 days ago", "4–7 days ago", "1–4 weeks ago", "1–6 months ago", "Over a year", "Sudden", "Gradual"]
     static let timing   = ["Constant", "Intermittent", "Progressive", "Post-prandial", "Nocturnal", "Episodic", "Worse over time"]
