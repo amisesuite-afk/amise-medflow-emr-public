@@ -34,7 +34,7 @@ enum UserRole: String, Codable {
         case .frontDesk:
             return [
                 .overview, .demographics,
-                .preOpChecklist, .consent, .patientInstructions,
+                .notes, .documents,
             ]
         case .nurse:
             return [

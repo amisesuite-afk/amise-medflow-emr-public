@@ -585,7 +585,7 @@ struct SOCRATESDimension: Identifiable {
 }
 
 // CC-adaptive chip sets — shared across SOCRATES dimensions
-private enum SOCRATESChips {
+enum SOCRATESChips {
     // Stable across all complaint types
     static let onset    = ["Today", "Yesterday", "2–3 days ago", "4–7 days ago", "1–4 weeks ago", "1–6 months ago", "Over a year", "Sudden", "Gradual"]
     static let timing   = ["Constant", "Intermittent", "Progressive", "Post-prandial", "Nocturnal", "Episodic", "Worse over time"]
@@ -3742,6 +3742,36 @@ struct ConsultationView: View {
          patient.examNeuro, patient.examMSK, patient.examSkin, patient.examOther]
             .compactMap { $0 }.joined(separator: "\n")
     }
+
+    // MARK: - Encounter History Tab
+
+    private var encounterHistoryTab: some View {
+        let sorted = patient.encounters
+            .filter(\.isComplete)
+            .sorted { $0.encounterDate > $1.encounterDate }
+        return Group {
+            if sorted.isEmpty {
+                ContentUnavailableView(
+                    "No Saved Visits",
+                    systemImage: "clock.badge.questionmark",
+                    description: Text("Tap \"Save Visit\" to snapshot the current consultation into history.")
+                )
+            } else {
+                List {
+                    ForEach(sorted, id: \.id) { enc in
+                        Button { selectedEncounter = enc } label: {
+                            EncounterHistoryRow(encounter: enc)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .listStyle(.insetGrouped)
+                .sheet(item: $selectedEncounter) { enc in
+                    EncounterDetailSheet(encounter: enc)
+                }
+            }
+        }
+    }
 }
 
 // MARK: - Drug interaction row
@@ -3939,35 +3969,6 @@ private struct ConsultationLetterSheet: View {
         }
     }
 
-    // MARK: - Encounter History Tab
-
-    private var encounterHistoryTab: some View {
-        let sorted = patient.encounters
-            .filter(\.isComplete)
-            .sorted { $0.encounterDate > $1.encounterDate }
-        return Group {
-            if sorted.isEmpty {
-                ContentUnavailableView(
-                    "No Saved Visits",
-                    systemImage: "clock.badge.questionmark",
-                    description: Text("Tap \"Save Visit\" to snapshot the current consultation into history.")
-                )
-            } else {
-                List {
-                    ForEach(sorted, id: \.id) { enc in
-                        Button { selectedEncounter = enc } label: {
-                            EncounterHistoryRow(encounter: enc)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .listStyle(.insetGrouped)
-                .sheet(item: $selectedEncounter) { enc in
-                    EncounterDetailSheet(encounter: enc)
-                }
-            }
-        }
-    }
 }
 
 // MARK: - EncounterHistoryRow
