@@ -15,15 +15,21 @@ struct DiagnosisHypothesis: Identifiable {
     var logPosterior: Double          // log-odds units (natural log scale)
     var contributingEvidence: [(label: String, logLR: Double)]
 
-    // Softmax probability computed across all hypotheses by the engine
+    // Softmax probability computed across all hypotheses by the engine (display only)
     var probability: Double = 0.0
 
-    // Convenience badge
+    // Primary Bayesian confidence signals — seeded from BayesianDiagnosisEngine
+    var logGap: Int = 0                        // rank-1 minus rank-2 log-posterior gap
+    var pathognomicFindings: [String] = []     // fired features with logLR ≥ 18
+
+    // Confidence badge driven by logGap, not softmax probability
     var confidence: BayesianDiagnosisEngine.DiagnosisResult.Confidence {
-        let pct = Int(probability * 100)
-        if pct >= 55 { return .high }
-        if pct >= 30 { return .moderate }
-        return .low
+        switch logGap {
+        case 25...: return .certain
+        case 15...: return .high
+        case 7...:  return .moderate
+        default:    return pathognomicFindings.isEmpty ? .low : .high
+        }
     }
 }
 
@@ -274,7 +280,7 @@ final class SequentialDiagnosisEngine: ObservableObject {
     // Evidence keys already observed per hypothesis (for correlation dampening)
     private var observedKeys: [String: [String]] = [:]   // hypothesisName → [evidenceKey]
     // Seeded log-posteriors — used by resetToSeeded() to restore the base before replaying
-    private var seededLogPosteriors: [String: Double] = []  // hypothesisName → logPosterior
+    private var seededLogPosteriors: [String: Double] = [:]  // hypothesisName → logPosterior
 
     // MARK: - Seed from Naive-Bayes snapshot
 
@@ -290,7 +296,19 @@ final class SequentialDiagnosisEngine: ObservableObject {
         sex: Sex,
         medications: [String] = [],
         socialHistoryText: String? = nil,
-        bmi: Double? = nil
+        bmi: Double? = nil,
+        alvaradoScore: Int? = nil,
+        glasgowPancreatitisScore: Int? = nil,
+        ransonScore: Int? = nil,
+        tokyoCholecystitisGrade: Int? = nil,
+        tokyoCholangitisGrade: Int? = nil,
+        rockallScore: Int? = nil,
+        blatchfordScore: Int? = nil,
+        wellsDVTScore: Double? = nil,
+        wellsPEScore: Double? = nil,
+        abcd2Score: Int? = nil,
+        lrinecScore: Int? = nil,
+        qsofaScore: Int? = nil
     ) {
         let results = BayesianDiagnosisEngine.infer(
             chiefComplaint: chiefComplaint,
@@ -304,7 +322,19 @@ final class SequentialDiagnosisEngine: ObservableObject {
             sex: sex,
             medications: medications,
             socialHistoryText: socialHistoryText,
-            bmi: bmi
+            bmi: bmi,
+            alvaradoScore: alvaradoScore,
+            glasgowPancreatitisScore: glasgowPancreatitisScore,
+            ransonScore: ransonScore,
+            tokyoCholecystitisGrade: tokyoCholecystitisGrade,
+            tokyoCholangitisGrade: tokyoCholangitisGrade,
+            rockallScore: rockallScore,
+            blatchfordScore: blatchfordScore,
+            wellsDVTScore: wellsDVTScore,
+            wellsPEScore: wellsPEScore,
+            abcd2Score: abcd2Score,
+            lrinecScore: lrinecScore,
+            qsofaScore: qsofaScore
         )
 
         guard !results.isEmpty else {
@@ -324,10 +354,12 @@ final class SequentialDiagnosisEngine: ObservableObject {
                 contributingEvidence: r.evidence.map { ($0, 0.0) }
             )
             h.probability = p
+            h.logGap = r.logGap
+            h.pathognomicFindings = r.pathognomicFindings
             return h
         }
 
-        observedKeys = Dictionary(uniqueKeysWithValues: hypotheses.map { ($0.name, []) })
+        observedKeys = Dictionary(uniqueKeysWithValues: hypotheses.map { ($0.name, [String]()) })
         seededLogPosteriors = Dictionary(uniqueKeysWithValues: hypotheses.map { ($0.name, $0.logPosterior) })
         recomputeProbabilities()
         isSeeded = true
@@ -406,7 +438,7 @@ final class SequentialDiagnosisEngine: ObservableObject {
             }
             hypotheses[i].contributingEvidence = hypotheses[i].contributingEvidence.filter { $0.logLR == 0.0 }
         }
-        observedKeys = Dictionary(uniqueKeysWithValues: hypotheses.map { ($0.name, []) })
+        observedKeys = Dictionary(uniqueKeysWithValues: hypotheses.map { ($0.name, [String]()) })
     }
 
     private func recomputeProbabilities() {

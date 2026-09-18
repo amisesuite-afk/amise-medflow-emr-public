@@ -117,7 +117,19 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
             sex:                patient.sex,
             medications:        patient.prescriptions.map { $0.displayLine },
             socialHistoryText:  patient.socialHistory,
-            bmi:                patient.latestBMI()
+            bmi:                patient.latestBMI(),
+            alvaradoScore:               patient.alvaradoScore,
+            glasgowPancreatitisScore:    patient.glasgowPancreatitisScore,
+            ransonScore:                 patient.ransonScore,
+            tokyoCholecystitisGrade:     patient.tokyoCholecystitisGrade,
+            tokyoCholangitisGrade:       patient.tokyoCholangitisGrade,
+            rockallScore:                patient.rockallScore,
+            blatchfordScore:             patient.blatchfordScore,
+            wellsDVTScore:               patient.wellsDVTScore,
+            wellsPEScore:                patient.wellsPEScore,
+            abcd2Score:                  patient.abcd2Score,
+            lrinecScore:                 patient.lrinecScore,
+            qsofaScore:                  patient.qsofaScore
         )
 
         let seeded = sequentialEngine.topDiagnoses(n: 10)
@@ -180,6 +192,15 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
 // MARK: - Pipeline summary helpers
 
 extension ClinicalPipelineOrchestrator {
+
+    /// Statistically enforced working diagnosis — non-nil when logGap ≥ 15 or a pathognomonic
+    /// finding fired on rank-1. This is the Bayesian engine's gravitational signal: when present,
+    /// the evidence has mathematically separated rank-1 from the field, and the UI should
+    /// surface it with commensurate prominence.
+    var enforcedWorkingDiagnosis: DiagnosisHypothesis? {
+        guard let top = hypotheses.first else { return nil }
+        return (top.logGap >= 15 || !top.pathognomicFindings.isEmpty) ? top : nil
+    }
 
     /// Highest-priority decision (emergency first)
     var topDecision: ClinicalDecision? {

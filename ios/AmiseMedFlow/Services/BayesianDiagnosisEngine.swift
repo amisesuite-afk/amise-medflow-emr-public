@@ -13,17 +13,30 @@ enum BayesianDiagnosisEngine {
         let id = UUID()
         let name: String
         let icdCode: String
-        let probability: Int          // 0–100 %
-        let evidence: [String]        // human-readable supporting features
+        let probability: Int          // 0–100 % (softmax — display only, NOT the confidence signal)
+        let evidence: [String]        // flat list — kept for backwards compat
+        // Evidence grouped by input source.
+        // Keys: "symptoms" | "exam" | "history" | "investigation" | "score" | "longitudinal"
+        let evidenceSources: [String: [String]]
         let confidence: Confidence
+        // Primary confidence signals (logGap-based, not softmax-based)
+        let rawLogPosterior: Int           // log-posterior before softmax
+        let logGap: Int                    // rank-1 minus rank-2 log-posterior gap (0 for non-rank-1)
+        let pathognomicFindings: [String]  // fired features with logLR ≥ 18
 
         enum Confidence {
-            case high     // ≥ 55 %
-            case moderate // 30–54 %
-            case low      // < 30 %
+            case certain  // logGap ≥ 25 — statistically overwhelming
+            case high     // logGap ≥ 15 or pathognomonic finding fired
+            case moderate // logGap ≥ 7
+            case low      // otherwise
 
             var label: String {
-                switch self { case .high: "High"; case .moderate: "Moderate"; case .low: "Low" }
+                switch self {
+                case .certain:  "Certain"
+                case .high:     "High"
+                case .moderate: "Moderate"
+                case .low:      "Low"
+                }
             }
         }
     }
@@ -71,7 +84,19 @@ enum BayesianDiagnosisEngine {
         longitudinal: LongitudinalContext = .empty,
         medications: [String] = [],
         socialHistoryText: String? = nil,
-        bmi: Double? = nil
+        bmi: Double? = nil,
+        alvaradoScore: Int? = nil,
+        glasgowPancreatitisScore: Int? = nil,
+        ransonScore: Int? = nil,
+        tokyoCholecystitisGrade: Int? = nil,
+        tokyoCholangitisGrade: Int? = nil,
+        rockallScore: Int? = nil,
+        blatchfordScore: Int? = nil,
+        wellsDVTScore: Double? = nil,
+        wellsPEScore: Double? = nil,
+        abcd2Score: Int? = nil,
+        lrinecScore: Int? = nil,
+        qsofaScore: Int? = nil
     ) -> [DiagnosisResult] {
         guard let cc = chiefComplaint, !cc.isEmpty else { return [] }
         let ccL = cc.lowercased()
@@ -79,145 +104,152 @@ enum BayesianDiagnosisEngine {
         let candidates: [Candidate]
         switch true {
         case ccL.contains("jaundice") || ccL.contains("yellow"):
-            candidates = jaundice
+            candidates = externalPool("jaundice") ?? jaundice
         case ccL.contains("dysphagia") || ccL.contains("swallow"):
-            candidates = dysphagia
+            candidates = externalPool("dysphagia") ?? dysphagia
         case ccL.contains("rectal bleed") || ccL.contains("blood per rectum") ||
              ccL.contains("haematochezia") || ccL.contains("bpr"):
-            candidates = rectalBleeding
+            candidates = externalPool("rectalBleeding") ?? rectalBleeding
         case ccL.contains("bowel habit") || ccL.contains("change in stool") ||
              ccL.contains("constipation") || ccL.contains("diarrhoea") || ccL.contains("diarrhea"):
-            candidates = bowelHabit
+            candidates = externalPool("bowelHabit") ?? bowelHabit
         case ccL.contains("breast") && (ccL.contains("lump") || ccL.contains("mass")):
-            candidates = breastLump
+            candidates = externalPool("breastLump") ?? breastLump
         case ccL.contains("neck") && (ccL.contains("lump") || ccL.contains("swelling") || ccL.contains("mass")):
-            candidates = neckLump
+            candidates = externalPool("neckLump") ?? neckLump
         case ccL.contains("thyroid") || ccL.contains("hypothyroid") ||
              ccL.contains("hyperthyroid") || ccL.contains("graves") ||
              ccL.contains("goitre") || ccL.contains("hashimoto") ||
              ccL.contains("thyrotoxic") || ccL.contains("tsh"):
-            candidates = thyroidPathology
+            candidates = externalPool("thyroidPathology") ?? thyroidPathology
         case ccL.contains("hernia") || (ccL.contains("groin") && ccL.contains("lump")):
-            candidates = hernia
+            candidates = externalPool("hernia") ?? hernia
         case ccL.contains("perianal") || ccL.contains("haemorrhoid") ||
              ccL.contains("hemorrhoid") || ccL.contains("anal pain") || ccL.contains("piles"):
-            candidates = perianal
+            candidates = externalPool("perianal") ?? perianal
         case ccL.contains("weight loss") || ccL.contains("anorexia") || ccL.contains("cachexia"):
-            candidates = weightLoss
+            candidates = externalPool("weightLoss") ?? weightLoss
         case ccL.contains("reflux") || ccL.contains("heartburn") ||
              ccL.contains("gerd") || ccL.contains("gord") ||
              ccL.contains("bloating") || ccL.contains("indigestion") ||
              ccL.contains("dyspepsia") || ccL.contains("regurgitat"):
-            candidates = refluxGERD
+            candidates = externalPool("refluxGERD") ?? refluxGERD
         case ccL.contains("groin pain") || ccL.contains("right iliac") || ccL.contains("inguinal pain"):
-            candidates = groinPain
+            candidates = externalPool("groinPain") ?? groinPain
         case ccL.contains("abdom") || ccL.contains("belly") || ccL.contains("stomach") ||
              ccL.contains("upper abdom") || ccL.contains("epigast") ||
              ccL.contains("right upper") || ccL.contains("right lower") ||
              ccL.contains("ruq") || ccL.contains("llq") || ccL.contains("rlq"):
-            candidates = abdominalPain
+            candidates = externalPool("abdominalPain") ?? abdominalPain
         case ccL.contains("chest pain") || ccL.contains("chest tightness") ||
              ccL.contains("chest heaviness") || ccL.contains("palpitation"):
-            candidates = chestPain
+            candidates = externalPool("chestPain") ?? chestPain
         case ccL.contains("short") && ccL.contains("breath") ||
              ccL.contains("dyspnoea") || ccL.contains("breathless") ||
              ccL.contains("sob") || ccL.contains("wheez"):
-            candidates = shortnessOfBreath
+            candidates = externalPool("shortnessOfBreath") ?? shortnessOfBreath
         case ccL.contains("fever") || ccL.contains("infection") || ccL.contains("pyrexia") ||
              ccL.contains("dengue") || ccL.contains("leptospir") || ccL.contains("typhoid") ||
              ccL.contains("rigor") || ccL.contains("chills"):
-            candidates = feverInfection
+            candidates = externalPool("feverInfection") ?? feverInfection
         case ccL.contains("urinary") || ccL.contains("dysuria") || ccL.contains("haematuria") ||
              ccL.contains("frequency") || ccL.contains("urine") || ccL.contains("uti"):
-            candidates = urinarySymptoms
+            candidates = externalPool("urinarySymptoms") ?? urinarySymptoms
         case ccL.contains("joint") || ccL.contains("arthrit") || ccL.contains("gout") ||
              ccL.contains("musculoskelet") || ccL.contains("swollen joint") ||
              ccL.contains("joint pain") || ccL.contains("arthralgia"):
-            candidates = jointPain
+            candidates = externalPool("jointPain") ?? jointPain
         case ccL.contains("hypertension") || ccL.contains("high blood pressure") ||
              ccL.contains("htn") || ccL.contains("bp review") || ccL.contains("blood pressure"):
-            candidates = hypertensionReview
+            candidates = externalPool("hypertensionReview") ?? hypertensionReview
         case ccL.contains("diabetes") || ccL.contains("diabetic") || ccL.contains("glucose") ||
              ccL.contains("hba1c") || ccL.contains("dm2") || ccL.contains("dm1"):
-            candidates = diabetesReview
+            candidates = externalPool("diabetesReview") ?? diabetesReview
         case ccL.contains("nausea") || ccL.contains("vomiting") || ccL.contains("vomit") ||
              ccL.contains("emesis") || ccL.contains("retching"):
-            candidates = nauseaVomiting
+            candidates = externalPool("nauseaVomiting") ?? nauseaVomiting
         case ccL.contains("haematemesis") || ccL.contains("hematemesis") ||
              ccL.contains("melaena") || ccL.contains("melena") ||
              ccL.contains("coffee ground") || ccL.contains("upper gi bleed") ||
              (ccL.contains("blood") && ccL.contains("vomit")):
-            candidates = upperGIBleed
+            candidates = externalPool("upperGIBleed") ?? upperGIBleed
         case ccL.contains("post-op") || ccL.contains("post op") || ccL.contains("postop") ||
              ccL.contains("post-operative") || ccL.contains("post operative") ||
              ccL.contains("post surgery") || ccL.contains("post-surgery"):
-            candidates = postOpReview
+            candidates = externalPool("postOpReview") ?? postOpReview
         case ccL.contains("adrenal") || ccL.contains("conn") || ccL.contains("cushing") ||
              ccL.contains("pheochromocytoma") || ccL.contains("phaeochromocytoma") ||
              ccL.contains("incidentaloma") || ccL.contains("hyperaldosterone"):
-            candidates = adrenalEndocrine
+            candidates = externalPool("adrenalEndocrine") ?? adrenalEndocrine
         case ccL.contains("vascular") || ccL.contains("mesenteric") ||
              ccL.contains("ischaemia") || ccL.contains("ischemia") ||
              ccL.contains("aortic") || ccL.contains("claudicat") ||
              ccL.contains("limb ischaemia") || ccL.contains("peripheral arterial"):
-            candidates = vascularSurgical
+            candidates = externalPool("vascularSurgical") ?? vascularSurgical
         case ccL.contains("bowel obstruct") || ccL.contains("small bowel") ||
              ccL.contains("volvulus") || ccL.contains("intussuscep") ||
              (ccL.contains("obstruction") && (ccL.contains("bowel") || ccL.contains("intesti"))):
-            candidates = smallBowelObstruction
+            candidates = externalPool("smallBowelObstruction") ?? smallBowelObstruction
         case ccL.contains("pilonidal") || ccL.contains("coccyx") || ccL.contains("sacrococcygeal"):
-            candidates = pilonidalDisease
+            candidates = externalPool("pilonidalDisease") ?? pilonidalDisease
         case ccL.contains("renal colic") || ccL.contains("kidney stone") ||
              ccL.contains("ureteric") || ccL.contains("nephrolithiasis") ||
              ccL.contains("loin to groin") || ccL.contains("renal calcul"):
-            candidates = renalColic
+            candidates = externalPool("renalColic") ?? renalColic
         case ccL.contains("stroke") || ccL.contains("tia") || ccL.contains("transient ischaem") ||
              ccL.contains("facial droop") || ccL.contains("hemiplegia") || ccL.contains("hemiparesis"):
-            candidates = strokeTIA
+            candidates = externalPool("strokeTIA") ?? strokeTIA
         case ccL.contains("anaemia") || ccL.contains("anemia") ||
              (ccL.contains("fatigue") && ccL.contains("pallor")) ||
              ccL.contains("low haemoglobin") || ccL.contains("low hemoglobin"):
-            candidates = anaemia
+            candidates = externalPool("anaemia") ?? anaemia
         case (ccL.contains("wound") || ccL.contains("surgical site")) &&
              (ccL.contains("infect") || ccL.contains("discharge") || ccL.contains("dehisc")):
-            candidates = woundInfection
+            candidates = externalPool("woundInfection") ?? woundInfection
         case ccL.contains("sepsis") || ccL.contains("septic") || ccL.contains("bacteraemia") ||
              ccL.contains("sirs") || (ccL.contains("fever") && ccL.contains("shock")):
-            candidates = sepsisConditions
+            candidates = externalPool("sepsisConditions") ?? sepsisConditions
         case ccL.contains("necrotis") || ccL.contains("fasciitis") || ccL.contains("fournier") ||
              (ccL.contains("wound") && ccL.contains("necrot")) ||
              (ccL.contains("skin") && ccL.contains("infect") && ccL.contains("severe")):
-            candidates = necrotizingInfection
+            candidates = externalPool("necrotizingInfection") ?? necrotizingInfection
         case ccL.contains("pulmonary embol") || ccL.contains("pe ") || ccL == "pe" ||
              ccL.contains("haemoptysis") || ccL.contains("hemoptysis") ||
              (ccL.contains("breathless") && ccL.contains("chest pain") && ccL.contains("leg")):
-            candidates = venousThromboEmbolism
+            candidates = externalPool("venousThromboEmbolism") ?? venousThromboEmbolism
         case ccL.contains("limb ischaem") || ccL.contains("acute ischaem") ||
              ccL.contains("cold leg") || ccL.contains("cold foot") || ccL.contains("cold limb") ||
              (ccL.contains("limb") && (ccL.contains("pale") || ccL.contains("pulseless"))):
-            candidates = acuteLimbIschaemia
+            candidates = externalPool("acuteLimbIschaemia") ?? acuteLimbIschaemia
         case ccL.contains("skin") && (ccL.contains("lump") || ccL.contains("lesion") || ccL.contains("mole") || ccL.contains("growth")) ||
              ccL.contains("melanoma") || ccL.contains("bcc") || ccL.contains("scc") ||
              ccL.contains("sebaceous") || ccL.contains("lipoma") ||
              (ccL.contains("lump") && (ccL.contains("back") || ccL.contains("arm") || ccL.contains("scalp") || ccL.contains("face"))):
-            candidates = skinLesion
+            candidates = externalPool("skinLesion") ?? skinLesion
         case ccL.contains("scrotum") || ccL.contains("testicular") || ccL.contains("testicle") ||
              ccL.contains("orchit") || ccL.contains("hydrocele") || ccL.contains("varicocele") ||
              ccL.contains("epididym") || (ccL.contains("scrotal") && ccL.contains("lump")):
-            candidates = scrotalTesticular
+            candidates = externalPool("scrotalTesticular") ?? scrotalTesticular
         case ccL.contains("urinary retention") || ccL.contains("unable to void") ||
              ccL.contains("acute retention") || ccL.contains("retention of urine") ||
              (ccL.contains("prostate") && !ccL.contains("cancer")) ||
              ccL.contains("bph") || ccL.contains("urethral stricture") || ccL.contains("lower urinary"):
-            candidates = urinaryRetention
+            candidates = externalPool("urinaryRetention") ?? urinaryRetention
         case ccL.contains("rectal prolapse") || ccL.contains("prolapse") && ccL.contains("rectum") ||
              (ccL.contains("protrusion") && ccL.contains("anus")):
-            candidates = rectalProlapse
+            candidates = externalPool("rectalProlapse") ?? rectalProlapse
         case ccL.contains("parotid") || ccL.contains("salivary") || ccL.contains("submandibular gland") ||
              ccL.contains("sublingual gland") || (ccL.contains("jaw") && ccL.contains("swelling")):
-            candidates = parotidSalivary
+            candidates = externalPool("parotidSalivary") ?? parotidSalivary
+        case ccL.contains("follow-up") || ccL.contains("follow up") ||
+             (ccL.contains("follow") && ccL.contains("up")):
+            candidates = externalPool("postOpReview") ?? postOpReview
+        case ccL.contains("ercp") || (ccL.contains("biliary") && !ccL.contains("hernia")):
+            candidates = externalPool("jaundice") ?? jaundice
+        case ccL.contains("screen"):
+            candidates = externalPool("weightLoss") ?? weightLoss
         default:
-            candidates = abdominalPain   // safest surgical default
+            candidates = externalPool("abdominalPain") ?? abdominalPain   // safest surgical default
         }
 
         // Merge longitudinal context into scoring inputs.
@@ -262,6 +294,197 @@ enum BayesianDiagnosisEngine {
                 if confirmedL.contains(where: { nameL.contains($0) || $0.contains(nameL) }) {
                     scored[i].logPosterior += 20
                     scored[i].evidence.insert("Previously confirmed diagnosis", at: 0)
+                    scored[i].evidenceSources["longitudinal", default: []].insert("Previously confirmed", at: 0)
+                }
+            }
+        }
+
+        // Alvarado score feedback: adjust appendicitis log-posterior based on
+        // a computed Alvarado score (0–10) entered in the Clinical Scores tab.
+        // This is the POC for clinical score → Bayesian engine integration.
+        if let alv = alvaradoScore {
+            let adj: Int
+            let label: String
+            switch alv {
+            case 7...10: adj = 18; label = "Alvarado \(alv)/10 — high probability"
+            case 5...6:  adj = 8;  label = "Alvarado \(alv)/10 — compatible"
+            case 4:      adj = 2;  label = "Alvarado \(alv)/10 — borderline"
+            default:     adj = -8; label = "Alvarado \(alv)/10 — low probability"
+            }
+            for i in scored.indices where scored[i].candidate.name.lowercased().contains("appendicitis") {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+
+        // Glasgow / Ranson → pancreatitis severity adjustment
+        // Both scores measure severity of acute pancreatitis; ≥3 = severe.
+        // Take the higher of the two to avoid double-penalising mild cases.
+        let pancreatitisAdj: (Int, String)? = {
+            func grade(_ val: Int, system: String) -> (Int, String) {
+                switch val {
+                case 3...: return (16, "\(system) \(val) — severe pancreatitis")
+                case 2:    return (8,  "\(system) \(val) — moderate pancreatitis")
+                default:   return (-4, "\(system) \(val) — mild pancreatitis")
+                }
+            }
+            if let g = glasgowPancreatitisScore, let r = ransonScore {
+                let gPair = grade(g, system: "Glasgow"); let rPair = grade(r, system: "Ranson")
+                return gPair.0 >= rPair.0 ? gPair : rPair
+            }
+            if let g = glasgowPancreatitisScore { return grade(g, system: "Glasgow") }
+            if let r = ransonScore              { return grade(r, system: "Ranson") }
+            return nil
+        }()
+        if let (adj, label) = pancreatitisAdj {
+            for i in scored.indices where scored[i].candidate.name.lowercased().contains("pancreatitis") {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+
+        // Tokyo Grade → cholecystitis / cholangitis adjustment
+        // Grade I (mild) → conservative management likely; Grade III (severe) → urgent intervention.
+        func tokyoAdj(_ grade: Int) -> (Int, String) {
+            switch grade {
+            case 3: return (16, "Tokyo Grade III — severe, urgent intervention")
+            case 2: return (8,  "Tokyo Grade II — moderate severity")
+            default: return (-4, "Tokyo Grade I — mild")
+            }
+        }
+        if let g = tokyoCholecystitisGrade {
+            let (adj, label) = tokyoAdj(g)
+            for i in scored.indices where scored[i].candidate.name.lowercased().contains("cholecystitis") {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+        if let g = tokyoCholangitisGrade {
+            let (adj, label) = tokyoAdj(g)
+            for i in scored.indices where scored[i].candidate.name.lowercased().contains("cholangitis") {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+
+        // Rockall / Blatchford → UGI bleed candidate weighting
+        // Rockall ≥5 = high rebleed mortality; Blatchford ≥6 = needs inpatient endoscopy.
+        if let rk = rockallScore {
+            let (adj, label): (Int, String) = switch rk {
+            case 8...: (18, "Rockall \(rk) — very high risk UGI bleed")
+            case 5...: (12, "Rockall \(rk) — high risk UGI bleed")
+            case 3...: (6,  "Rockall \(rk) — intermediate risk")
+            default:   (-4, "Rockall \(rk) — low risk")
+            }
+            let ugiTargets = ["peptic ulcer", "varices", "mallory", "dieulafoy", "malignancy bleed"]
+            for i in scored.indices where ugiTargets.contains(where: { scored[i].candidate.name.lowercased().contains($0) }) {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+        if let bf = blatchfordScore {
+            let (adj, label): (Int, String) = switch bf {
+            case 12...: (16, "Blatchford \(bf) — very high risk, admit + OGD")
+            case 6...:  (10, "Blatchford \(bf) — high risk, endoscopy required")
+            default:    (-4, "Blatchford \(bf) — possible outpatient management")
+            }
+            let ugiTargets = ["peptic ulcer", "varices", "mallory", "dieulafoy", "malignancy bleed"]
+            for i in scored.indices where ugiTargets.contains(where: { scored[i].candidate.name.lowercased().contains($0) }) {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+
+        // Wells DVT → DVT candidates
+        if let dvt = wellsDVTScore {
+            let (adj, label): (Int, String) = dvt >= 3 ? (16, "Wells DVT \(Int(dvt)) — high probability (~53%)")
+                                              : dvt >= 1 ? (8, "Wells DVT \(Int(dvt)) — moderate probability (~17%)")
+                                              : (-6, "Wells DVT \(Int(dvt)) — low probability (~5%)")
+            for i in scored.indices where scored[i].candidate.name.lowercased().contains("deep vein") ||
+                                          scored[i].candidate.name.lowercased().contains("dvt") {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+
+        // Wells PE → PE candidates
+        if let pe = wellsPEScore {
+            let (adj, label): (Int, String) = pe >= 7 ? (16, "Wells PE \(pe) — high probability (~41%)")
+                                              : pe >= 5 ? (10, "Wells PE \(pe) — moderate probability (~16%)")
+                                              : (-6, "Wells PE \(pe) — low probability (~3%)")
+            for i in scored.indices where scored[i].candidate.name.lowercased().contains("pulmonary embol") ||
+                                          scored[i].candidate.name.lowercased().contains(" pe ") {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+
+        // ABCD² → TIA/stroke candidates
+        if let abcd = abcd2Score {
+            let (adj, label): (Int, String) = abcd >= 6 ? (16, "ABCD² \(abcd)/7 — high 2-day stroke risk (~8%)")
+                                              : abcd >= 4 ? (10, "ABCD² \(abcd)/7 — moderate risk (~4%)")
+                                              : (-4, "ABCD² \(abcd)/7 — lower risk (~1%)")
+            for i in scored.indices where scored[i].candidate.name.lowercased().contains("tia") ||
+                                          scored[i].candidate.name.lowercased().contains("transient") {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+
+        // LRINEC → necrotising soft tissue infection candidates
+        if let lr = lrinecScore {
+            let (adj, label): (Int, String) = lr >= 8 ? (18, "LRINEC \(lr) — high risk necrotising fasciitis (PPV 93%)")
+                                              : lr >= 6 ? (12, "LRINEC \(lr) — moderate risk (PPV 51%)")
+                                              : (-4, "LRINEC \(lr) — low risk")
+            for i in scored.indices where scored[i].candidate.name.lowercased().contains("necrotis") ||
+                                          scored[i].candidate.name.lowercased().contains("fasciitis") ||
+                                          scored[i].candidate.name.lowercased().contains("fournier") {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+
+        // qSOFA → sepsis candidates
+        if let qs = qsofaScore {
+            let (adj, label): (Int, String) = qs >= 2 ? (16, "qSOFA \(qs)/3 — high risk organ dysfunction (Sepsis-3)")
+                                              : qs == 1 ? (6,  "qSOFA \(qs)/3 — monitor closely")
+                                              : (-4, "qSOFA 0 — low risk")
+            for i in scored.indices where scored[i].candidate.name.lowercased().contains("sepsis") ||
+                                          scored[i].candidate.name.lowercased().contains("bacteraemia") {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
                 }
             }
         }
@@ -311,6 +534,8 @@ enum BayesianDiagnosisEngine {
         let candidate: Candidate
         var logPosterior: Int
         var evidence: [String]
+        var evidenceSources: [String: [String]] = [:]
+        var pathognomicFindings: [String] = []   // features with logLR ≥ 18 that fired
     }
 
     private static func score(
@@ -340,9 +565,12 @@ enum BayesianDiagnosisEngine {
         return candidates.map { c in
             var logP = c.logPrior
             var evidence: [String] = []
+            var evidenceSources: [String: [String]] = [:]
+            var pathognomicFindings: [String] = []
 
             for f in c.features {
                 var triggered = false
+                var sourceKey = "other"
                 switch f.key {
                 case "onset", "site", "character", "radiation", "associations",
                      "timing", "exacerbating", "relieving", "severity":
@@ -350,80 +578,168 @@ enum BayesianDiagnosisEngine {
                     triggered = sel.contains(where: {
                         $0.lowercased().contains(f.value.lowercased())
                     })
+                    sourceKey = "symptoms"
                 case "exam":
                     // Space-separated value = all words must appear in exam text (AND logic).
                     let words = f.value.lowercased().split(separator: " ").map(String.init)
                     triggered = words.allSatisfy { examL.contains($0) }
+                    sourceKey = "exam"
                 case "pmh":
                     triggered = pmhL.contains(f.value.lowercased())
+                    sourceKey = "history"
                 case "pshx":
                     triggered = pshxL.contains(f.value.lowercased())
+                    sourceKey = "history"
                 case "inv":
                     triggered = invNames.contains(where: { $0.contains(f.value.lowercased()) }) ||
                                 invResults.contains(where: { $0.contains(f.value.lowercased()) })
+                    sourceKey = "investigation"
                 case "age_over":
                     if let threshold = Int(f.value) { triggered = age >= threshold }
+                    sourceKey = "demographics"
                 case "age_under":
                     if let threshold = Int(f.value) { triggered = age > 0 && age < threshold }
+                    sourceKey = "demographics"
                 case "sex_female":
                     triggered = sex == .female
+                    sourceKey = "demographics"
                 case "sex_male":
                     triggered = sex == .male
+                    sourceKey = "demographics"
                 case "med":
                     triggered = medsL.contains(where: { $0.contains(f.value.lowercased()) })
+                    sourceKey = "history"
                 case "social":
                     triggered = socialL.contains(f.value.lowercased())
+                    sourceKey = "history"
                 case "bmi_over":
                     if let threshold = Double(f.value), let bmiVal = bmi { triggered = bmiVal >= threshold }
+                    sourceKey = "demographics"
                 case "bmi_under":
                     if let threshold = Double(f.value), let bmiVal = bmi { triggered = bmiVal > 0 && bmiVal < threshold }
+                    sourceKey = "demographics"
                 default:
                     break
                 }
 
                 if triggered {
                     logP += f.logLR
-                    if f.logLR > 0 { evidence.append(f.evidenceLabel) }
+                    if f.logLR > 0 && !f.evidenceLabel.isEmpty {
+                        evidence.append(f.evidenceLabel)
+                        // Suppress demographics from the evidence panel (age/sex are context, not findings)
+                        if sourceKey != "demographics" && sourceKey != "other" {
+                            evidenceSources[sourceKey, default: []].append(f.evidenceLabel)
+                        }
+                    }
+                    // Track pathognomonic findings (LR+ ≥ 36 ≙ logLR ≥ 18) — these gravitationally enforce working diagnosis
+                    if f.logLR >= 18 && !f.evidenceLabel.isEmpty {
+                        pathognomicFindings.append(f.evidenceLabel)
+                    }
                 }
             }
 
-            return ScoredCandidate(candidate: c, logPosterior: logP, evidence: evidence)
+            return ScoredCandidate(candidate: c, logPosterior: logP, evidence: evidence,
+                                   evidenceSources: evidenceSources, pathognomicFindings: pathognomicFindings)
         }
     }
 
-    // MARK: - Softmax normalisation → top 5 results
+    // MARK: - Log-gap normalisation → top 5 results
+    // Architecture: logGap (rank-1 minus rank-2 log-posterior) is the primary confidence
+    // signal — it measures how much the evidence statistically separates rank-1 from the field.
+    // Softmax probability is computed for display only and is NOT the architectural decision metric.
 
     private static func topResults(from scored: [ScoredCandidate]) -> [DiagnosisResult] {
         guard !scored.isEmpty else { return [] }
 
-        let maxScore = scored.map(\.logPosterior).max() ?? 0
-        let exps = scored.map { exp(Double($0.logPosterior - maxScore)) }
+        // Sort by log-posterior BEFORE softmax — this preserves the gap signal
+        let byLogP = scored.sorted { $0.logPosterior > $1.logPosterior }
+
+        // logGap: rank-1 minus rank-2 in log-posterior space (or rank-1's own score if only one)
+        let logGap = byLogP.count >= 2
+            ? byLogP[0].logPosterior - byLogP[1].logPosterior
+            : max(byLogP[0].logPosterior, 0)
+
+        // Softmax for display only
+        let maxScore = byLogP[0].logPosterior
+        let exps = byLogP.map { exp(Double($0.logPosterior - maxScore)) }
         let total = exps.reduce(0, +)
 
-        let withProb = zip(scored, exps).map { (s, e) -> (ScoredCandidate, Int) in
+        let withProb = zip(byLogP, exps).map { (s, e) -> (ScoredCandidate, Int) in
             let prob = total > 0 ? Int((e / total) * 100.0) : 0
             return (s, prob)
         }
 
-        let top5 = withProb
-            .sorted { $0.1 > $1.1 }
-            .prefix(5)
+        return withProb.prefix(5).enumerated().map { (idx, pair) in
+            let (s, prob) = pair
+            // Only rank-1 carries the gap; lower ranks carry 0
+            let gap = idx == 0 ? logGap : 0
 
-        return top5.map { (s, prob) in
+            // Confidence driven by logGap (rank-1) or pathognomonic finding (any rank)
             let conf: DiagnosisResult.Confidence
-            switch prob {
-            case 55...: conf = .high
-            case 30...: conf = .moderate
-            default:    conf = .low
+            switch gap {
+            case 25...: conf = .certain
+            case 15...: conf = .high
+            case 7...:  conf = .moderate
+            default:
+                conf = s.pathognomicFindings.isEmpty ? .low : .high
             }
+
             return DiagnosisResult(
                 name: s.candidate.name,
                 icdCode: s.candidate.icd,
                 probability: prob,
                 evidence: Array(s.evidence.prefix(4)),
-                confidence: conf
+                evidenceSources: s.evidenceSources.mapValues { Array($0.prefix(3)) },
+                confidence: conf,
+                rawLogPosterior: s.logPosterior,
+                logGap: gap,
+                pathognomicFindings: s.pathognomicFindings
             )
         }
+    }
+
+    // MARK: - External diagnostic database (DiagnosticDatabase.json)
+    // JSON file in the app bundle; evidence-based LR values with citations.
+    // Engine prefers loaded pools; falls back to hardcoded arrays if absent.
+
+    struct CandidateSpec: Codable {
+        let name: String
+        let icd: String
+        let logPrior: Int
+        let features: [FeatureSpec]
+
+        struct FeatureSpec: Codable {
+            let key: String
+            let value: String
+            let logLR: Int
+            let evidenceLabel: String
+            let citation: String?
+        }
+
+        func toCandidate() -> Candidate {
+            Candidate(name: name, icd: icd, logPrior: logPrior,
+                      features: features.map { f in
+                          Candidate.Feature(key: f.key, value: f.value,
+                                            logLR: f.logLR, evidenceLabel: f.evidenceLabel)
+                      })
+        }
+    }
+
+    struct CandidateDatabase: Codable {
+        let version: String
+        let pools: [String: [CandidateSpec]]
+    }
+
+    // Lazy-loaded once at first access; nil if file absent or unparseable.
+    static let externalDatabase: CandidateDatabase? = {
+        guard let url = Bundle.main.url(forResource: "DiagnosticDatabase", withExtension: "json"),
+              let data = try? Data(contentsOf: url) else { return nil }
+        return try? JSONDecoder().decode(CandidateDatabase.self, from: data)
+    }()
+
+    // Convenience: load a candidate pool from the external database, or return nil.
+    private static func externalPool(_ name: String) -> [Candidate]? {
+        externalDatabase?.pools[name].map { $0.map { $0.toCandidate() } }
     }
 
     // MARK: - Candidate tables

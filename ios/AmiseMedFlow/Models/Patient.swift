@@ -62,7 +62,33 @@ final class Patient {
     // MARK: - Clinical intelligence fields
     var workingDiagnosis: String?
     var workingDiagnosisICD: String?
+    // CC that was active when workingDiagnosis was last confirmed — used to detect staleness
+    var workingDiagnosisCC: String?
     var assessmentText: String?
+    // Most recently computed Alvarado score (0–10); nil if not yet scored
+    var alvaradoScore: Int?
+    // Glasgow Pancreatitis score (0–8); ≥3 = severe
+    var glasgowPancreatitisScore: Int?
+    // Ranson score (0–11); ≥3 = severe
+    var ransonScore: Int?
+    // Tokyo Grade for acute cholecystitis (1–3); nil if not scored
+    var tokyoCholecystitisGrade: Int?
+    // Tokyo Grade for acute cholangitis (1–3); nil if not scored
+    var tokyoCholangitisGrade: Int?
+    // Rockall score (0–11); ≥5 = high rebleed risk
+    var rockallScore: Int?
+    // Blatchford score (0–23); ≥6 = high-risk UGI bleed
+    var blatchfordScore: Int?
+    // Wells DVT score (continuous); ≤0 low, 1–2 moderate, ≥3 high
+    var wellsDVTScore: Double?
+    // Wells PE score (continuous); ≤4 low, 5–6 moderate, ≥7 high
+    var wellsPEScore: Double?
+    // ABCD² score (0–7); ≥4 = higher 2-day stroke risk after TIA
+    var abcd2Score: Int?
+    // LRINEC score (0–13); ≥6 = moderate risk necrotising fasciitis
+    var lrinecScore: Int?
+    // qSOFA score (0–3); ≥2 with suspected infection = sepsis
+    var qsofaScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

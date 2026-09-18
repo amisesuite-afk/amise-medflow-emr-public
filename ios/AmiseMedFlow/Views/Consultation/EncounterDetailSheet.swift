@@ -101,7 +101,6 @@ struct EncounterDetailSheet: View {
     private var acuityBadge: some View {
         let (label, color): (String, Color) = switch encounter.acuity {
         case .routine:   ("Routine", .green)
-        case .priority:  ("Priority", .yellow)
         case .urgent:    ("Urgent", .orange)
         case .emergency: ("Emergency", .red)
         }

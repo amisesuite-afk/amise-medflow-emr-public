@@ -585,7 +585,7 @@ struct SOCRATESDimension: Identifiable {
 }
 
 // CC-adaptive chip sets — shared across SOCRATES dimensions
-enum SOCRATESChips {
+private enum SOCRATESChips {
     // Stable across all complaint types
     static let onset    = ["Today", "Yesterday", "2–3 days ago", "4–7 days ago", "1–4 weeks ago", "1–6 months ago", "Over a year", "Sudden", "Gradual"]
     static let timing   = ["Constant", "Intermittent", "Progressive", "Post-prandial", "Nocturnal", "Episodic", "Worse over time"]
@@ -638,207 +638,84 @@ enum SOCRATESChips {
     static let relChest   = ["Rest", "GTN spray", "Antacids", "Sitting up", "Analgesics", "Nothing"]
     static let relDysph   = ["Small sips of water", "Liquids only", "Sitting upright", "Nothing"]
     static let relAnoRect = ["Lying down", "Warm bath / sitz bath", "Analgesics", "Nothing"]
-
-    // Non-pain character sets
-    static let charDysphagia  = ["Solids only", "Liquids only", "Both solids and liquids", "Meat and bread especially", "Tablets / pills only", "Regurgitation of undigested food", "Odynophagia (painful swallowing)"]
-    static let charBleeding   = ["Bright red on tissue / paper", "Blood coating stool", "Blood mixed with stool", "Blood dripping into pan", "Visible haematuria", "Dark / altered blood", "Clots passed", "Minimal spotting"]
-    static let charUrine      = ["Uniformly pink / red (painless)", "Initial stream only", "Terminal haematuria", "Visible clots", "Dark brown / cola-coloured", "Frothy / foamy", "Turbid / cloudy", "Offensive odour"]
-    static let charSkinGrowth = ["Stable for years", "Slowly growing", "Recently enlarging", "Changed colour", "Ulcerated", "Started bleeding", "No notable change", "Appeared suddenly"]
-
-    // Growth / progression chips (replaces Radiation for non-pain presentations)
-    static let growthRate     = ["Stable for years", "Slowly growing (months–years)", "Growing over weeks", "Rapid growth (days–weeks)", "Fluctuating in size", "Recently enlarging", "Intermittently visible"]
-    static let progression    = ["Stable", "Slowly progressive (months)", "Rapidly progressive (weeks)", "Intermittent / variable", "Improving recently", "Worsening despite treatment"]
-
-    // Non-pain severity / impact chips
-    static let sevImpact    = ["Cosmetic concern only", "Mild discomfort", "Moderate discomfort", "Significant pain", "Functional limitation", "Severely limiting activities"]
-    static let sevDysphagia = ["Normal diet maintained", "Avoiding certain foods", "Modified / soft diet only", "Liquid diet only", "Cannot swallow at all"]
-    static let sevBleeding  = ["Spots only", "Intermittent episodes", "Daily / frequent", "Heavy — clots / flooding", "Causing anaemia symptoms"]
-    static let sevUrinary   = ["Occasional episodes", "Intermittent visible haematuria", "Persistent visible haematuria", "Clots / difficulty voiding"]
-    static let sevBowel     = ["Infrequent / manageable", "Affecting quality of life", "Daily episodes", "Constant access to toilet required", "Faecal incontinence", "Nocturnal symptoms"]
-
-    // Weight loss specific
-    static let weightLossType = ["Intentional (diet / exercise)", "Unintentional", "Related to illness", "Post-operative", "Unknown cause"]
-    static let weightLoss     = ["<5% body weight (mild)", "5–10% body weight (moderate)", ">10% body weight (significant)", "Rapid >5%/month", "Gradual over months–years", "Objectively measured", "Estimated by patient"]
 }
 
 // Returns SOCRATES chip sets adapted to the chief complaint keyword(s)
-// Dimension titles, questions, and chips all adapt to symptom type — not pain-only.
 func socrateDimensions(for cc: String) -> [SOCRATESDimension] {
     let lc = cc.lowercased()
 
-    let isNeck      = lc.contains("neck") || lc.contains("thyroid") || lc.contains("goitre") || lc.contains("goiter") || lc.contains("lymph") || lc.contains("cervical gland")
-    let isBreast    = lc.contains("breast") || lc.contains("nipple") || lc.contains("mastalgia")
+    let isNeck     = lc.contains("neck") || lc.contains("thyroid") || lc.contains("goitre") || lc.contains("goiter") || lc.contains("lymph") || lc.contains("cervical gland")
+    let isBreast   = lc.contains("breast") || lc.contains("nipple") || lc.contains("mastalgia")
     let isChestPain = (lc.contains("chest") && lc.contains("pain")) || lc.contains("cardiac") || lc.contains("angina")
-    let isGroin     = lc.contains("groin") || lc.contains("hernia") || lc.contains("inguinal") || lc.contains("femoral") || lc.contains("scrotal") || lc.contains("umbilical lump") || lc.contains("incisional")
-    let isDysph     = lc.contains("dysphagia") || lc.contains("swallow")
-    let isAnoRect   = lc.contains("rectal") || lc.contains("anorectal") || lc.contains("anal") || lc.contains("haemorrhoid") || lc.contains("hemorrhoid") || lc.contains("fissure") || lc.contains("fistula") || lc.contains("perianal")
-    let isSkin      = lc.contains("skin") || lc.contains("mole") || lc.contains("melanoma") || lc.contains("sebaceous") || lc.contains("lipoma") || (lc.contains("lump") && (lc.contains("back") || lc.contains("arm") || lc.contains("leg") || lc.contains("scalp") || lc.contains("face")))
-    let isUro       = lc.contains("haematuria") || lc.contains("hematuria") || lc.contains("urinary") || lc.contains("urological") || lc.contains("renal colic") || lc.contains("kidney stone") || lc.contains("bladder")
-    let isLump      = lc.contains("lump") || lc.contains("mass") || lc.contains("swelling") || lc.contains("node")
-    let isJaundice  = lc.contains("jaundice") || lc.contains("jaundic") || lc.contains("yellow") || lc.contains("icterus")
-    let isBleeding  = lc.contains("bleeding") || lc.contains("rectal bleed") || lc.contains("pr bleed") || lc.contains("melaena")
-    let isWeightLoss = lc.contains("weight loss") || lc.contains("weight_loss") || lc.contains("loss of weight")
-    let isBowel     = lc.contains("bowel") || lc.contains("constipation") || lc.contains("diarrhoea") || lc.contains("diarrhea") || lc.contains("change in bowel")
-    let isReflux    = lc.contains("reflux") || lc.contains("heartburn") || lc.contains("gerd") || lc.contains("gord") || lc.contains("indigestion") || lc.contains("dyspepsia") || lc.contains("regurgitat") || lc.contains("bloating") || lc.contains("belching") || lc.contains("waterbrash")
+    let isGroin    = lc.contains("groin") || lc.contains("hernia") || lc.contains("inguinal") || lc.contains("femoral") || lc.contains("scrotal") || lc.contains("umbilical lump") || lc.contains("incisional")
+    let isDysph    = lc.contains("dysphagia") || lc.contains("swallow")
+    let isAnoRect  = lc.contains("rectal") || lc.contains("anorectal") || lc.contains("anal") || lc.contains("haemorrhoid") || lc.contains("hemorrhoid") || lc.contains("fissure") || lc.contains("fistula") || lc.contains("perianal")
+    let isSkin     = lc.contains("skin") || lc.contains("mole") || lc.contains("melanoma") || lc.contains("sebaceous") || lc.contains("lipoma") || (lc.contains("lump") && (lc.contains("back") || lc.contains("arm") || lc.contains("leg") || lc.contains("scalp") || lc.contains("face")))
+    let isUro      = lc.contains("haematuria") || lc.contains("hematuria") || lc.contains("urinary") || lc.contains("urological") || lc.contains("renal colic") || lc.contains("kidney stone") || lc.contains("bladder")
+    let isLump     = lc.contains("lump") || lc.contains("mass") || lc.contains("swelling") || lc.contains("node")
 
     let site: [String], char: [String], rad: [String], assoc: [String], exc: [String], rel: [String]
-    var charTitle = "Character",  charQ   = "What is it like?"
-    var radTitle  = "Radiation",  radQ    = "Does it spread?"
-    var radMulti  = false
-    var sevTitle  = "Severity",   sevQ    = "Severity rating?"
-    var sevChips  = SOCRATESChips.severity
 
     switch true {
     case isNeck:
-        site = SOCRATESChips.siteNeck;    char = SOCRATESChips.charLump
-        charTitle = "Features";           charQ  = "What is the lump like?"
-        rad = SOCRATESChips.growthRate;   radTitle = "Growth"; radQ = "How fast has it grown?"; radMulti = false
-        assoc = SOCRATESChips.assocNeck
-        exc = SOCRATESChips.excLump;      rel = SOCRATESChips.relLump
-        sevTitle = "Impact"; sevQ = "How is it affecting you?"; sevChips = SOCRATESChips.sevImpact
-
+        site = SOCRATESChips.siteNeck;   char = SOCRATESChips.charLump
+        rad  = SOCRATESChips.radNeck;    assoc = SOCRATESChips.assocNeck
+        exc  = SOCRATESChips.excLump;    rel   = SOCRATESChips.relLump
     case isBreast:
-        site = SOCRATESChips.siteBreast;  char = SOCRATESChips.charBreast
-        charTitle = "Features";           charQ  = "What is the lump like?"
-        rad = SOCRATESChips.growthRate;   radTitle = "Growth / duration"; radQ = "How long present, how fast growing?"; radMulti = false
-        assoc = SOCRATESChips.assocBreast
-        exc = SOCRATESChips.excLump;      rel = SOCRATESChips.relLump
-        sevTitle = "Impact"; sevQ = "How is it affecting you?"; sevChips = SOCRATESChips.sevImpact
-
+        site = SOCRATESChips.siteBreast; char = SOCRATESChips.charBreast
+        rad  = SOCRATESChips.radNone;    assoc = SOCRATESChips.assocBreast
+        exc  = SOCRATESChips.excLump;    rel   = SOCRATESChips.relLump
     case isChestPain:
-        site = SOCRATESChips.siteChest;   char = SOCRATESChips.charPain
-        rad = SOCRATESChips.radChest;     assoc = SOCRATESChips.assocChest
-        exc = SOCRATESChips.excChest;     rel = SOCRATESChips.relChest
-
+        site = SOCRATESChips.siteChest;  char = SOCRATESChips.charPain
+        rad  = SOCRATESChips.radChest;   assoc = SOCRATESChips.assocChest
+        exc  = SOCRATESChips.excChest;   rel   = SOCRATESChips.relChest
     case isGroin:
-        site = SOCRATESChips.siteGroin
-        if isLump {
-            char = SOCRATESChips.charLump
-            charTitle = "Features"; charQ = "What is the lump like?"
-            rad = SOCRATESChips.growthRate; radTitle = "Growth"; radQ = "How long present / growing?"; radMulti = false
-            sevTitle = "Impact"; sevQ = "How is it affecting you?"; sevChips = SOCRATESChips.sevImpact
-        } else {
-            char = SOCRATESChips.charPain
-            rad = SOCRATESChips.radAbdominal
-        }
-        assoc = SOCRATESChips.assocAbdominal
-        exc = SOCRATESChips.excLump;      rel = SOCRATESChips.relLump
-
+        site = SOCRATESChips.siteGroin;  char = isLump ? SOCRATESChips.charLump : SOCRATESChips.charPain
+        rad  = SOCRATESChips.radAbdominal; assoc = SOCRATESChips.assocAbdominal
+        exc  = SOCRATESChips.excLump;    rel   = SOCRATESChips.relLump
     case isDysph:
-        site = SOCRATESChips.siteDysphagia
-        char = SOCRATESChips.charDysphagia
-        charTitle = "Food / trigger";     charQ = "What triggers the dysphagia?"
-        rad = SOCRATESChips.progression;  radTitle = "Progression"; radQ = "Is it worsening?"; radMulti = false
-        assoc = SOCRATESChips.assocDysphagia
-        exc = SOCRATESChips.excDysph;     rel = SOCRATESChips.relDysph
-        sevTitle = "Dietary impact"; sevQ = "What can you eat now?"; sevChips = SOCRATESChips.sevDysphagia
-
+        site = SOCRATESChips.siteDysphagia; char = SOCRATESChips.charPain
+        rad  = SOCRATESChips.radNone;    assoc = SOCRATESChips.assocDysphagia
+        exc  = SOCRATESChips.excDysph;   rel   = SOCRATESChips.relDysph
     case isAnoRect:
-        site = SOCRATESChips.siteAnorectal
-        if isBleeding {
-            char = SOCRATESChips.charBleeding
-            charTitle = "Type of bleeding"; charQ = "Describe the bleeding?"
-            sevTitle = "Volume"; sevQ = "How much bleeding?"; sevChips = SOCRATESChips.sevBleeding
-        } else {
-            char = SOCRATESChips.charPain
-        }
-        rad = SOCRATESChips.radNone;      assoc = SOCRATESChips.assocAnorectal
-        exc = SOCRATESChips.excAnoRect;   rel = SOCRATESChips.relAnoRect
-
+        site = SOCRATESChips.siteAnorectal; char = SOCRATESChips.charPain
+        rad  = SOCRATESChips.radNone;    assoc = SOCRATESChips.assocAnorectal
+        exc  = SOCRATESChips.excAnoRect; rel   = SOCRATESChips.relAnoRect
     case isSkin:
-        site = SOCRATESChips.siteSkin;    char = SOCRATESChips.charSkin
-        charTitle = "Appearance";         charQ = "What does it look like?"
-        rad = SOCRATESChips.charSkinGrowth; radTitle = "Change over time"; radQ = "Has it changed recently?"; radMulti = false
-        assoc = SOCRATESChips.assocSkin
-        exc = ["Sun exposure", "Trauma", "None"]
-        rel = ["None", "Reducing sun exposure"]
-        sevTitle = "Concern"; sevQ = "Level of concern?"; sevChips = SOCRATESChips.sevImpact
-
+        site = SOCRATESChips.siteSkin;   char = SOCRATESChips.charSkin
+        rad  = SOCRATESChips.radNone;    assoc = SOCRATESChips.assocSkin
+        exc  = ["Sun exposure", "Trauma", "None"]
+        rel  = ["None", "Reducing sun exposure"]
     case isUro:
-        site = SOCRATESChips.siteUrology
-        char = SOCRATESChips.charUrine
-        charTitle = "Urine appearance";   charQ = "What is the urine like?"
-        rad = SOCRATESChips.radUrology;   assoc = SOCRATESChips.assocUrology
-        exc = SOCRATESChips.excPain;      rel = SOCRATESChips.relPain
-        sevTitle = "Frequency / severity"; sevQ = "How often / how severe?"; sevChips = SOCRATESChips.sevUrinary
-
-    case isJaundice:
-        site = ["Generalised (skin + sclerae)", "Sclerae only", "Skin only", "Palmar erythema noted"]
-        char = ["Painless obstructive", "Painful jaundice", "Intermittent / fluctuating", "Progressive worsening", "Improving"]
-        charTitle = "Type of jaundice";   charQ = "What type of jaundice?"
-        rad = ["Dark urine + pale stools", "Dark urine only", "Pale stools only", "Normal urine and stools", "Frothy urine", "Pruritus (itch)"]
-        radTitle = "Urine / stool colour"; radQ = "What colour is the urine and stool?"; radMulti = true
-        assoc = SOCRATESChips.assocAbdominal
-        exc = ["Fatty food", "Alcohol", "None identified"]
-        rel = ["Fasting", "Nothing identified"]
-        sevTitle = "Impact"; sevQ = "How is it affecting you?"; sevChips = SOCRATESChips.sevImpact
-
-    case isWeightLoss:
-        site = ["Systemic — no localised site"]
-        char = SOCRATESChips.weightLossType
-        charTitle = "Type";               charQ = "Intentional or unintentional?"
-        rad = ["No systemic features", "Drenching night sweats", "Intermittent low-grade fever", "High fever / rigors", "Severe fatigue / lethargy", "Lymphadenopathy"]
-        radTitle = "Systemic features";   radQ = "Any associated systemic symptoms?"; radMulti = true
-        assoc = SOCRATESChips.assocAbdominal
-        exc = ["None identified"]; rel = ["Dietary support", "Nothing identified"]
-        sevTitle = "Amount lost"; sevQ = "Estimated weight loss?"; sevChips = SOCRATESChips.weightLoss
-
-    case isBowel:
-        site = ["Left colon / sigmoid", "Right colon", "Transverse colon", "Rectum", "Generalised / diffuse", "Perianal"]
-        char = ["Looser / more frequent", "Harder / less frequent (constipation)", "Alternating loose and hard", "Urgency", "Incontinence", "Narrow / ribbon stools", "Blood in stool", "Mucus in stool"]
-        charTitle = "Nature of change";   charQ = "What has changed about your bowel habit?"
-        rad = ["Blood in stool", "Mucus in stool", "Melaena", "No blood or mucus"]
-        radTitle = "Stool character";     radQ = "Anything else in the stool?"; radMulti = true
-        assoc = SOCRATESChips.assocAbdominal
-        exc = ["Certain foods", "Stress", "None identified"]
-        rel = ["Dietary change", "Nothing identified"]
-        sevTitle = "Impact"; sevQ = "How is it affecting daily life?"; sevChips = SOCRATESChips.sevBowel
-
-    case isReflux:
-        // Aligned to BayesianDiagnosisEngine refluxGERD candidate feature values
-        site  = ["Retrosternal", "Epigastric", "Throat / upper chest", "Left chest"]
-        char  = ["Burning", "Pressure", "Gnawing", "Aching", "Fullness", "Sour / bitter taste", "Sharp"]
-        charTitle = "Character"; charQ = "What is the discomfort like?"
-        rad   = ["No radiation", "Throat / neck", "Back", "Left arm / jaw"]
-        radTitle = "Radiation";  radQ = "Does it spread anywhere?"
-        assoc = ["Heartburn", "Regurgitation", "Belching", "Bloating", "Nausea",
-                 "Dysphagia", "Hoarseness / voice change", "Nocturnal cough / wheeze",
-                 "Sour taste in mouth", "Globus sensation", "Weight loss",
-                 "Haematemesis", "Anorexia"]
-        exc   = ["Lying flat", "Eating", "Fatty food", "Alcohol", "Coffee / caffeine",
-                 "NSAIDs / aspirin", "Bending forward", "Spicy food", "Stress", "Smoking"]
-        rel   = ["Antacids", "Sitting up", "Small meals", "Fasting", "Eating / food",
-                 "Milk / dairy", "Nothing"]
-        sevTitle = "Frequency"; sevQ = "How often do symptoms occur?"
-        sevChips = ["Occasional (≤1×/week)", "Frequent (>1×/week)", "Daily",
-                    "Constant / disabling", "Nocturnal symptoms disturbing sleep"]
-
+        site = SOCRATESChips.siteUrology; char = SOCRATESChips.charPain
+        rad  = SOCRATESChips.radUrology; assoc = SOCRATESChips.assocUrology
+        exc  = SOCRATESChips.excPain;    rel   = SOCRATESChips.relPain
     default:
-        // Abdominal / general surgical pain presentation
+        // Default: abdominal / general surgical presentation
         site = SOCRATESChips.siteAbdominal; char = SOCRATESChips.charPain
-        rad = SOCRATESChips.radAbdominal;   assoc = SOCRATESChips.assocAbdominal
-        exc = SOCRATESChips.excPain;        rel = SOCRATESChips.relPain
+        rad  = SOCRATESChips.radAbdominal;  assoc = SOCRATESChips.assocAbdominal
+        exc  = SOCRATESChips.excPain;       rel   = SOCRATESChips.relPain
     }
 
     return [
-        .init(id: "onset",        title: "Onset",      question: "When did it start?",       icon: "clock",
-              chips: SOCRATESChips.onset,   multiSelect: false),
-        .init(id: "site",         title: "Site",        question: "Where exactly?",            icon: "mappin",
-              chips: site,                  multiSelect: true),
-        .init(id: "character",    title: charTitle,     question: charQ,                       icon: "waveform.path",
-              chips: char,                  multiSelect: true),
-        .init(id: "radiation",    title: radTitle,      question: radQ,                        icon: "arrow.up.right.and.arrow.down.left",
-              chips: rad,                   multiSelect: radMulti),
-        .init(id: "associations", title: "Associations", question: "Associated symptoms?",     icon: "list.bullet",
-              chips: assoc,                 multiSelect: true),
-        .init(id: "timing",       title: "Timing",      question: "Pattern of symptoms?",      icon: "chart.line.uptrend.xyaxis",
-              chips: SOCRATESChips.timing,  multiSelect: true),
-        .init(id: "exacerbating", title: "Exacerbating", question: "What makes it worse?",    icon: "arrow.up.circle",
-              chips: exc,                   multiSelect: true),
-        .init(id: "relieving",    title: "Relieving",   question: "What makes it better?",    icon: "arrow.down.circle",
-              chips: rel,                   multiSelect: true),
-        .init(id: "severity",     title: sevTitle,      question: sevQ,                        icon: "speedometer",
-              chips: sevChips,              multiSelect: false),
+        .init(id: "onset",        title: "Onset",        question: "When did it start?",         icon: "clock",
+              chips: SOCRATESChips.onset,    multiSelect: false),
+        .init(id: "site",         title: "Site",         question: "Where exactly?",              icon: "mappin",
+              chips: site,                   multiSelect: true),
+        .init(id: "character",    title: "Character",    question: "What is it like?",            icon: "waveform.path",
+              chips: char,                   multiSelect: true),
+        .init(id: "radiation",    title: "Radiation",    question: "Does it spread?",             icon: "arrow.up.right.and.arrow.down.left",
+              chips: rad,                    multiSelect: false),
+        .init(id: "associations", title: "Associations", question: "Associated symptoms?",        icon: "list.bullet",
+              chips: assoc,                  multiSelect: true),
+        .init(id: "timing",       title: "Timing",       question: "Pattern of symptoms?",        icon: "chart.line.uptrend.xyaxis",
+              chips: SOCRATESChips.timing,   multiSelect: true),
+        .init(id: "exacerbating", title: "Exacerbating", question: "What makes it worse?",        icon: "arrow.up.circle",
+              chips: exc,                    multiSelect: true),
+        .init(id: "relieving",    title: "Relieving",    question: "What makes it better?",       icon: "arrow.down.circle",
+              chips: rel,                    multiSelect: true),
+        .init(id: "severity",     title: "Severity",     question: "Severity rating?",            icon: "speedometer",
+              chips: SOCRATESChips.severity, multiSelect: false),
     ]
 }
 
@@ -854,7 +731,6 @@ enum ConsultTab: String, CaseIterable {
     case social    = "Social"
     case exam           = "Exam"
     case investigations = "Ix"
-    case scores         = "Scores"
     case diagnosis      = "Diagnosis"
     case plan      = "Plan"
     case history   = "History"
@@ -884,8 +760,6 @@ struct ConsultationView: View {
     @State private var icdSuggestions: [ICDCode] = []
     @State private var showAIError = false
     @State private var consultationPDFWrapper: PDFDataWrapper?
-    @State private var preConsultPDFWrapper: PDFDataWrapper?
-    @State private var showPreConsultEntry = false
     @State private var showLetterSheet = false
     @State private var generatedLetterText = ""
     @State private var socratesSelections: [String: Set<String>] = [:]
@@ -899,7 +773,6 @@ struct ConsultationView: View {
     // PMH — medication history
     @State private var medQuery = ""
     @State private var medSuggestions: [SurgicalDrug] = []
-    @FocusState private var medFieldFocused: Bool
     @State private var expandedMed: SurgicalDrug? = nil
     @State private var medDose = ""
     @State private var medRoute = "Oral"
@@ -908,7 +781,7 @@ struct ConsultationView: View {
     @State private var aiMedSuggestions: [String] = []
     @State private var newInvName = ""
     @State private var newInvCategory: InvestigationEntry.InvCategory = .blood
-    @State private var textFeatures: [String: Set<String>] = [:]
+    @State private var bayesianDx: [BayesianDiagnosisEngine.DiagnosisResult] = []
     @State private var dismissedRadiation = false
     @State private var clinicalAlarms: [ClinicalTextParser.ClinicalAlarm] = []
     @State private var dismissedAlarmIds: Set<UUID> = []
@@ -975,9 +848,6 @@ struct ConsultationView: View {
     }
 
     var body: some View {
-        // Force SwiftUI to track chiefComplaint unconditionally on every body evaluation,
-        // regardless of which tab is active or whether completenessBar is in the hierarchy.
-        let _ = patient.chiefComplaint
         VStack(spacing: 0) {
             if !patient.allergies.isEmpty { allergyBanner }
             // Clinical alarm banner — fires from free text parsing
@@ -1018,58 +888,41 @@ struct ConsultationView: View {
                 recomputeRisk()
             }
             pipeline.runNow(for: patient, socratesSelections: socratesSelections)
-            refreshTextFeatures()
             MRNGenerator.backfillIfNeeded(patient)
-            // Pre-load popular drugs when landing directly on the meds tab (iPad nav path).
-            // On iPhone the focus onChange handles this, but on iPad the keyboard never
-            // auto-focuses so medSuggestions stays empty until the user taps.
-            if startingTab == .meds && medSuggestions.isEmpty {
-                medSuggestions = SurgicalDrug.popular
-            }
         }
         .navigationTitle("Consultation")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarBackground(Color(.systemBackground), for: .navigationBar)
         .onChange(of: activeTab) { _, tab in
-            if tab == .meds && medSuggestions.isEmpty && medQuery.isEmpty {
-                medSuggestions = SurgicalDrug.popular
-            }
+            if tab == .diagnosis { refreshBayesian() }
         }
         .onChange(of: patient.workingDiagnosis) { _, _ in
             dismissedRadiation = false
         }
         .onChange(of: patient.chiefComplaint) { _, newCC in
-            // When CC changes, SOCRATES dimensions and working diagnosis change entirely.
-            socratesSelections = [:]
-            socratesExpandedDim = "onset"
-            // Clear stored working diagnosis — it was set for the previous CC and is
-            // now clinically invalid. Doctor must re-confirm from the new differentials.
-            patient.workingDiagnosis = nil
-            patient.workingDiagnosisICD = nil
-            touch()
             guard let cc = newCC, !cc.isEmpty else { triageResult = nil; return }
             pathwayTask?.cancel()
             pathwayTask = Task {
                 try? await Task.sleep(nanoseconds: 800_000_000)
                 guard !Task.isCancelled else { return }
-                await MainActor.run { runPathway() }
+                await MainActor.run { runPathway(); refreshBayesian() }
             }
         }
         .onChange(of: patient.hpi) { _, _ in
-            refreshTextFeatures()
+            refreshBayesian()
             pipeline.schedule(for: patient, socratesSelections: socratesSelections)
         }
         .onChange(of: patient.examGeneral) { _, _ in
-            refreshTextFeatures()
+            refreshBayesian()
             pipeline.schedule(for: patient, socratesSelections: socratesSelections)
         }
         .onChange(of: patient.examAbdo) { _, _ in
-            refreshTextFeatures()
+            refreshBayesian()
             pipeline.schedule(for: patient, socratesSelections: socratesSelections)
         }
         .onChange(of: patient.investigationsJson) { _, _ in
-            refreshTextFeatures()
+            refreshBayesian()
             pipeline.schedule(for: patient, socratesSelections: socratesSelections)
         }
         .onChange(of: socratesSelections) { _, _ in
@@ -1084,12 +937,6 @@ struct ConsultationView: View {
         } message: { Text(ai.error ?? "Unknown error") }
         .sheet(item: $consultationPDFWrapper) { wrapper in
             ShareSheet(items: [wrapper.data as Any]).ignoresSafeArea()
-        }
-        .sheet(item: $preConsultPDFWrapper) { wrapper in
-            ShareSheet(items: [wrapper.data as Any]).ignoresSafeArea()
-        }
-        .sheet(isPresented: $showPreConsultEntry) {
-            PreConsultEntrySheet(patient: patient)
         }
         .sheet(isPresented: $showLetterSheet) {
             ConsultationLetterSheet(letterText: generatedLetterText, patient: patient)
@@ -1439,7 +1286,6 @@ struct ConsultationView: View {
         case .social:    return !(patient.socialHistory ?? "").isEmpty
         case .exam:           return !(patient.examGeneral ?? "").isEmpty || !(patient.examAbdo ?? "").isEmpty
         case .investigations: return !patient.investigations.isEmpty
-        case .scores:         return false  // always available, no completion state
         case .diagnosis:      return patient.workingDiagnosis != nil
         case .plan:      return !(patient.managementPlan ?? "").isEmpty
         case .history:   return !patient.encounters.isEmpty
@@ -1455,13 +1301,11 @@ struct ConsultationView: View {
         case .hpi:       hpiTab
         case .pmh:       pmhTab
         case .pshx:      pshxTab
-        case .meds:
-            if embeddedInNav { medsSplitPanel } else { List { medicationsSection } }
+        case .meds:      List { medicationsSection }
         case .allergies: allergiesTab
         case .social:    socialTab
         case .exam:           examTab
         case .investigations: investigationsTab
-        case .scores:         ClinicalScoresView(patient: patient)
         case .diagnosis:      diagnosisTab
         case .plan:      planTab
         case .history:   encounterHistoryTab
@@ -1553,123 +1397,7 @@ struct ConsultationView: View {
             }
 
             if let result = triageResult { pathwayResult(result) }
-
-            // Associated symptoms — adaptive chip picker driven by CC keyword
-            if !(patient.chiefComplaint ?? "").isEmpty {
-                Section {
-                    ChipFlow(hSpacing: 8, vSpacing: 8) {
-                        ForEach(ccAssocChips, id: \.self) { chip in
-                            let isSelected = selectedAssocSymptoms.contains(chip)
-                            Button {
-                                toggleAssocSymptom(chip)
-                            } label: {
-                                Text(chip)
-                                    .font(.system(size: 12, weight: isSelected ? .semibold : .regular))
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 5)
-                                    .background(isSelected ? AMColor.accent : AMColor.accentLt, in: Capsule())
-                                    .foregroundStyle(isSelected ? Color.white : AMColor.accent)
-                                    .animation(.easeInOut(duration: 0.12), value: isSelected)
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    .padding(.vertical, 4)
-                    if !selectedAssocSymptoms.isEmpty {
-                        Button(role: .destructive) {
-                            patient.associatedSymptoms = nil; touch()
-                        } label: {
-                            Label("Clear all", systemImage: "xmark.circle")
-                                .font(.caption)
-                        }
-                    }
-                } header: {
-                    sectionHeader("Associated Symptoms", icon: "list.bullet.clipboard",
-                                  filled: !(patient.associatedSymptoms ?? "").isEmpty)
-                }
-            }
-
-            // Pre-consult questionnaire — send form or enter patient's answers
-            Section {
-                // Row 1: generate blank form
-                Button {
-                    sharePreConsultForm()
-                } label: {
-                    HStack(spacing: 10) {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 7)
-                                .fill(AMColor.accentLt)
-                                .frame(width: 32, height: 32)
-                            Image(systemName: "doc.badge.arrow.up")
-                                .font(.system(size: 14))
-                                .foregroundStyle(AMColor.accent)
-                        }
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Send Blank Form to Patient")
-                                .font(.subheadline.weight(.medium))
-                                .foregroundStyle(.primary)
-                            Text("Share / print the questionnaire before the visit")
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
-                    }
-                }
-                .buttonStyle(.plain)
-
-                // Row 2: record patient's completed answers
-                Button {
-                    showPreConsultEntry = true
-                } label: {
-                    HStack(spacing: 10) {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 7)
-                                .fill(Color.green.opacity(0.12))
-                                .frame(width: 32, height: 32)
-                            Image(systemName: "square.and.pencil")
-                                .font(.system(size: 14))
-                                .foregroundStyle(.green)
-                        }
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Enter Patient's Answers")
-                                .font(.subheadline.weight(.medium))
-                                .foregroundStyle(.primary)
-                            Text("Record completed form — pre-fills consultation fields")
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
-                    }
-                }
-                .buttonStyle(.plain)
-            } header: {
-                sectionHeader("Pre-Consult", icon: "square.and.pencil", filled: false)
-            } footer: {
-                Text("Send the blank form before the appointment, then enter the patient's answers to pre-fill the consultation. Existing data is never overwritten.")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
-            }
         }
-    }
-
-    private func sharePreConsultForm() {
-        let data = PreConsultQuestionnairePDF.generate(
-            patientName: patient.fullName.isEmpty ? nil : patient.fullName,
-            patientDOB: patient.dateOfBirth.map { DateFormatter.ectDate.string(from: $0) },
-            patientMRN: patient.mrn
-        )
-        let df = DateFormatter()
-        df.dateFormat = "yyyy-MM-dd"
-        let fileName = "PreConsult_\(patient.fullName.replacingOccurrences(of: " ", with: "_"))_\(df.string(from: .now)).pdf"
-        let tmp = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
-        try? data.write(to: tmp)
-        preConsultPDFWrapper = PDFDataWrapper(data: data)
     }
 
     // MARK: - HPI tab (SOCRATES chip builder)
@@ -1902,33 +1630,6 @@ struct ConsultationView: View {
         }
     }
 
-    // MARK: - CC tab associated symptoms helpers
-
-    private var selectedAssocSymptoms: Set<String> {
-        guard let s = patient.associatedSymptoms, !s.isEmpty else { return [] }
-        return Set(s.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) })
-    }
-
-    private func toggleAssocSymptom(_ chip: String) {
-        var current = selectedAssocSymptoms
-        if current.contains(chip) { current.remove(chip) } else { current.insert(chip) }
-        patient.associatedSymptoms = current.isEmpty ? nil : current.sorted().joined(separator: ", ")
-        touch()
-    }
-
-    // Returns adaptive associated-symptom chips for the current CC (mirrors SOCRATES assoc sets)
-    private var ccAssocChips: [String] {
-        let lc = (patient.chiefComplaint ?? "").lowercased()
-        if lc.contains("neck") || lc.contains("thyroid") || lc.contains("lymph") || lc.contains("goitre") { return SOCRATESChips.assocNeck }
-        if lc.contains("breast") || lc.contains("nipple") || lc.contains("mastalgia") { return SOCRATESChips.assocBreast }
-        if (lc.contains("chest") && lc.contains("pain")) || lc.contains("angina") { return SOCRATESChips.assocChest }
-        if lc.contains("dysphagia") || lc.contains("swallow") { return SOCRATESChips.assocDysphagia }
-        if lc.contains("rectal") || lc.contains("anal") || lc.contains("haemorrhoid") || lc.contains("perianal") { return SOCRATESChips.assocAnorectal }
-        if lc.contains("skin") || lc.contains("mole") || lc.contains("melanoma") || lc.contains("lipoma") { return SOCRATESChips.assocSkin }
-        if lc.contains("haematuria") || lc.contains("urinary") || lc.contains("urological") { return SOCRATESChips.assocUrology }
-        return SOCRATESChips.assocAbdominal
-    }
-
     // MARK: - HPI prose generation from SOCRATES chips
 
     private var socratesPreview: String? {
@@ -1938,29 +1639,15 @@ struct ConsultationView: View {
 
     private func buildHpiProse() -> String {
         let cc   = patient.chiefComplaint ?? "presenting complaint"
-        let dims = adaptedSocrateDimensions   // use adaptive dimension metadata for labels
         let onset = (socratesSelections["onset"] ?? []).first ?? ""
         let sites = (socratesSelections["site"] ?? []).sorted()
         let chars = (socratesSelections["character"] ?? []).sorted()
-        let radItems = socratesSelections["radiation"] ?? []
-        let rad   = radItems.first
-        // Use CC-tab associated symptoms as fallback when SOCRATES "associations" is empty
-        let socAssoc = (socratesSelections["associations"] ?? []).sorted()
-        let ccAssoc  = selectedAssocSymptoms.sorted()
-        let assoc    = socAssoc.isEmpty ? ccAssoc : socAssoc
-        let timing   = (socratesSelections["timing"] ?? []).sorted()
-        let exc      = (socratesSelections["exacerbating"] ?? []).sorted()
-        let rel      = (socratesSelections["relieving"] ?? []).sorted()
-        let sev      = socratesSelections["severity"]?.first
-
-        // Adaptive dimension labels
-        let charDim  = dims.first(where: { $0.id == "character" })
-        let radDim   = dims.first(where: { $0.id == "radiation" })
-        let sevDim   = dims.first(where: { $0.id == "severity" })
-        let charLabel = charDim?.title.lowercased() ?? "character"
-        let radLabel  = radDim?.title.lowercased() ?? "radiation"
-        let _ = sevDim?.title.lowercased() ?? "severity"
-        let isPainRad = radLabel == "radiation"
+        let rad   = socratesSelections["radiation"]?.first
+        let assoc = (socratesSelections["associations"] ?? []).sorted()
+        let timing = (socratesSelections["timing"] ?? []).sorted()
+        let exc   = (socratesSelections["exacerbating"] ?? []).sorted()
+        let rel   = (socratesSelections["relieving"] ?? []).sorted()
+        let sev   = socratesSelections["severity"]?.first
 
         var parts: [String] = []
 
@@ -1974,24 +1661,17 @@ struct ConsultationView: View {
         open += "."
         parts.append(open)
 
-        // Character / features + site
+        // Character + site
         if !chars.isEmpty || !sites.isEmpty {
             var s = "The \(cc)"
-            if !chars.isEmpty { s += " is \(joinList(chars.map { $0.lowercased() })) in \(charLabel)" }
+            if !chars.isEmpty { s += " is \(joinList(chars.map { $0.lowercased() })) in character" }
             if !sites.isEmpty { s += (chars.isEmpty ? " is" : ",") + " localised to the \(joinList(sites))" }
             parts.append(s + ".")
         }
 
-        // Radiation / growth / progression / stool character (adaptive label)
-        if let r = rad, r != "No radiation", r != "Localised only" {
-            if isPainRad {
-                parts.append("The pain radiates to the \(r.lowercased()).")
-            } else {
-                let all = radItems.filter { $0 != "No radiation" && $0 != "Localised only" }
-                if !all.isEmpty {
-                    parts.append("\(radDim?.title ?? "Radiation"): \(joinList(all.map { $0.lowercased() })).")
-                }
-            }
+        // Radiation
+        if let r = rad, r != "No radiation" {
+            parts.append("The pain radiates to the \(r.lowercased()).")
         }
 
         // Timing
@@ -1999,7 +1679,7 @@ struct ConsultationView: View {
             parts.append("Symptoms are \(joinList(timing.map { $0.lowercased() })) in nature.")
         }
 
-        // Associations (from SOCRATES or CC tab)
+        // Associations
         if !assoc.isEmpty {
             parts.append("Associated symptoms include \(joinList(assoc.map { $0.lowercased() })).")
         }
@@ -2010,14 +1690,14 @@ struct ConsultationView: View {
         }
 
         // Relieving
-        let relFiltered = rel.filter { $0 != "Nothing" && $0 != "None" }
+        let relFiltered = rel.filter { $0 != "Nothing" }
         if !relFiltered.isEmpty {
             parts.append("Relief is obtained with \(joinList(relFiltered.map { $0.lowercased() })).")
         }
 
-        // Severity / impact
+        // Severity
         if let s = sev {
-            parts.append("\(sevDim?.title ?? "Severity"): \(s.lowercased()).")
+            parts.append("Severity is rated as \(s.lowercased()).")
         }
 
         return parts.joined(separator: " ")
@@ -2033,136 +1713,6 @@ struct ConsultationView: View {
     }
 
     // MARK: - PMH tab
-
-    // MARK: - iPad split-panel drug chart (embeddedInNav path)
-
-    private var medsSplitPanel: some View {
-        HStack(spacing: 0) {
-            // ── LEFT: drug search + browse ───────────────────────────────
-            List { medicationsSection }
-                .frame(minWidth: 320, maxWidth: 420)
-
-            Divider()
-
-            // ── RIGHT: current drug chart ────────────────────────────────
-            VStack(spacing: 0) {
-                HStack(spacing: 8) {
-                    Image(systemName: "pills.fill")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(AMColor.accent)
-                    Text("Current Drug Chart")
-                        .font(.system(size: 14, weight: .semibold))
-                    Spacer()
-                    Text("\(patient.prescriptions.count) item\(patient.prescriptions.count == 1 ? "" : "s")")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
-                .background(Color(.systemBackground))
-
-                Divider()
-
-                if patient.prescriptions.isEmpty {
-                    ContentUnavailableView(
-                        "No Medications",
-                        systemImage: "pills",
-                        description: Text("Add medications using the search panel.")
-                    )
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    List {
-                        let sorted = patient.prescriptions.sorted { $0.prescribedAt > $1.prescribedAt }
-                        ForEach(sorted) { rx in
-                            VStack(alignment: .leading, spacing: 6) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "pill.fill")
-                                        .font(.system(size: 11, weight: .bold))
-                                        .foregroundStyle(AMColor.accent)
-                                        .frame(width: 18)
-                                    Text(rx.drug)
-                                        .font(.system(size: 14, weight: .semibold))
-                                    Spacer()
-                                    Text(rx.prescribedAt.formatted(.dateTime.day().month(.abbreviated).year()))
-                                        .font(.caption2.monospacedDigit())
-                                        .foregroundStyle(.tertiary)
-                                }
-                                if !rx.displayLine.isEmpty {
-                                    Text(rx.displayLine)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                        .padding(.leading, 26)
-                                }
-                                let alerts = DrugInteractionService.check(drugs: [rx.drug] + patient.prescriptions.filter { $0.id != rx.id }.map { $0.drug })
-                                    .filter { $0.drugA == rx.drug || $0.drugB == rx.drug }
-                                ForEach(alerts) { alert in
-                                    HStack(spacing: 6) {
-                                        Image(systemName: "exclamationmark.triangle.fill")
-                                            .font(.caption2)
-                                            .foregroundStyle(alert.interaction.severity.color)
-                                        Text("\(alert.interaction.severity.rawValue): \(alert.interaction.clinicalEffect)")
-                                            .font(.caption2)
-                                            .foregroundStyle(alert.interaction.severity.color)
-                                    }
-                                    .padding(.leading, 26)
-                                }
-                                if let formularyDrug = SurgicalDrug.allDrugs.first(where: {
-                                    $0.name.lowercased() == rx.drug.lowercased() ||
-                                    $0.name.lowercased().hasPrefix(rx.drug.lowercased())
-                                }) {
-                                    formularyDetailRows(for: formularyDrug)
-                                }
-                            }
-                            .padding(.vertical, 2)
-                        }
-                        .onDelete { idxSet in
-                            let sorted2 = patient.prescriptions.sorted { $0.prescribedAt > $1.prescribedAt }
-                            for i in idxSet { context.delete(sorted2[i]) }
-                            touch()
-                        }
-                    }
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .background(AMColor.bg)
-        }
-    }
-
-    @ViewBuilder
-    private func formularyDetailRows(for drug: SurgicalDrug) -> some View {
-        let fields: [(label: String, icon: String, value: String, color: Color)] = [
-            ("Monitoring", "waveform.path.ecg", drug.monitoring, .blue),
-            ("Contraindications", "exclamationmark.octagon", drug.contraindications, .red),
-            ("Renal dosing", "drop.triangle", drug.renalDosing, .orange),
-            ("Hepatic dosing", "arrow.triangle.2.circlepath", drug.hepaticDosing, .purple),
-        ].filter { !$0.value.isEmpty }
-
-        if !fields.isEmpty {
-            VStack(alignment: .leading, spacing: 3) {
-                ForEach(fields, id: \.label) { field in
-                    HStack(alignment: .top, spacing: 5) {
-                        Image(systemName: field.icon)
-                            .font(.system(size: 9, weight: .semibold))
-                            .foregroundStyle(field.color)
-                            .frame(width: 14, alignment: .center)
-                            .padding(.top, 1)
-                        VStack(alignment: .leading, spacing: 0) {
-                            Text(field.label.uppercased())
-                                .font(.system(size: 8.5, weight: .semibold))
-                                .foregroundStyle(field.color)
-                                .kerning(0.4)
-                            Text(field.value)
-                                .font(.system(size: 10.5))
-                                .foregroundStyle(.secondary)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                    }
-                }
-            }
-            .padding(.leading, 26)
-            .padding(.top, 2)
-        }
-    }
 
     // MARK: - PMH medications section
 
@@ -2208,41 +1758,23 @@ struct ConsultationView: View {
             // Drug search field
             HStack(spacing: 8) {
                 Image(systemName: "pills").foregroundStyle(.secondary)
-                TextField("Type a drug name or browse below…", text: $medQuery)
+                TextField("Search medication…", text: $medQuery)
                     .autocorrectionDisabled()
-                    .focused($medFieldFocused)
                     .onChange(of: medQuery) { _, q in
-                        if q.isEmpty {
-                            medSuggestions = medFieldFocused ? SurgicalDrug.popular : []
-                        } else {
-                            medSuggestions = ClinicalSearchService.searchDrugs(q)
-                        }
+                        medSuggestions = q.count >= 2 ? ClinicalSearchService.searchDrugs(q) : []
                         if expandedMed != nil && expandedMed?.name.lowercased() != q.lowercased() {
                             expandedMed = nil
                         }
                     }
-                    .onChange(of: medFieldFocused) { _, focused in
-                        if focused && medQuery.isEmpty {
-                            medSuggestions = SurgicalDrug.popular
-                        } else if !focused && medQuery.isEmpty {
-                            medSuggestions = []
-                        }
-                    }
                 if !medQuery.isEmpty {
-                    Button { medQuery = ""; medSuggestions = SurgicalDrug.popular; expandedMed = nil } label: {
+                    Button { medQuery = ""; medSuggestions = []; expandedMed = nil } label: {
                         Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
                     }.buttonStyle(.plain)
                 }
             }
 
-            // Drug suggestion / browse list (popular when empty, filtered when typing)
-            if !medSuggestions.isEmpty {
-                Text(medQuery.isEmpty ? "Common medications — tap to select" : "Tap to select")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .listRowSeparator(.hidden)
-            }
-            ForEach(medSuggestions.prefix(medQuery.isEmpty ? 30 : 8)) { drug in
+            // Drug suggestion list
+            ForEach(medSuggestions.prefix(6)) { drug in
                 Button {
                     medQuery  = drug.name
                     expandedMed = drug
@@ -3020,7 +2552,7 @@ struct ConsultationView: View {
                             .padding(.horizontal, 10).padding(.vertical, 5)
                             .background(added ? Color.red.opacity(0.15) : Color.red.opacity(0.07),
                                         in: Capsule())
-                            .foregroundStyle(added ? .red : .red.opacity(0.75))
+                            .foregroundStyle(added ? Color.red : Color.red.opacity(0.75))
                             .overlay(Capsule()
                                 .stroke(added ? Color.red.opacity(0.35) : Color.clear, lineWidth: 1))
                         }
@@ -3542,22 +3074,34 @@ struct ConsultationView: View {
         return chips
     }
 
-    // MARK: - Bayesian diagnosis (computed — reactive, no manual refresh needed)
-    // Recomputes automatically whenever patient model properties or socratesSelections
-    // change. textFeatures (from free-text parsing) are kept as @State so text
-    // parsing only runs when HPI / exam text actually changes.
+    // MARK: - Bayesian engine refresh
+    // Augments SOCRATES selections with clinical features extracted from free text
+    // (HPI, exam findings, notes) so the engine fires from any typed data, not
+    // only structured chip selections.
 
-    private var bayesianDx: [BayesianDiagnosisEngine.DiagnosisResult] {
-        // Read patient.chiefComplaint directly — SwiftUI already tracks this property
-        // via completenessBar (always visible), so body re-evaluates on every CC change.
-        guard let cc = patient.chiefComplaint, !cc.isEmpty else { return [] }
-        var merged = socratesSelections
-        for (dim, chips) in textFeatures {
-            merged[dim, default: []].formUnion(chips)
+    private func refreshBayesian() {
+        let parsed = ClinicalTextParser.parse(
+            hpi: patient.hpi,
+            examGeneral: patient.examGeneral,
+            examAbdo: patient.examAbdo,
+            examOther: nil,
+            notes: nil
+        )
+
+        // Merge parser-extracted features into the chip-selection dict
+        var augmented = socratesSelections
+        for (dim, chips) in parsed.featureAugments {
+            augmented[dim, default: []].formUnion(chips)
         }
-        return BayesianDiagnosisEngine.infer(
-            chiefComplaint: cc,
-            socratesSelections: merged,
+
+        // Offer a CC hint only when no CC is set yet
+        if (patient.chiefComplaint ?? "").isEmpty, let hint = parsed.ccHint {
+            patient.chiefComplaint = hint
+        }
+
+        bayesianDx = BayesianDiagnosisEngine.infer(
+            chiefComplaint: patient.chiefComplaint,
+            socratesSelections: augmented,
             pmhNotes: patient.pmhNotes,
             surgicalHistory: patient.surgicalHistory,
             examAbdo: patient.examAbdo,
@@ -3571,28 +3115,11 @@ struct ConsultationView: View {
             investigations: patient.investigations,
             ageYears: patient.ageYears,
             sex: patient.sex,
-            longitudinal: patient.longitudinalContext,
-            medications: patient.prescriptions.map { $0.displayLine },
-            socialHistoryText: patient.socialHistory,
-            bmi: patient.latestBMI()
+            longitudinal: patient.longitudinalContext
         )
-    }
 
-    // MARK: - Text feature refresh (called only when HPI / exam text changes)
-
-    private func refreshTextFeatures() {
-        let parsed = ClinicalTextParser.parse(
-            hpi: patient.hpi,
-            examGeneral: patient.examGeneral,
-            examAbdo: patient.examAbdo,
-            examOther: nil,
-            notes: nil
-        )
-        textFeatures = parsed.featureAugments
+        // Update alarm list (keep dismissed state across refreshes)
         clinicalAlarms = parsed.clinicalAlarms
-        if (patient.chiefComplaint ?? "").isEmpty, let hint = parsed.ccHint {
-            patient.chiefComplaint = hint
-        }
     }
 
     // MARK: - Diagnosis tab
@@ -3617,7 +3144,7 @@ struct ConsultationView: View {
                             .font(.caption.weight(.semibold))
                         Spacer()
                         Button {
-                            refreshTextFeatures()
+                            refreshBayesian()
                         } label: {
                             Image(systemName: "arrow.clockwise")
                                 .font(.caption)
@@ -3626,7 +3153,7 @@ struct ConsultationView: View {
                         .buttonStyle(.plain)
                     }
                 } footer: {
-                    Text("Based on CC · SOCRATES · PMH · Meds · Social · BMI · Exam · Ix · Age/Sex. Apply to confirm.")
+                    Text("Based on CC · SOCRATES · PMH · Exam · Ix · Age/Sex. Apply to confirm.")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                 }
@@ -3780,25 +3307,6 @@ struct ConsultationView: View {
                     },
                     onDismiss: { dismissedRadiation = true }
                 )
-            }
-
-            Section {
-                ZStack(alignment: .topLeading) {
-                    TextEditor(text: Binding(
-                        get: { patient.notes ?? "" },
-                        set: { patient.notes = $0.isEmpty ? nil : $0; touch() }
-                    ))
-                    .frame(minHeight: 100)
-                    if (patient.notes ?? "").isEmpty {
-                        Text("Quick capture — impressions, raw dictation, things to look up, anything to structure later…")
-                            .foregroundStyle(.tertiary).font(.callout)
-                            .padding(.top, 8).padding(.leading, 4)
-                            .allowsHitTesting(false)
-                    }
-                }
-            } header: {
-                sectionHeader("Quick Notes", icon: "pencil.and.scribble",
-                              filled: !(patient.notes ?? "").isEmpty)
             }
 
             Section {
@@ -4178,7 +3686,7 @@ struct ConsultationView: View {
             // Investigations
             let invs = patient.investigations.filter { $0.status != .suggested }
             if !invs.isEmpty {
-                section("Investigations", body: invs.map { "• \($0.name): \($0.result.isEmpty ? "Pending" : $0.result)" }.joined(separator: "\n"), y: &y)
+                section("Investigations", body: invs.map { "• \($0.name): \($0.result ?? "Pending")" }.joined(separator: "\n"), y: &y)
             }
 
             // Diagnosis
@@ -4234,36 +3742,6 @@ struct ConsultationView: View {
          patient.examNeuro, patient.examMSK, patient.examSkin, patient.examOther]
             .compactMap { $0 }.joined(separator: "\n")
     }
-
-    // MARK: - Encounter History Tab
-
-    private var encounterHistoryTab: some View {
-        let sorted = patient.encounters
-            .filter(\.isComplete)
-            .sorted { $0.encounterDate > $1.encounterDate }
-        return Group {
-            if sorted.isEmpty {
-                ContentUnavailableView(
-                    "No Saved Visits",
-                    systemImage: "clock.badge.questionmark",
-                    description: Text("Tap \"Save Visit\" to snapshot the current consultation into history.")
-                )
-            } else {
-                List {
-                    ForEach(sorted, id: \.id) { enc in
-                        Button { selectedEncounter = enc } label: {
-                            EncounterHistoryRow(encounter: enc)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .listStyle(.insetGrouped)
-                .sheet(item: $selectedEncounter) { enc in
-                    EncounterDetailSheet(encounter: enc)
-                }
-            }
-        }
-    }
 }
 
 // MARK: - Drug interaction row
@@ -4291,14 +3769,13 @@ private struct AddMedicationSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var drugQuery = ""
-    @State private var suggestions: [SurgicalDrug] = SurgicalDrug.popular
+    @State private var suggestions: [SurgicalDrug] = []
     @State private var selectedDrug: SurgicalDrug?
     @State private var dose = ""
     @State private var route = "Oral"
     @State private var frequency = "Once daily"
     @State private var duration = "7 days"
     @State private var indication = ""
-    @FocusState private var fieldFocused: Bool
 
     var body: some View {
         NavigationStack {
@@ -4306,38 +3783,25 @@ private struct AddMedicationSheet: View {
                 Section {
                     HStack {
                         Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
-                        TextField("Type a drug name or browse below…", text: $drugQuery)
+                        TextField("Drug name", text: $drugQuery)
                             .autocorrectionDisabled()
-                            .focused($fieldFocused)
                             .onChange(of: drugQuery) { _, q in
-                                suggestions = q.isEmpty
-                                    ? SurgicalDrug.popular
-                                    : ClinicalSearchService.searchDrugs(q)
+                                suggestions = q.count >= 2 ? ClinicalSearchService.searchDrugs(q) : []
                             }
                         if !drugQuery.isEmpty {
-                            Button { drugQuery = ""; suggestions = SurgicalDrug.popular }
+                            Button { drugQuery = ""; suggestions = [] }
                                 label: { Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary) }
                         }
                     }
-                    if !suggestions.isEmpty {
-                        Text(drugQuery.isEmpty ? "Common medications — tap to select" : "Tap to select")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .listRowSeparator(.hidden)
-                    }
-                    ForEach(suggestions.prefix(drugQuery.isEmpty ? 30 : 8)) { drug in
+                    ForEach(suggestions.prefix(6)) { drug in
                         Button {
                             selectedDrug = drug; drugQuery = drug.name
                             dose = drug.commonDoses; indication = patient.workingDiagnosis ?? ""
                             suggestions = []
                         } label: {
-                            HStack {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(drug.name).foregroundStyle(.primary).font(.subheadline)
-                                    Text(drug.category).font(.caption).foregroundStyle(.secondary)
-                                }
-                                Spacer()
-                                Text(drug.commonDoses).font(.caption2).foregroundStyle(.tertiary)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(drug.name).foregroundStyle(.primary).font(.subheadline)
+                                Text(drug.commonDoses).font(.caption).foregroundStyle(.secondary)
                             }
                         }
                     }
@@ -4471,6 +3935,36 @@ private struct ConsultationLetterSheet: View {
             }
             .sheet(isPresented: $showShare) {
                 ShareSheet(items: [letterText]).ignoresSafeArea()
+            }
+        }
+    }
+
+    // MARK: - Encounter History Tab
+
+    private var encounterHistoryTab: some View {
+        let sorted = patient.encounters
+            .filter(\.isComplete)
+            .sorted { $0.encounterDate > $1.encounterDate }
+        return Group {
+            if sorted.isEmpty {
+                ContentUnavailableView(
+                    "No Saved Visits",
+                    systemImage: "clock.badge.questionmark",
+                    description: Text("Tap \"Save Visit\" to snapshot the current consultation into history.")
+                )
+            } else {
+                List {
+                    ForEach(sorted, id: \.id) { enc in
+                        Button { selectedEncounter = enc } label: {
+                            EncounterHistoryRow(encounter: enc)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .listStyle(.insetGrouped)
+                .sheet(item: $selectedEncounter) { enc in
+                    EncounterDetailSheet(encounter: enc)
+                }
             }
         }
     }
