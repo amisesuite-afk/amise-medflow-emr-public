@@ -102,7 +102,7 @@ enum BayesianDiagnosisEngine {
             candidates = externalPool("rectalBleeding") ?? rectalBleeding
         case ccL.contains("bowel habit") || ccL.contains("change in stool") ||
              ccL.contains("constipation") || ccL.contains("diarrhoea") || ccL.contains("diarrhea"):
-            candidates = bowelHabit
+            candidates = externalPool("bowelHabit") ?? bowelHabit
         case ccL.contains("breast") && (ccL.contains("lump") || ccL.contains("mass")):
             candidates = breastLump
         case ccL.contains("neck") && (ccL.contains("lump") || ccL.contains("swelling") || ccL.contains("mass")):
@@ -118,7 +118,7 @@ enum BayesianDiagnosisEngine {
              ccL.contains("hemorrhoid") || ccL.contains("anal pain") || ccL.contains("piles"):
             candidates = perianal
         case ccL.contains("weight loss") || ccL.contains("anorexia") || ccL.contains("cachexia"):
-            candidates = weightLoss
+            candidates = externalPool("weightLoss") ?? weightLoss
         case ccL.contains("reflux") || ccL.contains("heartburn") ||
              ccL.contains("gerd") || ccL.contains("gord") ||
              ccL.contains("bloating") || ccL.contains("indigestion") ||
@@ -137,7 +137,7 @@ enum BayesianDiagnosisEngine {
         case ccL.contains("short") && ccL.contains("breath") ||
              ccL.contains("dyspnoea") || ccL.contains("breathless") ||
              ccL.contains("sob") || ccL.contains("wheez"):
-            candidates = shortnessOfBreath
+            candidates = externalPool("shortnessOfBreath") ?? shortnessOfBreath
         case ccL.contains("fever") || ccL.contains("infection") || ccL.contains("pyrexia") ||
              ccL.contains("dengue") || ccL.contains("leptospir") || ccL.contains("typhoid") ||
              ccL.contains("rigor") || ccL.contains("chills"):
@@ -157,7 +157,7 @@ enum BayesianDiagnosisEngine {
             candidates = diabetesReview
         case ccL.contains("nausea") || ccL.contains("vomiting") || ccL.contains("vomit") ||
              ccL.contains("emesis") || ccL.contains("retching"):
-            candidates = nauseaVomiting
+            candidates = externalPool("nauseaVomiting") ?? nauseaVomiting
         case ccL.contains("haematemesis") || ccL.contains("hematemesis") ||
              ccL.contains("melaena") || ccL.contains("melena") ||
              ccL.contains("coffee ground") || ccL.contains("upper gi bleed") ||
@@ -179,7 +179,7 @@ enum BayesianDiagnosisEngine {
         case ccL.contains("bowel obstruct") || ccL.contains("small bowel") ||
              ccL.contains("volvulus") || ccL.contains("intussuscep") ||
              (ccL.contains("obstruction") && (ccL.contains("bowel") || ccL.contains("intesti"))):
-            candidates = smallBowelObstruction
+            candidates = externalPool("smallBowelObstruction") ?? smallBowelObstruction
         case ccL.contains("pilonidal") || ccL.contains("coccyx") || ccL.contains("sacrococcygeal"):
             candidates = pilonidalDisease
         case ccL.contains("renal colic") || ccL.contains("kidney stone") ||
@@ -192,7 +192,7 @@ enum BayesianDiagnosisEngine {
         case ccL.contains("anaemia") || ccL.contains("anemia") ||
              (ccL.contains("fatigue") && ccL.contains("pallor")) ||
              ccL.contains("low haemoglobin") || ccL.contains("low hemoglobin"):
-            candidates = anaemia
+            candidates = externalPool("anaemia") ?? anaemia
         case (ccL.contains("wound") || ccL.contains("surgical site")) &&
              (ccL.contains("infect") || ccL.contains("discharge") || ccL.contains("dehisc")):
             candidates = woundInfection
@@ -202,11 +202,11 @@ enum BayesianDiagnosisEngine {
         case ccL.contains("necrotis") || ccL.contains("fasciitis") || ccL.contains("fournier") ||
              (ccL.contains("wound") && ccL.contains("necrot")) ||
              (ccL.contains("skin") && ccL.contains("infect") && ccL.contains("severe")):
-            candidates = necrotizingInfection
+            candidates = externalPool("necrotizingInfection") ?? necrotizingInfection
         case ccL.contains("pulmonary embol") || ccL.contains("pe ") || ccL == "pe" ||
              ccL.contains("haemoptysis") || ccL.contains("hemoptysis") ||
              (ccL.contains("breathless") && ccL.contains("chest pain") && ccL.contains("leg")):
-            candidates = venousThromboEmbolism
+            candidates = externalPool("venousThromboEmbolism") ?? venousThromboEmbolism
         case ccL.contains("limb ischaem") || ccL.contains("acute ischaem") ||
              ccL.contains("cold leg") || ccL.contains("cold foot") || ccL.contains("cold limb") ||
              (ccL.contains("limb") && (ccL.contains("pale") || ccL.contains("pulseless"))):
@@ -237,7 +237,7 @@ enum BayesianDiagnosisEngine {
         case ccL.contains("ercp") || (ccL.contains("biliary") && !ccL.contains("hernia")):
             candidates = jaundice
         case ccL.contains("screen"):
-            candidates = weightLoss
+            candidates = externalPool("weightLoss") ?? weightLoss
         default:
             candidates = abdominalPain   // safest surgical default
         }
