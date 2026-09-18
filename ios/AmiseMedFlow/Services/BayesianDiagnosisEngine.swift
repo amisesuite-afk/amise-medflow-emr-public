@@ -245,11 +245,11 @@ enum BayesianDiagnosisEngine {
              (ccL.contains("follow") && ccL.contains("up")):
             candidates = externalPool("postOpReview") ?? postOpReview
         case ccL.contains("ercp") || (ccL.contains("biliary") && !ccL.contains("hernia")):
-            candidates = jaundice
+            candidates = externalPool("jaundice") ?? jaundice
         case ccL.contains("screen"):
             candidates = externalPool("weightLoss") ?? weightLoss
         default:
-            candidates = abdominalPain   // safest surgical default
+            candidates = externalPool("abdominalPain") ?? abdominalPain   // safest surgical default
         }
 
         // Merge longitudinal context into scoring inputs.
