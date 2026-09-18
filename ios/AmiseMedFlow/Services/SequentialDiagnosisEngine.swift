@@ -15,15 +15,21 @@ struct DiagnosisHypothesis: Identifiable {
     var logPosterior: Double          // log-odds units (natural log scale)
     var contributingEvidence: [(label: String, logLR: Double)]
 
-    // Softmax probability computed across all hypotheses by the engine
+    // Softmax probability computed across all hypotheses by the engine (display only)
     var probability: Double = 0.0
 
-    // Convenience badge
+    // Primary Bayesian confidence signals — seeded from BayesianDiagnosisEngine
+    var logGap: Int = 0                        // rank-1 minus rank-2 log-posterior gap
+    var pathognomicFindings: [String] = []     // fired features with logLR ≥ 18
+
+    // Confidence badge driven by logGap, not softmax probability
     var confidence: BayesianDiagnosisEngine.DiagnosisResult.Confidence {
-        let pct = Int(probability * 100)
-        if pct >= 55 { return .high }
-        if pct >= 30 { return .moderate }
-        return .low
+        switch logGap {
+        case 25...: return .certain
+        case 15...: return .high
+        case 7...:  return .moderate
+        default:    return pathognomicFindings.isEmpty ? .low : .high
+        }
     }
 }
 
@@ -348,6 +354,8 @@ final class SequentialDiagnosisEngine: ObservableObject {
                 contributingEvidence: r.evidence.map { ($0, 0.0) }
             )
             h.probability = p
+            h.logGap = r.logGap
+            h.pathognomicFindings = r.pathognomicFindings
             return h
         }
 

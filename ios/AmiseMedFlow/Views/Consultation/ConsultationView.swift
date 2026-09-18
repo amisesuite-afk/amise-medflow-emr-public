@@ -4453,10 +4453,11 @@ private struct BayesianDxRow: View {
     let onApply: () -> Void
 
     private var barColor: Color {
-        switch result.probability {
-        case 55...: return .green
-        case 30...: return .orange
-        default:    return .secondary
+        switch result.confidence {
+        case .certain:  return .indigo
+        case .high:     return .green
+        case .moderate: return .orange
+        case .low:      return .secondary
         }
     }
 
@@ -4508,6 +4509,21 @@ private struct BayesianDxRow: View {
                 }
             }
             .frame(height: 5)
+
+            // ── Pathognomonic findings badge (logLR ≥ 18) ────────────
+            if !result.pathognomicFindings.isEmpty {
+                HStack(spacing: 4) {
+                    Image(systemName: "bolt.fill")
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(.indigo)
+                    Text(result.pathognomicFindings.joined(separator: " · "))
+                        .font(.caption2.weight(.medium))
+                        .foregroundStyle(.indigo)
+                }
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(.indigo.opacity(0.08), in: RoundedRectangle(cornerRadius: 4))
+            }
 
             // ── Categorised evidence ──────────────────────────────────
             if !result.evidenceSources.isEmpty {

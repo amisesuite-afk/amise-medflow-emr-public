@@ -193,6 +193,15 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
 
 extension ClinicalPipelineOrchestrator {
 
+    /// Statistically enforced working diagnosis — non-nil when logGap ≥ 15 or a pathognomonic
+    /// finding fired on rank-1. This is the Bayesian engine's gravitational signal: when present,
+    /// the evidence has mathematically separated rank-1 from the field, and the UI should
+    /// surface it with commensurate prominence.
+    var enforcedWorkingDiagnosis: DiagnosisHypothesis? {
+        guard let top = hypotheses.first else { return nil }
+        return (top.logGap >= 15 || !top.pathognomicFindings.isEmpty) ? top : nil
+    }
+
     /// Highest-priority decision (emergency first)
     var topDecision: ClinicalDecision? {
         decisions.sorted { $0.priority < $1.priority }.first

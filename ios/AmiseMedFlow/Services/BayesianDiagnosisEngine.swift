@@ -13,20 +13,30 @@ enum BayesianDiagnosisEngine {
         let id = UUID()
         let name: String
         let icdCode: String
-        let probability: Int          // 0–100 %
+        let probability: Int          // 0–100 % (softmax — display only, NOT the confidence signal)
         let evidence: [String]        // flat list — kept for backwards compat
         // Evidence grouped by input source.
         // Keys: "symptoms" | "exam" | "history" | "investigation" | "score" | "longitudinal"
         let evidenceSources: [String: [String]]
         let confidence: Confidence
+        // Primary confidence signals (logGap-based, not softmax-based)
+        let rawLogPosterior: Int           // log-posterior before softmax
+        let logGap: Int                    // rank-1 minus rank-2 log-posterior gap (0 for non-rank-1)
+        let pathognomicFindings: [String]  // fired features with logLR ≥ 18
 
         enum Confidence {
-            case high     // ≥ 55 %
-            case moderate // 30–54 %
-            case low      // < 30 %
+            case certain  // logGap ≥ 25 — statistically overwhelming
+            case high     // logGap ≥ 15 or pathognomonic finding fired
+            case moderate // logGap ≥ 7
+            case low      // otherwise
 
             var label: String {
-                switch self { case .high: "High"; case .moderate: "Moderate"; case .low: "Low" }
+                switch self {
+                case .certain:  "Certain"
+                case .high:     "High"
+                case .moderate: "Moderate"
+                case .low:      "Low"
+                }
             }
         }
     }
@@ -525,6 +535,7 @@ enum BayesianDiagnosisEngine {
         var logPosterior: Int
         var evidence: [String]
         var evidenceSources: [String: [String]] = [:]
+        var pathognomicFindings: [String] = []   // features with logLR ≥ 18 that fired
     }
 
     private static func score(
@@ -555,6 +566,7 @@ enum BayesianDiagnosisEngine {
             var logP = c.logPrior
             var evidence: [String] = []
             var evidenceSources: [String: [String]] = [:]
+            var pathognomicFindings: [String] = []
 
             for f in c.features {
                 var triggered = false
@@ -619,45 +631,69 @@ enum BayesianDiagnosisEngine {
                             evidenceSources[sourceKey, default: []].append(f.evidenceLabel)
                         }
                     }
+                    // Track pathognomonic findings (LR+ ≥ 36 ≙ logLR ≥ 18) — these gravitationally enforce working diagnosis
+                    if f.logLR >= 18 && !f.evidenceLabel.isEmpty {
+                        pathognomicFindings.append(f.evidenceLabel)
+                    }
                 }
             }
 
-            return ScoredCandidate(candidate: c, logPosterior: logP, evidence: evidence, evidenceSources: evidenceSources)
+            return ScoredCandidate(candidate: c, logPosterior: logP, evidence: evidence,
+                                   evidenceSources: evidenceSources, pathognomicFindings: pathognomicFindings)
         }
     }
 
-    // MARK: - Softmax normalisation → top 5 results
+    // MARK: - Log-gap normalisation → top 5 results
+    // Architecture: logGap (rank-1 minus rank-2 log-posterior) is the primary confidence
+    // signal — it measures how much the evidence statistically separates rank-1 from the field.
+    // Softmax probability is computed for display only and is NOT the architectural decision metric.
 
     private static func topResults(from scored: [ScoredCandidate]) -> [DiagnosisResult] {
         guard !scored.isEmpty else { return [] }
 
-        let maxScore = scored.map(\.logPosterior).max() ?? 0
-        let exps = scored.map { exp(Double($0.logPosterior - maxScore)) }
+        // Sort by log-posterior BEFORE softmax — this preserves the gap signal
+        let byLogP = scored.sorted { $0.logPosterior > $1.logPosterior }
+
+        // logGap: rank-1 minus rank-2 in log-posterior space (or rank-1's own score if only one)
+        let logGap = byLogP.count >= 2
+            ? byLogP[0].logPosterior - byLogP[1].logPosterior
+            : max(byLogP[0].logPosterior, 0)
+
+        // Softmax for display only
+        let maxScore = byLogP[0].logPosterior
+        let exps = byLogP.map { exp(Double($0.logPosterior - maxScore)) }
         let total = exps.reduce(0, +)
 
-        let withProb = zip(scored, exps).map { (s, e) -> (ScoredCandidate, Int) in
+        let withProb = zip(byLogP, exps).map { (s, e) -> (ScoredCandidate, Int) in
             let prob = total > 0 ? Int((e / total) * 100.0) : 0
             return (s, prob)
         }
 
-        let top5 = withProb
-            .sorted { $0.1 > $1.1 }
-            .prefix(5)
+        return withProb.prefix(5).enumerated().map { (idx, pair) in
+            let (s, prob) = pair
+            // Only rank-1 carries the gap; lower ranks carry 0
+            let gap = idx == 0 ? logGap : 0
 
-        return top5.map { (s, prob) in
+            // Confidence driven by logGap (rank-1) or pathognomonic finding (any rank)
             let conf: DiagnosisResult.Confidence
-            switch prob {
-            case 55...: conf = .high
-            case 30...: conf = .moderate
-            default:    conf = .low
+            switch gap {
+            case 25...: conf = .certain
+            case 15...: conf = .high
+            case 7...:  conf = .moderate
+            default:
+                conf = s.pathognomicFindings.isEmpty ? .low : .high
             }
+
             return DiagnosisResult(
                 name: s.candidate.name,
                 icdCode: s.candidate.icd,
                 probability: prob,
                 evidence: Array(s.evidence.prefix(4)),
                 evidenceSources: s.evidenceSources.mapValues { Array($0.prefix(3)) },
-                confidence: conf
+                confidence: conf,
+                rawLogPosterior: s.logPosterior,
+                logGap: gap,
+                pathognomicFindings: s.pathognomicFindings
             )
         }
     }
