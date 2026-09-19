@@ -150,7 +150,7 @@ struct SettingsView: View {
                 Section {
                     TextField("WebDAV URL",
                               text: $nasBackup.serverURL,
-                              prompt: Text("http://amisestorage:5005"))
+                              prompt: Text("http://amise-storage:5005"))
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                         .keyboardType(.URL)
@@ -225,7 +225,7 @@ struct SettingsView: View {
                 } header: {
                     Text("NAS Backup")
                 } footer: {
-                    Text("Backs up all patient records to a Synology, QNAP, or any WebDAV server.\n\nSynology DSM: enable WebDAV in Control Panel → File Services → WebDAV. Default port: 5005 (HTTP) or 5006 (HTTPS). Path: the shared folder URL, e.g. http://amisestorage:5005/homes/admin.\n\nWorks over Tailscale — enter your NAS's Tailscale IP to back up from anywhere.")
+                    Text("Backs up all patient records to a Synology, QNAP, or any WebDAV server.\n\nSynology DSM: Control Panel → File Services → WebDAV → Enable. Port 5005 (HTTP) or 5006 (HTTPS).\n\nExample — over Tailscale: http://amise-storage:5005 or http://100.119.29.97:5005. The iPhone is already on the same Tailnet, so backup works from any network automatically.")
                 }
 
                 // MARK: Practice
