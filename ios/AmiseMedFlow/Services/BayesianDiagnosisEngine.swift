@@ -101,7 +101,7 @@ enum BayesianDiagnosisEngine {
         guard let cc = chiefComplaint, !cc.isEmpty else { return [] }
         let ccL = cc.lowercased()
 
-        let candidates: [Candidate]
+        var candidates: [Candidate]
         switch true {
         case ccL.contains("jaundice") || ccL.contains("yellow"):
             candidates = externalPool("jaundice") ?? jaundice
@@ -248,9 +248,58 @@ enum BayesianDiagnosisEngine {
             candidates = externalPool("jaundice") ?? jaundice
         case ccL.contains("screen"):
             candidates = externalPool("weightLoss") ?? weightLoss
+
+        // ── General medicine pools (wide-net; added 2026-09) ────────────
+        case ccL.contains("headache") || ccL.contains("migraine") ||
+             ccL.contains("thunderclap") || ccL.contains("head ache"):
+            candidates = externalPool("headache") ?? []
+        case ccL.contains("dizzin") || ccL.contains("vertigo") ||
+             ccL.contains("presyncope") || ccL.contains("pre-syncope") ||
+             (ccL.contains("syncope") && !ccL.contains("vasovagal syncopal")):
+            candidates = externalPool("dizzinessVertigo") ?? []
+        case ccL.contains("back pain") || ccL.contains("backpain") ||
+             ccL.contains("lumbar") || ccL.contains("sciatica") ||
+             ccL.contains("radiculopathy") || ccL.contains("lumbago") ||
+             (ccL.contains("back") && (ccL.contains("ache") || ccL.contains("pain"))):
+            candidates = externalPool("backPain") ?? []
+        case ccL.contains("fatigue") || ccL.contains("tired") ||
+             ccL.contains("lethargy") || ccL.contains("exhaustion") ||
+             ccL.contains("lack of energy") || ccL.contains("low energy"):
+            candidates = externalPool("fatigue") ?? []
+        case ccL.contains("cough") || ccL.contains("haemoptysis") ||
+             ccL.contains("hemoptysis") || ccL.contains("coughing"):
+            candidates = externalPool("cough") ?? []
+
         default:
-            candidates = externalPool("abdominalPain") ?? abdominalPain   // safest surgical default
+            // Wide-net general medicine catch-all — no longer surgical-biased
+            candidates = externalPool("generalMedicine") ?? []
         }
+
+        // ── Multi-pool augmentation ──────────────────────────────────────
+        // When the CC spans several symptom domains (e.g. "chest pain and
+        // shortness of breath"), merge candidates from up to two secondary
+        // pools so the Bayesian scorer sees the full differential.
+        var seenNames = Set<String>(candidates.map(\.name))
+        func mergePool(_ name: String) {
+            guard let extra = externalPool(name) else { return }
+            let novel = extra.filter { seenNames.insert($0.name).inserted }
+            candidates.append(contentsOf: novel)
+        }
+        // Secondary pool: respiratory
+        if ccL.contains("cough") || ccL.contains("breathless") ||
+           ccL.contains("dyspnoea") || ccL.contains("dyspnea") { mergePool("cough") }
+        // Secondary pool: nausea/vomiting overlay
+        if ccL.contains("nausea") || ccL.contains("vomiting") { mergePool("nauseaVomiting") }
+        // Secondary pool: systemic infection / fever overlay
+        if ccL.contains("fever") || ccL.contains("pyrexia") { mergePool("feverInfection") }
+        // Secondary pool: neurological overlay
+        if ccL.contains("headache") || ccL.contains("migraine") { mergePool("headache") }
+        // Secondary pool: chest pain overlay
+        if ccL.contains("chest pain") || ccL.contains("chest tightness") { mergePool("chestPain") }
+        // Secondary pool: weight loss / constitutional overlay
+        if ccL.contains("weight loss") || ccL.contains("losing weight") { mergePool("weightLoss") }
+        // Cap total candidates at 30 to keep scoring fast
+        if candidates.count > 30 { candidates = Array(candidates.prefix(30)) }
 
         // Merge longitudinal context into scoring inputs.
         // Confirmed past diagnoses are appended to pmh so existing "pmh" feature
@@ -725,9 +774,14 @@ enum BayesianDiagnosisEngine {
         }
     }
 
+    /// Wrapper matching the JSON pool object `{"candidates": [...]}`
+    struct PoolSpec: Codable {
+        let candidates: [CandidateSpec]
+    }
+
     struct CandidateDatabase: Codable {
         let version: String
-        let pools: [String: [CandidateSpec]]
+        let pools: [String: PoolSpec]
     }
 
     // Lazy-loaded once at first access; nil if file absent or unparseable.
@@ -739,7 +793,57 @@ enum BayesianDiagnosisEngine {
 
     // Convenience: load a candidate pool from the external database, or return nil.
     private static func externalPool(_ name: String) -> [Candidate]? {
-        externalDatabase?.pools[name].map { $0.map { $0.toCandidate() } }
+        externalDatabase?.pools[name].map { $0.candidates.map { $0.toCandidate() } }
+    }
+
+    // MARK: - Diagnostic catalogue (search + browse)
+
+    /// A lightweight descriptor used for browsing and search — no scoring weights.
+    struct CatalogueEntry: Identifiable {
+        let id = UUID()
+        let name: String
+        let icd: String
+        let pool: String        // pool key (e.g. "headache", "abdominalPain")
+        let logPrior: Int       // base prevalence — higher = more common
+
+        /// Clinical priority tier derived from logPrior:
+        ///   A (≥40) — very common; B (25–39) — common;
+        ///   C (10–24) — less common; D (<10) — rare / contextual
+        var tier: String {
+            switch logPrior {
+            case 40...: return "A"
+            case 25..<40: return "B"
+            case 10..<25: return "C"
+            default: return "D"
+            }
+        }
+    }
+
+    /// All candidates from the external database across all pools, deduplicated by name.
+    static var allCatalogueEntries: [CatalogueEntry] {
+        guard let db = externalDatabase else { return [] }
+        var seen = Set<String>()
+        var result: [CatalogueEntry] = []
+        for (poolKey, poolSpec) in db.pools.sorted(by: { $0.key < $1.key }) {
+            for spec in poolSpec.candidates {
+                guard seen.insert(spec.name).inserted else { continue }
+                result.append(CatalogueEntry(name: spec.name, icd: spec.icd,
+                                              pool: poolKey, logPrior: spec.logPrior))
+            }
+        }
+        return result.sorted { $0.logPrior > $1.logPrior }
+    }
+
+    /// Search catalogue by diagnosis name, ICD code, or pool (symptom domain).
+    /// Returns up to 20 matches, sorted by prevalence descending.
+    static func searchCatalogue(_ query: String) -> [CatalogueEntry] {
+        guard query.count >= 2 else { return [] }
+        let q = query.lowercased()
+        return allCatalogueEntries.filter {
+            $0.name.lowercased().contains(q) ||
+            $0.icd.lowercased().hasPrefix(q) ||
+            $0.pool.lowercased().contains(q)
+        }.prefix(20).map { $0 }
     }
 
     // MARK: - Candidate tables
