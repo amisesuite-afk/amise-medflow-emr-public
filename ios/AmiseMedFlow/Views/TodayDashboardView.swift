@@ -12,6 +12,9 @@ struct TodayDashboardView: View {
     @State private var showCalendarImport = false
     @State private var searchQuery = ""
     @State private var isRefreshing = false
+    @State private var calEventActionTarget: EKEvent? = nil
+    @State private var calEventActionPatient: Patient? = nil
+    @State private var showCalEncounterSheet = false
 
     private let cal = Calendar.current
 
@@ -191,6 +194,36 @@ struct TodayDashboardView: View {
             .sheet(isPresented: $showAdd) { AddPatientView() }
             .sheet(isPresented: $showCalendarImport) {
                 CalendarImportSheet(events: calSvc.events)
+            }
+            .confirmationDialog(
+                calEventActionTarget?.title ?? "Appointment",
+                isPresented: Binding(
+                    get: { calEventActionTarget != nil },
+                    set: { if !$0 { calEventActionTarget = nil } }
+                ),
+                titleVisibility: .visible
+            ) {
+                if calEventActionPatient != nil {
+                    Button("Start Encounter") {
+                        showCalEncounterSheet = true
+                        calEventActionTarget = nil
+                    }
+                    Button("Open Patient File") {
+                        selectedPatient = calEventActionPatient
+                        calEventActionTarget = nil
+                    }
+                } else {
+                    Button("Import Patient") {
+                        showCalendarImport = true
+                        calEventActionTarget = nil
+                    }
+                }
+                Button("Cancel", role: .cancel) { calEventActionTarget = nil }
+            }
+            .sheet(isPresented: $showCalEncounterSheet, onDismiss: { calEventActionPatient = nil }) {
+                if let patient = calEventActionPatient {
+                    ConsultationView(patient: patient)
+                }
             }
         }
     }
@@ -517,38 +550,51 @@ struct TodayDashboardView: View {
                 .padding(.vertical, 4)
             }
             ForEach(todayCalEvents, id: \.eventIdentifier) { event in
-                HStack(spacing: 10) {
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(event.calEntryColor)
-                        .frame(width: 3, height: 32)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(event.title ?? "Untitled")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(.primary)
-                            .lineLimit(1)
-                        HStack(spacing: 6) {
-                            if let start = event.startDate {
-                                Text(start.formatted(date: .omitted, time: .shortened))
-                                    .font(.caption2.monospacedDigit())
-                                    .foregroundStyle(.secondary)
-                            }
-                            if let calName = event.calendar?.title {
-                                Text(calName)
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                                    .padding(.horizontal, 5).padding(.vertical, 1)
-                                    .background(event.calEntryColor.opacity(0.12), in: Capsule())
+                Button {
+                    let parsed = CalendarEventParser.parse(title: event.title ?? "", calLabel: event.calEntryLabel)
+                    calEventActionPatient = allPatients.first {
+                        $0.fullName.lowercased().trimmingCharacters(in: .whitespaces) ==
+                        parsed.name.lowercased().trimmingCharacters(in: .whitespaces)
+                    }
+                    calEventActionTarget = event
+                } label: {
+                    HStack(spacing: 10) {
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(event.calEntryColor)
+                            .frame(width: 3, height: 32)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(event.title ?? "Untitled")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(.primary)
+                                .lineLimit(1)
+                            HStack(spacing: 6) {
+                                if let start = event.startDate {
+                                    Text(start.formatted(date: .omitted, time: .shortened))
+                                        .font(.caption2.monospacedDigit())
+                                        .foregroundStyle(.secondary)
+                                }
+                                if let calName = event.calendar?.title {
+                                    Text(calName)
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                        .padding(.horizontal, 5).padding(.vertical, 1)
+                                        .background(event.calEntryColor.opacity(0.12), in: Capsule())
+                                }
                             }
                         }
+                        Spacer()
+                        Text(event.calEntryLabel)
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(event.calEntryColor)
+                            .padding(.horizontal, 6).padding(.vertical, 2)
+                            .background(event.calEntryColor.opacity(0.12), in: Capsule())
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.tertiary)
                     }
-                    Spacer()
-                    Text(event.calEntryLabel)
-                        .font(.caption2.weight(.bold))
-                        .foregroundStyle(event.calEntryColor)
-                        .padding(.horizontal, 6).padding(.vertical, 2)
-                        .background(event.calEntryColor.opacity(0.12), in: Capsule())
+                    .padding(.vertical, 2)
                 }
-                .padding(.vertical, 2)
+                .buttonStyle(.plain)
             }
         } header: {
             HStack {
