@@ -89,6 +89,7 @@ export default function PatientAccountsTab() {
         const r = await fetch(apiUrl(`/api/patients/search?q=${encodeURIComponent(patientSearch.trim())}&limit=8`), {
           headers: await staffAuthHeaders(),
         });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
         const d = await r.json() as { patients?: PatientResult[] };
         setPatientResults(d.patients ?? []);
       } catch { setPatientResults([]); }

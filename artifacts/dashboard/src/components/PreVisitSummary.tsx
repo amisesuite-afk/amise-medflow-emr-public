@@ -134,7 +134,7 @@ export default function PreVisitSummary({ patientId }: { patientId: string }) {
         headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
         body: JSON.stringify({ patientId, submissionId: submission.id }),
       });
-      const body = await r.json() as { formatted?: AiFormatted; error?: string };
+      const body = await r.json().catch(() => { throw new Error(`HTTP ${r.status}`); }) as { formatted?: AiFormatted; error?: string };
       if (!r.ok) {
         setAiError(body.error ?? `HTTP ${r.status}`);
         return;

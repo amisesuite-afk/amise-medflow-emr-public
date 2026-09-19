@@ -143,13 +143,14 @@ router.post('/api/clinical-states', async (req, res) => {
     if (error) throw error;
 
     // Record initial transition: null → proposed
-    await sb().from('clinical_state_transitions').insert({
+    const { error: transitionInsertErr } = await sb().from('clinical_state_transitions').insert({
       clinical_state_id: data.id,
       from_status:       'new',
       to_status:         'proposed',
       transitioned_by:   createdBy,
       reason:            'State created',
     });
+    if (transitionInsertErr) log.warn({ err: transitionInsertErr, id: data.id }, '[clinical-states] initial transition insert failed (non-fatal)');
 
     log.info({ id: data.id, title, patientId }, '[clinical-states] created');
     void logAudit(req, 'create', 'clinical_state', data.id as string, patientId, { stateType, title });
@@ -235,6 +236,7 @@ router.patch('/api/clinical-states/:id', async (req, res) => {
     if (error) throw error;
 
     log.info({ id }, '[clinical-states] updated');
+    void logAudit(req, 'update', 'clinical_state', id, undefined, { fields: Object.keys(patch).filter(k => k !== 'updated_at') });
     res.json(data);
   } catch (err) {
     log.error({ err }, '[clinical-states] update error');
@@ -373,6 +375,7 @@ router.delete('/api/clinical-states/:id', async (req, res) => {
     ]);
 
     log.info({ id, reason }, '[clinical-states] marked entered_in_error');
+    void logAudit(req, 'delete', 'clinical_state', id, undefined, { reason });
     res.json({ id, status: 'entered_in_error' });
   } catch (err) {
     log.error({ err }, '[clinical-states] delete error');

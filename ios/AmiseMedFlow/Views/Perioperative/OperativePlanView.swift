@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import EventKit
 
 struct OperativePlanView: View {
     @Bindable var patient: Patient
@@ -67,6 +68,15 @@ private struct PlanForm: View {
     @Binding var aiError: String?
     let context: ModelContext
 
+    @StateObject private var calSvc = CalendarService()
+    @State private var bookingDate = Date().addingTimeInterval(86400)  // default: tomorrow
+    @State private var bookingDurationMins: Double = 90
+    @State private var bookingNotes = ""
+    @State private var bookingCalendar: EKCalendar? = nil
+    @State private var isBooking = false
+    @State private var bookingMessage: String? = nil
+    @State private var bookingSuccess = false
+
     private var radiationConsentCategory: String? {
         guard let dx = patient.workingDiagnosis else { return nil }
         return DiagnosisRadiationEngine.radiate(
@@ -106,6 +116,8 @@ private struct PlanForm: View {
     var body: some View {
         List {
             consentSection
+            if !perioperativeFlags.isEmpty { perioperativeFlagsSection }
+            theatreBookingSection
             anaesthesiaSection
             whoSignIn
             whoTimeOut
@@ -113,6 +125,291 @@ private struct PlanForm: View {
             progressSection
             teamSection
             aiSection
+        }
+    }
+
+    // MARK: - Perioperative flags (deterministic, derived from prescriptions + PMH notes)
+
+    private struct PeriopFlag: Identifiable {
+        let id = UUID()
+        enum Band { case moderate, high, critical }
+        let band: Band
+        let title: String
+        let detail: String
+        let action: String
+    }
+
+    private var perioperativeFlags: [PeriopFlag] {
+        var flags: [PeriopFlag] = []
+
+        // Steroid stress-dose
+        if patient.hasSteroidTherapy {
+            let drugs = patient.activeSteroids.map { $0.drug }.joined(separator: ", ")
+            flags.append(PeriopFlag(
+                band: .high,
+                title: "Steroid stress-dose required",
+                detail: "Patient on \(drugs). Risk of adrenal insufficiency perioperatively.",
+                action: "Hydrocortisone 50–100 mg IV at induction; double maintenance dose post-op × 48 h."
+            ))
+        }
+
+        // Anticoagulation bridging — enhanced (already noted in anaesthesia section too)
+        if patient.hasAnticoagulation {
+            let drugs = patient.activeAnticoagulants.map { $0.drug }.joined(separator: ", ")
+            flags.append(PeriopFlag(
+                band: .high,
+                title: "Anticoagulation — bridging protocol",
+                detail: "On \(drugs). Perioperative management required.",
+                action: "Stop per drug protocol. Consider LMWH bridging if high thrombotic risk. Document post-op restart plan."
+            ))
+        }
+
+        // OSA / CPAP continuation
+        if patient.hasOSAinHistory {
+            let bmi = patient.latestBMI() ?? 0
+            let band: PeriopFlag.Band = bmi >= 35 ? .high : .moderate
+            flags.append(PeriopFlag(
+                band: band,
+                title: "OSA — CPAP continuation required",
+                detail: bmi >= 35 ? "OSA with BMI ≥35 — significantly elevated airway and aspiration risk." : "Obstructive sleep apnoea noted in history.",
+                action: "Instruct patient to bring CPAP machine. Apply in recovery. Inform anaesthetist pre-op. Avoid sedative pre-medication."
+            ))
+        }
+
+        // Obesity — aspiration / airway risk
+        if let bmi = patient.latestBMI(), bmi >= 35, !patient.hasOSAinHistory {
+            flags.append(PeriopFlag(
+                band: .moderate,
+                title: "Obesity — aspiration & airway risk",
+                detail: String(format: "BMI %.0f kg/m².", bmi),
+                action: "RSI induction indicated. Ramped position. Inform anaesthetist."
+            ))
+        }
+
+        // Diabetes — perioperative glucose management
+        if patient.hasDiabetesInHistory {
+            flags.append(PeriopFlag(
+                band: .moderate,
+                title: "Diabetes — glucose monitoring required",
+                detail: "Diabetes mellitus noted. Risk of hypo/hyperglycaemia perioperatively.",
+                action: "VRIII sliding scale if glucose >12 mmol/L or >2 h NPO. Monitor 1–2 hourly."
+            ))
+        }
+
+        // PSHx → adhesion / anatomy flags (keyword scan of persisted surgicalHistory)
+        let pshx = (patient.surgicalHistory ?? "").lowercased()
+        let adhesionKeywords = ["laparotomy", "bowel resection", "anterior resection", "hartmann",
+                                "apr", "whipple", "liver resection", "pancreatectomy"]
+        if adhesionKeywords.contains(where: { pshx.contains($0) }) {
+            flags.append(PeriopFlag(
+                band: .moderate,
+                title: "Previous abdominal surgery — adhesions likely",
+                detail: "Prior major abdominal procedure documented in surgical history.",
+                action: "Counsel patient on adhesion risk. Consider laparoscopic-first approach with low threshold for conversion. Ensure bowel prep discussed if indicated."
+            ))
+        }
+
+        // Gastric bypass / sleeve — anatomy altered
+        if pshx.contains("gastric bypass") || pshx.contains("sleeve") || pshx.contains("bariatric") {
+            flags.append(PeriopFlag(
+                band: .moderate,
+                title: "Altered upper GI anatomy — bariatric surgery",
+                detail: "Gastric bypass or sleeve gastrectomy in surgical history.",
+                action: "Standard NG/OG placement may not be suitable. ERCP approach altered. Inform anaesthetist and scrub team."
+            ))
+        }
+
+        // Splenectomy — asplenic immunocompromise
+        if pshx.contains("splenectomy") {
+            flags.append(PeriopFlag(
+                band: .moderate,
+                title: "Asplenic patient — infection risk",
+                detail: "Splenectomy documented. Increased risk of overwhelming post-splenectomy infection (OPSI).",
+                action: "Confirm vaccinations (pneumococcal, Hib, meningococcal). Antibiotic prophylaxis per local protocol if not already on it."
+            ))
+        }
+
+        return flags
+    }
+
+    @ViewBuilder
+    private var perioperativeFlagsSection: some View {
+        Section {
+            ForEach(perioperativeFlags) { flag in
+                perioperativeFlagRow(flag)
+            }
+        } header: {
+            Label("Perioperative Alerts", systemImage: "exclamationmark.triangle.fill")
+                .foregroundStyle(.orange)
+        } footer: {
+            Text("Deterministic flags from prescriptions, PMH, and surgical history. Verify and document actions before proceeding.")
+                .font(.caption2).foregroundStyle(.tertiary)
+        }
+    }
+
+    @ViewBuilder
+    private func perioperativeFlagRow(_ flag: PeriopFlag) -> some View {
+        let bandColor: Color = {
+            switch flag.band {
+            case .moderate: return .orange
+            case .high:     return Color(red: 0.85, green: 0.2, blue: 0.1)
+            case .critical: return .red
+            }
+        }()
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.system(size: 11))
+                    .foregroundStyle(bandColor)
+                Text(flag.title)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(bandColor)
+            }
+            Text(flag.detail)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            HStack(alignment: .top, spacing: 4) {
+                Image(systemName: "arrow.right.circle.fill")
+                    .font(.system(size: 10))
+                    .foregroundStyle(.teal)
+                    .padding(.top, 1)
+                Text(flag.action)
+                    .font(.caption)
+                    .foregroundStyle(.teal)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+
+    // MARK: - Theatre / procedure booking
+
+    @ViewBuilder
+    private var theatreBookingSection: some View {
+        Section {
+            // Procedure field (mirrors consent, editable here)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("PROCEDURE").font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
+                Text(plan.consentProcedure.isEmpty ? "Set procedure in Consent section" : plan.consentProcedure)
+                    .font(.callout)
+                    .foregroundStyle(plan.consentProcedure.isEmpty ? .tertiary : .primary)
+            }
+
+            // Patient
+            VStack(alignment: .leading, spacing: 4) {
+                Text("PATIENT").font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
+                Text(patient.fullName)
+                    .font(.callout)
+            }
+
+            // Date & time
+            DatePicker("Date & time", selection: $bookingDate, in: Date()...)
+                .datePickerStyle(.compact)
+                .font(.callout)
+
+            // Duration
+            VStack(alignment: .leading, spacing: 8) {
+                Text("ESTIMATED DURATION").font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach([30, 60, 90, 120, 150, 180, 240], id: \.self) { mins in
+                            let label = mins < 60 ? "\(mins) min" : (mins % 60 == 0 ? "\(mins/60)h" : "\(mins/60)h \(mins%60)m")
+                            let sel = Int(bookingDurationMins) == mins
+                            Button(label) { bookingDurationMins = Double(mins) }
+                                .font(.caption2.weight(sel ? .semibold : .regular))
+                                .padding(.horizontal, 8).padding(.vertical, 3)
+                                .background(sel ? AMColor.accent : AMColor.accentLt, in: Capsule())
+                                .foregroundStyle(sel ? Color.white : AMColor.accent)
+                                .buttonStyle(.plain)
+                        }
+                    }
+                }
+            }
+
+            // Theatre notes
+            ZStack(alignment: .topLeading) {
+                TextEditor(text: $bookingNotes)
+                    .frame(minHeight: 60)
+                    .font(.callout)
+                if bookingNotes.isEmpty {
+                    Text("Special instructions, equipment, implants…")
+                        .foregroundStyle(.tertiary).font(.caption)
+                        .padding(.top, 8).padding(.leading, 4)
+                        .allowsHitTesting(false)
+                }
+            }
+
+            // Feedback
+            if let msg = bookingMessage {
+                HStack(spacing: 8) {
+                    Image(systemName: bookingSuccess ? "checkmark.circle.fill" : "xmark.circle.fill")
+                        .foregroundStyle(bookingSuccess ? .green : .red)
+                    Text(msg)
+                        .font(.caption)
+                        .foregroundStyle(bookingSuccess ? .green : .red)
+                }
+            }
+
+            // Book button
+            Button {
+                Task { await requestBooking() }
+            } label: {
+                HStack(spacing: 8) {
+                    if isBooking {
+                        ProgressView().scaleEffect(0.8)
+                    } else {
+                        Image(systemName: "calendar.badge.plus")
+                    }
+                    Text(isBooking ? "Booking…" : "Add to iOS Calendar")
+                        .font(.callout.weight(.semibold))
+                    Spacer()
+                    let dur = Int(bookingDurationMins)
+                    let label = dur < 60 ? "\(dur) min" : (dur % 60 == 0 ? "\(dur/60)h" : "\(dur/60)h \(dur%60)m")
+                    Text(label)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .foregroundStyle(plan.consentProcedure.isEmpty || isBooking ? Color.secondary : AMColor.accent)
+            .disabled(plan.consentProcedure.isEmpty || isBooking)
+            .buttonStyle(.plain)
+        } header: {
+            Label("Theatre / Procedure Booking", systemImage: "calendar.badge.plus")
+        } footer: {
+            Text("Creates an event in your iOS Calendar (synced to Google Calendar if connected).")
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+        }
+    }
+
+    private func requestBooking() async {
+        isBooking = true
+        bookingMessage = nil
+        defer { isBooking = false }
+
+        let notes = [
+            "Patient: \(patient.fullName)",
+            patient.ageYears > 0 ? "Age: \(patient.ageYears) yrs · \(patient.sex.rawValue)" : nil,
+            patient.mrn.flatMap { $0.isEmpty ? nil : "MRN: \($0)" },
+            plan.anaesthesiaType.isEmpty ? nil : "Anaesthesia: \(plan.anaesthesiaType)",
+            plan.antibioticProphylaxis.isEmpty ? nil : "Abx: \(plan.antibioticProphylaxis)",
+            plan.specialEquipment.isEmpty ? nil : "Equipment: \(plan.specialEquipment)",
+            bookingNotes.isEmpty ? nil : bookingNotes,
+        ].compactMap { $0 }.joined(separator: "\n")
+
+        do {
+            try await calSvc.createTheatreBooking(
+                procedure: plan.consentProcedure,
+                patientName: patient.fullName,
+                date: bookingDate,
+                duration: bookingDurationMins * 60,
+                notes: notes,
+                calendar: bookingCalendar
+            )
+            bookingSuccess = true
+            bookingMessage = "Booking added to iOS Calendar for \(bookingDate.formatted(date: .abbreviated, time: .shortened))"
+        } catch {
+            bookingSuccess = false
+            bookingMessage = error.localizedDescription
         }
     }
 
@@ -181,6 +478,22 @@ private struct PlanForm: View {
                     }
                 }
             }
+            Picker("ASA Class", selection: Binding<Int>(
+                get: { patient.asaClass ?? 0 },
+                set: {
+                    patient.asaClass = $0 == 0 ? nil : $0
+                    patient.updatedAt = .now
+                    patient.pendingSync = true
+                }
+            )) {
+                Text("Not set").tag(0)
+                Text("ASA I — Healthy").tag(1)
+                Text("ASA II — Mild systemic disease").tag(2)
+                Text("ASA III — Severe systemic disease").tag(3)
+                Text("ASA IV — Life-threatening disease").tag(4)
+                Text("ASA V — Moribund").tag(5)
+            }
+
             Picker("Anaesthesia type", selection: $plan.anaesthesiaType) {
                 ForEach(["General", "Spinal", "Epidural", "Local + Sedation", "Local only", "Regional"], id: \.self) { Text($0).tag($0) }
             }

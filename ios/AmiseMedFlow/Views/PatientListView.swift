@@ -9,14 +9,12 @@ struct PatientListView: View {
     @State private var searchText = ""
     @State private var selectedPatient: Patient?
 
-    private var outpatients: [Patient] {
-        allPatients.filter { $0.setting == .outpatient }
-    }
+    // MARK: – Filter
 
     private var filtered: [Patient] {
-        guard !searchText.isEmpty else { return outpatients }
+        guard !searchText.isEmpty else { return allPatients }
         let q = searchText.lowercased()
-        return outpatients.filter {
+        return allPatients.filter {
             $0.fullName.lowercased().contains(q) ||
             ($0.chiefComplaint?.lowercased().contains(q) ?? false) ||
             ($0.workingDiagnosis?.lowercased().contains(q) ?? false) ||
@@ -25,30 +23,69 @@ struct PatientListView: View {
         }
     }
 
+    // MARK: – Sections (deduped via PatientDeduplication.swift)
+
+    private static let settingOrder: [ClinicalSetting] = [
+        .emergency, .inpatient, .theatre, .endoscopy, .outpatient
+    ]
+
+    private var sections: [(setting: ClinicalSetting, patients: [Patient])] {
+        Self.settingOrder.compactMap { setting in
+            let patients = filtered
+                .filter { $0.setting == setting }
+                .sorted { $0.createdAt > $1.createdAt }
+                .deduped()
+            return patients.isEmpty ? nil : (setting: setting, patients: patients)
+        }
+    }
+
+    // MARK: – Body
+
     var body: some View {
         NavigationStack {
             List {
-                if filtered.isEmpty {
+                if allPatients.isEmpty {
                     ContentUnavailableView(
                         "No patients",
                         systemImage: "person.crop.circle",
-                        description: Text("Add an outpatient to get started.")
+                        description: Text("Add a patient to get started.")
+                    )
+                } else if sections.isEmpty {
+                    ContentUnavailableView(
+                        "No results",
+                        systemImage: "magnifyingglass",
+                        description: Text("No patients match \"\(searchText)\".")
                     )
                 } else {
-                    ForEach(filtered) { patient in
-                        Button { selectedPatient = patient } label: {
-                            PatientRow(patient: patient)
+                    ForEach(sections, id: \.setting) { section in
+                        Section {
+                            ForEach(section.patients) { patient in
+                                Button { selectedPatient = patient } label: {
+                                    PatientRow(patient: patient)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                            .onDelete { offsets in
+                                deleteWithDuplicates(from: section.patients, at: offsets)
+                            }
+                        } header: {
+                            Label(section.setting.rawValue,
+                                  systemImage: section.setting.icon)
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(Color(hex: section.setting.accentHex))
+                                .textCase(nil)
                         }
-                        .buttonStyle(.plain)
                     }
-                    .onDelete(perform: delete)
                 }
             }
             .navigationTitle("Patients")
-            .searchable(text: $searchText, prompt: "Search name or complaint")
+            .searchable(text: $searchText, prompt: "Search name, MRN, or complaint")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button { showAdd = true } label: { Image(systemName: "plus") }
+                    HStack {
+                        SyncStatusBar()
+                        Button { showAdd = true } label: { Image(systemName: "plus") }
+                    }
                 }
             }
             .sheet(isPresented: $showAdd) {
@@ -60,8 +97,20 @@ struct PatientListView: View {
         }
     }
 
-    private func delete(at offsets: IndexSet) {
-        for i in offsets { context.delete(filtered[i]) }
+    // MARK: – Actions
+
+    /// Deletes the tapped row and any hidden duplicates of the same patient
+    /// in the same setting (same dedupKey). Clinical data is intentionally
+    /// preserved on the winner; duplicates with no encounters/vitals/notes
+    /// are safe to remove.
+    private func deleteWithDuplicates(from patients: [Patient], at offsets: IndexSet) {
+        for i in offsets {
+            let victim = patients[i]
+            let key = victim.dedupKey
+            allPatients
+                .filter { $0.setting == victim.setting && $0.dedupKey == key }
+                .forEach { context.delete($0) }
+        }
     }
 }
 
@@ -181,15 +230,17 @@ struct PatientRow: View {
                     }
                 }
 
-                // Row 4: NEWS2 + POD (ward patients) or allergy/anticoag badges (all settings)
-                if (patient.setting == .inpatient || patient.setting == .emergency),
-                   let v = latestVitals, v.hasAnyValue {
-                    HStack(spacing: 6) {
-                        if let days = patient.postOpDays {
-                            Text("POD \(days)")
-                                .font(.system(size: 9, weight: .bold))
-                                .foregroundStyle(AMColor.accent)
-                        }
+                // Row 4: NEWS2 (always shown) + POD + safety badges
+                HStack(spacing: 6) {
+                    if let days = patient.postOpDays {
+                        Text("POD \(days)")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(AMColor.accent)
+                    }
+                    if let v = latestVitals, v.hasAnyValue {
+                        Circle()
+                            .fill(Color(hex: v.news2Color))
+                            .frame(width: 6, height: 6)
                         Text("NEWS2 \(v.news2Score)")
                             .font(.system(size: 9, weight: .bold))
                             .foregroundStyle(Color(hex: v.news2Color))
@@ -201,29 +252,32 @@ struct PatientRow: View {
                         Text(v.news2Risk)
                             .font(.system(size: 9))
                             .foregroundStyle(Color(hex: v.news2Color).opacity(0.8))
-                        Spacer()
-                        if patient.hasCriticalAllergy {
-                            Label("Allergy", systemImage: "exclamationmark.shield.fill")
-                                .font(.system(size: 9, weight: .bold))
-                                .foregroundStyle(.red)
-                                .labelStyle(.iconOnly)
-                        } else if !patient.allergies.isEmpty {
-                            Label("Allergy", systemImage: "exclamationmark.shield")
-                                .font(.system(size: 9, weight: .semibold))
-                                .foregroundStyle(.orange)
-                                .labelStyle(.iconOnly)
-                        }
-                        if patient.hasAnticoagulation {
-                            Label("Anticoag", systemImage: "drop.fill")
-                                .font(.system(size: 9, weight: .bold))
-                                .foregroundStyle(.purple)
-                                .labelStyle(.iconOnly)
-                        }
+                    } else {
+                        Circle()
+                            .fill(Color.secondary.opacity(0.3))
+                            .frame(width: 6, height: 6)
+                        Text("No vitals")
+                            .font(.system(size: 9))
+                            .foregroundStyle(.secondary)
                     }
-                } else if let days = patient.postOpDays {
-                    Text("POD \(days)")
-                        .font(.system(size: 9, weight: .bold))
-                        .foregroundStyle(accentColor)
+                    Spacer()
+                    if patient.hasCriticalAllergy {
+                        Label("Allergy", systemImage: "exclamationmark.shield.fill")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.red)
+                            .labelStyle(.iconOnly)
+                    } else if !patient.allergies.isEmpty {
+                        Label("Allergy", systemImage: "exclamationmark.shield")
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundStyle(.orange)
+                            .labelStyle(.iconOnly)
+                    }
+                    if patient.hasAnticoagulation {
+                        Label("Anticoag", systemImage: "drop.fill")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.purple)
+                            .labelStyle(.iconOnly)
+                    }
                 }
             }
             .padding(.leading, 10)

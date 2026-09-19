@@ -259,3 +259,64 @@ See `docs/INCIDENT-RUNBOOK.md` for where to look first during an incident (healt
 endpoints, Render logs, Sentry) and how to roll back each part of the stack (Vercel frontends,
 the Render-hosted API server, a bad migration, a bad cron run) — none of this was written down
 before this file existed.
+
+## iOS compile error patterns
+
+Known Swift/SwiftUI type-ambiguity bugs encountered in this codebase — check these first before
+attempting other fixes.
+
+### `Color.opacity()` ambiguity (`"Ambiguous use of 'opacity'"`)
+
+`SwiftUI.Color` conforms to BOTH `ShapeStyle` AND `View`. Both protocols define an `opacity`
+method with different return types (`some ShapeStyle` vs `some View`). When the compiler cannot
+narrow the base type to one conformance, it reports "Ambiguous use of 'opacity'".
+
+**Triggers that cause ambiguity:**
+- `Color.red.opacity(0.85)` passed as the single argument to `.background()` — `.background()`
+  accepts both `ShapeStyle` and the deprecated `View` overload, so `Color` satisfies both and
+  the call is ambiguous.
+- `Color.white.opacity(0.9)` passed to `.foregroundStyle()` — even though `foregroundStyle`
+  only takes `ShapeStyle`, writing `Color.white.opacity(...)` makes the base type explicitly
+  `Color` (both conformances visible), confusing the type-checker in some Xcode versions.
+
+**What does NOT cause ambiguity (safe patterns):**
+- `.white.opacity(0.9)` dot-syntax in `.foregroundStyle()` — Swift infers `.white` from the
+  `ShapeStyle` context (not from `Color`), making `.opacity()` unambiguous.
+- `Color.red.opacity(0.15)` in `.background(_ style: ShapeStyle, in: Shape)` — the two-argument
+  form uniquely matches the `ShapeStyle` + `Shape` overload.
+- `Color(white: 1, opacity: 0.3)` or `Color(red:green:blue:opacity:)` initializer — avoids
+  calling `.opacity()` on `Color` entirely; no ambiguity possible.
+- A private helper/property with explicit `-> Color` return type: `private var bg: Color { Color.red.opacity(0.85) }`.
+  The `-> Color` annotation forces the compiler to use `Color.opacity()->Color`, unambiguous.
+  Use it as `.background { bg }` in call sites.
+- `.background { Color.red.opacity(0.85) }` closure form MAY still be ambiguous in some Xcode
+  versions even with `@ViewBuilder` — prefer the two patterns above when you get cascades.
+
+**Fix strategy for `.background(Color.X.opacity(...))`:**
+Use the `@ViewBuilder` closure form instead of passing the color directly:
+```swift
+// Before (ambiguous):
+.background(Color.red.opacity(0.85))
+
+// After (unambiguous):
+.background { Color.red.opacity(0.85) }
+```
+
+**Fix strategy for `.foregroundStyle(Color.X.opacity(...))`:**
+Revert to dot-syntax so Swift infers the base type from the `ShapeStyle` context:
+```swift
+// Before (ambiguous — Color is both ShapeStyle and View):
+.foregroundStyle(Color.white.opacity(0.9))
+
+// After (unambiguous — dot-syntax lets Swift infer ShapeStyle.white):
+.foregroundStyle(.white.opacity(0.9))
+```
+
+### Cascade errors from opacity ambiguity
+
+A single unresolved `Color.opacity()` ambiguity inside a `@ViewBuilder` function body causes the
+Swift type-checker to fail the entire function scope, generating spurious cascade errors on
+unrelated lines — e.g. `"Ambiguous use of 'count'"` on `array.count` in a `.animation(value:)`
+modifier in the same function. When you see `"Ambiguous use of 'count'"` (or similar) on an
+expression that is clearly unambiguous, look UPWARD in the same `@ViewBuilder` scope for an
+unresolved `Color.opacity()` call.

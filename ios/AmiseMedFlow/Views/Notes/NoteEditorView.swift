@@ -7,12 +7,18 @@ struct NoteEditorView: View {
     @Environment(\.modelContext) var context
     @StateObject private var ai = AIService()
 
-    @State private var showAIOptions   = false
+    @State private var showAIOptions        = false
     @State private var aiError: String?
-    @State private var showError       = false
-    @State private var showShareSheet  = false
+    @State private var showError            = false
+    @State private var showShareSheet       = false
     @State private var shareURL: URL?
-    @State private var isExportingPDF  = false
+    @State private var isExportingPDF       = false
+    @State private var showReferralSheet    = false
+    @State private var referralSpecialty    = ""
+    @State private var referralReason       = ""
+    @State private var showDischargeSheet   = false
+    @State private var dischargeTreatment   = ""
+    @State private var dischargeFollowUp    = ""
 
     private let soapPlaceholders = (
         s: "What the patient reports — symptoms, history, concerns",
@@ -99,7 +105,11 @@ struct NoteEditorView: View {
                 if note.noteType.isStructured, let patient = note.patient {
                     Button("Generate SOAP draft") { Task { await generateSOAP(patient: patient) } }
                 }
-                if let patient = note.patient {
+                if note.noteType == .referralLetter {
+                    Button("Generate referral letter…") { showReferralSheet = true }
+                } else if note.noteType == .discharge {
+                    Button("Generate discharge summary…") { showDischargeSheet = true }
+                } else if let patient = note.patient {
                     Button("Generate full draft") { Task { await generateFreeText(patient: patient) } }
                 }
                 Button("Cancel", role: .cancel) {}
@@ -113,6 +123,28 @@ struct NoteEditorView: View {
                 if let url = shareURL {
                     ShareSheet(items: [url])
                         .presentationDetents([.medium, .large])
+                }
+            }
+            .sheet(isPresented: $showReferralSheet) {
+                if let patient = note.patient {
+                    ReferralParamsSheet(
+                        specialty: $referralSpecialty,
+                        reason: $referralReason
+                    ) {
+                        showReferralSheet = false
+                        Task { await generateReferralNote(patient: patient) }
+                    }
+                }
+            }
+            .sheet(isPresented: $showDischargeSheet) {
+                if let patient = note.patient {
+                    DischargeParamsSheet(
+                        treatment: $dischargeTreatment,
+                        followUp: $dischargeFollowUp
+                    ) {
+                        showDischargeSheet = false
+                        Task { await generateDischargeSummaryNote(patient: patient) }
+                    }
                 }
             }
         }
@@ -330,6 +362,24 @@ struct NoteEditorView: View {
                     }
                     .foregroundStyle(.teal)
                 }
+                if let patient = note.patient,
+                   let radiationPlan = DiagnosisRadiationEngine.radiate(
+                       workingDiagnosis: patient.workingDiagnosis,
+                       ageYears: patient.ageYears,
+                       sex: patient.sex
+                   ),
+                   !radiationPlan.planTemplate.isEmpty {
+                    Button {
+                        let existing = (note.plan ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                        let template = radiationPlan.planTemplate.trimmingCharacters(in: .whitespacesAndNewlines)
+                        note.plan = existing.isEmpty ? template : existing + "\n\n" + template
+                    } label: {
+                        Label("Insert \(radiationPlan.conditionName) plan", systemImage: "wand.and.stars")
+                            .font(.caption)
+                            .lineLimit(1)
+                    }
+                    .foregroundStyle(.teal)
+                }
             } header: {
                 Label("Plan", systemImage: "list.bullet.clipboard")
             }
@@ -407,6 +457,40 @@ struct NoteEditorView: View {
     private func generateFreeText(patient: Patient) async {
         do {
             let text = try await ai.generateFreeText(patient: patient, noteType: note.noteType)
+            note.freeText     = text
+            note.updatedAt    = .now
+            note.isAIAssisted = true
+            note.pendingSync  = true
+        } catch {
+            aiError = error.localizedDescription
+            showError = true
+        }
+    }
+
+    private func generateReferralNote(patient: Patient) async {
+        do {
+            let text = try await ai.generateReferral(
+                patient: patient,
+                toSpecialty: referralSpecialty.isEmpty ? "relevant specialty" : referralSpecialty,
+                reason: referralReason.isEmpty ? patient.workingDiagnosis ?? "See clinical notes" : referralReason
+            )
+            note.freeText     = text
+            note.updatedAt    = .now
+            note.isAIAssisted = true
+            note.pendingSync  = true
+        } catch {
+            aiError = error.localizedDescription
+            showError = true
+        }
+    }
+
+    private func generateDischargeSummaryNote(patient: Patient) async {
+        do {
+            let text = try await ai.generateDischargeSummary(
+                patient: patient,
+                treatment: dischargeTreatment.isEmpty ? "See clinical notes" : dischargeTreatment,
+                followUp: dischargeFollowUp.isEmpty ? "As per discharge plan" : dischargeFollowUp
+            )
             note.freeText     = text
             note.updatedAt    = .now
             note.isAIAssisted = true
@@ -632,5 +716,73 @@ struct NoteEditorView: View {
         default:
             return ""
         }
+    }
+}
+
+// MARK: - Parameter sheets for specialised AI generation
+
+private struct ReferralParamsSheet: View {
+    @Binding var specialty: String
+    @Binding var reason: String
+    let onGenerate: () -> Void
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Referring to") {
+                    TextField("Specialty (e.g. Cardiology, Oncology)", text: $specialty)
+                        .autocorrectionDisabled()
+                }
+                Section("Reason for referral") {
+                    TextField("Brief clinical reason…", text: $reason, axis: .vertical)
+                        .lineLimit(3...)
+                }
+                Section {
+                    Button {
+                        onGenerate()
+                    } label: {
+                        Label("Generate Referral Letter", systemImage: "sparkles")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .foregroundStyle(.purple)
+                }
+            }
+            .navigationTitle("Referral Details")
+            .navigationBarTitleDisplayMode(.inline)
+        }
+        .presentationDetents([.medium])
+    }
+}
+
+private struct DischargeParamsSheet: View {
+    @Binding var treatment: String
+    @Binding var followUp: String
+    let onGenerate: () -> Void
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Treatment provided") {
+                    TextField("Procedures, interventions, medications given…", text: $treatment, axis: .vertical)
+                        .lineLimit(3...)
+                }
+                Section("Follow-up plan") {
+                    TextField("Outpatient review, district nurse, GP, investigations…", text: $followUp, axis: .vertical)
+                        .lineLimit(3...)
+                }
+                Section {
+                    Button {
+                        onGenerate()
+                    } label: {
+                        Label("Generate Discharge Summary", systemImage: "sparkles")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .foregroundStyle(.purple)
+                }
+            }
+            .navigationTitle("Discharge Details")
+            .navigationBarTitleDisplayMode(.inline)
+        }
+        .presentationDetents([.medium])
     }
 }

@@ -7,6 +7,16 @@ const router = Router();
 const VALID_SITES = ['rodney_bay', 'tapion'];
 const VALID_SEX   = ['male', 'female', 'other', 'unknown'];
 
+/** Normalise sex value from any client — empty string, wrong case, abbreviation → valid DB value. */
+function normalizeSex(raw: unknown): string {
+  if (!raw || typeof raw !== 'string') return 'unknown';
+  const s = raw.toLowerCase().trim();
+  if (s === 'm') return 'male';
+  if (s === 'f') return 'female';
+  if (VALID_SEX.includes(s)) return s;
+  return 'unknown';
+}
+
 interface EncSummary {
   patient_id: string;
   status: string;
@@ -170,7 +180,7 @@ router.post('/api/patients', async (req, res) => {
 
     const row: Record<string, unknown> = {
       full_name:  rawName.trim(),
-      sex:        (body.sex as string) ?? 'unknown',
+      sex:        normalizeSex(body.sex),
       created_by: createdBy ?? null,
       updated_by: createdBy ?? null,
     };
@@ -219,9 +229,15 @@ router.patch('/api/patients/:id', async (req, res) => {
   const { id } = req.params;
   const body = (req.body ?? {}) as Record<string, unknown>;
 
-  if (body.sex && !VALID_SEX.includes(body.sex as string)) {
-    res.status(400).json({ error: `sex must be one of: ${VALID_SEX.join(', ')}` });
-    return;
+  if (body.sex !== undefined) {
+    const raw = typeof body.sex === 'string' ? body.sex.toLowerCase().trim() : '';
+    const normalized = normalizeSex(body.sex);
+    // normalizeSex falls back to 'unknown' for unrecognised values — reject those explicitly
+    if (normalized === 'unknown' && raw !== '' && raw !== 'unknown') {
+      res.status(400).json({ error: `Invalid sex value: ${body.sex}` });
+      return;
+    }
+    body.sex = normalized;
   }
 
   try {

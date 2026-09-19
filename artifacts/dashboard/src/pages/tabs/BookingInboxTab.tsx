@@ -444,6 +444,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
         const r = await fetch(apiUrl(`/api/admin/patient-accounts?email=${encodeURIComponent(selected.patient_email!)}`), {
           headers: await staffAuthHeaders(),
         });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
         const d = await r.json() as { accounts?: Array<{ id: string; patient_id: string | null; patient_name: string | null }> };
         const acct = d.accounts?.[0] ?? null;
         setAcctStatus(acct ? { id: acct.id, patient_id: acct.patient_id, patient_name: acct.patient_name } : 'not_found');
@@ -462,6 +463,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
         const r = await fetch(apiUrl(`/api/patients/search?q=${encodeURIComponent(linkSearchQ.trim())}&limit=6`), {
           headers: await staffAuthHeaders(),
         });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
         const d = await r.json() as { patients?: Array<{ id: string; full_name: string; mrn?: string; phone?: string }> };
         setLinkSearchResults(d.patients ?? []);
       } catch { setLinkSearchResults([]); }

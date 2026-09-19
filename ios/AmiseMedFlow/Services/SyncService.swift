@@ -7,32 +7,75 @@ import Supabase
 @MainActor
 final class SyncService: ObservableObject {
     @Published var isConnected: Bool = false
+    @Published var isOnWiFi: Bool = false
     @Published var pendingCount: Int = 0
     @Published var lastSyncedAt: Date?
     @Published var currentUserEmail: String?
+    @Published var currentUserRole: UserRole = .frontDesk
     @Published var isSyncing: Bool = false
     @Published var syncError: String?
 
     private let monitor = NWPathMonitor()
     private let networkQueue = DispatchQueue(label: "com.amise.network")
     private var modelContext: ModelContext?
+    private var periodicSyncTask: Task<Void, Never>?
+    private var realtimeTask: Task<Void, Never>?
 
     init() {
         monitor.pathUpdateHandler = { [weak self] path in
             Task { @MainActor in
                 let connected = path.status == .satisfied
+                let onWiFi    = path.usesInterfaceType(.wifi)
                 self?.isConnected = connected
+                self?.isOnWiFi    = onWiFi
                 if connected { await self?.syncIfAuthenticated() }
             }
         }
         monitor.start(queue: networkQueue)
         Task { await restoreSession() }
+        startPeriodicSync()
     }
 
     // MARK: - Session context (injected after ModelContainer is ready)
 
     func setModelContext(_ context: ModelContext) {
         self.modelContext = context
+        // If network was already up (and auto-sync fired before the context arrived), sync now.
+        Task { await syncIfAuthenticated() }
+        if isSignedIn { startRealtime() }
+    }
+
+    // MARK: - Periodic WiFi sync (30 s on WiFi / local network, pauses on cellular)
+
+    private func startPeriodicSync() {
+        periodicSyncTask = Task { [weak self] in
+            while !Task.isCancelled {
+                do { try await Task.sleep(for: .seconds(30)) } catch { break }
+                guard let self, self.isOnWiFi else { continue }
+                await self.syncIfAuthenticated()
+            }
+        }
+    }
+
+    // MARK: - Realtime subscription (doctor device gets instant update on check-in)
+
+    func startRealtime() {
+        realtimeTask?.cancel()
+        realtimeTask = Task { [weak self] in
+            guard let self else { return }
+            let channel = SupabaseConfig.client.realtimeV2.channel("patient-encounter-sync")
+            let changes = channel.postgresChange(AnyAction.self, schema: "public", table: "patients")
+            try? await channel.subscribeWithError()
+            for await _ in changes {
+                guard !Task.isCancelled else { break }
+                await self.syncIfAuthenticated()
+            }
+        }
+    }
+
+    func stopRealtime() {
+        realtimeTask?.cancel()
+        realtimeTask = nil
     }
 
     // MARK: - Auth
@@ -41,6 +84,7 @@ final class SyncService: ObservableObject {
         do {
             let session = try await SupabaseConfig.client.auth.session
             currentUserEmail = session.user.email
+            await fetchUserRole(userId: session.user.id)
         } catch {
             currentUserEmail = nil
         }
@@ -49,12 +93,35 @@ final class SyncService: ObservableObject {
     func signIn(email: String, password: String) async throws {
         let session = try await SupabaseConfig.client.auth.signIn(email: email, password: password)
         currentUserEmail = session.user.email
+        await fetchUserRole(userId: session.user.id)
         await syncIfAuthenticated()
+        startRealtime()
     }
 
     func signOut() async throws {
         try await SupabaseConfig.client.auth.signOut()
         currentUserEmail = nil
+        currentUserRole = .frontDesk
+    }
+
+    private func fetchUserRole(userId: UUID) async {
+        struct ProfileRow: Decodable { let role: String? }
+        do {
+            let rows: [ProfileRow] = try await SupabaseConfig.client
+                .from("user_profiles")
+                .select("role")
+                .eq("id", value: userId.uuidString)
+                .limit(1)
+                .execute()
+                .value
+            if let raw = rows.first?.role, let role = UserRole(rawValue: raw) {
+                currentUserRole = role
+            } else {
+                currentUserRole = .frontDesk
+            }
+        } catch {
+            currentUserRole = .frontDesk
+        }
     }
 
     var isSignedIn: Bool { currentUserEmail != nil }
@@ -125,6 +192,7 @@ final class SyncService: ObservableObject {
         let working_diagnosis_icd: String?
         let allergies_json: String?
         let social_history: String?
+        let surgical_history: String?
         let height_cm: Double?
         let ward: String?
         let bed_number: String?
@@ -136,13 +204,15 @@ final class SyncService: ObservableObject {
         let exam_msk: String?
         let exam_skin: String?
         let exam_other: String?
+        let encounter_status: String?
+        let check_in_time: String?
         let created_at: String
     }
 
     private func pullPatients(context: ModelContext) async throws {
         let rows: [RemotePatient] = try await SupabaseConfig.client
             .from("patients")
-            .select("id, full_name, sex, date_of_birth, phone, email, address, mrn, nok_name, nok_relation, nok_phone, pmh_notes, family_history_notes, insurance_provider, policy_number, setting, location, acuity, chief_complaint, hpi, assessment_text, management_plan, working_diagnosis, working_diagnosis_icd, allergies_json, social_history, height_cm, ward, bed_number, exam_general, exam_cvs, exam_resp, exam_abdo, exam_neuro, exam_msk, exam_skin, exam_other, created_at")
+            .select("id, full_name, sex, date_of_birth, phone, email, address, mrn, nok_name, nok_relation, nok_phone, pmh_notes, family_history_notes, insurance_provider, policy_number, setting, location, acuity, chief_complaint, hpi, assessment_text, management_plan, working_diagnosis, working_diagnosis_icd, allergies_json, social_history, surgical_history, height_cm, ward, bed_number, exam_general, exam_cvs, exam_resp, exam_abdo, exam_neuro, exam_msk, exam_skin, exam_other, encounter_status, check_in_time, created_at")
             .order("created_at", ascending: false)
             .limit(500)
             .execute()
@@ -163,7 +233,7 @@ final class SyncService: ObservableObject {
 
             patient.remoteId = row.id
             patient.fullName = row.full_name
-            patient.sex = Sex(rawValue: row.sex?.capitalized ?? "") ?? .unspecified
+            patient.sex = Sex.fromSupabase(row.sex)
             if let dob = row.date_of_birth { patient.dateOfBirth = iso.date(from: dob) }
             patient.phone = row.phone
             patient.email = row.email
@@ -203,6 +273,9 @@ final class SyncService: ObservableObject {
             if let sh = row.social_history, (patient.socialHistory ?? "").isEmpty {
                 patient.socialHistory = sh
             }
+            if let sx = row.surgical_history, (patient.surgicalHistory ?? "").isEmpty {
+                patient.surgicalHistory = sx
+            }
             if let h = row.height_cm, patient.heightCm == nil { patient.heightCm = h }
             if let w = row.ward,   (patient.ward ?? "").isEmpty   { patient.ward = w }
             if let b = row.bed_number, (patient.bedNumber ?? "").isEmpty { patient.bedNumber = b }
@@ -215,8 +288,19 @@ final class SyncService: ObservableObject {
             if let es = row.exam_skin,   (patient.examSkin ?? "").isEmpty    { patient.examSkin    = es }
             if let eo = row.exam_other,  (patient.examOther ?? "").isEmpty   { patient.examOther   = eo }
 
+            if let es = row.encounter_status {
+                patient.encounterStatus = EncounterStatus(rawValue: es) ?? .notCheckedIn
+            }
+            if let ct = row.check_in_time {
+                patient.checkInTime = iso.date(from: ct)
+            }
             patient.syncedAt = .now
-            patient.pendingSync = false
+            // Only mark clean for patients created from this pull.
+            // Existing dirty patients keep pendingSync=true so pushPatientEdits
+            // can still flush their local edits in the same sync cycle.
+            if existing == nil {
+                patient.pendingSync = false
+            }
         }
 
         try context.save()
@@ -281,6 +365,7 @@ final class SyncService: ObservableObject {
                 let management_plan: String?
                 let allergies_json: String?
                 let social_history: String?
+                let surgical_history: String?
                 let height_cm: Double?
                 let ward: String?
                 let bed_number: String?
@@ -292,11 +377,13 @@ final class SyncService: ObservableObject {
                 let exam_msk: String?
                 let exam_skin: String?
                 let exam_other: String?
+                let encounter_status: String
+                let check_in_time: String?
             }
             let isoFmt = ISO8601DateFormatter()
             let row = InsertRow(
                 full_name: patient.fullName,
-                sex: patient.sex.rawValue.lowercased(),
+                sex: patient.sex.supabaseValue,
                 date_of_birth: patient.dateOfBirth.map { isoFmt.string(from: $0) },
                 phone: patient.phone,
                 email: patient.email,
@@ -318,6 +405,7 @@ final class SyncService: ObservableObject {
                 management_plan: patient.managementPlan,
                 allergies_json: patient.allergiesJson,
                 social_history: patient.socialHistory,
+                surgical_history: patient.surgicalHistory,
                 height_cm: patient.heightCm,
                 ward: patient.ward,
                 bed_number: patient.bedNumber,
@@ -328,7 +416,9 @@ final class SyncService: ObservableObject {
                 exam_neuro: patient.examNeuro,
                 exam_msk: patient.examMSK,
                 exam_skin: patient.examSkin,
-                exam_other: patient.examOther
+                exam_other: patient.examOther,
+                encounter_status: patient.encounterStatus.rawValue,
+                check_in_time: patient.checkInTime.map { isoFmt.string(from: $0) }
             )
             struct InsertResponse: Decodable { let id: String }
             let response: [InsertResponse] = try await SupabaseConfig.client
@@ -361,15 +451,21 @@ final class SyncService: ObservableObject {
 
     private func pullConfirmedAppointments(context: ModelContext) async throws {
         let oneWeekAgo = ISO8601DateFormatter().string(from: Date(timeIntervalSinceNow: -7 * 86400))
-        let rows: [RemoteAppointment] = try await SupabaseConfig.client
-            .from("appointment_requests")
-            .select("id, patient_name, patient_phone, patient_email, reason, preferred_slot, status, created_at")
-            .in("status", values: ["staff_confirmed", "patient_confirmed"])
-            .gte("created_at", value: oneWeekAgo)
-            .order("created_at", ascending: false)
-            .limit(200)
-            .execute()
-            .value
+        let rows: [RemoteAppointment]
+        do {
+            rows = try await SupabaseConfig.client
+                .from("appointment_requests")
+                .select("id, patient_name, patient_phone, patient_email, reason, preferred_slot, status, created_at")
+                .in("status", values: ["staff_confirmed", "patient_confirmed"])
+                .gte("created_at", value: oneWeekAgo)
+                .order("created_at", ascending: false)
+                .limit(200)
+                .execute()
+                .value
+        } catch {
+            // appointment_requests schema varies across deployments — skip without failing the whole sync
+            return
+        }
 
         let allLocal = try context.fetch(FetchDescriptor<Patient>())
 
@@ -428,6 +524,7 @@ final class SyncService: ObservableObject {
                 let management_plan: String?
                 let allergies_json: String?
                 let social_history: String?
+                let surgical_history: String?
                 let height_cm: Double?
                 let ward: String?
                 let bed_number: String?
@@ -439,12 +536,14 @@ final class SyncService: ObservableObject {
                 let exam_msk: String?
                 let exam_skin: String?
                 let exam_other: String?
+                let encounter_status: String
+                let check_in_time: String?
                 let updated_at: String
             }
             let iso = ISO8601DateFormatter()
             let row = UpdateRow(
                 full_name: patient.fullName,
-                sex: patient.sex.rawValue.lowercased(),
+                sex: patient.sex.supabaseValue,
                 phone: patient.phone,
                 email: patient.email,
                 address: patient.address,
@@ -467,6 +566,7 @@ final class SyncService: ObservableObject {
                 management_plan: patient.managementPlan,
                 allergies_json: patient.allergiesJson,
                 social_history: patient.socialHistory,
+                surgical_history: patient.surgicalHistory,
                 height_cm: patient.heightCm,
                 ward: patient.ward,
                 bed_number: patient.bedNumber,
@@ -478,6 +578,8 @@ final class SyncService: ObservableObject {
                 exam_msk: patient.examMSK,
                 exam_skin: patient.examSkin,
                 exam_other: patient.examOther,
+                encounter_status: patient.encounterStatus.rawValue,
+                check_in_time: patient.checkInTime.map { iso.string(from: $0) },
                 updated_at: iso.string(from: patient.updatedAt)
             )
             try await SupabaseConfig.client
@@ -632,7 +734,7 @@ final class SyncService: ObservableObject {
 
             struct RxRow: Encodable {
                 let patient_id: String
-                let drug: String
+                let drug_name: String   // Supabase column is drug_name not drug
                 let dose: String?
                 let route: String?
                 let frequency: String?
@@ -643,7 +745,7 @@ final class SyncService: ObservableObject {
             }
             let row = RxRow(
                 patient_id: patientId,
-                drug: rx.drug,
+                drug_name: rx.drug,
                 dose: rx.dose.isEmpty ? nil : rx.dose,
                 route: rx.route.isEmpty ? nil : rx.route,
                 frequency: rx.frequency.isEmpty ? nil : rx.frequency,
@@ -662,6 +764,7 @@ final class SyncService: ObservableObject {
             if let first = response.first {
                 rx.remoteId = first.id
                 rx.pendingSync = false
+                rx.syncedAt = .now
             }
         }
         try context.save()
@@ -670,7 +773,7 @@ final class SyncService: ObservableObject {
     private struct RemotePrescription: Decodable {
         let id: String
         let patient_id: String
-        let drug: String
+        let drug_name: String   // Supabase column is drug_name
         let dose: String?
         let route: String?
         let frequency: String?
@@ -683,7 +786,7 @@ final class SyncService: ObservableObject {
     private func pullPrescriptions(context: ModelContext) async throws {
         let rows: [RemotePrescription] = try await SupabaseConfig.client
             .from("prescriptions")
-            .select("id, patient_id, drug, dose, route, frequency, duration, indication, instructions, prescribed_at")
+            .select("id, patient_id, drug_name, dose, route, frequency, duration, indication, instructions, prescribed_at")
             .order("prescribed_at", ascending: false)
             .limit(500)
             .execute()
@@ -697,7 +800,7 @@ final class SyncService: ObservableObject {
             guard allLocal.first(where: { $0.remoteId == row.id }) == nil else { continue }
             guard let patient = allPatients.first(where: { $0.remoteId == row.patient_id }) else { continue }
 
-            let rx = Prescription(drug: row.drug,
+            let rx = Prescription(drug: row.drug_name,
                                   dose: row.dose ?? "",
                                   route: row.route ?? "Oral",
                                   frequency: row.frequency ?? "",
@@ -708,6 +811,7 @@ final class SyncService: ObservableObject {
             rx.patient = patient
             rx.remoteId = row.id
             rx.pendingSync = false
+            rx.syncedAt = .now
             context.insert(rx)
         }
         try context.save()
@@ -765,6 +869,7 @@ final class SyncService: ObservableObject {
             if let first = response.first {
                 v.remoteId = first.id
                 v.pendingSync = false
+                v.syncedAt = .now
             }
         }
         try context.save()
@@ -819,6 +924,7 @@ final class SyncService: ObservableObject {
             entry.notes            = row.notes
             entry.remoteId         = row.id
             entry.pendingSync      = false
+            entry.syncedAt         = .now
             context.insert(entry)
         }
         try context.save()
@@ -1075,6 +1181,7 @@ final class SyncService: ObservableObject {
             if let first = response.first {
                 item.remoteId = first.id
                 item.pendingSync = false
+                item.syncedAt = .now
             }
         }
         try context.save()
@@ -1121,6 +1228,7 @@ final class SyncService: ObservableObject {
             item.patient    = patient
             item.remoteId   = row.id
             item.pendingSync = false
+            item.syncedAt   = .now
             context.insert(item)
         }
         try context.save()

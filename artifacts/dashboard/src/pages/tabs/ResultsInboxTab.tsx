@@ -579,7 +579,7 @@ function ManualUploadBar({ onUploaded, onBackfill }: { onUploaded: () => void; o
         method: 'POST',
         headers: await staffAuthHeaders(),
       });
-      const d = await res.json() as { documentsCreated?: number; alreadyStored?: number; errors?: unknown[]; error?: string };
+      const d = await res.json().catch(() => { throw new Error(`HTTP ${res.status}`); }) as { documentsCreated?: number; alreadyStored?: number; errors?: unknown[]; error?: string };
       if (!res.ok) throw new Error(d.error ?? `HTTP ${res.status}`);
       setBackfillOk({ docs: d.documentsCreated ?? 0, already: d.alreadyStored ?? 0 });
       setTimeout(() => { setBackfillOk(null); onBackfill(); }, 3000);
@@ -616,7 +616,7 @@ function ManualUploadBar({ onUploaded, onBackfill }: { onUploaded: () => void; o
           documentType: docType,
         }),
       });
-      const d = await res.json() as { id?: string; error?: string };
+      const d = await res.json().catch(() => { throw new Error(`HTTP ${res.status}`); }) as { id?: string; error?: string };
       if (!res.ok) throw new Error(d.error ?? `HTTP ${res.status}`);
       setOk(true);
       setTimeout(() => { setOk(false); onUploaded(); }, 2000);
@@ -777,6 +777,7 @@ function ReceivedDocCard({
         const res = await fetch(apiUrl(`/api/patients/search?q=${encodeURIComponent(searchQ.trim())}&limit=8`), {
           headers: await staffAuthHeaders(),
         });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const d = await res.json() as { patients?: PatientSearchResult[] };
         setResults(d.patients ?? []);
       } catch { setResults([]); }
@@ -794,7 +795,7 @@ function ReceivedDocCard({
         headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
         body: JSON.stringify({ fullName: name }),
       });
-      const d = await res.json() as { id?: string; mrn?: string; full_name?: string; error?: string };
+      const d = await res.json().catch(() => { throw new Error(`HTTP ${res.status}`); }) as { id?: string; mrn?: string; full_name?: string; error?: string };
       if (!res.ok) throw new Error(d.error ?? `HTTP ${res.status}`);
       if (!d.id) throw new Error('No patient ID returned');
       await handleMatch(d.id);
@@ -1123,10 +1124,10 @@ export default function ResultsInboxTab() {
         const docs = (recBody.documents ?? []).map(d => ({
           ...d,
           ai_extracted_data: typeof d.ai_extracted_data === 'string'
-            ? JSON.parse(d.ai_extracted_data) as AiExtractedData
+            ? (() => { try { return JSON.parse(d.ai_extracted_data as string) as AiExtractedData; } catch { return null; } })()
             : (d.ai_extracted_data ?? null),
           ai_flags: typeof d.ai_flags === 'string'
-            ? JSON.parse(d.ai_flags) as AiFlag[]
+            ? (() => { try { return JSON.parse(d.ai_flags as string) as AiFlag[]; } catch { return null; } })()
             : (d.ai_flags ?? null),
         }));
         setReceivedDocs(docs);

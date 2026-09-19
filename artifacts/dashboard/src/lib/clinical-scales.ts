@@ -2032,3 +2032,283 @@ export function interpretAudit(score: number): ScaleResult {
     evidence,
   };
 }
+
+// ─── 35. BMI Calculator ──────────────────────────────────────────────────────
+
+export function calcBmi(weightKg: number, heightCm: number): number {
+  if (heightCm <= 0) return 0;
+  return weightKg / ((heightCm / 100) ** 2);
+}
+
+export function interpretBmi(weightKg: number, heightCm: number): ScaleResult {
+  const bmi = calcBmi(weightKg, heightCm);
+  const evidence = 'WHO Expert Consultation. Lancet 2004;363(9403):157-163. WHO Technical Report 894, 2000. NIH NHLBI Clinical Guidelines on Obesity 2013.';
+  if (bmi < 18.5) return {
+    score: parseFloat(bmi.toFixed(1)),
+    band: `BMI ${bmi.toFixed(1)} — Underweight`, color: 'amber',
+    description: 'BMI below healthy range. Increased surgical risk; impaired wound healing; immunosuppression.',
+    action: 'Nutritional assessment (MUST score). Consider dietitian referral pre-operatively. Screen for malabsorption, malignancy, eating disorder. Target ≥4 weeks pre-operative nutritional optimisation before elective surgery.',
+    evidence,
+  };
+  if (bmi < 25) return {
+    score: parseFloat(bmi.toFixed(1)),
+    band: `BMI ${bmi.toFixed(1)} — Healthy weight`, color: 'green',
+    description: 'BMI within healthy range.',
+    action: 'Routine dietary advice. No specific surgical risk modification required for BMI alone.',
+    evidence,
+  };
+  if (bmi < 30) return {
+    score: parseFloat(bmi.toFixed(1)),
+    band: `BMI ${bmi.toFixed(1)} — Overweight`, color: 'amber',
+    description: 'Overweight. Increased risk of type 2 diabetes, hypertension, cardiovascular disease, and OSA.',
+    action: 'Lifestyle modification advice. Screen for metabolic syndrome. STOP-BANG for OSA if pre-operative. Consider bariatric referral if BMI 27–30 with comorbidities.',
+    evidence,
+  };
+  if (bmi < 35) return {
+    score: parseFloat(bmi.toFixed(1)),
+    band: `BMI ${bmi.toFixed(1)} — Obesity Class I`, color: 'amber',
+    description: 'Class I obesity. Elevated anaesthetic risk; increased wound complications; DVT risk.',
+    action: 'Pre-operative: STOP-BANG, Caprini, Apfel scores. CPAP if OSA confirmed. Thromboprophylaxis: adjust LMWH dosing for weight. Consider pre-operative weight loss programme. Bariatric surgery referral if appropriate.',
+    evidence,
+  };
+  if (bmi < 40) return {
+    score: parseFloat(bmi.toFixed(1)),
+    band: `BMI ${bmi.toFixed(1)} — Obesity Class II`, color: 'red',
+    description: 'Class II (severe) obesity. Significant perioperative risk elevation.',
+    action: 'Multidisciplinary pre-operative assessment mandatory. Early anaesthetic review. Ensure bariatric-capable equipment. Weight-based drug dosing. Post-operative HDU consideration. Bariatric surgery referral strongly indicated.',
+    evidence,
+  };
+  return {
+    score: parseFloat(bmi.toFixed(1)),
+    band: `BMI ${bmi.toFixed(1)} — Obesity Class III (Morbid)`, color: 'red',
+    description: 'Morbid obesity. High perioperative mortality and morbidity.',
+    action: 'Specialist bariatric and anaesthetic consultation essential before elective surgery. ICU availability pre-arranged. Difficult airway anticipated — video-laryngoscopy ready. Weight-based LMWH (anti-Xa monitoring). Bariatric surgery assessment if not already done.',
+    evidence,
+  };
+}
+
+// ─── 36. Morse Fall Scale ────────────────────────────────────────────────────
+
+export interface MorseFallInputs {
+  historyOfFalling: boolean;   // fall in last 3 months (25 pts)
+  secondaryDiagnosis: boolean; // ≥2 medical diagnoses (15 pts)
+  ambulatoryAid: 0 | 15 | 30; // 0=none/nurse/bedrest; 15=crutches/cane/walker; 30=furniture
+  ivLineOrHepLock: boolean;    // IV access (20 pts)
+  gait: 0 | 10 | 20;          // 0=normal/bedrest; 10=weak; 20=impaired
+  mentalStatus: 0 | 15;       // 0=oriented; 15=overestimates own ability
+}
+
+export function morseFallScore(i: MorseFallInputs): number {
+  return (
+    (i.historyOfFalling ? 25 : 0) +
+    (i.secondaryDiagnosis ? 15 : 0) +
+    i.ambulatoryAid +
+    (i.ivLineOrHepLock ? 20 : 0) +
+    i.gait +
+    i.mentalStatus
+  );
+}
+
+export function interpretMorseFall(score: number): ScaleResult {
+  const evidence = 'Morse JM et al. Advances in Nursing Science 1989;11(4):45-57. Oliver D et al. BMJ 2004;328(7441):680. NICE CG161 Falls in Older People 2013.';
+  if (score < 25) return {
+    score, band: 'LOW RISK (< 25)', color: 'green',
+    description: 'Low fall risk.',
+    action: 'Standard nursing care. Orientation to environment, call bell within reach, non-slip footwear. Document baseline.',
+    evidence,
+  };
+  if (score < 51) return {
+    score, band: `MEDIUM RISK (${score})`, color: 'amber',
+    description: 'Moderate fall risk — implement fall prevention protocol.',
+    action: 'Fall risk alert band. Bed lowest position. Hourly rounding. Physiotherapy assessment. Medication review (sedatives, antihypertensives, diuretics). Environmental hazard removal. Document in care plan.',
+    evidence,
+  };
+  return {
+    score, band: `HIGH RISK (${score})`, color: 'red',
+    description: 'High fall risk — enhanced precautions required.',
+    action: 'High-risk alert band + signage. 1:1 supervision if required. Bed exit alarm, side rails up. Non-pharmacological sleep aids — avoid benzodiazepines. Physiotherapy for balance training. Hip protectors if appropriate. Urgent medication review. Communicate to all care team.',
+    evidence,
+  };
+}
+
+// ─── 37. Greene Climacteric Scale (Menopausal Symptom Score) ─────────────────
+
+export type GreeneFreq = 0 | 1 | 2 | 3;
+
+export interface GreeneInputs {
+  heartRacing:             GreeneFreq;
+  feelingTense:            GreeneFreq;
+  difficultyConcentrating: GreeneFreq;
+  depressiveMood:          GreeneFreq;
+  tearful:                 GreeneFreq;
+  irritable:               GreeneFreq;
+  dizzy:                   GreeneFreq;
+  pressureInHead:          GreeneFreq;
+  numbnessTingling:        GreeneFreq;
+  headaches:               GreeneFreq;
+  musclePains:             GreeneFreq;
+  lossOfFeeling:           GreeneFreq;
+  breathingDifficulty:     GreeneFreq;
+  bloatedness:             GreeneFreq;
+  hotFlushes:              GreeneFreq;
+  nightSweats:             GreeneFreq;
+  lossOfInterestInSex:     GreeneFreq;
+  vaginalDryness:          GreeneFreq;
+  avoidanceOfIntimacy:     GreeneFreq;
+  decreasedLibido:         GreeneFreq;
+  fatigue:                 GreeneFreq;
+}
+
+export const GREENE_ITEMS: {
+  key: keyof GreeneInputs;
+  text: string;
+  subscale: 'anxiety' | 'depression' | 'somatic' | 'vasomotor' | 'sexual';
+}[] = [
+  { key: 'heartRacing',             text: 'Heart beating quickly or strongly',        subscale: 'anxiety'    },
+  { key: 'feelingTense',            text: 'Feeling tense or nervous',                 subscale: 'anxiety'    },
+  { key: 'difficultyConcentrating', text: 'Difficulty in concentrating',              subscale: 'anxiety'    },
+  { key: 'depressiveMood',          text: 'Feeling unhappy or depressed',             subscale: 'depression' },
+  { key: 'tearful',                 text: 'Crying spells',                            subscale: 'depression' },
+  { key: 'irritable',               text: 'Feeling irritable',                        subscale: 'depression' },
+  { key: 'dizzy',                   text: 'Feeling dizzy or faint',                   subscale: 'somatic'    },
+  { key: 'pressureInHead',          text: 'Pressure or tightness in head or body',    subscale: 'somatic'    },
+  { key: 'numbnessTingling',        text: 'Parts of body feeling numb or tingling',   subscale: 'somatic'    },
+  { key: 'headaches',               text: 'Headaches',                                subscale: 'somatic'    },
+  { key: 'musclePains',             text: 'Muscle and joint pains',                   subscale: 'somatic'    },
+  { key: 'lossOfFeeling',           text: 'Loss of feeling in hands or feet',         subscale: 'somatic'    },
+  { key: 'breathingDifficulty',     text: 'Breathing difficulties',                   subscale: 'somatic'    },
+  { key: 'bloatedness',             text: 'Bloating or fullness in stomach',          subscale: 'somatic'    },
+  { key: 'hotFlushes',              text: 'Hot flushes',                              subscale: 'vasomotor'  },
+  { key: 'nightSweats',             text: 'Sweating at night',                        subscale: 'vasomotor'  },
+  { key: 'lossOfInterestInSex',     text: 'Loss of interest in sex',                  subscale: 'sexual'     },
+  { key: 'vaginalDryness',          text: 'Vaginal dryness or discomfort during sex', subscale: 'sexual'     },
+  { key: 'avoidanceOfIntimacy',     text: 'Avoiding intimacy',                        subscale: 'sexual'     },
+  { key: 'decreasedLibido',         text: 'Decreased sexual desire',                  subscale: 'sexual'     },
+  { key: 'fatigue',                 text: 'Feeling tired or lacking in energy',       subscale: 'somatic'    },
+];
+
+export const GREENE_FREQ_OPTS: { value: GreeneFreq; label: string }[] = [
+  { value: 0, label: 'Not at all' },
+  { value: 1, label: 'A little'   },
+  { value: 2, label: 'Quite a bit'},
+  { value: 3, label: 'Extremely'  },
+];
+
+export function greeneScore(i: GreeneInputs): { total: number; vasomotor: number; anxiety: number; depression: number; somatic: number; sexual: number } {
+  const vasomotor   = i.hotFlushes + i.nightSweats;
+  const anxiety     = i.heartRacing + i.feelingTense + i.difficultyConcentrating + i.dizzy + i.pressureInHead + i.numbnessTingling;
+  const depression  = i.depressiveMood + i.tearful + i.irritable;
+  const somatic     = i.headaches + i.musclePains + i.lossOfFeeling + i.breathingDifficulty + i.bloatedness + i.fatigue;
+  const sexual      = i.lossOfInterestInSex + i.vaginalDryness + i.avoidanceOfIntimacy + i.decreasedLibido;
+  return { total: vasomotor + anxiety + depression + somatic + sexual, vasomotor, anxiety, depression, somatic, sexual };
+}
+
+export function interpretGreene(i: GreeneInputs): ScaleResult {
+  const { total, vasomotor } = greeneScore(i);
+  const evidence = 'Greene JG. Maturitas 1998;29(3):245-255. Schneider HPG et al. Climacteric 2004. NICE NG23 Menopause 2015.';
+  if (total <= 15) return {
+    score: total, band: `Mild (total ${total}/63)`, color: 'green',
+    description: `Mild menopausal symptom burden. Vasomotor score: ${vasomotor}/6.`,
+    action: 'Lifestyle: regular exercise, cool environment, breathable clothing, avoid triggers (caffeine, alcohol, spicy food). CBT / mindfulness for psychological symptoms. Phytoestrogens may reduce mild vasomotor symptoms. Reassurance and education.',
+    evidence,
+  };
+  if (total <= 30) return {
+    score: total, band: `Moderate (total ${total}/63)`, color: 'amber',
+    description: `Moderate menopausal symptom burden. Vasomotor score: ${vasomotor}/6.`,
+    action: 'Discuss HRT if no contraindications (NICE NG23 recommended first-line). SSRIs/SNRIs (venlafaxine, fluoxetine) effective for vasomotor symptoms if HRT declined. CBT for psychological symptoms. Refer to menopause clinic if complex or uncertain. Bone density assessment if prolonged amenorrhoea.',
+    evidence,
+  };
+  return {
+    score: total, band: `Severe (total ${total}/63)`, color: 'red',
+    description: `Severe menopausal symptom burden significantly impacting quality of life. Vasomotor score: ${vasomotor}/6.`,
+    action: 'Refer to specialist menopause clinic. HRT strongly indicated if no contraindications — document risks/benefits discussion. Transdermal preferred in obesity/migraine/VTE risk. Annual breast/cardiovascular review on HRT. PHQ-9 and GAD-7 if psychological subscale dominant.',
+    evidence,
+  };
+}
+
+// ─── 38. Karnofsky Performance Scale ────────────────────────────────────────
+
+export const KARNOFSKY_LEVELS: { value: number; label: string; category: string }[] = [
+  { value: 100, label: 'Normal, no complaints, no evidence of disease',             category: 'Able to carry on normal activity' },
+  { value: 90,  label: 'Able to carry on normal activity; minor signs or symptoms', category: 'Able to carry on normal activity' },
+  { value: 80,  label: 'Normal activity with effort; some signs or symptoms',       category: 'Able to carry on normal activity' },
+  { value: 70,  label: 'Cares for self; unable to carry on normal activity',        category: 'Unable to work; lives at home' },
+  { value: 60,  label: 'Requires occasional assistance; cares for most needs',      category: 'Unable to work; lives at home' },
+  { value: 50,  label: 'Requires considerable assistance and frequent medical care', category: 'Unable to work; lives at home' },
+  { value: 40,  label: 'Disabled; requires special care and assistance',            category: 'Requires institutional care or equivalent' },
+  { value: 30,  label: 'Severely disabled; hospitalisation indicated',              category: 'Requires institutional care or equivalent' },
+  { value: 20,  label: 'Very sick; active supportive treatment necessary',          category: 'Requires institutional care or equivalent' },
+  { value: 10,  label: 'Moribund; fatal processes progressing rapidly',             category: 'Requires institutional care or equivalent' },
+  { value: 0,   label: 'Dead',                                                      category: '' },
+];
+
+export function interpretKarnofsky(score: number): ScaleResult {
+  const evidence = 'Karnofsky DA, Burchenal JH. The Evaluation of Chemotherapeutic Agents. Columbia Univ Press, 1949. Oken MM et al. Am J Clin Oncol 1982;5(6):649-655.';
+  const level = KARNOFSKY_LEVELS.find(l => l.value === score);
+  const label = level?.label ?? `KPS ${score}`;
+  if (score >= 80) return {
+    score, band: `KPS ${score} — Independent`, color: 'green',
+    description: label,
+    action: 'Fit for standard curative treatment. No functional limitation to surgical candidacy from performance status alone.',
+    evidence,
+  };
+  if (score >= 50) return {
+    score, band: `KPS ${score} — Partially dependent`, color: 'amber',
+    description: label,
+    action: 'Multidisciplinary pre-treatment assessment required. Consider fitness for surgery/chemotherapy individually. Assess home support needs. Palliative intent may be more appropriate.',
+    evidence,
+  };
+  return {
+    score, band: `KPS ${score} — Fully dependent`, color: 'red',
+    description: label,
+    action: 'Curative treatment unlikely appropriate. Specialist palliative care referral. Goals of care discussion with patient and family. Best supportive care. Document capacity assessment.',
+    evidence,
+  };
+}
+
+// ─── 39. Barthel Activities of Daily Living Index ───────────────────────────
+
+export interface BarthelInputs {
+  feeding:        0 | 5 | 10;
+  bathing:        0 | 5;
+  grooming:       0 | 5;
+  dressing:       0 | 5 | 10;
+  bowels:         0 | 5 | 10;
+  bladder:        0 | 5 | 10;
+  toiletUse:      0 | 5 | 10;
+  transfers:      0 | 5 | 10 | 15;
+  mobility:       0 | 5 | 10 | 15;
+  stairsClimbing: 0 | 5 | 10;
+}
+
+export function barthelScore(i: BarthelInputs): number {
+  return i.feeding + i.bathing + i.grooming + i.dressing + i.bowels + i.bladder + i.toiletUse + i.transfers + i.mobility + i.stairsClimbing;
+}
+
+export function interpretBarthel(score: number): ScaleResult {
+  const evidence = 'Mahoney FI, Barthel DW. Maryland State Medical Journal 1965;14:61-65. Wade DT, Collin C. Int Disability Studies 1988;10(2):64-67.';
+  if (score >= 85) return {
+    score, band: `Barthel ${score}/100 — Minimal dependency`, color: 'green',
+    description: 'Minimal or no dependency. Patient largely independent in activities of daily living.',
+    action: 'Discharge planning: likely safe for home discharge. Reassess at follow-up. Address any specific domain impairments individually.',
+    evidence,
+  };
+  if (score >= 60) return {
+    score, band: `Barthel ${score}/100 — Moderate dependency`, color: 'amber',
+    description: 'Moderate dependency — assistance required for some daily activities.',
+    action: 'Occupational therapy and physiotherapy assessment. Consider home care package or supported discharge. Social services referral if living alone. Assistive devices assessment.',
+    evidence,
+  };
+  if (score >= 20) return {
+    score, band: `Barthel ${score}/100 — Severe dependency`, color: 'red',
+    description: 'Severe dependency — substantial assistance required across multiple domains.',
+    action: 'MDT rehabilitation assessment. Consider rehabilitation unit admission before home discharge. Carer support assessment. Residential or nursing home placement may be required. Ensure adequate post-operative support plan before elective surgery.',
+    evidence,
+  };
+  return {
+    score, band: `Barthel ${score}/100 — Total dependency`, color: 'red',
+    description: 'Total dependency — patient unable to perform activities of daily living independently.',
+    action: 'Full nursing care required. Nursing home care likely required. Re-examine surgical candidacy — very high perioperative risk. Goals of care discussion essential before any major elective procedure.',
+    evidence,
+  };
+}

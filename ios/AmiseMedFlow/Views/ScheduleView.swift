@@ -33,15 +33,15 @@ private enum CalMode: String, CaseIterable {
 
 struct ScheduleView: View {
     @Query(sort: \Patient.createdAt, order: .reverse) private var allPatients: [Patient]
-    @StateObject private var calSvc = CalendarService()
+    @EnvironmentObject private var calSvc: CalendarService
 
     @State private var mode: CalMode = .week
-    @State private var anchor: Date  = Calendar.current.startOfDay(for: .now)
+    @State private var anchor: Date  = Calendar.ect.startOfDay(for: .now)
     @State private var selectedPatient: Patient?
     @State private var selectedEntry: CalEntry?
     @State private var showAdd = false
 
-    private let cal = Calendar.current
+    private let cal = Calendar.ect
 
     private var weekStart: Date {
         // Start week on Sunday
@@ -112,12 +112,20 @@ struct ScheduleView: View {
                     }
                     .buttonStyle(.plain)
 
-                    Button { anchor = cal.startOfDay(for: .now) } label: {
-                        Text("Today")
-                            .font(.system(size: 12, weight: .semibold))
-                            .padding(.horizontal, 12).padding(.vertical, 5)
-                            .background(Color.teal.opacity(0.12), in: Capsule())
-                            .foregroundStyle(.teal)
+                    Button {
+                        anchor = cal.startOfDay(for: .now)
+                        Task { await calSvc.sync() }
+                    } label: {
+                        HStack(spacing: 4) {
+                            if calSvc.isSyncing {
+                                ProgressView().controlSize(.mini).tint(.teal)
+                            }
+                            Text("Today")
+                                .font(.system(size: 12, weight: .semibold))
+                        }
+                        .padding(.horizontal, 12).padding(.vertical, 5)
+                        .background(Color.teal.opacity(0.12), in: Capsule())
+                        .foregroundStyle(.teal)
                     }
                     .buttonStyle(.plain)
 
@@ -174,15 +182,19 @@ struct ScheduleView: View {
             ToolbarItem(placement: .primaryAction) {
                 HStack {
                     Button { Task { await calSvc.sync() } } label: {
-                        if calSvc.isSyncing { ProgressView().controlSize(.small) }
-                        else { Image(systemName: "arrow.clockwise") }
+                        if calSvc.isSyncing {
+                            ProgressView().controlSize(.small)
+                        } else {
+                            Image(systemName: "arrow.clockwise")
+                        }
                     }
                     Button { showAdd = true } label: { Image(systemName: "plus") }
                 }
             }
         }
-        .task { await calSvc.fetch() }
-        .sheet(isPresented: $showAdd) { AddPatientView(initialSetting: .theatre) }
+        .task { await calSvc.sync() }
+        .onAppear { anchor = cal.startOfDay(for: .now) }
+        .sheet(isPresented: $showAdd) { AppointmentSchedulerView() }
         .sheet(item: $selectedPatient) { PatientDetailView(patient: $0) }
         .sheet(item: $selectedEntry) { entry in
             let setting: ClinicalSetting = {
@@ -209,7 +221,7 @@ private struct MonthCalView: View {
     let entries: [CalEntry]
     let onSelectDay: (Date) -> Void
 
-    private let cal = Calendar.current
+    private let cal = Calendar.ect
     private let dayLetters = ["S", "M", "T", "W", "T", "F", "S"]
 
     private var monthStart: Date {
@@ -272,7 +284,7 @@ private struct MonthDayCell: View {
     let entries: [CalEntry]
     let onTap: () -> Void
 
-    private let cal = Calendar.current
+    private let cal = Calendar.ect
 
     var body: some View {
         Button(action: onTap) {
@@ -306,8 +318,9 @@ private struct MonthDayCell: View {
                 }
             }
             .frame(maxWidth: .infinity, minHeight: 82, alignment: .topLeading)
-            .background((date.map { cal.isDateInToday($0) } ?? false)
-                ? Color.teal.opacity(0.05) : Color.clear)
+            .background {
+                (date.map { cal.isDateInToday($0) } ?? false) ? Color.teal.opacity(0.05) : Color.clear
+            }
             .overlay(Rectangle().fill(Color.secondary.opacity(0.1)).frame(width: 0.5), alignment: .trailing)
         }
         .buttonStyle(.plain)
@@ -320,7 +333,7 @@ private struct WeekCalView: View {
     let weekStart: Date
     let entries: [CalEntry]
     let onTap: (CalEntry) -> Void
-    private let cal = Calendar.current
+    private let cal = Calendar.ect
 
     private var days: [Date] {
         (0..<7).compactMap { cal.date(byAdding: .day, value: $0, to: weekStart) }
@@ -379,7 +392,7 @@ private struct CalTimeline: View {
     let entries: [CalEntry]
     let onTap: (CalEntry) -> Void
 
-    private let cal = Calendar.current
+    private let cal = Calendar.ect
 
     var body: some View {
         GeometryReader { outer in
@@ -503,7 +516,7 @@ private struct CalEventBlock: View {
                     Text(entry.label)
                         .font(.system(size: 8, weight: .heavy))
                         .foregroundStyle(entry.color)
-                    Text(entry.start.formatted(date: .omitted, time: .shortened))
+                    Text(DateFormatter.ectShort.string(from: entry.start))
                         .font(.system(size: 8))
                         .foregroundStyle(entry.color.opacity(0.7))
                     Spacer(minLength: 0)
@@ -522,7 +535,7 @@ private struct CalEventBlock: View {
             .padding(.horizontal, 5)
             .padding(.vertical, 3)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .background(entry.color.opacity(0.1))
+            .background { entry.color.opacity(0.1) }
             .overlay(alignment: .leading) {
                 Rectangle().fill(entry.color).frame(width: 3)
             }

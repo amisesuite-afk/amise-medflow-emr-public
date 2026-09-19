@@ -124,6 +124,7 @@ export default function ExamPhotoPanel() {
         headers: { 'Content-Type': 'application/json', ...authHeaders },
         body: JSON.stringify({ imageDataUrl: photo.dataUrl, context: photo.bodyRegion }),
       });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const data = await r.json() as { description?: string; error?: string };
       if (data.description) {
         setExamPhotos(prev => prev.map(p =>

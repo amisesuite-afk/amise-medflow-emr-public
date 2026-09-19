@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { requireStaffAuth, sb } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 import { assemblePatientContext, formatContextBlock } from '../lib/patient-context.js';
+import { logAudit } from '../lib/audit.js';
 
 const router = Router();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
@@ -104,15 +105,16 @@ router.post('/api/voice/segment', async (req, res) => {
     await (async () => {
       try {
         // Save call log
-        await sb().from('call_logs').insert({
+        const { error: callLogErr } = await sb().from('call_logs').insert({
           patient_id:     patientId ?? null,
           source:         'ambient',
           direction:      'ambient',
           transcript:     transcript.trim(),
           soap_segmented: segmented,
         });
+        if (callLogErr) log.warn({ err: callLogErr }, 'voice segment: call_log save failed (non-fatal)');
         // Save AI proposal for clinician review
-        const { data: proposal } = await sb()
+        const { data: proposal, error: proposalErr } = await sb()
           .from('ai_proposals')
           .insert({
             patient_id:     patientId   ?? null,
@@ -126,13 +128,15 @@ router.post('/api/voice/segment', async (req, res) => {
           })
           .select('id')
           .single();
+        if (proposalErr) log.warn({ err: proposalErr }, 'voice segment: ai_proposal save failed (non-fatal)');
         if (proposal?.id) proposalId = proposal.id as string;
       } catch (saveErr) {
-        log.warn({ saveErr }, 'voice segment: proposal save failed (non-fatal)');
+        log.warn({ saveErr }, 'voice segment: DB save failed (non-fatal)');
       }
     })();
 
     log.info({ chars: transcript.length, patientId: patientId ?? 'anon' }, 'voice transcript segmented');
+    void logAudit(req, 'ai_call', 'voice_transcript', proposalId ?? undefined, patientId ?? undefined, { model: MODEL, chars: transcript.length });
     res.json({ success: true, segmented, proposalId });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Voice segmentation failed';

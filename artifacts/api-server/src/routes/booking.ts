@@ -159,7 +159,8 @@ router.post('/api/booking/request', bookingRateLimit, async (req, res) => {
     // Record that patient was notified and staff was alerted
     const updatePayload: Record<string, string | boolean> = { staff_notified_at: now };
     if (patientAckSent) updatePayload.patient_ack_sent_at = now;
-    await supa.from('appointment_requests').update(updatePayload).eq('id', bookingId);
+    const { error: notifyUpdateErr } = await supa.from('appointment_requests').update(updatePayload).eq('id', bookingId);
+    if (notifyUpdateErr) logger.warn({ err: notifyUpdateErr, bookingId }, '[booking/request] notification-tracking update failed');
 
     await audit({ action: 'book', entityType: 'appointment_request', entityId: bookingId, payload: { status: 'pending', appointment_type, source: resolvedSource, patient_ack_sent: patientAckSent, staff_notified: !!(staffPhone || staffEmail) } });
     logger.info({ id: bookingId, patientAckSent, staffPhone: !!staffPhone, staffEmail: !!staffEmail }, '[booking/request] created + notified');

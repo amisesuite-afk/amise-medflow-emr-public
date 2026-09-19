@@ -1127,7 +1127,7 @@ function DirectExportPanel() {
           disposition,
         }),
       });
-      const data = await r.json() as {
+      const data = await r.json().catch(() => { throw new Error(`HTTP ${r.status}`); }) as {
         instructions?: string; warningSigns?: string; followUp?: string;
         referNotes?: string; error?: string;
       };

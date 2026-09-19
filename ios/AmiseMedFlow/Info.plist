@@ -62,5 +62,12 @@
     <string>Microphone access is required for voice dictation of clinical notes.</string>
     <key>NSSpeechRecognitionUsageDescription</key>
     <string>Speech recognition converts your dictated clinical notes to text for review and editing.</string>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>Amise MedFlow syncs patient data directly between your iPhone and iPad when they are on the same local network or in Bluetooth range, without requiring an internet connection.</string>
+    <key>NSBonjourServices</key>
+    <array>
+        <string>_amise-medflow._tcp</string>
+        <string>_amise-medflow._udp</string>
+    </array>
 </dict>
 </plist>

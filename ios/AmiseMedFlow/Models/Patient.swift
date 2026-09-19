@@ -6,7 +6,8 @@ import SwiftData
 @Model
 final class Patient {
     var id: UUID
-    var remoteId: String?
+    @Attribute(.unique) var remoteId: String?
+    var syncCode: String = ""  // stable offline peer-sync ID, set in init()
     var fullName: String
     var dateOfBirth: Date?
     var sex: Sex
@@ -17,6 +18,7 @@ final class Patient {
     var location: ClinicalLocation
     var acuity: Acuity
     var chiefComplaint: String?
+    var associatedSymptoms: String?     // Comma-separated selected associated symptoms (CC tab)
     var referralSource: ReferralSource?
     var referringDoctor: String?
     var referringPractice: String?
@@ -51,10 +53,42 @@ final class Patient {
     @Relationship(deleteRule: .cascade, inverse: \BillingLineItem.patient)
     var billingItems: [BillingLineItem] = []
 
+    @Relationship(deleteRule: .cascade, inverse: \Encounter.patient)
+    var encounters: [Encounter] = []
+
+    @Relationship(deleteRule: .cascade, inverse: \ScoreHistoryEntry.patient)
+    var scoreHistory: [ScoreHistoryEntry] = []
+
     // MARK: - Clinical intelligence fields
     var workingDiagnosis: String?
     var workingDiagnosisICD: String?
+    // CC that was active when workingDiagnosis was last confirmed — used to detect staleness
+    var workingDiagnosisCC: String?
     var assessmentText: String?
+    // Most recently computed Alvarado score (0–10); nil if not yet scored
+    var alvaradoScore: Int?
+    // Glasgow Pancreatitis score (0–8); ≥3 = severe
+    var glasgowPancreatitisScore: Int?
+    // Ranson score (0–11); ≥3 = severe
+    var ransonScore: Int?
+    // Tokyo Grade for acute cholecystitis (1–3); nil if not scored
+    var tokyoCholecystitisGrade: Int?
+    // Tokyo Grade for acute cholangitis (1–3); nil if not scored
+    var tokyoCholangitisGrade: Int?
+    // Rockall score (0–11); ≥5 = high rebleed risk
+    var rockallScore: Int?
+    // Blatchford score (0–23); ≥6 = high-risk UGI bleed
+    var blatchfordScore: Int?
+    // Wells DVT score (continuous); ≤0 low, 1–2 moderate, ≥3 high
+    var wellsDVTScore: Double?
+    // Wells PE score (continuous); ≤4 low, 5–6 moderate, ≥7 high
+    var wellsPEScore: Double?
+    // ABCD² score (0–7); ≥4 = higher 2-day stroke risk after TIA
+    var abcd2Score: Int?
+    // LRINEC score (0–13); ≥6 = moderate risk necrotising fasciitis
+    var lrinecScore: Int?
+    // qSOFA score (0–3); ≥2 with suspected infection = sepsis
+    var qsofaScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?
@@ -87,6 +121,32 @@ final class Patient {
     var heightCm: Double?
     var aiClinicalReasoning: String?   // Persisted AI reasoning summary
 
+    // MARK: - Procedure / specialty form data (JSON-encoded)
+    var traumaDataJson: String?           // TraumaData
+    var ogdDataJson: String?              // OGDData
+    var colonoscopyDataJson: String?      // ColonoscopyData
+    var surgeryDataJson: String?          // SurgeryNoteData
+    var ercpDataJson: String?             // ERCPData
+    var dischargeSummaryDataJson: String? // DischargeSummaryData
+    var postOpReviewDataJson: String?     // PostOpReviewData
+    var referralLetterDataJson: String?   // ReferralLetterData
+    var consentFormDataJson: String?      // ConsentFormData
+    var preOpChecklistDataJson: String?   // PreOpChecklistData
+    var patientInstructionsDataJson: String? // PatientInstructionsData
+
+    // MARK: - Encounter status (front desk → doctor handoff)
+    var checkInTime: Date?
+    var encounterStatus: EncounterStatus
+
+    // MARK: - Perioperative checklist
+    var asaClass: Int?                       // ASA physical status 1–5
+    var consentSent: Bool = false            // Consent form given to patient
+    var preOpInstructionsSent: Bool = false  // Pre-op instructions sent to patient
+
+    // MARK: - Structured clinical history (JSON-encoded)
+    var pmhEntriesJson: String?    // JSON: [PMHEntry]
+    var pshxEntriesJson: String?   // JSON: [PSHxEntry]
+
     init(
         fullName: String,
         sex: Sex = .unspecified,
@@ -95,14 +155,41 @@ final class Patient {
         acuity: Acuity = .routine
     ) {
         self.id = UUID()
+        self.syncCode = UUID().uuidString
         self.fullName = fullName
         self.sex = sex
         self.setting = setting
         self.location = location
         self.acuity = acuity
+        self.encounterStatus = .notCheckedIn
         self.createdAt = .now
         self.updatedAt = .now
         self.pendingSync = true
+        self.mrn = MRNGenerator.next()
+    }
+
+    // MARK: - Longitudinal context from closed encounters
+
+    var longitudinalContext: BayesianDiagnosisEngine.LongitudinalContext {
+        let closed = encounters.filter(\.isComplete).sorted { $0.encounterDate < $1.encounterDate }
+        let confirmedDx = closed.compactMap(\.workingDiagnosis).filter { !$0.isEmpty }
+        let allInvestigations = closed.flatMap { $0.decodedInvestigations }
+        let pmhAccumulated = closed.compactMap(\.pmhNotes).joined(separator: " ")
+        let pshxAccumulated = closed.compactMap(\.surgicalHistory).joined(separator: " ")
+
+        let daysSinceLast: Int? = closed.last.flatMap {
+            Calendar.current.dateComponents([.day], from: $0.encounterDate, to: .now).day
+        }
+
+        return BayesianDiagnosisEngine.LongitudinalContext(
+            confirmedDiagnoses: confirmedDx,
+            cumulativeInvestigations: allInvestigations,
+            accumulatedPMH: pmhAccumulated,
+            accumulatedPSHx: pshxAccumulated,
+            encounterCount: closed.count,
+            lastVisitType: closed.last?.visitType,
+            daysSinceLastEncounter: daysSinceLast
+        )
     }
 
     var initials: String {
@@ -155,6 +242,21 @@ enum Sex: String, Codable, CaseIterable {
     case male = "Male"
     case female = "Female"
     case unspecified = "Unspecified"
+
+    // Supabase stores lowercase; "unspecified" is not in the CHECK constraint
+    // so we map it to "unknown" (which IS allowed) and back.
+    var supabaseValue: String {
+        self == .unspecified ? "unknown" : rawValue.lowercased()
+    }
+
+    static func fromSupabase(_ value: String?) -> Sex {
+        switch value?.lowercased() {
+        case "male":             return .male
+        case "female":           return .female
+        case "unknown", "other": return .unspecified
+        default:                 return .unspecified
+        }
+    }
 }
 
 enum ClinicalSetting: String, Codable, CaseIterable {
@@ -302,6 +404,22 @@ enum ReferralSource: String, Codable, CaseIterable {
     case specialist   = "Specialist"
     case emergency    = "Emergency"
     case other        = "Other"
+}
+
+enum EncounterStatus: String, Codable {
+    case notCheckedIn = "not_checked_in"
+    case waiting      = "waiting"
+    case withDoctor   = "with_doctor"
+    case complete     = "complete"
+
+    var label: String {
+        switch self {
+        case .notCheckedIn: return "Not checked in"
+        case .waiting:      return "Waiting"
+        case .withDoctor:   return "With doctor"
+        case .complete:     return "Complete"
+        }
+    }
 }
 
 // MARK: - Clinical handover summary

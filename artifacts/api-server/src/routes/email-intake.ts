@@ -3,6 +3,7 @@ import { sb, requireStaffAuth, requireCronSecret } from '../lib/supabase.js';
 import { processIncomingDocumentEmails, backfillDocumentEmails } from '../lib/email-documents.js';
 import { extractDocumentInsights } from './portal.js';
 import { logger, errStr } from '../lib/logger.js';
+import { logAudit } from '../lib/audit.js';
 
 const router = Router();
 
@@ -118,6 +119,7 @@ router.post('/api/investigations/manual-upload-document', async (req, res) => {
     if (insertError) throw insertError;
 
     void extractDocumentInsights(doc.id);
+    void logAudit(req, 'create', 'document', doc.id, undefined, { source: 'manual_upload', mimeType, providerName, documentType: finalDocType });
 
     logger.info({ docId: doc.id, mimeType, providerName }, '[manual-upload-document] queued');
     res.json({ id: doc.id, status: 'processing' });
@@ -187,6 +189,7 @@ router.post('/api/admin/referring-providers', async (req, res) => {
 
     if (error) throw error;
 
+    void logAudit(req, 'create', 'referring_provider', data.id, undefined, { name: data.name, provider_type });
     res.json({ provider: data });
   } catch (err) {
     req.log.error({ err }, '[admin/referring-providers] create error');
@@ -234,6 +237,7 @@ router.patch('/api/admin/referring-providers/:id', async (req, res) => {
 
     if (error) throw error;
 
+    void logAudit(req, 'update', 'referring_provider', id, undefined, { fields: Object.keys(updates) });
     res.json({ provider: data });
   } catch (err) {
     req.log.error({ err }, '[admin/referring-providers/:id] update error');
@@ -254,6 +258,7 @@ router.delete('/api/admin/referring-providers/:id', async (req, res) => {
 
     if (error) throw error;
 
+    void logAudit(req, 'delete', 'referring_provider', id, undefined, {});
     res.json({ status: 'deleted' });
   } catch (err) {
     req.log.error({ err }, '[admin/referring-providers/:id] delete error');

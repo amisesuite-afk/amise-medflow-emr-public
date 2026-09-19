@@ -88,6 +88,9 @@ struct ClinicalHubView: View {
                         }
                     }
                 }
+                NavigationLink { ClinicalScoresView(patient: patient) } label: {
+                    Label("Clinical Scores & Scales", systemImage: "chart.bar.doc.horizontal")
+                }
             }
 
             Section("Workflow") {
@@ -175,6 +178,101 @@ struct ClinicalHubView: View {
                                 .foregroundStyle(.secondary)
                         }
                     }
+                }
+            }
+
+            // Procedure-specific forms (shown based on visitType)
+            if let vt = patient.visitType {
+                let showTrauma       = vt == .trauma
+                let showOGD          = vt == .ogd || vt == .dayOfSurgery
+                let showColonoscopy  = vt == .colonoscopy || vt == .dayOfSurgery
+                let showSurgery      = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
+                let showERCP         = vt == .ercp || vt == .dayOfSurgery
+                let showPostOp       = vt == .postOp
+                let showDischarge    = vt == .postOp || vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
+                let showReferral     = vt == .newConsult || vt == .followUp || vt == .urgentReview || vt == .postOp
+                let showConsent      = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
+                let showPreOpChecklist = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
+
+                if showTrauma || showOGD || showColonoscopy || showSurgery || showERCP || showPostOp || showDischarge || showReferral || showConsent || showPreOpChecklist {
+                    Section("Procedure Forms") {
+                        if showTrauma {
+                            NavigationLink { TraumaAssessmentView(patient: patient) } label: {
+                                Label("Trauma Assessment (ATLS)", systemImage: "cross.case.fill")
+                                    .foregroundStyle(.red)
+                            }
+                        }
+                        if showPreOpChecklist {
+                            NavigationLink { PreOpChecklistView(patient: patient) } label: {
+                                Label("Pre-op Checklist (WHO)", systemImage: "checklist")
+                            }
+                        }
+                        if showConsent {
+                            NavigationLink { ConsentFormView(patient: patient) } label: {
+                                Label("Surgical Consent", systemImage: "signature")
+                            }
+                        }
+                        if showSurgery {
+                            NavigationLink { SurgeryNoteView(patient: patient) } label: {
+                                Label("Operative Note", systemImage: "scissors")
+                            }
+                        }
+                        if showOGD {
+                            NavigationLink { OGDFormView(patient: patient) } label: {
+                                Label("OGD / Gastroscopy Report", systemImage: "scope")
+                            }
+                        }
+                        if showColonoscopy {
+                            NavigationLink { ColonoscopyFormView(patient: patient) } label: {
+                                Label("Colonoscopy Report", systemImage: "circle.dotted.and.circle")
+                            }
+                        }
+                        if showERCP {
+                            NavigationLink { ERCPFormView(patient: patient) } label: {
+                                Label("ERCP Report", systemImage: "waveform.and.magnifyingglass")
+                            }
+                        }
+                        if showPostOp {
+                            NavigationLink { PostOpReviewView(patient: patient) } label: {
+                                Label("Post-op Review", systemImage: "bandage")
+                            }
+                        }
+                        if showDischarge {
+                            NavigationLink { DischargeSummaryView(patient: patient) } label: {
+                                Label("Discharge Summary", systemImage: "rectangle.portrait.and.arrow.right")
+                            }
+                        }
+                        if showReferral {
+                            NavigationLink { ReferralLetterView(patient: patient) } label: {
+                                Label("Referral / Reply Letter", systemImage: "envelope.open")
+                            }
+                        }
+                    }
+                }
+            }
+
+            Section("Reference") {
+                NavigationLink {
+                    SurgicalEncyclopediaView(
+                        preselectedDiagnosis: patient.workingDiagnosis
+                    )
+                } label: {
+                    HStack {
+                        Label("Surgical Encyclopedia", systemImage: "books.vertical")
+                        Spacer()
+                        if let dx = patient.workingDiagnosis,
+                           SurgicalAlgorithmEngine.shared.lookup(diagnosisName: dx) != nil {
+                            Text("Match")
+                                .font(.caption2)
+                                .foregroundStyle(.teal)
+                        }
+                    }
+                }
+            }
+
+            Section("Patient Communication") {
+                NavigationLink { PatientInstructionsView(patient: patient) } label: {
+                    Label("Patient Instructions Sheet", systemImage: "doc.text.fill")
                 }
             }
 
@@ -275,16 +373,44 @@ enum AppSection: String, CaseIterable, Hashable, Identifiable {
 
 struct ContentView: View {
     @EnvironmentObject private var sync: SyncService
+    @EnvironmentObject private var peerSync: PeerSyncService
+    @Environment(\.modelContext) private var modelContext
 
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
 
     var body: some View {
         Group {
             if isPad {
-                RegularRootView()
+                switch sync.currentUserRole {
+                case .frontDesk:
+                    FrontDeskPadView()
+                default:
+                    RegularRootView()
+                }
             } else {
                 CompactRootView()
             }
+        }
+        .onAppear {
+            // Inject context so cloud sync works even if Settings is never opened
+            sync.setModelContext(modelContext)
+            // Start peer-to-peer sync only if email is already resolved (cached session).
+            // If nil, the onChange below will start it once restoreSession() finishes.
+            if let email = sync.currentUserEmail, !email.isEmpty {
+                peerSync.start(context: modelContext, email: email)
+            }
+        }
+        .onChange(of: sync.currentUserEmail) { _, email in
+            guard let email, !email.isEmpty else {
+                // Sign-out path: clear storedEmail so restart() on next foreground
+                // doesn't resume advertising under the old account's identity.
+                peerSync.signOut()
+                return
+            }
+            // Stop any session that may have started with an empty email hash,
+            // then restart with the real address so peer matching is correct.
+            peerSync.stop()
+            peerSync.start(context: modelContext, email: email)
         }
         .fullScreenCover(isPresented: Binding(
             get: { !sync.isSignedIn },
@@ -301,16 +427,186 @@ struct ContentView: View {
 // MARK: - iPhone: tab view
 
 private struct CompactRootView: View {
+    @EnvironmentObject private var sync: SyncService
+
     var body: some View {
-        TabView {
-            WardRoundView()
-                .tabItem { Label("Ward", systemImage: "bed.double") }
-            ScheduleView()
+        switch sync.currentUserRole {
+        case .frontDesk:
+            CompactFrontDeskView()
+        default:
+            TabView {
+                TodayDashboardView()
+                    .tabItem { Label("Today", systemImage: "calendar.day.timeline.left") }
+                WardRoundView()
+                    .tabItem { Label("Ward", systemImage: "bed.double") }
+                ScheduleView()
+                    .tabItem { Label("Schedule", systemImage: "calendar") }
+                PatientListView()
+                    .tabItem { Label("Patients", systemImage: "person.crop.circle") }
+                SettingsView()
+                    .tabItem { Label("Settings", systemImage: "gearshape") }
+            }
+        }
+    }
+}
+
+// MARK: - iPhone front desk view (simplified check-in + waiting queue)
+
+private struct CompactFrontDeskView: View {
+    @EnvironmentObject private var sync: SyncService
+    @Query private var allPatients: [Patient]
+    @State private var searchQuery = ""
+    @State private var selectedTab = 0
+
+    private var theatreCount: Int {
+        allPatients.filter { $0.setting == .theatre }.deduped().count
+    }
+    private var endoscopyCount: Int {
+        allPatients.filter { $0.setting == .endoscopy }.deduped().count
+    }
+
+    private var filteredPatients: [Patient] {
+        let q = searchQuery.trimmingCharacters(in: .whitespaces).lowercased()
+        if q.isEmpty {
+            // Show most-recent 30 patients when no query — never a blank screen
+            return Array(allPatients.prefix(30))
+        }
+        return allPatients.filter {
+            $0.fullName.lowercased().contains(q) ||
+            ($0.mrn?.lowercased().contains(q) ?? false) ||
+            ($0.phone?.contains(q) ?? false)
+        }.prefix(20).map { $0 }
+    }
+
+    private var waitingPatients: [Patient] {
+        allPatients
+            .filter { $0.encounterStatus == .waiting && Calendar.ect.isDateInToday($0.checkInTime ?? .distantPast) }
+            .sorted { ($0.checkInTime ?? .distantPast) < ($1.checkInTime ?? .distantPast) }
+    }
+
+    var body: some View {
+        TabView(selection: $selectedTab) {
+            checkInTab
+                .tabItem { Label("Check-In", systemImage: "person.badge.plus") }
+                .tag(0)
+
+            waitingTab
+                .tabItem {
+                    Label("Waiting", systemImage: "person.fill.checkmark")
+                }
+                .badge(waitingPatients.count)
+                .tag(1)
+
+            NavigationStack { TheatreListView() }
+                .tabItem { Label("Theatre", systemImage: "scissors") }
+                .badge(theatreCount)
+                .tag(2)
+
+            NavigationStack { EndoscopyListView() }
+                .tabItem { Label("Scope", systemImage: "circle.dotted") }
+                .badge(endoscopyCount)
+                .tag(3)
+
+            NavigationStack { ScheduleView() }
                 .tabItem { Label("Schedule", systemImage: "calendar") }
-            PatientListView()
-                .tabItem { Label("Patients", systemImage: "person.crop.circle") }
+                .tag(4)
+
             SettingsView()
                 .tabItem { Label("Settings", systemImage: "gearshape") }
+                .tag(5)
+        }
+    }
+
+    private var checkInTab: some View {
+        NavigationStack {
+            List {
+                Section {
+                    TextField("Search name, MRN, phone…", text: $searchQuery)
+                        .autocorrectionDisabled()
+                }
+                if !filteredPatients.isEmpty {
+                    Section("Results") {
+                        ForEach(filteredPatients) { patient in
+                            NavigationLink {
+                                PatientDemographicsForm(patient: patient)
+                                    .navigationTitle(patient.fullName)
+                                    .navigationBarTitleDisplayMode(.inline)
+                            } label: {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    HStack {
+                                        AcuityPip(acuity: patient.acuity)
+                                        Text(patient.fullName).font(.subheadline.weight(.semibold))
+                                    }
+                                    HStack(spacing: 4) {
+                                        if let mrn = patient.mrn { Text("MRN \(mrn)").font(.caption2).foregroundStyle(AMColor.accent) }
+                                        Text(patient.ageDisplay ?? "").font(.caption2).foregroundStyle(.secondary)
+                                        Text(patient.sex.rawValue).font(.caption2).foregroundStyle(.secondary)
+                                    }
+                                }
+                                .padding(.vertical, 2)
+                            }
+                        }
+                    }
+                } else if !searchQuery.isEmpty {
+                    Section {
+                        NavigationLink {
+                            AddPatientView(initialSetting: .outpatient)
+                        } label: {
+                            Label("Register New Patient", systemImage: "person.badge.plus")
+                                .foregroundStyle(AMColor.accent)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Check-In")
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    NavigationLink {
+                        AddPatientView(initialSetting: .outpatient)
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+        }
+    }
+
+    private var waitingTab: some View {
+        NavigationStack {
+            Group {
+                if waitingPatients.isEmpty {
+                    ContentUnavailableView(
+                        "No patients waiting",
+                        systemImage: "person.fill.checkmark",
+                        description: Text("Patients checked in at the front desk will appear here.")
+                    )
+                } else {
+                    List(waitingPatients) { patient in
+                        NavigationLink {
+                            PatientDemographicsForm(patient: patient)
+                                .navigationTitle(patient.fullName)
+                                .navigationBarTitleDisplayMode(.inline)
+                        } label: {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(patient.fullName).font(.subheadline.weight(.semibold))
+                                    if let cc = patient.chiefComplaint {
+                                        Text(cc).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                                    }
+                                }
+                                Spacer()
+                                if let ct = patient.checkInTime {
+                                    Text(DateFormatter.ectShort.string(from: ct))
+                                        .font(.caption2.monospacedDigit())
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            .padding(.vertical, 2)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Waiting (\(waitingPatients.count))")
         }
     }
 }
@@ -318,45 +614,38 @@ private struct CompactRootView: View {
 // MARK: - iPad: custom 3-column HStack layout
 
 private struct RegularRootView: View {
+    @EnvironmentObject private var sync: SyncService
+    @EnvironmentObject private var peerSync: PeerSyncService
     @State private var selectedSection: AppSection = .outpatients
     @State private var selectedPatient: Patient?
     @State private var showSettings = false
+    @State private var showDashboard = false
 
     // Count badges per patient section
     @Query private var allPatients: [Patient]
 
     private func count(for section: AppSection) -> Int {
         switch section {
-        case .wardRounds:  allPatients.filter { $0.setting == .inpatient || $0.setting == .emergency }.count
-        case .theatre:     allPatients.filter { $0.setting == .theatre }.count
-        case .endoscopy:   allPatients.filter { $0.setting == .endoscopy }.count
-        case .outpatients: allPatients.filter { $0.setting == .outpatient }.count
+        case .wardRounds:  allPatients.filter { $0.setting == .inpatient || $0.setting == .emergency }.deduped().count
+        case .theatre:     allPatients.filter { $0.setting == .theatre }.deduped().count
+        case .endoscopy:   allPatients.filter { $0.setting == .endoscopy }.deduped().count
+        case .outpatients: allPatients.filter { $0.setting == .outpatient }.deduped().count
         case .schedule:    0
         }
     }
 
     var body: some View {
         HStack(spacing: 0) {
-            // Column 1: Icon sidebar
-            iconSidebar
-                .frame(width: 90)
-                .ignoresSafeArea(edges: .vertical)
-
-            Rectangle()
-                .fill(AMColor.sidebarGroup.opacity(0.4))
-                .frame(width: 0.5)
-                .ignoresSafeArea(edges: .vertical)
-
             if selectedSection == .schedule {
-                // Schedule fills the full remaining width (columns 2+3 merged)
+                // Schedule fills the full remaining width
                 NavigationStack { ScheduleView() }
                     .frame(maxWidth: .infinity)
             } else if let patient = selectedPatient {
-                // Patient selected: full-width clinical workspace — list column collapses
+                // Patient selected: full-width clinical workspace
                 PatientDetailPadView(patient: patient, onBack: { selectedPatient = nil })
                     .frame(maxWidth: .infinity)
             } else {
-                // No patient selected: 296px list + empty state placeholder
+                // No patient selected: patient list + empty state placeholder
                 NavigationStack {
                     SectionPatientListView(section: selectedSection,
                                            selectedPatient: $selectedPatient)
@@ -376,28 +665,46 @@ private struct RegularRootView: View {
                 .background(AMColor.bg)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+
+            Rectangle()
+                .fill(AMColor.sidebarGroup.opacity(0.4))
+                .frame(width: 0.5)
+                .ignoresSafeArea(edges: .vertical)
+
+            // Rightmost column: icon navigation sidebar
+            iconSidebar
+                .frame(width: 90)
+                .ignoresSafeArea(edges: .vertical)
         }
         .ignoresSafeArea(.keyboard)
         .onChange(of: selectedSection) { _, _ in selectedPatient = nil }
         .sheet(isPresented: $showSettings) { SettingsView() }
+        .sheet(isPresented: $showDashboard) {
+            DashboardView()
+                .environmentObject(sync)
+                .environmentObject(peerSync)
+        }
     }
 
     // MARK: Sidebar
 
     private var iconSidebar: some View {
         VStack(spacing: 0) {
-            // App mark
-            VStack(spacing: 3) {
-                Image(systemName: "cross.case.fill")
-                    .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(AMColor.accent)
-                Text("AMF")
-                    .font(.system(size: 9, weight: .heavy))
-                    .foregroundStyle(AMColor.sidebarText)
-                    .tracking(1.5)
+            // App mark — tap for clinical dashboard
+            Button { showDashboard = true } label: {
+                VStack(spacing: 3) {
+                    Image(systemName: "cross.case.fill")
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(AMColor.accent)
+                    Text("AMF")
+                        .font(.system(size: 9, weight: .heavy))
+                        .foregroundStyle(AMColor.sidebarText)
+                        .tracking(1.5)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 18)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 18)
+            .buttonStyle(.plain)
 
             Rectangle()
                 .fill(AMColor.sidebarGroup.opacity(0.4))
@@ -412,6 +719,15 @@ private struct RegularRootView: View {
             .padding(.vertical, 10)
 
             Spacer()
+
+            Rectangle()
+                .fill(AMColor.sidebarGroup.opacity(0.4))
+                .frame(height: 0.5)
+
+            // Compact sync status in sidebar
+            SyncStatusBar()
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
 
             Rectangle()
                 .fill(AMColor.sidebarGroup.opacity(0.4))
@@ -450,7 +766,7 @@ private struct RegularRootView: View {
                 .padding(.vertical, 12)
                 .background(isSel ? AMColor.accent.opacity(0.15) : Color.clear,
                             in: RoundedRectangle(cornerRadius: 8))
-                .overlay(alignment: .leading) {
+                .overlay(alignment: .trailing) {
                     if isSel {
                         Capsule()
                             .fill(AMColor.accent)
@@ -587,7 +903,10 @@ struct SectionPatientListView: View {
         .searchable(text: $searchText, prompt: "Search name or complaint")
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button { showAdd = true } label: { Image(systemName: "plus") }
+                HStack {
+                    SyncStatusBar()
+                    Button { showAdd = true } label: { Image(systemName: "plus") }
+                }
             }
         }
         .sheet(isPresented: $showAdd) {
@@ -619,5 +938,6 @@ struct SectionPatientListView: View {
 #Preview {
     ContentView()
         .environmentObject(SyncService())
+        .environmentObject(PeerSyncService())
         .modelContainer(for: Patient.self, inMemory: true)
 }

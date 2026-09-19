@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 import { requireAuth } from '../middlewares/auth.js';
 import { checkForbiddenContent, FORBIDDEN_PATTERNS } from '@workspace/triage-engine';
+import { logAudit } from '../lib/audit.js';
 
 const router = Router();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
@@ -312,6 +313,7 @@ router.post('/api/summary/generate', requireAuth, async (req, res) => {
       }).join('\n');
     }
 
+    void logAudit(req, 'ai_call', 'clinical_note', undefined, undefined, { model: MODEL, action: 'generate_summary' });
     res.json({ document });
   } catch {
     res.json({ document: scanTemplate(buildTemplateSoap(req.body)) });
@@ -359,6 +361,7 @@ router.post('/api/ai/refine', requireAuth, async (req, res) => {
       }).join('\n');
     }
 
+    void logAudit(req, 'ai_call', 'clinical_note', undefined, undefined, { model: MODEL, action: 'refine' });
     res.json({ refined });
   } catch {
     res.status(502).json({ error: 'AI refine request failed' });
@@ -545,6 +548,7 @@ router.post('/api/soap/polish', requireAuth, async (req, res) => {
       }
     }
 
+    void logAudit(req, 'ai_call', 'clinical_note', undefined, undefined, { model: MODEL, action: 'soap_polish' });
     res.json(polished);
   } catch {
     // On AI failure, fall back to plain concatenation — scan each section

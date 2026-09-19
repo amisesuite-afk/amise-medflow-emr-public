@@ -6,10 +6,11 @@ import SwiftUI
 
 struct DiagnosisRadiationCard: View {
     let radiation: DiagnosisRadiation
-    let patientAge: Int?
     let onAddInvestigation: (DiagnosisRadiation.SuggestedInvestigation) -> Void
     let onUsePlan: (String) -> Void
     let onDismiss: () -> Void
+
+    var patientAge: Int? = nil
 
     @State private var expanded = true
     @State private var addedNames: Set<String> = []
@@ -25,7 +26,6 @@ struct DiagnosisRadiationCard: View {
                 }
             }
         }
-        .onAppear { preloadAgeFields() }
     }
 
     // MARK: - Header
@@ -90,9 +90,10 @@ struct DiagnosisRadiationCard: View {
                 }
             }
 
-            // Clinical score calculator
+            // Scoring calculator
             if let criteria = radiation.scoringCriteria {
                 scoringSection(criteria)
+                Divider()
             }
 
             // Suggested investigations
@@ -173,6 +174,12 @@ struct DiagnosisRadiationCard: View {
                 }
             }
 
+            // Referral suggestions
+            if !radiation.referralSuggestions.isEmpty {
+                referralsSection
+                Divider()
+            }
+
             // Follow-up note
             if !radiation.followUp.isEmpty {
                 HStack(alignment: .top, spacing: 8) {
@@ -197,6 +204,7 @@ struct DiagnosisRadiationCard: View {
             }
         }
         .padding(.vertical, 8)
+        .onAppear { preloadAgeFields() }
     }
 
     // MARK: - Score calculator
@@ -240,35 +248,88 @@ struct DiagnosisRadiationCard: View {
     }
 
     @ViewBuilder
+    private func binaryToggle(for variable: DiagnosisRadiation.ScoreVariable) -> some View {
+        let current = scoreValues[variable.id]
+        let isYes = current == "1"
+        let isNeg = variable.points < 0
+        HStack(spacing: 0) {
+            Button {
+                scoreValues[variable.id] = "0"
+            } label: {
+                Text("No")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(current == "0" ? Color.primary : Color.secondary)
+                    .frame(width: 34)
+                    .padding(.vertical, 5)
+                    .background { current == "0" ? Color.secondary.opacity(0.2) : Color.clear }
+            }
+            .buttonStyle(.plain)
+            Divider().frame(height: 22)
+            Button {
+                scoreValues[variable.id] = "1"
+            } label: {
+                Text("Yes")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(isYes ? (isNeg ? Color.orange : Color.green) : Color.secondary)
+                    .frame(width: 34)
+                    .padding(.vertical, 5)
+                    .background { isYes ? (isNeg ? Color.orange.opacity(0.15) : Color.green.opacity(0.15)) : Color.clear }
+            }
+            .buttonStyle(.plain)
+        }
+        .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.secondary.opacity(0.3), lineWidth: 0.5))
+        .clipShape(RoundedRectangle(cornerRadius: 6))
+    }
+
+    @ViewBuilder
     private func scoreVariableRow(_ variable: DiagnosisRadiation.ScoreVariable) -> some View {
         HStack(spacing: 8) {
             VStack(alignment: .leading, spacing: 1) {
-                Text(variable.label)
-                    .font(.system(size: 11, weight: .medium))
-                Text(variable.hint)
-                    .font(.system(size: 9))
-                    .foregroundStyle(.secondary)
+                HStack(spacing: 4) {
+                    Text(variable.label)
+                        .font(.system(size: 11, weight: .medium))
+                    if variable.points == 2 {
+                        Text("×2")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.indigo)
+                            .padding(.horizontal, 3).padding(.vertical, 1)
+                            .background(Color.indigo.opacity(0.1), in: RoundedRectangle(cornerRadius: 3))
+                    } else if variable.points < 0 {
+                        Text("\(variable.points)")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.orange)
+                            .padding(.horizontal, 3).padding(.vertical, 1)
+                            .background(Color.orange.opacity(0.1), in: RoundedRectangle(cornerRadius: 3))
+                    }
+                }
+                if !variable.hint.isEmpty {
+                    Text(variable.hint)
+                        .font(.system(size: 9))
+                        .foregroundStyle(.secondary)
+                }
             }
             .frame(minWidth: 80, alignment: .leading)
 
             Spacer()
 
-            // Value field
-            HStack(spacing: 4) {
-                TextField("—", text: binding(for: variable))
-                    .keyboardType(.decimalPad)
-                    .font(.system(size: 12, weight: .semibold).monospaced())
-                    .multilineTextAlignment(.trailing)
-                    .frame(width: 64)
-                    .padding(.horizontal, 6).padding(.vertical, 4)
-                    .background(Color(.secondarySystemFill), in: RoundedRectangle(cornerRadius: 6))
-                Text(variable.unit)
-                    .font(.system(size: 10))
-                    .foregroundStyle(.secondary)
-                    .frame(width: 42, alignment: .leading)
+            if variable.isBinary {
+                binaryToggle(for: variable)
+            } else {
+                HStack(spacing: 4) {
+                    TextField("—", text: binding(for: variable))
+                        .keyboardType(.decimalPad)
+                        .font(.system(size: 12, weight: .semibold).monospaced())
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 64)
+                        .padding(.horizontal, 6).padding(.vertical, 4)
+                        .background(Color(.secondarySystemFill), in: RoundedRectangle(cornerRadius: 6))
+                    Text(variable.unit)
+                        .font(.system(size: 10))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 42, alignment: .leading)
+                }
             }
 
-            // Point indicator
             pointIndicator(for: variable)
         }
     }
@@ -289,7 +350,7 @@ struct DiagnosisRadiationCard: View {
                         .font(.system(size: 9))
                         .foregroundStyle(.secondary)
                 } else {
-                    Text(score >= criteria.severeThreshold ? "SEVERE" : "MILD–MOD")
+                    Text(score >= criteria.severeThreshold ? criteria.aboveThresholdLabel : criteria.belowThresholdLabel)
                         .font(.system(size: 9, weight: .bold))
                         .foregroundStyle(scoreColor(score, threshold: criteria.severeThreshold))
                 }
@@ -310,24 +371,84 @@ struct DiagnosisRadiationCard: View {
     private func pointIndicator(for variable: DiagnosisRadiation.ScoreVariable) -> some View {
         let text = scoreValues[variable.id] ?? ""
         if text.isEmpty {
-            Circle()
-                .fill(Color.secondary.opacity(0.2))
-                .frame(width: 16, height: 16)
+            Circle().fill(Color.secondary.opacity(0.2)).frame(width: 16, height: 16)
+        } else if variable.isBinary {
+            let scored = text == "1"
+            let pts = variable.points
+            if scored {
+                Circle()
+                    .fill(pts < 0 ? Color.orange : Color.red)
+                    .frame(width: 16, height: 16)
+                    .overlay(
+                        Text(pts > 0 ? "+\(pts)" : "\(pts)")
+                            .font(.system(size: 7, weight: .bold)).foregroundStyle(.white)
+                    )
+            } else {
+                Circle().fill(Color.green).frame(width: 16, height: 16)
+                    .overlay(Text("0").font(.system(size: 7, weight: .bold)).foregroundStyle(.white))
+            }
         } else if let val = Double(text) {
-            let scores = variableScores(variable, value: val)
-            Circle()
-                .fill(scores ? Color.red : Color.green)
-                .frame(width: 16, height: 16)
-                .overlay(
-                    Text(scores ? "+1" : "0")
-                        .font(.system(size: 7, weight: .bold))
-                        .foregroundStyle(.white)
-                )
+            let scored = variable.cutoffIsAbove ? val > variable.cutoffValue : val < variable.cutoffValue
+            let pts = variable.points
+            if scored {
+                Circle()
+                    .fill(pts < 0 ? Color.orange : Color.red)
+                    .frame(width: 16, height: 16)
+                    .overlay(
+                        Text(pts > 0 ? "+\(pts)" : "\(pts)")
+                            .font(.system(size: 7, weight: .bold)).foregroundStyle(.white)
+                    )
+            } else {
+                Circle().fill(Color.green).frame(width: 16, height: 16)
+                    .overlay(Text("0").font(.system(size: 7, weight: .bold)).foregroundStyle(.white))
+            }
         } else {
-            Circle()
-                .fill(Color.orange.opacity(0.5))
-                .frame(width: 16, height: 16)
+            Circle().fill(Color.orange.opacity(0.5)).frame(width: 16, height: 16)
         }
+    }
+
+    // MARK: - Referrals
+
+    private var referralsSection: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Label("Referral Suggestions", systemImage: "person.badge.clock.fill")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(.blue)
+            ForEach(radiation.referralSuggestions) { ref in
+                HStack(alignment: .top, spacing: 8) {
+                    urgencyPill(ref.urgency)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(ref.specialty)
+                            .font(.system(size: 11, weight: .semibold))
+                        Text(ref.reason)
+                            .font(.system(size: 10))
+                            .foregroundStyle(.secondary)
+                        if let notes = ref.notes {
+                            Text(notes)
+                                .font(.system(size: 9))
+                                .foregroundStyle(.secondary.opacity(0.7))
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func urgencyPill(_ urgency: DiagnosisRadiation.ReferralSuggestion.ReferralUrgency) -> some View {
+        let (bg, fg): (Color, Color) = {
+            switch urgency {
+            case .emergency: return (.red, .white)
+            case .urgent:    return (.orange, .white)
+            case .routine:   return (Color(.systemGray5), .primary)
+            }
+        }()
+        Text(urgency.rawValue)
+            .font(.system(size: 8, weight: .bold))
+            .foregroundStyle(fg)
+            .padding(.horizontal, 5).padding(.vertical, 2)
+            .background(bg, in: Capsule())
+            .fixedSize()
     }
 
     // MARK: - Helpers
@@ -339,24 +460,23 @@ struct DiagnosisRadiationCard: View {
         )
     }
 
-    private func variableScores(_ variable: DiagnosisRadiation.ScoreVariable, value: Double) -> Bool {
-        variable.cutoffIsAbove ? value > variable.cutoffValue : value < variable.cutoffValue
-    }
-
     private func computedScore(_ criteria: DiagnosisRadiation.ScoringCriteria) -> Int {
         var total = 0
         var countedGroups: Set<String> = []
         for variable in criteria.variables {
-            guard let text = scoreValues[variable.id], !text.isEmpty,
-                  let val = Double(text) else { continue }
+            guard let text = scoreValues[variable.id], !text.isEmpty else { continue }
+            let scored: Bool
+            if variable.isBinary {
+                scored = text == "1"
+            } else {
+                guard let val = Double(text) else { continue }
+                scored = variable.cutoffIsAbove ? val > variable.cutoffValue : val < variable.cutoffValue
+            }
             if let gid = variable.groupId {
                 guard !countedGroups.contains(gid) else { continue }
-                if variableScores(variable, value: val) {
-                    total += 1
-                    countedGroups.insert(gid)
-                }
+                if scored { total += variable.points; countedGroups.insert(gid) }
             } else {
-                if variableScores(variable, value: val) { total += 1 }
+                if scored { total += variable.points }
             }
         }
         return total

@@ -54,7 +54,7 @@ enum PatientSummaryPDF {
         nameAttr.draw(in: nameRect)
 
         // Generated timestamp
-        let ts = DateFormatter.localizedString(from: .now, dateStyle: .medium, timeStyle: .short)
+        let ts = "\(DateFormatter.ectDateTime.string(from: .now)) ECT"
         ts.draw(in: CGRect(x: margin, y: 66, width: colW, height: 12),
             withAttributes: [.font: UIFont.systemFont(ofSize: 8), .foregroundColor: UIColor.secondaryLabel])
 
@@ -67,7 +67,7 @@ enum PatientSummaryPDF {
 
         var rows: [(String, String)] = [
             ("Full name",  patient.fullName),
-            ("Date of birth", patient.dateOfBirth.map { DateFormatter.localizedString(from: $0, dateStyle: .medium, timeStyle: .none) } ?? "—"),
+            ("Date of birth", patient.dateOfBirth.map { DateFormatter.ectDate.string(from: $0) } ?? "—"),
             ("Age",        patient.ageDisplay ?? "—"),
             ("Sex",        patient.sex.rawValue),
             ("MRN",        patient.mrn ?? "—"),
@@ -204,7 +204,7 @@ enum PatientSummaryPDF {
         // Latest vitals
         if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first, v.hasAnyValue {
             y = maybeNewPage(ctx: ctx, y: y)
-            y = sectionTitle("Latest Vitals  ·  \(DateFormatter.localizedString(from: v.recordedAt, dateStyle: .short, timeStyle: .short))", y: y)
+            y = sectionTitle("Latest Vitals  ·  \(DateFormatter.ectShort.string(from: v.recordedAt)) ECT", y: y)
             var vRows: [(String, String)] = [("NEWS2", "\(v.news2Score) — \(v.news2Risk)")]
             if let bp = v.bpString  { vRows.append(("BP", "\(bp) mmHg")) }
             if let hr = v.heartRate { vRows.append(("Heart rate", "\(hr) bpm")) }
@@ -248,7 +248,7 @@ enum PatientSummaryPDF {
         for note in signedNotes {
             guard let text = note.freeText, !text.isEmpty else { continue }
             y = maybeNewPage(ctx: ctx, y: y)
-            let label = "\(note.noteType.rawValue.capitalized) Note  ·  \(DateFormatter.localizedString(from: note.createdAt, dateStyle: .short, timeStyle: .short))"
+            let label = "\(note.noteType.rawValue.capitalized) Note  ·  \(DateFormatter.ectShort.string(from: note.createdAt)) ECT"
             y = sectionTitle(label, y: y)
             y = drawText(ctx: ctx, text: text, y: y)
         }
@@ -318,7 +318,7 @@ enum PatientSummaryPDF {
     }
 
     private static func drawFooter(pageRect: CGRect) {
-        let text = "Generated \(DateFormatter.localizedString(from: .now, dateStyle: .medium, timeStyle: .short)) · Dr Dawit Daniel Kabiye MD DM · Amise Medical Services, Saint Lucia · CONFIDENTIAL — AI-assisted draft, clinician review required"
+        let text = "Generated \(DateFormatter.ectDateTime.string(from: .now)) ECT · Dr Dawit Daniel Kabiye MD DM · Amise Medical Services, Saint Lucia · CONFIDENTIAL — AI-assisted draft, clinician review required"
         text.draw(
             in: CGRect(x: margin, y: pageRect.height - 22, width: pageRect.width - margin * 2, height: 18),
             withAttributes: [.font: UIFont.systemFont(ofSize: 6.5), .foregroundColor: UIColor.secondaryLabel])

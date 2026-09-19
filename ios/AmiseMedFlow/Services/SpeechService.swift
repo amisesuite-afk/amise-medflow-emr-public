@@ -15,6 +15,7 @@ enum DictationMode: String, CaseIterable, Identifiable {
     case referral      = "referral"
     case clinicalSummary = "clinical_summary"
     case prescription  = "prescription"
+    case consultation  = "consultation"
 
     var id: String { rawValue }
 
@@ -30,6 +31,7 @@ enum DictationMode: String, CaseIterable, Identifiable {
         case .referral:       return "Referral Letter"
         case .clinicalSummary: return "Clinical Summary"
         case .prescription:   return "Prescription"
+        case .consultation:   return "Consultation"
         }
     }
 
@@ -45,6 +47,7 @@ enum DictationMode: String, CaseIterable, Identifiable {
         case .referral:       return "envelope"
         case .clinicalSummary: return "doc.text.fill"
         case .prescription:   return "pills"
+        case .consultation:   return "stethoscope"
         }
     }
 
@@ -78,6 +81,8 @@ enum DictationMode: String, CaseIterable, Identifiable {
             return base + "\nFormat: comprehensive clinical summary document with UPPERCASE section headings. Sections: PATIENT DETAILS, PRESENTING COMPLAINT, HISTORY, PAST MEDICAL & SURGICAL HISTORY, MEDICATIONS, ALLERGIES, EXAMINATION FINDINGS, INVESTIGATIONS, ASSESSMENT, MANAGEMENT PLAN."
         case .prescription:
             return base + "\nExtract medication prescriptions from the dictation. For each medication return: drug name (generic), dose, route, frequency, duration. Format as a numbered list. Flag any non-standard doses."
+        case .consultation:
+            return base + "\nFormat: structured outpatient consultation note. Sections: Reason for consultation, Referring clinician, History of presenting complaint, Past medical and surgical history, Medications and allergies, Examination findings, Investigations reviewed, Impression and differential diagnosis, Plan and recommendations, Follow-up arrangements."
         }
     }
 

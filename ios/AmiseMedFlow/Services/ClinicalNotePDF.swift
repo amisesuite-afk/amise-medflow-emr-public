@@ -17,7 +17,9 @@ enum ClinicalNotePDF {
             y = drawPatientStrip(page: page, y: y, patient: patient, teal: teal)
             y = drawMeta(page: page, y: y, note: note, teal: teal)
 
-            if note.noteType.isStructured {
+            if note.noteType == .consultation {
+                y = drawConsultationFields(ctx: ctx, page: page, y: y, patient: patient, note: note, teal: teal)
+            } else if note.noteType.isStructured {
                 y = drawSOAP(ctx: ctx, page: page, y: y, note: note, teal: teal)
             } else {
                 y = drawFreeText(ctx: ctx, page: page, y: y, note: note, teal: teal)
@@ -75,9 +77,7 @@ enum ClinicalNotePDF {
         teal.withAlphaComponent(0.1).setFill()
         UIRectFill(CGRect(x: 0, y: y, width: page.width, height: h))
 
-        let dob = patient.dateOfBirth.map {
-            DateFormatter.localizedString(from: $0, dateStyle: .medium, timeStyle: .none)
-        } ?? ""
+        let dob = patient.dateOfBirth.map { DateFormatter.ectDate.string(from: $0) } ?? ""
         let parts: [String] = [
             patient.fullName,
             "\(patient.sex.rawValue)\(patient.ageYears > 0 ? ", \(patient.ageYears)y" : "")",
@@ -98,8 +98,8 @@ enum ClinicalNotePDF {
 
     @discardableResult
     private static func drawMeta(page: CGRect, y: CGFloat, note: ClinicalNote, teal: UIColor) -> CGFloat {
-        let dateStr = DateFormatter.localizedString(from: note.createdAt, dateStyle: .long, timeStyle: .short)
-        "Created: \(dateStr)   ·   Author: Dr Dawit Daniel Kabiye MD DM".draw(
+        let dateStr = DateFormatter.ectLong.string(from: note.createdAt)
+        "Created: \(dateStr) ECT   ·   Author: Dr Dawit Daniel Kabiye MD DM".draw(
             in: CGRect(x: 24, y: y, width: page.width - 48, height: 13),
             withAttributes: [.font: UIFont.systemFont(ofSize: 8.5),
                              .foregroundColor: UIColor.secondaryLabel])
@@ -108,6 +108,123 @@ enum ClinicalNotePDF {
         teal.withAlphaComponent(0.3).setFill()
         UIRectFill(CGRect(x: 24, y: rule, width: page.width - 48, height: 0.5))
         return rule + 12
+    }
+
+    // MARK: - Structured consultation fields (all fields, no data silos)
+
+    @discardableResult
+    private static func drawConsultationFields(ctx: UIGraphicsPDFRendererContext, page: CGRect, y: CGFloat,
+                                               patient: Patient, note: ClinicalNote, teal: UIColor) -> CGFloat {
+        var y = y
+
+        // Build content blocks — label : value pairs
+        var blocks: [(String, String)] = []
+
+        if let cc = patient.chiefComplaint, !cc.isEmpty {
+            blocks.append(("CHIEF COMPLAINT", cc))
+        }
+        if let assoc = patient.associatedSymptoms, !assoc.isEmpty {
+            blocks.append(("ASSOCIATED SYMPTOMS", assoc))
+        }
+        if let hpi = patient.hpi, !hpi.isEmpty {
+            blocks.append(("HISTORY OF PRESENTING ILLNESS", hpi))
+        }
+        if let pmh = patient.pmhNotes, !pmh.isEmpty {
+            blocks.append(("PAST MEDICAL HISTORY", pmh))
+        }
+        if let pshx = patient.surgicalHistory, !pshx.isEmpty {
+            blocks.append(("PAST SURGICAL HISTORY", pshx))
+        }
+
+        // Allergies
+        let allergies = patient.allergies
+        if allergies.isEmpty {
+            blocks.append(("ALLERGIES", "No known drug allergies (NKDA)"))
+        } else {
+            let allergyText = allergies.map { "\($0.name) — \($0.reaction) (\($0.severity))" }.joined(separator: "\n")
+            blocks.append(("ALLERGIES", allergyText))
+        }
+
+        // Social history
+        if let soc = patient.socialHistory, !soc.isEmpty {
+            blocks.append(("SOCIAL HISTORY", soc))
+        }
+        if let fhx = patient.familyHistoryNotes, !fhx.isEmpty {
+            blocks.append(("FAMILY HISTORY", fhx))
+        }
+
+        // Examination
+        var examParts: [String] = []
+        if let g  = patient.examGeneral, !g.isEmpty  { examParts.append("General: \(g)") }
+        if let ab = patient.examAbdo,    !ab.isEmpty  { examParts.append("Abdomen: \(ab)") }
+        if let cv = patient.examCVS,     !cv.isEmpty  { examParts.append("CVS: \(cv)") }
+        if let rs = patient.examResp,    !rs.isEmpty  { examParts.append("Respiratory: \(rs)") }
+        if let nr = patient.examNeuro,   !nr.isEmpty  { examParts.append("Neurological: \(nr)") }
+        if let ms = patient.examMSK,     !ms.isEmpty  { examParts.append("MSK: \(ms)") }
+        if let sk = patient.examSkin,    !sk.isEmpty  { examParts.append("Skin: \(sk)") }
+        if let ot = patient.examOther,   !ot.isEmpty  { examParts.append("Other: \(ot)") }
+        if let v  = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first, v.hasAnyValue {
+            var vLine = "Vitals: NEWS2 \(v.news2Score) (\(v.news2Risk))"
+            if let bp  = v.bpString    { vLine += " · BP \(bp) mmHg" }
+            if let hr  = v.heartRate   { vLine += " · HR \(hr) bpm" }
+            if let rr  = v.respiratoryRate { vLine += " · RR \(rr)/min" }
+            if let tmp = v.temperatureCelsius { vLine += String(format: " · Temp %.1f°C", tmp) }
+            if let sp  = v.spo2        { vLine += " · SpO₂ \(sp)%" }
+            examParts.insert(vLine, at: 0)
+        }
+        if !examParts.isEmpty {
+            blocks.append(("EXAMINATION", examParts.joined(separator: "\n")))
+        }
+
+        // Investigations
+        let investigations = patient.investigations
+        if !investigations.isEmpty {
+            let invText = investigations.map { inv -> String in
+                let status = inv.status == .resulted ? "✓" : "⏳"
+                let result = inv.result.isEmpty ? "" : ": \(inv.result)"
+                return "\(status) \(inv.name)\(result)"
+            }.joined(separator: "\n")
+            blocks.append(("INVESTIGATIONS", invText))
+        }
+
+        // Working diagnosis
+        if let dx = patient.workingDiagnosis, !dx.isEmpty {
+            let icd = patient.workingDiagnosisICD.map { " [\($0)]" } ?? ""
+            blocks.append(("WORKING DIAGNOSIS", "\(dx)\(icd)"))
+        }
+
+        // Assessment
+        if let assessment = note.assessment ?? patient.assessmentText, !assessment.isEmpty {
+            blocks.append(("ASSESSMENT", assessment))
+        }
+
+        // Medications
+        if !patient.prescriptions.isEmpty {
+            let rxText = patient.prescriptions.map { "• \($0.displayLine)" }.joined(separator: "\n")
+            blocks.append(("MEDICATIONS / PRESCRIPTIONS", rxText))
+        }
+
+        // Management plan
+        if let plan = patient.managementPlan, !plan.isEmpty {
+            blocks.append(("MANAGEMENT PLAN", plan))
+        }
+
+        // Quick notes (surgeon's scratch-pad)
+        if let quick = patient.notes, !quick.isEmpty {
+            blocks.append(("QUICK NOTES", quick))
+        }
+
+        // Free text from note (if any)
+        if let ft = note.freeText, !ft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            blocks.append(("CONSULTATION NOTE", ft))
+        }
+
+        for (label, body) in blocks {
+            if y > page.height - 80 { ctx.beginPage(); y = 40 }
+            y = drawSection(ctx: ctx, page: page, y: y, label: label, body: body, teal: teal, mono: false)
+        }
+
+        return y
     }
 
     // MARK: - SOAP sections
@@ -198,6 +315,8 @@ enum ClinicalNotePDF {
         }
 
         let df = DateFormatter()
+        df.locale     = Locale(identifier: "en_LC")
+        df.timeZone   = .ect
         df.dateFormat = "dd MMM yyyy  HH:mm"
 
         for (i, n) in notes.enumerated() {
@@ -246,7 +365,7 @@ enum ClinicalNotePDF {
 
         let isDraft = note.status == .draft
         let suffix  = isDraft ? " · DRAFT — NOT VALID UNTIL SIGNED" : ""
-        let text    = "Generated \(DateFormatter.localizedString(from: .now, dateStyle: .medium, timeStyle: .short)) · Dr Dawit Daniel Kabiye MD DM · Amise Medical Services, Saint Lucia\(suffix)"
+        let text    = "Generated \(DateFormatter.ectDateTime.string(from: .now)) ECT · Dr Dawit Daniel Kabiye MD DM · Amise Medical Services, Saint Lucia\(suffix)"
         text.draw(
             in: CGRect(x: 24, y: footerY, width: page.width - 48, height: 14),
             withAttributes: [.font: UIFont.systemFont(ofSize: 7),
@@ -268,7 +387,7 @@ enum ClinicalNotePDF {
         let line = (note.freeText ?? "")
             .components(separatedBy: "\n")
             .map { $0.trimmingCharacters(in: .whitespaces) }
-            .first(where: { !$0.isEmpty && !skip.contains(where: { $0.hasPrefix($0) }) }) ?? ""
+            .first(where: { line in !line.isEmpty && !skip.contains(where: { line.hasPrefix($0) }) }) ?? ""
         return String(line.prefix(55))
     }
 }

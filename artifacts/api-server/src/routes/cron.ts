@@ -148,9 +148,9 @@ router.post('/api/cron/daily-summary', async (req, res) => {
 
   // Run all queries in parallel
   const [
-    { data: appointments },
-    { data: escalations },
-    { data: pending },
+    { data: appointments, error: apptErr },
+    { data: escalations, error: escErr },
+    { data: pending, error: pendingErr },
   ] = await Promise.all([
     sb()
       .from('appointment_requests')
@@ -169,6 +169,9 @@ router.post('/api/cron/daily-summary', async (req, res) => {
       .select('id')
       .eq('status', 'pending'),
   ]);
+  if (apptErr) req.log.warn({ err: apptErr }, '[cron/daily-summary] appointments query error');
+  if (escErr) req.log.warn({ err: escErr }, '[cron/daily-summary] escalations query error');
+  if (pendingErr) req.log.warn({ err: pendingErr }, '[cron/daily-summary] pending query error');
 
   // Fetch today's schedule from Google Calendar (all 3 calendars, all event types)
   let calEvents: Awaited<ReturnType<typeof fetchAllEventsForDate>> = [];
@@ -179,11 +182,12 @@ router.post('/api/cron/daily-summary', async (req, res) => {
   }
 
   // Mark any open/in_progress tasks whose due_date has passed as overdue.
-  await sb()
+  const { error: overdueErr } = await sb()
     .from('patient_tasks')
     .update({ status: 'overdue' })
     .in('status', ['open', 'in_progress'])
     .lt('due_date', todayEctDateString);
+  if (overdueErr) req.log.warn({ err: overdueErr }, '[cron/daily-summary] overdue task update error');
 
   const { data: overdueTasks } = await sb()
     .from('patient_tasks')
@@ -203,10 +207,37 @@ router.post('/api/cron/daily-summary', async (req, res) => {
     `Pending replies: ${pending?.length ?? 0}`,
   ];
 
-  // Google Calendar is the source of truth for the day's schedule
-  if (calEvents.length) {
-    summaryLines.push('', "Today's schedule (Google Calendar):");
-    for (const ev of calEvents) {
+  // Google Calendar is the source of truth for the day's schedule.
+  // Business hours: 10:00–16:30 ECT. Outside that window only surgery/endoscopy/emergency events are shown.
+  const BUSINESS_START_MINS = 10 * 60;       // 10:00
+  const BUSINESS_END_MINS   = 16 * 60 + 30;  // 16:30
+
+  const isSurgicalOrEmergency = (type: string): boolean =>
+    ['theatre', 'endoscopy', 'emergency', 'surgery', 'ercp'].includes(type.toLowerCase());
+
+  const ectMinutesOf = (startISO: string): number | null => {
+    if (!startISO.includes('T')) return null; // all-day event
+    const ectStr = new Date(startISO).toLocaleTimeString('en-GB', {
+      timeZone: 'America/St_Lucia', hour: '2-digit', minute: '2-digit', hour12: false,
+    });
+    const [hh, mm] = ectStr.split(':').map(Number);
+    return hh * 60 + mm;
+  };
+
+  const withinBusinessHours = (startISO: string): boolean => {
+    const mins = ectMinutesOf(startISO);
+    if (mins === null) return true; // all-day events always pass through
+    return mins >= BUSINESS_START_MINS && mins <= BUSINESS_END_MINS;
+  };
+
+  const scheduleEvents = calEvents.filter(ev =>
+    withinBusinessHours(ev.start) || isSurgicalOrEmergency(ev.type ?? 'clinic'),
+  );
+  const afterHoursCount = calEvents.length - scheduleEvents.length;
+
+  if (scheduleEvents.length) {
+    summaryLines.push('', `Today's schedule (Google Calendar)${afterHoursCount > 0 ? ` — ${afterHoursCount} out-of-hours event${afterHoursCount === 1 ? '' : 's'} omitted` : ''}:`);
+    for (const ev of scheduleEvents) {
       const t = ev.start.includes('T') ? new Date(ev.start) : null;
       const timeStr = t
         ? t.toLocaleTimeString('en-GB', { timeZone: 'America/St_Lucia', hour: '2-digit', minute: '2-digit', hour12: false })
@@ -214,6 +245,8 @@ router.post('/api/cron/daily-summary', async (req, res) => {
       const typeTag = ev.type !== 'clinic' ? ` [${ev.type}]` : '';
       summaryLines.push(`  ${timeStr}${typeTag} — ${ev.summary}`);
     }
+  } else if (calEvents.length && !scheduleEvents.length) {
+    summaryLines.push('', `Today's schedule (Google Calendar): no events within business hours (10:00–16:30)`);
   } else if (appointments?.length) {
     // Fallback: Supabase confirmed appointments (Google Calendar unavailable)
     summaryLines.push('', "Today's schedule (intake system):");
@@ -296,12 +329,14 @@ router.post('/api/cron/booking-reminders', async (req, res) => {
         const body = `Hi ${req.patient_name.split(' ')[0]}, your appointment with Dr Kabiye is on ${slotStr}. Reply YES to confirm or call us to reschedule.${prepLine} – Amise Medical`;
         const result = await sendSms({ to: req.patient_phone, body });
         if (result.action === 'sent' || result.action === 'skipped') {
-          await supa.from('appointment_requests').update({ reminder_sent_at: now.toISOString(), prep_sms_sent: !!prepInstructions }).eq('id', req.id);
+          const { error: reminderUpdateErr } = await supa.from('appointment_requests').update({ reminder_sent_at: now.toISOString(), prep_sms_sent: !!prepInstructions }).eq('id', req.id);
+          if (reminderUpdateErr) logger.warn({ err: reminderUpdateErr, requestId: req.id }, '[cron/booking-reminders] reminder_sent_at update failed');
           await audit({ action: 'remind', entityType: 'appointment_request', entityId: req.id, payload: { kind: 'sms_48h_confirmation', prep_included: !!prepInstructions } });
           results.push({ id: req.id, action: result.action === 'sent' ? 'sms_sent' : 'sms_dry_run' });
         }
       } else {
-        await supa.from('appointment_requests').update({ reminder_sent_at: now.toISOString() }).eq('id', req.id);
+        const { error: noPhoneUpdateErr } = await supa.from('appointment_requests').update({ reminder_sent_at: now.toISOString() }).eq('id', req.id);
+        if (noPhoneUpdateErr) logger.warn({ err: noPhoneUpdateErr, requestId: req.id }, '[cron/booking-reminders] no-phone reminder_sent_at update failed');
         results.push({ id: req.id, action: 'no_phone' });
       }
     } catch (err) {
@@ -378,7 +413,8 @@ router.post('/api/cron/staff-escalation', async (req, res) => {
         await sendSms({ to: staffPhone, body: smsBody });
       }
 
-      await supa.from('appointment_requests').update({ staff_escalated_at: now.toISOString() }).eq('id', booking.id);
+      const { error: escalateUpdateErr } = await supa.from('appointment_requests').update({ staff_escalated_at: now.toISOString() }).eq('id', booking.id);
+      if (escalateUpdateErr) logger.warn({ err: escalateUpdateErr, bookingId: booking.id }, '[cron/staff-escalation] staff_escalated_at update failed');
       await audit({ action: 'escalate', entityType: 'appointment_request', entityId: booking.id, payload: { hours_waiting: hoursWaiting, doc_escalation: isDocEscalation } });
       results.push({ id: booking.id, action: isDocEscalation ? 'doctor_escalated' : 'staff_re_notified' });
     } catch (err) {
@@ -400,7 +436,8 @@ router.post('/api/cron/staff-escalation', async (req, res) => {
   } else {
     for (const booking of stale ?? []) {
       try {
-        await supa.from('appointment_requests').update({ status: 'cancelled', notes: 'Auto-cancelled after 8h with no staff action' }).eq('id', booking.id);
+        const { error: cancelUpdateErr } = await supa.from('appointment_requests').update({ status: 'cancelled', notes: 'Auto-cancelled after 8h with no staff action' }).eq('id', booking.id);
+        if (cancelUpdateErr) logger.warn({ err: cancelUpdateErr, bookingId: booking.id }, '[cron/staff-escalation] auto-cancel update failed');
 
         if (booking.patient_phone) {
           const firstName = (booking.patient_name as string || 'there').split(' ')[0];
@@ -481,7 +518,7 @@ router.post('/api/cron/escalate-results', async (req, res) => {
           ? await sendSms({ to: doctorPhone, body })
           : { action: 'dry_run' as const };
 
-        await supa.from('escalation_events').insert({
+        const { error: escalationInsertErr } = await supa.from('escalation_events').insert({
           entity_type: 'investigation_result',
           entity_id: result.id,
           patient_id: result.patient_id ?? null,
@@ -489,6 +526,7 @@ router.post('/api/cron/escalate-results', async (req, res) => {
           escalated_via: smsResult.action === 'sent' ? 'sms' : 'dry_run',
           escalated_to: doctorPhone,
         });
+        if (escalationInsertErr) logger.warn({ err: escalationInsertErr, resultId: result.id }, '[cron/critical-results] escalation_events insert failed');
 
         await audit({
           action: 'escalate',
@@ -513,4 +551,154 @@ router.post('/api/cron/escalate-results', async (req, res) => {
   }
 });
 
+// POST /api/cron/backup-alert
+// Called by GitHub Actions when a nightly backup fails.
+// Emails the doctor with the Actions log URL.
+router.post('/api/cron/backup-alert', async (req, res) => {
+  if (!requireCronSecret(req, res)) return;
+
+  const { run_id, log_url } = req.body as { run_id?: string; log_url?: string };
+  const doctorEmail = process.env.DOCTOR_NOTIFY_EMAIL;
+
+  req.log.error({ run_id, log_url }, '[cron/backup-alert] NAS backup FAILED');
+
+  if (doctorEmail) {
+    try {
+      await sendOrDraft({
+        to: doctorEmail,
+        subject: 'ALERT: Amise MedFlow nightly NAS backup FAILED',
+        body: [
+          'The nightly Supabase → NAS backup failed.',
+          '',
+          `GitHub Actions run ID: ${run_id ?? 'unknown'}`,
+          `Log URL: ${log_url ?? 'check GitHub Actions tab'}`,
+          '',
+          'Action required: Check the Actions log above, investigate the failure,',
+          'and run the backup manually once fixed.',
+          '',
+          'If the NAS is unreachable, verify the Synology is online and the SSH key',
+          'in GitHub Secrets (NAS_SSH_KEY) matches the key installed on the NAS.',
+          '',
+          '-- Amise MedFlow automated alert',
+        ].join('\n'),
+      }, 'auto');
+    } catch (err) {
+      req.log.error({ err }, '[cron/backup-alert] failed to send alert email');
+    }
+  }
+
+  res.json({ alerted: !!doctorEmail });
+});
+
+// GET /api/cron/backup-status
+// Returns the last 10 backup_runs rows so the dashboard can show backup health.
+router.get('/api/cron/backup-status', async (req, res) => {
+  if (!requireCronSecret(req, res)) return;
+
+  const { data, error } = await sb()
+    .from('backup_runs')
+    .select('id, status, backup_type, triggered_by, run_id, size_bytes, nas_path, error_message, started_at, finished_at')
+    .order('started_at', { ascending: false })
+    .limit(10);
+
+  if (error) {
+    req.log.error({ error }, '[cron/backup-status] db error');
+    res.status(502).json({ error: 'DB error' });
+    return;
+  }
+
+  const lastSuccess = data?.find(r => r.status === 'success');
+  const lastFailed  = data?.find(r => r.status === 'failed');
+
+  res.json({
+    runs: data ?? [],
+    lastSuccessAt:  lastSuccess?.started_at ?? null,
+    lastFailureAt:  lastFailed?.started_at  ?? null,
+    consecutiveFails: data
+      ? data.findIndex(r => r.status === 'success')  // -1 if no success in last 10
+      : -1,
+  });
+});
+
+// POST /api/cron/backup-usb-complete
+// Called by nas-usb-copy.sh on the Synology NAS when a USB drive copy finishes.
+// Emails the doctor with drive details and logs to backup_runs.
+router.post('/api/cron/backup-usb-complete', async (req, res) => {
+  if (!requireCronSecret(req, res)) return;
+
+  const { drive, files, size, date, status, error: errorMsg } = req.body as {
+    drive?: string;
+    files?: number;
+    size?: string;
+    date?: string;
+    status?: 'success' | 'failed';
+    error?: string;
+  };
+
+  const doctorEmail = process.env.DOCTOR_NOTIFY_EMAIL;
+  const isSuccess = status === 'success';
+
+  req.log.info({ drive, files, size, date, status }, '[cron/backup-usb-complete] USB copy event');
+
+  if (doctorEmail) {
+    try {
+      if (isSuccess) {
+        await sendOrDraft({
+          to: doctorEmail,
+          subject: `MedFlow Backup — USB Drive ${drive ?? 'UNKNOWN'} verified OK (${date ?? 'today'})`,
+          body: [
+            `USB drive backup completed and verified successfully.`,
+            '',
+            `Drive:  ${drive ?? 'UNKNOWN'}`,
+            `Date:   ${date ?? new Date().toISOString().slice(0, 10)}`,
+            `Files:  ${files ?? '—'}`,
+            `Size:   ${size ?? '—'}`,
+            `Status: VERIFIED OK`,
+            '',
+            'The drive has been safely ejected from the NAS and is ready to remove.',
+            '',
+            '-- Amise MedFlow automated notification',
+          ].join('\n'),
+        }, 'auto');
+      } else {
+        await sendOrDraft({
+          to: doctorEmail,
+          subject: `ALERT: MedFlow USB Backup FAILED — Drive ${drive ?? 'UNKNOWN'}`,
+          body: [
+            'The USB drive backup on the Synology NAS FAILED.',
+            '',
+            `Drive:  ${drive ?? 'UNKNOWN'}`,
+            `Date:   ${date ?? new Date().toISOString().slice(0, 10)}`,
+            `Error:  ${errorMsg ?? 'unknown error'}`,
+            '',
+            'Action required: Check the NAS system log in DSM for details.',
+            'Do NOT use this drive for recovery until a successful copy is confirmed.',
+            '',
+            '-- Amise MedFlow automated alert',
+          ].join('\n'),
+        }, 'auto');
+      }
+    } catch (err) {
+      req.log.error({ err }, '[cron/backup-usb-complete] failed to send email');
+    }
+  }
+
+  // Log to backup_runs so the dashboard can show USB copy history
+  try {
+    await sb().from('backup_runs').insert({
+      status: isSuccess ? 'success' : 'failed',
+      backup_type: 'storage',
+      triggered_by: `usb_drive_${drive ?? 'UNKNOWN'}`,
+      finished_at: new Date().toISOString(),
+      nas_path: drive ? `/volumeUSB/medflow-backups (drive ${drive})` : null,
+      error_message: isSuccess ? null : (errorMsg ?? 'NAS USB copy failed'),
+    });
+  } catch (err) {
+    req.log.warn({ err }, '[cron/backup-usb-complete] backup_runs insert failed');
+  }
+
+  res.json({ received: true, alerted: !!doctorEmail });
+});
+
 export default router;
+

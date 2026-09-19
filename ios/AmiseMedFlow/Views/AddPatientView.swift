@@ -4,6 +4,7 @@ import SwiftData
 struct AddPatientView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var calSvc: CalendarService
 
     var initialSetting: ClinicalSetting
 
@@ -99,7 +100,18 @@ struct AddPatientView: View {
             TextField("Email", text: $email)
                 .keyboardType(.emailAddress)
                 .autocapitalization(.none)
-            TextField("MRN (optional)", text: $mrn)
+            HStack(spacing: 8) {
+                TextField("MRN (optional)", text: $mrn)
+                if mrn.isEmpty {
+                    Button("Generate") {
+                        let digits = (0..<6).map { _ in String(Int.random(in: 0...9)) }.joined()
+                        mrn = "AMI-\(digits)"
+                    }
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(AMColor.accent)
+                    .buttonStyle(.bordered)
+                }
+            }
         }
     }
 
@@ -382,6 +394,21 @@ struct AddPatientView: View {
         }
         context.insert(p)
         try? context.save()
+
+        // Mirror to iOS Calendar (syncs to Google Calendar via account settings)
+        if showProcedure && hasOperationDate {
+            let procedure = appointmentType.isEmpty ? chiefComplaint : appointmentType
+            Task {
+                try? await calSvc.createTheatreBooking(
+                    procedure: procedure,
+                    patientName: p.fullName,
+                    date: operationDate,
+                    duration: 5400, // 90 min default
+                    notes: p.workingDiagnosis.map { "Indication: \($0)" } ?? ""
+                )
+            }
+        }
+
         dismiss()
     }
 }

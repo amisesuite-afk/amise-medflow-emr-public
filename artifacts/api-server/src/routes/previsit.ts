@@ -2,6 +2,7 @@ import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { sb, requireStaffAuth } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
+import { logAudit } from '../lib/audit.js';
 
 const router = Router();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
@@ -133,6 +134,7 @@ router.post('/api/previsit/create', async (req, res) => {
     }
 
     log.info({ submissionId, smsSent }, 'previsit submission created');
+    void logAudit(req, 'create', 'appointment', submissionId, patientId);
     res.json({ success: true, token, link, submissionId, smsSent });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to create pre-visit';
@@ -424,6 +426,7 @@ router.post('/api/previsit/ai-format', async (req, res) => {
     }
 
     log.info({ submissionId: data.id }, 'previsit AI formatting complete');
+    void logAudit(req, 'ai_call', 'clinical_note', data.id as string, patientId, { model: MODEL });
     res.json({ success: true, formatted: aiFormatted, submissionId: data.id });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'AI formatting failed';

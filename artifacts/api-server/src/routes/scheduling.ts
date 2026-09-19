@@ -7,12 +7,30 @@ import { requireCronSecret, sb } from '../lib/supabase.js';
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { logger } from '../lib/logger.js';
+import { logAudit } from '../lib/audit.js';
 
 // Resolves correctly in both ts-node (src/routes/) and esbuild bundle (dist/)
 const CACHE_PATH = join(process.cwd(), 'src/data/calendar-cache.json');
 const CACHE_KEY = 'combined';
 
 const router = Router();
+
+const ECT_OFFSET_MS = -4 * 60 * 60_000; // UTC-4, no DST
+
+function ectDayOfWeek(d: Date): number {
+  return new Date(d.getTime() + ECT_OFFSET_MS).getDay();
+}
+
+function setTimeECT(d: Date, hhmm: string): Date {
+  const [h, m] = hhmm.split(':').map(Number);
+  // Interpret hhmm as ECT — compute ECT midnight in UTC for the ECT calendar
+  // day that d falls in, then add h:m as ECT-local minutes.
+  const ectDate = new Date(d.getTime() + ECT_OFFSET_MS);
+  const ectMidnightUtc = Date.UTC(
+    ectDate.getUTCFullYear(), ectDate.getUTCMonth(), ectDate.getUTCDate(),
+  ) - ECT_OFFSET_MS;
+  return new Date(ectMidnightUtc + (h * 60 + m) * 60_000);
+}
 
 function generateMockSlots(
   appointmentType: AppointmentType,
@@ -22,23 +40,22 @@ function generateMockSlots(
 ): AvailableSlot[] {
   const slots: AvailableSlot[] = [];
   const twoHoursFromNow = new Date(fromDate.getTime() + 2 * 60 * 60_000);
+  // Advance cursor day by day in ECT
   const cursor = new Date(fromDate);
-  cursor.setSeconds(0, 0);
-
-  const [startH, startM] = rule.windowStart.split(':').map(Number);
 
   while (slots.length < max && cursor.getTime() < fromDate.getTime() + 60 * 86400_000) {
-    const dow = cursor.getDay();
-    if (rule.days.includes(dow)) {
-      const slotStart = new Date(cursor);
-      slotStart.setHours(startH, startM, 0, 0);
-      const slotEnd = new Date(slotStart.getTime() + rule.durationMin * 60_000);
+    if (rule.days.includes(ectDayOfWeek(cursor))) {
+      const slotStart = setTimeECT(cursor, rule.windowStart);
+      const slotEnd   = new Date(slotStart.getTime() + rule.durationMin * 60_000);
       if (slotStart > twoHoursFromNow) {
         slots.push({ start: slotStart, end: slotEnd, location: rule.location as Location, appointmentType });
       }
     }
-    cursor.setDate(cursor.getDate() + 1);
-    cursor.setHours(0, 0, 0, 0);
+    // Advance to next ECT midnight → next UTC day start
+    const nextEctDay = new Date(cursor.getTime() + ECT_OFFSET_MS);
+    nextEctDay.setUTCHours(0, 0, 0, 0);
+    nextEctDay.setUTCDate(nextEctDay.getUTCDate() + 1);
+    cursor.setTime(nextEctDay.getTime() - ECT_OFFSET_MS);
   }
 
   return slots;
@@ -120,12 +137,22 @@ async function syncCalendarCache(): Promise<{ synced: boolean; eventCount?: numb
 }
 
 router.post('/api/scheduling/sync', requireAuth, async (_req, res) => {
-  res.json(await syncCalendarCache());
+  try {
+    res.json(await syncCalendarCache());
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: msg });
+  }
 });
 
 router.post('/api/cron/calendar-sync', async (req, res) => {
   if (!requireCronSecret(req, res)) return;
-  res.json(await syncCalendarCache());
+  try {
+    res.json(await syncCalendarCache());
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: msg });
+  }
 });
 
 // ── /api/scheduling/upcoming ─────────────────────────────────────────────────
@@ -180,27 +207,33 @@ async function loadCache(): Promise<CalendarCache | null> {
 }
 
 router.get('/api/scheduling/upcoming', requireAuth, async (req, res) => {
-  const cache = await loadCache();
-  if (!cache) {
-    res.status(503).json({ error: 'Calendar cache not available' });
-    return;
+  try {
+    const cache = await loadCache();
+    if (!cache) {
+      res.status(503).json({ error: 'Calendar cache not available' });
+      return;
+    }
+
+    const dateFilter = req.query.date as string | undefined;
+    const daysAhead = Math.min(Number(req.query.days ?? 14), 60);
+    const now = new Date();
+    const cutoff = new Date(now.getTime() + daysAhead * 86400_000);
+
+    let events = cache.events.filter(e => {
+      const start = new Date(e.start);
+      return start >= now && start < cutoff;
+    });
+
+    if (dateFilter) {
+      events = events.filter(e => e.start.startsWith(dateFilter));
+    }
+
+    res.json({ events, fetchedAt: cache.fetchedAt, calendarId: cache.calendarId });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    logger.error({ err }, 'scheduling/upcoming error');
+    res.status(503).json({ error: msg });
   }
-
-  const dateFilter = req.query.date as string | undefined;
-  const daysAhead = Math.min(Number(req.query.days ?? 14), 60);
-  const now = new Date();
-  const cutoff = new Date(now.getTime() + daysAhead * 86400_000);
-
-  let events = cache.events.filter(e => {
-    const start = new Date(e.start);
-    return start >= now && start < cutoff;
-  });
-
-  if (dateFilter) {
-    events = events.filter(e => e.start.startsWith(dateFilter));
-  }
-
-  res.json({ events, fetchedAt: cache.fetchedAt, calendarId: cache.calendarId });
 });
 
 // ── /api/scheduling/book-followup ────────────────────────────────────────────
@@ -297,6 +330,7 @@ router.post('/api/scheduling/book-followup', requireAuth, async (req, res) => {
       },
     });
 
+    void logAudit(req, 'create', 'appointment', data.id ?? undefined, patientId, { entityType: 'follow_up_calendar_event', followUpDate, visitType, patientName });
     res.json({
       eventId:    data.id,
       eventLink:  data.htmlLink ?? null,

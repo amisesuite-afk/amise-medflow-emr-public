@@ -22,73 +22,113 @@ struct NoteListView: View {
         patient.clinicalNotes.filter { $0.status == .draft && !$0.isEmpty }.count
     }
 
-    var body: some View {
-        Group {
-            if sortedNotes.isEmpty {
-                ContentUnavailableView(
-                    "No notes",
-                    systemImage: "note.text",
-                    description: Text("Tap + to add the first clinical note.")
-                )
-                .listRowBackground(Color.clear)
-            } else {
-                if draftCount > 0 {
-                    HStack(spacing: 6) {
-                        Image(systemName: "pencil.circle.fill")
-                            .foregroundStyle(.orange)
-                            .font(.caption)
-                        Text("\(draftCount) unsigned draft\(draftCount == 1 ? "" : "s")")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.orange)
-                        Spacer()
-                        Text("Swipe right to sign")
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
-                    }
-                    .padding(.horizontal, 4)
-                    .padding(.vertical, 6)
-                    .listRowBackground(Color.orange.opacity(0.06))
-                }
-
-                ForEach(sortedNotes) { note in
-                    NoteRow(note: note, onExportPDF: { exportPDF(note) })
-                        .contentShape(Rectangle())
-                        .onTapGesture { editingNote = note }
-                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                            if note.status == .draft {
-                                Button {
-                                    signNote(note)
-                                } label: {
-                                    Label("Sign", systemImage: "checkmark.seal")
-                                }
-                                .tint(.green)
-                            }
-                        }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                            Button(role: .destructive) { delete(note) } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
-                            Button { exportPDF(note) } label: {
-                                Label("PDF", systemImage: "arrow.up.doc.fill")
-                            }
-                            .tint(.indigo)
-                        }
+    // Menu content reused in both FAB and empty-state button
+    private var noteTypeMenu: some View {
+        Menu {
+            ForEach(NoteType.allCases, id: \.self) { type in
+                Button { addNote(type: type) } label: {
+                    Label(type.label, systemImage: type.icon)
                 }
             }
+        } label: {
+            Label("New Note", systemImage: "plus")
         }
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
+    }
+
+    var body: some View {
+        ZStack(alignment: .bottomTrailing) {
+            List {
+                if sortedNotes.isEmpty {
+                    // Empty state with tappable action
+                    VStack(spacing: 20) {
+                        Image(systemName: "note.text")
+                            .font(.system(size: 52))
+                            .foregroundStyle(.secondary.opacity(0.5))
+                        Text("No notes")
+                            .font(.title3.weight(.semibold))
+                        Menu {
+                            ForEach(NoteType.allCases, id: \.self) { type in
+                                Button { addNote(type: type) } label: {
+                                    Label(type.label, systemImage: type.icon)
+                                }
+                            }
+                        } label: {
+                            Label("New Note", systemImage: "plus")
+                                .font(.subheadline.weight(.semibold))
+                                .padding(.horizontal, 22)
+                                .padding(.vertical, 11)
+                                .background(AMColor.accent, in: Capsule())
+                                .foregroundStyle(.white)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 60)
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                } else {
+                    if draftCount > 0 {
+                        HStack(spacing: 6) {
+                            Image(systemName: "pencil.circle.fill")
+                                .foregroundStyle(.orange)
+                                .font(.caption)
+                            Text("\(draftCount) unsigned draft\(draftCount == 1 ? "" : "s")")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.orange)
+                            Spacer()
+                            Text("Swipe right to sign")
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        }
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 6)
+                        .listRowBackground(Color.orange.opacity(0.06))
+                    }
+
+                    ForEach(sortedNotes) { note in
+                        NoteRow(note: note, onExportPDF: { exportPDF(note) })
+                            .contentShape(Rectangle())
+                            .onTapGesture { editingNote = note }
+                            .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                                if note.status == .draft {
+                                    Button { signNote(note) } label: {
+                                        Label("Sign", systemImage: "checkmark.seal")
+                                    }
+                                    .tint(.green)
+                                }
+                            }
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                Button(role: .destructive) { delete(note) } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                                Button { exportPDF(note) } label: {
+                                    Label("PDF", systemImage: "arrow.up.doc.fill")
+                                }
+                                .tint(.indigo)
+                            }
+                    }
+                }
+            }
+
+            // Floating "+" always visible when there are existing notes
+            if !sortedNotes.isEmpty {
                 Menu {
                     ForEach(NoteType.allCases, id: \.self) { type in
-                        Button {
-                            addNote(type: type)
-                        } label: {
+                        Button { addNote(type: type) } label: {
                             Label(type.label, systemImage: type.icon)
                         }
                     }
                 } label: {
                     Image(systemName: "plus")
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 56, height: 56)
+                        .background(AMColor.accent, in: Circle())
+                        .shadow(color: AMColor.accent.opacity(0.4), radius: 8, y: 4)
                 }
+                .buttonStyle(.plain)
+                .padding(.trailing, 20)
+                .padding(.bottom, 24)
             }
         }
         .sheet(item: $editingNote) { note in

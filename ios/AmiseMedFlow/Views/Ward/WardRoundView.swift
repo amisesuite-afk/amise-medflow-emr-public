@@ -28,7 +28,7 @@ struct WardRoundView: View {
         if let loc = locationFilter {
             results = results.filter { $0.location == loc }
         }
-        return results.sorted { $0.acuity < $1.acuity }
+        return results.sorted { $0.acuity < $1.acuity }.deduped()
     }
 
     private var grouped: [(ClinicalLocation, [Patient])] {
@@ -164,6 +164,7 @@ struct WardRoundView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     HStack {
+                        SyncStatusBar()
                         Button { showTriage = true } label: {
                             Image(systemName: "chart.bar.xaxis.ascending")
                         }

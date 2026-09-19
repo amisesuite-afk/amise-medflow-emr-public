@@ -41,6 +41,13 @@ import {
   gcsScore, interpretGcs, type GcsInputs,
   AUDIT_QUESTIONS, AUDIT_Q1_OPTS, AUDIT_Q2_OPTS, AUDIT_Q3TO8_OPTS, AUDIT_Q9TO10_OPTS,
   auditScore, interpretAudit, type AuditInputs,
+  calcBmi, interpretBmi,
+  morseFallScore, interpretMorseFall, type MorseFallInputs,
+  GREENE_ITEMS, GREENE_FREQ_OPTS, greeneScore, interpretGreene, type GreeneInputs, type GreeneFreq,
+  KARNOFSKY_LEVELS, interpretKarnofsky,
+  barthelScore, interpretBarthel, type BarthelInputs,
+  ISS_REGIONS, AIS_LABELS, issScore, nissScore, interpretIss,
+  BURN_REGIONS, BURN_DEGREE_LABELS, calcTbsa, parklandFormula, bauxScore, interpretBaux, type BurnDegree,
   type ScaleResult,
 } from '@/lib/clinical-scales';
 import { getCdsSuggestions, type CdsContext } from '@/lib/clinical-cds';
@@ -1522,6 +1529,372 @@ function AuditCard() {
   );
 }
 
+// ── BMI Card ─────────────────────────────────────────────────────────────────
+
+function BmiCard() {
+  const ctx = useAppContext();
+  const [weight, setWeight] = useState<number>(() => _vn(ctx, 'weightKg') ?? 70);
+  const [height, setHeight] = useState<number>(() => _vn(ctx, 'heightCm') ?? 170);
+  const prePop = !!(_vn(ctx, 'weightKg') ?? null);
+  const result = interpretBmi(weight, height);
+  return (
+    <div>
+      {prePop && <PrePopBadge />}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <label style={{ fontSize: 13 }}>Weight (kg)
+          <input type="number" value={weight} min={1} max={300} step={0.1}
+            onChange={e => setWeight(parseFloat(e.target.value) || 0)}
+            style={{ display: 'block', width: '100%', marginTop: 4, padding: '6px 8px', border: '1px solid #d1d5db', borderRadius: 4 }} />
+        </label>
+        <label style={{ fontSize: 13 }}>Height (cm)
+          <input type="number" value={height} min={50} max={250} step={1}
+            onChange={e => setHeight(parseFloat(e.target.value) || 0)}
+            style={{ display: 'block', width: '100%', marginTop: 4, padding: '6px 8px', border: '1px solid #d1d5db', borderRadius: 4 }} />
+        </label>
+      </div>
+      <ScoreRow label="BMI" value={`${calcBmi(weight, height).toFixed(1)} kg/m²`} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── Morse Fall Scale Card ─────────────────────────────────────────────────────
+
+function MorseFallCard() {
+  const ctx = useAppContext();
+  const [v, setV] = useState<MorseFallInputs>(() => ({
+    historyOfFalling: _co(ctx, 'falls', 'fall'),
+    secondaryDiagnosis: (ctx.comorbidities?.length ?? 0) >= 2,
+    ambulatoryAid: 0,
+    ivLineOrHepLock: false,
+    gait: 0,
+    mentalStatus: 0,
+  }));
+  const prePop = !!((ctx.comorbidities?.length ?? 0) >= 2 || _co(ctx, 'falls', 'fall'));
+  const set = <K extends keyof MorseFallInputs>(k: K, val: MorseFallInputs[K]) => setV(p => ({ ...p, [k]: val }));
+  const score = morseFallScore(v);
+  const result = interpretMorseFall(score);
+  return (
+    <div>
+      {prePop && <PrePopBadge />}
+      <Chk label="History of falling (in last 3 months)" checked={v.historyOfFalling} onChange={() => set('historyOfFalling', !v.historyOfFalling)} pts={25} />
+      <Chk label="Secondary diagnosis (≥ 2 medical diagnoses)" checked={v.secondaryDiagnosis} onChange={() => set('secondaryDiagnosis', !v.secondaryDiagnosis)} pts={15} />
+      <Chk label="IV line / heparin lock" checked={v.ivLineOrHepLock} onChange={() => set('ivLineOrHepLock', !v.ivLineOrHepLock)} pts={20} />
+      <div style={{ marginBottom: 8 }}>
+        <div style={{ fontSize: 13, marginBottom: 4 }}>Ambulatory aid</div>
+        {([['none', 0], ['Crutches / cane / walker', 15], ['Holds furniture', 30]] as [string, 0|15|30][]).map(([label, val]) => (
+          <label key={val} style={{ display: 'flex', gap: 6, cursor: 'pointer', fontSize: 13, marginBottom: 4 }}>
+            <input type="radio" checked={v.ambulatoryAid === val} onChange={() => set('ambulatoryAid', val)} />
+            {label} {val > 0 && <span style={{ color: '#6b7280' }}>(+{val})</span>}
+          </label>
+        ))}
+      </div>
+      <div style={{ marginBottom: 8 }}>
+        <div style={{ fontSize: 13, marginBottom: 4 }}>Gait</div>
+        {([['Normal / bedrest / immobile', 0], ['Weak — stooped, shuffles, slowed', 10], ['Impaired — lurching, unsteady', 20]] as [string, 0|10|20][]).map(([label, val]) => (
+          <label key={val} style={{ display: 'flex', gap: 6, cursor: 'pointer', fontSize: 13, marginBottom: 4 }}>
+            <input type="radio" checked={v.gait === val} onChange={() => set('gait', val)} />
+            {label} {val > 0 && <span style={{ color: '#6b7280' }}>(+{val})</span>}
+          </label>
+        ))}
+      </div>
+      <div style={{ marginBottom: 8 }}>
+        <div style={{ fontSize: 13, marginBottom: 4 }}>Mental status</div>
+        {([['Oriented to own ability', 0], ['Overestimates own ability / forgets limitations', 15]] as [string, 0|15][]).map(([label, val]) => (
+          <label key={val} style={{ display: 'flex', gap: 6, cursor: 'pointer', fontSize: 13, marginBottom: 4 }}>
+            <input type="radio" checked={v.mentalStatus === val} onChange={() => set('mentalStatus', val)} />
+            {label} {val > 0 && <span style={{ color: '#6b7280' }}>(+{val})</span>}
+          </label>
+        ))}
+      </div>
+      <ScoreRow label="Morse Fall Score" value={`${score} / 125`} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── Greene Climacteric Scale Card ─────────────────────────────────────────────
+
+const GREENE_DEFAULT: GreeneInputs = {
+  heartRacing: 0, feelingTense: 0, difficultyConcentrating: 0,
+  depressiveMood: 0, tearful: 0, irritable: 0,
+  dizzy: 0, pressureInHead: 0, numbnessTingling: 0, headaches: 0,
+  musclePains: 0, lossOfFeeling: 0, breathingDifficulty: 0, bloatedness: 0,
+  hotFlushes: 0, nightSweats: 0,
+  lossOfInterestInSex: 0, vaginalDryness: 0, avoidanceOfIntimacy: 0, decreasedLibido: 0,
+  fatigue: 0,
+};
+
+const GREENE_SUBSCALE_LABELS: Record<string, string> = {
+  anxiety: 'Anxiety',
+  depression: 'Depression',
+  somatic: 'Somatic',
+  vasomotor: 'Vasomotor',
+  sexual: 'Sexual',
+};
+
+function GreeneClimatericCard() {
+  const [v, setV] = useState<GreeneInputs>(() => ({ ...GREENE_DEFAULT }));
+  const set = (k: keyof GreeneInputs, val: GreeneFreq) => setV(p => ({ ...p, [k]: val }));
+  const subscales = greeneScore(v);
+  const result = interpretGreene(v);
+  const currentSubscale = GREENE_ITEMS.reduce((acc, item) => {
+    if (!acc[item.subscale]) acc[item.subscale] = [];
+    acc[item.subscale].push(item);
+    return acc;
+  }, {} as Record<string, typeof GREENE_ITEMS>);
+
+  return (
+    <div>
+      <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 12 }}>
+        Score each symptom: 0 = Not at all · 1 = A little · 2 = Quite a bit · 3 = Extremely
+      </div>
+      {(Object.keys(GREENE_SUBSCALE_LABELS) as (keyof typeof GREENE_SUBSCALE_LABELS)[]).map(sub => (
+        <div key={sub} style={{ marginBottom: 12 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            {GREENE_SUBSCALE_LABELS[sub]}
+          </div>
+          {(currentSubscale[sub] ?? []).map(item => (
+            <div key={item.key} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, fontSize: 13 }}>
+              <span style={{ flex: 1 }}>{item.text}</span>
+              <select
+                value={v[item.key]}
+                onChange={e => set(item.key, parseInt(e.target.value) as GreeneFreq)}
+                style={{ padding: '3px 6px', border: '1px solid #d1d5db', borderRadius: 4, fontSize: 12 }}
+              >
+                {GREENE_FREQ_OPTS.map(o => <option key={o.value} value={o.value}>{o.value} — {o.label}</option>)}
+              </select>
+            </div>
+          ))}
+        </div>
+      ))}
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 8, fontSize: 12 }}>
+        {Object.entries(subscales).filter(([k]) => k !== 'total').map(([k, val]) => (
+          <span key={k} style={{ background: '#f3f4f6', padding: '3px 8px', borderRadius: 4 }}>
+            {GREENE_SUBSCALE_LABELS[k]}: <strong>{val}</strong>
+          </span>
+        ))}
+      </div>
+      <ScoreRow label="Total Score" value={`${subscales.total} / 63`} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── Karnofsky Performance Scale Card ─────────────────────────────────────────
+
+function KarnofskyCard() {
+  const [score, setScore] = useState(90);
+  const result = interpretKarnofsky(score);
+  return (
+    <div>
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ fontSize: 13, marginBottom: 6 }}>Karnofsky Performance Status</div>
+        {KARNOFSKY_LEVELS.filter(l => l.value > 0).map(l => (
+          <label key={l.value} style={{ display: 'flex', gap: 8, cursor: 'pointer', fontSize: 13, marginBottom: 6, alignItems: 'flex-start' }}>
+            <input type="radio" checked={score === l.value} onChange={() => setScore(l.value)} style={{ marginTop: 2, flexShrink: 0 }} />
+            <span>
+              <strong style={{ minWidth: 28, display: 'inline-block' }}>{l.value}</strong>
+              {' '}{l.label}
+              <span style={{ color: '#9ca3af', fontSize: 12 }}> — {l.category}</span>
+            </span>
+          </label>
+        ))}
+      </div>
+      <ScoreRow label="KPS" value={score} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── Barthel ADL Index Card ────────────────────────────────────────────────────
+
+type BarthelField = keyof BarthelInputs;
+
+const BARTHEL_FIELDS: { key: BarthelField; label: string; opts: { value: number; label: string }[] }[] = [
+  { key: 'feeding',        label: 'Feeding',            opts: [{value:0,label:'Dependent'},{value:5,label:'Needs help'},{value:10,label:'Independent'}] },
+  { key: 'bathing',        label: 'Bathing',            opts: [{value:0,label:'Dependent'},{value:5,label:'Independent'}] },
+  { key: 'grooming',       label: 'Grooming',           opts: [{value:0,label:'Needs help'},{value:5,label:'Independent'}] },
+  { key: 'dressing',       label: 'Dressing',           opts: [{value:0,label:'Dependent'},{value:5,label:'Needs help'},{value:10,label:'Independent'}] },
+  { key: 'bowels',         label: 'Bowel control',      opts: [{value:0,label:'Incontinent'},{value:5,label:'Occasional accident'},{value:10,label:'Continent'}] },
+  { key: 'bladder',        label: 'Bladder control',    opts: [{value:0,label:'Incontinent/catheter'},{value:5,label:'Occasional accident'},{value:10,label:'Continent'}] },
+  { key: 'toiletUse',      label: 'Toilet use',         opts: [{value:0,label:'Dependent'},{value:5,label:'Needs help'},{value:10,label:'Independent'}] },
+  { key: 'transfers',      label: 'Chair↔Bed transfers', opts: [{value:0,label:'Unable'},{value:5,label:'Major help'},{value:10,label:'Minor help'},{value:15,label:'Independent'}] },
+  { key: 'mobility',       label: 'Mobility (on level)', opts: [{value:0,label:'Immobile'},{value:5,label:'Wheelchair independent'},{value:10,label:'Walks with help'},{value:15,label:'Independent'}] },
+  { key: 'stairsClimbing', label: 'Stairs',             opts: [{value:0,label:'Unable'},{value:5,label:'Needs help'},{value:10,label:'Independent'}] },
+];
+
+function BarthelAdlCard() {
+  const [v, setV] = useState<BarthelInputs>({
+    feeding: 10, bathing: 5, grooming: 5, dressing: 10,
+    bowels: 10, bladder: 10, toiletUse: 10,
+    transfers: 15, mobility: 15, stairsClimbing: 10,
+  });
+  const set = <K extends BarthelField>(k: K, val: BarthelInputs[K]) => setV(p => ({ ...p, [k]: val }));
+  const score = barthelScore(v);
+  const result = interpretBarthel(score);
+  return (
+    <div>
+      {BARTHEL_FIELDS.map(f => (
+        <div key={f.key} style={{ marginBottom: 8 }}>
+          <div style={{ fontSize: 13, marginBottom: 4 }}>{f.label}</div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {f.opts.map(o => (
+              <label key={o.value} style={{ display: 'flex', gap: 4, cursor: 'pointer', fontSize: 12, alignItems: 'center' }}>
+                <input type="radio" checked={v[f.key] === o.value} onChange={() => set(f.key, o.value as BarthelInputs[typeof f.key])} />
+                {o.value} — {o.label}
+              </label>
+            ))}
+          </div>
+        </div>
+      ))}
+      <ScoreRow label="Barthel Index" value={`${score} / 100`} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── ISS / NISS (Trauma) Card ──────────────────────────────────────────────────
+
+function IssCard() {
+  const [ais, setAis] = useState<Record<string, number>>(() =>
+    Object.fromEntries(ISS_REGIONS.map(r => [r.key, 0]))
+  );
+  const setAisFn = (k: string, v: number) => setAis(p => ({ ...p, [k]: v }));
+  const iss  = issScore(ais);
+  const niss = nissScore(ais);
+  const issLabel  = interpretIss(iss);
+  const nissLabel = interpretIss(niss);
+  const color = issLabel.color;
+  return (
+    <div>
+      <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 10 }}>
+        Enter the highest AIS severity score for each body region (0 = no injury, 6 = unsurvivable).
+      </div>
+      {ISS_REGIONS.map(r => (
+        <div key={r.key} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+          <span style={{ width: 220, fontSize: 13 }}>{r.label}</span>
+          <select
+            value={ais[r.key] ?? 0}
+            onChange={e => setAisFn(r.key, parseInt(e.target.value))}
+            style={{ padding: '4px 6px', border: '1px solid #d1d5db', borderRadius: 4, fontSize: 12 }}
+          >
+            {Object.entries(AIS_LABELS).map(([val, label]) => (
+              <option key={val} value={val}>{label}</option>
+            ))}
+          </select>
+        </div>
+      ))}
+      <div style={{ display: 'flex', gap: 16, marginTop: 10 }}>
+        <div style={{ fontWeight: 600, fontSize: 14 }}>
+          ISS: <span style={{ color }}>{iss}</span>
+          <span style={{ color: '#6b7280', fontWeight: 400, marginLeft: 6, fontSize: 12 }}>— {issLabel.label}</span>
+        </div>
+        <div style={{ fontWeight: 600, fontSize: 14 }}>
+          NISS: <span style={{ color: nissLabel.color }}>{niss}</span>
+          <span style={{ color: '#6b7280', fontWeight: 400, marginLeft: 6, fontSize: 12 }}>— {nissLabel.label}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Burns Assessment Card ─────────────────────────────────────────────────────
+
+function BurnsCard() {
+  const ctx = useAppContext();
+  const [regions, setRegions] = useState<Record<string, { affected: boolean; degree: BurnDegree }>>(() =>
+    Object.fromEntries(BURN_REGIONS.map(r => [r.key, { affected: false, degree: 'SPT' as BurnDegree }]))
+  );
+  const [weightKg, setWeightKg]   = useState<number>(() => _vn(ctx, 'weightKg') ?? 70);
+  const [age, setAge]             = useState<number>(() => _ageN(ctx) ?? 30);
+  const [burnTime, setBurnTime]   = useState('');
+  const [inhalation, setInhalation] = useState(false);
+  const prePop = !!_vn(ctx, 'weightKg');
+
+  const toggleRegion = (key: string) =>
+    setRegions(p => ({ ...p, [key]: { ...p[key], affected: !p[key].affected } }));
+  const setDegree = (key: string, degree: BurnDegree) =>
+    setRegions(p => ({ ...p, [key]: { ...p[key], degree } }));
+
+  const tbsa   = calcTbsa(regions as Record<string, { affected: boolean; degree: string }>);
+  const baux   = bauxScore(age, tbsa, inhalation);
+  const bauxR  = interpretBaux(baux);
+  const parkland = tbsa > 0 && weightKg > 0
+    ? parklandFormula(weightKg, tbsa, burnTime, new Date().toISOString())
+    : null;
+
+  const groups = [...new Set(BURN_REGIONS.map(r => r.group))];
+
+  return (
+    <div>
+      {prePop && <PrePopBadge />}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 12 }}>
+        <label style={{ fontSize: 13 }}>Weight (kg)
+          <input type="number" value={weightKg} min={1} max={300} step={1}
+            onChange={e => setWeightKg(parseFloat(e.target.value) || 0)}
+            style={{ display: 'block', width: '100%', marginTop: 4, padding: '5px 6px', border: '1px solid #d1d5db', borderRadius: 4 }} />
+        </label>
+        <label style={{ fontSize: 13 }}>Age (years)
+          <input type="number" value={age} min={0} max={120} step={1}
+            onChange={e => setAge(parseInt(e.target.value) || 0)}
+            style={{ display: 'block', width: '100%', marginTop: 4, padding: '5px 6px', border: '1px solid #d1d5db', borderRadius: 4 }} />
+        </label>
+        <label style={{ fontSize: 13 }}>Burn time
+          <input type="datetime-local" value={burnTime}
+            onChange={e => setBurnTime(e.target.value)}
+            style={{ display: 'block', width: '100%', marginTop: 4, padding: '5px 6px', border: '1px solid #d1d5db', borderRadius: 4, fontSize: 11 }} />
+        </label>
+      </div>
+      <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 13, marginBottom: 10, cursor: 'pointer' }}>
+        <input type="checkbox" checked={inhalation} onChange={() => setInhalation(p => !p)} />
+        Inhalation injury (+17 to Baux score)
+      </label>
+      <div style={{ fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        Burn Regions — Rule of Nines
+      </div>
+      {groups.map(group => (
+        <div key={group} style={{ marginBottom: 10 }}>
+          <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>{group}</div>
+          {BURN_REGIONS.filter(r => r.group === group).map(r => (
+            <div key={r.key} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4, fontSize: 13 }}>
+              <input type="checkbox" checked={regions[r.key]?.affected ?? false} onChange={() => toggleRegion(r.key)} />
+              <span style={{ width: 200 }}>{r.label} ({r.percent}%)</span>
+              {regions[r.key]?.affected && (
+                <select
+                  value={regions[r.key]?.degree}
+                  onChange={e => setDegree(r.key, e.target.value as BurnDegree)}
+                  style={{ padding: '3px 5px', border: '1px solid #d1d5db', borderRadius: 4, fontSize: 11 }}
+                >
+                  {Object.entries(BURN_DEGREE_LABELS).map(([k, label]) => (
+                    <option key={k} value={k}>{label}</option>
+                  ))}
+                </select>
+              )}
+            </div>
+          ))}
+        </div>
+      ))}
+      <div style={{ display: 'flex', gap: 20, marginTop: 10, flexWrap: 'wrap' }}>
+        <div style={{ fontWeight: 600, fontSize: 14 }}>TBSA: <span style={{ color: tbsa >= 20 ? '#dc2626' : tbsa >= 10 ? '#ca8a04' : '#16a34a' }}>{tbsa.toFixed(1)}%</span></div>
+        <div style={{ fontWeight: 600, fontSize: 14 }}>Revised Baux: <span style={{ color: bauxR.color }}>{baux}</span>
+          <span style={{ color: '#6b7280', fontWeight: 400, fontSize: 12, marginLeft: 6 }}>— {bauxR.label}</span>
+        </div>
+      </div>
+      {parkland && (
+        <div style={{ marginTop: 12, background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, padding: '10px 14px', fontSize: 13 }}>
+          <div style={{ fontWeight: 700, marginBottom: 6 }}>Parkland Formula — Fluid Resuscitation</div>
+          {parkland.warning && <div style={{ color: '#92400e', background: '#fef3c7', padding: '4px 8px', borderRadius: 4, marginBottom: 8, fontSize: 12 }}>{parkland.warning}</div>}
+          <div>Total 24h: <strong>{parkland.total.toFixed(0)} mL</strong> Ringer's Lactate</div>
+          <div>First 8h: <strong>{parkland.first8h.toFixed(0)} mL</strong> = {parkland.rateNow > 0 ? <strong style={{ color: '#dc2626' }}>{parkland.rateNow.toFixed(0)} mL/hr now</strong> : 'window elapsed'}</div>
+          <div>Next 16h: <strong>{parkland.next16h.toFixed(0)} mL</strong> at {parkland.rateNext16h.toFixed(0)} mL/hr</div>
+          <div style={{ fontSize: 11, color: '#6b7280', marginTop: 4 }}>Titrate to urine output 0.5–1 mL/kg/hr. 1st-degree burns excluded from TBSA.</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Scale registry ────────────────────────────────────────────────────────────
 
 const SCALE_COMPONENTS: Record<string, React.FC> = {
@@ -1560,6 +1933,13 @@ const SCALE_COMPONENTS: Record<string, React.FC> = {
   clavienDindo:     ClavienDindoCard,
   gcs:              GcsCard,
   audit:            AuditCard,
+  bmi:              BmiCard,
+  morseFall:        MorseFallCard,
+  greeneClimateric: GreeneClimatericCard,
+  karnofsky:        KarnofskyCard,
+  barthelAdl:       BarthelAdlCard,
+  iss:              IssCard,
+  burns:            BurnsCard,
 };
 
 const ALL_SCALE_TITLES: Record<string, string> = {
@@ -1598,6 +1978,13 @@ const ALL_SCALE_TITLES: Record<string, string> = {
   clavienDindo:     'Clavien-Dindo Classification — Post-operative Complications',
   gcs:              'Glasgow Coma Scale (GCS)',
   audit:            'AUDIT — Alcohol Use Disorders Identification Test',
+  bmi:              'BMI Calculator — Weight Classification',
+  morseFall:        'Morse Fall Scale — Inpatient Fall Risk',
+  greeneClimateric: 'Greene Climacteric Scale — Menopausal Symptoms',
+  karnofsky:        'Karnofsky Performance Scale (KPS)',
+  barthelAdl:       'Barthel ADL Index — Activities of Daily Living',
+  iss:              'ISS / NISS — Injury Severity Score (Trauma)',
+  burns:            'Burns Assessment — TBSA, Parkland & Revised Baux',
 };
 
 const URGENCY_LABELS: Record<string, { tag: string; color: string; bg: string }> = {

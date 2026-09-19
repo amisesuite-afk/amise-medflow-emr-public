@@ -89,7 +89,8 @@ async function sendPortalInvite(patientId: string, normalEmail: string): Promise
   };
   if (authUserId) updates.auth_user_id = authUserId;
 
-  await sb().from('patients').update(updates).eq('id', patientId);
+  const { error: inviteUpdateErr } = await sb().from('patients').update(updates).eq('id', patientId);
+  if (inviteUpdateErr) logger.warn({ err: inviteUpdateErr, patientId }, '[portal/enablePortalAccess] patients update failed');
 
   await audit({
     action: 'portal_invite_sent',
@@ -315,7 +316,12 @@ router.post('/api/patient/sms-code/verify', async (req, res) => {
     // ever match. Without this the patient is permanently locked out of their
     // own row ("Unable to load your profile") despite a valid session.
     const authUserId = data.session.user.id;
-    await sb().from('patients').update({ auth_user_id: authUserId }).eq('id', patient.id);
+    const { error: authLinkErr } = await sb().from('patients').update({ auth_user_id: authUserId }).eq('id', patient.id);
+    if (authLinkErr) {
+      req.log.error({ err: authLinkErr, patientId: patient.id }, '[portal/sms-code/verify] auth_user_id back-link failed — patient will be locked out');
+    }
+
+    void logAudit(req, 'login', 'patient', patient.id, patient.id, { method: 'sms_otp' });
 
     res.json({
       access_token: data.session.access_token,
@@ -561,6 +567,7 @@ router.post('/api/patient/documents/register', async (req, res) => {
 
     if (error) throw error;
 
+    void logAudit(req, 'create', 'document', data.id, auth.patientId, { document_type: docType, source: 'patient_portal' });
     res.json({ status: 'registered', document_id: data.id });
 
     void extractDocumentInsights(data.id);
@@ -611,24 +618,27 @@ export async function extractDocumentInsights(documentId: string): Promise<void>
     if (doc.ai_extraction_status === 'processing' || doc.ai_extraction_status === 'done') return;
 
     if (!doc.storage_path || !doc.mime_type || !EXTRACTABLE_MIME.has(doc.mime_type)) {
-      await sb().from('documents').update({
+      const { error: skipErr } = await sb().from('documents').update({
         ai_extraction_status: 'skipped',
         ai_extraction_at: new Date().toISOString(),
       }).eq('id', documentId);
+      if (skipErr) logger.warn({ err: skipErr, documentId }, '[portal/documents] skipped status update failed');
       return;
     }
 
-    await sb().from('documents').update({ ai_extraction_status: 'processing' }).eq('id', documentId);
+    const { error: processingErr } = await sb().from('documents').update({ ai_extraction_status: 'processing' }).eq('id', documentId);
+    if (processingErr) logger.warn({ err: processingErr, documentId }, '[portal/documents] processing status update failed');
 
     const { data: file, error: dlErr } = await sb().storage.from('patient-documents').download(doc.storage_path);
     if (dlErr || !file) throw dlErr ?? new Error('download returned no file');
 
     const buf = Buffer.from(await file.arrayBuffer());
     if (buf.length > 20 * 1024 * 1024) {
-      await sb().from('documents').update({
+      const { error: bigSkipErr } = await sb().from('documents').update({
         ai_extraction_status: 'skipped',
         ai_extraction_at: new Date().toISOString(),
       }).eq('id', documentId);
+      if (bigSkipErr) logger.warn({ err: bigSkipErr, documentId }, '[portal/documents] oversized-doc skipped status update failed');
       return;
     }
     const base64 = buf.toString('base64');
@@ -945,6 +955,7 @@ router.patch('/api/patient/consultation-requests/:id', async (req, res) => {
       }
     }
 
+    void logAudit(req, 'update', 'consultation_request', id, patientId ?? undefined, { status, staff_notes: staff_notes !== undefined, patient_linked: !!patientId, invited });
     res.json({ success: true, patient_id: patientId, invited });
   } catch (err) {
     req.log.error({ err }, '[portal/consultation-requests/:id] error');

@@ -35,28 +35,99 @@ but out of scope here — noted so a future pass doesn't repeat the same underco
   mapping for the same route (`'letter'` for `generate-letter`, `'clinical_note'` for the other
   four) for consistency between view-audits and mutation-audits of the same resource.
 
-## Confirmed complete gap — zero audit calls of any kind (19 files)
+## Fixed in follow-up pass (2026-08-29)
 
-Administrative/scheduling routes, not patient-record clinical data — lower priority per the
-backlog's own prioritization, left for a follow-up pass:
+- **`theatre.ts`** — session create, case add, case delete, and publish all now emit `logAudit` calls.
+- **`workflow-tasks.ts`** — task create, resolve, and dismiss now emit `logAudit` with `task_resolve`/`task_dismiss` actions.
+- **`scheduling.ts`** — follow-up calendar event booking now emits a `logAudit` call.
+- **`ai-consult.ts`** — AI consultation requests now emit an `ai_call` audit event with `consultationType` and `patientId`.
 
-`admin.ts`, `ai-consult.ts`, `call-recording.ts`, `calls.ts`, `clinical-states.ts`,
-`email-intake.ts`, `endoscopy-capture.ts`, `narrative.ts`, `patient-auth.ts`,
-`patient-messages.ts`, `previsit.ts`, `scheduling.ts`, `suggest-codes.ts`, `summary.ts`,
-`theatre.ts`, `triage-preview.ts`, `voice.ts`, `workflow-tasks.ts`, `document-scan.ts`
+## Fixed in second follow-up pass (2026-08-29)
 
-Two worth flagging specifically for whoever picks this up: `patient-auth.ts` mutates login/logout
-state (the `action` taxonomy in `lib/audit.ts` already documents `login`/`logout`/`access_denied`
-for exactly this), and `theatre.ts` mutates operating list data — both closer to the
-patient-record tier than the rest of this list.
+- **`whatsapp.ts`** — wrapped `sendMetaWhatsApp` and `sendTelnyxWhatsApp` in try/catch; P1 crash risk (unguarded `fetch()` called via `void` → unhandled rejection on any network error).
+- **`portal.ts`** — three mutating routes with zero audit coverage added:
+  - `POST /api/patient/sms-code/verify` — patient portal login now emits a `logAudit` call with `action: 'login'`, capturing IP and user-agent.
+  - `POST /api/patient/documents/register` — patient document upload now emits `logAudit` with `action: 'create'` and `source: 'patient_portal'`.
+  - `PATCH /api/patient/consultation-requests/:id` — status update (which may also create a patient record) now emits `logAudit` with `action: 'update'`.
+- **`investigations.ts`** — `POST /api/investigations/scan-referral` (AI call on referral PHI with no audit) now emits `logAudit` with `action: 'ai_call'`.
+- **`calls.ts`** — `PATCH /api/calls/:id/resolve` patient linkage now emits `logAudit`.
+- **`clinical-states.ts`** — PATCH and DELETE now emit `logAudit`.
 
-## Partial coverage — has some audit calls, but fewer than mutating routes (needs a route-by-route check, not a file-level count)
+## Fixed in third follow-up pass (2026-09-10)
 
-`notify.ts` (1 mutating route, 1 audit call — likely fine, not verified route-by-route),
-`portal.ts` (12 mutating, 5 audit), `cron.ts` (5 mutating, 7 audit — likely fine, over-provisioned),
-`investigations.ts` (11 mutating, 8 audit), `visit-lifecycle.ts` (8 mutating, 7 audit — likely
-fine, off by one). `portal.ts` and `investigations.ts` are the two with a real numeric gap worth
-checking which specific routes are missing coverage.
+Seven of the thirteen zero-coverage files from the previous pass are now covered:
+
+- **`narrative.ts`** — `POST /api/narrative/parse` (sends clinical narrative PHI to Claude across
+  6 sections) now emits `logAudit` with `action: 'ai_call'`, `resourceType: 'clinical_note'` and
+  the section name in details.
+- **`voice.ts`** — `POST /api/voice/segment` (sends voice transcript PHI to Claude, stores in
+  `call_logs` and `ai_proposals`) now emits `logAudit` with `action: 'ai_call'`,
+  `resourceType: 'voice_transcript'`, `patientId`, and char count in details.
+- **`document-scan.ts`** — `POST /api/document-scan` (sends document PHI to Claude fallback when
+  native parser confidence < 0.75) now emits `logAudit` with `action: 'ai_call'`,
+  `resourceType: 'document'`, and `{ mimeType, usedClaude }` so it's clear when the AI was
+  actually invoked vs. when the native parser alone handled extraction.
+- **`suggest-codes.ts`** — `POST /api/suggest-codes` (sends clinical assessment PHI to Claude for
+  ICD-10/CPT code suggestions) now emits `logAudit` with `action: 'ai_call'`,
+  `resourceType: 'invoice'`.
+- **`summary.ts`** — three AI routes now covered:
+  - `POST /api/summary/generate` — SOAP summary generation from structured intake data.
+  - `POST /api/ai/refine` — clinical encounter record refinement by Claude.
+  - `POST /api/soap/polish` — structured SOAP data polishing into prose.
+  All three emit `logAudit` with `action: 'ai_call'`, `resourceType: 'clinical_note'`, and
+  `action` name in details.
+- **`previsit.ts`** — two mutating routes now covered:
+  - `POST /api/previsit/create` — staff creates a pre-visit submission row; emits `logAudit` with
+    `action: 'create'`, `resourceType: 'appointment'`, `patientId`.
+  - `POST /api/previsit/ai-format` — sends patient-submitted PHI to Claude for clinical
+    formatting; emits `logAudit` with `action: 'ai_call'`, `resourceType: 'clinical_note'`,
+    `patientId`.
+- **`admin.ts`** — three mutating routes now covered:
+  - `POST /api/admin/patient-accounts/:id/link` — patient account linkage; emits `update` on
+    `patient`.
+  - `DELETE /api/admin/patient-accounts/:id` — unlinked portal account deletion; emits `delete`
+    on `patient`.
+  - `POST /api/admin/patients/quick-create` — minimal patient record creation; emits `create` on
+    `patient` with the new patient's ID as both `resourceId` and `patientId`.
+- **`call-recording.ts`** — `POST /api/calls/recording-upload` (RECORDING_UPLOAD_KEY auth,
+  not staff JWT — userId will be null in the audit record but IP and device metadata are still
+  captured) now emits `logAudit` with `action: 'create'`, `resourceType: 'appointment'`,
+  `patientId` where resolvable, and `{ direction, deviceLabel, practiceLine }` in details.
+
+## Fixed in fourth follow-up pass (2026-09-12)
+
+- **`email-intake.ts`** — four mutating routes now covered:
+  - `POST /api/investigations/manual-upload-document` — staff uploads a physical lab/imaging
+    document; emits `logAudit` with `action: 'create'`, `resourceType: 'document'`, and
+    `{ source: 'manual_upload', mimeType, providerName, documentType }` in details.
+  - `POST /api/admin/referring-providers` — referring provider creation; emits `logAudit` with
+    `action: 'create'`, `resourceType: 'referring_provider'`, and `{ name, provider_type }`.
+  - `PATCH /api/admin/referring-providers/:id` — provider update; emits `logAudit` with
+    `action: 'update'` and `{ fields: [...keys changed] }`.
+  - `DELETE /api/admin/referring-providers/:id` — provider deletion; emits `logAudit` with
+    `action: 'delete'`. Cron routes (`/api/cron/email-documents`, `/api/cron/email-documents/backfill`)
+    are service-to-service calls with no user JWT — skipped per the existing pattern for cron routes.
+
+## Confirmed complete gap — zero audit calls of any kind (4 files)
+
+Left intentionally for future passes with notes on priority/rationale:
+
+`endoscopy-capture.ts` — uses in-memory store with `CRON_SECRET` auth; no PHI persisted to DB,
+so no immediate audit need.
+
+`triage-preview.ts` — no auth, pure computation, no PHI stored; skip.
+
+`patient-messages.ts` — patient-facing SMS/message routes; worth a dedicated review pass
+to confirm which mutations touch PHI.
+
+Note: `patient-auth.ts` mentioned in the prior pass no longer exists as a separate file —
+the patient portal auth routes live in `portal.ts`, which now has login audit coverage.
+
+## Partial coverage — resolved or within acceptable range
+
+`portal.ts` and `investigations.ts` gaps addressed in the second follow-up pass above.
+`notify.ts` (1 mutating route, 1 audit call — likely fine), `cron.ts` (5 mutating, 7 audit —
+over-provisioned, fine), `visit-lifecycle.ts` (8 mutating, 7 audit — off by one, acceptable).
 
 ## Not touched — patient self-service routes in `patient.ts`
 

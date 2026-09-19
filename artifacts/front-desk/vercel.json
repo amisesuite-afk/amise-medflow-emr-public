@@ -1,8 +1,8 @@
 {
   "framework": "nextjs",
   "ignoreCommand": "cd ../.. && git diff --quiet HEAD^ HEAD -- artifacts/front-desk lib/triage-engine pnpm-lock.yaml pnpm-workspace.yaml package.json",
-  "installCommand": "npm install -g pnpm@10 && cd ../.. && pnpm install --frozen-lockfile",
-  "buildCommand": "cd ../.. && pnpm --filter @workspace/front-desk run build",
+  "installCommand": "npm install -g pnpm@10 && cd ../.. && pnpm install",
+  "buildCommand": "cd ../.. && pnpm --filter {./artifacts/front-desk} run build",
   "headers": [
     {
       "source": "/(.*)",
