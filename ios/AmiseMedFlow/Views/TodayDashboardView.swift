@@ -9,6 +9,7 @@ struct TodayDashboardView: View {
 
     @State private var selectedPatient: Patient?
     @State private var showAdd = false
+    @State private var showCalendarImport = false
     @State private var searchQuery = ""
     @State private var isRefreshing = false
 
@@ -73,6 +74,16 @@ struct TodayDashboardView: View {
         !todayCalEvents.isEmpty
     }
 
+    // Calendar events today that don't yet have a matching patient record
+    private var unimportedCalEventCount: Int {
+        let existingNames = Set(allTodayPatients.map { $0.fullName.lowercased().trimmingCharacters(in: .whitespaces) })
+        return todayCalEvents.filter { event in
+            guard let title = event.title, !title.isEmpty else { return false }
+            let parsed = CalendarEventParser.parse(title: title, calLabel: event.calEntryLabel)
+            return !parsed.name.isEmpty && !existingNames.contains(parsed.name.lowercased().trimmingCharacters(in: .whitespaces))
+        }.count
+    }
+
     // All today's patients in one flat list for search
     private var allTodayPatients: [Patient] {
         (readyForDoctorPatients + highAcuityWard + wardPatients +
@@ -131,6 +142,10 @@ struct TodayDashboardView: View {
                                 }
                             }
                         } else {
+                            // ── Calendar import nudge ───────────────────
+                            if unimportedCalEventCount > 0 {
+                                calendarImportBanner
+                            }
                             // ── Normal sections ─────────────────────────
                             if !readyForDoctorPatients.isEmpty { waitingSection }
                             if !highAcuityWard.isEmpty { alertSection }
@@ -162,11 +177,53 @@ struct TodayDashboardView: View {
                         .foregroundStyle(.secondary)
                 }
                 ToolbarItem(placement: .primaryAction) {
-                    Button { showAdd = true } label: { Image(systemName: "plus") }
+                    HStack(spacing: 4) {
+                        Button {
+                            showCalendarImport = true
+                        } label: {
+                            Image(systemName: "calendar.badge.plus")
+                        }
+                        Button { showAdd = true } label: { Image(systemName: "plus") }
+                    }
                 }
             }
             .sheet(item: $selectedPatient) { PatientDetailView(patient: $0) }
             .sheet(isPresented: $showAdd) { AddPatientView() }
+            .sheet(isPresented: $showCalendarImport) {
+                CalendarImportSheet(events: calSvc.events)
+            }
+        }
+    }
+
+    // MARK: - Calendar import banner
+
+    private var calendarImportBanner: some View {
+        Section {
+            Button {
+                showCalendarImport = true
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "calendar.badge.plus")
+                        .font(.system(size: 20))
+                        .foregroundStyle(AMColor.accent)
+                        .frame(width: 32)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("\(unimportedCalEventCount) patient\(unimportedCalEventCount == 1 ? "" : "s") in Google Calendar not yet added")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(.primary)
+                        Text("Tap to review and add today's appointments")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.tertiary)
+                }
+                .padding(.vertical, 6)
+            }
+            .buttonStyle(.plain)
+            .listRowBackground(AMColor.accentLt.opacity(0.2))
         }
     }
 
@@ -522,16 +579,30 @@ struct TodayDashboardView: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
-            Button {
-                showAdd = true
-            } label: {
-                Label("Add Patient", systemImage: "plus")
-                    .font(.subheadline.weight(.semibold))
-                    .padding(.horizontal, 20).padding(.vertical, 10)
-                    .background(AMColor.accent, in: Capsule())
-                    .foregroundStyle(.white)
+            HStack(spacing: 12) {
+                if unimportedCalEventCount > 0 {
+                    Button {
+                        showCalendarImport = true
+                    } label: {
+                        Label("Add from Calendar (\(unimportedCalEventCount))", systemImage: "calendar.badge.plus")
+                            .font(.subheadline.weight(.semibold))
+                            .padding(.horizontal, 20).padding(.vertical, 10)
+                            .background(AMColor.accent, in: Capsule())
+                            .foregroundStyle(.white)
+                    }
+                    .buttonStyle(.plain)
+                }
+                Button {
+                    showAdd = true
+                } label: {
+                    Label("Add Patient", systemImage: "plus")
+                        .font(.subheadline.weight(.semibold))
+                        .padding(.horizontal, 20).padding(.vertical, 10)
+                        .background(Color(.secondarySystemBackground), in: Capsule())
+                        .foregroundStyle(.primary)
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
             .padding(.top, 8)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
