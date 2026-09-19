@@ -186,6 +186,11 @@ struct PatientInstructionsView: View {
         }
         .onAppear {
             data = patient.patientInstructionsData
+            // Cross-populate procedure name for records opened before surgery note was filled
+            if data.procedurePerformed.isEmpty, !patient.surgeryData.procedureName.isEmpty {
+                data.procedurePerformed = patient.surgeryData.procedureName
+                save()
+            }
         }
     }
 

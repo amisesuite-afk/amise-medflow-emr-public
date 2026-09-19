@@ -73,7 +73,9 @@ extension Patient {
             guard let json = postOpReviewDataJson,
                   let raw = json.data(using: .utf8) else {
                 var d = PostOpReviewData()
-                d.procedure = surgeryData.procedureName
+                let sx = surgeryData
+                d.procedure    = sx.procedureName
+                d.drainPresent = sx.drainInserted
                 if let op = operationDate {
                     d.procedureDate = op
                     d.postOpDay = max(1, Calendar.current.dateComponents([.day], from: op, to: .now).day ?? 1)
@@ -148,6 +150,13 @@ struct PostOpReviewView: View {
             data = patient.postOpReviewData
             hasReviewDate = data.reviewDate != nil
             hasExpectedDischarge = data.expectedDischargeDate != nil
+
+            // Cross-populate drain state from surgery note when not yet set
+            // (handles re-opening after surgery note was updated)
+            if !data.drainPresent && patient.surgeryData.drainInserted {
+                data.drainPresent = true
+                save()
+            }
         }
     }
 
