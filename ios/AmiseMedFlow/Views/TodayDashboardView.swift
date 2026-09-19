@@ -9,6 +9,8 @@ struct TodayDashboardView: View {
 
     @State private var selectedPatient: Patient?
     @State private var showAdd = false
+    @State private var searchQuery = ""
+    @State private var isRefreshing = false
 
     private let cal = Calendar.current
 
@@ -71,22 +73,82 @@ struct TodayDashboardView: View {
         !todayCalEvents.isEmpty
     }
 
+    // All today's patients in one flat list for search
+    private var allTodayPatients: [Patient] {
+        (readyForDoctorPatients + highAcuityWard + wardPatients +
+         theatreToday + endoscopyToday + clinicToday)
+            .reduce(into: [Patient]()) { acc, p in
+                if !acc.contains(where: { $0.id == p.id }) { acc.append(p) }
+            }
+    }
+
+    private var searchActive: Bool { !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty }
+
+    private var searchResults: [Patient] {
+        let q = searchQuery.trimmingCharacters(in: .whitespaces).lowercased()
+        return allTodayPatients.filter {
+            $0.fullName.lowercased().contains(q) ||
+            ($0.mrn?.lowercased().contains(q) ?? false) ||
+            ($0.workingDiagnosis?.lowercased().contains(q) ?? false) ||
+            ($0.chiefComplaint?.lowercased().contains(q) ?? false)
+        }
+    }
+
+    // Total count for the day summary strip
+    private var totalCount: Int { allTodayPatients.count }
+
     // MARK: - Body
 
     var body: some View {
         NavigationStack {
             Group {
-                if isAnythingOn {
+                if isAnythingOn || searchActive {
                     List {
-                        if !readyForDoctorPatients.isEmpty { waitingSection }
-                        if !highAcuityWard.isEmpty { alertSection }
-                        if !wardPatients.isEmpty   { wardSection }
-                        if !theatreToday.isEmpty   { theatreSection }
-                        if !endoscopyToday.isEmpty { endoscopySection }
-                        if !clinicToday.isEmpty    { clinicSection }
-                        if !todayCalEvents.isEmpty { calendarSection }
+                        // ── Day summary strip ───────────────────────────
+                        if !searchActive {
+                            Section {
+                                daySummaryStrip
+                            }
+                            .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                            .listRowBackground(Color.clear)
+                        }
+
+                        // ── Search results (when active) ────────────────
+                        if searchActive {
+                            if searchResults.isEmpty {
+                                Section {
+                                    ContentUnavailableView.search(text: searchQuery)
+                                }
+                                .listRowBackground(Color.clear)
+                            } else {
+                                Section("Results for "\(searchQuery.trimmingCharacters(in: .whitespaces))"") {
+                                    ForEach(searchResults) { patient in
+                                        Button { selectedPatient = patient } label: {
+                                            TodayPatientRow(patient: patient, style: rowStyle(for: patient))
+                                        }
+                                        .buttonStyle(.plain)
+                                    }
+                                }
+                            }
+                        } else {
+                            // ── Normal sections ─────────────────────────
+                            if !readyForDoctorPatients.isEmpty { waitingSection }
+                            if !highAcuityWard.isEmpty { alertSection }
+                            if !wardPatients.isEmpty   { wardSection }
+                            if !theatreToday.isEmpty   { theatreSection }
+                            if !endoscopyToday.isEmpty { endoscopySection }
+                            if !clinicToday.isEmpty    { clinicSection }
+                            if !todayCalEvents.isEmpty { calendarSection }
+                        }
                     }
                     .listStyle(.insetGrouped)
+                    .searchable(text: $searchQuery, placement: .navigationBarDrawer(displayMode: .automatic),
+                                prompt: "Search today's patients…")
+                    .refreshable {
+                        isRefreshing = true
+                        await calSvc.sync()
+                        isRefreshing = false
+                    }
                 } else {
                     emptyState
                 }
@@ -100,23 +162,74 @@ struct TodayDashboardView: View {
                         .foregroundStyle(.secondary)
                 }
                 ToolbarItem(placement: .primaryAction) {
-                    HStack(spacing: 16) {
-                        Button {
-                            Task { await calSvc.sync() }
-                        } label: {
-                            if calSvc.isSyncing {
-                                ProgressView().scaleEffect(0.7)
-                            } else {
-                                Image(systemName: "arrow.clockwise")
-                            }
-                        }
-                        .help("Refresh calendar")
-                        Button { showAdd = true } label: { Image(systemName: "plus") }
-                    }
+                    Button { showAdd = true } label: { Image(systemName: "plus") }
                 }
             }
             .sheet(item: $selectedPatient) { PatientDetailView(patient: $0) }
             .sheet(isPresented: $showAdd) { AddPatientView() }
+        }
+    }
+
+    // MARK: - Day summary strip
+
+    private var daySummaryStrip: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                if totalCount > 0 {
+                    summaryTile(count: totalCount, label: "Total", icon: "person.2.fill", color: AMColor.accent)
+                }
+                if !readyForDoctorPatients.isEmpty {
+                    summaryTile(count: readyForDoctorPatients.count, label: "Waiting", icon: "person.fill.checkmark", color: .orange)
+                }
+                if !highAcuityWard.isEmpty {
+                    summaryTile(count: highAcuityWard.count, label: "Alerts", icon: "exclamationmark.triangle.fill", color: .red)
+                }
+                if !wardPatients.isEmpty {
+                    summaryTile(count: wardPatients.count, label: "Ward", icon: "bed.double.fill", color: .teal)
+                }
+                if !theatreToday.isEmpty {
+                    summaryTile(count: theatreToday.count, label: "Theatre", icon: "scalpel", color: .purple)
+                }
+                if !endoscopyToday.isEmpty {
+                    summaryTile(count: endoscopyToday.count, label: "Scope", icon: "eye.circle.fill", color: .cyan)
+                }
+                if !clinicToday.isEmpty {
+                    summaryTile(count: clinicToday.count, label: "Clinic", icon: "stethoscope", color: .indigo)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+        }
+    }
+
+    private func summaryTile(count: Int, label: String, icon: String, color: Color) -> some View {
+        VStack(spacing: 4) {
+            HStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: 11, weight: .semibold))
+                Text("\(count)")
+                    .font(.system(size: 20, weight: .bold).monospacedDigit())
+            }
+            .foregroundStyle(color)
+            Text(label)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(.secondary)
+        }
+        .frame(minWidth: 64)
+        .padding(.vertical, 10)
+        .padding(.horizontal, 12)
+        .background(color.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+        .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(color.opacity(0.18), lineWidth: 1))
+    }
+
+    // MARK: - Row style helper for search results
+
+    private func rowStyle(for patient: Patient) -> TodayRowStyle {
+        switch patient.setting {
+        case .theatre:   return .theatre
+        case .endoscopy: return .endoscopy
+        case .outpatient: return .clinic
+        default:         return .ward
         }
     }
 
