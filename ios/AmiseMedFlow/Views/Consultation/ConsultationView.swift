@@ -3291,6 +3291,7 @@ struct ConsultationView: View {
             if let radiation = radiationResult, !dismissedRadiation {
                 DiagnosisRadiationCard(
                     radiation: radiation,
+                    patientAge: computedAge(from: patient.dateOfBirth),
                     onAddInvestigation: { inv in
                         let entry = InvestigationEntry(
                             name: inv.name, category: inv.category,
@@ -3357,7 +3358,7 @@ struct ConsultationView: View {
                 Button {
                     consultationPDFWrapper = exportConsultationPDF()
                 } label: {
-                    Label("Save as SOAP Note", systemImage: "square.and.arrow.down")
+                    Label("Export as PDF", systemImage: "square.and.arrow.up")
                 }
                 .foregroundStyle(.blue)
             }
@@ -3704,22 +3705,13 @@ struct ConsultationView: View {
         }
 
         // Also archive a record in Notes
+        let note = ClinicalNote(noteType: .soap, patient: patient)
         let parts: [String] = [
             patient.chiefComplaint.map { "CC: \($0)" },
             patient.hpi.map { "HPI:\n\($0)" },
-            patient.pmhNotes.map { "PMH: \($0)" },
-            patient.surgicalHistory.map { "Past Surgical Hx: \($0)" },
-            allergySummary(),
-            medicationSummary(),
-            examSummary(),
-            patient.workingDiagnosis.map { dx -> String in
-                let icdSuffix = patient.workingDiagnosisICD.map { " (\($0))" } ?? ""
-                return "Diagnosis: \(dx)\(icdSuffix)"
-            },
+            patient.workingDiagnosis.map { "Diagnosis: \($0)" },
             patient.managementPlan.map { "Plan:\n\($0)" },
         ].compactMap { $0 }
-
-        let note = ClinicalNote(noteType: .soap, patient: patient)
         note.freeText = parts.joined(separator: "\n\n")
         context.insert(note); touch()
         return PDFDataWrapper(data: data)
