@@ -15,6 +15,7 @@ struct TodayDashboardView: View {
     @State private var calEventActionTarget: EKEvent? = nil
     @State private var calEventActionPatient: Patient? = nil
     @State private var showCalEncounterSheet = false
+    @State private var showPreConsultSheet = false
 
     private let cal = Calendar.current
 
@@ -204,6 +205,10 @@ struct TodayDashboardView: View {
                 titleVisibility: .visible
             ) {
                 if calEventActionPatient != nil {
+                    Button("Enter Pre-Consult Questionnaire") {
+                        showPreConsultSheet = true
+                        calEventActionTarget = nil
+                    }
                     Button("Start Encounter") {
                         showCalEncounterSheet = true
                         calEventActionTarget = nil
@@ -213,7 +218,14 @@ struct TodayDashboardView: View {
                         calEventActionTarget = nil
                     }
                 } else {
-                    Button("Import Patient") {
+                    Button("Enter Pre-Consult Questionnaire") {
+                        if let event = calEventActionTarget {
+                            calEventActionPatient = createAndInsertPatient(from: event)
+                        }
+                        showPreConsultSheet = true
+                        calEventActionTarget = nil
+                    }
+                    Button("Import Patient Only") {
                         showCalendarImport = true
                         calEventActionTarget = nil
                     }
@@ -223,6 +235,11 @@ struct TodayDashboardView: View {
             .sheet(isPresented: $showCalEncounterSheet, onDismiss: { calEventActionPatient = nil }) {
                 if let patient = calEventActionPatient {
                     ConsultationView(patient: patient)
+                }
+            }
+            .sheet(isPresented: $showPreConsultSheet, onDismiss: { calEventActionPatient = nil }) {
+                if let patient = calEventActionPatient {
+                    PreConsultEntrySheet(patient: patient)
                 }
             }
         }
@@ -659,6 +676,20 @@ struct TodayDashboardView: View {
     private func isToday(_ date: Date?) -> Bool {
         guard let date else { return false }
         return cal.isDateInToday(date)
+    }
+
+    // Creates a minimal Patient record from a calendar event so the pre-consult
+    // questionnaire can be opened immediately without going through the import sheet.
+    @discardableResult
+    private func createAndInsertPatient(from event: EKEvent) -> Patient {
+        let parsed = CalendarEventParser.parse(title: event.title ?? "", calLabel: event.calEntryLabel)
+        let p = Patient(fullName: parsed.name, setting: parsed.setting)
+        p.operationDate = event.startDate
+        p.appointmentType = parsed.appointmentType
+        p.acuity = .routine
+        context.insert(p)
+        try? context.save()
+        return p
     }
 }
 
