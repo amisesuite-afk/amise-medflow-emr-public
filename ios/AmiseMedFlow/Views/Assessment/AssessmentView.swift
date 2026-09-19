@@ -11,6 +11,7 @@ struct AssessmentView: View {
     @State private var triageResult: TriageResult?
     @State private var isAssessing = false
     @State private var isDrafting = false
+    @State private var showDiagnosisCatalogue = false
 
     var body: some View {
         List {
@@ -21,6 +22,9 @@ struct AssessmentView: View {
         }
         .navigationTitle("Assessment")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showDiagnosisCatalogue) {
+            DiagnosisCatalogueSheet(patient: patient)
+        }
     }
 
     // MARK: - Diagnosis search
@@ -68,6 +72,15 @@ struct AssessmentView: View {
                         Divider()
                     }
                 }
+            }
+
+            // Browse the full Bayesian diagnostic catalogue
+            Button {
+                showDiagnosisCatalogue = true
+            } label: {
+                Label("Browse Diagnostic Catalogue", systemImage: "list.bullet.rectangle.portrait")
+                    .font(.subheadline)
+                    .foregroundStyle(AMColor.accent)
             }
 
             if let dx = patient.workingDiagnosis {

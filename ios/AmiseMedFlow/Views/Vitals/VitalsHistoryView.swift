@@ -256,10 +256,12 @@ struct VitalsMultiSparkline: View {
                 .textCase(.uppercase)
                 .kerning(0.3)
 
-            let hrValues   = displayEntries.compactMap { $0.heartRate.map      { Double($0) } }
-            let bpValues   = displayEntries.compactMap { $0.bpSystolic.map     { Double($0) } }
-            let spo2Values = displayEntries.compactMap { $0.spo2.map           { Double($0) } }
-            let tempValues = displayEntries.compactMap { $0.temperatureCelsius }
+            let hrValues      = displayEntries.compactMap { $0.heartRate.map      { Double($0) } }
+            let bpValues      = displayEntries.compactMap { $0.bpSystolic.map     { Double($0) } }
+            let spo2Values    = displayEntries.compactMap { $0.spo2.map           { Double($0) } }
+            let tempValues    = displayEntries.compactMap { $0.temperatureCelsius }
+            let glucoseValues = displayEntries.compactMap { $0.glucoseMmol }
+            let weightValues  = displayEntries.compactMap { $0.weightKg }
 
             if hrValues.count >= 2 {
                 VitalTrendLine(label: "HR", unit: "bpm", values: hrValues,
@@ -275,7 +277,18 @@ struct VitalsMultiSparkline: View {
             }
             if tempValues.count >= 2 {
                 VitalTrendLine(label: "Temp", unit: "°C", values: tempValues,
-                               color: .teal, alertAbove: 38.5, alertBelow: 36.0)
+                               color: .teal, alertAbove: 38.5, alertBelow: 36.0,
+                               formatDecimal: true)
+            }
+            if glucoseValues.count >= 2 {
+                VitalTrendLine(label: "BGL", unit: "mmol/L", values: glucoseValues,
+                               color: .purple, alertAbove: 11.0, alertBelow: 3.9,
+                               formatDecimal: true)
+            }
+            if weightValues.count >= 2 {
+                VitalTrendLine(label: "Wt", unit: "kg", values: weightValues,
+                               color: .gray, alertAbove: nil, alertBelow: nil,
+                               formatDecimal: true)
             }
         }
         .padding(.horizontal, 2)
@@ -290,6 +303,7 @@ struct VitalTrendLine: View {
     let color: Color
     let alertAbove: Double?
     let alertBelow: Double?
+    var formatDecimal: Bool = false
 
     private var isAlert: Bool {
         guard let last = values.last else { return false }
@@ -300,6 +314,11 @@ struct VitalTrendLine: View {
 
     private var lineColor: Color { isAlert ? .red : color }
 
+    private func formatted(_ v: Double) -> String {
+        if formatDecimal { return String(format: "%.1f", v) }
+        return "\(Int(v))"
+    }
+
     var body: some View {
         HStack(spacing: 8) {
             VStack(alignment: .trailing, spacing: 1) {
@@ -308,7 +327,7 @@ struct VitalTrendLine: View {
                     .foregroundStyle(.secondary)
                     .textCase(.uppercase)
                 if let last = values.last {
-                    Text(label == "Temp" ? String(format: "%.1f", last) : "\(Int(last))")
+                    Text(formatted(last))
                         .font(.system(size: 11, weight: .bold, design: .rounded))
                         .foregroundStyle(isAlert ? .red : .primary)
                 }

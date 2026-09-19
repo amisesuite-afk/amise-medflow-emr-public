@@ -12660,6 +12660,2006 @@
           ]
         }
       ]
+    },
+    "headache": {
+      "candidates": [
+        {
+          "name": "Tension-Type Headache",
+          "icd": "G44.20",
+          "logPrior": 55,
+          "features": [
+            {
+              "key": "character",
+              "value": "Pressure",
+              "logLR": 14,
+              "evidenceLabel": "Bilateral pressing / tightening quality",
+              "citation": "ICHD-3 criteria. Bilateral pressing quality LR+ 8.6 for TTH vs migraine. Lipton RB et al. Headache 2013"
+            },
+            {
+              "key": "character",
+              "value": "Bilateral",
+              "logLR": 12,
+              "evidenceLabel": "Bilateral distribution",
+              "citation": "ICHD-3 2018. Bilateral location is required criterion for TTH"
+            },
+            {
+              "key": "character",
+              "value": "Band-like",
+              "logLR": 12,
+              "evidenceLabel": "Band-like or vice-like quality"
+            },
+            {
+              "key": "associations",
+              "value": "Stress",
+              "logLR": 10,
+              "evidenceLabel": "Stress-related onset",
+              "citation": "Lyngberg AC et al. Cephalalgia 2005. Stress is commonest precipitant in TTH"
+            },
+            {
+              "key": "associations",
+              "value": "Nausea",
+              "logLR": -8,
+              "evidenceLabel": "Absent nausea (argues against migraine)",
+              "citation": "ICHD-3. Absence of nausea supports TTH over migraine"
+            },
+            {
+              "key": "exacerbating",
+              "value": "Physical activity",
+              "logLR": -6,
+              "evidenceLabel": "Not aggravated by routine activity",
+              "citation": "ICHD-3. Non-aggravation by activity is TTH criterion"
+            },
+            {
+              "key": "timing",
+              "value": "Intermittent",
+              "logLR": 8,
+              "evidenceLabel": "Episodic pattern"
+            },
+            {
+              "key": "relieving",
+              "value": "Paracetamol",
+              "logLR": 6,
+              "evidenceLabel": "Response to simple analgesia"
+            },
+            {
+              "key": "associations",
+              "value": "Photophobia",
+              "logLR": -4,
+              "evidenceLabel": "Mild or absent photophobia (if marked, favours migraine)"
+            }
+          ]
+        },
+        {
+          "name": "Migraine Without Aura",
+          "icd": "G43.909",
+          "logPrior": 30,
+          "features": [
+            {
+              "key": "character",
+              "value": "Unilateral",
+              "logLR": 12,
+              "evidenceLabel": "Unilateral (>60% of migraine attacks)",
+              "citation": "Lipton RB. Headache 2013. Unilateral LR+ 4.0 for migraine"
+            },
+            {
+              "key": "character",
+              "value": "Pulsating",
+              "logLR": 14,
+              "evidenceLabel": "Pulsating / throbbing quality",
+              "citation": "ICHD-3 2018. Pulsating quality — required migraine criterion. LR+ 8.2"
+            },
+            {
+              "key": "associations",
+              "value": "Nausea",
+              "logLR": 14,
+              "evidenceLabel": "Nausea / vomiting",
+              "citation": "ICHD-3. Nausea required criterion. LR+ 5.2 for migraine"
+            },
+            {
+              "key": "associations",
+              "value": "Photophobia",
+              "logLR": 14,
+              "evidenceLabel": "Photophobia",
+              "citation": "ICHD-3. Photophobia required criterion for migraine"
+            },
+            {
+              "key": "associations",
+              "value": "Phonophobia",
+              "logLR": 12,
+              "evidenceLabel": "Phonophobia",
+              "citation": "ICHD-3 required criterion"
+            },
+            {
+              "key": "exacerbating",
+              "value": "Physical activity",
+              "logLR": 12,
+              "evidenceLabel": "Aggravated by routine physical activity",
+              "citation": "ICHD-3 required criterion. LR+ 3.7"
+            },
+            {
+              "key": "timing",
+              "value": "4–72 hours",
+              "logLR": 10,
+              "evidenceLabel": "Duration 4–72 hours untreated"
+            },
+            {
+              "key": "relieving",
+              "value": "Triptan",
+              "logLR": 14,
+              "evidenceLabel": "Response to triptan therapy"
+            },
+            {
+              "key": "pmh",
+              "value": "migraine",
+              "logLR": 16,
+              "evidenceLabel": "Personal history of migraine"
+            },
+            {
+              "key": "sex_female",
+              "value": "",
+              "logLR": 8,
+              "evidenceLabel": "Female sex (3:1 ratio)",
+              "citation": "Lipton RB. Neurology 2007. Female:male 3:1 for migraine"
+            },
+            {
+              "key": "exacerbating",
+              "value": "Menstrual",
+              "logLR": 10,
+              "evidenceLabel": "Perimenstrual timing"
+            },
+            {
+              "key": "associations",
+              "value": "Aura",
+              "logLR": 16,
+              "evidenceLabel": "Visual / sensory aura preceding headache"
+            }
+          ]
+        },
+        {
+          "name": "Cluster Headache",
+          "icd": "G44.009",
+          "logPrior": 5,
+          "features": [
+            {
+              "key": "character",
+              "value": "Unilateral",
+              "logLR": 14,
+              "evidenceLabel": "Strictly unilateral — orbital / supraorbital",
+              "citation": "ICHD-3 2018. Strictly unilateral is required criterion for cluster headache"
+            },
+            {
+              "key": "character",
+              "value": "Excruciating",
+              "logLR": 14,
+              "evidenceLabel": "Severe / excruciating intensity ('worst pain imaginable')",
+              "citation": "ICHD-3. Severe / very severe required criterion"
+            },
+            {
+              "key": "timing",
+              "value": "15–180 minutes",
+              "logLR": 12,
+              "evidenceLabel": "Duration 15–180 minutes",
+              "citation": "ICHD-3 duration criterion"
+            },
+            {
+              "key": "associations",
+              "value": "Lacrimation",
+              "logLR": 16,
+              "evidenceLabel": "Ipsilateral lacrimation / rhinorrhoea — pathognomonic",
+              "citation": "ICHD-3. Autonomic features LR+ >10 for cluster"
+            },
+            {
+              "key": "associations",
+              "value": "Ptosis",
+              "logLR": 16,
+              "evidenceLabel": "Ipsilateral ptosis / miosis (partial Horner's)"
+            },
+            {
+              "key": "associations",
+              "value": "Agitation",
+              "logLR": 14,
+              "evidenceLabel": "Restlessness / agitation (cannot lie still — opposite to migraine)"
+            },
+            {
+              "key": "timing",
+              "value": "Nocturnal",
+              "logLR": 12,
+              "evidenceLabel": "Nocturnal onset (frequently wakes patient)"
+            },
+            {
+              "key": "sex_male",
+              "value": "",
+              "logLR": 8,
+              "evidenceLabel": "Male predominance (5:1)",
+              "citation": "Headache Classification Committee ICHD-3. Male predominance 4–8:1"
+            },
+            {
+              "key": "social",
+              "value": "smok",
+              "logLR": 8,
+              "evidenceLabel": "Heavy smoking history"
+            }
+          ]
+        },
+        {
+          "name": "Subarachnoid Haemorrhage",
+          "icd": "I60.9",
+          "logPrior": 3,
+          "features": [
+            {
+              "key": "onset",
+              "value": "Thunderclap",
+              "logLR": 20,
+              "evidenceLabel": "Thunderclap onset — 'worst headache of life' — RED FLAG",
+              "citation": "Perry JJ et al. BMJ 2011. Thunderclap headache sensitivity 98.5% for SAH. 'Worst ever' headache LR+ 11.0"
+            },
+            {
+              "key": "onset",
+              "value": "Sudden",
+              "logLR": 16,
+              "evidenceLabel": "Sudden onset at maximal severity within seconds"
+            },
+            {
+              "key": "associations",
+              "value": "Neck stiffness",
+              "logLR": 14,
+              "evidenceLabel": "Neck stiffness / meningism",
+              "citation": "Edlow JA et al. Ann Emerg Med 2000. Neck stiffness LR+ 6.6 for SAH"
+            },
+            {
+              "key": "associations",
+              "value": "Vomiting",
+              "logLR": 12,
+              "evidenceLabel": "Vomiting at onset"
+            },
+            {
+              "key": "associations",
+              "value": "Loss of consciousness",
+              "logLR": 14,
+              "evidenceLabel": "Transient loss of consciousness"
+            },
+            {
+              "key": "exam",
+              "value": "photophobia",
+              "logLR": 12,
+              "evidenceLabel": "Photophobia"
+            },
+            {
+              "key": "inv",
+              "value": "ct",
+              "logLR": 18,
+              "evidenceLabel": "CT head — subarachnoid blood",
+              "citation": "Perry JJ. Lancet 2011. CT sensitivity 98% within 6h of onset"
+            },
+            {
+              "key": "inv",
+              "value": "lp",
+              "logLR": 18,
+              "evidenceLabel": "LP — xanthochromia / blood-stained CSF"
+            }
+          ]
+        },
+        {
+          "name": "Bacterial Meningitis",
+          "icd": "G00.9",
+          "logPrior": 4,
+          "features": [
+            {
+              "key": "associations",
+              "value": "Fever",
+              "logLR": 14,
+              "evidenceLabel": "Fever — triad component",
+              "citation": "van de Beek D. NEJM 2004. Classical triad present in 44%; any two of three in 95%"
+            },
+            {
+              "key": "associations",
+              "value": "Neck stiffness",
+              "logLR": 16,
+              "evidenceLabel": "Neck stiffness — triad component",
+              "citation": "van de Beek D. NEJM 2004. Neck stiffness LR+ 9.6 (6.1–15.4)"
+            },
+            {
+              "key": "associations",
+              "value": "Photophobia",
+              "logLR": 12,
+              "evidenceLabel": "Photophobia"
+            },
+            {
+              "key": "associations",
+              "value": "Rash",
+              "logLR": 18,
+              "evidenceLabel": "Petechial / purpuric rash — RED FLAG (meningococcaemia)",
+              "citation": "Thompson MJ et al. Lancet 2006. Non-blanching rash LR+ 19.1"
+            },
+            {
+              "key": "onset",
+              "value": "Acute",
+              "logLR": 12,
+              "evidenceLabel": "Acute onset over hours"
+            },
+            {
+              "key": "associations",
+              "value": "Altered consciousness",
+              "logLR": 14,
+              "evidenceLabel": "Reduced GCS / altered consciousness"
+            },
+            {
+              "key": "exam",
+              "value": "kernig",
+              "logLR": 16,
+              "evidenceLabel": "Kernig's / Brudzinski's sign positive"
+            },
+            {
+              "key": "inv",
+              "value": "lp",
+              "logLR": 20,
+              "evidenceLabel": "LP — turbid CSF, raised WCC, low glucose"
+            },
+            {
+              "key": "inv",
+              "value": "wcc",
+              "logLR": 12,
+              "evidenceLabel": "Raised WCC / neutrophilia"
+            }
+          ]
+        },
+        {
+          "name": "Temporal Arteritis (Giant Cell Arteritis)",
+          "icd": "M31.6",
+          "logPrior": 6,
+          "features": [
+            {
+              "key": "age_over",
+              "value": "50",
+              "logLR": 12,
+              "evidenceLabel": "Age >50 — almost exclusively in >50yo",
+              "citation": "Salvarani C et al. Ann Intern Med 2002. Age >50 required; mean 72y"
+            },
+            {
+              "key": "character",
+              "value": "Temporal",
+              "logLR": 14,
+              "evidenceLabel": "Temporal / scalp tenderness",
+              "citation": "Smetana GW. JAMA 2002. Jaw claudication LR+ 4.2; temporal tenderness LR+ 2.6"
+            },
+            {
+              "key": "associations",
+              "value": "Jaw claudication",
+              "logLR": 18,
+              "evidenceLabel": "Jaw claudication — pathognomonic",
+              "citation": "Smetana GW. JAMA 2002. Jaw claudication LR+ 4.2 (2.8–6.2) for positive biopsy"
+            },
+            {
+              "key": "associations",
+              "value": "Visual loss",
+              "logLR": 18,
+              "evidenceLabel": "Visual loss / amaurosis fugax — RED FLAG"
+            },
+            {
+              "key": "associations",
+              "value": "Scalp tenderness",
+              "logLR": 14,
+              "evidenceLabel": "Scalp tenderness (e.g. combing hair)"
+            },
+            {
+              "key": "exam",
+              "value": "tender temporal artery",
+              "logLR": 16,
+              "evidenceLabel": "Tender / nodular temporal artery on palpation"
+            },
+            {
+              "key": "inv",
+              "value": "esr",
+              "logLR": 16,
+              "evidenceLabel": "ESR >50 mm/h",
+              "citation": "Smetana GW. JAMA 2002. ESR >100 LR+ 3.2 (1.7–5.9)"
+            },
+            {
+              "key": "inv",
+              "value": "crp",
+              "logLR": 14,
+              "evidenceLabel": "CRP elevated"
+            },
+            {
+              "key": "inv",
+              "value": "biopsy",
+              "logLR": 20,
+              "evidenceLabel": "Temporal artery biopsy — granulomatous inflammation"
+            }
+          ]
+        }
+      ]
+    },
+    "dizzinessVertigo": {
+      "candidates": [
+        {
+          "name": "Benign Paroxysmal Positional Vertigo (BPPV)",
+          "icd": "H81.10",
+          "logPrior": 40,
+          "features": [
+            {
+              "key": "character",
+              "value": "Positional",
+              "logLR": 16,
+              "evidenceLabel": "Triggered by head position change — pathognomonic",
+              "citation": "Bhattacharyya N et al. Otolaryngol HNS 2017. Positional LR+ 6.3 (4.4–9.0)"
+            },
+            {
+              "key": "timing",
+              "value": "Brief",
+              "logLR": 14,
+              "evidenceLabel": "Duration <1 minute per episode",
+              "citation": "Bhattacharyya N. 2017. Brief episodes <1 min are BPPV hallmark"
+            },
+            {
+              "key": "exacerbating",
+              "value": "Rolling over",
+              "logLR": 12,
+              "evidenceLabel": "Worsened by rolling over in bed"
+            },
+            {
+              "key": "exacerbating",
+              "value": "Looking up",
+              "logLR": 12,
+              "evidenceLabel": "Provoked by looking up / reaching overhead"
+            },
+            {
+              "key": "exam",
+              "value": "dix-hallpike",
+              "logLR": 18,
+              "evidenceLabel": "Dix-Hallpike manoeuvre positive — diagnostic",
+              "citation": "Furman JM. NEJM 1999. Dix-Hallpike sensitivity 79–88%, specificity 75–100%"
+            },
+            {
+              "key": "associations",
+              "value": "Nausea",
+              "logLR": 6,
+              "evidenceLabel": "Nausea during episodes"
+            },
+            {
+              "key": "associations",
+              "value": "Tinnitus",
+              "logLR": -6,
+              "evidenceLabel": "Absent tinnitus (argues against Ménière's)"
+            }
+          ]
+        },
+        {
+          "name": "Vestibular Neuronitis / Labyrinthitis",
+          "icd": "H81.20",
+          "logPrior": 18,
+          "features": [
+            {
+              "key": "onset",
+              "value": "Acute",
+              "logLR": 14,
+              "evidenceLabel": "Acute onset of prolonged vertigo (days)",
+              "citation": "Swartz R. Am Fam Physician 2010. Single prolonged episode distinguishes vestibular neuronitis from BPPV"
+            },
+            {
+              "key": "timing",
+              "value": "Continuous",
+              "logLR": 12,
+              "evidenceLabel": "Continuous vertigo (not positional episodes)"
+            },
+            {
+              "key": "pmh",
+              "value": "viral",
+              "logLR": 12,
+              "evidenceLabel": "Recent viral upper respiratory infection"
+            },
+            {
+              "key": "exam",
+              "value": "horizontal nystagmus",
+              "logLR": 16,
+              "evidenceLabel": "Horizontal nystagmus beating away from affected side"
+            },
+            {
+              "key": "exam",
+              "value": "head impulse positive",
+              "logLR": 16,
+              "evidenceLabel": "Head impulse test positive (peripheral lesion)",
+              "citation": "Kattah JC. Stroke 2009. Positive HIT strongly predicts peripheral cause"
+            },
+            {
+              "key": "associations",
+              "value": "Tinnitus",
+              "logLR": 8,
+              "evidenceLabel": "Tinnitus / hearing loss (labyrinthitis)"
+            },
+            {
+              "key": "associations",
+              "value": "Neurological",
+              "logLR": -12,
+              "evidenceLabel": "Absent focal neurology (presence suggests central cause)"
+            }
+          ]
+        },
+        {
+          "name": "Ménière's Disease",
+          "icd": "H81.09",
+          "logPrior": 8,
+          "features": [
+            {
+              "key": "timing",
+              "value": "Episodic",
+              "logLR": 14,
+              "evidenceLabel": "Episodic attacks lasting 20 min–12 hours — diagnostic criterion",
+              "citation": "Lopez-Escamez JA et al. J Vestib Res 2015. Definite Ménière's requires episodic vertigo 20 min–12h"
+            },
+            {
+              "key": "associations",
+              "value": "Tinnitus",
+              "logLR": 16,
+              "evidenceLabel": "Ipsilateral tinnitus — triad component",
+              "citation": "AAO-HNS 1995 criteria. Tinnitus is required criterion"
+            },
+            {
+              "key": "associations",
+              "value": "Hearing loss",
+              "logLR": 16,
+              "evidenceLabel": "Fluctuating unilateral sensorineural hearing loss — triad component"
+            },
+            {
+              "key": "associations",
+              "value": "Aural fullness",
+              "logLR": 14,
+              "evidenceLabel": "Aural fullness / pressure"
+            },
+            {
+              "key": "inv",
+              "value": "audiogram",
+              "logLR": 14,
+              "evidenceLabel": "Audiometry — low-frequency SNHL"
+            }
+          ]
+        },
+        {
+          "name": "Orthostatic Hypotension / Vasovagal Syncope",
+          "icd": "G90.3",
+          "logPrior": 25,
+          "features": [
+            {
+              "key": "exacerbating",
+              "value": "Standing up",
+              "logLR": 16,
+              "evidenceLabel": "Symptoms on standing — postural trigger",
+              "citation": "Freeman R. Clin Auton Res 2008. Orthostatic hypotension definition: SBP drop ≥20 mmHg within 3 min of standing"
+            },
+            {
+              "key": "character",
+              "value": "Lightheadedness",
+              "logLR": 12,
+              "evidenceLabel": "Presyncope / lightheadedness rather than rotatory vertigo"
+            },
+            {
+              "key": "associations",
+              "value": "Diaphoresis",
+              "logLR": 12,
+              "evidenceLabel": "Diaphoresis / pallor (vasovagal prodrome)"
+            },
+            {
+              "key": "associations",
+              "value": "Nausea",
+              "logLR": 10,
+              "evidenceLabel": "Nausea preceding episode"
+            },
+            {
+              "key": "exacerbating",
+              "value": "Prolonged standing",
+              "logLR": 14,
+              "evidenceLabel": "Prolonged standing / hot environment"
+            },
+            {
+              "key": "exacerbating",
+              "value": "Dehydration",
+              "logLR": 12,
+              "evidenceLabel": "Dehydration / volume depletion"
+            },
+            {
+              "key": "inv",
+              "value": "bp lying standing",
+              "logLR": 18,
+              "evidenceLabel": "BP lying/standing — ≥20 mmHg SBP drop confirms diagnosis"
+            },
+            {
+              "key": "pmh",
+              "value": "antihypertensive",
+              "logLR": 12,
+              "evidenceLabel": "Antihypertensive / diuretic medication"
+            },
+            {
+              "key": "med",
+              "value": "amlodipine",
+              "logLR": 10,
+              "evidenceLabel": "Calcium channel blocker — orthostatic hypotension risk"
+            },
+            {
+              "key": "med",
+              "value": "furosemide",
+              "logLR": 10,
+              "evidenceLabel": "Loop diuretic — volume depletion"
+            }
+          ]
+        },
+        {
+          "name": "Central Vertigo (Posterior Fossa Pathology)",
+          "icd": "H81.39",
+          "logPrior": 5,
+          "features": [
+            {
+              "key": "associations",
+              "value": "Diplopia",
+              "logLR": 18,
+              "evidenceLabel": "Diplopia — RED FLAG for posterior fossa",
+              "citation": "Kattah JC. Stroke 2009. HINTS exam. Any of: direction-changing nystagmus, normal HIT, skew deviation → central cause"
+            },
+            {
+              "key": "associations",
+              "value": "Dysarthria",
+              "logLR": 18,
+              "evidenceLabel": "Dysarthria — cerebellar / brainstem"
+            },
+            {
+              "key": "associations",
+              "value": "Dysphagia",
+              "logLR": 16,
+              "evidenceLabel": "Dysphagia — posterior fossa"
+            },
+            {
+              "key": "associations",
+              "value": "Limb ataxia",
+              "logLR": 16,
+              "evidenceLabel": "Limb ataxia / incoordination"
+            },
+            {
+              "key": "exam",
+              "value": "direction-changing nystagmus",
+              "logLR": 18,
+              "evidenceLabel": "Direction-changing or vertical nystagmus — pathognomonic for central",
+              "citation": "Kattah JC. Stroke 2009. Direction-changing nystagmus PPV 99% for central cause"
+            },
+            {
+              "key": "exam",
+              "value": "head impulse negative",
+              "logLR": 14,
+              "evidenceLabel": "Negative head impulse test with vertigo — central sign"
+            },
+            {
+              "key": "inv",
+              "value": "mri",
+              "logLR": 18,
+              "evidenceLabel": "MRI brain — posterior fossa lesion"
+            },
+            {
+              "key": "pmh",
+              "value": "stroke",
+              "logLR": 12,
+              "evidenceLabel": "Prior stroke / vascular risk factors"
+            },
+            {
+              "key": "age_over",
+              "value": "50",
+              "logLR": 8,
+              "evidenceLabel": "Older patient with vascular risk factors"
+            }
+          ]
+        }
+      ]
+    },
+    "backPain": {
+      "candidates": [
+        {
+          "name": "Non-Specific Mechanical Low Back Pain",
+          "icd": "M54.5",
+          "logPrior": 60,
+          "features": [
+            {
+              "key": "site",
+              "value": "Lumbar",
+              "logLR": 10,
+              "evidenceLabel": "Lumbar / lumbosacral location"
+            },
+            {
+              "key": "exacerbating",
+              "value": "Movement",
+              "logLR": 12,
+              "evidenceLabel": "Worse with movement / better with rest",
+              "citation": "Deyo RA. NEJM 2001. Mechanical pattern (worse movement, better rest) favours non-specific cause"
+            },
+            {
+              "key": "relieving",
+              "value": "Rest",
+              "logLR": 10,
+              "evidenceLabel": "Relieved by rest"
+            },
+            {
+              "key": "onset",
+              "value": "After lifting",
+              "logLR": 12,
+              "evidenceLabel": "Onset after lifting / awkward movement"
+            },
+            {
+              "key": "associations",
+              "value": "Muscle spasm",
+              "logLR": 10,
+              "evidenceLabel": "Paraspinal muscle spasm on examination"
+            },
+            {
+              "key": "exam",
+              "value": "normal neurology",
+              "logLR": 8,
+              "evidenceLabel": "Normal neurological examination"
+            },
+            {
+              "key": "associations",
+              "value": "Fever",
+              "logLR": -10,
+              "evidenceLabel": "Absent fever (presence → red flag)"
+            },
+            {
+              "key": "associations",
+              "value": "Weight loss",
+              "logLR": -10,
+              "evidenceLabel": "Absent weight loss (presence → red flag)"
+            },
+            {
+              "key": "age_under",
+              "value": "65",
+              "logLR": 6,
+              "evidenceLabel": "Younger / middle-aged patient"
+            },
+            {
+              "key": "relieving",
+              "value": "NSAIDs",
+              "logLR": 8,
+              "evidenceLabel": "Response to NSAIDs / analgesia"
+            }
+          ]
+        },
+        {
+          "name": "Lumbar Disc Herniation / Sciatica",
+          "icd": "M51.16",
+          "logPrior": 25,
+          "features": [
+            {
+              "key": "radiation",
+              "value": "Leg",
+              "logLR": 16,
+              "evidenceLabel": "Radiation to leg (dermatomal) — pathognomonic",
+              "citation": "Vroomen PC. Spine 1999. Leg pain below knee LR+ 5.3 (3.0–9.4) for disc herniation"
+            },
+            {
+              "key": "radiation",
+              "value": "Below knee",
+              "logLR": 16,
+              "evidenceLabel": "Radiation below knee",
+              "citation": "Deyo RA. NEJM 2001. Below-knee radiation LR+ 4.9 for radiculopathy"
+            },
+            {
+              "key": "character",
+              "value": "Electric shock",
+              "logLR": 12,
+              "evidenceLabel": "Electric / shooting pain down the leg"
+            },
+            {
+              "key": "exam",
+              "value": "slr positive",
+              "logLR": 16,
+              "evidenceLabel": "Straight leg raise positive (Lasègue's sign)",
+              "citation": "Deville WL. Spine 2000. Positive SLR sensitivity 72–97%, specificity 11–66% for disc herniation"
+            },
+            {
+              "key": "exacerbating",
+              "value": "Coughing",
+              "logLR": 12,
+              "evidenceLabel": "Worsened by coughing / sneezing / Valsalva"
+            },
+            {
+              "key": "associations",
+              "value": "Paraesthesia",
+              "logLR": 12,
+              "evidenceLabel": "Dermatomal paraesthesia / numbness"
+            },
+            {
+              "key": "exam",
+              "value": "reduced reflexes",
+              "logLR": 14,
+              "evidenceLabel": "Reduced / absent ankle or knee reflex"
+            },
+            {
+              "key": "inv",
+              "value": "mri",
+              "logLR": 18,
+              "evidenceLabel": "MRI lumbar spine — disc herniation with nerve root compression"
+            }
+          ]
+        },
+        {
+          "name": "Cauda Equina Syndrome",
+          "icd": "G83.4",
+          "logPrior": 2,
+          "features": [
+            {
+              "key": "associations",
+              "value": "Bilateral leg weakness",
+              "logLR": 18,
+              "evidenceLabel": "Bilateral leg weakness — RED FLAG",
+              "citation": "Lavy C. Lancet 2009. Bilateral leg symptoms in CES. Any bilateral neurological sign demands urgent MRI"
+            },
+            {
+              "key": "associations",
+              "value": "Urinary retention",
+              "logLR": 20,
+              "evidenceLabel": "Urinary retention / incontinence — pathognomonic RED FLAG",
+              "citation": "Gitelman A. J Neurosurg Spine 2008. Urinary retention LR+ 6.7 for CES requiring emergency surgery"
+            },
+            {
+              "key": "associations",
+              "value": "Faecal incontinence",
+              "logLR": 18,
+              "evidenceLabel": "Faecal incontinence / altered bowel sensation — RED FLAG"
+            },
+            {
+              "key": "exam",
+              "value": "saddle anaesthesia",
+              "logLR": 20,
+              "evidenceLabel": "Perineal / saddle anaesthesia — pathognomonic",
+              "citation": "NICE CG59. Saddle anaesthesia = emergency — same-day MRI required"
+            },
+            {
+              "key": "onset",
+              "value": "Rapid",
+              "logLR": 14,
+              "evidenceLabel": "Rapid neurological deterioration"
+            },
+            {
+              "key": "inv",
+              "value": "mri",
+              "logLR": 20,
+              "evidenceLabel": "Emergency MRI lumbar spine — cauda equina compression"
+            }
+          ]
+        },
+        {
+          "name": "Vertebral Fracture (Osteoporotic / Traumatic)",
+          "icd": "M80.08",
+          "logPrior": 8,
+          "features": [
+            {
+              "key": "age_over",
+              "value": "65",
+              "logLR": 12,
+              "evidenceLabel": "Age >65 / osteoporosis risk",
+              "citation": "Chou R. Ann Intern Med 2007. Age >65 is independent red flag"
+            },
+            {
+              "key": "pmh",
+              "value": "osteoporosis",
+              "logLR": 14,
+              "evidenceLabel": "Known osteoporosis / steroid use"
+            },
+            {
+              "key": "onset",
+              "value": "After trauma",
+              "logLR": 14,
+              "evidenceLabel": "Onset after trauma / fall / minor injury"
+            },
+            {
+              "key": "character",
+              "value": "Point tenderness",
+              "logLR": 14,
+              "evidenceLabel": "Vertebral point tenderness on percussion"
+            },
+            {
+              "key": "inv",
+              "value": "xray",
+              "logLR": 16,
+              "evidenceLabel": "X-ray / CT — vertebral body compression"
+            },
+            {
+              "key": "sex_female",
+              "value": "",
+              "logLR": 8,
+              "evidenceLabel": "Female sex (postmenopausal osteoporosis)"
+            },
+            {
+              "key": "pmh",
+              "value": "steroid",
+              "logLR": 12,
+              "evidenceLabel": "Chronic steroid use — bone loss"
+            }
+          ]
+        },
+        {
+          "name": "Malignant Spinal Cord Compression",
+          "icd": "G99.2",
+          "logPrior": 3,
+          "features": [
+            {
+              "key": "pmh",
+              "value": "cancer",
+              "logLR": 20,
+              "evidenceLabel": "Known malignancy — RED FLAG",
+              "citation": "Nater A. Spine J 2017. Prior cancer history LR+ 8.1 for metastatic cause"
+            },
+            {
+              "key": "timing",
+              "value": "Progressive",
+              "logLR": 14,
+              "evidenceLabel": "Progressive pain worse at rest / at night"
+            },
+            {
+              "key": "timing",
+              "value": "Nocturnal",
+              "logLR": 14,
+              "evidenceLabel": "Nocturnal pain — malignant pattern"
+            },
+            {
+              "key": "associations",
+              "value": "Weight loss",
+              "logLR": 14,
+              "evidenceLabel": "Weight loss / constitutional symptoms"
+            },
+            {
+              "key": "associations",
+              "value": "Leg weakness",
+              "logLR": 16,
+              "evidenceLabel": "Progressive leg weakness / myelopathy"
+            },
+            {
+              "key": "inv",
+              "value": "mri",
+              "logLR": 20,
+              "evidenceLabel": "Urgent MRI — spinal metastasis / cord compression"
+            }
+          ]
+        },
+        {
+          "name": "Ankylosing Spondylitis",
+          "icd": "M45.9",
+          "logPrior": 6,
+          "features": [
+            {
+              "key": "onset",
+              "value": "Insidious",
+              "logLR": 12,
+              "evidenceLabel": "Insidious onset before age 45",
+              "citation": "van der Linden S. Arthritis Rheum 1984. Insidious onset <45y is ASAS criterion"
+            },
+            {
+              "key": "age_under",
+              "value": "45",
+              "logLR": 12,
+              "evidenceLabel": "Onset before age 45"
+            },
+            {
+              "key": "timing",
+              "value": "Morning stiffness",
+              "logLR": 14,
+              "evidenceLabel": "Morning stiffness >30 min",
+              "citation": "Sieper J. Ann Rheum Dis 2009. Morning stiffness is ASAS clinical criterion"
+            },
+            {
+              "key": "relieving",
+              "value": "Exercise",
+              "logLR": 14,
+              "evidenceLabel": "Improves with exercise, not with rest (inflammatory pattern)"
+            },
+            {
+              "key": "sex_male",
+              "value": "",
+              "logLR": 8,
+              "evidenceLabel": "Male predominance (3:1)"
+            },
+            {
+              "key": "inv",
+              "value": "hla-b27",
+              "logLR": 18,
+              "evidenceLabel": "HLA-B27 positive",
+              "citation": "Sieper J. Ann Rheum Dis 2009. HLA-B27 sensitivity 80–95% in AS"
+            },
+            {
+              "key": "inv",
+              "value": "mri sacroiliac",
+              "logLR": 18,
+              "evidenceLabel": "MRI — sacroiliitis (active inflammation)"
+            },
+            {
+              "key": "pmh",
+              "value": "uveitis",
+              "logLR": 14,
+              "evidenceLabel": "Anterior uveitis / iritis"
+            }
+          ]
+        }
+      ]
+    },
+    "fatigue": {
+      "candidates": [
+        {
+          "name": "Iron Deficiency Anaemia",
+          "icd": "D50.9",
+          "logPrior": 30,
+          "features": [
+            {
+              "key": "associations",
+              "value": "Pallor",
+              "logLR": 12,
+              "evidenceLabel": "Pallor (conjunctival / palmar)",
+              "citation": "Nardone DA. JAMA 1990. Conjunctival pallor LR+ 5.0 (2.4–10.5) for Hb <8"
+            },
+            {
+              "key": "associations",
+              "value": "Dyspnoea",
+              "logLR": 10,
+              "evidenceLabel": "Exertional dyspnoea"
+            },
+            {
+              "key": "sex_female",
+              "value": "",
+              "logLR": 8,
+              "evidenceLabel": "Female sex — menstrual blood loss",
+              "citation": "Powers JM. Hematol Oncol Clin 2014. IDA 5× more common in women of reproductive age"
+            },
+            {
+              "key": "pmh",
+              "value": "menorrhagia",
+              "logLR": 12,
+              "evidenceLabel": "Menorrhagia / heavy periods"
+            },
+            {
+              "key": "inv",
+              "value": "hb",
+              "logLR": 16,
+              "evidenceLabel": "Low haemoglobin"
+            },
+            {
+              "key": "inv",
+              "value": "mch",
+              "logLR": 16,
+              "evidenceLabel": "Microcytic / hypochromic red cells (low MCV, low MCH)"
+            },
+            {
+              "key": "inv",
+              "value": "ferritin",
+              "logLR": 20,
+              "evidenceLabel": "Low serum ferritin — most sensitive test",
+              "citation": "Guyatt GH. Lancet 1992. Ferritin <30 LR+ 28 (8–86) for iron deficiency"
+            },
+            {
+              "key": "associations",
+              "value": "Pica",
+              "logLR": 14,
+              "evidenceLabel": "Pica (craving ice/earth) — pathognomonic"
+            },
+            {
+              "key": "pmh",
+              "value": "coeliac",
+              "logLR": 12,
+              "evidenceLabel": "Coeliac disease / malabsorption"
+            }
+          ]
+        },
+        {
+          "name": "Hypothyroidism",
+          "icd": "E03.9",
+          "logPrior": 20,
+          "features": [
+            {
+              "key": "associations",
+              "value": "Weight gain",
+              "logLR": 10,
+              "evidenceLabel": "Weight gain"
+            },
+            {
+              "key": "associations",
+              "value": "Cold intolerance",
+              "logLR": 12,
+              "evidenceLabel": "Cold intolerance"
+            },
+            {
+              "key": "associations",
+              "value": "Constipation",
+              "logLR": 8,
+              "evidenceLabel": "Constipation"
+            },
+            {
+              "key": "associations",
+              "value": "Bradycardia",
+              "logLR": 10,
+              "evidenceLabel": "Bradycardia"
+            },
+            {
+              "key": "associations",
+              "value": "Hair loss",
+              "logLR": 10,
+              "evidenceLabel": "Hair loss / dry skin"
+            },
+            {
+              "key": "exam",
+              "value": "goitre",
+              "logLR": 12,
+              "evidenceLabel": "Goitre"
+            },
+            {
+              "key": "sex_female",
+              "value": "",
+              "logLR": 8,
+              "evidenceLabel": "Female sex (10:1)"
+            },
+            {
+              "key": "inv",
+              "value": "tsh",
+              "logLR": 20,
+              "evidenceLabel": "TSH elevated — diagnostic",
+              "citation": "Canaris GJ. Arch Intern Med 2000. Elevated TSH sensitivity 98% for hypothyroidism"
+            },
+            {
+              "key": "inv",
+              "value": "t4",
+              "logLR": 14,
+              "evidenceLabel": "Free T4 low (overt hypothyroidism)"
+            },
+            {
+              "key": "inv",
+              "value": "tpo",
+              "logLR": 14,
+              "evidenceLabel": "Anti-TPO antibodies (Hashimoto's)"
+            }
+          ]
+        },
+        {
+          "name": "Type 2 Diabetes Mellitus",
+          "icd": "E11.9",
+          "logPrior": 25,
+          "features": [
+            {
+              "key": "associations",
+              "value": "Polyuria",
+              "logLR": 14,
+              "evidenceLabel": "Polyuria",
+              "citation": "Spijkerman AMW. Diab Care 2004. Polyuria + polydipsia LR+ 15.8 for DM in symptomatic patients"
+            },
+            {
+              "key": "associations",
+              "value": "Polydipsia",
+              "logLR": 14,
+              "evidenceLabel": "Polydipsia / thirst"
+            },
+            {
+              "key": "associations",
+              "value": "Blurred vision",
+              "logLR": 10,
+              "evidenceLabel": "Blurred vision (osmotic / retinopathy)"
+            },
+            {
+              "key": "associations",
+              "value": "Weight loss",
+              "logLR": 8,
+              "evidenceLabel": "Unintentional weight loss"
+            },
+            {
+              "key": "pmh",
+              "value": "obesity",
+              "logLR": 10,
+              "evidenceLabel": "Obesity / overweight"
+            },
+            {
+              "key": "pmh",
+              "value": "family history diabetes",
+              "logLR": 10,
+              "evidenceLabel": "Family history of diabetes"
+            },
+            {
+              "key": "inv",
+              "value": "glucose",
+              "logLR": 18,
+              "evidenceLabel": "Fasting glucose ≥7.0 mmol/L or random ≥11.1 mmol/L — diagnostic",
+              "citation": "WHO 2006. Diagnostic criteria for DM"
+            },
+            {
+              "key": "inv",
+              "value": "hba1c",
+              "logLR": 18,
+              "evidenceLabel": "HbA1c ≥48 mmol/mol (6.5%) — diagnostic"
+            },
+            {
+              "key": "bmi_over",
+              "value": "27",
+              "logLR": 8,
+              "evidenceLabel": "BMI ≥27 — T2DM risk factor"
+            }
+          ]
+        },
+        {
+          "name": "Depression",
+          "icd": "F32.9",
+          "logPrior": 25,
+          "features": [
+            {
+              "key": "associations",
+              "value": "Low mood",
+              "logLR": 16,
+              "evidenceLabel": "Persistent low mood — core criterion",
+              "citation": "Arroll B. BMJ 2003. Two-question screen: low mood + anhedonia. Sensitivity 96%, specificity 57%"
+            },
+            {
+              "key": "associations",
+              "value": "Anhedonia",
+              "logLR": 16,
+              "evidenceLabel": "Loss of interest / pleasure (anhedonia) — core criterion"
+            },
+            {
+              "key": "associations",
+              "value": "Sleep disturbance",
+              "logLR": 12,
+              "evidenceLabel": "Insomnia / hypersomnia"
+            },
+            {
+              "key": "associations",
+              "value": "Poor concentration",
+              "logLR": 10,
+              "evidenceLabel": "Poor concentration / memory"
+            },
+            {
+              "key": "associations",
+              "value": "Appetite change",
+              "logLR": 10,
+              "evidenceLabel": "Appetite change / weight change"
+            },
+            {
+              "key": "timing",
+              "value": ">2 weeks",
+              "logLR": 12,
+              "evidenceLabel": "Duration >2 weeks — DSM-5 criterion"
+            },
+            {
+              "key": "associations",
+              "value": "Suicidal ideation",
+              "logLR": 16,
+              "evidenceLabel": "Suicidal / self-harm ideation — RED FLAG requiring immediate assessment"
+            },
+            {
+              "key": "associations",
+              "value": "Anxiety",
+              "logLR": 8,
+              "evidenceLabel": "Coexisting anxiety symptoms"
+            },
+            {
+              "key": "pmh",
+              "value": "depression",
+              "logLR": 14,
+              "evidenceLabel": "Previous depressive episode"
+            }
+          ]
+        },
+        {
+          "name": "Obstructive Sleep Apnoea",
+          "icd": "G47.33",
+          "logPrior": 18,
+          "features": [
+            {
+              "key": "associations",
+              "value": "Snoring",
+              "logLR": 12,
+              "evidenceLabel": "Loud snoring — hallmark symptom",
+              "citation": "Ramachandran SK. Anesth Analg 2010. Snoring present in 95% of OSA patients"
+            },
+            {
+              "key": "associations",
+              "value": "Witnessed apnoea",
+              "logLR": 18,
+              "evidenceLabel": "Witnessed apnoeas — pathognomonic",
+              "citation": "Ramachandran SK. 2010. Witnessed apnoeas LR+ 16 for OSA"
+            },
+            {
+              "key": "associations",
+              "value": "Morning headache",
+              "logLR": 10,
+              "evidenceLabel": "Morning headache (CO2 retention)"
+            },
+            {
+              "key": "associations",
+              "value": "Nocturia",
+              "logLR": 8,
+              "evidenceLabel": "Nocturia"
+            },
+            {
+              "key": "pmh",
+              "value": "obesity",
+              "logLR": 12,
+              "evidenceLabel": "Obesity / neck circumference >40cm",
+              "citation": "Young T. NEJM 1993. BMI ≥30 OR+ 7.0 for OSA"
+            },
+            {
+              "key": "pmh",
+              "value": "hypertension",
+              "logLR": 10,
+              "evidenceLabel": "Resistant hypertension"
+            },
+            {
+              "key": "inv",
+              "value": "sleep study",
+              "logLR": 20,
+              "evidenceLabel": "Polysomnography / sleep study — AHI ≥5 diagnostic"
+            },
+            {
+              "key": "bmi_over",
+              "value": "30",
+              "logLR": 12,
+              "evidenceLabel": "BMI ≥30 — major risk factor"
+            }
+          ]
+        },
+        {
+          "name": "Chronic Fatigue Syndrome / ME",
+          "icd": "G93.3",
+          "logPrior": 8,
+          "features": [
+            {
+              "key": "timing",
+              "value": ">6 months",
+              "logLR": 14,
+              "evidenceLabel": "Disabling fatigue >6 months — diagnostic criterion",
+              "citation": "Fukuda K. Ann Intern Med 1994. CDC criteria: substantial fatigue >6 months, new onset, unexplained"
+            },
+            {
+              "key": "associations",
+              "value": "Post-exertional malaise",
+              "logLR": 18,
+              "evidenceLabel": "Post-exertional malaise — hallmark (worsening after minimal exertion)",
+              "citation": "Carruthers BM. J Int Med 2011. PEM is cardinal feature of ME/CFS"
+            },
+            {
+              "key": "associations",
+              "value": "Cognitive impairment",
+              "logLR": 12,
+              "evidenceLabel": "Cognitive impairment ('brain fog')"
+            },
+            {
+              "key": "associations",
+              "value": "Unrefreshing sleep",
+              "logLR": 12,
+              "evidenceLabel": "Unrefreshing sleep"
+            },
+            {
+              "key": "exam",
+              "value": "normal",
+              "logLR": 8,
+              "evidenceLabel": "Normal physical examination (diagnosis of exclusion)"
+            },
+            {
+              "key": "inv",
+              "value": "normal",
+              "logLR": 8,
+              "evidenceLabel": "Normal routine investigations (exclusion required)"
+            }
+          ]
+        }
+      ]
+    },
+    "cough": {
+      "candidates": [
+        {
+          "name": "Upper Airway Cough Syndrome (Post-nasal Drip)",
+          "icd": "J31.0",
+          "logPrior": 35,
+          "features": [
+            {
+              "key": "character",
+              "value": "Drip sensation",
+              "logLR": 14,
+              "evidenceLabel": "Post-nasal drip / throat clearing",
+              "citation": "Irwin RS. Chest 2006. UACS commonest cause of chronic cough in non-smokers. Drip LR+ 3.7"
+            },
+            {
+              "key": "timing",
+              "value": "Worse lying",
+              "logLR": 12,
+              "evidenceLabel": "Worse on lying down / mornings"
+            },
+            {
+              "key": "associations",
+              "value": "Nasal discharge",
+              "logLR": 12,
+              "evidenceLabel": "Nasal congestion / discharge"
+            },
+            {
+              "key": "pmh",
+              "value": "rhinitis",
+              "logLR": 12,
+              "evidenceLabel": "Allergic rhinitis / sinusitis history"
+            },
+            {
+              "key": "exam",
+              "value": "cobblestone pharynx",
+              "logLR": 12,
+              "evidenceLabel": "Cobblestone / mucous on posterior pharynx"
+            },
+            {
+              "key": "relieving",
+              "value": "Antihistamine",
+              "logLR": 12,
+              "evidenceLabel": "Response to antihistamine / intranasal steroid"
+            }
+          ]
+        },
+        {
+          "name": "Asthma",
+          "icd": "J45.909",
+          "logPrior": 20,
+          "features": [
+            {
+              "key": "associations",
+              "value": "Wheeze",
+              "logLR": 14,
+              "evidenceLabel": "Wheeze — hallmark",
+              "citation": "Levy ML. Thorax 2003. Wheeze LR+ 4.8 for asthma vs other causes of cough"
+            },
+            {
+              "key": "timing",
+              "value": "Nocturnal",
+              "logLR": 12,
+              "evidenceLabel": "Nocturnal cough / wheeze",
+              "citation": "GINA 2023. Nocturnal / early morning cough is asthma pattern"
+            },
+            {
+              "key": "exacerbating",
+              "value": "Exercise",
+              "logLR": 12,
+              "evidenceLabel": "Exercise-induced"
+            },
+            {
+              "key": "exacerbating",
+              "value": "Allergen",
+              "logLR": 14,
+              "evidenceLabel": "Triggered by allergens / cold air"
+            },
+            {
+              "key": "pmh",
+              "value": "atopy",
+              "logLR": 12,
+              "evidenceLabel": "Atopy / eczema / allergic rhinitis"
+            },
+            {
+              "key": "pmh",
+              "value": "asthma",
+              "logLR": 16,
+              "evidenceLabel": "Previous asthma diagnosis"
+            },
+            {
+              "key": "relieving",
+              "value": "Bronchodilator",
+              "logLR": 14,
+              "evidenceLabel": "Reliever inhaler response"
+            },
+            {
+              "key": "inv",
+              "value": "spirometry",
+              "logLR": 16,
+              "evidenceLabel": "Spirometry — obstructive pattern with reversibility"
+            },
+            {
+              "key": "inv",
+              "value": "peak flow",
+              "logLR": 12,
+              "evidenceLabel": "Peak flow variability >20%"
+            }
+          ]
+        },
+        {
+          "name": "ACE Inhibitor Cough",
+          "icd": "R05",
+          "logPrior": 15,
+          "features": [
+            {
+              "key": "med",
+              "value": "ramipril",
+              "logLR": 18,
+              "evidenceLabel": "ACE inhibitor (ramipril) — pathognomonic",
+              "citation": "Irwin RS. Chest 2006. ACE inhibitor cough in 5–15% of ACEi users; temporally related to prescription"
+            },
+            {
+              "key": "med",
+              "value": "perindopril",
+              "logLR": 18,
+              "evidenceLabel": "ACE inhibitor (perindopril)"
+            },
+            {
+              "key": "med",
+              "value": "lisinopril",
+              "logLR": 18,
+              "evidenceLabel": "ACE inhibitor (lisinopril)"
+            },
+            {
+              "key": "med",
+              "value": "enalapril",
+              "logLR": 18,
+              "evidenceLabel": "ACE inhibitor (enalapril)"
+            },
+            {
+              "key": "character",
+              "value": "Dry",
+              "logLR": 12,
+              "evidenceLabel": "Dry, tickling cough"
+            },
+            {
+              "key": "timing",
+              "value": "After starting ACEi",
+              "logLR": 16,
+              "evidenceLabel": "Onset after starting ACE inhibitor"
+            },
+            {
+              "key": "relieving",
+              "value": "Stop ACEi",
+              "logLR": 20,
+              "evidenceLabel": "Resolves on stopping ACE inhibitor — definitive test"
+            }
+          ]
+        },
+        {
+          "name": "GERD-Related Cough",
+          "icd": "K21.00",
+          "logPrior": 15,
+          "features": [
+            {
+              "key": "associations",
+              "value": "Heartburn",
+              "logLR": 10,
+              "evidenceLabel": "Heartburn (absent in 75% of GERD cough)",
+              "citation": "Irwin RS. Chest 2006. GERD causes cough without heartburn in up to 75%"
+            },
+            {
+              "key": "timing",
+              "value": "Post-prandial",
+              "logLR": 10,
+              "evidenceLabel": "Worse after meals"
+            },
+            {
+              "key": "timing",
+              "value": "Worse lying",
+              "logLR": 12,
+              "evidenceLabel": "Worse lying down"
+            },
+            {
+              "key": "relieving",
+              "value": "PPI",
+              "logLR": 14,
+              "evidenceLabel": "Response to proton pump inhibitor"
+            },
+            {
+              "key": "inv",
+              "value": "ph manometry",
+              "logLR": 16,
+              "evidenceLabel": "24h pH-impedance study — pathological acid exposure"
+            },
+            {
+              "key": "pmh",
+              "value": "gerd",
+              "logLR": 12,
+              "evidenceLabel": "Known GERD history"
+            }
+          ]
+        },
+        {
+          "name": "Chronic Obstructive Pulmonary Disease (COPD)",
+          "icd": "J44.9",
+          "logPrior": 15,
+          "features": [
+            {
+              "key": "social",
+              "value": "smok",
+              "logLR": 14,
+              "evidenceLabel": "Significant smoking history (>20 pack-years)",
+              "citation": "GOLD 2023. Smoking is responsible for 80–90% of COPD risk"
+            },
+            {
+              "key": "age_over",
+              "value": "40",
+              "logLR": 10,
+              "evidenceLabel": "Age >40"
+            },
+            {
+              "key": "associations",
+              "value": "Wheeze",
+              "logLR": 10,
+              "evidenceLabel": "Wheeze / chronic productive cough"
+            },
+            {
+              "key": "associations",
+              "value": "Breathlessness",
+              "logLR": 12,
+              "evidenceLabel": "Progressive exertional dyspnoea"
+            },
+            {
+              "key": "character",
+              "value": "Productive",
+              "logLR": 10,
+              "evidenceLabel": "Productive cough (chronic bronchitis)"
+            },
+            {
+              "key": "inv",
+              "value": "spirometry",
+              "logLR": 18,
+              "evidenceLabel": "Post-bronchodilator FEV1/FVC <0.70 — diagnostic",
+              "citation": "GOLD 2023. Fixed ratio <0.7 confirms obstructive airflow limitation"
+            },
+            {
+              "key": "inv",
+              "value": "cxr",
+              "logLR": 10,
+              "evidenceLabel": "CXR — hyperinflation, flat diaphragm"
+            }
+          ]
+        },
+        {
+          "name": "Pulmonary Tuberculosis",
+          "icd": "A15.0",
+          "logPrior": 8,
+          "features": [
+            {
+              "key": "associations",
+              "value": "Night sweats",
+              "logLR": 14,
+              "evidenceLabel": "Night sweats — classic constitutional symptom",
+              "citation": "Wisnivesky JP. JAMA 2005. Night sweats LR+ 3.1; classic triad: fever, night sweats, weight loss"
+            },
+            {
+              "key": "associations",
+              "value": "Haemoptysis",
+              "logLR": 16,
+              "evidenceLabel": "Haemoptysis — RED FLAG",
+              "citation": "Wisnivesky JP. 2005. Haemoptysis LR+ 4.3 for TB"
+            },
+            {
+              "key": "associations",
+              "value": "Weight loss",
+              "logLR": 12,
+              "evidenceLabel": "Unintentional weight loss"
+            },
+            {
+              "key": "associations",
+              "value": "Fever",
+              "logLR": 10,
+              "evidenceLabel": "Low-grade fever"
+            },
+            {
+              "key": "timing",
+              "value": ">3 weeks",
+              "logLR": 12,
+              "evidenceLabel": "Cough >3 weeks — screen for TB in high-risk areas"
+            },
+            {
+              "key": "pmh",
+              "value": "tb contact",
+              "logLR": 16,
+              "evidenceLabel": "Known TB contact / travel to high-prevalence region"
+            },
+            {
+              "key": "pmh",
+              "value": "hiv",
+              "logLR": 14,
+              "evidenceLabel": "HIV / immunocompromised state"
+            },
+            {
+              "key": "inv",
+              "value": "cxr",
+              "logLR": 16,
+              "evidenceLabel": "CXR — upper lobe infiltrates, cavitation"
+            },
+            {
+              "key": "inv",
+              "value": "sputum afb",
+              "logLR": 20,
+              "evidenceLabel": "Sputum AFB / culture / GeneXpert — confirmatory"
+            }
+          ]
+        },
+        {
+          "name": "Lung Carcinoma",
+          "icd": "C34.10",
+          "logPrior": 5,
+          "features": [
+            {
+              "key": "social",
+              "value": "smok",
+              "logLR": 14,
+              "evidenceLabel": "Smoking history — major risk factor",
+              "citation": "Aberle DR. NEJM 2011. NLST trial. Lung cancer risk ×14 in heavy smokers"
+            },
+            {
+              "key": "age_over",
+              "value": "50",
+              "logLR": 10,
+              "evidenceLabel": "Age >50"
+            },
+            {
+              "key": "associations",
+              "value": "Haemoptysis",
+              "logLR": 16,
+              "evidenceLabel": "Haemoptysis — RED FLAG",
+              "citation": "Hollings N. Eur J Radiol 2002. Haemoptysis LR+ 4.9 for lung malignancy on CXR"
+            },
+            {
+              "key": "associations",
+              "value": "Weight loss",
+              "logLR": 14,
+              "evidenceLabel": "Unintentional weight loss"
+            },
+            {
+              "key": "associations",
+              "value": "Hoarseness",
+              "logLR": 14,
+              "evidenceLabel": "Hoarseness — recurrent laryngeal nerve involvement"
+            },
+            {
+              "key": "timing",
+              "value": "Progressive",
+              "logLR": 12,
+              "evidenceLabel": "Progressive over weeks-months"
+            },
+            {
+              "key": "inv",
+              "value": "cxr",
+              "logLR": 16,
+              "evidenceLabel": "CXR — mass / nodule / consolidation"
+            },
+            {
+              "key": "inv",
+              "value": "ct",
+              "logLR": 18,
+              "evidenceLabel": "CT chest — spiculated mass, adenopathy"
+            },
+            {
+              "key": "exam",
+              "value": "clubbing",
+              "logLR": 12,
+              "evidenceLabel": "Finger clubbing"
+            }
+          ]
+        }
+      ]
+    },
+    "generalMedicine": {
+      "candidates": [
+        {
+          "name": "Hypertensive Urgency / Crisis",
+          "icd": "I16.0",
+          "logPrior": 10,
+          "features": [
+            {
+              "key": "inv",
+              "value": "bp",
+              "logLR": 20,
+              "evidenceLabel": "BP ≥180/120 mmHg — diagnostic",
+              "citation": "JNC 8 2014. Hypertensive urgency: BP ≥180/120 without target organ damage"
+            },
+            {
+              "key": "associations",
+              "value": "Headache",
+              "logLR": 10,
+              "evidenceLabel": "Occipital headache"
+            },
+            {
+              "key": "associations",
+              "value": "Visual disturbance",
+              "logLR": 14,
+              "evidenceLabel": "Visual disturbance / blurred vision"
+            },
+            {
+              "key": "associations",
+              "value": "Chest pain",
+              "logLR": 12,
+              "evidenceLabel": "Chest pain — hypertensive emergency"
+            },
+            {
+              "key": "pmh",
+              "value": "hypertension",
+              "logLR": 14,
+              "evidenceLabel": "Known hypertension"
+            },
+            {
+              "key": "pmh",
+              "value": "non-compliant",
+              "logLR": 12,
+              "evidenceLabel": "Non-compliance with antihypertensives"
+            }
+          ]
+        },
+        {
+          "name": "Dehydration / Electrolyte Imbalance",
+          "icd": "E86.0",
+          "logPrior": 20,
+          "features": [
+            {
+              "key": "associations",
+              "value": "Polyuria",
+              "logLR": 12,
+              "evidenceLabel": "Polyuria / polydipsia"
+            },
+            {
+              "key": "associations",
+              "value": "Nausea",
+              "logLR": 8,
+              "evidenceLabel": "Nausea / vomiting"
+            },
+            {
+              "key": "associations",
+              "value": "Muscle cramps",
+              "logLR": 10,
+              "evidenceLabel": "Muscle cramps (hypokalaemia / hyponatraemia)"
+            },
+            {
+              "key": "exam",
+              "value": "dry mucous membranes",
+              "logLR": 14,
+              "evidenceLabel": "Dry mucous membranes / reduced skin turgor"
+            },
+            {
+              "key": "inv",
+              "value": "electrolytes",
+              "logLR": 16,
+              "evidenceLabel": "Electrolyte abnormality on blood tests"
+            },
+            {
+              "key": "inv",
+              "value": "creatinine",
+              "logLR": 14,
+              "evidenceLabel": "Raised creatinine / urea (pre-renal AKI)"
+            }
+          ]
+        },
+        {
+          "name": "Acute Kidney Injury",
+          "icd": "N17.9",
+          "logPrior": 10,
+          "features": [
+            {
+              "key": "inv",
+              "value": "creatinine",
+              "logLR": 20,
+              "evidenceLabel": "Rising serum creatinine — diagnostic criterion",
+              "citation": "KDIGO 2012. AKI: creatinine rise ≥26.5 µmol/L in 48h, or ≥1.5× baseline within 7 days"
+            },
+            {
+              "key": "associations",
+              "value": "Oliguria",
+              "logLR": 14,
+              "evidenceLabel": "Oliguria / anuria (<0.5 mL/kg/h)"
+            },
+            {
+              "key": "pmh",
+              "value": "nephrotoxin",
+              "logLR": 12,
+              "evidenceLabel": "Recent nephrotoxin (NSAIDs, contrast, antibiotics)"
+            },
+            {
+              "key": "pmh",
+              "value": "ckd",
+              "logLR": 12,
+              "evidenceLabel": "Pre-existing CKD"
+            },
+            {
+              "key": "associations",
+              "value": "Dehydration",
+              "logLR": 12,
+              "evidenceLabel": "Dehydration / volume depletion"
+            },
+            {
+              "key": "inv",
+              "value": "urea",
+              "logLR": 14,
+              "evidenceLabel": "Elevated urea out of proportion to creatinine (pre-renal pattern)"
+            }
+          ]
+        },
+        {
+          "name": "Medication Side Effect / Adverse Drug Reaction",
+          "icd": "T88.7",
+          "logPrior": 20,
+          "features": [
+            {
+              "key": "timing",
+              "value": "After starting medication",
+              "logLR": 16,
+              "evidenceLabel": "Temporal relationship to medication initiation"
+            },
+            {
+              "key": "relieving",
+              "value": "Stop medication",
+              "logLR": 18,
+              "evidenceLabel": "Symptoms resolve on drug withdrawal — definitive"
+            },
+            {
+              "key": "pmh",
+              "value": "polypharmacy",
+              "logLR": 10,
+              "evidenceLabel": "Polypharmacy / multiple medications"
+            },
+            {
+              "key": "exam",
+              "value": "normal",
+              "logLR": 6,
+              "evidenceLabel": "No primary disease found on investigation"
+            }
+          ]
+        },
+        {
+          "name": "Anxiety Disorder",
+          "icd": "F41.9",
+          "logPrior": 20,
+          "features": [
+            {
+              "key": "associations",
+              "value": "Palpitations",
+              "logLR": 10,
+              "evidenceLabel": "Palpitations / racing heart"
+            },
+            {
+              "key": "associations",
+              "value": "Sweating",
+              "logLR": 10,
+              "evidenceLabel": "Sweating / tremor"
+            },
+            {
+              "key": "associations",
+              "value": "Dyspnoea",
+              "logLR": 10,
+              "evidenceLabel": "Breathlessness / chest tightness"
+            },
+            {
+              "key": "associations",
+              "value": "Worry",
+              "logLR": 14,
+              "evidenceLabel": "Excessive worry / apprehension — core criterion"
+            },
+            {
+              "key": "timing",
+              "value": ">6 months",
+              "logLR": 10,
+              "evidenceLabel": "Duration >6 months (GAD criterion)"
+            },
+            {
+              "key": "exam",
+              "value": "normal",
+              "logLR": 8,
+              "evidenceLabel": "Normal physical examination and investigations"
+            },
+            {
+              "key": "associations",
+              "value": "Panic attacks",
+              "logLR": 14,
+              "evidenceLabel": "Episodic panic attacks"
+            }
+          ]
+        },
+        {
+          "name": "Preventive / Screening Visit",
+          "icd": "Z00.0",
+          "logPrior": 15,
+          "features": [
+            {
+              "key": "exam",
+              "value": "asymptomatic",
+              "logLR": 14,
+              "evidenceLabel": "Asymptomatic / well patient"
+            },
+            {
+              "key": "character",
+              "value": "Check-up",
+              "logLR": 14,
+              "evidenceLabel": "Routine health check / screening"
+            },
+            {
+              "key": "character",
+              "value": "Screening",
+              "logLR": 14,
+              "evidenceLabel": "Preventive care visit"
+            }
+          ]
+        }
+      ]
     }
   }
 }

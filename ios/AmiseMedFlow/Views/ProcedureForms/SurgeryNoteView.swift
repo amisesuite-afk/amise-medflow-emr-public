@@ -102,6 +102,8 @@ struct SurgeryNoteView: View {
     @State private var hasStartTime = false
     @State private var hasEndTime = false
     @State private var pdfWrapper: PDFDataWrapper?
+    @State private var showTemplatePicker = false
+    @State private var suggestedTemplate: ProcedureTemplate? = nil
 
     @StateObject private var ai = AIService()
     @State private var aiError: String?
@@ -118,6 +120,7 @@ struct SurgeryNoteView: View {
 
     var body: some View {
         Form {
+            templatePickerSection
             teamSection
             anaesthesiaSection
             whoChecklistSection
@@ -145,6 +148,12 @@ struct SurgeryNoteView: View {
         .sheet(item: $pdfWrapper) { wrapper in
             ShareSheet(items: [wrapper.data])
         }
+        .sheet(isPresented: $showTemplatePicker) {
+            ProcedurePickerSheet { template in
+                template.applySurgeryFields(to: &data)
+                save()
+            }
+        }
         .onAppear {
             data = patient.surgeryData
             hasSurgeryDate = data.dateOfSurgery != nil
@@ -159,6 +168,11 @@ struct SurgeryNoteView: View {
             }
             if data.indication.isEmpty, let cc = patient.chiefComplaint, !cc.isEmpty {
                 data.indication = cc
+            }
+            // Suggest a template if the procedure name already matches one
+            // but the standard fields haven't been filled yet
+            if data.anaesthesiaType == "General" && data.incision.isEmpty && data.procedureDescription.isEmpty {
+                suggestedTemplate = matchTemplate(for: data.procedureName)
             }
         }
         .alert("AI Error", isPresented: Binding(
@@ -269,6 +283,40 @@ struct SurgeryNoteView: View {
         }
     }
 
+    private var templatePickerSection: some View {
+        Section {
+            Button {
+                showTemplatePicker = true
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "doc.text.magnifyingglass")
+                        .font(.system(size: 18))
+                        .foregroundStyle(AMColor.accent)
+                        .frame(width: 28)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Load Procedure Template")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(.primary)
+                        Text(data.procedureName.isEmpty
+                             ? "Pre-fills anaesthesia, position, incision, technique & closure"
+                             : "Loaded: \(data.procedureName)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.tertiary)
+                }
+                .padding(.vertical, 4)
+            }
+            .buttonStyle(.plain)
+        } footer: {
+            Text("Selecting a template pre-fills the standard fields. Patient-specific findings and team details are always entered manually.")
+                .font(.caption2)
+        }
+    }
+
     private var teamSection: some View {
         Section("Surgical Team") {
             Toggle("Date of surgery", isOn: $hasSurgeryDate)
@@ -339,7 +387,44 @@ struct SurgeryNoteView: View {
         Section("Procedure") {
             TextField("Procedure name", text: $data.procedureName, axis: .vertical)
                 .lineLimit(2...)
-                .onChange(of: data.procedureName) { _, _ in save() }
+                .onChange(of: data.procedureName) { _, new in
+                    save()
+                    suggestedTemplate = matchTemplate(for: new)
+                }
+
+            if let t = suggestedTemplate {
+                Button {
+                    t.applySurgeryFields(to: &data)
+                    suggestedTemplate = nil
+                    save()
+                } label: {
+                    HStack(spacing: 10) {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 14))
+                            .foregroundStyle(AMColor.accent)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text("Apply "\(t.name)" template")
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(AMColor.accent)
+                            Text("Pre-fills anaesthesia · position · incision · technique · closure")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Button {
+                            suggestedTemplate = nil
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.tertiary)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(.vertical, 4)
+                }
+                .buttonStyle(.plain)
+                .listRowBackground(AMColor.accentLt.opacity(0.25))
+            }
+
             Picker("Type", selection: $data.procedureType) {
                 ForEach(["Elective", "Urgent", "Emergency", "Staged"], id: \.self) { Text($0) }
             }
@@ -510,6 +595,28 @@ struct SurgeryNoteView: View {
         patient.updatedAt = .now
         patient.pendingSync = true
         try? context.save()
+    }
+
+    // Returns the best-matching template when the user types a procedure name,
+    // so we can surface a one-tap "Apply template" suggestion without requiring
+    // the surgeon to know the picker exists.
+    private func matchTemplate(for name: String) -> ProcedureTemplate? {
+        let q = name.trimmingCharacters(in: .whitespaces).lowercased()
+        guard q.count >= 4 else { return nil }
+        // Exact or substring match first
+        if let t = ProcedureTemplate.all.first(where: { $0.name.lowercased().contains(q) || q.contains($0.name.lowercased()) }) {
+            return t
+        }
+        // Word-overlap: require at least 2 significant words to match
+        let stopWords: Set<String> = ["the","and","or","of","for","a","an","with","on","in","to"]
+        let queryWords = Set(q.components(separatedBy: .whitespacesAndNewlines)
+            .map { $0.trimmingCharacters(in: .punctuationCharacters) }
+            .filter { $0.count > 2 && !stopWords.contains($0) })
+        return ProcedureTemplate.all.first { template in
+            let tWords = Set(template.name.lowercased().components(separatedBy: .whitespacesAndNewlines)
+                .filter { $0.count > 2 && !stopWords.contains($0) })
+            return queryWords.intersection(tWords).count >= 2
+        }
     }
 
     @ViewBuilder

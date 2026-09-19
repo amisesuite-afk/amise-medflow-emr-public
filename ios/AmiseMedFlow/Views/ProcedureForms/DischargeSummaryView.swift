@@ -121,6 +121,28 @@ struct DischargeSummaryView: View {
             hasAdmissionDate  = data.admissionDate != nil
             hasDischargeDate  = data.dischargeDate != nil
             hasDrainRemovalDate = data.drainRemovalDate != nil
+
+            // Cross-populate from surgery note (only if the field is still blank)
+            let sx = patient.surgeryData
+            if data.procedurePerformed.isEmpty { data.procedurePerformed = sx.procedureName }
+            if data.anaesthetistName.isEmpty   { data.anaesthetistName   = sx.anaesthetist }
+            if data.admittingDoctor.isEmpty    {
+                data.admittingDoctor = StaffRegistry.shared.names(for: .surgeon).first ?? ""
+            }
+            if data.followUpAppointment.isEmpty, !sx.followUpWeeks.isEmpty {
+                data.followUpAppointment = "Review in \(sx.followUpWeeks) weeks"
+            }
+            if !data.drainInSitu && sx.drainInserted {
+                data.drainInSitu = true
+                if data.drainType.isEmpty { data.drainType = sx.drainType }
+            }
+            if data.procedurePerformed != patient.dischargeSummaryData.procedurePerformed ||
+               data.anaesthetistName   != patient.dischargeSummaryData.anaesthetistName   ||
+               data.admittingDoctor    != patient.dischargeSummaryData.admittingDoctor    ||
+               data.followUpAppointment != patient.dischargeSummaryData.followUpAppointment ||
+               data.drainInSitu != patient.dischargeSummaryData.drainInSitu {
+                save()
+            }
         }
     }
 

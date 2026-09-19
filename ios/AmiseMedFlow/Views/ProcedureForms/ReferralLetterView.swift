@@ -32,6 +32,8 @@ extension Patient {
                 d.diagnosis           = workingDiagnosis ?? ""
                 d.presentingComplaint = chiefComplaint ?? ""
                 d.patientBackground   = [pmhNotes, familyHistoryNotes].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: "\n")
+                let proc = surgeryData.procedureName
+                if !proc.isEmpty { d.managementToDate = "Patient underwent \(proc)." }
                 return d
             }
             let decoder = JSONDecoder(); decoder.dateDecodingStrategy = .iso8601
@@ -78,6 +80,15 @@ struct ReferralLetterView: View {
         }
         .onAppear {
             data = patient.referralLetterData
+
+            // Cross-populate management history from surgery note when not yet entered
+            if data.managementToDate.isEmpty {
+                let proc = patient.surgeryData.procedureName
+                if !proc.isEmpty {
+                    data.managementToDate = "Patient underwent \(proc)."
+                    save()
+                }
+            }
         }
     }
 

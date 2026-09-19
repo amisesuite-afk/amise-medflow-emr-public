@@ -7,11 +7,15 @@ struct EndoscopyListView: View {
 
     @State private var showAdd = false
     @State private var selectedPatient: Patient?
+    @State private var manualOrder: [PersistentIdentifier] = []
+    @State private var isReordering = false
 
     private var endoscopyPatients: [Patient] {
-        allPatients
+        let base = allPatients
             .filter { $0.setting == .endoscopy }
-            .sorted {
+            .deduped()
+        guard isReordering || !manualOrder.isEmpty else {
+            return base.sorted {
                 switch ($0.operationDate, $1.operationDate) {
                 case let (a?, b?): return a < b
                 case (_?, nil):    return true
@@ -19,7 +23,21 @@ struct EndoscopyListView: View {
                 default:           return $0.acuity < $1.acuity
                 }
             }
-            .deduped()
+        }
+        var result: [Patient] = []
+        for pid in manualOrder {
+            if let p = base.first(where: { $0.persistentModelID == pid }) { result.append(p) }
+        }
+        let remaining = base.filter { p in !manualOrder.contains(p.persistentModelID) }
+        result.append(contentsOf: remaining.sorted {
+            switch ($0.operationDate, $1.operationDate) {
+            case let (a?, b?): return a < b
+            case (_?, nil):    return true
+            case (nil, _?):    return false
+            default:           return $0.acuity < $1.acuity
+            }
+        })
+        return result
     }
 
     var body: some View {
@@ -54,11 +72,34 @@ struct EndoscopyListView: View {
                                 }
                             }
                         }
+                        .onMove { src, dst in
+                            var order = manualOrder.isEmpty
+                                ? endoscopyPatients.map { $0.persistentModelID }
+                                : manualOrder
+                            order.move(fromOffsets: src, toOffset: dst)
+                            manualOrder = order
+                        }
                     }
+                    .environment(\.editMode, .constant(isReordering ? .active : .inactive))
                 }
             }
             .navigationTitle("Endoscopy List")
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    if !endoscopyPatients.isEmpty {
+                        Button {
+                            withAnimation { isReordering.toggle() }
+                            if !isReordering && manualOrder.isEmpty {
+                                manualOrder = endoscopyPatients.map { $0.persistentModelID }
+                            }
+                        } label: {
+                            Label(isReordering ? "Done" : "Reorder",
+                                  systemImage: isReordering ? "checkmark" : "arrow.up.arrow.down")
+                                .font(.subheadline)
+                        }
+                        .tint(isReordering ? .teal : .primary)
+                    }
+                }
                 ToolbarItem(placement: .primaryAction) {
                     HStack {
                         if !endoscopyPatients.isEmpty {

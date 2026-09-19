@@ -9,6 +9,9 @@ struct TodayDashboardView: View {
 
     @State private var selectedPatient: Patient?
     @State private var showAdd = false
+    @State private var showCalendarImport = false
+    @State private var searchQuery = ""
+    @State private var isRefreshing = false
 
     private let cal = Calendar.current
 
@@ -71,22 +74,96 @@ struct TodayDashboardView: View {
         !todayCalEvents.isEmpty
     }
 
+    // Calendar events today that don't yet have a matching patient record
+    private var unimportedCalEventCount: Int {
+        let existingNames = Set(allTodayPatients.map { $0.fullName.lowercased().trimmingCharacters(in: .whitespaces) })
+        return todayCalEvents.filter { event in
+            guard let title = event.title, !title.isEmpty else { return false }
+            let parsed = CalendarEventParser.parse(title: title, calLabel: event.calEntryLabel)
+            return !parsed.name.isEmpty && !existingNames.contains(parsed.name.lowercased().trimmingCharacters(in: .whitespaces))
+        }.count
+    }
+
+    // All today's patients in one flat list for search
+    private var allTodayPatients: [Patient] {
+        (readyForDoctorPatients + highAcuityWard + wardPatients +
+         theatreToday + endoscopyToday + clinicToday)
+            .reduce(into: [Patient]()) { acc, p in
+                if !acc.contains(where: { $0.id == p.id }) { acc.append(p) }
+            }
+    }
+
+    private var searchActive: Bool { !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty }
+
+    private var searchResults: [Patient] {
+        let q = searchQuery.trimmingCharacters(in: .whitespaces).lowercased()
+        return allTodayPatients.filter {
+            $0.fullName.lowercased().contains(q) ||
+            ($0.mrn?.lowercased().contains(q) ?? false) ||
+            ($0.workingDiagnosis?.lowercased().contains(q) ?? false) ||
+            ($0.chiefComplaint?.lowercased().contains(q) ?? false)
+        }
+    }
+
+    // Total count for the day summary strip
+    private var totalCount: Int { allTodayPatients.count }
+
     // MARK: - Body
 
     var body: some View {
         NavigationStack {
             Group {
-                if isAnythingOn {
+                if isAnythingOn || searchActive {
                     List {
-                        if !readyForDoctorPatients.isEmpty { waitingSection }
-                        if !highAcuityWard.isEmpty { alertSection }
-                        if !wardPatients.isEmpty   { wardSection }
-                        if !theatreToday.isEmpty   { theatreSection }
-                        if !endoscopyToday.isEmpty { endoscopySection }
-                        if !clinicToday.isEmpty    { clinicSection }
-                        if !todayCalEvents.isEmpty { calendarSection }
+                        // ── Day summary strip ───────────────────────────
+                        if !searchActive {
+                            Section {
+                                daySummaryStrip
+                            }
+                            .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                            .listRowBackground(Color.clear)
+                        }
+
+                        // ── Search results (when active) ────────────────
+                        if searchActive {
+                            if searchResults.isEmpty {
+                                Section {
+                                    ContentUnavailableView.search(text: searchQuery)
+                                }
+                                .listRowBackground(Color.clear)
+                            } else {
+                                Section("Results for "\(searchQuery.trimmingCharacters(in: .whitespaces))"") {
+                                    ForEach(searchResults) { patient in
+                                        Button { selectedPatient = patient } label: {
+                                            TodayPatientRow(patient: patient, style: rowStyle(for: patient))
+                                        }
+                                        .buttonStyle(.plain)
+                                    }
+                                }
+                            }
+                        } else {
+                            // ── Calendar import nudge ───────────────────
+                            if unimportedCalEventCount > 0 {
+                                calendarImportBanner
+                            }
+                            // ── Normal sections ─────────────────────────
+                            if !readyForDoctorPatients.isEmpty { waitingSection }
+                            if !highAcuityWard.isEmpty { alertSection }
+                            if !wardPatients.isEmpty   { wardSection }
+                            if !theatreToday.isEmpty   { theatreSection }
+                            if !endoscopyToday.isEmpty { endoscopySection }
+                            if !clinicToday.isEmpty    { clinicSection }
+                            if !todayCalEvents.isEmpty { calendarSection }
+                        }
                     }
                     .listStyle(.insetGrouped)
+                    .searchable(text: $searchQuery, placement: .navigationBarDrawer(displayMode: .automatic),
+                                prompt: "Search today's patients…")
+                    .refreshable {
+                        isRefreshing = true
+                        await calSvc.sync()
+                        isRefreshing = false
+                    }
                 } else {
                     emptyState
                 }
@@ -100,23 +177,116 @@ struct TodayDashboardView: View {
                         .foregroundStyle(.secondary)
                 }
                 ToolbarItem(placement: .primaryAction) {
-                    HStack(spacing: 16) {
+                    HStack(spacing: 4) {
                         Button {
-                            Task { await calSvc.sync() }
+                            showCalendarImport = true
                         } label: {
-                            if calSvc.isSyncing {
-                                ProgressView().scaleEffect(0.7)
-                            } else {
-                                Image(systemName: "arrow.clockwise")
-                            }
+                            Image(systemName: "calendar.badge.plus")
                         }
-                        .help("Refresh calendar")
                         Button { showAdd = true } label: { Image(systemName: "plus") }
                     }
                 }
             }
             .sheet(item: $selectedPatient) { PatientDetailView(patient: $0) }
             .sheet(isPresented: $showAdd) { AddPatientView() }
+            .sheet(isPresented: $showCalendarImport) {
+                CalendarImportSheet(events: calSvc.events)
+            }
+        }
+    }
+
+    // MARK: - Calendar import banner
+
+    private var calendarImportBanner: some View {
+        Section {
+            Button {
+                showCalendarImport = true
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "calendar.badge.plus")
+                        .font(.system(size: 20))
+                        .foregroundStyle(AMColor.accent)
+                        .frame(width: 32)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("\(unimportedCalEventCount) patient\(unimportedCalEventCount == 1 ? "" : "s") in Google Calendar not yet added")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(.primary)
+                        Text("Tap to review and add today's appointments")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.tertiary)
+                }
+                .padding(.vertical, 6)
+            }
+            .buttonStyle(.plain)
+            .listRowBackground(AMColor.accentLt.opacity(0.2))
+        }
+    }
+
+    // MARK: - Day summary strip
+
+    private var daySummaryStrip: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                if totalCount > 0 {
+                    summaryTile(count: totalCount, label: "Total", icon: "person.2.fill", color: AMColor.accent)
+                }
+                if !readyForDoctorPatients.isEmpty {
+                    summaryTile(count: readyForDoctorPatients.count, label: "Waiting", icon: "person.fill.checkmark", color: .orange)
+                }
+                if !highAcuityWard.isEmpty {
+                    summaryTile(count: highAcuityWard.count, label: "Alerts", icon: "exclamationmark.triangle.fill", color: .red)
+                }
+                if !wardPatients.isEmpty {
+                    summaryTile(count: wardPatients.count, label: "Ward", icon: "bed.double.fill", color: .teal)
+                }
+                if !theatreToday.isEmpty {
+                    summaryTile(count: theatreToday.count, label: "Theatre", icon: "scalpel", color: .purple)
+                }
+                if !endoscopyToday.isEmpty {
+                    summaryTile(count: endoscopyToday.count, label: "Scope", icon: "eye.circle.fill", color: .cyan)
+                }
+                if !clinicToday.isEmpty {
+                    summaryTile(count: clinicToday.count, label: "Clinic", icon: "stethoscope", color: .indigo)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+        }
+    }
+
+    private func summaryTile(count: Int, label: String, icon: String, color: Color) -> some View {
+        VStack(spacing: 4) {
+            HStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: 11, weight: .semibold))
+                Text("\(count)")
+                    .font(.system(size: 20, weight: .bold).monospacedDigit())
+            }
+            .foregroundStyle(color)
+            Text(label)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(.secondary)
+        }
+        .frame(minWidth: 64)
+        .padding(.vertical, 10)
+        .padding(.horizontal, 12)
+        .background(color.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+        .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(color.opacity(0.18), lineWidth: 1))
+    }
+
+    // MARK: - Row style helper for search results
+
+    private func rowStyle(for patient: Patient) -> TodayRowStyle {
+        switch patient.setting {
+        case .theatre:   return .theatre
+        case .endoscopy: return .endoscopy
+        case .outpatient: return .clinic
+        default:         return .ward
         }
     }
 
@@ -409,16 +579,30 @@ struct TodayDashboardView: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
-            Button {
-                showAdd = true
-            } label: {
-                Label("Add Patient", systemImage: "plus")
-                    .font(.subheadline.weight(.semibold))
-                    .padding(.horizontal, 20).padding(.vertical, 10)
-                    .background(AMColor.accent, in: Capsule())
-                    .foregroundStyle(.white)
+            HStack(spacing: 12) {
+                if unimportedCalEventCount > 0 {
+                    Button {
+                        showCalendarImport = true
+                    } label: {
+                        Label("Add from Calendar (\(unimportedCalEventCount))", systemImage: "calendar.badge.plus")
+                            .font(.subheadline.weight(.semibold))
+                            .padding(.horizontal, 20).padding(.vertical, 10)
+                            .background(AMColor.accent, in: Capsule())
+                            .foregroundStyle(.white)
+                    }
+                    .buttonStyle(.plain)
+                }
+                Button {
+                    showAdd = true
+                } label: {
+                    Label("Add Patient", systemImage: "plus")
+                        .font(.subheadline.weight(.semibold))
+                        .padding(.horizontal, 20).padding(.vertical, 10)
+                        .background(Color(.secondarySystemBackground), in: Capsule())
+                        .foregroundStyle(.primary)
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
             .padding(.top, 8)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

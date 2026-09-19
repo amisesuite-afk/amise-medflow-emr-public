@@ -149,10 +149,16 @@ struct OGDFormView: View {
                 data.dateOfProcedure = opDate
                 hasProcedureDate = true
             }
-            if data.indication.isEmpty, let cc = patient.chiefComplaint, !cc.isEmpty {
-                let matched = indications.filter { cc.lowercased().contains($0.lowercased()) }
+            if data.operator_.isEmpty {
+                data.operator_ = StaffRegistry.shared.names(for: .surgeon).first ?? "Dr Dawit Daniel Kabiye"
+            }
+            if data.indication.isEmpty {
+                let sources = [patient.workingDiagnosis, patient.chiefComplaint].compactMap { $0 }
+                let combined = sources.joined(separator: " ").lowercased()
+                let matched = indications.filter { combined.contains($0.lowercased()) }
                 if !matched.isEmpty { data.indication = matched }
             }
+            save()
         }
         .alert("AI Error", isPresented: Binding(
             get: { aiError != nil },
