@@ -514,7 +514,7 @@ enum BayesianDiagnosisEngine {
 
     // MARK: - Internal candidate type
 
-    private struct Candidate {
+    struct Candidate {
         let name: String
         let icd: String
         let logPrior: Int            // higher = more prevalent in this CC context
