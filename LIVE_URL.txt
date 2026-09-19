@@ -1,2 +1,2 @@
-https://front-desk-topaz.vercel.app
+Error:Resourceislimited-tryagainin24hours(morethan100,code:"api-deployments-free-per-day").
 Pages: / book guidance pathway refer
