@@ -86,6 +86,7 @@ struct ConsentFormView: View {
     @State private var data = ConsentFormData()
     @State private var pdfWrapper: PDFDataWrapper?
     @State private var showTemplatePicker = false
+    @State private var suggestedTemplate: ProcedureTemplate? = nil
 
     private let specificRiskOptions = [
         // GI / abdominal
@@ -159,6 +160,11 @@ struct ConsentFormView: View {
         }
         .onAppear {
             data = patient.consentFormData
+            // Suggest a template if the procedure name already matches one
+            // but procedure-specific risks haven't been filled yet
+            if data.specificRisks.isEmpty {
+                suggestedTemplate = matchTemplate(for: data.procedureName)
+            }
         }
     }
 
@@ -218,7 +224,44 @@ struct ConsentFormView: View {
     private var procedureSection: some View {
         Section("Procedure") {
             TextField("Procedure name", text: $data.procedureName)
-                .onChange(of: data.procedureName) { _, _ in save() }
+                .onChange(of: data.procedureName) { _, new in
+                    save()
+                    suggestedTemplate = matchTemplate(for: new)
+                }
+
+            if let t = suggestedTemplate {
+                Button {
+                    t.applyConsentFields(to: &data)
+                    suggestedTemplate = nil
+                    save()
+                } label: {
+                    HStack(spacing: 10) {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 14))
+                            .foregroundStyle(AMColor.accent)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text("Apply "\(t.name)" template")
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(AMColor.accent)
+                            Text("Pre-fills description · specific risks · alternatives · anaesthesia")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Button {
+                            suggestedTemplate = nil
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.tertiary)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(.vertical, 4)
+                }
+                .buttonStyle(.plain)
+                .listRowBackground(AMColor.accentLt.opacity(0.25))
+            }
+
             TextField("Indication / diagnosis", text: $data.indication, axis: .vertical)
                 .lineLimit(2...)
                 .onChange(of: data.indication) { _, _ in save() }
@@ -336,6 +379,23 @@ struct ConsentFormView: View {
         patient.updatedAt = .now
         patient.pendingSync = true
         try? context.save()
+    }
+
+    private func matchTemplate(for name: String) -> ProcedureTemplate? {
+        let q = name.trimmingCharacters(in: .whitespaces).lowercased()
+        guard q.count >= 4 else { return nil }
+        if let t = ProcedureTemplate.all.first(where: { $0.name.lowercased().contains(q) || q.contains($0.name.lowercased()) }) {
+            return t
+        }
+        let stopWords: Set<String> = ["the","and","or","of","for","a","an","with","on","in","to"]
+        let queryWords = Set(q.components(separatedBy: .whitespacesAndNewlines)
+            .map { $0.trimmingCharacters(in: .punctuationCharacters) }
+            .filter { $0.count > 2 && !stopWords.contains($0) })
+        return ProcedureTemplate.all.first { template in
+            let tWords = Set(template.name.lowercased().components(separatedBy: .whitespacesAndNewlines)
+                .filter { $0.count > 2 && !stopWords.contains($0) })
+            return queryWords.intersection(tWords).count >= 2
+        }
     }
 
     @ViewBuilder
