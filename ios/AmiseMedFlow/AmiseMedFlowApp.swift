@@ -5,6 +5,7 @@ import SwiftData
 struct AmiseMedFlowApp: App {
     @StateObject private var sync = SyncService()
     @StateObject private var peerSync = PeerSyncService()
+    @StateObject private var nasBackup = NASBackupService()
     @StateObject private var bioAuth = BiometricAuthService()
     @StateObject private var calendarService = CalendarService()
     @StateObject private var notifications = NotificationService()
@@ -46,6 +47,7 @@ struct AmiseMedFlowApp: App {
                 ContentView()
                     .environmentObject(sync)
                     .environmentObject(peerSync)
+                    .environmentObject(nasBackup)
                     .environmentObject(calendarService)
                     .environmentObject(notifications)
                     .tint(AMColor.accent)

@@ -4,12 +4,14 @@ import SwiftData
 struct SettingsView: View {
     @EnvironmentObject private var sync: SyncService
     @EnvironmentObject private var peerSync: PeerSyncService
+    @EnvironmentObject private var nasBackup: NASBackupService
     @Environment(\.modelContext) private var context
 
     @State private var showLogin = false
     @State private var showSignOutConfirm = false
     @State private var isSigningOut = false
     @State private var showAIDisclosure = false
+    @State private var showClearNASConfirm = false
 
     var body: some View {
         NavigationStack {
@@ -144,6 +146,88 @@ struct SettingsView: View {
                     Text("Syncs directly between your iPhone and iPad over Bluetooth or WiFi — no internet required.")
                 }
 
+                // MARK: NAS Backup
+                Section {
+                    TextField("WebDAV URL",
+                              text: $nasBackup.serverURL,
+                              prompt: Text("http://amise-storage:5005"))
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+                        .keyboardType(.URL)
+
+                    TextField("Username",
+                              text: $nasBackup.username,
+                              prompt: Text("admin"))
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+
+                    SecureField("Password", text: $nasBackup.password)
+
+                    // Status row
+                    LabeledContent("Status") {
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(nasStatusColor)
+                                .frame(width: 8, height: 8)
+                            Text(nasBackup.connectionStatus.label)
+                                .font(.subheadline)
+                        }
+                    }
+
+                    if let last = nasBackup.lastBackupAt {
+                        LabeledContent("Last backup") {
+                            VStack(alignment: .trailing, spacing: 2) {
+                                Text(last, style: .relative).foregroundStyle(.secondary)
+                                Text("\(nasBackup.lastBackupCount) records")
+                                    .font(.caption2)
+                                    .foregroundStyle(.tertiary)
+                            }
+                        }
+                    }
+
+                    if let err = nasBackup.backupError {
+                        Label(err, systemImage: "exclamationmark.triangle")
+                            .foregroundStyle(.red)
+                            .font(.caption)
+                    }
+
+                    HStack(spacing: 12) {
+                        Button {
+                            Task { await nasBackup.testConnection() }
+                        } label: {
+                            if nasBackup.isTesting {
+                                ProgressView().frame(maxWidth: .infinity)
+                            } else {
+                                Text("Test").frame(maxWidth: .infinity)
+                            }
+                        }
+                        .disabled(nasBackup.isTesting || !nasBackup.isConfigured)
+
+                        Button {
+                            Task { await nasBackup.backup(context: context) }
+                        } label: {
+                            if nasBackup.isBackingUp {
+                                ProgressView().frame(maxWidth: .infinity)
+                            } else {
+                                Text("Backup Now").frame(maxWidth: .infinity)
+                            }
+                        }
+                        .disabled(nasBackup.isBackingUp || !nasBackup.isConfigured)
+                        .tint(AMColor.accent)
+                    }
+                    .buttonStyle(.bordered)
+
+                    if nasBackup.isConfigured {
+                        Button("Clear NAS Settings", role: .destructive) {
+                            showClearNASConfirm = true
+                        }
+                    }
+                } header: {
+                    Text("NAS Backup")
+                } footer: {
+                    Text("Backs up all patient records to a Synology, QNAP, or any WebDAV server.\n\nSynology DSM: Control Panel → File Services → WebDAV → Enable. Port 5005 (HTTP) or 5006 (HTTPS).\n\nExample — over Tailscale: http://amise-storage:5005 or http://100.119.29.97:5005. The iPhone is already on the same Tailnet, so backup works from any network automatically.")
+                }
+
                 // MARK: Practice
                 Section("Practice") {
                     LabeledContent("Name", value: "Amise Medical Services")
@@ -207,9 +291,28 @@ struct SettingsView: View {
             } message: {
                 Text("You will need to sign in again to sync your data.")
             }
+            .confirmationDialog("Clear NAS Settings?", isPresented: $showClearNASConfirm, titleVisibility: .visible) {
+                Button("Clear", role: .destructive) { nasBackup.clearCredentials() }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This removes the server URL and credentials. Existing backups on the NAS are not deleted.")
+            }
             .onAppear {
                 sync.setModelContext(context)
             }
+        }
+    }
+
+    private var nasStatusColor: Color {
+        switch nasBackup.connectionStatus {
+        case .unconfigured: return .secondary
+        case .ok:
+            if nasBackup.isBackingUp { return .accentColor }
+            if let last = nasBackup.lastBackupAt {
+                return Date.now.timeIntervalSince(last) > 86_400 ? .orange : .green
+            }
+            return .orange
+        case .error: return .red
         }
     }
 }
