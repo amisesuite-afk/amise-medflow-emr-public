@@ -773,8 +773,8 @@ importers:
         specifier: ^1.4.5-lts.1
         version: 1.4.5-lts.2
       nanoid:
-        specifier: ^5.1.5
-        version: 5.1.11
+        specifier: ^6.0.1
+        version: 6.0.1
       react:
         specifier: 'catalog:'
         version: 19.1.0
@@ -5270,9 +5270,9 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  nanoid@5.1.11:
-    resolution: {integrity: sha512-v+KEsUv2ps74PaSKv0gHTxTCgMXOIfBEbaqa6w6ISIGC7ZsvHN4N9oJ8d4cmf0n5oTzQz2SLmThbQWhjd/8eKg==}
-    engines: {node: ^18 || >=20}
+  nanoid@6.0.1:
+    resolution: {integrity: sha512-3wVS3i51pE2pi1k5FFL/95BGfVS0kSsvDVuGXHOtxox/TywUmtgq+3qiTOTbs9J7KfHaXPiN171k/A6dBnaXFw==}
+    engines: {node: ^22 || ^24 || >=26}
     hasBin: true
 
   napi-build-utils@2.0.0:
@@ -6472,11 +6472,6 @@ packages:
 
   tsx@4.21.0:
     resolution: {integrity: sha512-5C1sg4USs1lfG0GFb2RLXsdpXqBSEhAaA/0kPL01wxzpMqLILNxIxIOKiILz+cdg/pLnOUxFYOR5yhHU666wbw==}
-    engines: {node: '>=18.0.0'}
-    hasBin: true
-
-  tsx@4.23.12:
-    resolution: {integrity: sha512-FDf4L4sYzKtzWYhU/Xm0AQFdTjdIxNo9ElTf2mxXM6k8YMHXzYUe4yODVaXP4V9uMFbVg8c0qyBccK2OOxb45Q==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -10198,7 +10193,7 @@ snapshots:
   drizzle-kit@0.31.10:
     dependencies:
       '@drizzle-team/brocli': 0.10.2
-      '@esbuild-kit/esm-loader': tsx@4.23.12
+      '@esbuild-kit/esm-loader': tsx@4.23.13
       esbuild: 0.27.3
       tsx: 4.21.0
 
@@ -11638,7 +11633,7 @@ snapshots:
 
   nanoid@3.3.18: {}
 
-  nanoid@5.1.11: {}
+  nanoid@6.0.1: {}
 
   napi-build-utils@2.0.0: {}
 
@@ -13026,12 +13021,6 @@ snapshots:
     dependencies:
       esbuild: 0.27.3
       get-tsconfig: 4.14.2
-    optionalDependencies:
-      fsevents: 2.3.3
-
-  tsx@4.23.12:
-    dependencies:
-      esbuild: 0.27.3
     optionalDependencies:
       fsevents: 2.3.3
 
