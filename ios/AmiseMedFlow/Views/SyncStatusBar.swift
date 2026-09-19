@@ -3,11 +3,12 @@ import UIKit
 
 // MARK: - Compact sync status indicator for toolbars
 
-/// A small dual-icon badge showing cloud + peer sync state.
+/// Three-icon badge: cloud (Supabase) · antenna (MultipeerConnectivity) · drive (NAS/WebDAV).
 /// Tap to see a popover with details. Used in navigation toolbars throughout the app.
 struct SyncStatusBar: View {
     @EnvironmentObject private var sync: SyncService
     @EnvironmentObject private var peerSync: PeerSyncService
+    @EnvironmentObject private var nasBackup: NASBackupService
     @State private var showPopover = false
     @State private var spinAngle: Double = 0
 
@@ -26,8 +27,14 @@ struct SyncStatusBar: View {
         return .secondary
     }
 
-    private var anyActivity: Bool {
-        sync.isSyncing || peerSync.connectedCount > 0
+    private var nasColor: Color {
+        if nasBackup.isBackingUp                  { return .accentColor }
+        if nasBackup.backupError != nil           { return .red }
+        guard nasBackup.isConfigured              else { return .secondary }
+        if let last = nasBackup.lastBackupAt {
+            return Date.now.timeIntervalSince(last) > 86_400 ? .orange : .secondary
+        }
+        return .orange  // configured but never backed up
     }
 
     var body: some View {
@@ -69,6 +76,23 @@ struct SyncStatusBar: View {
                             .offset(x: 4, y: -4)
                     }
                 }
+
+                // NAS / WebDAV icon — shown when configured, or when backing up / error
+                if nasBackup.isConfigured || nasBackup.isBackingUp {
+                    ZStack(alignment: .topTrailing) {
+                        Image(systemName: nasBackup.isBackingUp
+                              ? "arrow.triangle.2.circlepath"
+                              : "externaldrive.fill")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(nasColor)
+                        if nasBackup.backupError != nil && !nasBackup.isBackingUp {
+                            Circle()
+                                .fill(Color.red)
+                                .frame(width: 6, height: 6)
+                                .offset(x: 4, y: -4)
+                        }
+                    }
+                }
             }
             .padding(.vertical, 2)
             .padding(.horizontal, 4)
@@ -78,6 +102,7 @@ struct SyncStatusBar: View {
             SyncStatusPopover()
                 .environmentObject(sync)
                 .environmentObject(peerSync)
+                .environmentObject(nasBackup)
         }
         .accessibilityLabel(accessibilityLabel)
     }
@@ -98,6 +123,13 @@ struct SyncStatusBar: View {
         } else {
             parts.append("No devices nearby")
         }
+        if nasBackup.isConfigured {
+            if nasBackup.isBackingUp {
+                parts.append("NAS backup in progress")
+            } else if let last = nasBackup.lastBackupAt {
+                parts.append("NAS backup \(last.formatted(.relative(presentation: .named)))")
+            }
+        }
         return parts.joined(separator: ", ")
     }
 }
@@ -107,10 +139,11 @@ struct SyncStatusBar: View {
 private struct SyncStatusPopover: View {
     @EnvironmentObject private var sync: SyncService
     @EnvironmentObject private var peerSync: PeerSyncService
+    @EnvironmentObject private var nasBackup: NASBackupService
+    @Environment(\.modelContext) private var context
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Header
             Text("Sync Status")
                 .font(.headline)
                 .padding(.horizontal, 16)
@@ -218,7 +251,6 @@ private struct SyncStatusPopover: View {
                                 .foregroundStyle(.secondary)
                         }
 
-                        // Recent sync history (last 3)
                         if !peerSync.syncHistory.isEmpty {
                             VStack(alignment: .leading, spacing: 4) {
                                 ForEach(peerSync.syncHistory.prefix(3)) { event in
@@ -252,6 +284,48 @@ private struct SyncStatusPopover: View {
                                 .tint(.orange)
                         }
                         .padding(.top, 4)
+                    }
+
+                    // NAS backup section — only when configured
+                    if nasBackup.isConfigured {
+                        Divider()
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            Label("NAS Backup", systemImage: "externaldrive.fill")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.secondary)
+
+                            HStack(spacing: 8) {
+                                Circle()
+                                    .fill(nasStatusColor)
+                                    .frame(width: 8, height: 8)
+                                Text(nasStatusText)
+                                    .font(.subheadline)
+                            }
+
+                            if let last = nasBackup.lastBackupAt {
+                                Text("Last backup \(last, style: .relative) · \(nasBackup.lastBackupCount) records")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            if let err = nasBackup.backupError {
+                                Text(err)
+                                    .font(.caption)
+                                    .foregroundStyle(.red)
+                                    .lineLimit(3)
+                            }
+
+                            Button {
+                                Task { await nasBackup.backup(context: context) }
+                            } label: {
+                                Label("Backup Now", systemImage: "arrow.clockwise")
+                                    .font(.caption.weight(.medium))
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.mini)
+                            .disabled(nasBackup.isBackingUp)
+                        }
                     }
                 }
                 .padding(16)
@@ -293,5 +367,21 @@ private struct SyncStatusPopover: View {
             return "\(peerSync.nearbyCount) device\(peerSync.nearbyCount == 1 ? "" : "s") nearby"
         }
         return "No devices detected"
+    }
+
+    private var nasStatusColor: Color {
+        if nasBackup.isBackingUp                  { return .accentColor }
+        if nasBackup.backupError != nil           { return .red }
+        if let last = nasBackup.lastBackupAt {
+            return Date.now.timeIntervalSince(last) > 86_400 ? .orange : .green
+        }
+        return .orange
+    }
+
+    private var nasStatusText: String {
+        if nasBackup.isBackingUp { return "Backing up…" }
+        if nasBackup.backupError != nil { return "Backup error" }
+        if nasBackup.lastBackupAt != nil { return "Ready" }
+        return "Not yet backed up"
     }
 }
