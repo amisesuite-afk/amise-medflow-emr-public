@@ -112,6 +112,22 @@ struct PreOpChecklistView: View {
         }
         .onAppear {
             data = patient.preOpChecklistData
+
+            // Seed date from operation date when the checklist hasn't been started yet
+            if !data.si_timeRecorded, let opDate = patient.operationDate {
+                data.checklistDate = opDate
+                data.si_time = opDate
+                data.to_time = opDate
+                data.so_time = opDate
+            }
+
+            // Cross-populate team from surgery note (only if still blank)
+            let sx = patient.surgeryData
+            if data.anaesthetistName.isEmpty    { data.anaesthetistName    = sx.anaesthetist }
+            if data.scrubNurseName.isEmpty      { data.scrubNurseName      = sx.scrubNurse }
+            if data.circulatingNurseName.isEmpty { data.circulatingNurseName = sx.circNurse }
+
+            save()
         }
     }
 
