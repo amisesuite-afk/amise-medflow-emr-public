@@ -85,6 +85,7 @@ struct ConsentFormView: View {
 
     @State private var data = ConsentFormData()
     @State private var pdfWrapper: PDFDataWrapper?
+    @State private var showTemplatePicker = false
 
     private let specificRiskOptions = [
         // GI / abdominal
@@ -124,6 +125,7 @@ struct ConsentFormView: View {
 
     var body: some View {
         Form {
+            templatePickerSection
             headerSection
             procedureSection
             generalRisksSection
@@ -149,12 +151,52 @@ struct ConsentFormView: View {
         .sheet(item: $pdfWrapper) { wrapper in
             ShareSheet(items: [wrapper.data])
         }
+        .sheet(isPresented: $showTemplatePicker) {
+            ProcedurePickerSheet { template in
+                template.applyConsentFields(to: &data)
+                save()
+            }
+        }
         .onAppear {
             data = patient.consentFormData
         }
     }
 
     // MARK: Sections
+
+    private var templatePickerSection: some View {
+        Section {
+            Button {
+                showTemplatePicker = true
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "doc.text.magnifyingglass")
+                        .font(.system(size: 18))
+                        .foregroundStyle(AMColor.accent)
+                        .frame(width: 28)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Load Consent Template")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(.primary)
+                        Text(data.procedureName.isEmpty
+                             ? "Pre-fills procedure name, description, risks & alternatives"
+                             : "Loaded: \(data.procedureName)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.tertiary)
+                }
+                .padding(.vertical, 4)
+            }
+            .buttonStyle(.plain)
+        } footer: {
+            Text("Selecting a template pre-fills procedure-specific risks and plain-language description. Review all content with the patient before signing.")
+                .font(.caption2)
+        }
+    }
 
     private var headerSection: some View {
         Section("Consent Details") {

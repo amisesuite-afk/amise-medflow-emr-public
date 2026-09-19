@@ -102,6 +102,7 @@ struct SurgeryNoteView: View {
     @State private var hasStartTime = false
     @State private var hasEndTime = false
     @State private var pdfWrapper: PDFDataWrapper?
+    @State private var showTemplatePicker = false
 
     @StateObject private var ai = AIService()
     @State private var aiError: String?
@@ -118,6 +119,7 @@ struct SurgeryNoteView: View {
 
     var body: some View {
         Form {
+            templatePickerSection
             teamSection
             anaesthesiaSection
             whoChecklistSection
@@ -144,6 +146,12 @@ struct SurgeryNoteView: View {
         }
         .sheet(item: $pdfWrapper) { wrapper in
             ShareSheet(items: [wrapper.data])
+        }
+        .sheet(isPresented: $showTemplatePicker) {
+            ProcedurePickerSheet { template in
+                template.applySurgeryFields(to: &data)
+                save()
+            }
         }
         .onAppear {
             data = patient.surgeryData
@@ -265,6 +273,40 @@ struct SurgeryNoteView: View {
             Text("AI Assistance")
         } footer: {
             Text("AI-generated content is pre-filled as a draft. Review and edit before signing.")
+                .font(.caption2)
+        }
+    }
+
+    private var templatePickerSection: some View {
+        Section {
+            Button {
+                showTemplatePicker = true
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "doc.text.magnifyingglass")
+                        .font(.system(size: 18))
+                        .foregroundStyle(AMColor.accent)
+                        .frame(width: 28)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Load Procedure Template")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(.primary)
+                        Text(data.procedureName.isEmpty
+                             ? "Pre-fills anaesthesia, position, incision, technique & closure"
+                             : "Loaded: \(data.procedureName)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.tertiary)
+                }
+                .padding(.vertical, 4)
+            }
+            .buttonStyle(.plain)
+        } footer: {
+            Text("Selecting a template pre-fills the standard fields. Patient-specific findings and team details are always entered manually.")
                 .font(.caption2)
         }
     }
