@@ -175,6 +175,27 @@ struct ERCPFormView: View {
         .onAppear {
             data = patient.ercpData
             hasProcedureDate = data.dateOfProcedure != nil
+
+            // Pre-fill date from the patient's scheduled operation date
+            if data.dateOfProcedure == nil, let opDate = patient.operationDate {
+                data.dateOfProcedure = opDate
+                hasProcedureDate = true
+            }
+
+            // Pre-fill operator from the registry (most recently used surgeon)
+            if data.operator_.isEmpty {
+                data.operator_ = StaffRegistry.shared.names(for: .surgeon).first ?? "Dr Dawit Daniel Kabiye"
+            }
+
+            // Pre-fill indication chips from working diagnosis + chief complaint
+            if data.indication.isEmpty {
+                let sources = [patient.workingDiagnosis, patient.chiefComplaint].compactMap { $0 }
+                let combined = sources.joined(separator: " ").lowercased()
+                let matched = indications.filter { combined.contains($0.lowercased()) }
+                if !matched.isEmpty { data.indication = matched }
+            }
+
+            save()
         }
         .alert("AI Error", isPresented: Binding(
             get: { aiError != nil },
