@@ -198,7 +198,9 @@ struct WardRoundView: View {
                 AddPatientView(initialSetting: .inpatient)
             }
             .sheet(item: $selectedPatient) { p in
-                PatientDetailView(patient: p)
+                WardRoundProgressSheet(patient: p) { reviewed in
+                    markReviewed(reviewed)
+                }
             }
             .sheet(item: $dischargeContext) { ctx in
                 DischargeFlowSheet(
