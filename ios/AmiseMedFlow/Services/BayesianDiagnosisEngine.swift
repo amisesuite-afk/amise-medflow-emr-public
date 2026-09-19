@@ -579,7 +579,7 @@ enum BayesianDiagnosisEngine {
 
     // MARK: - Scoring
 
-    private struct ScoredCandidate {
+    struct ScoredCandidate {
         let candidate: Candidate
         var logPosterior: Int
         var evidence: [String]
