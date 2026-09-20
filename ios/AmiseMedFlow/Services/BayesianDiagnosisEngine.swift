@@ -945,6 +945,12 @@ enum BayesianDiagnosisEngine {
         let specialtyIndex: [String: [String]]
         /// CC keyword → [system names]  (lowercase keys)
         let ccToSystems: [String: [String]]
+        /// Z-axis: urgency tier → [disease names]
+        /// Tiers: "critical" (life-threatening, urgency=3),
+        ///        "emergency" (organ/limb threat, urgency=2),
+        ///        "urgent" (function threat, urgency=1),
+        ///        "routine" (non-urgent, urgency=0)
+        let urgencyIndex: [String: [String]]
     }
 
     struct CandidateDatabase: Codable {
@@ -965,33 +971,50 @@ enum BayesianDiagnosisEngine {
         externalDatabase?.pools[name].map { $0.candidates.map { $0.toCandidate() } }
     }
 
-    /// Cross-specialty matrix query implementing the ICD-11 polyhierarchy model.
-    /// Maps the chief complaint to body systems via `matrix.ccToSystems`, then
-    /// collects all disease candidates tagged to those systems from `matrix.systemIndex`.
-    /// If `specialtyHint` is provided (e.g. "cardiology"), the result is further
-    /// intersected with `matrix.specialtyIndex` so a referred patient only surfaces
-    /// diagnoses relevant to their specialty context.
+    /// Cross-specialty matrix query implementing an X/Y/Z polyhierarchy model.
+    ///
+    /// **X axis** — `ccToSystems`: CC keywords → body systems
+    /// **Y axis** — `systemIndex` / `specialtyIndex`: systems → disease names,
+    ///   optionally narrowed to a specialty context via `specialtyHint`
+    /// **Z axis** — `urgencyIndex`: urgency tier safety net
+    ///   - `critical` (urgency=3, life-threatening) and `emergency` (urgency=2,
+    ///     organ/limb threat) diseases that fall in the X-axis system set are always
+    ///     included, bypassing the specialty intersection entirely — a clinician in
+    ///     any specialty must never miss an immediately life- or organ-threatening
+    ///     diagnosis that is system-relevant to the presenting CC.
+    ///   - `urgent` / `routine` diseases are subject to the full X-Y filter.
     static func matrixCandidates(forCC cc: String, specialtyHint: String? = nil) -> [Candidate] {
         guard let db = externalDatabase, let mx = db.matrix else { return [] }
         let ccL = cc.lowercased()
 
-        // Map CC keywords → systems
+        // ── X axis: CC → body systems ────────────────────────────────────────
         var matchedSystems = Set<String>()
         for (keyword, systems) in mx.ccToSystems where ccL.contains(keyword) {
             systems.forEach { matchedSystems.insert($0) }
         }
         guard !matchedSystems.isEmpty else { return [] }
 
-        // Collect disease names that belong to those systems
-        var diseaseNames: Set<String> = []
+        // ── Y axis: systems → full disease name set ───────────────────────────
+        var allSystemDiseases = Set<String>()
         for system in matchedSystems {
-            mx.systemIndex[system]?.forEach { diseaseNames.insert($0) }
+            mx.systemIndex[system]?.forEach { allSystemDiseases.insert($0) }
         }
 
-        // Optionally narrow to a specialty intersection.
+        // ── Z axis: safety-net — critical + emergency diseases ────────────────
+        // These bypass specialty filtering; their urgency score ensures they rank
+        // high enough to be surfaced in the final differential.
+        var safetyNetDiseases = Set<String>()
+        for tier in ["critical", "emergency"] {
+            mx.urgencyIndex[tier]?.forEach {
+                if allSystemDiseases.contains($0) { safetyNetDiseases.insert($0) }
+            }
+        }
+
+        // ── Y × specialty: narrow the non-safety-net diseases ────────────────
         // UI hint names (e.g. "General & GI Surgery") use human-readable labels;
         // specialtyIndex keys use camelCase (e.g. "generalSurgery"). The expansion
         // map handles compound names; bidirectional contains handles simple ones.
+        var filteredDiseases = allSystemDiseases
         if let hint = specialtyHint, !hint.isEmpty {
             let hintL = hint.lowercased()
             let hintExpansion: [String: [String]] = [
@@ -1009,9 +1032,6 @@ enum BayesianDiagnosisEngine {
                     mx.specialtyIndex[key]?.forEach { specialtyDiseases.insert($0) }
                 }
             } else {
-                // Bidirectional contains handles "neurology", "cardiology",
-                // "psychiatry / mental health" (hint contains "psychiatry"),
-                // "gynaecology & obstetrics" (hint contains both keys), etc.
                 for (key, diseases) in mx.specialtyIndex {
                     let kL = key.lowercased()
                     if kL.contains(hintL) || hintL.contains(kL) {
@@ -1020,16 +1040,19 @@ enum BayesianDiagnosisEngine {
                 }
             }
             if !specialtyDiseases.isEmpty {
-                diseaseNames = diseaseNames.intersection(specialtyDiseases)
+                filteredDiseases = filteredDiseases.intersection(specialtyDiseases)
             }
         }
+
+        // Merge: specialty-filtered diseases ∪ Z-axis safety net
+        let diseaseNames = filteredDiseases.union(safetyNetDiseases)
         guard !diseaseNames.isEmpty else { return [] }
 
-        // Look up the actual candidate specs from pools (canonical source of truth).
-        // Threshold filter: logPrior > 45 candidates are high-prevalence background
-        // diseases (back pain, gastroenteritis) that pollute cross-specialty results.
-        // Exemption: urgency ≥ 1 bypasses the filter so critical/urgent conditions
-        // always surface regardless of base prevalence.
+        // ── Look up candidates from pools ─────────────────────────────────────
+        // Threshold filter: logPrior > 45 = very common background diseases that
+        // pollute cross-specialty results (back pain, gastroenteritis etc.).
+        // Exemptions: urgency ≥ 1 bypasses logPrior cap; Z-axis safety-net
+        // diseases bypass both the logPrior cap and specialty filter (above).
         var seen = Set<String>()
         var result: [Candidate] = []
         for (_, poolSpec) in db.pools {
