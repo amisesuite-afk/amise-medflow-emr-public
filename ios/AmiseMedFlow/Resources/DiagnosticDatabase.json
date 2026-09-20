@@ -15581,6 +15581,118 @@
               "logLR": -10,
               "evidenceLabel": "Mild intensity (\u22645/10) \u2014 SAH is typically the worst pain ever experienced",
               "citation": "Perry JJ et al. CMAJ 2010. Severity \u22645/10 significantly reduces SAH likelihood. Most SAH patients rate pain 8\u201310/10."
+            },
+            {
+              "key": "associations",
+              "value": "Seizure at ictus",
+              "logLR": 14,
+              "evidenceLabel": "Seizure at onset of thunderclap headache \u2014 aneurysmal rupture with cortical spreading",
+              "citation": "Butzkueven H et al. J Neurol Neurosurg Psychiatry 2000. Seizure occurs at ictus in 6\u201316% of aneurysmal SAH and in up to 26% of anterior communicating artery aneurysms. Onset seizure with thunderclap headache is a highly specific combination for SAH. Late seizures (>24h post-ictus) reflect cortical irritation from subarachnoid blood and are an independent risk factor for delayed cerebral ischaemia."
+            },
+            {
+              "key": "associations",
+              "value": "Diplopia at onset",
+              "logLR": 12,
+              "evidenceLabel": "Diplopia at headache onset \u2014 CN III or CN VI palsy from aneurysmal compression or raised ICP",
+              "citation": "Giombini S et al. J Neurosurg 1984. Diplopia at SAH onset reflects CN III palsy (posterior communicating artery aneurysm compressing the nerve from outside \u2014 pupil-involving, downward and outward gaze deviation), CN VI palsy (false localising from raised ICP), or cavernous sinus involvement. Painful diplopia with headache is a neurosurgical emergency."
+            },
+            {
+              "key": "onset",
+              "value": "Woken from sleep by headache",
+              "logLR": 10,
+              "evidenceLabel": "Thunderclap headache waking patient from sleep \u2014 SAH until proven otherwise",
+              "citation": "Perry JJ et al. BMJ 2011 (Ottawa SAH Rule). Being woken from sleep by a thunderclap headache is a high-risk feature; SAH must be excluded. Thunderclap onset during sleep is less amenable to a gradual-onset alternative explanation, making benign causes less plausible. Combined with maximal severity at onset and no prior history of identical headaches, this warrants emergency CT."
+            },
+            {
+              "key": "associations",
+              "value": "Delayed fever post-ictus",
+              "logLR": 8,
+              "evidenceLabel": "Reactive fever 6\u201324h after thunderclap headache onset \u2014 meningeal irritation from subarachnoid blood",
+              "citation": "Rabinstein AA et al. Neurocrit Care 2004. Fever developing 6\u201324 hours after SAH onset reflects chemical meningitis from subarachnoid blood products; it is not a primary infectious process. Fever is present in up to 72% of SAH during the hospital course. Early fever (within 24h) correlates with haemorrhage volume and predicts delayed cerebral ischaemia; it is distinct from the fever of bacterial meningitis which precedes or accompanies the headache."
+            },
+            {
+              "key": "associations",
+              "value": "Delayed cerebral ischaemia",
+              "logLR": 12,
+              "evidenceLabel": "Neurological deterioration 4\u201314 days post-ictus \u2014 vasospasm / delayed cerebral ischaemia (DCI)",
+              "citation": "Vergouwen MD et al. Stroke 2010. Delayed cerebral ischaemia (DCI) complicates 20\u201330% of aneurysmal SAH, typically presenting 4\u201314 days post-ictus with new focal deficit, confusion, or declining GCS. It reflects cerebral vasospasm plus microthrombosis and cortical spreading depolarisations. Nimodipine reduces DCI (NNT ~15). Deterioration in this time window after a confirmed SAH is DCI until proven otherwise."
+            },
+            {
+              "key": "associations",
+              "value": "Acute hydrocephalus",
+              "logLR": 12,
+              "evidenceLabel": "Acute obstructive hydrocephalus \u2014 blood in ventricles/CSF pathways; rapid GCS decline within hours",
+              "citation": "van Gijn J et al. Lancet 2007. Acute hydrocephalus complicates 20\u201330% of aneurysmal SAH; it results from obstruction of CSF pathways by subarachnoid/intraventricular blood. Clinical presentation: rapid decline in GCS, upgaze palsy, small unreactive pupils. Emergency ventriculostomy is life-saving. Early hydrocephalus on CT predicts worse functional outcome and rebleeding risk."
+            },
+            {
+              "key": "exam",
+              "value": "GCS impaired at presentation",
+              "logLR": 12,
+              "evidenceLabel": "GCS \u226414 at presentation \u2014 WFNS grade II\u2013V; predicts outcome and rebleeding risk",
+              "citation": "Drake CG. J Neurosurg 1988 (WFNS scale). GCS at presentation is the basis of the WFNS (World Federation of Neurosurgical Societies) grading scale: Grade I (GCS 15, no deficit), Grade II (GCS 13\u201314, no deficit), Grade III (GCS 13\u201314 + focal deficit), Grades IV\u2013V (GCS \u226412). WFNS grade III\u2013V carries 30-day mortality >50%. GCS \u226414 with thunderclap headache is a neurosurgical emergency."
+            },
+            {
+              "key": "inv",
+              "value": "DSA confirms aneurysm",
+              "logLR": 20,
+              "evidenceLabel": "Digital subtraction angiography \u2014 gold standard for aneurysm characterisation; defines neck and morphology",
+              "citation": "van Gijn J et al. Lancet 2007. DSA is the gold standard for cerebral aneurysm detection and characterisation (sensitivity ~95\u201399% for aneurysms >3 mm). It defines the aneurysm neck, size, orientation, and relationship to parent vessels \u2014 essential for surgical clipping or endovascular coiling decisions. CTA is first-line in acute SAH; DSA follows when CTA is equivocal or negative despite confirmed SAH."
+            },
+            {
+              "key": "inv",
+              "value": "ECG neurogenic changes",
+              "logLR": 10,
+              "evidenceLabel": "ECG: T-wave inversion, QTc prolongation, ST changes, U-waves \u2014 neurogenic cardiac injury from catecholamine surge",
+              "citation": "Sommargren CE. J Neurosci Nurs 2002; Di Pasquale G et al. Stroke 1987. ECG abnormalities occur in 50\u201380% of SAH; they reflect massive catecholamine release at rupture causing neurogenic myocardial injury (takotsubo-like). Characteristic patterns: diffuse T-wave inversion, QTc prolongation (>500ms \u2014 VF risk), ST elevation/depression, prominent U-waves. ECG should be obtained in all suspected SAH; abnormalities do not require cardiac-focused management unless haemodynamically unstable."
+            },
+            {
+              "key": "inv",
+              "value": "Elevated troponin",
+              "logLR": 8,
+              "evidenceLabel": "Elevated troponin \u2014 neurogenic myocardial injury (not primary ACS) in 20\u201330% of SAH",
+              "citation": "Tung P et al. Neurocrit Care 2004. Troponin elevation occurs in 20\u201330% of SAH from neurogenic myocardial injury (catecholamine-mediated subendocardial ischaemia). It is not primary ACS; coronary angiography is not required unless regional wall motion abnormality is severe. Troponin elevation in SAH independently predicts delayed cerebral ischaemia and poor outcome. Takotsubo (stress) cardiomyopathy occurs in ~2% of SAH."
+            },
+            {
+              "key": "risk",
+              "value": "Prior SAH or known aneurysm",
+              "logLR": 16,
+              "evidenceLabel": "Prior SAH or known untreated / partially treated aneurysm \u2014 extremely high rerupture risk",
+              "citation": "Juvela S et al. Stroke 2000. Untreated aneurysms have an annual rupture risk of 1\u20132% (ISUIA); prior SAH from a different aneurysm or an incompletely treated aneurysm carries substantially higher risk. A patient presenting with thunderclap headache and a known aneurysm has SAH until proven otherwise, regardless of CT result, and requires DSA."
+            },
+            {
+              "key": "risk",
+              "value": "Cocaine / stimulant use",
+              "logLR": 10,
+              "evidenceLabel": "Recent cocaine, amphetamine, or sympathomimetic use \u2014 abrupt BP surge triggers aneurysm rupture",
+              "citation": "Nanda A et al. J Stroke Cerebrovasc Dis 2000. Cocaine and amphetamines cause abrupt hypertensive surges that can rupture pre-existing intracranial aneurysms. Cocaine-associated SAH is the most common non-traumatic cause of intracranial haemorrhage in adults under 45. Onset is typically within 3 hours of use. Toxicology screen should be included in the SAH workup in young patients."
+            },
+            {
+              "key": "risk",
+              "value": "Connective tissue disorder",
+              "logLR": 8,
+              "evidenceLabel": "Marfan syndrome, Ehlers-Danlos Type IV (vascular), or neurofibromatosis \u2014 aneurysm association",
+              "citation": "Schievink WI. NEJM 1997. Vascular connective tissue disorders (Ehlers-Danlos Type IV, Marfan syndrome, pseudoxanthoma elasticum) are associated with intracranial aneurysm formation due to abnormal vessel wall collagen. Ehlers-Danlos Type IV carries the highest risk (COL3A1 mutation). When a young patient presents with SAH and features of CTD (aortic root, lens dislocation, skin hyperextensibility), CTD workup is warranted."
+            },
+            {
+              "key": "risk",
+              "value": "Female sex postmenopausal",
+              "logLR": 6,
+              "evidenceLabel": "Female sex, particularly post-menopause \u2014 1.6:1 F:M ratio in aneurysmal SAH; oestrogen-protective effect lost",
+              "citation": "Longstreth WT et al. Neurology 1993. SAH is 1.6\u00d7 more common in women than men overall; the female predominance becomes more pronounced after menopause, suggesting a protective role of oestrogen on aneurysm wall integrity. Female sex combined with hypertension and smoking gives the highest risk. Female sex alone provides a modest positive LR for SAH over primary headache."
+            },
+            {
+              "key": "inv",
+              "value": "CT negative within 6h AND LP normal",
+              "logLR": -20,
+              "evidenceLabel": "CT negative within 6h of onset AND normal LP \u2014 Ottawa rule negative; effectively excludes SAH",
+              "citation": "Perry JJ et al. NEJM 2011 (Ottawa SAH Rule). Third/fourth-generation CT within 6h of onset has 98.7% sensitivity (100% in prospective validation). When CT within 6h is negative, LP adds sensitivity for xanthochromia (spectrophotometry) for the remaining 1.3%. CT negative <6h + LP normal (no xanthochromia, no RBC) has a negative predictive value of >99.9% for aneurysmal SAH in alert patients. This combination permits safe discharge from emergency."
+            },
+            {
+              "key": "character",
+              "value": "Positional orthostatic headache",
+              "logLR": -12,
+              "evidenceLabel": "Positional headache \u2014 worse upright, relieved lying down \u2014 suggests intracranial hypotension (CSF leak)",
+              "citation": "Schievink WI. NEJM 2006. Orthostatic headache (worse within 15 min of standing, relieved within 30 min of lying down) is the hallmark of intracranial hypotension from spontaneous CSF leak. It is distinct from SAH headache, which is constant and worsened by any movement or light. A clear orthostatic component substantially reduces SAH probability and suggests spontaneous intracranial hypotension (SIH) or post-LP headache."
             }
           ],
           "systems": [
