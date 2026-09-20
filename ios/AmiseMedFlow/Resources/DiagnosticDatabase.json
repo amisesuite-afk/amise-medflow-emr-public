@@ -14924,6 +14924,125 @@
               "logLR": -8,
               "evidenceLabel": "Failure to respond to two different triptans \u2014 reduces migraine probability",
               "citation": "Scher AI et al. Neurology 2003. Non-response to two triptans has positive predictive value for non-migraine diagnosis; consider secondary headache workup. Also consider medication overuse."
+            },
+            {
+              "key": "relieving",
+              "value": "Dark quiet room",
+              "logLR": 12,
+              "evidenceLabel": "Compulsion to lie in a dark, quiet room during attack \u2014 reflects photo/phonophobia severity",
+              "citation": "Goadsby PJ et al. NEJM 2002. The compulsion to seek a dark, quiet environment is one of the most clinically reliable indicators of migraine severity. It directly reflects the photophobia and phonophobia that are ICHD-3 diagnostic criteria. Unlike TTH patients who can often continue activities, migraineurs are typically disabled and seek refuge from sensory stimulation."
+            },
+            {
+              "key": "relieving",
+              "value": "NSAIDs response",
+              "logLR": 8,
+              "evidenceLabel": "Consistent relief with NSAIDs (ibuprofen 400\u2013800 mg, naproxen 500\u20131000 mg, aspirin 900 mg)",
+              "citation": "Tfelt-Hansen P et al. Cephalalgia 2006. NSAIDs are first-line for acute migraine; ibuprofen 400 mg provides relief in ~57%, naproxen 500 mg in ~50% (NNT ~3\u20135). Regular consistent NSAID response is a positive marker for migraine. Failure of NSAIDs at adequate dose is associated with triptan need and more severe phenotype."
+            },
+            {
+              "key": "relieving",
+              "value": "CGRP antagonist / gepant",
+              "logLR": 12,
+              "evidenceLabel": "Response to gepant (ubrogepant, rimegepant) or CGRP monoclonal antibody prevention \u2014 near-pathognomonic",
+              "citation": "Dodick DW et al. NEJM 2019 (erenumab); Lipton RB et al. NEJM 2019 (ubrogepant). CGRP pathway drugs (gepants, ditans, anti-CGRP mAbs) are migraine-specific; their therapeutic response is near-pathognomonic for migraine. Response to erenumab, fremanezumab, or galcanezumab preventive therapy with \u226550% headache-day reduction is a definitive positive feature."
+            },
+            {
+              "key": "associations",
+              "value": "Neck pain during attack",
+              "logLR": 8,
+              "evidenceLabel": "Neck pain as part of migraine attack (trigeminocervical complex activation) \u2014 present in up to 75%",
+              "citation": "Bartsch T & Goadsby PJ. Ann Neurol 2003. Neck pain occurs in 38\u201375% of migraine attacks, reflecting convergence of trigeminal and cervical afferents in the trigeminocervical complex (TCC; C1\u2013C3). Clinically important because neck pain in migraine is often misattributed to 'cervicogenic headache', delaying correct diagnosis. Unlike true cervicogenic headache, migraine neck pain is bilateral, does not restrict cervical ROM, and responds to triptans."
+            },
+            {
+              "key": "associations",
+              "value": "Yawning premonitory",
+              "logLR": 8,
+              "evidenceLabel": "Excessive yawning as premonitory symptom (hours before headache onset) \u2014 most reliable prodromal marker",
+              "citation": "Giffin NJ et al. Neurology 2003. Yawning is the most frequently reported and most reliable premonitory symptom in migraine, present in up to 36% of attacks in prospective diary studies. Patients who recognise yawning as their migraine prodrome can initiate early treatment before pain onset. The mechanism involves dopaminergic hypothalamic activation during the prodrome phase."
+            },
+            {
+              "key": "associations",
+              "value": "Cognitive fog / difficulty concentrating",
+              "logLR": 6,
+              "evidenceLabel": "Cognitive impairment during attack ('brain fog') \u2014 difficulty concentrating, word-finding, memory",
+              "citation": "Farmer K et al. Curr Pain Headache Rep 2012. Cognitive impairment (brain fog, difficulty concentrating, word-finding problems) affects ~50% of migraineurs during attacks and during the postdrome phase. Its occurrence as a prodromal or ictal symptom is more specific to migraine than TTH, reflecting widespread cortical dysfunction beyond the pain-generating mechanism."
+            },
+            {
+              "key": "exacerbating",
+              "value": "Bright light / flicker trigger",
+              "logLR": 8,
+              "evidenceLabel": "Bright light, flickering light, or visual stimuli reliably trigger attacks \u2014 photosensitivity",
+              "citation": "Mulleners WM et al. Cephalalgia 2001. Photosensitivity (sensitivity to light as a trigger) is reported by 50\u201360% of migraineurs as a reliable attack precipitant, reflecting cortical hyperexcitability. Fluorescent lighting, sunlight glare, screen flicker, and cinema stroboscopes are the most common light triggers. This is distinct from ictal photophobia (during attack) and reflects interictal cortical susceptibility."
+            },
+            {
+              "key": "exacerbating",
+              "value": "Weather / barometric pressure change",
+              "logLR": 6,
+              "evidenceLabel": "Weather change or falling barometric pressure as a reliable trigger \u2014 reported in 50\u201375% of migraineurs",
+              "citation": "Scher AI et al. Neurology 2004. Weather-related triggers (barometric pressure drop, storm approach, hot dry winds) are reported by 50\u201375% of migraineurs. Meteorological triggers are relatively specific to migraine over TTH. The proposed mechanism involves barometric pressure changes directly affecting meningeal nociceptors and modulating thalamic gating of pain signals."
+            },
+            {
+              "key": "exacerbating",
+              "value": "Tyramine / chocolate / cheese",
+              "logLR": 6,
+              "evidenceLabel": "Tyramine-containing foods (aged cheese, chocolate, red wine, processed meats) as dietary triggers",
+              "citation": "Scharff L et al. Headache 1995. Dietary triggers including tyramine-rich foods (aged cheeses, chocolate, cured meats, red wine) are reported by 20\u201330% of migraineurs. Chocolate craving in the prodrome phase is often mistaken as the trigger when it is actually the prodrome itself (dopaminergic craving). Dietary triggers are more specific to migraine than TTH."
+            },
+            {
+              "key": "exacerbating",
+              "value": "Strong odours trigger",
+              "logLR": 6,
+              "evidenceLabel": "Strong odours (perfume, paint, smoke) reliably trigger attacks \u2014 olfactory hypersensitivity",
+              "citation": "Kelman L. Cephalalgia 2004. Olfactory triggers are reported by 43% of migraineurs; strong perfume is the most common. This olfactory hypersensitivity reflects interictal central sensitisation and trigeminal nociceptor hyperexcitability. It is a clinically useful trigger history feature that is relatively specific for migraine over TTH."
+            },
+            {
+              "key": "history",
+              "value": "Functional disability / work absence",
+              "logLR": 8,
+              "evidenceLabel": "Significant headache-related functional disability \u2014 unable to work, school absence, bed rest required",
+              "citation": "Lipton RB et al. Headache 2001 (MIDAS). Functional disability distinguishes migraine from TTH at a population level. The MIDAS (Migraine Disability Assessment) questionnaire quantifies lost days; Grade III\u2013IV disability (\u226511 lost days/3 months) is almost exclusively due to migraine. TTH rarely causes such severe functional impairment. Disability documentation supports diagnosis and treatment justification."
+            },
+            {
+              "key": "history",
+              "value": "Perimenopausal worsening",
+              "logLR": 6,
+              "evidenceLabel": "Worsening migraine frequency / severity during perimenopause \u2014 oestrogen fluctuation mechanism",
+              "citation": "MacGregor EA. Maturitas 2012. Migraine worsens in 45\u201360% of women during perimenopause due to oestrogen withdrawal and fluctuation; improves after menopause in 67%. Perimenopausal migraine escalation is a recognised clinical pattern. Conversely, migraine improvement in early pregnancy (oestrogen rise) and worsening postpartum (oestrogen drop) are also characteristic hormonal signatures."
+            },
+            {
+              "key": "exam",
+              "value": "Papilloedema",
+              "logLR": -18,
+              "evidenceLabel": "Papilloedema \u2014 absolute exclusion for primary migraine; indicates raised intracranial pressure",
+              "citation": "ICHD-3 2018. Papilloedema on fundoscopy excludes all primary headache disorders. It indicates raised ICP from space-occupying lesion, IIH, cerebral venous thrombosis, or hydrocephalus. A patient presenting with 'migraine-like' headache and papilloedema has a secondary headache until proven otherwise. Urgent neuroimaging is mandatory before any lumbar puncture attempt."
+            },
+            {
+              "key": "associations",
+              "value": "Meningism / neck stiffness",
+              "logLR": -16,
+              "evidenceLabel": "Neck stiffness / nuchal rigidity \u2014 excludes primary migraine; mandates meningitis / SAH exclusion",
+              "citation": "van de Beek D et al. NEJM 2006; ICHD-3 2018. Meningism (neck stiffness, Kernig's/Brudzinski's signs) is not a feature of migraine and mandates urgent exclusion of bacterial meningitis, subarachnoid haemorrhage, and viral encephalitis. Neck pain in migraine is a subjective symptom without true meningism; objective nuchal rigidity on examination is a red flag requiring LP after neuroimaging."
+            },
+            {
+              "key": "associations",
+              "value": "Fever with headache",
+              "logLR": -14,
+              "evidenceLabel": "Fever accompanying headache \u2014 excludes primary migraine; infection workup mandatory",
+              "citation": "ICHD-3 2018. Fever is not a feature of migraine. Its presence with headache mandates exclusion of bacterial meningitis, viral encephalitis, cerebral abscess, systemic viral illness with headache, and SARS-CoV-2. Even a fever of 37.8\u00b0C with a new or changed headache in a patient with a prior migraine history warrants reassessment for secondary cause."
+            },
+            {
+              "key": "associations",
+              "value": "No photophobia and no phonophobia",
+              "logLR": -10,
+              "evidenceLabel": "Absence of BOTH photophobia and phonophobia \u2014 fails ICHD-3 C criterion for migraine",
+              "citation": "ICHD-3 2018. Migraine Without Aura requires at least one of: nausea/vomiting, OR photophobia AND phonophobia (criterion C). If the patient explicitly denies both photophobia and phonophobia, the ICHD-3 C criterion can only be met by nausea/vomiting alone. Complete absence of photophobia, phonophobia, and nausea eliminates migraine and strongly supports TTH or secondary headache."
+            },
+            {
+              "key": "associations",
+              "value": "Focal neurological deficit",
+              "logLR": -14,
+              "evidenceLabel": "Persistent focal neurological deficit \u2014 not explained by typical migraine aura; secondary cause",
+              "citation": "ICHD-3 2018; Silberstein SD. Lancet Neurol 2004. Migraine aura produces fully reversible neurological symptoms lasting 5\u201360 min. Persistent (>60 min) or progressive neurological deficits in the context of headache mandate urgent secondary workup: ischaemic stroke, cerebral venous thrombosis, CADASIL, and mitochondrial disorders all present with headache plus deficits. Hemiplegic migraine is a rare exception but requires specialist confirmation."
             }
           ],
           "systems": [
