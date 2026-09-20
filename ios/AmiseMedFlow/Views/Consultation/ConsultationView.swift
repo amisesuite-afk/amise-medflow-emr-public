@@ -867,6 +867,222 @@ func socrateDimensions(for cc: String) -> [SOCRATESDimension] {
     ]
 }
 
+// MARK: - Specialty Early Form data
+
+/// A single chip in the specialty early form. The `dimId` + `value` pair maps directly
+/// to a feature key/value in DiagnosticDatabase.json, so tapping the chip feeds the
+/// Bayesian scorer through the existing toggleSOCRATES mechanism.
+struct EFChip: Identifiable {
+    let id = UUID()
+    let label: String
+    let dimId: String          // DB feature key (standard SOCRATES dim or custom specialist key)
+    let value: String          // must match the DB feature value (case-insensitive contains)
+    var multiSelect: Bool = true
+}
+
+/// A labelled group of early-form chips shown under one clinical question.
+struct EFGroup: Identifiable {
+    let id = UUID()
+    let question: String
+    let icon: String
+    let chips: [EFChip]
+}
+
+// swiftlint:disable line_length
+
+// ── Neurology: Headache ──────────────────────────────────────────────────────
+private let neurologHeadacheEarlyForm: [EFGroup] = [
+    EFGroup(question: "Onset character", icon: "clock.badge.exclamationmark.fill", chips: [
+        EFChip(label: "Thunderclap — worst ever",      dimId: "onset",        value: "Thunderclap",            multiSelect: false),
+        EFChip(label: "Sudden",                        dimId: "onset",        value: "Sudden",                 multiSelect: false),
+        EFChip(label: "Sentinel (prior milder episode)", dimId: "onset",      value: "Sentinel headache",      multiSelect: false),
+    ]),
+    EFGroup(question: "Headache character", icon: "waveform.path", chips: [
+        EFChip(label: "Pulsating / throbbing",         dimId: "character",    value: "Pulsating"),
+        EFChip(label: "Pressure / band-like",          dimId: "character",    value: "Pressure"),
+        EFChip(label: "Orbital / retro-orbital",       dimId: "character",    value: "Orbital / retro-orbital"),
+        EFChip(label: "Temporal region",               dimId: "character",    value: "Temporal"),
+        EFChip(label: "Unilateral",                    dimId: "character",    value: "Unilateral"),
+        EFChip(label: "Excruciating severity",         dimId: "character",    value: "Excruciating"),
+    ]),
+    EFGroup(question: "Key associated features", icon: "exclamationmark.triangle.fill", chips: [
+        EFChip(label: "Neck stiffness / meningism",    dimId: "associations", value: "Neck stiffness"),
+        EFChip(label: "Scintillating scotoma",         dimId: "associations", value: "Scintillating scotoma"),
+        EFChip(label: "Jaw claudication",              dimId: "associations", value: "Jaw claudication"),
+        EFChip(label: "Scalp tenderness",              dimId: "associations", value: "Scalp tenderness"),
+        EFChip(label: "Lacrimation / eye watering",    dimId: "associations", value: "Lacrimation"),
+        EFChip(label: "Photophobia / phonophobia",     dimId: "associations", value: "Photophobia"),
+        EFChip(label: "Loss of consciousness",         dimId: "associations", value: "Loss of consciousness"),
+        EFChip(label: "Nausea / vomiting",             dimId: "associations", value: "Nausea"),
+    ]),
+    EFGroup(question: "Timing pattern", icon: "clock.arrow.2.circlepath", chips: [
+        EFChip(label: "Circadian clustering (same time each day)", dimId: "timing", value: "Circadian clustering"),
+        EFChip(label: "Multiple attacks per day",      dimId: "timing",       value: "Multiple attacks per day"),
+        EFChip(label: "Seasonal clustering",           dimId: "timing",       value: "Seasonal clustering"),
+    ]),
+]
+
+// ── Neurology: Dizziness / Vertigo ───────────────────────────────────────────
+private let neurologDizzinessEarlyForm: [EFGroup] = [
+    EFGroup(question: "Type of dizziness", icon: "rotate.3d", chips: [
+        EFChip(label: "Positional (position-triggered)", dimId: "character",  value: "Positional",             multiSelect: false),
+        EFChip(label: "Lightheadedness / near-faint",  dimId: "character",    value: "Lightheadedness",        multiSelect: false),
+    ]),
+    EFGroup(question: "Pattern & trigger", icon: "clock.arrow.2.circlepath", chips: [
+        EFChip(label: "Brief (seconds)",               dimId: "timing",       value: "Brief"),
+        EFChip(label: "Episodic (minutes–hours)",       dimId: "timing",       value: "Episodic"),
+        EFChip(label: "Continuous / persistent",       dimId: "timing",       value: "Continuous"),
+        EFChip(label: "Rolling over in bed",           dimId: "exacerbating", value: "Rolling over"),
+        EFChip(label: "Standing up / postural change", dimId: "exacerbating", value: "Standing up"),
+        EFChip(label: "Looking upward",                dimId: "exacerbating", value: "Looking up"),
+    ]),
+    EFGroup(question: "Associated features", icon: "list.bullet.circle.fill", chips: [
+        EFChip(label: "Tinnitus",                      dimId: "associations", value: "Tinnitus"),
+        EFChip(label: "Hearing loss",                  dimId: "associations", value: "Hearing loss"),
+        EFChip(label: "Diplopia / double vision",      dimId: "associations", value: "Diplopia"),
+        EFChip(label: "Dysarthria / slurred speech",   dimId: "associations", value: "Dysarthria"),
+        EFChip(label: "Limb ataxia / unsteadiness",    dimId: "associations", value: "Limb ataxia"),
+        EFChip(label: "Diaphoresis / sweating",        dimId: "associations", value: "Diaphoresis"),
+    ]),
+]
+
+// ── Neurosurgery: Head injury / Trauma ───────────────────────────────────────
+private let neurosurgTraumaEarlyForm: [EFGroup] = [
+    EFGroup(question: "Key clinical history", icon: "bolt.trianglebadge.exclamationmark.fill", chips: [
+        EFChip(label: "Lucid interval (talked, then deteriorated)", dimId: "lucid_interval",   value: "present"),
+        EFChip(label: "New-onset seizure post-injury",              dimId: "seizure",          value: "new_onset_adult"),
+        EFChip(label: "Ipsilateral pupil dilation",                dimId: "pupil",            value: "ipsilateral_dilation"),
+    ]),
+    EFGroup(question: "Associated symptoms", icon: "exclamationmark.triangle.fill", chips: [
+        EFChip(label: "Thunderclap / sudden severe headache",       dimId: "onset",            value: "Thunderclap"),
+        EFChip(label: "Neck stiffness",                            dimId: "associations",     value: "Neck stiffness"),
+        EFChip(label: "Loss of consciousness",                     dimId: "associations",     value: "Loss of consciousness"),
+    ]),
+]
+
+// ── Neurosurgery: Severe headache ─────────────────────────────────────────────
+private let neurosurgHeadacheEarlyForm: [EFGroup] = [
+    EFGroup(question: "Onset", icon: "clock.badge.exclamationmark.fill", chips: [
+        EFChip(label: "Thunderclap — worst ever",      dimId: "onset",        value: "Thunderclap",            multiSelect: false),
+        EFChip(label: "Sudden",                        dimId: "onset",        value: "Sudden",                 multiSelect: false),
+        EFChip(label: "Sentinel (prior milder)",       dimId: "onset",        value: "Sentinel headache",      multiSelect: false),
+    ]),
+    EFGroup(question: "Red flag features", icon: "exclamationmark.triangle.fill", chips: [
+        EFChip(label: "Neck stiffness / meningism",    dimId: "associations", value: "Neck stiffness"),
+        EFChip(label: "Loss of consciousness",         dimId: "associations", value: "Loss of consciousness"),
+        EFChip(label: "Seizure at onset",              dimId: "associations", value: "Seizure at ictus"),
+        EFChip(label: "Lucid interval (post-trauma)",  dimId: "lucid_interval", value: "present"),
+        EFChip(label: "Progressive over days/weeks",   dimId: "new_focal_deficit", value: "present"),
+    ]),
+]
+
+// ── Neurosurgery: Brain tumour / Hydrocephalus ───────────────────────────────
+private let neurosurgTumourEarlyForm: [EFGroup] = [
+    EFGroup(question: "Specific features", icon: "brain.head.profile", chips: [
+        EFChip(label: "New-onset seizure in adult",                dimId: "seizure",          value: "new_onset_adult"),
+        EFChip(label: "Progressive focal neurological deficit",    dimId: "new_focal_deficit", value: "present"),
+        EFChip(label: "Gait + cognition + incontinence triad",     dimId: "triad_nph",        value: "gait_cognitive_incontinence"),
+        EFChip(label: "Headache worse lying flat / AM",            dimId: "associations",     value: "Loss of consciousness"),
+    ]),
+]
+
+// ── Cardiology: Chest pain ───────────────────────────────────────────────────
+private let cardiologyChestEarlyForm: [EFGroup] = [
+    EFGroup(question: "Pain character", icon: "heart.fill", chips: [
+        EFChip(label: "Pressure / tightness",          dimId: "character",    value: "Pressure"),
+        EFChip(label: "Tearing / ripping",             dimId: "character",    value: "Tearing"),
+        EFChip(label: "Sharp / pleuritic",             dimId: "character",    value: "Sharp"),
+    ]),
+    EFGroup(question: "Radiation", icon: "arrow.up.right.and.arrow.down.left", chips: [
+        EFChip(label: "Arm radiation",                 dimId: "radiation",    value: "Arm"),
+        EFChip(label: "Jaw radiation",                 dimId: "radiation",    value: "Jaw"),
+        EFChip(label: "Back radiation",                dimId: "radiation",    value: "Back"),
+    ]),
+    EFGroup(question: "Modifying factors & onset", icon: "arrow.2.circlepath", chips: [
+        EFChip(label: "Exertion-triggered",            dimId: "exacerbating", value: "Exertion"),
+        EFChip(label: "Relieved by rest",              dimId: "relieving",    value: "Rest"),
+        EFChip(label: "Relieved by nitrates",          dimId: "relieving",    value: "Nitrates"),
+        EFChip(label: "Sudden onset",                  dimId: "onset",        value: "Sudden"),
+        EFChip(label: "Shortness of breath",           dimId: "associations", value: "Shortness of breath"),
+    ]),
+]
+
+// ── Cardiology: Arrhythmia / Palpitations ────────────────────────────────────
+private let cardiologyArrhythmiaEarlyForm: [EFGroup] = [
+    EFGroup(question: "ECG pattern (if available)", icon: "waveform.path.ecg.rectangle", chips: [
+        EFChip(label: "Irregularly irregular pulse",   dimId: "pulse",        value: "irregularly_irregular"),
+        EFChip(label: "No P waves (AF on ECG)",        dimId: "ecg",          value: "no_p_waves_irregular_rhythm"),
+        EFChip(label: "Short PR + delta wave (WPW)",   dimId: "ecg",          value: "short_pr_delta_wave"),
+        EFChip(label: "Wide QRS, regular >100 bpm",    dimId: "ecg",          value: "wide_qrs_regular_above_100"),
+        EFChip(label: "P waves independent of QRS",    dimId: "ecg",          value: "p_waves_independent_qrs"),
+    ]),
+    EFGroup(question: "Clinical context", icon: "heart.text.square.fill", chips: [
+        EFChip(label: "Known structural heart disease", dimId: "structural_heart_disease", value: "present"),
+        EFChip(label: "Terminates with vagal manoeuvre", dimId: "vagal_response",          value: "terminates"),
+    ]),
+]
+
+// ── Internal Medicine: Anaemia workup ────────────────────────────────────────
+private let internalMedAnaemiaEarlyForm: [EFGroup] = [
+    EFGroup(question: "Associated features", icon: "drop.circle.fill", chips: [
+        EFChip(label: "Crisis pain (sickle)",          dimId: "associations", value: "Crisis pain"),
+        EFChip(label: "Jaundice (haemolysis)",         dimId: "associations", value: "Jaundice"),
+        EFChip(label: "Pica (craving non-food items)", dimId: "associations", value: "Pica"),
+        EFChip(label: "Peripheral neuropathy (B12)",   dimId: "associations", value: "Neuropathy"),
+        EFChip(label: "Dark urine (haemolysis)",       dimId: "associations", value: "Dark urine"),
+        EFChip(label: "Pallor",                        dimId: "associations", value: "Pallor"),
+        EFChip(label: "Sore tongue (B12/folate)",      dimId: "associations", value: "Sore tongue"),
+    ]),
+]
+
+// ── Internal Medicine: Fatigue ───────────────────────────────────────────────
+private let internalMedFatigueEarlyForm: [EFGroup] = [
+    EFGroup(question: "Duration & pattern", icon: "clock.arrow.2.circlepath", chips: [
+        EFChip(label: "Worse with exertion (CFS/ME)",  dimId: "associations", value: "Post-exertional malaise"),
+        EFChip(label: ">6 months duration",            dimId: "timing",       value: ">6 months"),
+        EFChip(label: ">2 weeks duration",             dimId: "timing",       value: ">2 weeks"),
+    ]),
+    EFGroup(question: "Specific associated features", icon: "list.bullet.circle.fill", chips: [
+        EFChip(label: "Low mood / anhedonia",          dimId: "associations", value: "Low mood"),
+        EFChip(label: "Snoring / witnessed apnoea",    dimId: "associations", value: "Witnessed apnoea"),
+        EFChip(label: "Polyuria / polydipsia (DM)",    dimId: "associations", value: "Polyuria"),
+        EFChip(label: "Cold intolerance (hypothyroid)", dimId: "associations", value: "Cold intolerance"),
+        EFChip(label: "Pallor (anaemia)",              dimId: "associations", value: "Pallor"),
+        EFChip(label: "Cognitive impairment",          dimId: "associations", value: "Cognitive impairment"),
+    ]),
+]
+
+// swiftlint:enable line_length
+
+/// Returns the early form chip groups for the given specialty hint + chief complaint.
+/// Returns an empty array when no targeted form exists for the combination.
+func specialtyEarlyFormGroups(hint: String, cc: String) -> [EFGroup] {
+    let lc = cc.lowercased()
+    switch hint {
+    case "Neurology":
+        if lc.contains("headache") || lc.contains("migraine") { return neurologHeadacheEarlyForm }
+        if lc.contains("dizz") || lc.contains("vertigo") { return neurologDizzinessEarlyForm }
+        return []
+    case "Neurosurgery":
+        if lc.contains("head injur") || lc.contains("trauma") { return neurosurgTraumaEarlyForm }
+        if lc.contains("severe") || lc.contains("headache") { return neurosurgHeadacheEarlyForm }
+        if lc.contains("tumour") || lc.contains("tumor") || lc.contains("hydrocephal") { return neurosurgTumourEarlyForm }
+        return []
+    case "Cardiology":
+        if lc.contains("chest") { return cardiologyChestEarlyForm }
+        if lc.contains("arrhythmia") || lc.contains("palpitation") || lc.contains("atrial") || lc.contains("fibrillation") {
+            return cardiologyArrhythmiaEarlyForm
+        }
+        return []
+    case "Internal Medicine":
+        if lc.contains("anaemia") || lc.contains("anemia") { return internalMedAnaemiaEarlyForm }
+        if lc.contains("fatigue") || lc.contains("tired") || lc.contains("lethargy") { return internalMedFatigueEarlyForm }
+        return []
+    default:
+        return []
+    }
+}
+
 // MARK: - Consultation sub-tab
 
 enum ConsultTab: String, CaseIterable {
@@ -1666,6 +1882,56 @@ struct ConsultationView: View {
         }
     }
 
+    // MARK: - Specialty Early Form
+
+    /// Renders targeted clinical flag chips above the SOCRATES builder when a focused
+    /// specialty CC is selected. Chips pre-populate socratesSelections, feeding directly
+    /// into the Bayesian scorer without requiring SOCRATES to be re-opened.
+    @ViewBuilder
+    private var specialtyEarlyFormSection: some View {
+        let hint = selectedSpecialtyHint ?? ""
+        let cc   = patient.chiefComplaint ?? ""
+        let groups = specialtyEarlyFormGroups(hint: hint, cc: cc)
+        if !groups.isEmpty {
+            Section {
+                ForEach(groups) { group in
+                    VStack(alignment: .leading, spacing: 6) {
+                        Label(group.question, systemImage: group.icon)
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(.secondary)
+                        ChipFlow(hSpacing: 7, vSpacing: 7) {
+                            ForEach(group.chips) { chip in
+                                let isSelected = (socratesSelections[chip.dimId] ?? []).contains(chip.value)
+                                Button {
+                                    toggleSOCRATES(dimId: chip.dimId, chip: chip.value, multiSelect: chip.multiSelect)
+                                } label: {
+                                    Text(chip.label)
+                                        .font(.system(size: 12, weight: isSelected ? .semibold : .regular))
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 5)
+                                        .background(isSelected ? AMColor.accent : AMColor.accentLt, in: Capsule())
+                                        .foregroundStyle(isSelected ? Color.white : AMColor.accent)
+                                        .animation(.easeInOut(duration: 0.12), value: isSelected)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+            } header: {
+                Label("Quick Clinical Flags — \(hint)", systemImage: "staroflife.fill")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(AMColor.accent)
+                    .textCase(nil)
+            } footer: {
+                Text("Chips feed the Bayesian scorer directly. Tap to select — findings also appear in SOCRATES.")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+    }
+
     // MARK: - HPI tab (SOCRATES chip builder)
 
     // Chip sets re-evaluated whenever the CC changes
@@ -1735,6 +2001,9 @@ struct ConsultationView: View {
 
     private var hpiTab: some View {
         List {
+            // Specialty early form: targeted discriminating chips before full SOCRATES
+            specialtyEarlyFormSection
+
             // SOCRATES builder accordion
             Section {
                 ForEach(adaptedSocrateDimensions) { dim in

@@ -807,7 +807,14 @@ enum BayesianDiagnosisEngine {
                     if let threshold = Double(f.value), let bmiVal = bmi { triggered = bmiVal > 0 && bmiVal < threshold }
                     sourceKey = "demographics"
                 default:
-                    break
+                    // Extended match: specialty early-form chips may store any custom DB key
+                    // (e.g. lucid_interval, ecg, triad_nph) into socratesSelections.
+                    // This lets specialist pool features fire from the early form without
+                    // requiring structural changes to those pools.
+                    if let sel = socrates[f.key], !sel.isEmpty {
+                        triggered = sel.contains(where: { $0.lowercased().contains(f.value.lowercased()) })
+                        sourceKey = "symptoms"
+                    }
                 }
 
                 if triggered {
