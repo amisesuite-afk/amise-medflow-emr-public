@@ -14678,6 +14678,146 @@
               "value": "lp",
               "logLR": 18,
               "evidenceLabel": "LP — xanthochromia / blood-stained CSF"
+            },
+            {
+              "key": "onset",
+              "value": "Sentinel headache",
+              "logLR": 16,
+              "evidenceLabel": "Sentinel / warning headache days before — prodromal minor bleed",
+              "citation": "Backes D et al. Stroke 2012. Sentinel headache precedes 20–40% of SAH. LR+ ~7.0. Prompt re-presentation avoids delayed diagnosis."
+            },
+            {
+              "key": "onset",
+              "value": "Exertional onset",
+              "logLR": 12,
+              "evidenceLabel": "Onset during exertion / straining / sexual activity (Valsalva)",
+              "citation": "Feigin VL et al. Lancet Neurol 2009. Strenuous physical activity and sexual activity are established precipitants of aneurysmal rupture. OR 3.5–10."
+            },
+            {
+              "key": "character",
+              "value": "Occipital",
+              "logLR": 8,
+              "evidenceLabel": "Occipital / nuchal pain radiating to neck and back",
+              "citation": "Linn FH et al. Lancet 1994. Occipital onset with radiation to neck and back is characteristic of SAH; blood tracks posteriorly and down the spinal canal."
+            },
+            {
+              "key": "character",
+              "value": "10/10 severity",
+              "logLR": 12,
+              "evidenceLabel": "'Worst headache of life' — maximal severity at onset (10/10)",
+              "citation": "Perry JJ et al. CMAJ 2010. Severity 'worst ever' LR+ 11.0 for SAH vs other thunderclap headaches."
+            },
+            {
+              "key": "exam",
+              "value": "Kernig / Brudzinski positive",
+              "logLR": 14,
+              "evidenceLabel": "Kernig's / Brudzinski's sign — meningeal irritation by subarachnoid blood",
+              "citation": "Thomas KE et al. Lancet 2002. Kernig's LR+ 6.1, Brudzinski's LR+ 4.3 for bacterial meningitis; also positive in SAH as blood causes chemical meningism."
+            },
+            {
+              "key": "exam",
+              "value": "CN III palsy",
+              "logLR": 18,
+              "evidenceLabel": "Ipsilateral CN III palsy — posterior communicating artery aneurysm",
+              "citation": "Kissel JT et al. JAMA 1983. Isolated pupil-involving CN III palsy: aneurysm (PCoA) sensitivity 97%, specificity 99%. Treat as aneurysm until proven otherwise."
+            },
+            {
+              "key": "exam",
+              "value": "Fixed dilated pupil",
+              "logLR": 20,
+              "evidenceLabel": "Unilateral fixed dilated pupil — CN III compression / transtentorial herniation",
+              "citation": "Connolly ES et al. Stroke 2012. Fixed dilated pupil in SAH indicates imminent herniation — neurosurgical emergency. AHA/ASA Class I recommendation for immediate imaging."
+            },
+            {
+              "key": "exam",
+              "value": "Retinal haemorrhage",
+              "logLR": 16,
+              "evidenceLabel": "Retinal / preretinal haemorrhage — Terson syndrome (vitreous bleed)",
+              "citation": "Pfausler B et al. J Neurosurg 1996. Terson syndrome (vitreous / preretinal haemorrhage) present in 13% of SAH; associated with higher Hunt-Hess grade. Specificity near 100% for SAH when present."
+            },
+            {
+              "key": "exam",
+              "value": "Focal neurological deficit",
+              "logLR": 12,
+              "evidenceLabel": "Focal neurological deficit — hemiparesis, dysphasia, or cranial nerve palsy",
+              "citation": "van Gijn J et al. Lancet 2007. Focal deficits in SAH indicate parenchymal involvement, vasospasm, or intracerebral haematoma from aneurysm rupture."
+            },
+            {
+              "key": "associations",
+              "value": "Back or leg pain",
+              "logLR": 8,
+              "evidenceLabel": "Back pain / leg pain — subarachnoid blood tracking down the spinal canal",
+              "citation": "Linn FH et al. Lancet 1994. Lumbar back pain and bilateral leg pain from lumbar nerve root irritation occurs as blood descends the subarachnoid space."
+            },
+            {
+              "key": "history",
+              "value": "Family history SAH",
+              "logLR": 12,
+              "evidenceLabel": "Family history of SAH or intracranial aneurysm in 1st-degree relative",
+              "citation": "Broderick JP et al. Stroke 2009. First-degree relative with SAH: RR 3–7. Familial SAH accounts for 5–20% of cases. Indicates heritable aneurysm susceptibility."
+            },
+            {
+              "key": "history",
+              "value": "Polycystic kidney disease",
+              "logLR": 10,
+              "evidenceLabel": "Polycystic kidney disease — 10× increased risk of intracranial aneurysm",
+              "citation": "Chapman AB et al. J Am Soc Nephrol 1992. Prevalence of intracranial aneurysm in ADPKD: 8% (vs 1–2% general population). PKD1 gene mutation particularly associated."
+            },
+            {
+              "key": "risk",
+              "value": "Hypertension",
+              "logLR": 6,
+              "evidenceLabel": "Hypertension — established risk factor for aneurysm formation and rupture",
+              "citation": "Feigin VL et al. Lancet Neurol 2009. Hypertension OR 2.5 for SAH; accounts for ~25% of attributable risk. Systolic >160 associated with 4× rupture rate."
+            },
+            {
+              "key": "risk",
+              "value": "Smoking",
+              "logLR": 4,
+              "evidenceLabel": "Smoking — doubles SAH risk; dose-dependent relationship",
+              "citation": "Broderick JP et al. Stroke 1994. Smoking RR 2.2 for SAH; pack-years correlated with risk. Current smokers have higher aneurysm rupture rates than ex-smokers."
+            },
+            {
+              "key": "risk",
+              "value": "Age 40-65",
+              "logLR": 4,
+              "evidenceLabel": "Age 40–65 — peak incidence of aneurysmal SAH (mean age 55)",
+              "citation": "de Rooij NK et al. J Neurol Neurosurg Psychiatry 2007. Incidence peaks 55–65y. SAH accounts for 5% of all strokes but 27% of stroke-related life-years lost."
+            },
+            {
+              "key": "inv",
+              "value": "cta aneurysm",
+              "logLR": 20,
+              "evidenceLabel": "CT angiography — cerebral aneurysm identified (site, size, morphology)",
+              "citation": "van der Schaaf I et al. Stroke 2005. CT angiography sensitivity 97.7% for aneurysms ≥4mm; replaces catheter angiography as first-line in acute SAH workup."
+            },
+            {
+              "key": "inv",
+              "value": "mri flair sah",
+              "logLR": 16,
+              "evidenceLabel": "MRI FLAIR — subarachnoid hyperintensity (more sensitive than CT after 24h)",
+              "citation": "Verma RK et al. Radiology 2013. FLAIR MRI sensitivity 87–100% for SAH >24h old (CT sensitivity drops to 50% at 5–7 days). Essential for late-presenting cases."
+            },
+            {
+              "key": "onset",
+              "value": "Gradual onset hours",
+              "logLR": -14,
+              "evidenceLabel": "Gradual onset over hours — argues strongly against SAH (which is instantaneous)",
+              "citation": "Perry JJ et al. BMJ 2011. Ottawa SAH Rule excludes thunderclap headaches reaching peak in >1h. Gradual-onset headache LR- 0.08 for SAH."
+            },
+            {
+              "key": "history",
+              "value": "Previous identical headaches",
+              "logLR": -10,
+              "evidenceLabel": "Previous identical headaches — establishes recurrent benign headache pattern",
+              "citation": "Linn FHH et al. Neurology 1998. In thunderclap headache, a prior identical episode reduces SAH probability; Ottawa Rule includes this as exclusion criterion."
+            },
+            {
+              "key": "character",
+              "value": "Mild intensity",
+              "logLR": -10,
+              "evidenceLabel": "Mild intensity (≤5/10) — SAH is typically the worst pain ever experienced",
+              "citation": "Perry JJ et al. CMAJ 2010. Severity ≤5/10 significantly reduces SAH likelihood. Most SAH patients rate pain 8–10/10."
             }
           ],
           "systems": [
