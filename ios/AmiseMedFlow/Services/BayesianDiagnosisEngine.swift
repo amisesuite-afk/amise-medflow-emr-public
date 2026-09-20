@@ -107,9 +107,13 @@ enum BayesianDiagnosisEngine {
 
         var candidates: [Candidate]
         switch true {
-        case ccL.contains("jaundice") || ccL.contains("yellow"):
+        case ccL.contains("jaundice") || ccL.contains("yellow") ||
+             ccL.contains("dark urine") || ccL.contains("pale stool") ||
+             ccL.contains("clay stool") || (ccL.contains("pruritus") && ccL.contains("jaund")):
             candidates = externalPool("jaundice") ?? jaundice
-        case ccL.contains("dysphagia") || ccL.contains("swallow"):
+        case ccL.contains("dysphagia") || ccL.contains("swallow") ||
+             ccL.contains("odynophagia") || ccL.contains("painful swallow") ||
+             ccL.contains("difficulty eating"):
             candidates = externalPool("dysphagia") ?? dysphagia
         case ccL.contains("rectal bleed") || ccL.contains("blood per rectum") ||
              ccL.contains("haematochezia") || ccL.contains("bpr"):
@@ -117,19 +121,30 @@ enum BayesianDiagnosisEngine {
         case ccL.contains("bowel habit") || ccL.contains("change in stool") ||
              ccL.contains("constipation") || ccL.contains("diarrhoea") || ccL.contains("diarrhea"):
             candidates = externalPool("bowelHabit") ?? bowelHabit
-        case ccL.contains("breast") && (ccL.contains("lump") || ccL.contains("mass")):
+        case ccL.contains("breast") && (ccL.contains("lump") || ccL.contains("mass") ||
+             ccL.contains("nipple") || ccL.contains("discharge") || ccL.contains("pain") ||
+             ccL.contains("skin change") || ccL.contains("dimpling")) ||
+             (ccL.contains("axillary") && ccL.contains("lump")):
             candidates = externalPool("breastLump") ?? breastLump
-        case ccL.contains("neck") && (ccL.contains("lump") || ccL.contains("swelling") || ccL.contains("mass")):
+        case ccL.contains("neck") && (ccL.contains("lump") || ccL.contains("swelling") || ccL.contains("mass")) ||
+             ccL.contains("lymphadenopathy") || ccL.contains("lymph node") ||
+             ccL.contains("facial swelling") || ccL.contains("submandibular swelling"):
             candidates = externalPool("neckLump") ?? neckLump
         case ccL.contains("thyroid") || ccL.contains("hypothyroid") ||
              ccL.contains("hyperthyroid") || ccL.contains("graves") ||
              ccL.contains("goitre") || ccL.contains("hashimoto") ||
-             ccL.contains("thyrotoxic") || ccL.contains("tsh"):
+             ccL.contains("thyrotoxic") || ccL.contains("tsh") ||
+             ccL.contains("hoarseness") || ccL.contains("voice change") ||
+             ccL.contains("heat intolerance") || ccL.contains("cold intolerance") ||
+             (ccL.contains("tremor") && (ccL.contains("thyroid") || ccL.contains("weight loss"))):
             candidates = externalPool("thyroidPathology") ?? thyroidPathology
         case ccL.contains("hernia") || (ccL.contains("groin") && ccL.contains("lump")):
             candidates = externalPool("hernia") ?? hernia
         case ccL.contains("perianal") || ccL.contains("haemorrhoid") ||
-             ccL.contains("hemorrhoid") || ccL.contains("anal pain") || ccL.contains("piles"):
+             ccL.contains("hemorrhoid") || ccL.contains("anal pain") || ccL.contains("piles") ||
+             ccL.contains("anal discharge") || ccL.contains("pruritus ani") ||
+             ccL.contains("fecal incontinence") || ccL.contains("faecal incontinence") ||
+             (ccL.contains("anal") && ccL.contains("lump")):
             candidates = externalPool("perianal") ?? perianal
         case ccL.contains("weight loss") || ccL.contains("anorexia") || ccL.contains("cachexia"):
             candidates = externalPool("weightLoss") ?? weightLoss
@@ -198,7 +213,10 @@ enum BayesianDiagnosisEngine {
         case ccL.contains("vascular") || ccL.contains("mesenteric") ||
              ccL.contains("ischaemia") || ccL.contains("ischemia") ||
              ccL.contains("aortic") || ccL.contains("claudicat") ||
-             ccL.contains("limb ischaemia") || ccL.contains("peripheral arterial"):
+             ccL.contains("limb ischaemia") || ccL.contains("peripheral arterial") ||
+             ccL.contains("varicose vein") || ccL.contains("non-healing ulcer") ||
+             ccL.contains("venous ulcer") || ccL.contains("pulsatile mass") ||
+             ccL.contains("arterial ulcer"):
             candidates = externalPool("vascularSurgical") ?? vascularSurgical
         case ccL.contains("bowel obstruct") || ccL.contains("small bowel") ||
              ccL.contains("volvulus") || ccL.contains("intussuscep") ||
@@ -211,14 +229,20 @@ enum BayesianDiagnosisEngine {
              ccL.contains("loin to groin") || ccL.contains("renal calcul"):
             candidates = externalPool("renalColic") ?? renalColic
         case ccL.contains("stroke") || ccL.contains("tia") || ccL.contains("transient ischaem") ||
-             ccL.contains("facial droop") || ccL.contains("hemiplegia") || ccL.contains("hemiparesis"):
+             ccL.contains("facial droop") || ccL.contains("hemiplegia") || ccL.contains("hemiparesis") ||
+             ccL.contains("aphasia") || ccL.contains("dysphasia") || ccL.contains("dysarthria") ||
+             ccL.contains("speech difficulty") || ccL.contains("gait disturbance") ||
+             (ccL.contains("sudden") && (ccL.contains("weakness") || ccL.contains("numbness"))) ||
+             (ccL.contains("visual") && (ccL.contains("sudden") || ccL.contains("loss"))):
             candidates = externalPool("strokeTIA") ?? strokeTIA
         case ccL.contains("anaemia") || ccL.contains("anemia") ||
              (ccL.contains("fatigue") && ccL.contains("pallor")) ||
              ccL.contains("low haemoglobin") || ccL.contains("low hemoglobin"):
             candidates = externalPool("anaemia") ?? anaemia
         case (ccL.contains("wound") || ccL.contains("surgical site")) &&
-             (ccL.contains("infect") || ccL.contains("discharge") || ccL.contains("dehisc")):
+             (ccL.contains("infect") || ccL.contains("discharge") || ccL.contains("dehisc")) ||
+             ccL.contains("cellulitis") ||
+             (ccL.contains("abscess") && !ccL.contains("perianal") && !ccL.contains("pilonidal")):
             candidates = externalPool("woundInfection") ?? woundInfection
         case ccL.contains("sepsis") || ccL.contains("septic") || ccL.contains("bacteraemia") ||
              ccL.contains("sirs") || (ccL.contains("fever") && ccL.contains("shock")):
@@ -354,7 +378,12 @@ enum BayesianDiagnosisEngine {
              ccL.contains("cardiomyopathy") || ccL.contains("valvular") ||
              ccL.contains("aortic stenosis") || ccL.contains("mitral") ||
              ccL.contains("tamponade") || ccL.contains("low ejection fraction") ||
-             ccL.contains("hfref") || ccL.contains("hfpef"):
+             ccL.contains("hfref") || ccL.contains("hfpef") ||
+             ccL.contains("orthopnoea") || ccL.contains("orthopnea") ||
+             ccL.contains("paroxysmal nocturnal dyspnoea") || ccL.contains("pnd") ||
+             (ccL.contains("leg") && ccL.contains("swelling") && !ccL.contains("cellulitis")) ||
+             (ccL.contains("ankle") && ccL.contains("swelling")) ||
+             ccL.contains("exercise intolerance") || ccL.contains("reduced exercise"):
             candidates = externalPool("cardiacFailure") ?? []
         case ccL.contains("atrial fibrillation") || ccL.contains("af ") || ccL == "af" ||
              ccL.contains("arrhythmia") || ccL.contains("svt") ||
@@ -381,6 +410,70 @@ enum BayesianDiagnosisEngine {
              ccL.contains("mental health") || ccL.contains("insomnia") ||
              ccL.contains("substance") || ccL.contains("ptsd") || ccL.contains("eating disorder"):
             candidates = externalPool("generalMedicine") ?? []
+
+        // ── Cardiovascular / Syncope ──────────────────────────────────────
+        case ccL.contains("syncope") || ccL.contains("syncopal") ||
+             ccL.contains("faint") || ccL.contains("fainting") ||
+             ccL.contains("blackout") || ccL.contains("black out") ||
+             ccL.contains("loss of consciousness") || ccL.contains("collapse") ||
+             ccL.contains("pre-syncope") || ccL.contains("presyncope"):
+            candidates = externalPool("syncope") ?? []
+
+        // ── ENT — Sore throat ─────────────────────────────────────────────
+        case ccL.contains("sore throat") || ccL.contains("throat pain") ||
+             ccL.contains("tonsil") || ccL.contains("tonsillit") ||
+             ccL.contains("pharyngit") || ccL.contains("odynophagia") ||
+             (ccL.contains("throat") && (ccL.contains("swell") || ccL.contains("infect"))):
+            candidates = externalPool("soreThroat") ?? []
+
+        // ── ENT — Epistaxis ───────────────────────────────────────────────
+        case ccL.contains("epistaxis") || ccL.contains("nosebleed") ||
+             ccL.contains("nose bleed") || ccL.contains("nasal bleed") ||
+             ccL.contains("blood from nose"):
+            candidates = externalPool("epistaxis") ?? []
+
+        // ── Ophthalmology ─────────────────────────────────────────────────
+        case ccL.contains("eye pain") || ccL.contains("red eye") ||
+             ccL.contains("visual loss") || ccL.contains("vision loss") ||
+             ccL.contains("blurred vision") || ccL.contains("diplopia") ||
+             ccL.contains("double vision") || ccL.contains("flashes") ||
+             ccL.contains("floaters") || ccL.contains("photophobia") ||
+             ccL.contains("eye complaint") || ccL.contains("ocular") ||
+             (ccL.contains("eye") && (ccL.contains("swell") || ccL.contains("discharge") || ccL.contains("itch"))):
+            candidates = externalPool("eyeComplaint") ?? []
+
+        // ── Neurology — Seizure ───────────────────────────────────────────
+        case ccL.contains("seizure") || ccL.contains("convulsion") ||
+             ccL.contains("epilepsy") || ccL.contains("fit ") || ccL == "fit" ||
+             ccL.contains("tonic-clonic") || ccL.contains("tonic clonic") ||
+             ccL.contains("status epilepticus") || ccL.contains("postictal") ||
+             (ccL.contains("jerking") && ccL.contains("uncontroll")):
+            candidates = externalPool("seizure") ?? []
+
+        // ── Leg swelling (unrouted) ───────────────────────────────────────
+        case ccL.contains("leg swelling") || ccL.contains("swollen leg") ||
+             ccL.contains("bilateral leg") || ccL.contains("lower limb swelling") ||
+             ccL.contains("pitting oedema") || ccL.contains("pitting edema"):
+            candidates = externalPool("cardiacFailure") ?? []
+
+        // ── Penile / urethral (unrouted) ──────────────────────────────────
+        case ccL.contains("penile") || ccL.contains("penis") ||
+             ccL.contains("urethral discharge") || ccL.contains("phimosis") ||
+             ccL.contains("paraphimosis") || ccL.contains("priapism"):
+            candidates = externalPool("scrotalTesticular") ?? scrotalTesticular
+
+        // ── Easy bruising / coagulopathy (unrouted) ───────────────────────
+        case ccL.contains("easy bruising") || ccL.contains("bruising") ||
+             ccL.contains("prolonged bleeding") || ccL.contains("coagulopathy") ||
+             ccL.contains("thrombocytopenia") || ccL.contains("haemophilia") ||
+             ccL.contains("petechiae") || ccL.contains("purpura"):
+            candidates = externalPool("anaemia") ?? anaemia
+
+        // ── Night sweats / constitutional (unrouted) ──────────────────────
+        case ccL.contains("night sweat") || ccL.contains("drenching sweat") ||
+             ccL.contains("constitutional symptom") ||
+             (ccL.contains("sweat") && ccL.contains("night")):
+            candidates = externalPool("feverInfection") ?? feverInfection
 
         default:
             // Wide-net general medicine catch-all — no longer surgical-biased
@@ -427,6 +520,21 @@ enum BayesianDiagnosisEngine {
         // Secondary pool: appendicitis overlay on RIF or periumbilical pain
         if ccL.contains("right iliac") || ccL.contains("rif") || ccL.contains("appendic") ||
            (ccL.contains("periumbilical") && ccL.contains("migrat")) { mergePool("rightIliacFossaPain") }
+        // Secondary pool: syncope overlay on dizziness / presyncope / collapse
+        if ccL.contains("syncope") || ccL.contains("faint") || ccL.contains("collapse") ||
+           ccL.contains("blackout") { mergePool("syncope") }
+        // Secondary pool: seizure overlay on loss of consciousness / convulsion
+        if ccL.contains("seizure") || ccL.contains("convulsion") ||
+           ccL.contains("postictal") { mergePool("seizure") }
+        // Secondary pool: ENT throat overlay on neck pain / odynophagia
+        if ccL.contains("throat") || ccL.contains("tonsil") ||
+           ccL.contains("odynophagia") { mergePool("soreThroat") }
+        // Secondary pool: eye overlay on headache with visual / temporal arteritis context
+        if ccL.contains("visual") || ccL.contains("diplopia") || ccL.contains("photophobia") ||
+           (ccL.contains("eye") && (ccL.contains("pain") || ccL.contains("red"))) { mergePool("eyeComplaint") }
+        // Secondary pool: VTE overlay on leg swelling / breathlessness combination
+        if (ccL.contains("leg") && ccL.contains("swelling")) ||
+           (ccL.contains("breathless") && ccL.contains("leg")) { mergePool("venousThromboEmbolism") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but

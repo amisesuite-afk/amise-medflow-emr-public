@@ -34028,6 +34028,2528 @@
           ]
         }
       ]
+    },
+    "syncope": {
+      "candidates": [
+        {
+          "name": "Vasovagal Syncope",
+          "icd": "R55",
+          "logPrior": -0.8,
+          "systems": [
+            "cardiovascular",
+            "neurological"
+          ],
+          "specialties": [
+            "cardiology",
+            "generalMedicine"
+          ],
+          "urgency": 0,
+          "features": [
+            {
+              "key": "socrates_timing",
+              "value": "prodrome nausea sweating",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "socrates_timing",
+              "value": "prolonged standing heat pain emotion trigger",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "socrates_character",
+              "value": "rapid recovery",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2002;347:878"
+            },
+            {
+              "key": "exam_general",
+              "value": "young patient normal ecg",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "investigations",
+              "value": "normal ecg",
+              "logLR": 6,
+              "evidenceLabel": "Moderate+",
+              "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "pmh",
+              "value": "previous vasovagal episodes",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2002;347:878"
+            },
+            {
+              "key": "investigations",
+              "value": "positive tilt table test",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "socrates_duration",
+              "value": "seconds to minutes",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2002;347:878"
+            }
+          ]
+        },
+        {
+          "name": "Cardiac Arrhythmia Syncope",
+          "icd": "R55+I49.9",
+          "logPrior": -2.5,
+          "systems": [
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiology"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "socrates_character",
+              "value": "sudden without prodrome",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "investigations",
+              "value": "abnormal ecg",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2018;391:689"
+            },
+            {
+              "key": "investigations",
+              "value": "holter monitor arrhythmia",
+              "logLR": 13,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2018;391:689"
+            },
+            {
+              "key": "exam_cvs",
+              "value": "bradycardia complete heart block",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "pmh",
+              "value": "structural heart disease",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "socrates_timing",
+              "value": "exertion lying down",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2018;391:689"
+            },
+            {
+              "key": "socrates_character",
+              "value": "palpitations preceding",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Heart 2009;95:2096"
+            }
+          ]
+        },
+        {
+          "name": "Orthostatic Hypotension",
+          "icd": "I95.1",
+          "logPrior": -2.0,
+          "systems": [
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiology",
+            "generalMedicine"
+          ],
+          "urgency": 0,
+          "features": [
+            {
+              "key": "socrates_timing",
+              "value": "on standing rising from bed",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2002;347:878"
+            },
+            {
+              "key": "investigations",
+              "value": "postural drop systolic 20mmhg",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2002;347:878"
+            },
+            {
+              "key": "pmh",
+              "value": "dehydration diabetes autonomic neuropathy",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2002;347:878"
+            },
+            {
+              "key": "pmh",
+              "value": "antihypertensives diuretics",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2002;347:878"
+            },
+            {
+              "key": "exam_general",
+              "value": "elderly patient",
+              "logLR": 6,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2002;347:878"
+            },
+            {
+              "key": "socrates_character",
+              "value": "lightheadedness dizzy on standing",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2002;347:878"
+            },
+            {
+              "key": "investigations",
+              "value": "normal lying ecg",
+              "logLR": 5,
+              "evidenceLabel": "Weak+",
+              "citation": "Heart 2009;95:2096"
+            }
+          ]
+        },
+        {
+          "name": "Structural Cardiac Syncope",
+          "icd": "I35.0+R55",
+          "logPrior": -3.0,
+          "systems": [
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiology"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "socrates_timing",
+              "value": "exertional syncope",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2018;391:689"
+            },
+            {
+              "key": "investigations",
+              "value": "murmur on auscultation",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "investigations",
+              "value": "aortic stenosis on echocardiogram",
+              "logLR": 13,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2018;391:689"
+            },
+            {
+              "key": "pmh",
+              "value": "known valvular disease hypertrophic cardiomyopathy",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "investigations",
+              "value": "ecg left ventricular hypertrophy",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2018;391:689"
+            },
+            {
+              "key": "exam_general",
+              "value": "chest pain associated",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2018;391:689"
+            },
+            {
+              "key": "exam_cvs",
+              "value": "systolic murmur aortic area",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Heart 2009;95:2096"
+            }
+          ]
+        },
+        {
+          "name": "Carotid Sinus Hypersensitivity",
+          "icd": "G90.01",
+          "logPrior": -3.5,
+          "systems": [
+            "cardiovascular",
+            "neurological"
+          ],
+          "specialties": [
+            "cardiology"
+          ],
+          "urgency": 0,
+          "features": [
+            {
+              "key": "socrates_timing",
+              "value": "head turning tight collar shaving neck",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "exam_general",
+              "value": "elderly male",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "investigations",
+              "value": "positive carotid sinus massage asystole",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "socrates_character",
+              "value": "sudden fall without warning",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "pmh",
+              "value": "recurrent unexplained falls",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "investigations",
+              "value": "normal ecg at rest",
+              "logLR": 5,
+              "evidenceLabel": "Weak+",
+              "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "pmh",
+              "value": "atherosclerosis carotid disease",
+              "logLR": 6,
+              "evidenceLabel": "Moderate+",
+              "citation": "Heart 2009;95:2096"
+            }
+          ]
+        },
+        {
+          "name": "Transient Loss of Consciousness Epilepsy",
+          "icd": "G40.909",
+          "logPrior": -2.8,
+          "systems": [
+            "neurological"
+          ],
+          "specialties": [
+            "neurology"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "socrates_character",
+              "value": "tonic clonic movements tongue bite",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2002;347:878"
+            },
+            {
+              "key": "socrates_character",
+              "value": "prolonged postictal confusion",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2018;391:689"
+            },
+            {
+              "key": "investigations",
+              "value": "abnormal eeg",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2018;391:689"
+            },
+            {
+              "key": "pmh",
+              "value": "known epilepsy",
+              "logLR": 13,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2002;347:878"
+            },
+            {
+              "key": "socrates_timing",
+              "value": "aura preceding",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2002;347:878"
+            },
+            {
+              "key": "socrates_duration",
+              "value": "greater than 1 minute",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2018;391:689"
+            },
+            {
+              "key": "exam_general",
+              "value": "incontinence during episode",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2002;347:878"
+            }
+          ]
+        },
+        {
+          "name": "Hypoglycaemic Collapse",
+          "icd": "E16.0",
+          "logPrior": -2.5,
+          "systems": [
+            "metabolic"
+          ],
+          "specialties": [
+            "generalMedicine",
+            "cardiology"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "pmh",
+              "value": "diabetes insulin sulphonylurea",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2010;375:2215"
+            },
+            {
+              "key": "socrates_timing",
+              "value": "delayed meal after exercise",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2010;375:2215"
+            },
+            {
+              "key": "investigations",
+              "value": "blood glucose less than 3.5",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2010;375:2215"
+            },
+            {
+              "key": "socrates_character",
+              "value": "sweating tremor preceding collapse",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2010;375:2215"
+            },
+            {
+              "key": "socrates_character",
+              "value": "rapid recovery with glucose",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2010;375:2215"
+            },
+            {
+              "key": "exam_general",
+              "value": "diaphoresis pallor",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2010;375:2215"
+            },
+            {
+              "key": "investigations",
+              "value": "normal ecg normal cardiac enzymes",
+              "logLR": 5,
+              "evidenceLabel": "Weak+",
+              "citation": "Lancet 2010;375:2215"
+            }
+          ]
+        },
+        {
+          "name": "Pulmonary Embolism with Syncope",
+          "icd": "I26.09+R55",
+          "logPrior": -3.2,
+          "systems": [
+            "cardiovascular",
+            "respiratory"
+          ],
+          "specialties": [
+            "cardiology",
+            "generalMedicine"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "socrates_timing",
+              "value": "exertional sudden onset",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2018;391:689"
+            },
+            {
+              "key": "investigations",
+              "value": "elevated d-dimer",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2018;391:689"
+            },
+            {
+              "key": "investigations",
+              "value": "right heart strain ecg s1q3t3",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "pmh",
+              "value": "dvt recent surgery long haul flight",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2008;358:1037"
+            },
+            {
+              "key": "investigations",
+              "value": "ct pulmonary angiogram embolus",
+              "logLR": 15,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2008;358:1037"
+            },
+            {
+              "key": "exam_cvs",
+              "value": "tachycardia hypoxia",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2008;358:1037"
+            },
+            {
+              "key": "investigations",
+              "value": "elevated troponin bnp",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2018;391:689"
+            }
+          ]
+        }
+      ]
+    },
+    "soreThroat": {
+      "candidates": [
+        {
+          "name": "Bacterial Tonsillitis Strep Pharyngitis",
+          "icd": "J02.0",
+          "logPrior": -1.0,
+          "systems": [
+            "ent"
+          ],
+          "specialties": [
+            "ent",
+            "generalMedicine"
+          ],
+          "urgency": 0,
+          "features": [
+            {
+              "key": "exam_general",
+              "value": "tonsillar exudate white patches",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "JAMA 2004;291:1587"
+            },
+            {
+              "key": "investigations",
+              "value": "centor score 3 or 4",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "JAMA 2004;291:1587"
+            },
+            {
+              "key": "exam_general",
+              "value": "tender anterior cervical lymphadenopathy",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "JAMA 2004;291:1587"
+            },
+            {
+              "key": "exam_general",
+              "value": "fever greater than 38 no cough",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "JAMA 2004;291:1587"
+            },
+            {
+              "key": "investigations",
+              "value": "throat swab group a strep positive",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "JAMA 2004;291:1587"
+            },
+            {
+              "key": "socrates_character",
+              "value": "sudden onset odynophagia",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "JAMA 2004;291:1587"
+            },
+            {
+              "key": "socrates_timing",
+              "value": "4 to 10 days",
+              "logLR": 6,
+              "evidenceLabel": "Moderate+",
+              "citation": "JAMA 2004;291:1587"
+            }
+          ]
+        },
+        {
+          "name": "Viral Pharyngitis",
+          "icd": "J02.9",
+          "logPrior": -0.5,
+          "systems": [
+            "ent"
+          ],
+          "specialties": [
+            "ent",
+            "generalMedicine"
+          ],
+          "urgency": 0,
+          "features": [
+            {
+              "key": "exam_general",
+              "value": "coryza cough present",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "JAMA 2004;291:1587"
+            },
+            {
+              "key": "exam_general",
+              "value": "no exudate mildly inflamed",
+              "logLR": 6,
+              "evidenceLabel": "Moderate+",
+              "citation": "JAMA 2004;291:1587"
+            },
+            {
+              "key": "investigations",
+              "value": "centor score 0 or 1",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "JAMA 2004;291:1587"
+            },
+            {
+              "key": "exam_general",
+              "value": "low grade fever",
+              "logLR": 5,
+              "evidenceLabel": "Moderate+",
+              "citation": "JAMA 2004;291:1587"
+            },
+            {
+              "key": "investigations",
+              "value": "throat swab negative",
+              "logLR": 6,
+              "evidenceLabel": "Moderate+",
+              "citation": "JAMA 2004;291:1587"
+            },
+            {
+              "key": "socrates_timing",
+              "value": "3 to 5 days self-limiting",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "JAMA 2004;291:1587"
+            },
+            {
+              "key": "pmh",
+              "value": "contact with upper respiratory illness",
+              "logLR": 6,
+              "evidenceLabel": "Moderate+",
+              "citation": "JAMA 2004;291:1587"
+            }
+          ]
+        },
+        {
+          "name": "Peritonsillar Abscess",
+          "icd": "J36",
+          "logPrior": -2.5,
+          "systems": [
+            "ent"
+          ],
+          "specialties": [
+            "ent"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "exam_general",
+              "value": "peritonsillar bulge uvula deviation",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            },
+            {
+              "key": "socrates_character",
+              "value": "unilateral severe throat pain trismus",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            },
+            {
+              "key": "socrates_character",
+              "value": "muffled hot potato voice",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            },
+            {
+              "key": "exam_general",
+              "value": "high fever drooling",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            },
+            {
+              "key": "investigations",
+              "value": "elevated wbc",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            },
+            {
+              "key": "pmh",
+              "value": "previous tonsillitis",
+              "logLR": 6,
+              "evidenceLabel": "Moderate+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            },
+            {
+              "key": "investigations",
+              "value": "ultrasound or ct abscess peritonsillar",
+              "logLR": 13,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            }
+          ]
+        },
+        {
+          "name": "Infectious Mononucleosis",
+          "icd": "B27.00",
+          "logPrior": -2.0,
+          "systems": [
+            "ent",
+            "haematological"
+          ],
+          "specialties": [
+            "ent",
+            "generalMedicine"
+          ],
+          "urgency": 0,
+          "features": [
+            {
+              "key": "exam_general",
+              "value": "massive tonsils exudate splenomegaly",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2006;368:780"
+            },
+            {
+              "key": "exam_general",
+              "value": "generalised lymphadenopathy",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2006;368:780"
+            },
+            {
+              "key": "investigations",
+              "value": "monospot positive ebv antibody",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2006;368:780"
+            },
+            {
+              "key": "investigations",
+              "value": "atypical lymphocytes blood film",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2006;368:780"
+            },
+            {
+              "key": "exam_general",
+              "value": "adolescent young adult",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2006;368:780"
+            },
+            {
+              "key": "investigations",
+              "value": "elevated alt ast",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2006;368:780"
+            },
+            {
+              "key": "socrates_timing",
+              "value": "7 to 14 days fever lethargy",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2006;368:780"
+            }
+          ]
+        },
+        {
+          "name": "Epiglottitis",
+          "icd": "J05.10",
+          "logPrior": -4.0,
+          "systems": [
+            "ent"
+          ],
+          "specialties": [
+            "ent"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "socrates_character",
+              "value": "rapidly progressive severe throat pain",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            },
+            {
+              "key": "socrates_character",
+              "value": "drooling unable to swallow",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            },
+            {
+              "key": "socrates_character",
+              "value": "tripod position stridor",
+              "logLR": 13,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            },
+            {
+              "key": "investigations",
+              "value": "thumb sign epiglottis lateral neck xray",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            },
+            {
+              "key": "exam_general",
+              "value": "high fever toxic appearance",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            },
+            {
+              "key": "socrates_character",
+              "value": "muffled voice",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            },
+            {
+              "key": "socrates_timing",
+              "value": "hours rapid progression",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            }
+          ]
+        },
+        {
+          "name": "Oropharyngeal Carcinoma",
+          "icd": "C10.9",
+          "logPrior": -4.5,
+          "systems": [
+            "ent",
+            "oncological"
+          ],
+          "specialties": [
+            "ent",
+            "headNeckSurgery",
+            "oncology"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "socrates_timing",
+              "value": "progressive weeks months",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2016;387:1909"
+            },
+            {
+              "key": "socrates_character",
+              "value": "unilateral persistent throat pain ear pain",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2016;387:1909"
+            },
+            {
+              "key": "exam_general",
+              "value": "ipsilateral cervical lymphadenopathy",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2016;387:1909"
+            },
+            {
+              "key": "pmh",
+              "value": "tobacco alcohol hpv",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2016;387:1909"
+            },
+            {
+              "key": "investigations",
+              "value": "biopsy squamous cell carcinoma",
+              "logLR": 16,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2016;387:1909"
+            },
+            {
+              "key": "exam_general",
+              "value": "visible ulcer or mass tonsil base of tongue",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2016;387:1909"
+            },
+            {
+              "key": "exam_general",
+              "value": "weight loss",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2016;387:1909"
+            }
+          ]
+        },
+        {
+          "name": "Ludwig's Angina",
+          "icd": "K12.2",
+          "logPrior": -4.5,
+          "systems": [
+            "ent"
+          ],
+          "specialties": [
+            "ent",
+            "generalSurgery"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "exam_general",
+              "value": "submandibular swelling floor of mouth",
+              "logLR": 13,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Head Neck 2010;32:1294"
+            },
+            {
+              "key": "socrates_character",
+              "value": "trismus dysphagia drooling",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Head Neck 2010;32:1294"
+            },
+            {
+              "key": "pmh",
+              "value": "recent dental infection lower molar",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "Head Neck 2010;32:1294"
+            },
+            {
+              "key": "exam_general",
+              "value": "high fever toxic",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Head Neck 2010;32:1294"
+            },
+            {
+              "key": "socrates_character",
+              "value": "stridor airway threat",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Head Neck 2010;32:1294"
+            },
+            {
+              "key": "investigations",
+              "value": "ct neck bilateral floor mouth gas",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Head Neck 2010;32:1294"
+            },
+            {
+              "key": "investigations",
+              "value": "elevated wbc crp",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "Head Neck 2010;32:1294"
+            }
+          ]
+        },
+        {
+          "name": "Retropharyngeal Abscess",
+          "icd": "J39.0",
+          "logPrior": -4.0,
+          "systems": [
+            "ent"
+          ],
+          "specialties": [
+            "ent"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "exam_general",
+              "value": "child or young adult neck pain stiffness",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            },
+            {
+              "key": "socrates_character",
+              "value": "difficulty swallowing bulging posterior pharynx",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            },
+            {
+              "key": "investigations",
+              "value": "widened retropharyngeal space lateral neck xray",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            },
+            {
+              "key": "investigations",
+              "value": "ct neck abscess",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            },
+            {
+              "key": "exam_general",
+              "value": "high fever toxic",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            },
+            {
+              "key": "socrates_character",
+              "value": "torticollis drooling",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            },
+            {
+              "key": "investigations",
+              "value": "elevated wbc",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "Emerg Med Clin N Am 2019;37:15"
+            }
+          ]
+        }
+      ]
+    },
+    "epistaxis": {
+      "candidates": [
+        {
+          "name": "Anterior Epistaxis Little's Area",
+          "icd": "R04.0",
+          "logPrior": -0.5,
+          "systems": [
+            "ent"
+          ],
+          "specialties": [
+            "ent"
+          ],
+          "urgency": 0,
+          "features": [
+            {
+              "key": "exam_general",
+              "value": "bleeding from anterior nasal septum kiesselbach",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "socrates_character",
+              "value": "unilateral stops with pinching",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "exam_general",
+              "value": "young patient or elderly",
+              "logLR": 5,
+              "evidenceLabel": "Weak+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "socrates_timing",
+              "value": "dry weather nose picking trauma",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "investigations",
+              "value": "normal blood pressure",
+              "logLR": 6,
+              "evidenceLabel": "Moderate+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "investigations",
+              "value": "normal coagulation screen",
+              "logLR": 5,
+              "evidenceLabel": "Weak+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "socrates_duration",
+              "value": "less than 10 minutes",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "BMJ 2012;344:e1577"
+            }
+          ]
+        },
+        {
+          "name": "Hypertensive Epistaxis",
+          "icd": "R04.0+I10",
+          "logPrior": -1.5,
+          "systems": [
+            "ent",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "ent",
+            "generalMedicine"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "investigations",
+              "value": "elevated blood pressure greater than 160",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "pmh",
+              "value": "hypertension poorly controlled",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "socrates_character",
+              "value": "profuse difficult to control",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "exam_general",
+              "value": "bilateral bleeding",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "socrates_timing",
+              "value": "prolonged duration",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "exam_general",
+              "value": "elderly patient on antihypertensives",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "pmh",
+              "value": "anticoagulants antiplatelets",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "BMJ 2012;344:e1577"
+            }
+          ]
+        },
+        {
+          "name": "Coagulopathy Epistaxis",
+          "icd": "R04.0+D68.9",
+          "logPrior": -3.0,
+          "systems": [
+            "ent",
+            "haematological"
+          ],
+          "specialties": [
+            "ent",
+            "haematology"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "investigations",
+              "value": "elevated inr pt aptt",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "pmh",
+              "value": "warfarin anticoagulation haemophilia",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "socrates_character",
+              "value": "profuse prolonged spontaneous",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "pmh",
+              "value": "easy bruising bleeding from other sites",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "investigations",
+              "value": "low platelet count",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "pmh",
+              "value": "liver disease",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "socrates_timing",
+              "value": "recurrent multiple episodes",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "BMJ 2012;344:e1577"
+            }
+          ]
+        },
+        {
+          "name": "Posterior Epistaxis",
+          "icd": "R04.0",
+          "logPrior": -2.5,
+          "systems": [
+            "ent"
+          ],
+          "specialties": [
+            "ent"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "exam_general",
+              "value": "bleeding both nostrils or into throat",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "exam_general",
+              "value": "elderly male",
+              "logLR": 6,
+              "evidenceLabel": "Moderate+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "socrates_character",
+              "value": "does not stop with pinching",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "investigations",
+              "value": "requires nasal packing or endoscopy",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "pmh",
+              "value": "arteriosclerosis hypertension",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "investigations",
+              "value": "nasoendoscopy posterior vessel",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "BMJ 2012;344:e1577"
+            },
+            {
+              "key": "socrates_duration",
+              "value": "prolonged greater than 30 minutes",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2012;344:e1577"
+            }
+          ]
+        },
+        {
+          "name": "Hereditary Haemorrhagic Telangiectasia",
+          "icd": "I78.0",
+          "logPrior": -4.5,
+          "systems": [
+            "ent",
+            "haematological"
+          ],
+          "specialties": [
+            "ent",
+            "generalMedicine"
+          ],
+          "urgency": 0,
+          "features": [
+            {
+              "key": "exam_general",
+              "value": "telangiectasia lips tongue fingers",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2014;383:1490"
+            },
+            {
+              "key": "pmh",
+              "value": "family history epistaxis hht",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2014;383:1490"
+            },
+            {
+              "key": "socrates_timing",
+              "value": "recurrent since childhood",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2014;383:1490"
+            },
+            {
+              "key": "investigations",
+              "value": "iron deficiency anaemia",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2014;383:1490"
+            },
+            {
+              "key": "pmh",
+              "value": "gastrointestinal bleeding",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2014;383:1490"
+            },
+            {
+              "key": "investigations",
+              "value": "genetic test endoglin alk1 mutation",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2014;383:1490"
+            },
+            {
+              "key": "investigations",
+              "value": "normal coagulation",
+              "logLR": 5,
+              "evidenceLabel": "Weak+",
+              "citation": "Lancet 2014;383:1490"
+            }
+          ]
+        },
+        {
+          "name": "Nasal Polyps Sinusitis Epistaxis",
+          "icd": "J32.9+R04.0",
+          "logPrior": -3.0,
+          "systems": [
+            "ent"
+          ],
+          "specialties": [
+            "ent"
+          ],
+          "urgency": 0,
+          "features": [
+            {
+              "key": "pmh",
+              "value": "chronic sinusitis nasal polyps",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2012;379:1550"
+            },
+            {
+              "key": "exam_general",
+              "value": "nasal obstruction anosmia",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2012;379:1550"
+            },
+            {
+              "key": "investigations",
+              "value": "ct sinuses polyps opacification",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2012;379:1550"
+            },
+            {
+              "key": "pmh",
+              "value": "asthma aspirin sensitivity",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2012;379:1550"
+            },
+            {
+              "key": "socrates_timing",
+              "value": "intermittent with upper respiratory",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2012;379:1550"
+            },
+            {
+              "key": "exam_general",
+              "value": "pale grey polyps on nasoendoscopy",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2012;379:1550"
+            },
+            {
+              "key": "investigations",
+              "value": "eosinophilia",
+              "logLR": 6,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2012;379:1550"
+            }
+          ]
+        },
+        {
+          "name": "Nasopharyngeal Carcinoma",
+          "icd": "C11.9",
+          "logPrior": -4.5,
+          "systems": [
+            "ent",
+            "oncological"
+          ],
+          "specialties": [
+            "ent",
+            "oncology",
+            "headNeckSurgery"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "exam_general",
+              "value": "unilateral cervical lymphadenopathy",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2016;387:1081"
+            },
+            {
+              "key": "socrates_character",
+              "value": "unilateral nasal obstruction blood-stained discharge",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2016;387:1081"
+            },
+            {
+              "key": "pmh",
+              "value": "chinese south-east asian ebv exposure",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2016;387:1081"
+            },
+            {
+              "key": "investigations",
+              "value": "elevated ebv vca antibodies",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2016;387:1081"
+            },
+            {
+              "key": "investigations",
+              "value": "mass nasopharynx on endoscopy",
+              "logLR": 13,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2016;387:1081"
+            },
+            {
+              "key": "exam_general",
+              "value": "cranial nerve palsy hearing loss",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2016;387:1081"
+            },
+            {
+              "key": "investigations",
+              "value": "biopsy undifferentiated carcinoma",
+              "logLR": 16,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2016;387:1081"
+            }
+          ]
+        }
+      ]
+    },
+    "eyeComplaint": {
+      "candidates": [
+        {
+          "name": "Acute Angle-Closure Glaucoma",
+          "icd": "H40.219",
+          "logPrior": -3.5,
+          "systems": [
+            "ophthalmic"
+          ],
+          "specialties": [
+            "ophthalmology"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "socrates_character",
+              "value": "sudden severe eye pain nausea vomiting",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "exam_general",
+              "value": "mid-dilated fixed pupil",
+              "logLR": 13,
+              "evidenceLabel": "Very Strong+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "investigations",
+              "value": "elevated intraocular pressure",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "exam_general",
+              "value": "red eye corneal oedema cloudy",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "socrates_character",
+              "value": "haloes around lights blurred vision",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "socrates_timing",
+              "value": "dim light pupil dilation trigger",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "socrates_character",
+              "value": "headache on same side",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "BMJ 2004;329:1290"
+            }
+          ]
+        },
+        {
+          "name": "Retinal Detachment",
+          "icd": "H33.009",
+          "logPrior": -3.5,
+          "systems": [
+            "ophthalmic"
+          ],
+          "specialties": [
+            "ophthalmology"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "socrates_character",
+              "value": "curtain or shadow visual field loss",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2012;367:1229"
+            },
+            {
+              "key": "socrates_character",
+              "value": "floaters flashes photopsia",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;367:1229"
+            },
+            {
+              "key": "investigations",
+              "value": "detachment on fundoscopy slit lamp",
+              "logLR": 16,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2012;367:1229"
+            },
+            {
+              "key": "pmh",
+              "value": "myopia previous retinal tear surgery",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;367:1229"
+            },
+            {
+              "key": "socrates_character",
+              "value": "painless visual loss",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;367:1229"
+            },
+            {
+              "key": "investigations",
+              "value": "ocular ultrasound detachment",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2012;367:1229"
+            },
+            {
+              "key": "exam_general",
+              "value": "no pain red eye",
+              "logLR": 6,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2012;367:1229"
+            }
+          ]
+        },
+        {
+          "name": "Anterior Uveitis Iritis",
+          "icd": "H20.00",
+          "logPrior": -2.5,
+          "systems": [
+            "ophthalmic"
+          ],
+          "specialties": [
+            "ophthalmology"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "exam_general",
+              "value": "circumcorneal injection perilimbal flush",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "exam_general",
+              "value": "keratic precipitates slit lamp",
+              "logLR": 13,
+              "evidenceLabel": "Very Strong+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "exam_general",
+              "value": "photophobia small pupil",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "pmh",
+              "value": "hla-b27 ankylosing spondylitis crohn sarcoid",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "socrates_character",
+              "value": "deep aching eye pain",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "investigations",
+              "value": "cells flare in anterior chamber",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "investigations",
+              "value": "normal intraocular pressure",
+              "logLR": 5,
+              "evidenceLabel": "Weak+",
+              "citation": "BMJ 2004;329:1290"
+            }
+          ]
+        },
+        {
+          "name": "Bacterial Conjunctivitis",
+          "icd": "H10.019",
+          "logPrior": -0.5,
+          "systems": [
+            "ophthalmic"
+          ],
+          "specialties": [
+            "ophthalmology",
+            "generalMedicine"
+          ],
+          "urgency": 0,
+          "features": [
+            {
+              "key": "exam_general",
+              "value": "mucopurulent discharge bilateral",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "exam_general",
+              "value": "diffuse conjunctival injection",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "socrates_character",
+              "value": "gritty uncomfortable not painful",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "investigations",
+              "value": "swab positive staphyloccocus",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "socrates_character",
+              "value": "lids stuck together morning",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "exam_general",
+              "value": "vision unaffected normal pupil",
+              "logLR": 6,
+              "evidenceLabel": "Moderate+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "investigations",
+              "value": "normal intraocular pressure",
+              "logLR": 5,
+              "evidenceLabel": "Weak+",
+              "citation": "BMJ 2004;329:1290"
+            }
+          ]
+        },
+        {
+          "name": "Central Retinal Artery Occlusion",
+          "icd": "H34.10",
+          "logPrior": -3.8,
+          "systems": [
+            "ophthalmic",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "ophthalmology"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "socrates_character",
+              "value": "sudden painless complete monocular visual loss",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2012;367:1229"
+            },
+            {
+              "key": "investigations",
+              "value": "cherry red spot fovea pale retina fundoscopy",
+              "logLR": 16,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2012;367:1229"
+            },
+            {
+              "key": "pmh",
+              "value": "carotid artery disease af atrial fibrillation",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;367:1229"
+            },
+            {
+              "key": "socrates_timing",
+              "value": "within minutes",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;367:1229"
+            },
+            {
+              "key": "investigations",
+              "value": "fluorescein angiography arterial occlusion",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2012;367:1229"
+            },
+            {
+              "key": "pmh",
+              "value": "hypertension diabetes",
+              "logLR": 6,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2012;367:1229"
+            },
+            {
+              "key": "exam_general",
+              "value": "afferent pupillary defect",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;367:1229"
+            }
+          ]
+        },
+        {
+          "name": "Corneal Ulcer Keratitis",
+          "icd": "H16.009",
+          "logPrior": -2.8,
+          "systems": [
+            "ophthalmic"
+          ],
+          "specialties": [
+            "ophthalmology"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "exam_general",
+              "value": "corneal opacity ulcer on slit lamp",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "socrates_character",
+              "value": "severe eye pain photophobia tearing",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "pmh",
+              "value": "contact lens wear",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "exam_general",
+              "value": "fluorescein staining positive defect",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "pmh",
+              "value": "herpes simplex previous dendritic ulcer",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "investigations",
+              "value": "corneal scraping culture positive",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "BMJ 2004;329:1290"
+            },
+            {
+              "key": "exam_general",
+              "value": "blurred vision reduced acuity",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "BMJ 2004;329:1290"
+            }
+          ]
+        },
+        {
+          "name": "Scleritis",
+          "icd": "H15.009",
+          "logPrior": -4.0,
+          "systems": [
+            "ophthalmic"
+          ],
+          "specialties": [
+            "ophthalmology"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "socrates_character",
+              "value": "severe boring deep eye pain worse at night",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Ophthalmology 2010;117:501"
+            },
+            {
+              "key": "exam_general",
+              "value": "deep violaceous injection does not blanch with phenylephrine",
+              "logLR": 13,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Ophthalmology 2010;117:501"
+            },
+            {
+              "key": "pmh",
+              "value": "rheumatoid arthritis wegener granulomatosis sarcoidosis",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Ophthalmology 2010;117:501"
+            },
+            {
+              "key": "investigations",
+              "value": "elevated anca esr crp",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "Ophthalmology 2010;117:501"
+            },
+            {
+              "key": "exam_general",
+              "value": "scleral oedema tenderness",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "Ophthalmology 2010;117:501"
+            },
+            {
+              "key": "socrates_character",
+              "value": "wakens from sleep with pain",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Ophthalmology 2010;117:501"
+            },
+            {
+              "key": "investigations",
+              "value": "b-scan ultrasound scleral thickening",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Ophthalmology 2010;117:501"
+            }
+          ]
+        },
+        {
+          "name": "Giant Cell Arteritis with Visual Threat",
+          "icd": "M31.6+H34.10",
+          "logPrior": -3.8,
+          "systems": [
+            "ophthalmic",
+            "rheumatological"
+          ],
+          "specialties": [
+            "ophthalmology"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "exam_general",
+              "value": "age over 50 female",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2014;371:50"
+            },
+            {
+              "key": "exam_general",
+              "value": "tender temporal artery non-pulsatile",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2014;371:50"
+            },
+            {
+              "key": "socrates_character",
+              "value": "amaurosis fugax preceding vision loss",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2014;371:50"
+            },
+            {
+              "key": "investigations",
+              "value": "elevated esr greater than 50",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2014;371:50"
+            },
+            {
+              "key": "investigations",
+              "value": "elevated crp",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2014;371:50"
+            },
+            {
+              "key": "pmh",
+              "value": "jaw claudication scalp tenderness headache",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2014;371:50"
+            },
+            {
+              "key": "investigations",
+              "value": "temporal artery biopsy giant cells",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2014;371:50"
+            }
+          ]
+        }
+      ]
+    },
+    "seizure": {
+      "candidates": [
+        {
+          "name": "Generalised Tonic-Clonic Epilepsy",
+          "icd": "G40.309",
+          "logPrior": -2.0,
+          "systems": [
+            "neurological"
+          ],
+          "specialties": [
+            "neurology"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "socrates_character",
+              "value": "loss of consciousness tonic clonic movements",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2001;344:1145"
+            },
+            {
+              "key": "socrates_character",
+              "value": "tongue bite urinary incontinence during",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2001;344:1145"
+            },
+            {
+              "key": "socrates_character",
+              "value": "postictal confusion fatigue",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2006;367:1087"
+            },
+            {
+              "key": "investigations",
+              "value": "abnormal eeg epileptiform",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2001;344:1145"
+            },
+            {
+              "key": "pmh",
+              "value": "known epilepsy on antiepileptics",
+              "logLR": 13,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2001;344:1145"
+            },
+            {
+              "key": "investigations",
+              "value": "mri temporal lobe abnormality",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2006;367:1087"
+            },
+            {
+              "key": "socrates_duration",
+              "value": "1 to 3 minutes",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2001;344:1145"
+            }
+          ]
+        },
+        {
+          "name": "Focal Seizure",
+          "icd": "G40.109",
+          "logPrior": -2.5,
+          "systems": [
+            "neurological"
+          ],
+          "specialties": [
+            "neurology",
+            "neurosurgery"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "socrates_character",
+              "value": "focal jerking limb automatisms consciousness retained",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2006;367:1087"
+            },
+            {
+              "key": "socrates_character",
+              "value": "aura visual gustatory olfactory",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2001;344:1145"
+            },
+            {
+              "key": "investigations",
+              "value": "focal cortical lesion mri",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2006;367:1087"
+            },
+            {
+              "key": "investigations",
+              "value": "focal eeg abnormality",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2001;344:1145"
+            },
+            {
+              "key": "pmh",
+              "value": "previous brain lesion tumour stroke",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2006;367:1087"
+            },
+            {
+              "key": "socrates_duration",
+              "value": "seconds to minutes",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2001;344:1145"
+            },
+            {
+              "key": "socrates_character",
+              "value": "todd paralysis postictal weakness",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2006;367:1087"
+            }
+          ]
+        },
+        {
+          "name": "Febrile Convulsion",
+          "icd": "R56.00",
+          "logPrior": -1.5,
+          "systems": [
+            "neurological",
+            "paediatric"
+          ],
+          "specialties": [
+            "neurology",
+            "paediatrics"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "exam_general",
+              "value": "child 6 months to 5 years",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 1993;329:79"
+            },
+            {
+              "key": "exam_general",
+              "value": "fever greater than 38 celsius",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 1993;329:79"
+            },
+            {
+              "key": "socrates_duration",
+              "value": "less than 15 minutes",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 1993;329:79"
+            },
+            {
+              "key": "socrates_character",
+              "value": "generalised symmetrical",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 1993;329:79"
+            },
+            {
+              "key": "investigations",
+              "value": "normal cerebrospinal fluid",
+              "logLR": 6,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 1993;329:79"
+            },
+            {
+              "key": "pmh",
+              "value": "family history febrile convulsions",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 1993;329:79"
+            },
+            {
+              "key": "investigations",
+              "value": "normal mri eeg",
+              "logLR": 6,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 1993;329:79"
+            }
+          ]
+        },
+        {
+          "name": "Status Epilepticus",
+          "icd": "G41.9",
+          "logPrior": -3.5,
+          "systems": [
+            "neurological"
+          ],
+          "specialties": [
+            "neurology"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "socrates_duration",
+              "value": "greater than 5 minutes continuous or recurrent",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2012;366:542"
+            },
+            {
+              "key": "investigations",
+              "value": "metabolic cause low sodium glucose",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;366:542"
+            },
+            {
+              "key": "pmh",
+              "value": "known epilepsy non-compliant medication",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;366:542"
+            },
+            {
+              "key": "exam_general",
+              "value": "haemodynamic instability hypoxia",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;366:542"
+            },
+            {
+              "key": "investigations",
+              "value": "elevated lactate acidosis",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2012;366:542"
+            },
+            {
+              "key": "investigations",
+              "value": "ecg rhythm monitoring",
+              "logLR": 6,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2012;366:542"
+            },
+            {
+              "key": "investigations",
+              "value": "emergency eeg non-convulsive",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;366:542"
+            }
+          ]
+        },
+        {
+          "name": "Provoked Seizure Metabolic",
+          "icd": "G40.89",
+          "logPrior": -2.5,
+          "systems": [
+            "neurological",
+            "metabolic"
+          ],
+          "specialties": [
+            "neurology",
+            "generalMedicine"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "investigations",
+              "value": "hyponatraemia sodium less than 125",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2001;344:1145"
+            },
+            {
+              "key": "investigations",
+              "value": "hypocalcaemia hypoglycaemia",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2001;344:1145"
+            },
+            {
+              "key": "pmh",
+              "value": "alcohol withdrawal",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2006;367:1087"
+            },
+            {
+              "key": "investigations",
+              "value": "toxic drug levels ecstasy cocaine",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2006;367:1087"
+            },
+            {
+              "key": "pmh",
+              "value": "renal failure liver failure uraemia",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2001;344:1145"
+            },
+            {
+              "key": "investigations",
+              "value": "normal mri no structural lesion",
+              "logLR": 6,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2001;344:1145"
+            },
+            {
+              "key": "investigations",
+              "value": "resolves with metabolic correction",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2001;344:1145"
+            }
+          ]
+        },
+        {
+          "name": "Brain Tumour Seizure",
+          "icd": "C71.9+G40.89",
+          "logPrior": -3.8,
+          "systems": [
+            "neurological",
+            "oncological"
+          ],
+          "specialties": [
+            "neurosurgery",
+            "neurology",
+            "oncology"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "investigations",
+              "value": "intracranial mass on ct or mri",
+              "logLR": 15,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2015;385:439"
+            },
+            {
+              "key": "socrates_character",
+              "value": "new onset seizure adult no prior history",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2015;385:439"
+            },
+            {
+              "key": "socrates_character",
+              "value": "focal onset suggests cortical location",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2015;385:439"
+            },
+            {
+              "key": "pmh",
+              "value": "known malignancy metastasis",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2015;385:439"
+            },
+            {
+              "key": "investigations",
+              "value": "mri gadolinium enhancing lesion",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2015;385:439"
+            },
+            {
+              "key": "exam_general",
+              "value": "headache papilloedema progressive",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2015;385:439"
+            },
+            {
+              "key": "exam_general",
+              "value": "focal neurological deficit",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2015;385:439"
+            }
+          ]
+        },
+        {
+          "name": "Meningitis Encephalitis with Seizure",
+          "icd": "G03.9+G40.89",
+          "logPrior": -3.5,
+          "systems": [
+            "neurological",
+            "infectious"
+          ],
+          "specialties": [
+            "neurology",
+            "generalMedicine"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "exam_general",
+              "value": "fever neck stiffness photophobia",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2001;344:1145"
+            },
+            {
+              "key": "investigations",
+              "value": "csf pleocytosis elevated protein",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2006;354:44"
+            },
+            {
+              "key": "socrates_character",
+              "value": "severe headache seizure altered consciousness",
+              "logLR": 11,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2006;354:44"
+            },
+            {
+              "key": "investigations",
+              "value": "ct brain mri cerebral oedema",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2006;354:44"
+            },
+            {
+              "key": "exam_general",
+              "value": "non-blanching petechial rash",
+              "logLR": 13,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2006;354:44"
+            },
+            {
+              "key": "investigations",
+              "value": "blood culture positive pcr csf",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "NEJM 2006;354:44"
+            },
+            {
+              "key": "investigations",
+              "value": "elevated crp wbc",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2006;354:44"
+            }
+          ]
+        },
+        {
+          "name": "Non-Epileptic Attack Disorder",
+          "icd": "F44.5",
+          "logPrior": -3.0,
+          "systems": [
+            "neurological",
+            "psychiatric"
+          ],
+          "specialties": [
+            "neurology"
+          ],
+          "urgency": 0,
+          "features": [
+            {
+              "key": "socrates_character",
+              "value": "eyes closed during episode",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2011;378:2067"
+            },
+            {
+              "key": "socrates_character",
+              "value": "thrashing side to side pelvic thrusting",
+              "logLR": 10,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2011;378:2067"
+            },
+            {
+              "key": "investigations",
+              "value": "normal eeg during event",
+              "logLR": 12,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2011;378:2067"
+            },
+            {
+              "key": "pmh",
+              "value": "history of trauma psychological stressor",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2011;378:2067"
+            },
+            {
+              "key": "socrates_character",
+              "value": "rapid recovery no postictal confusion",
+              "logLR": 9,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2011;378:2067"
+            },
+            {
+              "key": "investigations",
+              "value": "video eeg telemetry event without correlate",
+              "logLR": 14,
+              "evidenceLabel": "Very Strong+",
+              "citation": "Lancet 2011;378:2067"
+            },
+            {
+              "key": "pmh",
+              "value": "multiple previous ed presentations",
+              "logLR": 7,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2011;378:2067"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {
@@ -34363,7 +36885,13 @@
         "Wolff-Parkinson-White Syndrome",
         "Chronic Kidney Disease (Stage 3\u20135)",
         "Liver Cirrhosis (Decompensated)",
-        "Non-Alcoholic Fatty Liver Disease (NAFLD/NASH)"
+        "Non-Alcoholic Fatty Liver Disease (NAFLD/NASH)",
+        "Vasovagal Syncope",
+        "Cardiac Arrhythmia Syncope",
+        "Orthostatic Hypotension",
+        "Structural Cardiac Syncope",
+        "Carotid Sinus Hypersensitivity",
+        "Pulmonary Embolism with Syncope"
       ],
       "respiratory": [
         "Pulmonary Embolism",
@@ -34434,7 +36962,17 @@
         "Primary Brain Tumour (Glioma / Meningioma)",
         "Hydrocephalus (Obstructive / NPH)",
         "Atrial Fibrillation",
-        "Wolff-Parkinson-White Syndrome"
+        "Wolff-Parkinson-White Syndrome",
+        "Transient Loss of Consciousness Epilepsy",
+        "Hypoglycaemic Collapse",
+        "Generalised Tonic-Clonic Epilepsy",
+        "Focal Seizure",
+        "Febrile Convulsion",
+        "Status Epilepticus",
+        "Provoked Seizure Metabolic",
+        "Brain Tumour Seizure",
+        "Meningitis Encephalitis with Seizure",
+        "Non-Epileptic Attack Disorder"
       ],
       "neurosurgical": [
         "Haemorrhagic Stroke",
@@ -34569,6 +37107,33 @@
         "Pre-eclampsia",
         "Gestational Diabetes",
         "Antepartum Haemorrhage"
+      ],
+      "ent": [
+        "Bacterial Tonsillitis Strep Pharyngitis",
+        "Viral Pharyngitis",
+        "Peritonsillar Abscess",
+        "Infectious Mononucleosis",
+        "Epiglottitis",
+        "Oropharyngeal Carcinoma",
+        "Ludwig's Angina",
+        "Retropharyngeal Abscess",
+        "Anterior Epistaxis Little's Area",
+        "Hypertensive Epistaxis",
+        "Coagulopathy Epistaxis",
+        "Posterior Epistaxis",
+        "Hereditary Haemorrhagic Telangiectasia",
+        "Nasal Polyps Sinusitis Epistaxis",
+        "Nasopharyngeal Carcinoma"
+      ],
+      "ophthalmic": [
+        "Acute Angle-Closure Glaucoma",
+        "Retinal Detachment",
+        "Anterior Uveitis Iritis",
+        "Bacterial Conjunctivitis",
+        "Central Retinal Artery Occlusion",
+        "Corneal Ulcer Keratitis",
+        "Scleritis",
+        "Giant Cell Arteritis with Visual Threat"
       ]
     },
     "specialtyIndex": {
@@ -35084,7 +37649,13 @@
         "Ventricular Tachycardia",
         "Complete Heart Block (CHB)",
         "Wolff-Parkinson-White Syndrome",
-        "Chronic Kidney Disease (Stage 3\u20135)"
+        "Chronic Kidney Disease (Stage 3\u20135)",
+        "Vasovagal Syncope",
+        "Cardiac Arrhythmia Syncope",
+        "Orthostatic Hypotension",
+        "Structural Cardiac Syncope",
+        "Carotid Sinus Hypersensitivity",
+        "Pulmonary Embolism with Syncope"
       ],
       "respiratoryMedicine": [
         "Pulmonary Embolism",
@@ -35208,7 +37779,15 @@
         "Bacterial Meningitis (Child)",
         "Primary Brain Tumour (Glioma / Meningioma)",
         "Hydrocephalus (Obstructive / NPH)",
-        "Atrial Fibrillation"
+        "Atrial Fibrillation",
+        "Transient Loss of Consciousness Epilepsy",
+        "Generalised Tonic-Clonic Epilepsy",
+        "Focal Seizure",
+        "Febrile Convulsion",
+        "Status Epilepticus",
+        "Provoked Seizure Metabolic",
+        "Meningitis Encephalitis with Seizure",
+        "Non-Epileptic Attack Disorder"
       ],
       "neurosurgery": [
         "Ischaemic Stroke",
@@ -35223,7 +37802,9 @@
         "Acute Subdural Haematoma",
         "Cerebral Contusion / Traumatic Brain Injury",
         "Primary Brain Tumour (Glioma / Meningioma)",
-        "Hydrocephalus (Obstructive / NPH)"
+        "Hydrocephalus (Obstructive / NPH)",
+        "Brain Tumour Seizure",
+        "Focal Seizure"
       ],
       "orthopaedics": [
         "Fat Embolism Syndrome",
@@ -35335,6 +37916,33 @@
         "Ascending Cholangitis",
         "Acalculous Cholecystitis",
         "Necrotising Pancreatitis"
+      ],
+      "ent": [
+        "Bacterial Tonsillitis Strep Pharyngitis",
+        "Viral Pharyngitis",
+        "Peritonsillar Abscess",
+        "Infectious Mononucleosis",
+        "Epiglottitis",
+        "Oropharyngeal Carcinoma",
+        "Ludwig's Angina",
+        "Retropharyngeal Abscess",
+        "Anterior Epistaxis Little's Area",
+        "Hypertensive Epistaxis",
+        "Coagulopathy Epistaxis",
+        "Posterior Epistaxis",
+        "Hereditary Haemorrhagic Telangiectasia",
+        "Nasal Polyps Sinusitis Epistaxis",
+        "Nasopharyngeal Carcinoma"
+      ],
+      "ophthalmology": [
+        "Acute Angle-Closure Glaucoma",
+        "Retinal Detachment",
+        "Anterior Uveitis Iritis",
+        "Bacterial Conjunctivitis",
+        "Central Retinal Artery Occlusion",
+        "Corneal Ulcer Keratitis",
+        "Scleritis",
+        "Giant Cell Arteritis with Visual Threat"
       ]
     },
     "ccToSystems": {
@@ -35641,6 +38249,106 @@
       ],
       "barrets oesophagus": [
         "gastrointestinal"
+      ],
+      "faint": [
+        "cardiovascular",
+        "neurological"
+      ],
+      "collapse": [
+        "cardiovascular",
+        "neurological"
+      ],
+      "blackout": [
+        "cardiovascular",
+        "neurological"
+      ],
+      "loss of consciousness": [
+        "cardiovascular",
+        "neurological"
+      ],
+      "sore throat": [
+        "ent"
+      ],
+      "throat pain": [
+        "ent"
+      ],
+      "tonsillitis": [
+        "ent"
+      ],
+      "epistaxis": [
+        "ent",
+        "haematological"
+      ],
+      "nosebleed": [
+        "ent"
+      ],
+      "eye pain": [
+        "ophthalmic"
+      ],
+      "red eye": [
+        "ophthalmic"
+      ],
+      "visual loss": [
+        "ophthalmic",
+        "neurological"
+      ],
+      "blurred vision": [
+        "ophthalmic",
+        "neurological"
+      ],
+      "diplopia": [
+        "ophthalmic",
+        "neurological"
+      ],
+      "seizure": [
+        "neurological"
+      ],
+      "convulsion": [
+        "neurological"
+      ],
+      "epilepsy": [
+        "neurological"
+      ],
+      "dark urine": [
+        "hepatobiliary"
+      ],
+      "pale stool": [
+        "hepatobiliary"
+      ],
+      "pruritus": [
+        "hepatobiliary",
+        "dermatological"
+      ],
+      "hoarseness": [
+        "ent",
+        "endocrine"
+      ],
+      "voice change": [
+        "ent",
+        "endocrine"
+      ],
+      "leg swelling": [
+        "cardiovascular",
+        "venous"
+      ],
+      "edema": [
+        "cardiovascular",
+        "renal"
+      ],
+      "oedema": [
+        "cardiovascular",
+        "renal"
+      ],
+      "varicose veins": [
+        "vascular"
+      ],
+      "non-healing ulcer": [
+        "vascular",
+        "dermatological"
+      ],
+      "abscess": [
+        "dermatological",
+        "infectious"
       ]
     },
     "urgencyIndex": {
@@ -35690,7 +38398,17 @@
         "Urosepsis",
         "Ventricular Tachycardia",
         "Oesophageal Varices",
-        "Necrotising Pancreatitis"
+        "Necrotising Pancreatitis",
+        "Epiglottitis",
+        "Ludwig's Angina",
+        "Retropharyngeal Abscess",
+        "Status Epilepticus",
+        "Meningitis Encephalitis with Seizure",
+        "Acute Angle-Closure Glaucoma",
+        "Retinal Detachment",
+        "Central Retinal Artery Occlusion",
+        "Giant Cell Arteritis with Visual Threat",
+        "Pulmonary Embolism with Syncope"
       ],
       "urgent": [
         "Acute Cholecystitis",
@@ -35723,7 +38441,25 @@
         "Gallbladder Carcinoma",
         "Carcinoma of Head of Pancreas",
         "Meckel's Diverticulitis",
-        "Psoas Abscess"
+        "Psoas Abscess",
+        "Peritonsillar Abscess",
+        "Hypertensive Epistaxis",
+        "Coagulopathy Epistaxis",
+        "Posterior Epistaxis",
+        "Nasopharyngeal Carcinoma",
+        "Oropharyngeal Carcinoma",
+        "Cardiac Arrhythmia Syncope",
+        "Structural Cardiac Syncope",
+        "Transient Loss of Consciousness Epilepsy",
+        "Hypoglycaemic Collapse",
+        "Generalised Tonic-Clonic Epilepsy",
+        "Focal Seizure",
+        "Febrile Convulsion",
+        "Provoked Seizure Metabolic",
+        "Brain Tumour Seizure",
+        "Anterior Uveitis Iritis",
+        "Corneal Ulcer Keratitis",
+        "Scleritis"
       ],
       "routine": [
         "ACE Inhibitor Cough",
