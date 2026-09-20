@@ -23,6 +23,9 @@ enum BayesianDiagnosisEngine {
         let rawLogPosterior: Int           // log-posterior before softmax
         let logGap: Int                    // rank-1 minus rank-2 log-posterior gap (0 for non-rank-1)
         let pathognomicFindings: [String]  // fired features with logLR ≥ 18
+        /// Clinical urgency tier: 0=routine 1=urgent 2=emergency 3=critical
+        /// Drives the safety-net boost and urgency badge in the differential UI.
+        let urgency: Int
 
         enum Confidence {
             case certain  // logGap ≥ 25 — statistically overwhelming
@@ -96,7 +99,8 @@ enum BayesianDiagnosisEngine {
         wellsPEScore: Double? = nil,
         abcd2Score: Int? = nil,
         lrinecScore: Int? = nil,
-        qsofaScore: Int? = nil
+        qsofaScore: Int? = nil,
+        specialtyHint: String? = nil  // e.g. "cardiology" — narrows matrix cross-query to that specialty
     ) -> [DiagnosisResult] {
         guard let cc = chiefComplaint, !cc.isEmpty else { return [] }
         let ccL = cc.lowercased()
@@ -406,8 +410,10 @@ enum BayesianDiagnosisEngine {
         // were not in the primary pool dispatch — e.g. a patient presenting with
         // "chest pain" gets cardiovascular AND respiratory candidates including
         // those tagged to both systems (PE, cardiac tamponade, etc.).
+        // specialtyHint narrows the result to a specialty context (e.g. a CC
+        // selected from the Cardiology block filters to cardiology diseases only).
         // Limited to 12 novel entries to keep the candidate list manageable.
-        let matrixExtra = matrixCandidates(forCC: ccL)
+        let matrixExtra = matrixCandidates(forCC: ccL, specialtyHint: specialtyHint)
         let matrixNovel = matrixExtra.filter { seenNames.insert($0.name).inserted }
         candidates.append(contentsOf: matrixNovel.prefix(12))
 
@@ -875,7 +881,8 @@ enum BayesianDiagnosisEngine {
                 confidence: conf,
                 rawLogPosterior: s.logPosterior,
                 logGap: gap,
-                pathognomicFindings: s.pathognomicFindings
+                pathognomicFindings: s.pathognomicFindings,
+                urgency: s.candidate.urgency
             )
         }
     }

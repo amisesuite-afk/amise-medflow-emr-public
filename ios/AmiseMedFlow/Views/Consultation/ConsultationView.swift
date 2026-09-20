@@ -903,6 +903,7 @@ struct ConsultationView: View {
     @State private var newAllergyReaction = ""
     @State private var triageResult: TriageResult?
     @State private var ccBayesDiff: [BayesianDiagnosisEngine.DiagnosisResult] = []
+    @State private var selectedSpecialtyHint: String? = nil  // set when a CC chip is tapped
     @State private var isAssessing = false
     @State private var pathwayTask: Task<Void, Never>?
     @State private var icdQuery = ""
@@ -1067,7 +1068,8 @@ struct ConsultationView: View {
                 examGeneral: nil,
                 investigations: [],
                 ageYears: patient.ageYears,
-                sex: patient.sex
+                sex: patient.sex,
+                specialtyHint: selectedSpecialtyHint
             )
             ccBayesDiff = Array(earlyDiff.prefix(4))
             // Debounced full pathway + Bayesian refresh
@@ -1523,7 +1525,7 @@ struct ConsultationView: View {
                 // Free-text override
                 TextField("Type a complaint or select below…",
                           text: Binding(get: { patient.chiefComplaint ?? "" },
-                                        set: { patient.chiefComplaint = $0.isEmpty ? nil : $0; touch() }),
+                                        set: { patient.chiefComplaint = $0.isEmpty ? nil : $0; selectedSpecialtyHint = nil; touch() }),
                           axis: .vertical)
                     .font(.callout)
                     .lineLimit(3...)
@@ -1553,6 +1555,7 @@ struct ConsultationView: View {
                         let isSelected = selectedChipLabel == chip.label
                         Button {
                             patient.chiefComplaint = chip.label
+                            selectedSpecialtyHint = group.name
                             touch()
                         } label: {
                             HStack(spacing: 10) {
@@ -1589,12 +1592,24 @@ struct ConsultationView: View {
         Section {
             ForEach(ccBayesDiff.prefix(4), id: \.name) { dx in
                 HStack(spacing: 8) {
+                    // Urgency left stripe: amber=urgent, red=emergency, deep red=critical
+                    if dx.urgency > 0 {
+                        RoundedRectangle(cornerRadius: 1.5)
+                            .fill(urgencyColor(dx.urgency))
+                            .frame(width: 3)
+                            .frame(minHeight: 36)
+                    }
                     VStack(alignment: .leading, spacing: 2) {
                         Text(dx.name)
                             .font(.subheadline.weight(.medium))
                         Text(dx.icdCode)
                             .font(.caption2)
                             .foregroundStyle(.tertiary)
+                        if dx.urgency > 0 {
+                            Text(urgencyLabel(dx.urgency))
+                                .font(.system(size: 9, weight: .bold))
+                                .foregroundStyle(urgencyColor(dx.urgency))
+                        }
                     }
                     Spacer()
                     // Probability bar + label
@@ -1618,7 +1633,7 @@ struct ConsultationView: View {
                 .foregroundStyle(AMColor.accent)
                 .textCase(nil)
         } footer: {
-            Text("Based on chief complaint + PMH only. Refines as you add more evidence.")
+            Text("Based on chief complaint + PMH only. Colour stripe = urgency tier. Refines as you add more evidence.")
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
         }
@@ -1630,6 +1645,24 @@ struct ConsultationView: View {
         case .high:     return .orange
         case .moderate: return AMColor.accent
         case .low:      return .secondary
+        }
+    }
+
+    private func urgencyColor(_ level: Int) -> Color {
+        switch level {
+        case 3: return Color(red: 0.72, green: 0.0, blue: 0.0)
+        case 2: return .red
+        case 1: return .orange
+        default: return .clear
+        }
+    }
+
+    private func urgencyLabel(_ level: Int) -> String {
+        switch level {
+        case 3: return "⚠ CRITICAL"
+        case 2: return "⚠ EMERGENCY"
+        case 1: return "URGENT"
+        default: return ""
         }
     }
 
@@ -3348,7 +3381,8 @@ struct ConsultationView: View {
             investigations: patient.investigations,
             ageYears: patient.ageYears,
             sex: patient.sex,
-            longitudinal: patient.longitudinalContext
+            longitudinal: patient.longitudinalContext,
+            specialtyHint: selectedSpecialtyHint
         )
 
         // Update alarm list (keep dismissed state across refreshes)
