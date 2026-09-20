@@ -14444,6 +14444,139 @@
               "value": "Photophobia",
               "logLR": -4,
               "evidenceLabel": "Mild or absent photophobia (if marked, favours migraine)"
+            },
+            {
+              "key": "character",
+              "value": "Occipital / nuchal tightness",
+              "logLR": 10,
+              "evidenceLabel": "Occipital or nuchal tightness / aching — muscle tension origin",
+              "citation": "Jensen R. Cephalalgia 1999. Pericranial muscle tenderness (manual palpation) present in 70–90% of TTH; most pronounced in suboccipital, trapezius, and temporalis muscles."
+            },
+            {
+              "key": "character",
+              "value": "Bilateral frontal",
+              "logLR": 8,
+              "evidenceLabel": "Bilateral frontal / fronto-occipital distribution (hatband pattern)",
+              "citation": "ICHD-3 2018. TTH pain is bilateral in >90% of episodes; fronto-occipital 'hatband' distribution is the most characteristic radiation pattern. Unilateral onset alone makes TTH diagnosis uncertain."
+            },
+            {
+              "key": "severity",
+              "value": "Mild to moderate",
+              "logLR": 10,
+              "evidenceLabel": "Mild to moderate pain intensity (3–6/10) — TTH rarely severe",
+              "citation": "Stovner LJ et al. Cephalalgia 2007. TTH intensity mild-moderate in >90% of episodes; severity ≥7/10 shifts probability towards migraine or secondary headache. Most patients maintain normal function."
+            },
+            {
+              "key": "timing",
+              "value": "30 min to 7 days",
+              "logLR": 10,
+              "evidenceLabel": "Duration 30 minutes to 7 days (ICHD-3 criterion for episodic TTH)",
+              "citation": "ICHD-3 2018. Episodic TTH: 30 min–7 days duration. Chronic TTH: ≥15 days/month for >3 months. Duration <30 min is unusual for TTH and should prompt consideration of TACs."
+            },
+            {
+              "key": "exacerbating",
+              "value": "Poor posture",
+              "logLR": 8,
+              "evidenceLabel": "Poor posture / prolonged desk or screen work exacerbates headache",
+              "citation": "Fernández-de-las-Peñas C et al. Cephalalgia 2006. Sustained neck flexion (screen work, reading) increases myofascial trigger point activity in upper trapezius and suboccipitals. Common occupational TTH trigger."
+            },
+            {
+              "key": "exacerbating",
+              "value": "Sleep deprivation",
+              "logLR": 6,
+              "evidenceLabel": "Sleep deprivation or poor sleep quality as a precipitant",
+              "citation": "Boardman HF et al. BMJ 2005. Poor sleep is the most commonly reported trigger in TTH (56% in population study); bidirectional relationship — headache also disrupts sleep."
+            },
+            {
+              "key": "exacerbating",
+              "value": "Eye strain",
+              "logLR": 6,
+              "evidenceLabel": "Eye strain / uncorrected refractive error contributing to frontal headache",
+              "citation": "Gil-Gouveia R & Martins IP. Headache 2002. Asthenopia (eye strain) and uncorrected refractive error can trigger or worsen TTH via frontal / periorbital muscle tension. Consider ophthalmology referral."
+            },
+            {
+              "key": "exam",
+              "value": "Pericranial muscle tenderness",
+              "logLR": 14,
+              "evidenceLabel": "Pericranial muscle tenderness on manual palpation (frontal, temporalis, masseter, trapezius)",
+              "citation": "Jensen R et al. Cephalalgia 1998. Pericranial muscle tenderness score (Total Tenderness Score) is the most important examination finding; TTS correlates with TTH frequency and intensity. LR+ 7.2."
+            },
+            {
+              "key": "history",
+              "value": "Chronic daily headache",
+              "logLR": 8,
+              "evidenceLabel": "Chronic daily headache (≥15 days/month) — chronic TTH pattern",
+              "citation": "Scher AI et al. Headache 2003. Chronic TTH affects 2–3% of population; 80% of chronic daily headache in general practice. Medication overuse must be excluded when analgesic use >15 days/month (MOH)."
+            },
+            {
+              "key": "history",
+              "value": "Medication overuse",
+              "logLR": 6,
+              "evidenceLabel": "Analgesic / triptan overuse (>10–15 days/month) — medication overuse headache",
+              "citation": "Diener HC et al. Lancet Neurol 2019. Medication overuse headache (MOH) transforms episodic TTH/migraine into chronic daily headache. Simple analgesia >15d/month, triptans >10d/month are thresholds."
+            },
+            {
+              "key": "history",
+              "value": "Anxiety or depression",
+              "logLR": 8,
+              "evidenceLabel": "Comorbid anxiety or depression — bidirectional association with TTH",
+              "citation": "Breslau N et al. Neurology 2000. Anxiety (OR 2.4) and depression (OR 2.2) strongly comorbid with TTH; central sensitisation and shared neurobiological pathways. Treat psychiatric comorbidity alongside headache."
+            },
+            {
+              "key": "relieving",
+              "value": "NSAIDs",
+              "logLR": 6,
+              "evidenceLabel": "Relief with NSAIDs (ibuprofen, aspirin) or paracetamol",
+              "citation": "Bendtsen L et al. Eur J Neurol 2010. NSAIDs (ibuprofen 400–800mg) provide significant relief in acute TTH; NNT ~4. Combination analgesics (aspirin + caffeine) more effective but higher MOH risk."
+            },
+            {
+              "key": "relieving",
+              "value": "Massage / heat",
+              "logLR": 6,
+              "evidenceLabel": "Relief from massage, heat application, or relaxation techniques",
+              "citation": "Nestoriuc Y et al. Cephalalgia 2008. Relaxation training and EMG biofeedback reduce TTH frequency 50% (meta-analysis NNT 3). Hot compress to neck and shoulders provides acute symptomatic relief."
+            },
+            {
+              "key": "character",
+              "value": "Unilateral",
+              "logLR": -8,
+              "evidenceLabel": "Strictly unilateral onset — argues against TTH, suggests migraine or TAC",
+              "citation": "ICHD-3 2018. TTH is bilateral by definition; strictly unilateral onset is an exclusion criterion for TTH. Unilateral headache shifts diagnosis to migraine without aura or TACs."
+            },
+            {
+              "key": "character",
+              "value": "Pulsating throbbing",
+              "logLR": -10,
+              "evidenceLabel": "Pulsating / throbbing quality — argues against TTH (ICHD-3 exclusion criterion)",
+              "citation": "ICHD-3 2018. Pulsating quality is an exclusion criterion for TTH and a positive criterion for migraine. Bilateral pressing/tightening distinguishes TTH from migraine at the character level alone."
+            },
+            {
+              "key": "associations",
+              "value": "Vomiting",
+              "logLR": -12,
+              "evidenceLabel": "Vomiting — strongly argues against TTH (not a feature of TTH)",
+              "citation": "ICHD-3 2018. Vomiting is an exclusion criterion for TTH. Its presence mandates reconsideration of migraine, SAH, raised ICP, or other secondary causes. TTH may very rarely cause mild nausea."
+            },
+            {
+              "key": "onset",
+              "value": "Thunderclap",
+              "logLR": -16,
+              "evidenceLabel": "Thunderclap onset — excludes TTH; mandates SAH / RCVS / CVST exclusion",
+              "citation": "ICHD-3 2018. TTH is never thunderclap in onset. Sudden severe headache is explicitly listed as a red flag requiring neuroimaging regardless of subsequent TTH-like features."
+            },
+            {
+              "key": "timing",
+              "value": "Duration under 30 min",
+              "logLR": -8,
+              "evidenceLabel": "Duration <30 minutes — too brief for TTH; consider TAC (cluster, SUNCT, SUNA)",
+              "citation": "ICHD-3 2018. Minimum TTH duration is 30 minutes. Attacks lasting 15–180 min with autonomic features = cluster headache; 1–600 sec = SUNCT/SUNA. Duration <30 min requires TAC workup."
+            },
+            {
+              "key": "associations",
+              "value": "Significant photophobia and phonophobia",
+              "logLR": -8,
+              "evidenceLabel": "Marked photophobia AND phonophobia together — argues for migraine over TTH",
+              "citation": "ICHD-3 2018. TTH permits only mild photophobia OR mild phonophobia (not both simultaneously). Both present simultaneously and marked = migraine criterion."
             }
           ],
           "systems": [
@@ -14746,6 +14879,153 @@
               "value": "smok",
               "logLR": 8,
               "evidenceLabel": "Heavy smoking history"
+            },
+            {
+              "key": "character",
+              "value": "Orbital / retro-orbital",
+              "logLR": 14,
+              "evidenceLabel": "Orbital, supraorbital, or temporal pain — ICHD-3 required location",
+              "citation": "ICHD-3 2018. Cluster headache pain is centred on the orbit, supraorbital region, or temporal area in virtually all cases; strictly ipsilateral. Orbital 'boring' or 'stabbing' quality is most characteristic."
+            },
+            {
+              "key": "character",
+              "value": "Boring stabbing",
+              "logLR": 12,
+              "evidenceLabel": "Boring / stabbing / searing quality — distinct from the pressing TTH or pulsating migraine",
+              "citation": "Headache Classification Committee. Cephalalgia 2018. Cluster headache quality described as 'boring', 'stabbing', 'red-hot poker through the eye'. Sharp stabbing quality distinguishes from other primary headaches."
+            },
+            {
+              "key": "associations",
+              "value": "Conjunctival injection",
+              "logLR": 14,
+              "evidenceLabel": "Ipsilateral conjunctival injection / eye redness — cranial autonomic feature",
+              "citation": "May A et al. Brain 1998. Conjunctival injection present in 79% of cluster attacks; reflects trigeminal-autonomic arc activation. Ipsilateral parasympathetic activation via sphenopalatine ganglion."
+            },
+            {
+              "key": "associations",
+              "value": "Nasal congestion",
+              "logLR": 12,
+              "evidenceLabel": "Ipsilateral nasal congestion or rhinorrhoea during attack",
+              "citation": "Goadsby PJ et al. Lancet 2001. Nasal autonomic features (rhinorrhoea 36%, congestion 48%) are ipsilateral cranial autonomic symptoms present in most cluster attacks; reflect parasympathetic sphenopalatine activation."
+            },
+            {
+              "key": "associations",
+              "value": "Forehead sweating",
+              "logLR": 10,
+              "evidenceLabel": "Ipsilateral forehead and facial sweating / flushing during attack",
+              "citation": "Ekbom K & Lindgren L. Headache 1971. Facial sweating and flushing present in ~50% of cluster attacks; ipsilateral autonomic activation pattern. Part of ICHD-3 diagnostic criterion for cranial autonomic features."
+            },
+            {
+              "key": "timing",
+              "value": "Circadian clustering",
+              "logLR": 16,
+              "evidenceLabel": "Strict circadian pattern — attacks at same time each day (often 1–2 AM)",
+              "citation": "Kudrow L. Headache 1987. Attacks occur in clusters of weeks-months, with remarkable circadian regularity (same time ± 30 min each day). Hypothalamic circadian pacemaker involvement confirmed by PET. Pathognomonic temporal pattern."
+            },
+            {
+              "key": "timing",
+              "value": "Seasonal clustering",
+              "logLR": 14,
+              "evidenceLabel": "Annual or seasonal periodicity — bouts at the same time each year",
+              "citation": "Waldenlind E et al. Cephalalgia 1987. Seasonal clustering in ~50% of episodic cluster headache; spring and autumn equinox most common. Implies circannual chronobiological mechanism linked to photoperiod."
+            },
+            {
+              "key": "history",
+              "value": "Episodic cluster period",
+              "logLR": 12,
+              "evidenceLabel": "Episodic cluster period 6–12 weeks followed by remission of months to years",
+              "citation": "ICHD-3 2018. Episodic cluster headache (85% of cases): bouts lasting 6–12 weeks, separated by remissions ≥3 months. Chronic cluster (15%): attacks for >1 year without ≥3-month remission."
+            },
+            {
+              "key": "associations",
+              "value": "Triggered by alcohol",
+              "logLR": 12,
+              "evidenceLabel": "Alcohol reliably triggers attack during a cluster bout (not outside a bout)",
+              "citation": "Ekbom K. Headache 1974. Small amounts of alcohol (1–2 units) trigger cluster attack within 30–60 min in >50% during an active bout; the same patient is immune to alcohol between bouts. This on-off pattern is pathognomonic."
+            },
+            {
+              "key": "associations",
+              "value": "GTN / vasodilator trigger",
+              "logLR": 10,
+              "evidenceLabel": "Glyceryl trinitrate / nitroglycerin reliably provokes attack during active bout",
+              "citation": "Tassorelli C et al. Cephalalgia 2005. GTN triggers cluster attacks within 30–45 min in patients during active bout; used diagnostically and in research. Also: histamine, hypoxia trigger attacks during a bout."
+            },
+            {
+              "key": "relieving",
+              "value": "High-flow oxygen",
+              "logLR": 16,
+              "evidenceLabel": "Rapid relief with 100% oxygen via non-rebreather mask (12–15 L/min for 15 min)",
+              "citation": "Cohen AS et al. JAMA 2009. High-flow O2 aborts cluster attack in 78% vs 20% placebo (NNT 1.7). EAN/EFNS Class A recommendation. Mechanism: reversal of vasodilation via vasoconstriction of trigeminovascular complex."
+            },
+            {
+              "key": "relieving",
+              "value": "Subcutaneous sumatriptan",
+              "logLR": 16,
+              "evidenceLabel": "Subcutaneous sumatriptan 6mg — aborts attack within 15 minutes",
+              "citation": "Ekbom K et al. Cephalalgia 1993. SC sumatriptan relief at 15 min: 74% vs 26% placebo (NNT 2.1). Most effective acute treatment. Intranasal zolmitriptan 5–10mg an alternative when injection declined."
+            },
+            {
+              "key": "associations",
+              "value": "Ipsilateral Horner syndrome",
+              "logLR": 14,
+              "evidenceLabel": "Partial Horner's syndrome — persistent ptosis / miosis between attacks",
+              "citation": "Salvesen R. Headache 2006. Persistent partial Horner's syndrome (ptosis + miosis) between attacks in 4–5% of cluster patients; indicates damage to pericarotid sympathetic fibres from repeated pericarotid inflammation."
+            },
+            {
+              "key": "risk",
+              "value": "Age 20-50 male",
+              "logLR": 8,
+              "evidenceLabel": "Male, age 20–50 — peak demographic (M:F ratio 5:1, mean onset age 30)",
+              "citation": "Torelli P & Manzoni GC. J Headache Pain 2003. Male predominance 5:1; peak onset 20–40y. Unlike migraine, no hormonal association. Lean body habitus (leonine facies) classically described."
+            },
+            {
+              "key": "risk",
+              "value": "Family history cluster",
+              "logLR": 8,
+              "evidenceLabel": "Family history of cluster headache (14× increased risk in first-degree relatives)",
+              "citation": "Leone M et al. Neurology 2001. First-degree relatives have 14× increased risk vs general population; 2–7% familial cases. Autosomal dominant inheritance with reduced penetrance proposed."
+            },
+            {
+              "key": "character",
+              "value": "Bilateral",
+              "logLR": -16,
+              "evidenceLabel": "Bilateral pain — strictly excludes cluster headache (must be unilateral)",
+              "citation": "ICHD-3 2018. Cluster headache must be strictly unilateral; bilateral onset is an absolute exclusion criterion. Bilateral severe headache with autonomic features suggests SUNCT/SUNA or secondary cause."
+            },
+            {
+              "key": "character",
+              "value": "Pressing tightening",
+              "logLR": -10,
+              "evidenceLabel": "Pressing / tightening quality — argues against cluster (which is boring/stabbing)",
+              "citation": "ICHD-3 2018. Cluster headache quality is boring or stabbing, never pressing or tightening (which characterises TTH). Quality mismatch substantially reduces cluster probability."
+            },
+            {
+              "key": "associations",
+              "value": "No autonomic features",
+              "logLR": -14,
+              "evidenceLabel": "Absent ipsilateral autonomic features — required for cluster headache diagnosis",
+              "citation": "ICHD-3 2018. At least one ipsilateral cranial autonomic symptom (lacrimation, conjunctival injection, nasal symptoms, ptosis, miosis, forehead sweating, ear fullness) is a required criterion for cluster headache."
+            },
+            {
+              "key": "associations",
+              "value": "Lies still during headache",
+              "logLR": -12,
+              "evidenceLabel": "Patient lies still during attack — argues against cluster (which causes agitation)",
+              "citation": "ICHD-3 2018. Restlessness or agitation is a characteristic feature of cluster headache (patient paces, rocks). Lying still is characteristic of migraine. Behaviour during attack is a key discriminating feature."
+            },
+            {
+              "key": "timing",
+              "value": "Duration over 3 hours",
+              "logLR": -10,
+              "evidenceLabel": "Duration >3 hours — cluster headache lasts 15–180 min; longer attacks suggest migraine",
+              "citation": "ICHD-3 2018. Upper duration limit for cluster headache is 180 minutes. Attacks consistently lasting >3h are more consistent with migraine without aura. Consider TAC overlap syndromes."
+            },
+            {
+              "key": "timing",
+              "value": "Duration under 15 minutes",
+              "logLR": -10,
+              "evidenceLabel": "Duration <15 minutes — too brief for cluster; consider SUNCT (1–600 sec) or SUNA",
+              "citation": "ICHD-3 2018. Minimum cluster headache duration is 15 minutes. Attacks <15 min with autonomic features suggest SUNCT (Short-lasting Unilateral Neuralgiform headache with Conjunctival injection and Tearing)."
             }
           ],
           "systems": [
