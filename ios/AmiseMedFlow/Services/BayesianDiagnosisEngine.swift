@@ -400,8 +400,19 @@ enum BayesianDiagnosisEngine {
         if ccL.contains("breathless") || ccL.contains("oedema") || ccL.contains("edema") { mergePool("cardiacFailure") }
         // Secondary pool: jaundice overlay on liver symptoms
         if ccL.contains("jaundice") || ccL.contains("yellow") { mergePool("liverDisease") }
-        // Cap total candidates at 35 to keep scoring fast
-        if candidates.count > 35 { candidates = Array(candidates.prefix(35)) }
+
+        // Matrix cross-query: ICD-11 polyhierarchy overlay.
+        // Surfaces diseases that belong to the systems implied by this CC but
+        // were not in the primary pool dispatch — e.g. a patient presenting with
+        // "chest pain" gets cardiovascular AND respiratory candidates including
+        // those tagged to both systems (PE, cardiac tamponade, etc.).
+        // Limited to 12 novel entries to keep the candidate list manageable.
+        let matrixExtra = matrixCandidates(forCC: ccL)
+        let matrixNovel = matrixExtra.filter { seenNames.insert($0.name).inserted }
+        candidates.append(contentsOf: matrixNovel.prefix(12))
+
+        // Cap total candidates at 45 (raised from 35 to accommodate matrix overlay)
+        if candidates.count > 45 { candidates = Array(candidates.prefix(45)) }
 
         // Merge longitudinal context into scoring inputs.
         // Confirmed past diagnoses are appended to pmh so existing "pmh" feature
@@ -881,9 +892,24 @@ enum BayesianDiagnosisEngine {
         let candidates: [CandidateSpec]
     }
 
+    /// Top-level matrix section of DiagnosticDatabase.json.
+    /// Encodes the ICD-11 / SNOMED CT polyhierarchy: each disease is tagged with
+    /// all its body systems and clinical specialties, enabling cross-specialty query.
+    struct MatrixSpec: Codable {
+        let version: String
+        let authority: String
+        /// system name → [disease names]
+        let systemIndex: [String: [String]]
+        /// specialty name → [disease names]
+        let specialtyIndex: [String: [String]]
+        /// CC keyword → [system names]  (lowercase keys)
+        let ccToSystems: [String: [String]]
+    }
+
     struct CandidateDatabase: Codable {
         let version: String
         let pools: [String: PoolSpec]
+        let matrix: MatrixSpec?
     }
 
     // Lazy-loaded once at first access; nil if file absent or unparseable.
@@ -896,6 +922,49 @@ enum BayesianDiagnosisEngine {
     // Convenience: load a candidate pool from the external database, or return nil.
     private static func externalPool(_ name: String) -> [Candidate]? {
         externalDatabase?.pools[name].map { $0.candidates.map { $0.toCandidate() } }
+    }
+
+    /// Cross-specialty matrix query implementing the ICD-11 polyhierarchy model.
+    /// Maps the chief complaint to body systems via `matrix.ccToSystems`, then
+    /// collects all disease candidates tagged to those systems from `matrix.systemIndex`.
+    /// If `specialtyHint` is provided (e.g. "cardiology"), the result is further
+    /// intersected with `matrix.specialtyIndex` so a referred patient only surfaces
+    /// diagnoses relevant to their specialty context.
+    static func matrixCandidates(forCC cc: String, specialtyHint: String? = nil) -> [Candidate] {
+        guard let db = externalDatabase, let mx = db.matrix else { return [] }
+        let ccL = cc.lowercased()
+
+        // Map CC keywords → systems
+        var matchedSystems = Set<String>()
+        for (keyword, systems) in mx.ccToSystems where ccL.contains(keyword) {
+            systems.forEach { matchedSystems.insert($0) }
+        }
+        guard !matchedSystems.isEmpty else { return [] }
+
+        // Collect disease names that belong to those systems
+        var diseaseNames: Set<String> = []
+        for system in matchedSystems {
+            mx.systemIndex[system]?.forEach { diseaseNames.insert($0) }
+        }
+
+        // Optionally narrow to a specialty intersection
+        if let hint = specialtyHint, !hint.isEmpty {
+            let hintL = hint.lowercased()
+            if let specialtyDiseases = mx.specialtyIndex.first(where: { $0.key.lowercased().contains(hintL) })?.value {
+                diseaseNames = diseaseNames.intersection(specialtyDiseases)
+            }
+        }
+        guard !diseaseNames.isEmpty else { return [] }
+
+        // Look up the actual candidate specs from pools (canonical source of truth)
+        var seen = Set<String>()
+        var result: [Candidate] = []
+        for (_, poolSpec) in db.pools {
+            for spec in poolSpec.candidates where diseaseNames.contains(spec.name) && seen.insert(spec.name).inserted {
+                result.append(spec.toCandidate())
+            }
+        }
+        return result.sorted { $0.logPrior > $1.logPrior }
     }
 
     // MARK: - Diagnostic catalogue (search + browse)

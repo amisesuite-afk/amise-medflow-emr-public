@@ -137,6 +137,13 @@
               "evidenceLabel": "",
               "citation": "RUQ pain strongly against standard appendicitis"
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "emergency"
           ]
         },
         {
@@ -242,6 +249,14 @@
               "evidenceLabel": "Age >40",
               "citation": "Prevalence of gallstones increases markedly after 40 years"
             }
+          ],
+          "systems": [
+            "hepatobiliary"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "gastroenterology",
+            "emergency"
           ]
         },
         {
@@ -326,6 +341,14 @@
               "evidenceLabel": "Female sex",
               "citation": "Higher prevalence of gallstones in females"
             }
+          ],
+          "systems": [
+            "hepatobiliary"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "gastroenterology",
+            "emergency"
           ]
         },
         {
@@ -424,6 +447,16 @@
               "evidenceLabel": "Alcohol use (social history)",
               "citation": "Social history of heavy alcohol use is significant risk factor"
             }
+          ],
+          "systems": [
+            "pancreatic",
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "gastroenterology",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -508,6 +541,13 @@
               "evidenceLabel": "",
               "citation": "RLQ location uncommon for sigmoid diverticulitis (right-sided diverticular less common)"
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "gastroenterology"
           ]
         },
         {
@@ -585,6 +625,14 @@
               "evidenceLabel": "Pneumoperitoneum on imaging",
               "citation": "Free gas under diaphragm on erect CXR/CT has very high specificity for perforation"
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "gastroenterology",
+            "emergency"
           ]
         },
         {
@@ -725,6 +773,14 @@
               "evidenceLabel": "Regurgitation",
               "citation": "Moayyedi P. BMJ 2002;324:1375."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "upperGISurgery",
+            "internalMedicine"
           ]
         },
         {
@@ -793,6 +849,13 @@
               "logLR": -8,
               "evidenceLabel": ""
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "internalMedicine"
           ]
         },
         {
@@ -922,6 +985,14 @@
               "evidenceLabel": "Pathognomonic — LR >50 for CBD stone",
               "citation": "Verma D. Gastrointest Endosc 2006."
             }
+          ],
+          "systems": [
+            "hepatobiliary"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "gastroenterology",
+            "upperGISurgery"
           ]
         },
         {
@@ -985,6 +1056,15 @@
               "evidenceLabel": "Age >60",
               "citation": "Older age increases incidence"
             }
+          ],
+          "systems": [
+            "hepatobiliary",
+            "infectious"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "gastroenterology",
+            "emergency"
           ]
         },
         {
@@ -1048,6 +1128,15 @@
               "evidenceLabel": "Dilated pancreatic duct on CT/MRCP",
               "citation": "Double-duct sign on ERCP/MRCP LR+ ~14 for pancreatic head mass"
             }
+          ],
+          "systems": [
+            "pancreatic",
+            "oncological"
+          ],
+          "specialties": [
+            "upperGISurgery",
+            "gastroenterology",
+            "oncology"
           ]
         },
         {
@@ -1111,6 +1200,15 @@
               "evidenceLabel": "LR 4 for viral hepatitis",
               "citation": "Bernal W. Lancet 2010."
             }
+          ],
+          "systems": [
+            "hepatobiliary",
+            "infectious"
+          ],
+          "specialties": [
+            "hepatology",
+            "infectiousDisease",
+            "internalMedicine"
           ]
         },
         {
@@ -1174,6 +1272,14 @@
               "evidenceLabel": "LR 5 for haemolysis",
               "citation": "Fargo MV. Am Fam Physician 2017."
             }
+          ],
+          "systems": [
+            "haematological",
+            "hepatobiliary"
+          ],
+          "specialties": [
+            "haematology",
+            "internalMedicine"
           ]
         }
       ]
@@ -1255,6 +1361,14 @@
               "evidenceLabel": "Stone on non-contrast CT KUB",
               "citation": "NCCT sensitivity 96–97%, specificity 96–99% — gold standard"
             }
+          ],
+          "systems": [
+            "renal",
+            "urological"
+          ],
+          "specialties": [
+            "urology",
+            "emergency"
           ]
         },
         {
@@ -1318,6 +1432,16 @@
               "evidenceLabel": "LR 5 for acute pyelonephritis on CT",
               "citation": "Craig WD. Radiographics 2008."
             }
+          ],
+          "systems": [
+            "renal",
+            "infectious"
+          ],
+          "specialties": [
+            "urology",
+            "nephrology",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -1381,6 +1505,14 @@
               "evidenceLabel": "LR 8 for left renal vein involvement",
               "citation": "Bhatt NR. Surg Oncol 2019."
             }
+          ],
+          "systems": [
+            "renal",
+            "oncological"
+          ],
+          "specialties": [
+            "urology",
+            "oncology"
           ]
         },
         {
@@ -1444,6 +1576,14 @@
               "evidenceLabel": "LR 8 for upper-tract urothelial disease",
               "citation": "Tritschler S. Lancet 2018."
             }
+          ],
+          "systems": [
+            "urological",
+            "oncological"
+          ],
+          "specialties": [
+            "urology",
+            "oncology"
           ]
         },
         {
@@ -1507,6 +1647,13 @@
               "evidenceLabel": "LR 15 for UPJ obstruction pattern",
               "citation": "Josephson S. Eur Urol 2002."
             }
+          ],
+          "systems": [
+            "renal",
+            "urological"
+          ],
+          "specialties": [
+            "urology"
           ]
         }
       ]
@@ -1588,6 +1735,14 @@
               "evidenceLabel": "Haemoglobin drop / iron deficiency",
               "citation": "Degree of Hb drop correlates with chronicity and severity"
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "upperGISurgery",
+            "emergency"
           ]
         },
         {
@@ -1658,6 +1813,16 @@
               "evidenceLabel": "OGD — bleeding varices confirmed",
               "citation": "Emergency OGD gold standard; band ligation or sclerotherapy"
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "hepatobiliary",
+            "vascular"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "hepatology",
+            "emergency"
           ]
         },
         {
@@ -1721,6 +1886,13 @@
               "evidenceLabel": "LR 3 for spontaneous resolution",
               "citation": "Bharucha AE. Mayo Clin Proc 2014."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "emergency"
           ]
         },
         {
@@ -1784,6 +1956,13 @@
               "evidenceLabel": "LR 5 distinguishing from peptic ulcer",
               "citation": "Norton ID. Gastrointest Endosc 2002."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "upperGISurgery"
           ]
         },
         {
@@ -1847,6 +2026,16 @@
               "evidenceLabel": "Pathognomonic — histological confirmation",
               "citation": "Kato H. Cancer 2004."
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "oncological"
+          ],
+          "specialties": [
+            "upperGISurgery",
+            "gastroenterology",
+            "oncology",
+            "emergency"
           ]
         }
       ]
@@ -1935,6 +2124,14 @@
               "evidenceLabel": "ST elevation / new LBBB / ST depression on ECG",
               "citation": "ST elevation LR+ ~200 for STEMI; ST depression LR+ 3–5 for NSTEMI"
             }
+          ],
+          "systems": [
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiology",
+            "emergency",
+            "internalMedicine"
           ]
         },
         {
@@ -1998,6 +2195,13 @@
               "evidenceLabel": "LR 8 for exercise-induced ischaemia",
               "citation": "Fihn SD. Circulation 2012."
             }
+          ],
+          "systems": [
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiology",
+            "internalMedicine"
           ]
         },
         {
@@ -2061,6 +2265,17 @@
               "evidenceLabel": "LR 6 for high probability PE",
               "citation": "Wells PS. Thromb Haemost 2000."
             }
+          ],
+          "systems": [
+            "respiratory",
+            "vascular",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "respiratoryMedicine",
+            "cardiology",
+            "emergency",
+            "haematology"
           ]
         },
         {
@@ -2124,6 +2339,16 @@
               "evidenceLabel": "LR 5.7 for aortic dissection",
               "citation": "Rogers AM. Circulation 2011."
             }
+          ],
+          "systems": [
+            "vascular",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "vascularSurgery",
+            "cardiothoracicSurgery",
+            "cardiology",
+            "emergency"
           ]
         },
         {
@@ -2187,6 +2412,14 @@
               "evidenceLabel": "Normal ECG shifts differential toward non-cardiac",
               "citation": "Anderson JL et al. JACC 2007."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "upperGISurgery",
+            "internalMedicine"
           ]
         },
         {
@@ -2317,6 +2550,16 @@
               "evidenceLabel": "Hoarseness (recurrent laryngeal invasion) LR+ 6.0",
               "citation": "Rice TW et al. J Thorac Oncol 2010."
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "oncological"
+          ],
+          "specialties": [
+            "upperGISurgery",
+            "gastroenterology",
+            "oncology",
+            "cardiothoracicSurgery"
           ]
         },
         {
@@ -2380,6 +2623,14 @@
               "evidenceLabel": "LR 3.5 for GERD",
               "citation": "Numans ME. Ann Intern Med 2004."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "upperGISurgery",
+            "internalMedicine"
           ]
         },
         {
@@ -2443,6 +2694,13 @@
               "evidenceLabel": "LR 5 for achalasia severity",
               "citation": "Kahrilas PJ. Gastroenterology 2017."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "upperGISurgery"
           ]
         },
         {
@@ -2506,6 +2764,13 @@
               "evidenceLabel": "LR 5 for benign stricture",
               "citation": "Richter JE. Am J Gastroenterol 2011."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "upperGISurgery"
           ]
         },
         {
@@ -2569,6 +2834,13 @@
               "evidenceLabel": "Pathognomonic — imaging confirmation",
               "citation": "Law R. Clin Gastroenterol Hepatol 2013."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "gastroenterology"
           ]
         }
       ]
@@ -2636,6 +2908,14 @@
               "evidenceLabel": "LR 3 favouring benign anorectal cause",
               "citation": "Mant J. BMJ 1989."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "generalSurgery",
+            "gastroenterology"
           ]
         },
         {
@@ -2699,6 +2979,15 @@
               "evidenceLabel": "CEA >5 ng/mL LR+ 3.9",
               "citation": "Locker GY et al. J Clin Oncol 2006."
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "oncological"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "gastroenterology",
+            "oncology"
           ]
         },
         {
@@ -2762,6 +3051,13 @@
               "evidenceLabel": "LR 5 for primary anal fissure",
               "citation": "Stewart DB. Dis Colon Rectum 2017."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "generalSurgery"
           ]
         },
         {
@@ -2825,6 +3121,14 @@
               "evidenceLabel": "LR 3.5 for significant lower GI haemorrhage",
               "citation": "Oakland K. Gut 2019."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "gastroenterology",
+            "emergency"
           ]
         },
         {
@@ -2888,6 +3192,15 @@
               "evidenceLabel": "LR 4 for IBD vs IBS",
               "citation": "Hwang C. Inflamm Bowel Dis 2014."
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "immunological"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "colorectalSurgery",
+            "rheumatology"
           ]
         }
       ]
@@ -2955,6 +3268,16 @@
               "evidenceLabel": "Positive tourniquet test LR+ 5.5",
               "citation": "Potts JA et al. J Infect 2010."
             }
+          ],
+          "systems": [
+            "infectious",
+            "cardiovascular",
+            "haematological"
+          ],
+          "specialties": [
+            "infectiousDisease",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -3018,6 +3341,16 @@
               "evidenceLabel": "LR 14 for acute leptospirosis serology",
               "citation": "Charan J. J Infect 2012."
             }
+          ],
+          "systems": [
+            "infectious",
+            "renal",
+            "hepatobiliary"
+          ],
+          "specialties": [
+            "infectiousDisease",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -3081,6 +3414,16 @@
               "evidenceLabel": "LR 24 for pneumococcal CAP",
               "citation": "Mandell LA. IDSA/ATS 2007."
             }
+          ],
+          "systems": [
+            "respiratory",
+            "infectious"
+          ],
+          "specialties": [
+            "respiratoryMedicine",
+            "internalMedicine",
+            "emergency",
+            "paediatrics"
           ]
         },
         {
@@ -3144,6 +3487,17 @@
               "evidenceLabel": "LR 12 for significant bacteriuria",
               "citation": "Hooton TM. NEJM 2012."
             }
+          ],
+          "systems": [
+            "urological",
+            "renal",
+            "infectious"
+          ],
+          "specialties": [
+            "urology",
+            "internalMedicine",
+            "emergency",
+            "paediatrics"
           ]
         },
         {
@@ -3207,6 +3561,15 @@
               "evidenceLabel": "Pathognomonic — gold standard culture",
               "citation": "Parry CM. NEJM 2002."
             }
+          ],
+          "systems": [
+            "infectious",
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "infectiousDisease",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -3337,6 +3700,15 @@
               "evidenceLabel": "Organ dysfunction (SOFA ≥2) defines sepsis",
               "citation": "Singer M et al. JAMA 2016."
             }
+          ],
+          "systems": [
+            "infectious",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "infectiousDisease",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -3400,6 +3772,15 @@
               "evidenceLabel": "LR 4 for organ dysfunction / sepsis severity",
               "citation": "Casserly B. Crit Care Med 2015."
             }
+          ],
+          "systems": [
+            "infectious",
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "infectiousDisease",
+            "emergency"
           ]
         },
         {
@@ -3463,6 +3844,16 @@
               "evidenceLabel": "LR 5 for sepsis severity",
               "citation": "Singer M. JAMA 2016."
             }
+          ],
+          "systems": [
+            "infectious",
+            "renal",
+            "urological"
+          ],
+          "specialties": [
+            "urology",
+            "infectiousDisease",
+            "emergency"
           ]
         },
         {
@@ -3526,6 +3917,15 @@
               "evidenceLabel": "LR 3.3 for bacterial pneumonia",
               "citation": "Schuetz P. Lancet Infect Dis 2012."
             }
+          ],
+          "systems": [
+            "respiratory",
+            "infectious"
+          ],
+          "specialties": [
+            "respiratoryMedicine",
+            "infectiousDisease",
+            "emergency"
           ]
         }
       ]
@@ -3593,6 +3993,17 @@
               "evidenceLabel": "NIHSS ≥4 functional deficit",
               "citation": "Brott T et al. Stroke 1989."
             }
+          ],
+          "systems": [
+            "neurological",
+            "cardiovascular",
+            "vascular"
+          ],
+          "specialties": [
+            "neurology",
+            "neurosurgery",
+            "cardiology",
+            "emergency"
           ]
         },
         {
@@ -3656,6 +4067,15 @@
               "evidenceLabel": "LR 3.5 for intracerebral bleed",
               "citation": "Kothari RU. Ann Emerg Med 1997."
             }
+          ],
+          "systems": [
+            "neurological",
+            "neurosurgical"
+          ],
+          "specialties": [
+            "neurosurgery",
+            "neurology",
+            "emergency"
           ]
         },
         {
@@ -3719,6 +4139,16 @@
               "evidenceLabel": "LR 3 for cerebrovascular TIA",
               "citation": "Rothwell PM. Lancet 2005."
             }
+          ],
+          "systems": [
+            "neurological",
+            "vascular",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "neurology",
+            "cardiology",
+            "emergency"
           ]
         },
         {
@@ -3782,6 +4212,15 @@
               "evidenceLabel": "LR 5 for PRES",
               "citation": "Fugate JE. AJNR 2015."
             }
+          ],
+          "systems": [
+            "neurological",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "neurology",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -3845,6 +4284,13 @@
               "evidenceLabel": "LR 5 for vestibular migraine",
               "citation": "Lempert T. Cephalalgia 2012."
             }
+          ],
+          "systems": [
+            "neurological"
+          ],
+          "specialties": [
+            "neurology",
+            "internalMedicine"
           ]
         }
       ]
@@ -3912,6 +4358,16 @@
               "evidenceLabel": "Duplex USS — non-compressible vein",
               "citation": "Compression USS sensitivity 95%, specificity 96% for proximal DVT"
             }
+          ],
+          "systems": [
+            "vascular",
+            "haematological"
+          ],
+          "specialties": [
+            "vascularSurgery",
+            "haematology",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -3975,6 +4431,17 @@
               "evidenceLabel": "CTPA — filling defect confirmed",
               "citation": "CTPA sensitivity 83–100%, specificity 89–97%; gold standard non-massive PE"
             }
+          ],
+          "systems": [
+            "respiratory",
+            "vascular",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "respiratoryMedicine",
+            "cardiology",
+            "emergency",
+            "haematology"
           ]
         },
         {
@@ -4038,6 +4505,14 @@
               "evidenceLabel": "LR 8 for DVT propagation risk",
               "citation": "Decousus H. Ann Intern Med 2010."
             }
+          ],
+          "systems": [
+            "vascular",
+            "dermatological"
+          ],
+          "specialties": [
+            "vascularSurgery",
+            "internalMedicine"
           ]
         },
         {
@@ -4101,6 +4576,16 @@
               "evidenceLabel": "LR 12 for FES diagnosis using Gurd criteria",
               "citation": "Gurd AR. J Bone Joint Surg 1970."
             }
+          ],
+          "systems": [
+            "respiratory",
+            "musculoskeletal",
+            "haematological"
+          ],
+          "specialties": [
+            "orthopaedics",
+            "respiratoryMedicine",
+            "emergency"
           ]
         },
         {
@@ -4164,6 +4649,15 @@
               "evidenceLabel": "LR 6 for advanced chronic venous disease",
               "citation": "Eklof B. J Vasc Surg 2004."
             }
+          ],
+          "systems": [
+            "vascular",
+            "haematological"
+          ],
+          "specialties": [
+            "vascularSurgery",
+            "haematology",
+            "internalMedicine"
           ]
         }
       ]
@@ -4224,6 +4718,16 @@
               "evidenceLabel": "Younger age favours asthma over COPD",
               "citation": "Clinical consensus."
             }
+          ],
+          "systems": [
+            "respiratory",
+            "immunological"
+          ],
+          "specialties": [
+            "respiratoryMedicine",
+            "emergency",
+            "internalMedicine",
+            "paediatrics"
           ]
         },
         {
@@ -4301,6 +4805,15 @@
               "evidenceLabel": "Age >60",
               "citation": "ESC HF Guidelines 2021."
             }
+          ],
+          "systems": [
+            "cardiovascular",
+            "respiratory"
+          ],
+          "specialties": [
+            "cardiology",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -4371,6 +4884,16 @@
               "evidenceLabel": "Age ≥65 (higher baseline risk)",
               "citation": "CURB-65. Lim WS. Thorax 2003."
             }
+          ],
+          "systems": [
+            "respiratory",
+            "infectious"
+          ],
+          "specialties": [
+            "respiratoryMedicine",
+            "internalMedicine",
+            "emergency",
+            "paediatrics"
           ]
         },
         {
@@ -4420,6 +4943,14 @@
               "evidenceLabel": "Age >50",
               "citation": "GOLD Report 2023."
             }
+          ],
+          "systems": [
+            "respiratory"
+          ],
+          "specialties": [
+            "respiratoryMedicine",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -4483,6 +5014,14 @@
               "evidenceLabel": "Tall, thin body habitus",
               "citation": "Noppen M. Respiration 2010."
             }
+          ],
+          "systems": [
+            "respiratory"
+          ],
+          "specialties": [
+            "respiratoryMedicine",
+            "cardiothoracicSurgery",
+            "emergency"
           ]
         },
         {
@@ -4546,6 +5085,14 @@
               "evidenceLabel": "Apical CXR changes",
               "citation": "WHO TB Guidelines 2022."
             }
+          ],
+          "systems": [
+            "respiratory",
+            "infectious"
+          ],
+          "specialties": [
+            "respiratoryMedicine",
+            "infectiousDisease"
           ]
         }
       ]
@@ -4613,6 +5160,15 @@
               "evidenceLabel": "IBD — long-standing disease",
               "citation": "Eaden JA. Gut 2001."
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "oncological"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "gastroenterology",
+            "oncology"
           ]
         },
         {
@@ -4676,6 +5232,13 @@
               "evidenceLabel": "LR 5 for IBS",
               "citation": "Lacy BE. Gastroenterology 2016."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "internalMedicine"
           ]
         },
         {
@@ -4739,6 +5302,15 @@
               "evidenceLabel": "Elevated CRP (active disease)",
               "citation": "Gomollon F. JCC 2017."
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "immunological"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "colorectalSurgery",
+            "rheumatology"
           ]
         },
         {
@@ -4802,6 +5374,13 @@
               "evidenceLabel": "LR 3 for diverticulitis",
               "citation": "Etzioni DA. Dis Colon Rectum 2009."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "gastroenterology"
           ]
         }
       ]
@@ -4883,6 +5462,16 @@
               "evidenceLabel": "Raised CA 19-9 (pancreatic)",
               "citation": "Locker GY. J Clin Oncol 2006."
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "oncological"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "upperGISurgery",
+            "gastroenterology",
+            "oncology"
           ]
         },
         {
@@ -4939,6 +5528,14 @@
               "evidenceLabel": "Upper zone shadowing on CXR",
               "citation": "WHO TB Guidelines 2022."
             }
+          ],
+          "systems": [
+            "respiratory",
+            "infectious"
+          ],
+          "specialties": [
+            "respiratoryMedicine",
+            "infectiousDisease"
           ]
         },
         {
@@ -5058,6 +5655,13 @@
               "evidenceLabel": "1st-degree family history LR+ 4.0",
               "citation": "McCarthy MI. Nat Rev Genet 2010."
             }
+          ],
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrinology",
+            "internalMedicine"
           ]
         },
         {
@@ -5121,6 +5725,15 @@
               "evidenceLabel": "Anaemia LR+ 4.0 for chronic IBD with malabsorption/blood loss",
               "citation": "Kulnigg S et al. Aliment Pharmacol Ther 2009."
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "immunological"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "colorectalSurgery",
+            "rheumatology"
           ]
         }
       ]
@@ -5188,6 +5801,15 @@
               "evidenceLabel": "LR 10 for infectious gastroenteritis",
               "citation": "Thielman NM. NEJM 2004."
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "infectious"
+          ],
+          "specialties": [
+            "internalMedicine",
+            "emergency",
+            "infectiousDisease"
           ]
         },
         {
@@ -5251,6 +5873,14 @@
               "evidenceLabel": "LR 4 for gastroparesis clinical pattern",
               "citation": "Parkman HP. Gastroenterology 2004."
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "endocrine"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "endocrinology"
           ]
         },
         {
@@ -5314,6 +5944,13 @@
               "evidenceLabel": "OGD — pyloric obstruction confirmed",
               "citation": "Johnson CD. Gut 1997."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "gastroenterology"
           ]
         },
         {
@@ -5377,6 +6014,13 @@
               "evidenceLabel": "CT abdomen — transition point (sensitivity 94%)",
               "citation": "Maung AA. J Trauma 2012."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "emergency"
           ]
         },
         {
@@ -5440,6 +6084,13 @@
               "evidenceLabel": "LR 23 for CT-confirmed appendicitis",
               "citation": "Rybkin AV. J Comput Assist Tomogr 2004."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "emergency"
           ]
         },
         {
@@ -5591,6 +6242,16 @@
               "evidenceLabel": "Immunosuppression",
               "citation": "Misiakos EP. World J Gastroenterol 2014."
             }
+          ],
+          "systems": [
+            "dermatological",
+            "musculoskeletal",
+            "infectious"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "infectiousDisease",
+            "emergency"
           ]
         },
         {
@@ -5654,6 +6315,17 @@
               "evidenceLabel": "Pathognomonic — gas in soft tissue on CT",
               "citation": "Levenson RB. Radiographics 2008."
             }
+          ],
+          "systems": [
+            "urological",
+            "scrotal",
+            "dermatological",
+            "infectious"
+          ],
+          "specialties": [
+            "urology",
+            "generalSurgery",
+            "emergency"
           ]
         },
         {
@@ -5717,6 +6389,15 @@
               "evidenceLabel": "LR 4 for severe SSTI vs NF",
               "citation": "Wong CH. Crit Care Med 2004."
             }
+          ],
+          "systems": [
+            "dermatological",
+            "infectious"
+          ],
+          "specialties": [
+            "dermatology",
+            "infectiousDisease",
+            "emergency"
           ]
         },
         {
@@ -5780,6 +6461,16 @@
               "evidenceLabel": "Pathognomonic — gas in muscle on imaging",
               "citation": "Stevens DL. Clin Infect Dis 2005."
             }
+          ],
+          "systems": [
+            "musculoskeletal",
+            "infectious"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "orthopaedics",
+            "infectiousDisease",
+            "emergency"
           ]
         }
       ]
@@ -5854,6 +6545,15 @@
               "evidenceLabel": "Female sex (premenopausal)",
               "citation": "Goddard AF. Gut 2011."
             }
+          ],
+          "systems": [
+            "haematological",
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "haematology",
+            "gastroenterology",
+            "internalMedicine"
           ]
         },
         {
@@ -5924,6 +6624,14 @@
               "evidenceLabel": "Elevated methylmalonic acid (B12 deficiency)",
               "citation": "Stabler SP. NEJM 2013."
             }
+          ],
+          "systems": [
+            "haematological",
+            "neurological"
+          ],
+          "specialties": [
+            "haematology",
+            "internalMedicine"
           ]
         },
         {
@@ -5987,6 +6695,14 @@
               "evidenceLabel": "LR 8 for ACD vs iron-deficiency anaemia",
               "citation": "Ganz T. NEJM 2019."
             }
+          ],
+          "systems": [
+            "haematological"
+          ],
+          "specialties": [
+            "haematology",
+            "internalMedicine",
+            "rheumatology"
           ]
         },
         {
@@ -6050,6 +6766,12 @@
               "evidenceLabel": "Low haptoglobin — LR+ 9.6 for haemolysis",
               "citation": "Luksenburg H. Blood 1994. Haptoglobin <0.25 g/L LR+ 9.6."
             }
+          ],
+          "systems": [
+            "haematological"
+          ],
+          "specialties": [
+            "haematology"
           ]
         },
         {
@@ -6113,6 +6835,14 @@
               "evidenceLabel": "LR 4 for sickle cell crisis trigger",
               "citation": "Platt OS. NEJM 1994."
             }
+          ],
+          "systems": [
+            "haematological",
+            "infectious"
+          ],
+          "specialties": [
+            "haematology",
+            "internalMedicine"
           ]
         }
       ]
@@ -6187,6 +6917,13 @@
               "evidenceLabel": "CT abdomen — transition point (sensitivity 94%)",
               "citation": "Maung AA. J Trauma 2012."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "emergency"
           ]
         },
         {
@@ -6243,6 +6980,14 @@
               "evidenceLabel": "CT abdomen / colonoscopy confirming LBO",
               "citation": "Frager DH. Gastrointest Radiol 1994."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "generalSurgery",
+            "emergency"
           ]
         },
         {
@@ -6306,6 +7051,14 @@
               "evidenceLabel": "Prior sigmoid volvulus (50–90% recurrence) LR+ 5.7",
               "citation": "Ballantyne GH et al. Ann Surg 1985."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "generalSurgery",
+            "emergency"
           ]
         },
         {
@@ -6369,6 +7122,13 @@
               "evidenceLabel": "Distension without tinkling bowel sounds LR+ 4.0",
               "citation": "Mattei P et al. J Surg Res 2006."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "internalMedicine"
           ]
         }
       ]
@@ -6443,6 +7203,14 @@
               "evidenceLabel": "Known hiatus hernia",
               "citation": "Hampel H. Ann Intern Med 2005."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "upperGISurgery",
+            "internalMedicine"
           ]
         },
         {
@@ -6506,6 +7274,14 @@
               "evidenceLabel": "Pathognomonic — histological confirmation",
               "citation": "Spechler SJ. NEJM 2002."
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "oncological"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "upperGISurgery"
           ]
         },
         {
@@ -6569,6 +7345,14 @@
               "evidenceLabel": "Symptomatic relief on PPI LR+ 4.0",
               "citation": "Malfertheiner P et al. Gut 2012."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "upperGISurgery",
+            "internalMedicine"
           ]
         },
         {
@@ -6632,6 +7416,13 @@
               "evidenceLabel": "Postprandial bloating LR+ 4.0",
               "citation": "Tack J et al. Gut 2006."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "internalMedicine"
           ]
         }
       ]
@@ -6699,6 +7490,12 @@
               "evidenceLabel": "LR 3 for inguinal hernia symptom pattern",
               "citation": "Simons MP. Hernia 2009."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery"
           ]
         },
         {
@@ -6762,6 +7559,15 @@
               "evidenceLabel": "LR 3 for reactive vs malignant adenopathy",
               "citation": "Bazemore AW. Am Fam Physician 2002."
             }
+          ],
+          "systems": [
+            "haematological",
+            "infectious"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "infectiousDisease",
+            "haematology"
           ]
         },
         {
@@ -6825,6 +7631,12 @@
               "evidenceLabel": "LR 5 — femoral hernia has 40% incarceration rate",
               "citation": "Bay-Nielsen M. Lancet 2001."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery"
           ]
         },
         {
@@ -6888,6 +7700,13 @@
               "evidenceLabel": "LR 5 for hip OA / FAI",
               "citation": "Sutlive TG. JOSPT 2008."
             }
+          ],
+          "systems": [
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "orthopaedics",
+            "rheumatology"
           ]
         },
         {
@@ -6951,6 +7770,13 @@
               "evidenceLabel": "LR 8 for iliopsoas bursitis confirmation",
               "citation": "Toohey AK. Arthritis Rheum 1990."
             }
+          ],
+          "systems": [
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "orthopaedics",
+            "rheumatology"
           ]
         }
       ]
@@ -7032,6 +7858,12 @@
               "evidenceLabel": "Severe pain (strangulation risk)",
               "citation": "Fitzgibbons RJ. Ann Surg 2006;243:261."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery"
           ]
         },
         {
@@ -7087,6 +7919,12 @@
               "logLR": -4,
               "evidenceLabel": ""
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery"
           ]
         },
         {
@@ -7143,6 +7981,12 @@
               "evidenceLabel": "Obesity risk factor",
               "citation": "Poelman MM. Hernia 2013;17:611."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery"
           ]
         },
         {
@@ -7206,6 +8050,12 @@
               "evidenceLabel": "Skin thinning marks chronic large hernia",
               "citation": "Millikan KW. Surg Clin North Am 2003."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery"
           ]
         },
         {
@@ -7269,6 +8119,12 @@
               "evidenceLabel": "No prior surgery distinguishes from incisional",
               "citation": "Muschaweck U. Hernia 2006."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery"
           ]
         }
       ]
@@ -7336,6 +8192,14 @@
               "evidenceLabel": "Afebrile",
               "citation": "Acheson AG. BMJ 2008;336:380."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "generalSurgery",
+            "gastroenterology"
           ]
         },
         {
@@ -7399,6 +8263,13 @@
               "evidenceLabel": "LR 3 for primary vs Crohn's fissure",
               "citation": "Stein E. Colorectal Dis 2003."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "generalSurgery"
           ]
         },
         {
@@ -7462,6 +8333,15 @@
               "evidenceLabel": "LR 12 for intersphincteric vs supralevator abscess",
               "citation": "Buchanan GN. Br J Surg 2004."
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "infectious"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "generalSurgery",
+            "emergency"
           ]
         },
         {
@@ -7525,6 +8405,13 @@
               "evidenceLabel": "LR 5 for surgical planning and complexity",
               "citation": "Parks AG. Br J Surg 1976."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "generalSurgery"
           ]
         },
         {
@@ -7588,6 +8475,15 @@
               "evidenceLabel": "Pathognomonic — histological confirmation",
               "citation": "Nigro ND. Cancer 1983."
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "oncological"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "oncology",
+            "radiotherapy"
           ]
         }
       ]
@@ -7655,6 +8551,13 @@
               "evidenceLabel": "No axillary lymphadenopathy",
               "citation": "Greenberg R. Am J Surg 1998;175:452."
             }
+          ],
+          "systems": [
+            "breast"
+          ],
+          "specialties": [
+            "breastSurgery",
+            "generalSurgery"
           ]
         },
         {
@@ -7718,6 +8621,14 @@
               "evidenceLabel": "BI-RADS 4–5 on mammogram",
               "citation": "Barton MB. JAMA 1999;282:1270."
             }
+          ],
+          "systems": [
+            "breast",
+            "oncological"
+          ],
+          "specialties": [
+            "breastSurgery",
+            "oncology"
           ]
         },
         {
@@ -7781,6 +8692,13 @@
               "evidenceLabel": "LR 8 confirming benign cyst on aspiration",
               "citation": "Shaaban M. Breast 2003."
             }
+          ],
+          "systems": [
+            "breast"
+          ],
+          "specialties": [
+            "breastSurgery",
+            "generalSurgery"
           ]
         },
         {
@@ -7844,6 +8762,15 @@
               "evidenceLabel": "LR 12 for breast abscess on USS",
               "citation": "Kvist LJ. BJOG 2005."
             }
+          ],
+          "systems": [
+            "breast",
+            "infectious"
+          ],
+          "specialties": [
+            "breastSurgery",
+            "generalSurgery",
+            "emergency"
           ]
         },
         {
@@ -7907,6 +8834,13 @@
               "evidenceLabel": "LR 13 for fat necrosis on MRI",
               "citation": "Kerridge WD. Radiographics 2016."
             }
+          ],
+          "systems": [
+            "breast"
+          ],
+          "specialties": [
+            "breastSurgery",
+            "generalSurgery"
           ]
         }
       ]
@@ -7974,6 +8908,15 @@
               "evidenceLabel": "LR 5 for reactive vs malignant adenopathy",
               "citation": "Bazemore AW. Am Fam Physician 2002."
             }
+          ],
+          "systems": [
+            "haematological",
+            "infectious"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "infectiousDisease",
+            "haematology"
           ]
         },
         {
@@ -8037,6 +8980,14 @@
               "evidenceLabel": "LR 12 for thyroid malignancy on FNA",
               "citation": "Cibas ES. Thyroid 2017."
             }
+          ],
+          "systems": [
+            "endocrine",
+            "thyroid"
+          ],
+          "specialties": [
+            "endocrinology",
+            "generalSurgery"
           ]
         },
         {
@@ -8100,6 +9051,15 @@
               "evidenceLabel": "Pathognomonic — histological confirmation",
               "citation": "Swerdlow SH. WHO Classification 2017."
             }
+          ],
+          "systems": [
+            "haematological",
+            "oncological"
+          ],
+          "specialties": [
+            "haematology",
+            "oncology",
+            "generalSurgery"
           ]
         },
         {
@@ -8163,6 +9123,14 @@
               "evidenceLabel": "LR 8 for detecting occult primary",
               "citation": "Pfeiffer J. Curr Oncol Rep 2020."
             }
+          ],
+          "systems": [
+            "oncological",
+            "haematological"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "oncology"
           ]
         },
         {
@@ -8226,6 +9194,12 @@
               "evidenceLabel": "Known since childhood LR+ 5.7",
               "citation": "Glosser JW et al. Oral Surg 1999."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery"
           ]
         }
       ]
@@ -8300,6 +9274,14 @@
               "evidenceLabel": "Female sex (5–8× higher prevalence)",
               "citation": "Garber JR. Thyroid 2012;22:1200."
             }
+          ],
+          "systems": [
+            "endocrine",
+            "thyroid"
+          ],
+          "specialties": [
+            "endocrinology",
+            "internalMedicine"
           ]
         },
         {
@@ -8363,6 +9345,14 @@
               "evidenceLabel": "Female sex (7–10× higher)",
               "citation": "Ross DS. Thyroid 2016;26:1343."
             }
+          ],
+          "systems": [
+            "endocrine",
+            "thyroid"
+          ],
+          "specialties": [
+            "endocrinology",
+            "internalMedicine"
           ]
         },
         {
@@ -8426,6 +9416,16 @@
               "evidenceLabel": "Childhood/young adult (papillary Ca peak)",
               "citation": "Haugen BR. Thyroid 2016;26:1."
             }
+          ],
+          "systems": [
+            "endocrine",
+            "thyroid",
+            "oncological"
+          ],
+          "specialties": [
+            "endocrinology",
+            "generalSurgery",
+            "oncology"
           ]
         },
         {
@@ -8482,6 +9482,15 @@
               "evidenceLabel": "Variable TSH (hyper→hypo transition)",
               "citation": "Sweeney LB. Am Fam Physician 2014;90:389."
             }
+          ],
+          "systems": [
+            "endocrine",
+            "thyroid",
+            "immunological"
+          ],
+          "specialties": [
+            "endocrinology",
+            "rheumatology"
           ]
         }
       ]
@@ -8555,6 +9564,17 @@
               "logLR": -4,
               "evidenceLabel": ""
             }
+          ],
+          "systems": [
+            "urological",
+            "renal",
+            "infectious"
+          ],
+          "specialties": [
+            "urology",
+            "internalMedicine",
+            "emergency",
+            "paediatrics"
           ]
         },
         {
@@ -8618,6 +9638,16 @@
               "evidenceLabel": "LR 8 for acute pyelonephritis on CT",
               "citation": "Craig WD. Radiographics 2008."
             }
+          ],
+          "systems": [
+            "renal",
+            "infectious"
+          ],
+          "specialties": [
+            "urology",
+            "nephrology",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -8681,6 +9711,14 @@
               "evidenceLabel": "Pathognomonic — histological confirmation",
               "citation": "Babjuk M. Eur Urol 2022."
             }
+          ],
+          "systems": [
+            "urological",
+            "oncological"
+          ],
+          "specialties": [
+            "urology",
+            "oncology"
           ]
         },
         {
@@ -8744,6 +9782,13 @@
               "evidenceLabel": "LR 3.5 supporting OAB diagnosis",
               "citation": "Abrams P. BJU Int 2012."
             }
+          ],
+          "systems": [
+            "urological"
+          ],
+          "specialties": [
+            "urology",
+            "internalMedicine"
           ]
         },
         {
@@ -8807,6 +9852,14 @@
               "evidenceLabel": "LR 5 for IC/bladder pain syndrome",
               "citation": "Hanno PM. J Urol 2015."
             }
+          ],
+          "systems": [
+            "urological",
+            "immunological"
+          ],
+          "specialties": [
+            "urology",
+            "rheumatology"
           ]
         }
       ]
@@ -8874,6 +9927,14 @@
               "evidenceLabel": "LR 3.5 for OA",
               "citation": "Zhang W. Ann Rheum Dis 2010."
             }
+          ],
+          "systems": [
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "orthopaedics",
+            "rheumatology",
+            "internalMedicine"
           ]
         },
         {
@@ -8937,6 +9998,15 @@
               "evidenceLabel": "LR 6 for gout",
               "citation": "Wallace SL. Arthritis Rheum 1977."
             }
+          ],
+          "systems": [
+            "musculoskeletal",
+            "renal"
+          ],
+          "specialties": [
+            "rheumatology",
+            "internalMedicine",
+            "nephrology"
           ]
         },
         {
@@ -9000,6 +10070,14 @@
               "evidenceLabel": "LR 5 for reactive arthritis enthesitis",
               "citation": "Carter JD. Semin Arthritis Rheum 2010."
             }
+          ],
+          "systems": [
+            "musculoskeletal",
+            "immunological"
+          ],
+          "specialties": [
+            "rheumatology",
+            "infectiousDisease"
           ]
         },
         {
@@ -9063,6 +10141,15 @@
               "evidenceLabel": "LR 4 for septic arthritis speed of onset",
               "citation": "Margaretten ME. JAMA 2007."
             }
+          ],
+          "systems": [
+            "musculoskeletal",
+            "infectious"
+          ],
+          "specialties": [
+            "orthopaedics",
+            "infectiousDisease",
+            "emergency"
           ]
         },
         {
@@ -9126,6 +10213,14 @@
               "evidenceLabel": "LR 5 for dengue in endemic setting",
               "citation": "Shepard DS. Am J Trop Med Hyg 2011."
             }
+          ],
+          "systems": [
+            "musculoskeletal",
+            "infectious"
+          ],
+          "specialties": [
+            "infectiousDisease",
+            "internalMedicine"
           ]
         }
       ]
@@ -9193,6 +10288,13 @@
               "evidenceLabel": "Normal renin-aldosterone ratio",
               "citation": "Whelton PK. Hypertension 2018;71:e13."
             }
+          ],
+          "systems": [
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiology",
+            "internalMedicine"
           ]
         },
         {
@@ -9256,6 +10358,16 @@
               "evidenceLabel": "LR 20 for haemodynamically significant stenosis",
               "citation": "Hirsch AT. JACC 2006."
             }
+          ],
+          "systems": [
+            "cardiovascular",
+            "renal",
+            "vascular"
+          ],
+          "specialties": [
+            "cardiology",
+            "nephrology",
+            "vascularSurgery"
           ]
         },
         {
@@ -9319,6 +10431,13 @@
               "evidenceLabel": "Reproducible elevation at multiple visits LR+ 4.0",
               "citation": "Mancia G et al. ESH Guidelines 2018."
             }
+          ],
+          "systems": [
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiology",
+            "internalMedicine"
           ]
         },
         {
@@ -9382,6 +10501,15 @@
               "evidenceLabel": "LR 4 for hypertensive heart disease",
               "citation": "Peixoto AJ. NEJM 2019."
             }
+          ],
+          "systems": [
+            "cardiovascular",
+            "neurological"
+          ],
+          "specialties": [
+            "cardiology",
+            "emergency",
+            "internalMedicine"
           ]
         }
       ]
@@ -9449,6 +10577,17 @@
               "evidenceLabel": "Impaired wound healing",
               "citation": "ADA Standards of Medical Care. Diabetes Care 2023."
             }
+          ],
+          "systems": [
+            "endocrine",
+            "cardiovascular",
+            "renal"
+          ],
+          "specialties": [
+            "endocrinology",
+            "internalMedicine",
+            "nephrology",
+            "cardiology"
           ]
         },
         {
@@ -9512,6 +10651,13 @@
               "evidenceLabel": "Dyslipidaemia commonly co-exists LR+ 2.8",
               "citation": "Stratton IM et al. BMJ 2000."
             }
+          ],
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrinology",
+            "internalMedicine"
           ]
         },
         {
@@ -9575,6 +10721,18 @@
               "evidenceLabel": "LR 3.5 for microvascular complication risk",
               "citation": "Stratton IM. BMJ 2000."
             }
+          ],
+          "systems": [
+            "endocrine",
+            "renal",
+            "neurological",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "endocrinology",
+            "nephrology",
+            "neurology",
+            "cardiology"
           ]
         },
         {
@@ -9638,6 +10796,14 @@
               "evidenceLabel": "Prior gestational diabetes LR+ 5.7",
               "citation": "Kim C et al. Diabetes Care 2002."
             }
+          ],
+          "systems": [
+            "endocrine",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "endocrinology",
+            "internalMedicine"
           ]
         }
       ]
@@ -9705,6 +10871,12 @@
               "evidenceLabel": "No fever after post-op day 3 LR+ 5.7 against complication",
               "citation": "Garibaldi RA et al. Infect Control 1985."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery"
           ]
         },
         {
@@ -9768,6 +10940,14 @@
               "evidenceLabel": "LR 12 for CDC-defined SSI",
               "citation": "Horan TC. Infect Control Hosp Epidemiol 1992."
             }
+          ],
+          "systems": [
+            "infectious",
+            "dermatological"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "infectiousDisease"
           ]
         },
         {
@@ -9831,6 +11011,15 @@
               "evidenceLabel": "LR 6 for DVT on Wells scoring",
               "citation": "Wells PS. Lancet 1997."
             }
+          ],
+          "systems": [
+            "vascular",
+            "haematological"
+          ],
+          "specialties": [
+            "vascularSurgery",
+            "haematology",
+            "internalMedicine"
           ]
         },
         {
@@ -9894,6 +11083,13 @@
               "evidenceLabel": "LR 4 for persistent post-operative ileus",
               "citation": "Vather R. Dis Colon Rectum 2013."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "gastroenterology"
           ]
         },
         {
@@ -9957,6 +11153,15 @@
               "evidenceLabel": "Pathognomonic — enteric drain content for anastomotic leak",
               "citation": "Bruce J. Br J Surg 2001."
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "infectious"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "colorectalSurgery",
+            "emergency"
           ]
         }
       ]
@@ -10024,6 +11229,13 @@
               "evidenceLabel": "Pathognomonic — gold standard for lateralisation",
               "citation": "Funder JW. J Clin Endocrinol Metab 2016."
             }
+          ],
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrinology",
+            "generalSurgery"
           ]
         },
         {
@@ -10087,6 +11299,14 @@
               "evidenceLabel": "LR 15 for functional imaging in phaeochromocytoma",
               "citation": "Lenders JWM. Lancet 2005."
             }
+          ],
+          "systems": [
+            "endocrine",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "endocrinology",
+            "generalSurgery"
           ]
         },
         {
@@ -10150,6 +11370,13 @@
               "evidenceLabel": "LR 6 for adrenocortical carcinoma vs adenoma",
               "citation": "Fassnacht M. Eur J Endocrinol 2016."
             }
+          ],
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrinology",
+            "generalSurgery"
           ]
         },
         {
@@ -10213,6 +11440,13 @@
               "evidenceLabel": "LR 8 for Cushing's syndrome screening",
               "citation": "Nieman LK. J Clin Endocrinol Metab 2008."
             }
+          ],
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrinology",
+            "generalSurgery"
           ]
         },
         {
@@ -10276,6 +11510,15 @@
               "evidenceLabel": "Absolute washout <60% LR+ 5.5 for non-adenoma",
               "citation": "Boland GW et al. Radiology 2008."
             }
+          ],
+          "systems": [
+            "endocrine",
+            "oncological"
+          ],
+          "specialties": [
+            "endocrinology",
+            "generalSurgery",
+            "oncology"
           ]
         }
       ]
@@ -10343,6 +11586,14 @@
               "evidenceLabel": "Family history of AAA",
               "citation": "Thompson SG. Br J Surg 2012;99:1172."
             }
+          ],
+          "systems": [
+            "vascular",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "vascularSurgery",
+            "cardiology"
           ]
         },
         {
@@ -10406,6 +11657,15 @@
               "evidenceLabel": "LR 12 for PAD vascular anatomy",
               "citation": "Norgren L. TASC II 2007."
             }
+          ],
+          "systems": [
+            "vascular",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "vascularSurgery",
+            "cardiology",
+            "internalMedicine"
           ]
         },
         {
@@ -10469,6 +11729,15 @@
               "evidenceLabel": "LR 15 for symptomatic carotid stenosis",
               "citation": "North American Symptomatic Carotid Endarterectomy Trial. NEJM 1991."
             }
+          ],
+          "systems": [
+            "vascular",
+            "neurological"
+          ],
+          "specialties": [
+            "vascularSurgery",
+            "neurology",
+            "cardiology"
           ]
         },
         {
@@ -10532,6 +11801,13 @@
               "evidenceLabel": "LR 12 for pathological venous reflux",
               "citation": "Labropoulos N. J Vasc Surg 2005."
             }
+          ],
+          "systems": [
+            "vascular"
+          ],
+          "specialties": [
+            "vascularSurgery",
+            "internalMedicine"
           ]
         }
       ]
@@ -10599,6 +11875,15 @@
               "evidenceLabel": "LR 10 for pilonidal disease",
               "citation": "Iesalnieks I. Br J Surg 2019."
             }
+          ],
+          "systems": [
+            "dermatological",
+            "infectious"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "generalSurgery",
+            "emergency"
           ]
         },
         {
@@ -10662,6 +11947,13 @@
               "evidenceLabel": "Probe identifies sinus track — confirms chronic sinus",
               "citation": "Steele SR et al. Dis Colon Rectum 2013."
             }
+          ],
+          "systems": [
+            "dermatological"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "generalSurgery"
           ]
         },
         {
@@ -10788,6 +12080,15 @@
               "evidenceLabel": "LR 8 for HS severity classification",
               "citation": "Zouboulis CC. J Am Acad Dermatol 2015."
             }
+          ],
+          "systems": [
+            "dermatological",
+            "infectious"
+          ],
+          "specialties": [
+            "dermatology",
+            "colorectalSurgery",
+            "generalSurgery"
           ]
         }
       ]
@@ -10855,6 +12156,14 @@
               "evidenceLabel": "Obesity",
               "citation": "Dronge AS. JAMA Surg 2006;141:375."
             }
+          ],
+          "systems": [
+            "infectious",
+            "dermatological"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "infectiousDisease"
           ]
         },
         {
@@ -10918,6 +12227,13 @@
               "evidenceLabel": "LR 8 for confirmed SSI",
               "citation": "Horan TC. Infect Control Hosp Epidemiol 1992."
             }
+          ],
+          "systems": [
+            "infectious"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "infectiousDisease"
           ]
         },
         {
@@ -10981,6 +12297,12 @@
               "evidenceLabel": "LR 9 for impending burst abdomen",
               "citation": "Waqar SH. J Coll Physicians Surg Pak 2005."
             }
+          ],
+          "systems": [
+            "dermatological"
+          ],
+          "specialties": [
+            "generalSurgery"
           ]
         },
         {
@@ -11044,6 +12366,13 @@
               "evidenceLabel": "LR 5 for seroma vs abscess",
               "citation": "Kuroi K. Breast Cancer 2006."
             }
+          ],
+          "systems": [
+            "dermatological"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "breastSurgery"
           ]
         }
       ]
@@ -11118,6 +12447,15 @@
               "evidenceLabel": "Valvular heart disease",
               "citation": "Norgren L. J Vasc Surg 2007;45:S5."
             }
+          ],
+          "systems": [
+            "vascular",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "vascularSurgery",
+            "cardiology",
+            "emergency"
           ]
         },
         {
@@ -11181,6 +12519,15 @@
               "evidenceLabel": "Low ABPI bilaterally",
               "citation": "Norgren L. J Vasc Surg 2007;45:S5."
             }
+          ],
+          "systems": [
+            "vascular",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "vascularSurgery",
+            "cardiology",
+            "emergency"
           ]
         },
         {
@@ -11244,6 +12591,13 @@
               "evidenceLabel": "LR 5 for acute limb ischaemia",
               "citation": "Norgren L. TASC II 2007."
             }
+          ],
+          "systems": [
+            "vascular"
+          ],
+          "specialties": [
+            "vascularSurgery",
+            "emergency"
           ]
         },
         {
@@ -11307,6 +12661,14 @@
               "evidenceLabel": "Pathognomonic — CTA confirmation",
               "citation": "Norgren L. TASC II 2007."
             }
+          ],
+          "systems": [
+            "vascular",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "vascularSurgery",
+            "emergency"
           ]
         }
       ]
@@ -11381,6 +12743,15 @@
               "evidenceLabel": "Personal/family history melanoma",
               "citation": "Gilchrest BA. NEJM 1999;340:1341."
             }
+          ],
+          "systems": [
+            "dermatological",
+            "oncological"
+          ],
+          "specialties": [
+            "dermatology",
+            "generalSurgery",
+            "oncology"
           ]
         },
         {
@@ -11444,6 +12815,15 @@
               "evidenceLabel": "LR 12 for BCC on dermoscopy",
               "citation": "Menzies SW. Arch Dermatol 2000."
             }
+          ],
+          "systems": [
+            "dermatological",
+            "oncological"
+          ],
+          "specialties": [
+            "dermatology",
+            "generalSurgery",
+            "oncology"
           ]
         },
         {
@@ -11507,6 +12887,15 @@
               "evidenceLabel": "Pathognomonic — histological confirmation",
               "citation": "Que SKT. J Am Acad Dermatol 2018."
             }
+          ],
+          "systems": [
+            "dermatological",
+            "oncological"
+          ],
+          "specialties": [
+            "dermatology",
+            "generalSurgery",
+            "oncology"
           ]
         },
         {
@@ -11570,6 +12959,13 @@
               "evidenceLabel": "LR 5 for benign cyst",
               "citation": "Huang CC. J Ultrasound Med 2011."
             }
+          ],
+          "systems": [
+            "dermatological"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "dermatology"
           ]
         },
         {
@@ -11633,6 +13029,14 @@
               "evidenceLabel": "LR 8 for lipoma on USS/MRI",
               "citation": "Gaskin CM. Radiology 2004."
             }
+          ],
+          "systems": [
+            "dermatological",
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "dermatology"
           ]
         }
       ]
@@ -11700,6 +13104,14 @@
               "evidenceLabel": "Previous intermittent torsion",
               "citation": "Callewaert PR. Eur Urol 2010;58:1."
             }
+          ],
+          "systems": [
+            "scrotal",
+            "urological"
+          ],
+          "specialties": [
+            "urology",
+            "emergency"
           ]
         },
         {
@@ -11763,6 +13175,16 @@
               "evidenceLabel": "Older males (enteric bacteria more likely)",
               "citation": "Trojian TH. Am Fam Physician 2009;79:583."
             }
+          ],
+          "systems": [
+            "scrotal",
+            "urological",
+            "infectious"
+          ],
+          "specialties": [
+            "urology",
+            "infectiousDisease",
+            "emergency"
           ]
         },
         {
@@ -11826,6 +13248,14 @@
               "evidenceLabel": "LR 8 ruling out secondary cause",
               "citation": "Dagur G. Adv Urol 2016."
             }
+          ],
+          "systems": [
+            "scrotal",
+            "urological"
+          ],
+          "specialties": [
+            "urology",
+            "generalSurgery"
           ]
         },
         {
@@ -11889,6 +13319,15 @@
               "evidenceLabel": "LR 15 for testicular malignancy",
               "citation": "Woodward PJ. Radiographics 2002."
             }
+          ],
+          "systems": [
+            "scrotal",
+            "urological",
+            "oncological"
+          ],
+          "specialties": [
+            "urology",
+            "oncology"
           ]
         }
       ]
@@ -11956,6 +13395,13 @@
               "evidenceLabel": "Elevated post-void residual",
               "citation": "McVary KT. JURO 2011;185:1793."
             }
+          ],
+          "systems": [
+            "urological"
+          ],
+          "specialties": [
+            "urology",
+            "internalMedicine"
           ]
         },
         {
@@ -12019,6 +13465,12 @@
               "evidenceLabel": "Pathognomonic — imaging confirmation",
               "citation": "Chapple C. Eur Urol 2014."
             }
+          ],
+          "systems": [
+            "urological"
+          ],
+          "specialties": [
+            "urology"
           ]
         },
         {
@@ -12082,6 +13534,14 @@
               "evidenceLabel": "Pathognomonic — biopsy confirmation",
               "citation": "Kasivisvanathan V. NEJM 2018."
             }
+          ],
+          "systems": [
+            "urological",
+            "oncological"
+          ],
+          "specialties": [
+            "urology",
+            "oncology"
           ]
         },
         {
@@ -12145,6 +13605,14 @@
               "evidenceLabel": "LR 4 for sacral cord involvement",
               "citation": "Fowler CJ. Lancet Neurol 2008."
             }
+          ],
+          "systems": [
+            "urological",
+            "neurological"
+          ],
+          "specialties": [
+            "urology",
+            "neurology"
           ]
         }
       ]
@@ -12212,6 +13680,13 @@
               "evidenceLabel": "LR 12 distinguishing full from mucosal prolapse",
               "citation": "Bordeianou L. Dis Colon Rectum 2017."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "generalSurgery"
           ]
         },
         {
@@ -12275,6 +13750,13 @@
               "evidenceLabel": "Chronic straining LR+ 4.0",
               "citation": "Kaidar-Person O et al. J Am Coll Surg 2007."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "generalSurgery"
           ]
         },
         {
@@ -12338,6 +13820,14 @@
               "evidenceLabel": "Obstructed defaecation syndrome LR+ 5.7",
               "citation": "Mellgren A et al. Dis Colon Rectum 1995."
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "gynaecological"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "gynaecology"
           ]
         },
         {
@@ -12401,6 +13891,13 @@
               "evidenceLabel": "Biopsy excludes carcinoma (SRUS can mimic) LR+ 5.5",
               "citation": "Tjandra JJ et al. Dis Colon Rectum 1992."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectalSurgery",
+            "gastroenterology"
           ]
         }
       ]
@@ -12468,6 +13965,12 @@
               "evidenceLabel": "Pathognomonic — imaging or endoscopy confirmation",
               "citation": "Koch M. Laryngoscope 2009."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery"
           ]
         },
         {
@@ -12531,6 +14034,14 @@
               "evidenceLabel": "LR 5 for Staph aureus in acute parotitis",
               "citation": "Brook I. J Oral Maxillofac Surg 1992."
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "infectious"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "infectiousDisease"
           ]
         },
         {
@@ -12594,6 +14105,12 @@
               "evidenceLabel": "Present for years without rapid change LR+ 4.0",
               "citation": "Spiro RH. Am J Surg 1986."
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery"
           ]
         },
         {
@@ -12657,6 +14174,14 @@
               "evidenceLabel": "Pathognomonic — cytological/histological confirmation",
               "citation": "Bradley PJ. Curr Opin Otolaryngol 2011."
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "oncological"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "oncology"
           ]
         }
       ]
@@ -12727,6 +14252,14 @@
               "logLR": -4,
               "evidenceLabel": "Mild or absent photophobia (if marked, favours migraine)"
             }
+          ],
+          "systems": [
+            "neurological",
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "neurology",
+            "internalMedicine"
           ]
         },
         {
@@ -12813,6 +14346,13 @@
               "logLR": 16,
               "evidenceLabel": "Visual / sensory aura preceding headache"
             }
+          ],
+          "systems": [
+            "neurological"
+          ],
+          "specialties": [
+            "neurology",
+            "internalMedicine"
           ]
         },
         {
@@ -12879,6 +14419,12 @@
               "logLR": 8,
               "evidenceLabel": "Heavy smoking history"
             }
+          ],
+          "systems": [
+            "neurological"
+          ],
+          "specialties": [
+            "neurology"
           ]
         },
         {
@@ -12937,6 +14483,15 @@
               "logLR": 18,
               "evidenceLabel": "LP — xanthochromia / blood-stained CSF"
             }
+          ],
+          "systems": [
+            "neurological",
+            "neurosurgical"
+          ],
+          "specialties": [
+            "neurosurgery",
+            "neurology",
+            "emergency"
           ]
         },
         {
@@ -13001,6 +14556,16 @@
               "logLR": 12,
               "evidenceLabel": "Raised WCC / neutrophilia"
             }
+          ],
+          "systems": [
+            "neurological",
+            "infectious"
+          ],
+          "specialties": [
+            "neurology",
+            "infectiousDisease",
+            "emergency",
+            "paediatrics"
           ]
         },
         {
@@ -13122,6 +14687,13 @@
               "logLR": -6,
               "evidenceLabel": "Absent tinnitus (argues against Ménière's)"
             }
+          ],
+          "systems": [
+            "neurological"
+          ],
+          "specialties": [
+            "neurology",
+            "internalMedicine"
           ]
         },
         {
@@ -13173,6 +14745,14 @@
               "logLR": -12,
               "evidenceLabel": "Absent focal neurology (presence suggests central cause)"
             }
+          ],
+          "systems": [
+            "neurological",
+            "infectious"
+          ],
+          "specialties": [
+            "neurology",
+            "emergency"
           ]
         },
         {
@@ -13212,6 +14792,12 @@
               "logLR": 14,
               "evidenceLabel": "Audiometry — low-frequency SNHL"
             }
+          ],
+          "systems": [
+            "neurological"
+          ],
+          "specialties": [
+            "neurology"
           ]
         },
         {
@@ -13280,6 +14866,15 @@
               "logLR": 10,
               "evidenceLabel": "Loop diuretic — volume depletion"
             }
+          ],
+          "systems": [
+            "cardiovascular",
+            "neurological"
+          ],
+          "specialties": [
+            "cardiology",
+            "neurology",
+            "internalMedicine"
           ]
         },
         {
@@ -13343,6 +14938,15 @@
               "logLR": 8,
               "evidenceLabel": "Older patient with vascular risk factors"
             }
+          ],
+          "systems": [
+            "neurological",
+            "neurosurgical"
+          ],
+          "specialties": [
+            "neurology",
+            "neurosurgery",
+            "emergency"
           ]
         }
       ]
@@ -13415,6 +15019,14 @@
               "logLR": 8,
               "evidenceLabel": "Response to NSAIDs / analgesia"
             }
+          ],
+          "systems": [
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "orthopaedics",
+            "rheumatology",
+            "internalMedicine"
           ]
         },
         {
@@ -13473,6 +15085,15 @@
               "logLR": 18,
               "evidenceLabel": "MRI lumbar spine — disc herniation with nerve root compression"
             }
+          ],
+          "systems": [
+            "musculoskeletal",
+            "neurological"
+          ],
+          "specialties": [
+            "neurosurgery",
+            "orthopaedics",
+            "internalMedicine"
           ]
         },
         {
@@ -13519,6 +15140,16 @@
               "logLR": 20,
               "evidenceLabel": "Emergency MRI lumbar spine — cauda equina compression"
             }
+          ],
+          "systems": [
+            "neurological",
+            "neurosurgical",
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "neurosurgery",
+            "orthopaedics",
+            "emergency"
           ]
         },
         {
@@ -13569,6 +15200,14 @@
               "logLR": 12,
               "evidenceLabel": "Chronic steroid use — bone loss"
             }
+          ],
+          "systems": [
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "orthopaedics",
+            "neurosurgery",
+            "internalMedicine"
           ]
         },
         {
@@ -13613,6 +15252,17 @@
               "logLR": 20,
               "evidenceLabel": "Urgent MRI — spinal metastasis / cord compression"
             }
+          ],
+          "systems": [
+            "neurological",
+            "neurosurgical",
+            "oncological",
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "neurosurgery",
+            "oncology",
+            "emergency"
           ]
         },
         {
@@ -13739,6 +15389,15 @@
               "logLR": 12,
               "evidenceLabel": "Coeliac disease / malabsorption"
             }
+          ],
+          "systems": [
+            "haematological",
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "haematology",
+            "gastroenterology",
+            "internalMedicine"
           ]
         },
         {
@@ -13807,6 +15466,14 @@
               "logLR": 14,
               "evidenceLabel": "Anti-TPO antibodies (Hashimoto's)"
             }
+          ],
+          "systems": [
+            "endocrine",
+            "thyroid"
+          ],
+          "specialties": [
+            "endocrinology",
+            "internalMedicine"
           ]
         },
         {
@@ -13870,6 +15537,17 @@
               "logLR": 8,
               "evidenceLabel": "BMI ≥27 — T2DM risk factor"
             }
+          ],
+          "systems": [
+            "endocrine",
+            "cardiovascular",
+            "renal"
+          ],
+          "specialties": [
+            "endocrinology",
+            "internalMedicine",
+            "nephrology",
+            "cardiology"
           ]
         },
         {
@@ -13932,6 +15610,13 @@
               "logLR": 14,
               "evidenceLabel": "Previous depressive episode"
             }
+          ],
+          "systems": [
+            "psychiatric"
+          ],
+          "specialties": [
+            "psychiatry",
+            "internalMedicine"
           ]
         },
         {
@@ -13990,6 +15675,13 @@
               "logLR": 12,
               "evidenceLabel": "BMI ≥30 — major risk factor"
             }
+          ],
+          "systems": [
+            "respiratory"
+          ],
+          "specialties": [
+            "respiratoryMedicine",
+            "internalMedicine"
           ]
         },
         {
@@ -14083,6 +15775,13 @@
               "logLR": 12,
               "evidenceLabel": "Response to antihistamine / intranasal steroid"
             }
+          ],
+          "systems": [
+            "respiratory"
+          ],
+          "specialties": [
+            "respiratoryMedicine",
+            "internalMedicine"
           ]
         },
         {
@@ -14146,6 +15845,16 @@
               "logLR": 12,
               "evidenceLabel": "Peak flow variability >20%"
             }
+          ],
+          "systems": [
+            "respiratory",
+            "immunological"
+          ],
+          "specialties": [
+            "respiratoryMedicine",
+            "paediatrics",
+            "emergency",
+            "internalMedicine"
           ]
         },
         {
@@ -14196,6 +15905,14 @@
               "logLR": 20,
               "evidenceLabel": "Resolves on stopping ACE inhibitor — definitive test"
             }
+          ],
+          "systems": [
+            "respiratory",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiology",
+            "internalMedicine"
           ]
         },
         {
@@ -14240,6 +15957,14 @@
               "logLR": 12,
               "evidenceLabel": "Known GERD history"
             }
+          ],
+          "systems": [
+            "respiratory",
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "respiratoryMedicine"
           ]
         },
         {
@@ -14291,6 +16016,13 @@
               "logLR": 10,
               "evidenceLabel": "CXR — hyperinflation, flat diaphragm"
             }
+          ],
+          "systems": [
+            "respiratory"
+          ],
+          "specialties": [
+            "respiratoryMedicine",
+            "internalMedicine"
           ]
         },
         {
@@ -14354,6 +16086,14 @@
               "logLR": 20,
               "evidenceLabel": "Sputum AFB / culture / GeneXpert — confirmatory"
             }
+          ],
+          "systems": [
+            "respiratory",
+            "infectious"
+          ],
+          "specialties": [
+            "respiratoryMedicine",
+            "infectiousDisease"
           ]
         },
         {
@@ -14465,6 +16205,15 @@
               "logLR": 12,
               "evidenceLabel": "Non-compliance with antihypertensives"
             }
+          ],
+          "systems": [
+            "cardiovascular",
+            "neurological"
+          ],
+          "specialties": [
+            "cardiology",
+            "emergency",
+            "internalMedicine"
           ]
         },
         {
@@ -14508,6 +16257,15 @@
               "logLR": 14,
               "evidenceLabel": "Raised creatinine / urea (pre-renal AKI)"
             }
+          ],
+          "systems": [
+            "renal",
+            "endocrine"
+          ],
+          "specialties": [
+            "internalMedicine",
+            "emergency",
+            "paediatrics"
           ]
         },
         {
@@ -14552,6 +16310,14 @@
               "logLR": 14,
               "evidenceLabel": "Elevated urea out of proportion to creatinine (pre-renal pattern)"
             }
+          ],
+          "systems": [
+            "renal"
+          ],
+          "specialties": [
+            "nephrology",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -14583,6 +16349,15 @@
               "logLR": 6,
               "evidenceLabel": "No primary disease found on investigation"
             }
+          ],
+          "systems": [
+            "dermatological",
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "internalMedicine",
+            "emergency",
+            "pharmacology"
           ]
         },
         {
@@ -14632,6 +16407,15 @@
               "logLR": 14,
               "evidenceLabel": "Episodic panic attacks"
             }
+          ],
+          "systems": [
+            "psychiatric",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "psychiatry",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -14701,6 +16485,15 @@
               "logLR": 10,
               "evidenceLabel": "Haemodynamic instability indicates ruptured ectopic"
             }
+          ],
+          "systems": [
+            "gynaecological",
+            "obstetric"
+          ],
+          "specialties": [
+            "gynaecology",
+            "obstetrics",
+            "emergency"
           ]
         },
         {
@@ -14735,6 +16528,14 @@
               "evidenceLabel": "Absent Doppler flow LR+ 9.7 for torsion",
               "citation": "Houry D, Abbott JT. Ann Emerg Med 2001."
             }
+          ],
+          "systems": [
+            "gynaecological"
+          ],
+          "specialties": [
+            "gynaecology",
+            "generalSurgery",
+            "emergency"
           ]
         },
         {
@@ -14767,6 +16568,15 @@
               "logLR": 12,
               "evidenceLabel": "Positive GC/Chlamydia LR+ 9"
             }
+          ],
+          "systems": [
+            "gynaecological",
+            "infectious"
+          ],
+          "specialties": [
+            "gynaecology",
+            "infectiousDisease",
+            "emergency"
           ]
         },
         {
@@ -14799,6 +16609,14 @@
               "logLR": 6,
               "evidenceLabel": "Elevated CA-125 (non-specific) LR+ 3"
             }
+          ],
+          "systems": [
+            "gynaecological",
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gynaecology",
+            "colorectalSurgery"
           ]
         },
         {
@@ -14830,6 +16648,13 @@
               "logLR": 7,
               "evidenceLabel": "Urinary pressure/frequency from fibroid bulk"
             }
+          ],
+          "systems": [
+            "gynaecological"
+          ],
+          "specialties": [
+            "gynaecology",
+            "internalMedicine"
           ]
         },
         {
@@ -14855,6 +16680,15 @@
               "logLR": 6,
               "evidenceLabel": "Negative bHCG makes ectopic unlikely"
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "gynaecological"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "gynaecology",
+            "emergency"
           ]
         }
       ]
@@ -14884,6 +16718,15 @@
               "logLR": 14,
               "evidenceLabel": "TVUS cardiac activity distinguishes threatened vs missed"
             }
+          ],
+          "systems": [
+            "gynaecological",
+            "obstetric"
+          ],
+          "specialties": [
+            "obstetrics",
+            "gynaecology",
+            "emergency"
           ]
         },
         {
@@ -14909,6 +16752,13 @@
               "logLR": 8,
               "evidenceLabel": "Normal TVUS endometrial thickness"
             }
+          ],
+          "systems": [
+            "gynaecological"
+          ],
+          "specialties": [
+            "gynaecology",
+            "internalMedicine"
           ]
         },
         {
@@ -14941,6 +16791,14 @@
               "logLR": 9,
               "evidenceLabel": "High-risk HPV positive LR+ 6"
             }
+          ],
+          "systems": [
+            "gynaecological",
+            "oncological"
+          ],
+          "specialties": [
+            "gynaecology",
+            "oncology"
           ]
         },
         {
@@ -14967,6 +16825,14 @@
               "logLR": 15,
               "evidenceLabel": "Hysteroscopy + biopsy diagnostic"
             }
+          ],
+          "systems": [
+            "gynaecological",
+            "oncological"
+          ],
+          "specialties": [
+            "gynaecology",
+            "oncology"
           ]
         },
         {
@@ -14992,6 +16858,13 @@
               "logLR": 14,
               "evidenceLabel": "Low-lying placenta on US confirms praevia"
             }
+          ],
+          "systems": [
+            "obstetric"
+          ],
+          "specialties": [
+            "obstetrics",
+            "emergency"
           ]
         }
       ]
@@ -15028,6 +16901,14 @@
               "logLR": 7,
               "evidenceLabel": "LH:FSH ratio >2 supportive"
             }
+          ],
+          "systems": [
+            "gynaecological",
+            "endocrine"
+          ],
+          "specialties": [
+            "gynaecology",
+            "endocrinology"
           ]
         },
         {
@@ -15047,6 +16928,13 @@
               "logLR": 7,
               "evidenceLabel": "Normal exam = primary; pathology on exam = secondary"
             }
+          ],
+          "systems": [
+            "gynaecological"
+          ],
+          "specialties": [
+            "gynaecology",
+            "internalMedicine"
           ]
         },
         {
@@ -15072,6 +16960,15 @@
               "logLR": 9,
               "evidenceLabel": "FSH >40 IU/L confirms menopause"
             }
+          ],
+          "systems": [
+            "gynaecological",
+            "endocrine"
+          ],
+          "specialties": [
+            "gynaecology",
+            "endocrinology",
+            "internalMedicine"
           ]
         },
         {
@@ -15103,6 +17000,15 @@
               "logLR": 12,
               "evidenceLabel": "Wet mount diagnostic"
             }
+          ],
+          "systems": [
+            "gynaecological",
+            "infectious"
+          ],
+          "specialties": [
+            "gynaecology",
+            "infectiousDisease",
+            "internalMedicine"
           ]
         },
         {
@@ -15128,6 +17034,14 @@
               "logLR": 14,
               "evidenceLabel": "Colposcopy-directed biopsy diagnostic"
             }
+          ],
+          "systems": [
+            "gynaecological",
+            "oncological"
+          ],
+          "specialties": [
+            "gynaecology",
+            "oncology"
           ]
         }
       ]
@@ -15157,6 +17071,14 @@
               "logLR": 12,
               "evidenceLabel": "bHCG positive mandatory"
             }
+          ],
+          "systems": [
+            "obstetric",
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "obstetrics",
+            "emergency"
           ]
         },
         {
@@ -15183,6 +17105,16 @@
               "logLR": 9,
               "evidenceLabel": "Severe features: headache, visual scotomata"
             }
+          ],
+          "systems": [
+            "obstetric",
+            "cardiovascular",
+            "renal"
+          ],
+          "specialties": [
+            "obstetrics",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -15202,6 +17134,14 @@
               "logLR": 6,
               "evidenceLabel": "BMI >30, FHx, previous GDM"
             }
+          ],
+          "systems": [
+            "obstetric",
+            "endocrine"
+          ],
+          "specialties": [
+            "obstetrics",
+            "endocrinology"
           ]
         },
         {
@@ -15221,6 +17161,14 @@
               "logLR": 12,
               "evidenceLabel": "CTG abnormality indicates urgency"
             }
+          ],
+          "systems": [
+            "obstetric",
+            "haematological"
+          ],
+          "specialties": [
+            "obstetrics",
+            "emergency"
           ]
         }
       ]
@@ -15250,6 +17198,15 @@
               "logLR": 6,
               "evidenceLabel": "No focal bacterial source on examination"
             }
+          ],
+          "systems": [
+            "respiratory",
+            "infectious"
+          ],
+          "specialties": [
+            "paediatrics",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -15276,6 +17233,14 @@
               "logLR": 5,
               "evidenceLabel": "Peak incidence 6m–2y"
             }
+          ],
+          "systems": [
+            "neurological",
+            "infectious"
+          ],
+          "specialties": [
+            "paediatrics",
+            "emergency"
           ]
         },
         {
@@ -15314,6 +17279,16 @@
               "logLR": 15,
               "evidenceLabel": "CSF: cloudy, high WBC, low glucose diagnostic"
             }
+          ],
+          "systems": [
+            "neurological",
+            "infectious"
+          ],
+          "specialties": [
+            "paediatrics",
+            "infectiousDisease",
+            "emergency",
+            "neurology"
           ]
         },
         {
@@ -15358,6 +17333,15 @@
               "logLR": 9,
               "evidenceLabel": "Erythema/oedema/peeling hands and feet"
             }
+          ],
+          "systems": [
+            "cardiovascular",
+            "infectious",
+            "immunological"
+          ],
+          "specialties": [
+            "paediatrics",
+            "cardiology"
           ]
         },
         {
@@ -15389,6 +17373,16 @@
               "logLR": 14,
               "evidenceLabel": "Culture >10⁵ CFU/ml diagnostic"
             }
+          ],
+          "systems": [
+            "renal",
+            "urological",
+            "infectious"
+          ],
+          "specialties": [
+            "paediatrics",
+            "urology",
+            "internalMedicine"
           ]
         },
         {
@@ -15421,6 +17415,15 @@
               "logLR": 9,
               "evidenceLabel": "SpO₂ <95% indicates significant respiratory compromise"
             }
+          ],
+          "systems": [
+            "respiratory",
+            "infectious"
+          ],
+          "specialties": [
+            "paediatrics",
+            "respiratoryMedicine",
+            "emergency"
           ]
         }
       ]
@@ -15463,6 +17466,14 @@
               "logLR": 15,
               "evidenceLabel": "Target sign on US — diagnostic"
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "paediatricSurgery",
+            "paediatrics",
+            "emergency"
           ]
         },
         {
@@ -15494,6 +17505,13 @@
               "logLR": 15,
               "evidenceLabel": "US: pyloric wall ≥4mm / channel ≥17mm diagnostic"
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "paediatricSurgery",
+            "paediatrics"
           ]
         },
         {
@@ -15525,6 +17543,14 @@
               "logLR": 9,
               "evidenceLabel": "Alvarado/PAS score ≥7 LR+ 7"
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "paediatricSurgery",
+            "paediatrics",
+            "emergency"
           ]
         },
         {
@@ -15550,6 +17576,15 @@
               "logLR": 10,
               "evidenceLabel": "Mesenteric nodes >10mm on US"
             }
+          ],
+          "systems": [
+            "gastrointestinal",
+            "haematological",
+            "infectious"
+          ],
+          "specialties": [
+            "paediatrics",
+            "internalMedicine"
           ]
         },
         {
@@ -15569,6 +17604,13 @@
               "logLR": 14,
               "evidenceLabel": "Tc-99m pertechnetate scan positive LR+ 9"
             }
+          ],
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "paediatricSurgery",
+            "paediatrics"
           ]
         }
       ]
@@ -15605,6 +17647,15 @@
               "logLR": 7,
               "evidenceLabel": "Personal/family history of asthma or allergic rhinitis"
             }
+          ],
+          "systems": [
+            "dermatological",
+            "immunological"
+          ],
+          "specialties": [
+            "dermatology",
+            "paediatrics",
+            "internalMedicine"
           ]
         },
         {
@@ -15637,6 +17688,15 @@
               "logLR": 8,
               "evidenceLabel": "Auspitz sign (pinpoint bleeding on scale removal)"
             }
+          ],
+          "systems": [
+            "dermatological",
+            "immunological",
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "dermatology",
+            "rheumatology"
           ]
         },
         {
@@ -15662,6 +17722,15 @@
               "logLR": 7,
               "evidenceLabel": "Allergen, NSAID, or infection trigger"
             }
+          ],
+          "systems": [
+            "dermatological",
+            "immunological"
+          ],
+          "specialties": [
+            "dermatology",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -15687,6 +17756,14 @@
               "logLR": 8,
               "evidenceLabel": "Tinea pedis / cruris / unguium distribution"
             }
+          ],
+          "systems": [
+            "dermatological",
+            "infectious"
+          ],
+          "specialties": [
+            "dermatology",
+            "internalMedicine"
           ]
         },
         {
@@ -15718,6 +17795,16 @@
               "logLR": 6,
               "evidenceLabel": "Elevated CRP/WBC supports bacterial aetiology"
             }
+          ],
+          "systems": [
+            "dermatological",
+            "infectious"
+          ],
+          "specialties": [
+            "dermatology",
+            "infectiousDisease",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -15743,6 +17830,14 @@
               "logLR": 13,
               "evidenceLabel": "Patch test positive for allergen (allergic CD)"
             }
+          ],
+          "systems": [
+            "dermatological",
+            "immunological"
+          ],
+          "specialties": [
+            "dermatology",
+            "rheumatology"
           ]
         },
         {
@@ -15768,6 +17863,14 @@
               "logLR": 5,
               "evidenceLabel": "Young adult, self-limiting 6–8 weeks"
             }
+          ],
+          "systems": [
+            "dermatological",
+            "infectious"
+          ],
+          "specialties": [
+            "dermatology",
+            "internalMedicine"
           ]
         }
       ]
@@ -15804,6 +17907,14 @@
               "logLR": 10,
               "evidenceLabel": "Ipsilateral fixed dilated pupil: uncal herniation"
             }
+          ],
+          "systems": [
+            "neurological",
+            "neurosurgical"
+          ],
+          "specialties": [
+            "neurosurgery",
+            "emergency"
           ]
         },
         {
@@ -15835,6 +17946,14 @@
               "logLR": 9,
               "evidenceLabel": "Declining GCS — neurosurgical emergency"
             }
+          ],
+          "systems": [
+            "neurological",
+            "neurosurgical"
+          ],
+          "specialties": [
+            "neurosurgery",
+            "emergency"
           ]
         },
         {
@@ -15860,6 +17979,14 @@
               "logLR": 12,
               "evidenceLabel": "Cortical contusion/haemorrhage on CT"
             }
+          ],
+          "systems": [
+            "neurological",
+            "neurosurgical"
+          ],
+          "specialties": [
+            "neurosurgery",
+            "emergency"
           ]
         },
         {
@@ -15891,6 +18018,16 @@
               "logLR": 15,
               "evidenceLabel": "Enhancing mass on MRI with brain parenchymal features"
             }
+          ],
+          "systems": [
+            "neurological",
+            "neurosurgical",
+            "oncological"
+          ],
+          "specialties": [
+            "neurosurgery",
+            "neurology",
+            "oncology"
           ]
         },
         {
@@ -15917,6 +18054,15 @@
               "logLR": 10,
               "evidenceLabel": "Gait improvement after CSF tap test LR+ 7"
             }
+          ],
+          "systems": [
+            "neurological",
+            "neurosurgical"
+          ],
+          "specialties": [
+            "neurosurgery",
+            "neurology",
+            "geriatrics"
           ]
         }
       ]
@@ -15961,6 +18107,15 @@
               "logLR": 8,
               "evidenceLabel": "Displaced apex beat LR+ 5.1"
             }
+          ],
+          "systems": [
+            "cardiovascular",
+            "respiratory"
+          ],
+          "specialties": [
+            "cardiology",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -15986,6 +18141,15 @@
               "logLR": 10,
               "evidenceLabel": "Elevated BNP supports diagnosis"
             }
+          ],
+          "systems": [
+            "cardiovascular",
+            "respiratory"
+          ],
+          "specialties": [
+            "cardiology",
+            "internalMedicine",
+            "geriatrics"
           ]
         },
         {
@@ -16011,6 +18175,13 @@
               "logLR": 6,
               "evidenceLabel": "AF as presenting arrhythmia of DCM"
             }
+          ],
+          "systems": [
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiology",
+            "cardiothoracicSurgery"
           ]
         },
         {
@@ -16043,6 +18214,14 @@
               "logLR": 8,
               "evidenceLabel": "Slow-rising pulsus parvus et tardus LR+ 5"
             }
+          ],
+          "systems": [
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiology",
+            "cardiothoracicSurgery",
+            "internalMedicine"
           ]
         },
         {
@@ -16069,6 +18248,14 @@
               "logLR": 15,
               "evidenceLabel": "RA/RV diastolic collapse on echo diagnostic"
             }
+          ],
+          "systems": [
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiology",
+            "cardiothoracicSurgery",
+            "emergency"
           ]
         }
       ]
@@ -16105,6 +18292,16 @@
               "logLR": 7,
               "evidenceLabel": "Hypertension, age >65, valvular disease risk factors"
             }
+          ],
+          "systems": [
+            "cardiovascular",
+            "neurological"
+          ],
+          "specialties": [
+            "cardiology",
+            "neurology",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -16136,6 +18333,14 @@
               "logLR": 10,
               "evidenceLabel": "Terminates with Valsalva/carotid sinus massage"
             }
+          ],
+          "systems": [
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiology",
+            "emergency",
+            "internalMedicine"
           ]
         },
         {
@@ -16167,6 +18372,13 @@
               "logLR": 9,
               "evidenceLabel": "Haemodynamic instability favours VT over SVT"
             }
+          ],
+          "systems": [
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiology",
+            "emergency"
           ]
         },
         {
@@ -16192,6 +18404,13 @@
               "logLR": 9,
               "evidenceLabel": "Sudden syncope without warning (Stokes-Adams)"
             }
+          ],
+          "systems": [
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiology",
+            "emergency"
           ]
         },
         {
@@ -16212,6 +18431,14 @@
               "logLR": 7,
               "evidenceLabel": "Young patient with episodic SVT"
             }
+          ],
+          "systems": [
+            "cardiovascular",
+            "neurological"
+          ],
+          "specialties": [
+            "cardiology",
+            "internalMedicine"
           ]
         }
       ]
@@ -16248,6 +18475,17 @@
               "logLR": 7,
               "evidenceLabel": "Normochromic normocytic anaemia of CKD"
             }
+          ],
+          "systems": [
+            "renal",
+            "cardiovascular",
+            "endocrine"
+          ],
+          "specialties": [
+            "nephrology",
+            "internalMedicine",
+            "endocrinology",
+            "cardiology"
           ]
         },
         {
@@ -16273,6 +18511,14 @@
               "logLR": 7,
               "evidenceLabel": "Sepsis, NSAIDs, contrast, dehydration precipitants"
             }
+          ],
+          "systems": [
+            "renal"
+          ],
+          "specialties": [
+            "nephrology",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -16304,6 +18550,16 @@
               "logLR": 8,
               "evidenceLabel": "Hyperlipidaemia + lipiduria ('oval fat bodies')"
             }
+          ],
+          "systems": [
+            "renal",
+            "haematological",
+            "immunological"
+          ],
+          "specialties": [
+            "nephrology",
+            "internalMedicine",
+            "haematology"
           ]
         },
         {
@@ -16329,6 +18585,14 @@
               "logLR": 15,
               "evidenceLabel": "Biopsy: mesangial IgA deposits diagnostic"
             }
+          ],
+          "systems": [
+            "renal",
+            "immunological"
+          ],
+          "specialties": [
+            "nephrology",
+            "rheumatology"
           ]
         }
       ]
@@ -16371,6 +18635,18 @@
               "logLR": 10,
               "evidenceLabel": "Hepatic encephalopathy: flapping tremor, confusion"
             }
+          ],
+          "systems": [
+            "hepatobiliary",
+            "gastrointestinal",
+            "cardiovascular",
+            "renal"
+          ],
+          "specialties": [
+            "hepatology",
+            "gastroenterology",
+            "internalMedicine",
+            "emergency"
           ]
         },
         {
@@ -16396,6 +18672,16 @@
               "logLR": 8,
               "evidenceLabel": "ALT >2×ULN indicates hepatic inflammation"
             }
+          ],
+          "systems": [
+            "hepatobiliary",
+            "infectious",
+            "oncological"
+          ],
+          "specialties": [
+            "hepatology",
+            "infectiousDisease",
+            "internalMedicine"
           ]
         },
         {
@@ -16421,6 +18707,16 @@
               "logLR": 8,
               "evidenceLabel": "IVDU, pre-1992 transfusion, tattooing"
             }
+          ],
+          "systems": [
+            "hepatobiliary",
+            "infectious",
+            "oncological"
+          ],
+          "specialties": [
+            "hepatology",
+            "infectiousDisease",
+            "internalMedicine"
           ]
         },
         {
@@ -16452,6 +18748,17 @@
               "logLR": 8,
               "evidenceLabel": "No excess alcohol: distinguishes from ALD"
             }
+          ],
+          "systems": [
+            "hepatobiliary",
+            "endocrine",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "hepatology",
+            "gastroenterology",
+            "endocrinology",
+            "internalMedicine"
           ]
         },
         {
@@ -16484,8 +18791,1489 @@
               "logLR": 9,
               "evidenceLabel": "Maddrey DF >32 — severe, consider steroids"
             }
+          ],
+          "systems": [
+            "hepatobiliary",
+            "infectious"
+          ],
+          "specialties": [
+            "hepatology",
+            "gastroenterology",
+            "internalMedicine",
+            "emergency"
           ]
         }
+      ]
+    }
+  },
+  "matrix": {
+    "version": "1.0",
+    "authority": "ICD-11 polyhierarchy + SNOMED CT concept model + AMA specialty taxonomy",
+    "systemIndex": {
+      "gastrointestinal": [
+        "Acute Appendicitis",
+        "Acute Pancreatitis",
+        "Acute Diverticulitis",
+        "Perforated Peptic Ulcer",
+        "GERD / Oesophagitis",
+        "Irritable Bowel Syndrome",
+        "Bleeding Peptic Ulcer",
+        "Oesophageal Varices Bleed",
+        "Mallory-Weiss Tear",
+        "Dieulafoy Lesion",
+        "Gastric / Oesophageal Malignancy Bleed",
+        "Oesophageal Carcinoma",
+        "Achalasia",
+        "Oesophageal Stricture (Benign)",
+        "Pharyngeal Pouch (Zenker Diverticulum)",
+        "Haemorrhoids",
+        "Colorectal Carcinoma",
+        "Anal Fissure",
+        "Diverticular Bleeding",
+        "Inflammatory Bowel Disease",
+        "Typhoid Fever",
+        "Intra-Abdominal Sepsis",
+        "Diverticular Disease",
+        "Gastrointestinal Malignancy",
+        "Acute Gastroenteritis",
+        "Gastroparesis",
+        "Gastric Outlet Obstruction",
+        "Small Bowel Obstruction",
+        "Appendicitis (Presenting with Nausea)",
+        "Iron Deficiency Anaemia",
+        "Large Bowel Obstruction",
+        "Sigmoid Volvulus",
+        "Paralytic Ileus",
+        "Gastro-oesophageal reflux disease",
+        "Barrett's oesophagus",
+        "Peptic ulcer disease",
+        "Functional dyspepsia",
+        "Inguinal Hernia",
+        "Femoral Hernia",
+        "Incisional Hernia",
+        "Umbilical / Paraumbilical Hernia",
+        "Epigastric Hernia",
+        "Perianal Abscess",
+        "Perianal Fistula",
+        "Anal Carcinoma",
+        "Branchial Cyst",
+        "Normal Post-Operative Recovery",
+        "Post-Operative Ileus",
+        "Anastomotic Leak",
+        "Full-Thickness Rectal Prolapse",
+        "Mucosal Prolapse / Haemorrhoids (grade III/IV)",
+        "Rectocele",
+        "Solitary Rectal Ulcer Syndrome",
+        "Salivary Gland Calculus (Sialolithiasis)",
+        "Parotitis (Acute Suppurative)",
+        "Pleomorphic Adenoma",
+        "Parotid Carcinoma",
+        "GERD-Related Cough",
+        "Medication Side Effect / Adverse Drug Reaction",
+        "Endometriosis",
+        "Appendicitis (Gynaecological Mimic)",
+        "Hyperemesis Gravidarum",
+        "Intussusception",
+        "Pyloric Stenosis",
+        "Appendicitis (Paediatric)",
+        "Mesenteric Adenitis",
+        "Meckel's Diverticulum",
+        "Liver Cirrhosis (Decompensated)"
+      ],
+      "hepatobiliary": [
+        "Acute Cholecystitis",
+        "Biliary Colic",
+        "Choledocholithiasis",
+        "Ascending Cholangitis",
+        "Viral Hepatitis",
+        "Haemolytic Jaundice",
+        "Oesophageal Varices Bleed",
+        "Leptospirosis",
+        "Liver Cirrhosis (Decompensated)",
+        "Hepatitis B (Chronic Active)",
+        "Hepatitis C (Chronic)",
+        "Non-Alcoholic Fatty Liver Disease (NAFLD/NASH)",
+        "Alcoholic Hepatitis"
+      ],
+      "pancreatic": [
+        "Acute Pancreatitis",
+        "Carcinoma of Head of Pancreas"
+      ],
+      "infectious": [
+        "Ascending Cholangitis",
+        "Viral Hepatitis",
+        "Pyelonephritis",
+        "Dengue Fever",
+        "Leptospirosis",
+        "Community-Acquired Pneumonia",
+        "Urinary Tract Infection",
+        "Typhoid Fever",
+        "Gram-Negative Sepsis / Bacteraemia",
+        "Intra-Abdominal Sepsis",
+        "Urosepsis",
+        "Pneumonia / Pulmonary Sepsis",
+        "Pulmonary Tuberculosis",
+        "Acute Gastroenteritis",
+        "Necrotising Fasciitis",
+        "Fournier's Gangrene",
+        "Severe Cellulitis / SSTI",
+        "Gas Gangrene (Clostridial Myonecrosis)",
+        "Sickle Cell Anaemia",
+        "Inguinal Lymphadenopathy",
+        "Perianal Abscess",
+        "Mastitis / Breast Abscess",
+        "Reactive Lymphadenopathy",
+        "Septic Arthritis",
+        "Dengue Arthralgia",
+        "Post-Operative Surgical Site Infection",
+        "Anastomotic Leak",
+        "Acute Pilonidal Abscess",
+        "Hidradenitis Suppurativa",
+        "Superficial Surgical Site Infection",
+        "Deep Surgical Site Infection",
+        "Epididymo-Orchitis",
+        "Parotitis (Acute Suppurative)",
+        "Bacterial Meningitis",
+        "Vestibular Neuronitis / Labyrinthitis",
+        "Pelvic Inflammatory Disease",
+        "Vulvovaginitis (Candidal / BV / Trichomonal)",
+        "Viral Upper Respiratory Tract Infection",
+        "Otitis Media (Acute)",
+        "Bacterial Meningitis (Child)",
+        "Kawasaki Disease",
+        "Febrile UTI (Pyelonephritis, Child)",
+        "Pneumonia (Childhood)",
+        "Mesenteric Adenitis",
+        "Tinea (Dermatophytosis)",
+        "Cellulitis / Erysipelas",
+        "Pityriasis Rosea",
+        "Hepatitis B (Chronic Active)",
+        "Hepatitis C (Chronic)",
+        "Alcoholic Hepatitis"
+      ],
+      "oncological": [
+        "Carcinoma of Head of Pancreas",
+        "Renal Cell Carcinoma",
+        "Bladder Cancer / Haematuria",
+        "Gastric / Oesophageal Malignancy Bleed",
+        "Oesophageal Carcinoma",
+        "Colorectal Carcinoma",
+        "Gastrointestinal Malignancy",
+        "Barrett's oesophagus",
+        "Anal Carcinoma",
+        "Breast Carcinoma",
+        "Lymphoma",
+        "Metastatic Neck Node",
+        "Thyroid Carcinoma",
+        "Bladder Carcinoma",
+        "Adrenocortical Carcinoma",
+        "Melanoma",
+        "Basal Cell Carcinoma",
+        "Squamous Cell Carcinoma",
+        "Testicular Tumour",
+        "Prostate Cancer with Obstruction",
+        "Parotid Carcinoma",
+        "Malignant Spinal Cord Compression",
+        "Cervical Carcinoma",
+        "Endometrial Pathology (Polyp / Hyperplasia / Carcinoma)",
+        "Cervical Dysplasia / CIN",
+        "Primary Brain Tumour (Glioma / Meningioma)",
+        "Hepatitis B (Chronic Active)",
+        "Hepatitis C (Chronic)"
+      ],
+      "haematological": [
+        "Haemolytic Jaundice",
+        "Dengue Fever",
+        "Deep Vein Thrombosis",
+        "Fat Embolism Syndrome",
+        "Chronic Venous Insufficiency / Post-Thrombotic Syndrome",
+        "Iron Deficiency Anaemia",
+        "Macrocytic Anaemia (B12/Folate Deficiency)",
+        "Anaemia of Chronic Disease",
+        "Haemolytic Anaemia",
+        "Sickle Cell Anaemia",
+        "Inguinal Lymphadenopathy",
+        "Reactive Lymphadenopathy",
+        "Lymphoma",
+        "Metastatic Neck Node",
+        "Post-Operative Deep Vein Thrombosis",
+        "Antepartum Haemorrhage",
+        "Mesenteric Adenitis",
+        "Nephrotic Syndrome"
+      ],
+      "renal": [
+        "Renal Colic / Ureteric Calculus",
+        "Pyelonephritis",
+        "Renal Cell Carcinoma",
+        "Ureteropelvic Junction Obstruction",
+        "Leptospirosis",
+        "Urinary Tract Infection",
+        "Urosepsis",
+        "Gout",
+        "Renovascular Hypertension",
+        "Type 2 Diabetes Mellitus",
+        "Diabetic Complications Review",
+        "Dehydration / Electrolyte Imbalance",
+        "Acute Kidney Injury",
+        "Pre-eclampsia",
+        "Febrile UTI (Pyelonephritis, Child)",
+        "Chronic Kidney Disease (Stage 3–5)",
+        "Acute Kidney Injury on CKD",
+        "Nephrotic Syndrome",
+        "IgA Nephropathy / Glomerulonephritis",
+        "Liver Cirrhosis (Decompensated)"
+      ],
+      "urological": [
+        "Renal Colic / Ureteric Calculus",
+        "Bladder Cancer / Haematuria",
+        "Ureteropelvic Junction Obstruction",
+        "Urinary Tract Infection",
+        "Urosepsis",
+        "Fournier's Gangrene",
+        "Bladder Carcinoma",
+        "Overactive Bladder",
+        "Interstitial Cystitis",
+        "Testicular Torsion",
+        "Epididymo-Orchitis",
+        "Hydrocele",
+        "Testicular Tumour",
+        "Benign Prostatic Hyperplasia",
+        "Urethral Stricture",
+        "Prostate Cancer with Obstruction",
+        "Neurogenic Bladder",
+        "Febrile UTI (Pyelonephritis, Child)"
+      ],
+      "vascular": [
+        "Oesophageal Varices Bleed",
+        "Pulmonary Embolism",
+        "Aortic Dissection",
+        "Ischaemic Stroke",
+        "Transient Ischaemic Attack",
+        "Deep Vein Thrombosis",
+        "Superficial Thrombophlebitis",
+        "Chronic Venous Insufficiency / Post-Thrombotic Syndrome",
+        "Renovascular Hypertension",
+        "Post-Operative Deep Vein Thrombosis",
+        "Abdominal Aortic Aneurysm",
+        "Peripheral Arterial Disease",
+        "Carotid Artery Disease",
+        "Chronic Venous Insufficiency / Varicose Veins",
+        "Acute Arterial Embolism",
+        "Acute Thrombosis on Atherosclerosis",
+        "Popliteal Artery Aneurysm Thrombosis",
+        "Aortoiliac Occlusion"
+      ],
+      "cardiovascular": [
+        "Acute Coronary Syndrome",
+        "Stable Angina",
+        "Pulmonary Embolism",
+        "Aortic Dissection",
+        "Dengue Fever",
+        "Gram-Negative Sepsis / Bacteraemia",
+        "Ischaemic Stroke",
+        "Transient Ischaemic Attack",
+        "Hypertensive Encephalopathy / PRES",
+        "Heart Failure",
+        "Essential Hypertension",
+        "Renovascular Hypertension",
+        "White Coat Hypertension",
+        "Hypertensive Urgency / Emergency",
+        "Type 2 Diabetes Mellitus",
+        "Diabetic Complications Review",
+        "Pre-Diabetes / Impaired Glucose Tolerance",
+        "Phaeochromocytoma",
+        "Abdominal Aortic Aneurysm",
+        "Peripheral Arterial Disease",
+        "Acute Arterial Embolism",
+        "Acute Thrombosis on Atherosclerosis",
+        "Aortoiliac Occlusion",
+        "Orthostatic Hypotension / Vasovagal Syncope",
+        "ACE Inhibitor Cough",
+        "Hypertensive Urgency / Crisis",
+        "Anxiety Disorder",
+        "Pre-eclampsia",
+        "Kawasaki Disease",
+        "Heart Failure with Reduced EF (HFrEF)",
+        "Heart Failure with Preserved EF (HFpEF)",
+        "Dilated Cardiomyopathy",
+        "Valvular Heart Disease (Aortic Stenosis)",
+        "Cardiac Tamponade",
+        "Atrial Fibrillation",
+        "Supraventricular Tachycardia (SVT)",
+        "Ventricular Tachycardia",
+        "Complete Heart Block (CHB)",
+        "Wolff-Parkinson-White Syndrome",
+        "Chronic Kidney Disease (Stage 3–5)",
+        "Liver Cirrhosis (Decompensated)",
+        "Non-Alcoholic Fatty Liver Disease (NAFLD/NASH)"
+      ],
+      "respiratory": [
+        "Pulmonary Embolism",
+        "Community-Acquired Pneumonia",
+        "Pneumonia / Pulmonary Sepsis",
+        "Fat Embolism Syndrome",
+        "Asthma (Acute Exacerbation)",
+        "Heart Failure",
+        "COPD Exacerbation",
+        "Pneumothorax",
+        "Pulmonary Tuberculosis",
+        "Obstructive Sleep Apnoea",
+        "Upper Airway Cough Syndrome (Post-nasal Drip)",
+        "Asthma",
+        "ACE Inhibitor Cough",
+        "GERD-Related Cough",
+        "Chronic Obstructive Pulmonary Disease (COPD)",
+        "Viral Upper Respiratory Tract Infection",
+        "Pneumonia (Childhood)",
+        "Heart Failure with Reduced EF (HFrEF)",
+        "Heart Failure with Preserved EF (HFpEF)"
+      ],
+      "immunological": [
+        "Inflammatory Bowel Disease",
+        "Asthma (Acute Exacerbation)",
+        "Thyroiditis (Hashimoto's / De Quervain's)",
+        "Interstitial Cystitis",
+        "Reactive Arthritis",
+        "Asthma",
+        "Kawasaki Disease",
+        "Atopic Eczema / Dermatitis",
+        "Psoriasis",
+        "Urticaria (Acute / Chronic)",
+        "Contact Dermatitis (Allergic / Irritant)",
+        "Nephrotic Syndrome",
+        "IgA Nephropathy / Glomerulonephritis"
+      ],
+      "neurological": [
+        "Ischaemic Stroke",
+        "Haemorrhagic Stroke",
+        "Transient Ischaemic Attack",
+        "Hypertensive Encephalopathy / PRES",
+        "Vestibular Migraine / Complex Migraine",
+        "Macrocytic Anaemia (B12/Folate Deficiency)",
+        "Hypertensive Urgency / Emergency",
+        "Diabetic Complications Review",
+        "Carotid Artery Disease",
+        "Neurogenic Bladder",
+        "Tension-Type Headache",
+        "Migraine Without Aura",
+        "Cluster Headache",
+        "Subarachnoid Haemorrhage",
+        "Bacterial Meningitis",
+        "Benign Paroxysmal Positional Vertigo (BPPV)",
+        "Vestibular Neuronitis / Labyrinthitis",
+        "Ménière's Disease",
+        "Orthostatic Hypotension / Vasovagal Syncope",
+        "Central Vertigo (Posterior Fossa Pathology)",
+        "Lumbar Disc Herniation / Sciatica",
+        "Cauda Equina Syndrome",
+        "Malignant Spinal Cord Compression",
+        "Hypertensive Urgency / Crisis",
+        "Otitis Media (Acute)",
+        "Bacterial Meningitis (Child)",
+        "Extradural Haematoma",
+        "Acute Subdural Haematoma",
+        "Cerebral Contusion / Traumatic Brain Injury",
+        "Primary Brain Tumour (Glioma / Meningioma)",
+        "Hydrocephalus (Obstructive / NPH)",
+        "Atrial Fibrillation",
+        "Wolff-Parkinson-White Syndrome"
+      ],
+      "neurosurgical": [
+        "Haemorrhagic Stroke",
+        "Subarachnoid Haemorrhage",
+        "Central Vertigo (Posterior Fossa Pathology)",
+        "Cauda Equina Syndrome",
+        "Malignant Spinal Cord Compression",
+        "Extradural Haematoma",
+        "Acute Subdural Haematoma",
+        "Cerebral Contusion / Traumatic Brain Injury",
+        "Primary Brain Tumour (Glioma / Meningioma)",
+        "Hydrocephalus (Obstructive / NPH)"
+      ],
+      "dermatological": [
+        "Superficial Thrombophlebitis",
+        "Necrotising Fasciitis",
+        "Fournier's Gangrene",
+        "Severe Cellulitis / SSTI",
+        "Post-Operative Surgical Site Infection",
+        "Acute Pilonidal Abscess",
+        "Chronic Pilonidal Sinus",
+        "Hidradenitis Suppurativa",
+        "Superficial Surgical Site Infection",
+        "Wound Dehiscence",
+        "Seroma",
+        "Melanoma",
+        "Basal Cell Carcinoma",
+        "Squamous Cell Carcinoma",
+        "Sebaceous / Epidermoid Cyst",
+        "Lipoma",
+        "Medication Side Effect / Adverse Drug Reaction",
+        "Atopic Eczema / Dermatitis",
+        "Psoriasis",
+        "Urticaria (Acute / Chronic)",
+        "Tinea (Dermatophytosis)",
+        "Cellulitis / Erysipelas",
+        "Contact Dermatitis (Allergic / Irritant)",
+        "Pityriasis Rosea"
+      ],
+      "musculoskeletal": [
+        "Fat Embolism Syndrome",
+        "Necrotising Fasciitis",
+        "Gas Gangrene (Clostridial Myonecrosis)",
+        "Hip Osteoarthritis",
+        "Iliopsoas Bursitis / Tendinopathy",
+        "Osteoarthritis",
+        "Gout",
+        "Reactive Arthritis",
+        "Septic Arthritis",
+        "Dengue Arthralgia",
+        "Lipoma",
+        "Tension-Type Headache",
+        "Non-Specific Mechanical Low Back Pain",
+        "Lumbar Disc Herniation / Sciatica",
+        "Cauda Equina Syndrome",
+        "Vertebral Fracture (Osteoporotic / Traumatic)",
+        "Malignant Spinal Cord Compression",
+        "Psoriasis"
+      ],
+      "endocrine": [
+        "Type 2 Diabetes Mellitus (Uncontrolled)",
+        "Gastroparesis",
+        "Thyroid Nodule / Goitre",
+        "Hypothyroidism",
+        "Hyperthyroidism / Graves' Disease",
+        "Thyroid Carcinoma",
+        "Thyroiditis (Hashimoto's / De Quervain's)",
+        "Type 2 Diabetes Mellitus",
+        "Poorly Controlled Diabetes",
+        "Diabetic Complications Review",
+        "Pre-Diabetes / Impaired Glucose Tolerance",
+        "Primary Hyperaldosteronism",
+        "Phaeochromocytoma",
+        "Adrenal Incidentaloma",
+        "Cushing's Syndrome",
+        "Adrenocortical Carcinoma",
+        "Dehydration / Electrolyte Imbalance",
+        "Polycystic Ovary Syndrome (PCOS)",
+        "Menopausal Symptoms",
+        "Gestational Diabetes",
+        "Chronic Kidney Disease (Stage 3–5)",
+        "Non-Alcoholic Fatty Liver Disease (NAFLD/NASH)"
+      ],
+      "scrotal": [
+        "Fournier's Gangrene",
+        "Testicular Torsion",
+        "Epididymo-Orchitis",
+        "Hydrocele",
+        "Testicular Tumour"
+      ],
+      "breast": [
+        "Fibroadenoma",
+        "Breast Carcinoma",
+        "Breast Cyst",
+        "Mastitis / Breast Abscess",
+        "Fat Necrosis"
+      ],
+      "thyroid": [
+        "Thyroid Nodule / Goitre",
+        "Hypothyroidism",
+        "Hyperthyroidism / Graves' Disease",
+        "Thyroid Carcinoma",
+        "Thyroiditis (Hashimoto's / De Quervain's)"
+      ],
+      "gynaecological": [
+        "Rectocele",
+        "Ectopic Pregnancy",
+        "Ovarian Cyst / Torsion",
+        "Pelvic Inflammatory Disease",
+        "Endometriosis",
+        "Uterine Fibroids (Symptomatic)",
+        "Appendicitis (Gynaecological Mimic)",
+        "Threatened / Inevitable Miscarriage",
+        "Dysfunctional Uterine Bleeding",
+        "Cervical Carcinoma",
+        "Endometrial Pathology (Polyp / Hyperplasia / Carcinoma)",
+        "Polycystic Ovary Syndrome (PCOS)",
+        "Primary/Secondary Dysmenorrhoea",
+        "Menopausal Symptoms",
+        "Vulvovaginitis (Candidal / BV / Trichomonal)",
+        "Cervical Dysplasia / CIN"
+      ],
+      "psychiatric": [
+        "Depression",
+        "Anxiety Disorder"
+      ],
+      "obstetric": [
+        "Ectopic Pregnancy",
+        "Threatened / Inevitable Miscarriage",
+        "Placenta Praevia / Abruption",
+        "Hyperemesis Gravidarum",
+        "Pre-eclampsia",
+        "Gestational Diabetes",
+        "Antepartum Haemorrhage"
+      ]
+    },
+    "specialtyIndex": {
+      "generalSurgery": [
+        "Acute Appendicitis",
+        "Acute Cholecystitis",
+        "Biliary Colic",
+        "Acute Pancreatitis",
+        "Acute Diverticulitis",
+        "Perforated Peptic Ulcer",
+        "Choledocholithiasis",
+        "Ascending Cholangitis",
+        "Pharyngeal Pouch (Zenker Diverticulum)",
+        "Haemorrhoids",
+        "Anal Fissure",
+        "Intra-Abdominal Sepsis",
+        "Gastric Outlet Obstruction",
+        "Small Bowel Obstruction",
+        "Appendicitis (Presenting with Nausea)",
+        "Necrotising Fasciitis",
+        "Fournier's Gangrene",
+        "Gas Gangrene (Clostridial Myonecrosis)",
+        "Large Bowel Obstruction",
+        "Sigmoid Volvulus",
+        "Paralytic Ileus",
+        "Inguinal Hernia",
+        "Inguinal Lymphadenopathy",
+        "Femoral Hernia",
+        "Incisional Hernia",
+        "Umbilical / Paraumbilical Hernia",
+        "Epigastric Hernia",
+        "Perianal Abscess",
+        "Perianal Fistula",
+        "Fibroadenoma",
+        "Breast Cyst",
+        "Mastitis / Breast Abscess",
+        "Fat Necrosis",
+        "Reactive Lymphadenopathy",
+        "Thyroid Nodule / Goitre",
+        "Lymphoma",
+        "Metastatic Neck Node",
+        "Branchial Cyst",
+        "Thyroid Carcinoma",
+        "Normal Post-Operative Recovery",
+        "Post-Operative Surgical Site Infection",
+        "Post-Operative Ileus",
+        "Anastomotic Leak",
+        "Primary Hyperaldosteronism",
+        "Phaeochromocytoma",
+        "Adrenal Incidentaloma",
+        "Cushing's Syndrome",
+        "Adrenocortical Carcinoma",
+        "Acute Pilonidal Abscess",
+        "Chronic Pilonidal Sinus",
+        "Hidradenitis Suppurativa",
+        "Superficial Surgical Site Infection",
+        "Deep Surgical Site Infection",
+        "Wound Dehiscence",
+        "Seroma",
+        "Melanoma",
+        "Basal Cell Carcinoma",
+        "Squamous Cell Carcinoma",
+        "Sebaceous / Epidermoid Cyst",
+        "Lipoma",
+        "Hydrocele",
+        "Full-Thickness Rectal Prolapse",
+        "Mucosal Prolapse / Haemorrhoids (grade III/IV)",
+        "Salivary Gland Calculus (Sialolithiasis)",
+        "Parotitis (Acute Suppurative)",
+        "Pleomorphic Adenoma",
+        "Parotid Carcinoma",
+        "Ovarian Cyst / Torsion",
+        "Appendicitis (Gynaecological Mimic)"
+      ],
+      "emergency": [
+        "Acute Appendicitis",
+        "Acute Cholecystitis",
+        "Biliary Colic",
+        "Acute Pancreatitis",
+        "Perforated Peptic Ulcer",
+        "Ascending Cholangitis",
+        "Renal Colic / Ureteric Calculus",
+        "Pyelonephritis",
+        "Bleeding Peptic Ulcer",
+        "Oesophageal Varices Bleed",
+        "Mallory-Weiss Tear",
+        "Gastric / Oesophageal Malignancy Bleed",
+        "Acute Coronary Syndrome",
+        "Pulmonary Embolism",
+        "Aortic Dissection",
+        "Diverticular Bleeding",
+        "Dengue Fever",
+        "Leptospirosis",
+        "Community-Acquired Pneumonia",
+        "Urinary Tract Infection",
+        "Typhoid Fever",
+        "Gram-Negative Sepsis / Bacteraemia",
+        "Intra-Abdominal Sepsis",
+        "Urosepsis",
+        "Pneumonia / Pulmonary Sepsis",
+        "Ischaemic Stroke",
+        "Haemorrhagic Stroke",
+        "Transient Ischaemic Attack",
+        "Hypertensive Encephalopathy / PRES",
+        "Deep Vein Thrombosis",
+        "Fat Embolism Syndrome",
+        "Asthma (Acute Exacerbation)",
+        "Heart Failure",
+        "COPD Exacerbation",
+        "Pneumothorax",
+        "Acute Gastroenteritis",
+        "Small Bowel Obstruction",
+        "Appendicitis (Presenting with Nausea)",
+        "Necrotising Fasciitis",
+        "Fournier's Gangrene",
+        "Severe Cellulitis / SSTI",
+        "Gas Gangrene (Clostridial Myonecrosis)",
+        "Large Bowel Obstruction",
+        "Sigmoid Volvulus",
+        "Perianal Abscess",
+        "Mastitis / Breast Abscess",
+        "Septic Arthritis",
+        "Hypertensive Urgency / Emergency",
+        "Anastomotic Leak",
+        "Acute Pilonidal Abscess",
+        "Acute Arterial Embolism",
+        "Acute Thrombosis on Atherosclerosis",
+        "Popliteal Artery Aneurysm Thrombosis",
+        "Aortoiliac Occlusion",
+        "Testicular Torsion",
+        "Epididymo-Orchitis",
+        "Subarachnoid Haemorrhage",
+        "Bacterial Meningitis",
+        "Vestibular Neuronitis / Labyrinthitis",
+        "Central Vertigo (Posterior Fossa Pathology)",
+        "Cauda Equina Syndrome",
+        "Malignant Spinal Cord Compression",
+        "Asthma",
+        "Hypertensive Urgency / Crisis",
+        "Dehydration / Electrolyte Imbalance",
+        "Acute Kidney Injury",
+        "Medication Side Effect / Adverse Drug Reaction",
+        "Anxiety Disorder",
+        "Ectopic Pregnancy",
+        "Ovarian Cyst / Torsion",
+        "Pelvic Inflammatory Disease",
+        "Appendicitis (Gynaecological Mimic)",
+        "Threatened / Inevitable Miscarriage",
+        "Placenta Praevia / Abruption",
+        "Hyperemesis Gravidarum",
+        "Pre-eclampsia",
+        "Antepartum Haemorrhage",
+        "Viral Upper Respiratory Tract Infection",
+        "Otitis Media (Acute)",
+        "Bacterial Meningitis (Child)",
+        "Pneumonia (Childhood)",
+        "Intussusception",
+        "Appendicitis (Paediatric)",
+        "Urticaria (Acute / Chronic)",
+        "Cellulitis / Erysipelas",
+        "Extradural Haematoma",
+        "Acute Subdural Haematoma",
+        "Cerebral Contusion / Traumatic Brain Injury",
+        "Heart Failure with Reduced EF (HFrEF)",
+        "Cardiac Tamponade",
+        "Atrial Fibrillation",
+        "Supraventricular Tachycardia (SVT)",
+        "Ventricular Tachycardia",
+        "Complete Heart Block (CHB)",
+        "Acute Kidney Injury on CKD",
+        "Liver Cirrhosis (Decompensated)",
+        "Alcoholic Hepatitis"
+      ],
+      "gastroenterology": [
+        "Acute Cholecystitis",
+        "Biliary Colic",
+        "Acute Pancreatitis",
+        "Acute Diverticulitis",
+        "Perforated Peptic Ulcer",
+        "GERD / Oesophagitis",
+        "Irritable Bowel Syndrome",
+        "Choledocholithiasis",
+        "Ascending Cholangitis",
+        "Carcinoma of Head of Pancreas",
+        "Bleeding Peptic Ulcer",
+        "Oesophageal Varices Bleed",
+        "Mallory-Weiss Tear",
+        "Dieulafoy Lesion",
+        "Gastric / Oesophageal Malignancy Bleed",
+        "Oesophageal Carcinoma",
+        "Achalasia",
+        "Oesophageal Stricture (Benign)",
+        "Pharyngeal Pouch (Zenker Diverticulum)",
+        "Haemorrhoids",
+        "Colorectal Carcinoma",
+        "Diverticular Bleeding",
+        "Inflammatory Bowel Disease",
+        "Diverticular Disease",
+        "Gastrointestinal Malignancy",
+        "Gastroparesis",
+        "Gastric Outlet Obstruction",
+        "Iron Deficiency Anaemia",
+        "Gastro-oesophageal reflux disease",
+        "Barrett's oesophagus",
+        "Peptic ulcer disease",
+        "Functional dyspepsia",
+        "Post-Operative Ileus",
+        "Solitary Rectal Ulcer Syndrome",
+        "GERD-Related Cough",
+        "Liver Cirrhosis (Decompensated)",
+        "Non-Alcoholic Fatty Liver Disease (NAFLD/NASH)",
+        "Alcoholic Hepatitis"
+      ],
+      "internalMedicine": [
+        "Acute Pancreatitis",
+        "GERD / Oesophagitis",
+        "Irritable Bowel Syndrome",
+        "Viral Hepatitis",
+        "Haemolytic Jaundice",
+        "Pyelonephritis",
+        "Acute Coronary Syndrome",
+        "Stable Angina",
+        "Dengue Fever",
+        "Leptospirosis",
+        "Community-Acquired Pneumonia",
+        "Urinary Tract Infection",
+        "Typhoid Fever",
+        "Gram-Negative Sepsis / Bacteraemia",
+        "Hypertensive Encephalopathy / PRES",
+        "Vestibular Migraine / Complex Migraine",
+        "Deep Vein Thrombosis",
+        "Superficial Thrombophlebitis",
+        "Chronic Venous Insufficiency / Post-Thrombotic Syndrome",
+        "Asthma (Acute Exacerbation)",
+        "Heart Failure",
+        "COPD Exacerbation",
+        "Type 2 Diabetes Mellitus (Uncontrolled)",
+        "Acute Gastroenteritis",
+        "Iron Deficiency Anaemia",
+        "Macrocytic Anaemia (B12/Folate Deficiency)",
+        "Anaemia of Chronic Disease",
+        "Sickle Cell Anaemia",
+        "Paralytic Ileus",
+        "Gastro-oesophageal reflux disease",
+        "Peptic ulcer disease",
+        "Functional dyspepsia",
+        "Hypothyroidism",
+        "Hyperthyroidism / Graves' Disease",
+        "Overactive Bladder",
+        "Osteoarthritis",
+        "Gout",
+        "Dengue Arthralgia",
+        "Essential Hypertension",
+        "White Coat Hypertension",
+        "Hypertensive Urgency / Emergency",
+        "Type 2 Diabetes Mellitus",
+        "Poorly Controlled Diabetes",
+        "Pre-Diabetes / Impaired Glucose Tolerance",
+        "Post-Operative Deep Vein Thrombosis",
+        "Peripheral Arterial Disease",
+        "Chronic Venous Insufficiency / Varicose Veins",
+        "Benign Prostatic Hyperplasia",
+        "Tension-Type Headache",
+        "Migraine Without Aura",
+        "Benign Paroxysmal Positional Vertigo (BPPV)",
+        "Orthostatic Hypotension / Vasovagal Syncope",
+        "Non-Specific Mechanical Low Back Pain",
+        "Lumbar Disc Herniation / Sciatica",
+        "Vertebral Fracture (Osteoporotic / Traumatic)",
+        "Depression",
+        "Obstructive Sleep Apnoea",
+        "Upper Airway Cough Syndrome (Post-nasal Drip)",
+        "Asthma",
+        "ACE Inhibitor Cough",
+        "Chronic Obstructive Pulmonary Disease (COPD)",
+        "Hypertensive Urgency / Crisis",
+        "Dehydration / Electrolyte Imbalance",
+        "Acute Kidney Injury",
+        "Medication Side Effect / Adverse Drug Reaction",
+        "Anxiety Disorder",
+        "Uterine Fibroids (Symptomatic)",
+        "Dysfunctional Uterine Bleeding",
+        "Primary/Secondary Dysmenorrhoea",
+        "Menopausal Symptoms",
+        "Vulvovaginitis (Candidal / BV / Trichomonal)",
+        "Pre-eclampsia",
+        "Viral Upper Respiratory Tract Infection",
+        "Febrile UTI (Pyelonephritis, Child)",
+        "Mesenteric Adenitis",
+        "Atopic Eczema / Dermatitis",
+        "Urticaria (Acute / Chronic)",
+        "Tinea (Dermatophytosis)",
+        "Cellulitis / Erysipelas",
+        "Pityriasis Rosea",
+        "Heart Failure with Reduced EF (HFrEF)",
+        "Heart Failure with Preserved EF (HFpEF)",
+        "Valvular Heart Disease (Aortic Stenosis)",
+        "Atrial Fibrillation",
+        "Supraventricular Tachycardia (SVT)",
+        "Wolff-Parkinson-White Syndrome",
+        "Chronic Kidney Disease (Stage 3–5)",
+        "Acute Kidney Injury on CKD",
+        "Nephrotic Syndrome",
+        "Liver Cirrhosis (Decompensated)",
+        "Hepatitis B (Chronic Active)",
+        "Hepatitis C (Chronic)",
+        "Non-Alcoholic Fatty Liver Disease (NAFLD/NASH)",
+        "Alcoholic Hepatitis"
+      ],
+      "upperGISurgery": [
+        "GERD / Oesophagitis",
+        "Choledocholithiasis",
+        "Carcinoma of Head of Pancreas",
+        "Bleeding Peptic Ulcer",
+        "Dieulafoy Lesion",
+        "Gastric / Oesophageal Malignancy Bleed",
+        "Oesophageal Carcinoma",
+        "Achalasia",
+        "Oesophageal Stricture (Benign)",
+        "Gastrointestinal Malignancy",
+        "Gastro-oesophageal reflux disease",
+        "Barrett's oesophagus",
+        "Peptic ulcer disease"
+      ],
+      "oncology": [
+        "Carcinoma of Head of Pancreas",
+        "Renal Cell Carcinoma",
+        "Bladder Cancer / Haematuria",
+        "Gastric / Oesophageal Malignancy Bleed",
+        "Oesophageal Carcinoma",
+        "Colorectal Carcinoma",
+        "Gastrointestinal Malignancy",
+        "Anal Carcinoma",
+        "Breast Carcinoma",
+        "Lymphoma",
+        "Metastatic Neck Node",
+        "Thyroid Carcinoma",
+        "Bladder Carcinoma",
+        "Adrenocortical Carcinoma",
+        "Melanoma",
+        "Basal Cell Carcinoma",
+        "Squamous Cell Carcinoma",
+        "Testicular Tumour",
+        "Prostate Cancer with Obstruction",
+        "Parotid Carcinoma",
+        "Malignant Spinal Cord Compression",
+        "Cervical Carcinoma",
+        "Endometrial Pathology (Polyp / Hyperplasia / Carcinoma)",
+        "Cervical Dysplasia / CIN",
+        "Primary Brain Tumour (Glioma / Meningioma)"
+      ],
+      "hepatology": [
+        "Viral Hepatitis",
+        "Oesophageal Varices Bleed",
+        "Liver Cirrhosis (Decompensated)",
+        "Hepatitis B (Chronic Active)",
+        "Hepatitis C (Chronic)",
+        "Non-Alcoholic Fatty Liver Disease (NAFLD/NASH)",
+        "Alcoholic Hepatitis"
+      ],
+      "infectiousDisease": [
+        "Viral Hepatitis",
+        "Dengue Fever",
+        "Leptospirosis",
+        "Typhoid Fever",
+        "Gram-Negative Sepsis / Bacteraemia",
+        "Intra-Abdominal Sepsis",
+        "Urosepsis",
+        "Pneumonia / Pulmonary Sepsis",
+        "Pulmonary Tuberculosis",
+        "Acute Gastroenteritis",
+        "Necrotising Fasciitis",
+        "Severe Cellulitis / SSTI",
+        "Gas Gangrene (Clostridial Myonecrosis)",
+        "Inguinal Lymphadenopathy",
+        "Reactive Lymphadenopathy",
+        "Reactive Arthritis",
+        "Septic Arthritis",
+        "Dengue Arthralgia",
+        "Post-Operative Surgical Site Infection",
+        "Superficial Surgical Site Infection",
+        "Deep Surgical Site Infection",
+        "Epididymo-Orchitis",
+        "Parotitis (Acute Suppurative)",
+        "Bacterial Meningitis",
+        "Pelvic Inflammatory Disease",
+        "Vulvovaginitis (Candidal / BV / Trichomonal)",
+        "Bacterial Meningitis (Child)",
+        "Cellulitis / Erysipelas",
+        "Hepatitis B (Chronic Active)",
+        "Hepatitis C (Chronic)"
+      ],
+      "haematology": [
+        "Haemolytic Jaundice",
+        "Pulmonary Embolism",
+        "Deep Vein Thrombosis",
+        "Chronic Venous Insufficiency / Post-Thrombotic Syndrome",
+        "Iron Deficiency Anaemia",
+        "Macrocytic Anaemia (B12/Folate Deficiency)",
+        "Anaemia of Chronic Disease",
+        "Haemolytic Anaemia",
+        "Sickle Cell Anaemia",
+        "Inguinal Lymphadenopathy",
+        "Reactive Lymphadenopathy",
+        "Lymphoma",
+        "Post-Operative Deep Vein Thrombosis",
+        "Nephrotic Syndrome"
+      ],
+      "urology": [
+        "Renal Colic / Ureteric Calculus",
+        "Pyelonephritis",
+        "Renal Cell Carcinoma",
+        "Bladder Cancer / Haematuria",
+        "Ureteropelvic Junction Obstruction",
+        "Urinary Tract Infection",
+        "Urosepsis",
+        "Fournier's Gangrene",
+        "Bladder Carcinoma",
+        "Overactive Bladder",
+        "Interstitial Cystitis",
+        "Testicular Torsion",
+        "Epididymo-Orchitis",
+        "Hydrocele",
+        "Testicular Tumour",
+        "Benign Prostatic Hyperplasia",
+        "Urethral Stricture",
+        "Prostate Cancer with Obstruction",
+        "Neurogenic Bladder",
+        "Febrile UTI (Pyelonephritis, Child)"
+      ],
+      "nephrology": [
+        "Pyelonephritis",
+        "Gout",
+        "Renovascular Hypertension",
+        "Type 2 Diabetes Mellitus",
+        "Diabetic Complications Review",
+        "Acute Kidney Injury",
+        "Chronic Kidney Disease (Stage 3–5)",
+        "Acute Kidney Injury on CKD",
+        "Nephrotic Syndrome",
+        "IgA Nephropathy / Glomerulonephritis"
+      ],
+      "cardiology": [
+        "Acute Coronary Syndrome",
+        "Stable Angina",
+        "Pulmonary Embolism",
+        "Aortic Dissection",
+        "Ischaemic Stroke",
+        "Transient Ischaemic Attack",
+        "Heart Failure",
+        "Essential Hypertension",
+        "Renovascular Hypertension",
+        "White Coat Hypertension",
+        "Hypertensive Urgency / Emergency",
+        "Type 2 Diabetes Mellitus",
+        "Diabetic Complications Review",
+        "Abdominal Aortic Aneurysm",
+        "Peripheral Arterial Disease",
+        "Carotid Artery Disease",
+        "Acute Arterial Embolism",
+        "Acute Thrombosis on Atherosclerosis",
+        "Orthostatic Hypotension / Vasovagal Syncope",
+        "ACE Inhibitor Cough",
+        "Hypertensive Urgency / Crisis",
+        "Kawasaki Disease",
+        "Heart Failure with Reduced EF (HFrEF)",
+        "Heart Failure with Preserved EF (HFpEF)",
+        "Dilated Cardiomyopathy",
+        "Valvular Heart Disease (Aortic Stenosis)",
+        "Cardiac Tamponade",
+        "Atrial Fibrillation",
+        "Supraventricular Tachycardia (SVT)",
+        "Ventricular Tachycardia",
+        "Complete Heart Block (CHB)",
+        "Wolff-Parkinson-White Syndrome",
+        "Chronic Kidney Disease (Stage 3–5)"
+      ],
+      "respiratoryMedicine": [
+        "Pulmonary Embolism",
+        "Community-Acquired Pneumonia",
+        "Pneumonia / Pulmonary Sepsis",
+        "Fat Embolism Syndrome",
+        "Asthma (Acute Exacerbation)",
+        "COPD Exacerbation",
+        "Pneumothorax",
+        "Pulmonary Tuberculosis",
+        "Obstructive Sleep Apnoea",
+        "Upper Airway Cough Syndrome (Post-nasal Drip)",
+        "Asthma",
+        "GERD-Related Cough",
+        "Chronic Obstructive Pulmonary Disease (COPD)",
+        "Pneumonia (Childhood)"
+      ],
+      "vascularSurgery": [
+        "Aortic Dissection",
+        "Deep Vein Thrombosis",
+        "Superficial Thrombophlebitis",
+        "Chronic Venous Insufficiency / Post-Thrombotic Syndrome",
+        "Renovascular Hypertension",
+        "Post-Operative Deep Vein Thrombosis",
+        "Abdominal Aortic Aneurysm",
+        "Peripheral Arterial Disease",
+        "Carotid Artery Disease",
+        "Chronic Venous Insufficiency / Varicose Veins",
+        "Acute Arterial Embolism",
+        "Acute Thrombosis on Atherosclerosis",
+        "Popliteal Artery Aneurysm Thrombosis",
+        "Aortoiliac Occlusion"
+      ],
+      "cardiothoracicSurgery": [
+        "Aortic Dissection",
+        "Oesophageal Carcinoma",
+        "Pneumothorax",
+        "Dilated Cardiomyopathy",
+        "Valvular Heart Disease (Aortic Stenosis)",
+        "Cardiac Tamponade"
+      ],
+      "colorectalSurgery": [
+        "Haemorrhoids",
+        "Colorectal Carcinoma",
+        "Anal Fissure",
+        "Diverticular Bleeding",
+        "Inflammatory Bowel Disease",
+        "Diverticular Disease",
+        "Gastrointestinal Malignancy",
+        "Large Bowel Obstruction",
+        "Sigmoid Volvulus",
+        "Perianal Abscess",
+        "Perianal Fistula",
+        "Anal Carcinoma",
+        "Anastomotic Leak",
+        "Acute Pilonidal Abscess",
+        "Chronic Pilonidal Sinus",
+        "Hidradenitis Suppurativa",
+        "Full-Thickness Rectal Prolapse",
+        "Mucosal Prolapse / Haemorrhoids (grade III/IV)",
+        "Rectocele",
+        "Solitary Rectal Ulcer Syndrome",
+        "Endometriosis"
+      ],
+      "rheumatology": [
+        "Inflammatory Bowel Disease",
+        "Anaemia of Chronic Disease",
+        "Hip Osteoarthritis",
+        "Iliopsoas Bursitis / Tendinopathy",
+        "Thyroiditis (Hashimoto's / De Quervain's)",
+        "Interstitial Cystitis",
+        "Osteoarthritis",
+        "Gout",
+        "Reactive Arthritis",
+        "Non-Specific Mechanical Low Back Pain",
+        "Psoriasis",
+        "Contact Dermatitis (Allergic / Irritant)",
+        "IgA Nephropathy / Glomerulonephritis"
+      ],
+      "paediatrics": [
+        "Community-Acquired Pneumonia",
+        "Urinary Tract Infection",
+        "Asthma (Acute Exacerbation)",
+        "Bacterial Meningitis",
+        "Asthma",
+        "Dehydration / Electrolyte Imbalance",
+        "Viral Upper Respiratory Tract Infection",
+        "Otitis Media (Acute)",
+        "Bacterial Meningitis (Child)",
+        "Kawasaki Disease",
+        "Febrile UTI (Pyelonephritis, Child)",
+        "Pneumonia (Childhood)",
+        "Intussusception",
+        "Pyloric Stenosis",
+        "Appendicitis (Paediatric)",
+        "Mesenteric Adenitis",
+        "Meckel's Diverticulum",
+        "Atopic Eczema / Dermatitis"
+      ],
+      "neurology": [
+        "Ischaemic Stroke",
+        "Haemorrhagic Stroke",
+        "Transient Ischaemic Attack",
+        "Hypertensive Encephalopathy / PRES",
+        "Vestibular Migraine / Complex Migraine",
+        "Diabetic Complications Review",
+        "Carotid Artery Disease",
+        "Neurogenic Bladder",
+        "Tension-Type Headache",
+        "Migraine Without Aura",
+        "Cluster Headache",
+        "Subarachnoid Haemorrhage",
+        "Bacterial Meningitis",
+        "Benign Paroxysmal Positional Vertigo (BPPV)",
+        "Vestibular Neuronitis / Labyrinthitis",
+        "Ménière's Disease",
+        "Orthostatic Hypotension / Vasovagal Syncope",
+        "Central Vertigo (Posterior Fossa Pathology)",
+        "Bacterial Meningitis (Child)",
+        "Primary Brain Tumour (Glioma / Meningioma)",
+        "Hydrocephalus (Obstructive / NPH)",
+        "Atrial Fibrillation"
+      ],
+      "neurosurgery": [
+        "Ischaemic Stroke",
+        "Haemorrhagic Stroke",
+        "Subarachnoid Haemorrhage",
+        "Central Vertigo (Posterior Fossa Pathology)",
+        "Lumbar Disc Herniation / Sciatica",
+        "Cauda Equina Syndrome",
+        "Vertebral Fracture (Osteoporotic / Traumatic)",
+        "Malignant Spinal Cord Compression",
+        "Extradural Haematoma",
+        "Acute Subdural Haematoma",
+        "Cerebral Contusion / Traumatic Brain Injury",
+        "Primary Brain Tumour (Glioma / Meningioma)",
+        "Hydrocephalus (Obstructive / NPH)"
+      ],
+      "orthopaedics": [
+        "Fat Embolism Syndrome",
+        "Gas Gangrene (Clostridial Myonecrosis)",
+        "Hip Osteoarthritis",
+        "Iliopsoas Bursitis / Tendinopathy",
+        "Osteoarthritis",
+        "Septic Arthritis",
+        "Non-Specific Mechanical Low Back Pain",
+        "Lumbar Disc Herniation / Sciatica",
+        "Cauda Equina Syndrome",
+        "Vertebral Fracture (Osteoporotic / Traumatic)"
+      ],
+      "endocrinology": [
+        "Type 2 Diabetes Mellitus (Uncontrolled)",
+        "Gastroparesis",
+        "Thyroid Nodule / Goitre",
+        "Hypothyroidism",
+        "Hyperthyroidism / Graves' Disease",
+        "Thyroid Carcinoma",
+        "Thyroiditis (Hashimoto's / De Quervain's)",
+        "Type 2 Diabetes Mellitus",
+        "Poorly Controlled Diabetes",
+        "Diabetic Complications Review",
+        "Pre-Diabetes / Impaired Glucose Tolerance",
+        "Primary Hyperaldosteronism",
+        "Phaeochromocytoma",
+        "Adrenal Incidentaloma",
+        "Cushing's Syndrome",
+        "Adrenocortical Carcinoma",
+        "Polycystic Ovary Syndrome (PCOS)",
+        "Menopausal Symptoms",
+        "Gestational Diabetes",
+        "Chronic Kidney Disease (Stage 3–5)",
+        "Non-Alcoholic Fatty Liver Disease (NAFLD/NASH)"
+      ],
+      "dermatology": [
+        "Severe Cellulitis / SSTI",
+        "Hidradenitis Suppurativa",
+        "Melanoma",
+        "Basal Cell Carcinoma",
+        "Squamous Cell Carcinoma",
+        "Sebaceous / Epidermoid Cyst",
+        "Lipoma",
+        "Atopic Eczema / Dermatitis",
+        "Psoriasis",
+        "Urticaria (Acute / Chronic)",
+        "Tinea (Dermatophytosis)",
+        "Cellulitis / Erysipelas",
+        "Contact Dermatitis (Allergic / Irritant)",
+        "Pityriasis Rosea"
+      ],
+      "radiotherapy": [
+        "Anal Carcinoma"
+      ],
+      "breastSurgery": [
+        "Fibroadenoma",
+        "Breast Carcinoma",
+        "Breast Cyst",
+        "Mastitis / Breast Abscess",
+        "Fat Necrosis",
+        "Seroma"
+      ],
+      "gynaecology": [
+        "Rectocele",
+        "Ectopic Pregnancy",
+        "Ovarian Cyst / Torsion",
+        "Pelvic Inflammatory Disease",
+        "Endometriosis",
+        "Uterine Fibroids (Symptomatic)",
+        "Appendicitis (Gynaecological Mimic)",
+        "Threatened / Inevitable Miscarriage",
+        "Dysfunctional Uterine Bleeding",
+        "Cervical Carcinoma",
+        "Endometrial Pathology (Polyp / Hyperplasia / Carcinoma)",
+        "Polycystic Ovary Syndrome (PCOS)",
+        "Primary/Secondary Dysmenorrhoea",
+        "Menopausal Symptoms",
+        "Vulvovaginitis (Candidal / BV / Trichomonal)",
+        "Cervical Dysplasia / CIN"
+      ],
+      "psychiatry": [
+        "Depression",
+        "Anxiety Disorder"
+      ],
+      "pharmacology": [
+        "Medication Side Effect / Adverse Drug Reaction"
+      ],
+      "obstetrics": [
+        "Ectopic Pregnancy",
+        "Threatened / Inevitable Miscarriage",
+        "Placenta Praevia / Abruption",
+        "Hyperemesis Gravidarum",
+        "Pre-eclampsia",
+        "Gestational Diabetes",
+        "Antepartum Haemorrhage"
+      ],
+      "paediatricSurgery": [
+        "Intussusception",
+        "Pyloric Stenosis",
+        "Appendicitis (Paediatric)",
+        "Meckel's Diverticulum"
+      ],
+      "geriatrics": [
+        "Hydrocephalus (Obstructive / NPH)",
+        "Heart Failure with Preserved EF (HFpEF)"
+      ]
+    },
+    "ccToSystems": {
+      "abdominal pain": [
+        "gastrointestinal",
+        "hepatobiliary",
+        "pancreatic",
+        "urological",
+        "gynaecological",
+        "obstetric",
+        "vascular"
+      ],
+      "chest pain": [
+        "cardiovascular",
+        "respiratory",
+        "gastrointestinal",
+        "vascular",
+        "musculoskeletal"
+      ],
+      "shortness of breath": [
+        "respiratory",
+        "cardiovascular",
+        "haematological",
+        "immunological"
+      ],
+      "fever": [
+        "infectious",
+        "haematological",
+        "immunological",
+        "respiratory",
+        "urological",
+        "gastrointestinal"
+      ],
+      "jaundice": [
+        "hepatobiliary",
+        "pancreatic",
+        "haematological",
+        "infectious"
+      ],
+      "weight loss": [
+        "oncological",
+        "endocrine",
+        "gastrointestinal",
+        "respiratory",
+        "infectious"
+      ],
+      "headache": [
+        "neurological",
+        "neurosurgical",
+        "cardiovascular",
+        "infectious"
+      ],
+      "dizziness": [
+        "neurological",
+        "cardiovascular"
+      ],
+      "syncope": [
+        "cardiovascular",
+        "neurological"
+      ],
+      "palpitations": [
+        "cardiovascular",
+        "endocrine",
+        "psychiatric"
+      ],
+      "back pain": [
+        "musculoskeletal",
+        "neurological",
+        "neurosurgical",
+        "vascular",
+        "urological",
+        "oncological"
+      ],
+      "joint pain": [
+        "musculoskeletal",
+        "immunological",
+        "infectious",
+        "haematological"
+      ],
+      "rash": [
+        "dermatological",
+        "infectious",
+        "immunological",
+        "haematological"
+      ],
+      "urinary symptoms": [
+        "urological",
+        "renal",
+        "infectious",
+        "gynaecological"
+      ],
+      "pelvic pain": [
+        "gynaecological",
+        "obstetric",
+        "gastrointestinal",
+        "urological"
+      ],
+      "vaginal bleeding": [
+        "gynaecological",
+        "obstetric",
+        "oncological"
+      ],
+      "neck lump": [
+        "haematological",
+        "thyroid",
+        "endocrine",
+        "oncological",
+        "infectious"
+      ],
+      "breast lump": [
+        "breast",
+        "oncological",
+        "infectious"
+      ],
+      "skin lesion": [
+        "dermatological",
+        "oncological"
+      ],
+      "scrotal": [
+        "scrotal",
+        "urological",
+        "infectious"
+      ],
+      "rectal bleeding": [
+        "gastrointestinal",
+        "oncological"
+      ],
+      "change in bowel habit": [
+        "gastrointestinal",
+        "oncological",
+        "immunological"
+      ],
+      "dysphagia": [
+        "gastrointestinal",
+        "oncological",
+        "neurological"
+      ],
+      "reflux": [
+        "gastrointestinal"
+      ],
+      "hernia": [
+        "gastrointestinal"
+      ],
+      "anaemia": [
+        "haematological",
+        "gastrointestinal",
+        "renal",
+        "nutritional"
+      ],
+      "fatigue": [
+        "haematological",
+        "endocrine",
+        "psychiatric",
+        "cardiovascular",
+        "immunological"
+      ],
+      "upper gi bleed": [
+        "gastrointestinal",
+        "hepatobiliary",
+        "vascular"
+      ],
+      "bowel obstruction": [
+        "gastrointestinal",
+        "vascular"
+      ],
+      "renal colic": [
+        "renal",
+        "urological"
+      ],
+      "stroke": [
+        "neurological",
+        "vascular",
+        "cardiovascular"
+      ],
+      "heart failure": [
+        "cardiovascular",
+        "respiratory",
+        "renal"
+      ],
+      "atrial fibrillation": [
+        "cardiovascular",
+        "neurological"
+      ],
+      "arrhythmia": [
+        "cardiovascular"
+      ],
+      "liver disease": [
+        "hepatobiliary",
+        "gastrointestinal",
+        "cardiovascular",
+        "renal"
+      ],
+      "ckd": [
+        "renal",
+        "cardiovascular",
+        "endocrine"
+      ],
+      "diabetes": [
+        "endocrine",
+        "renal",
+        "cardiovascular",
+        "neurological"
+      ],
+      "hypertension": [
+        "cardiovascular",
+        "renal",
+        "endocrine"
+      ],
+      "thyroid": [
+        "endocrine",
+        "thyroid",
+        "cardiovascular"
+      ],
+      "head injury": [
+        "neurological",
+        "neurosurgical"
+      ],
+      "paediatric fever": [
+        "infectious",
+        "respiratory",
+        "urological",
+        "neurological"
+      ],
+      "depression": [
+        "psychiatric",
+        "cardiovascular"
+      ],
+      "anxiety": [
+        "psychiatric",
+        "cardiovascular",
+        "endocrine"
+      ],
+      "eczema": [
+        "dermatological",
+        "immunological"
+      ],
+      "psoriasis": [
+        "dermatological",
+        "immunological",
+        "musculoskeletal"
+      ],
+      "cellulitis": [
+        "dermatological",
+        "infectious"
       ]
     }
   }
