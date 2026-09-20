@@ -14577,6 +14577,125 @@
               "logLR": -8,
               "evidenceLabel": "Marked photophobia AND phonophobia together \u2014 argues for migraine over TTH",
               "citation": "ICHD-3 2018. TTH permits only mild photophobia OR mild phonophobia (not both simultaneously). Both present simultaneously and marked = migraine criterion."
+            },
+            {
+              "key": "exam",
+              "value": "Trigger points suboccipital",
+              "logLR": 10,
+              "evidenceLabel": "Palpable myofascial trigger points in suboccipital / trapezius / SCM muscles",
+              "citation": "Fernandez-de-Las-Penas C et al. Headache 2007. Active myofascial trigger points in suboccipital, upper trapezius, and SCM muscles are found in >80% of patients with chronic TTH vs <20% of healthy controls (LR+ ~4.5). Trigger point pressure reproduction of the headache pattern strongly supports musculoskeletal origin."
+            },
+            {
+              "key": "associations",
+              "value": "Neck and shoulder tightness",
+              "logLR": 10,
+              "evidenceLabel": "Subjective neck and shoulder muscle tightness / stiffness associated with headache onset",
+              "citation": "Jensen R. Cephalalgia 1999. Pericranial and cervical muscle tenderness is the most consistent finding in TTH, present in 86% of chronic and 72% of episodic TTH patients. Patients typically describe subjective tightness in the neck, shoulders, and scalp as part of the headache complex."
+            },
+            {
+              "key": "associations",
+              "value": "Jaw clenching / bruxism",
+              "logLR": 8,
+              "evidenceLabel": "Jaw clenching, teeth grinding (bruxism), or temporomandibular joint tension associated with headache",
+              "citation": "Svensson P & Graven-Nielsen T. Headache 2001. Bruxism and temporomandibular disorders (TMD) are strongly comorbid with TTH; masseter and temporalis muscle hyperactivity from nocturnal bruxism generates pericranial tenderness that directly triggers TTH. TMD is present in up to 40% of chronic TTH patients."
+            },
+            {
+              "key": "exacerbating",
+              "value": "Caffeine withdrawal",
+              "logLR": 8,
+              "evidenceLabel": "Caffeine withdrawal headache \u2014 missed dose in regular consumer; bilateral pressing, resolves with caffeine",
+              "citation": "Silverman K et al. NEJM 1992. Caffeine withdrawal headache occurs in ~50% of regular caffeine consumers when intake is missed; clinically indistinguishable from episodic TTH (bilateral, pressing, mild-moderate). Resolves within 30\u201360 min of caffeine consumption. A daily caffeine habit followed by a weekend or illness-related miss is the classic scenario."
+            },
+            {
+              "key": "exacerbating",
+              "value": "Fasting / skipped meal",
+              "logLR": 6,
+              "evidenceLabel": "Fasting or skipped meals as a precipitant \u2014 hypoglycaemia-mediated vasodilation",
+              "citation": "Blau JN & Thavapalan M. Headache 1988. Fasting or skipped meals precipitate headache in ~50% of headache clinic patients. The mechanism involves hypoglycaemia-mediated vasodilation and cortisol/adrenaline release. TTH is the most common headache phenotype triggered by fasting; prompt relief with eating is characteristic."
+            },
+            {
+              "key": "exacerbating",
+              "value": "Dehydration",
+              "logLR": 6,
+              "evidenceLabel": "Inadequate hydration / dehydration as a recognised precipitant",
+              "citation": "Blau JN. Cephalalgia 2005. Dehydration is a well-recognised precipitant of TTH; the proposed mechanism involves plasma hyperosmolarity triggering hypothalamic osmoreceptors with secondary meningeal vessel dilation. Drinking 500 mL of water provides relief within 30 min in ~47% of dehydration-triggered headaches."
+            },
+            {
+              "key": "associations",
+              "value": "No ipsilateral autonomic features",
+              "logLR": 12,
+              "evidenceLabel": "Complete absence of ipsilateral cranial autonomic features \u2014 actively argues against cluster and TAC",
+              "citation": "ICHD-3 2018. Ipsilateral cranial autonomic features (lacrimation, ptosis, nasal symptoms, conjunctival injection) are a required diagnostic criterion for cluster headache and TACs. Their complete absence is a positive feature for TTH; patients explicitly denying any eye watering, nasal symptoms, or eyelid drooping shift probability strongly away from cluster toward TTH."
+            },
+            {
+              "key": "associations",
+              "value": "No aura",
+              "logLR": 8,
+              "evidenceLabel": "Absence of aura \u2014 no visual, sensory, or speech disturbance preceding headache",
+              "citation": "ICHD-3 2018. Aura (reversible focal neurological symptoms preceding headache) is a required criterion for Migraine With Aura and TIA-related headache. Its absence removes these diagnoses from contention. Explicitly noting that the patient has never experienced visual phenomena, tingling, or speech disturbance before a headache strongly supports TTH over MwA."
+            },
+            {
+              "key": "history",
+              "value": "Long-standing unchanged pattern",
+              "logLR": 12,
+              "evidenceLabel": "Years-long history of identical headaches with no progression or change in character \u2014 reassuring benign pattern",
+              "citation": "Tfelt-Hansen P et al. Headache 2000. A long-standing pattern of identical, non-progressive headaches is the strongest single historical reassurance against secondary headache. New headache in an adult warrants investigation; a 5-year history of identical bilateral pressing headaches that respond to paracetamol and have not progressed clinically supports a benign primary diagnosis."
+            },
+            {
+              "key": "relieving",
+              "value": "Relaxation / stress removal",
+              "logLR": 8,
+              "evidenceLabel": "Resolution with relaxation, holiday, stress removal, or sleep \u2014 confirms psychophysiological mechanism",
+              "citation": "Rasmussen BK. Cephalalgia 1993. TTH headaches characteristically resolve with removal of the precipitating stressor (holiday, weekend, post-deadline), relaxation, and sleep. This responsiveness to psychosocial context is not a feature of migraine (which often persists through rest) and provides useful discriminating history."
+            },
+            {
+              "key": "relieving",
+              "value": "Physiotherapy / cervical mobilisation",
+              "logLR": 8,
+              "evidenceLabel": "Sustained relief from physiotherapy, cervical mobilisation, or massage \u2014 confirms musculoskeletal origin",
+              "citation": "Biondi DM. Curr Pain Headache Rep 2005. Cervicogenic components to TTH respond to physiotherapy, cervical mobilisation, and trigger-point injections. Sustained improvement (not just momentary massage relief) between physiotherapy sessions supports a musculoskeletal mechanism and distinguishes from migraine, which does not respond to cervical treatment."
+            },
+            {
+              "key": "exam",
+              "value": "Papilloedema",
+              "logLR": -18,
+              "evidenceLabel": "Papilloedema on fundoscopy \u2014 absolute exclusion for TTH; indicates raised intracranial pressure",
+              "citation": "ICHD-3 2018; Mollan SP et al. Pract Neurol 2018. Papilloedema is an absolute red flag excluding TTH. Raised ICP causes bilateral disc oedema visible on fundoscopy. Causes include idiopathic intracranial hypertension (IIH), space-occupying lesion, cerebral venous sinus thrombosis, or hydrocephalus. Immediate neuroimaging and neurology referral are mandatory."
+            },
+            {
+              "key": "associations",
+              "value": "Progressive worsening over weeks",
+              "logLR": -14,
+              "evidenceLabel": "Headache progressively worsening over days to weeks \u2014 red flag for raised ICP or space-occupying lesion",
+              "citation": "NICE CG150 2012; Dodick DW. JAMA 2006. A new or progressively worsening headache pattern over weeks is a red flag criterion mandating imaging. TTH is a stable, non-progressive condition. Progressive intensification suggests increased ICP (tumour, subdural haematoma, IIH), CVST, or infectious meningitis. The SNOOP4 mnemonic: Systemic symptoms, Neurological signs, Onset (sudden), Older age, Papilloedema/positional/progressive."
+            },
+            {
+              "key": "associations",
+              "value": "Fever with headache",
+              "logLR": -14,
+              "evidenceLabel": "Fever accompanying headache \u2014 excludes primary TTH; mandates meningitis / encephalitis / systemic infection workup",
+              "citation": "ICHD-3 2018; van de Beek D et al. NEJM 2006. Fever is not a feature of any primary headache disorder; its presence mandates exclusion of infectious causes. In the context of headache, fever should immediately raise bacterial meningitis, viral encephalitis, and cerebral abscess in the differential. Even low-grade fever with a new headache in an immunocompromised patient warrants LP."
+            },
+            {
+              "key": "onset",
+              "value": "Exertional / Valsalva onset",
+              "logLR": -12,
+              "evidenceLabel": "Headache precipitated by coughing, sneezing, Valsalva, or physical exertion \u2014 red flag for secondary cause",
+              "citation": "Pascual J et al. Lancet 1996. Cough headache and exertional headache may be primary (benign) but secondary causes (Arnold-Chiari malformation, subarachnoid haemorrhage, cerebral venous thrombosis) must be excluded by neuroimaging. TTH is not triggered by Valsalva or physical exertion; such precipitation should prompt MRI brain and MR angiography."
+            },
+            {
+              "key": "timing",
+              "value": "Worst on waking",
+              "logLR": -10,
+              "evidenceLabel": "Headache maximal on waking / worse in morning \u2014 raises concern for raised ICP (IIH, tumour, sleep apnoea)",
+              "citation": "Silberstein SD et al. Neurology 2001. While migraine can wake patients from sleep, headache consistently worst on waking or before arising \u2014 especially with nausea \u2014 is a pattern associated with raised ICP (idiopathic intracranial hypertension, cerebral oedema, space-occupying lesion) and obstructive sleep apnoea. TTH typically improves with activity and is not characteristically worst at waking."
+            },
+            {
+              "key": "associations",
+              "value": "Ipsilateral autonomic features",
+              "logLR": -14,
+              "evidenceLabel": "Ipsilateral lacrimation, conjunctival injection, ptosis, or nasal symptoms \u2014 argues strongly against TTH",
+              "citation": "ICHD-3 2018. Ipsilateral cranial autonomic features are a required diagnostic criterion for cluster headache and the trigeminal autonomic cephalalgias (TAC). Their presence with a unilateral or bilateral headache essentially excludes TTH as the primary diagnosis and mandates consideration of cluster headache, SUNCT, paroxysmal hemicrania, or a secondary headache with autonomic involvement."
             }
           ],
           "systems": [
