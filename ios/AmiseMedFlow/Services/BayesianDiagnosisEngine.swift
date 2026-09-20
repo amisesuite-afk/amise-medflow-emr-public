@@ -446,6 +446,25 @@ enum BayesianDiagnosisEngine {
             bmi: bmi
         )
 
+        // Urgency safety-net boost: applied AFTER feature scoring so the boost
+        // supplements — rather than replaces — evidence-based ranking.
+        // urgency=1 (+8)  ≈ one moderate positive finding  → same-day assessment
+        // urgency=2 (+16) ≈ a strong clinical sign         → immediate evaluation
+        // urgency=3 (+24) ≈ a pathognomonic finding        → life-threatening
+        // This ensures "don't miss" diagnoses (PE, ACS, ectopic) appear in the
+        // differential even when the presenting history is sparse or atypical.
+        let urgencyLabels = ["", "Urgent — same-day assessment required",
+                             "Emergency — immediate evaluation required",
+                             "CRITICAL — potentially life-threatening; do not miss"]
+        for i in scored.indices where scored[i].candidate.urgency > 0 {
+            let u = scored[i].candidate.urgency
+            let boost = u * 8
+            scored[i].logPosterior += boost
+            let label = urgencyLabels[min(u, 3)]
+            scored[i].evidence.insert(label, at: 0)
+            scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+        }
+
         // Confirmed prior diagnoses boost the matching candidate's prior by 20 log
         // units — equivalent to a strong positive finding — so follow-up encounters
         // for a known disease don't start from scratch.
@@ -680,6 +699,7 @@ enum BayesianDiagnosisEngine {
         let name: String
         let icd: String
         let logPrior: Int            // higher = more prevalent in this CC context
+        var urgency: Int = 0         // 0=routine 1=urgent 2=emergency 3=critical
         let features: [Feature]
 
         struct Feature {
@@ -868,6 +888,12 @@ enum BayesianDiagnosisEngine {
         let name: String
         let icd: String
         let logPrior: Int
+        /// Clinical urgency tier (0=routine, 1=urgent, 2=emergency, 3=critical).
+        /// Drives two behaviours:
+        ///   a) Matrix overlay bypass: urgency ≥ 1 exempts from the logPrior > 45 noise filter.
+        ///   b) Bayesian logPrior boost: urgency × 8 added at scoring so "don't miss"
+        ///      diagnoses surface even with sparse feature evidence.
+        let urgency: Int?
         let features: [FeatureSpec]
 
         struct FeatureSpec: Codable {
@@ -880,6 +906,7 @@ enum BayesianDiagnosisEngine {
 
         func toCandidate() -> Candidate {
             Candidate(name: name, icd: icd, logPrior: logPrior,
+                      urgency: urgency ?? 0,
                       features: features.map { f in
                           Candidate.Feature(key: f.key, value: f.value,
                                             logLR: f.logLR, evidenceLabel: f.evidenceLabel)
@@ -956,11 +983,17 @@ enum BayesianDiagnosisEngine {
         }
         guard !diseaseNames.isEmpty else { return [] }
 
-        // Look up the actual candidate specs from pools (canonical source of truth)
+        // Look up the actual candidate specs from pools (canonical source of truth).
+        // Threshold filter: logPrior > 45 candidates are high-prevalence background
+        // diseases (back pain, gastroenteritis) that pollute cross-specialty results.
+        // Exemption: urgency ≥ 1 bypasses the filter so critical/urgent conditions
+        // always surface regardless of base prevalence.
         var seen = Set<String>()
         var result: [Candidate] = []
         for (_, poolSpec) in db.pools {
             for spec in poolSpec.candidates where diseaseNames.contains(spec.name) && seen.insert(spec.name).inserted {
+                let u = spec.urgency ?? 0
+                guard spec.logPrior <= 45 || u >= 1 else { continue }
                 result.append(spec.toCandidate())
             }
         }

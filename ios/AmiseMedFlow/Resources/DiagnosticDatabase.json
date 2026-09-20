@@ -144,7 +144,8 @@
           "specialties": [
             "generalSurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Acute Cholecystitis",
@@ -257,7 +258,8 @@
             "generalSurgery",
             "gastroenterology",
             "emergency"
-          ]
+          ],
+          "urgency": 1
         },
         {
           "name": "Biliary Colic",
@@ -349,7 +351,8 @@
             "generalSurgery",
             "gastroenterology",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Acute Pancreatitis",
@@ -457,7 +460,8 @@
             "gastroenterology",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Acute Diverticulitis",
@@ -548,7 +552,8 @@
           "specialties": [
             "generalSurgery",
             "gastroenterology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Perforated Peptic Ulcer",
@@ -633,7 +638,8 @@
             "generalSurgery",
             "gastroenterology",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Peptic Ulcer Disease",
@@ -710,7 +716,8 @@
               "evidenceLabel": "Haematemesis",
               "citation": "Rockall TA. Lancet 1995;346:1115."
             }
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "GERD / Oesophagitis",
@@ -781,7 +788,8 @@
             "gastroenterology",
             "upperGISurgery",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Irritable Bowel Syndrome",
@@ -856,7 +864,8 @@
           "specialties": [
             "gastroenterology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Renal / Ureteric Colic",
@@ -918,7 +927,8 @@
               "logLR": -6,
               "evidenceLabel": ""
             }
-          ]
+          ],
+          "urgency": 1
         }
       ]
     },
@@ -993,7 +1003,8 @@
             "generalSurgery",
             "gastroenterology",
             "upperGISurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Ascending Cholangitis",
@@ -1065,7 +1076,8 @@
             "generalSurgery",
             "gastroenterology",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Carcinoma of Head of Pancreas",
@@ -1137,7 +1149,8 @@
             "upperGISurgery",
             "gastroenterology",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Viral Hepatitis",
@@ -1209,7 +1222,8 @@
             "hepatology",
             "infectiousDisease",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Haemolytic Jaundice",
@@ -1280,7 +1294,8 @@
           "specialties": [
             "haematology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -1369,7 +1384,8 @@
           "specialties": [
             "urology",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Pyelonephritis",
@@ -1442,7 +1458,8 @@
             "nephrology",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Renal Cell Carcinoma",
@@ -1513,7 +1530,8 @@
           "specialties": [
             "urology",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Bladder Cancer / Haematuria",
@@ -1584,7 +1602,8 @@
           "specialties": [
             "urology",
             "oncology"
-          ]
+          ],
+          "urgency": 1
         },
         {
           "name": "Ureteropelvic Junction Obstruction",
@@ -1654,7 +1673,8 @@
           ],
           "specialties": [
             "urology"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -1743,7 +1763,8 @@
             "gastroenterology",
             "upperGISurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 1
         },
         {
           "name": "Oesophageal Varices Bleed",
@@ -1823,7 +1844,8 @@
             "gastroenterology",
             "hepatology",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Mallory-Weiss Tear",
@@ -1893,7 +1915,8 @@
           "specialties": [
             "gastroenterology",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Dieulafoy Lesion",
@@ -1963,7 +1986,8 @@
           "specialties": [
             "gastroenterology",
             "upperGISurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Gastric / Oesophageal Malignancy Bleed",
@@ -2036,7 +2060,8 @@
             "gastroenterology",
             "oncology",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -2132,7 +2157,8 @@
             "cardiology",
             "emergency",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 3
         },
         {
           "name": "Stable Angina",
@@ -2202,7 +2228,8 @@
           "specialties": [
             "cardiology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Pulmonary Embolism",
@@ -2276,7 +2303,8 @@
             "cardiology",
             "emergency",
             "haematology"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Aortic Dissection",
@@ -2349,7 +2377,8 @@
             "cardiothoracicSurgery",
             "cardiology",
             "emergency"
-          ]
+          ],
+          "urgency": 3
         },
         {
           "name": "GERD / Oesophagitis",
@@ -2420,7 +2449,8 @@
             "gastroenterology",
             "upperGISurgery",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Musculoskeletal Chest Pain",
@@ -2483,7 +2513,8 @@
               "evidenceLabel": "Relief with NSAIDs/rest LR+ 4.0",
               "citation": "Proulx AM et al. Am Fam Physician 2009."
             }
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -2560,7 +2591,8 @@
             "gastroenterology",
             "oncology",
             "cardiothoracicSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "GERD / Oesophagitis",
@@ -2631,7 +2663,8 @@
             "gastroenterology",
             "upperGISurgery",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Achalasia",
@@ -2701,7 +2734,8 @@
           "specialties": [
             "gastroenterology",
             "upperGISurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Oesophageal Stricture (Benign)",
@@ -2771,7 +2805,8 @@
           "specialties": [
             "gastroenterology",
             "upperGISurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Pharyngeal Pouch (Zenker Diverticulum)",
@@ -2841,7 +2876,8 @@
           "specialties": [
             "generalSurgery",
             "gastroenterology"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -2916,7 +2952,8 @@
             "colorectalSurgery",
             "generalSurgery",
             "gastroenterology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Colorectal Carcinoma",
@@ -2988,7 +3025,8 @@
             "colorectalSurgery",
             "gastroenterology",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Anal Fissure",
@@ -3058,7 +3096,8 @@
           "specialties": [
             "colorectalSurgery",
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Diverticular Bleeding",
@@ -3129,7 +3168,8 @@
             "colorectalSurgery",
             "gastroenterology",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Inflammatory Bowel Disease",
@@ -3201,7 +3241,8 @@
             "gastroenterology",
             "colorectalSurgery",
             "rheumatology"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -3278,7 +3319,8 @@
             "infectiousDisease",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 1
         },
         {
           "name": "Leptospirosis",
@@ -3351,7 +3393,8 @@
             "infectiousDisease",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 1
         },
         {
           "name": "Community-Acquired Pneumonia",
@@ -3424,7 +3467,8 @@
             "internalMedicine",
             "emergency",
             "paediatrics"
-          ]
+          ],
+          "urgency": 1
         },
         {
           "name": "Urinary Tract Infection",
@@ -3498,7 +3542,8 @@
             "internalMedicine",
             "emergency",
             "paediatrics"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Typhoid Fever",
@@ -3570,7 +3615,8 @@
             "infectiousDisease",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Cellulitis / SSTI",
@@ -3633,7 +3679,8 @@
               "evidenceLabel": "LR 3.5 distinguishing cellulitis from mimics",
               "citation": "Weng QY. JAMA Dermatol 2017."
             }
-          ]
+          ],
+          "urgency": 1
         }
       ]
     },
@@ -3709,7 +3756,8 @@
             "infectiousDisease",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Intra-Abdominal Sepsis",
@@ -3781,7 +3829,8 @@
             "generalSurgery",
             "infectiousDisease",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Urosepsis",
@@ -3854,7 +3903,8 @@
             "urology",
             "infectiousDisease",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Pneumonia / Pulmonary Sepsis",
@@ -3926,7 +3976,8 @@
             "respiratoryMedicine",
             "infectiousDisease",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         }
       ]
     },
@@ -4004,7 +4055,8 @@
             "neurosurgery",
             "cardiology",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Haemorrhagic Stroke",
@@ -4076,7 +4128,8 @@
             "neurosurgery",
             "neurology",
             "emergency"
-          ]
+          ],
+          "urgency": 3
         },
         {
           "name": "Transient Ischaemic Attack",
@@ -4149,7 +4202,8 @@
             "neurology",
             "cardiology",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Hypertensive Encephalopathy / PRES",
@@ -4221,7 +4275,8 @@
             "neurology",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Vestibular Migraine / Complex Migraine",
@@ -4291,7 +4346,8 @@
           "specialties": [
             "neurology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -4368,7 +4424,8 @@
             "haematology",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Pulmonary Embolism",
@@ -4442,7 +4499,8 @@
             "cardiology",
             "emergency",
             "haematology"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Superficial Thrombophlebitis",
@@ -4513,7 +4571,8 @@
           "specialties": [
             "vascularSurgery",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Fat Embolism Syndrome",
@@ -4586,7 +4645,8 @@
             "orthopaedics",
             "respiratoryMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Chronic Venous Insufficiency / Post-Thrombotic Syndrome",
@@ -4658,7 +4718,8 @@
             "vascularSurgery",
             "haematology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -4728,7 +4789,8 @@
             "emergency",
             "internalMedicine",
             "paediatrics"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Heart Failure",
@@ -4814,7 +4876,8 @@
             "cardiology",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Community-Acquired Pneumonia",
@@ -4894,7 +4957,8 @@
             "internalMedicine",
             "emergency",
             "paediatrics"
-          ]
+          ],
+          "urgency": 1
         },
         {
           "name": "COPD Exacerbation",
@@ -4951,7 +5015,8 @@
             "respiratoryMedicine",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Pneumothorax",
@@ -5022,7 +5087,8 @@
             "respiratoryMedicine",
             "cardiothoracicSurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 1
         },
         {
           "name": "Pulmonary Tuberculosis",
@@ -5093,7 +5159,8 @@
           "specialties": [
             "respiratoryMedicine",
             "infectiousDisease"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -5169,7 +5236,8 @@
             "colorectalSurgery",
             "gastroenterology",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Irritable Bowel Syndrome",
@@ -5239,7 +5307,8 @@
           "specialties": [
             "gastroenterology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Inflammatory Bowel Disease",
@@ -5311,7 +5380,8 @@
             "gastroenterology",
             "colorectalSurgery",
             "rheumatology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Diverticular Disease",
@@ -5381,7 +5451,8 @@
           "specialties": [
             "colorectalSurgery",
             "gastroenterology"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -5472,7 +5543,8 @@
             "upperGISurgery",
             "gastroenterology",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Pulmonary Tuberculosis",
@@ -5536,7 +5608,8 @@
           "specialties": [
             "respiratoryMedicine",
             "infectiousDisease"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Hyperthyroidism",
@@ -5592,7 +5665,8 @@
               "evidenceLabel": "Female sex (7–10x higher prevalence)",
               "citation": "Vanderpump MP. Clin Endocrinol 1995."
             }
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Type 2 Diabetes Mellitus (Uncontrolled)",
@@ -5662,7 +5736,8 @@
           "specialties": [
             "endocrinology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Inflammatory Bowel Disease",
@@ -5734,7 +5809,8 @@
             "gastroenterology",
             "colorectalSurgery",
             "rheumatology"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -5810,7 +5886,8 @@
             "internalMedicine",
             "emergency",
             "infectiousDisease"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Gastroparesis",
@@ -5881,7 +5958,8 @@
           "specialties": [
             "gastroenterology",
             "endocrinology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Gastric Outlet Obstruction",
@@ -5951,7 +6029,8 @@
           "specialties": [
             "generalSurgery",
             "gastroenterology"
-          ]
+          ],
+          "urgency": 1
         },
         {
           "name": "Small Bowel Obstruction",
@@ -6021,7 +6100,8 @@
           "specialties": [
             "generalSurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Appendicitis (Presenting with Nausea)",
@@ -6091,7 +6171,8 @@
           "specialties": [
             "generalSurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Drug-Induced Nausea / Vomiting",
@@ -6154,7 +6235,8 @@
               "evidenceLabel": "Naranjo ADR scale ≥5 (probable) or ≥9 (definite)",
               "citation": "Naranjo CA et al. Clin Pharmacol Ther 1981."
             }
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -6252,7 +6334,8 @@
             "generalSurgery",
             "infectiousDisease",
             "emergency"
-          ]
+          ],
+          "urgency": 3
         },
         {
           "name": "Fournier's Gangrene",
@@ -6326,7 +6409,8 @@
             "urology",
             "generalSurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 3
         },
         {
           "name": "Severe Cellulitis / SSTI",
@@ -6398,7 +6482,8 @@
             "dermatology",
             "infectiousDisease",
             "emergency"
-          ]
+          ],
+          "urgency": 1
         },
         {
           "name": "Gas Gangrene (Clostridial Myonecrosis)",
@@ -6471,7 +6556,8 @@
             "orthopaedics",
             "infectiousDisease",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -6554,7 +6640,8 @@
             "haematology",
             "gastroenterology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Macrocytic Anaemia (B12/Folate Deficiency)",
@@ -6632,7 +6719,8 @@
           "specialties": [
             "haematology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Anaemia of Chronic Disease",
@@ -6703,7 +6791,8 @@
             "haematology",
             "internalMedicine",
             "rheumatology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Haemolytic Anaemia",
@@ -6772,7 +6861,8 @@
           ],
           "specialties": [
             "haematology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Sickle Cell Anaemia",
@@ -6843,7 +6933,8 @@
           "specialties": [
             "haematology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -6924,7 +7015,8 @@
           "specialties": [
             "generalSurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Large Bowel Obstruction",
@@ -6988,7 +7080,8 @@
             "colorectalSurgery",
             "generalSurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Sigmoid Volvulus",
@@ -7059,7 +7152,8 @@
             "colorectalSurgery",
             "generalSurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Paralytic Ileus",
@@ -7129,7 +7223,8 @@
           "specialties": [
             "generalSurgery",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -7211,7 +7306,8 @@
             "gastroenterology",
             "upperGISurgery",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Barrett's oesophagus",
@@ -7282,7 +7378,8 @@
           "specialties": [
             "gastroenterology",
             "upperGISurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Peptic ulcer disease",
@@ -7353,7 +7450,8 @@
             "gastroenterology",
             "upperGISurgery",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Functional dyspepsia",
@@ -7423,7 +7521,8 @@
           "specialties": [
             "gastroenterology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -7496,7 +7595,8 @@
           ],
           "specialties": [
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Inguinal Lymphadenopathy",
@@ -7568,7 +7668,8 @@
             "generalSurgery",
             "infectiousDisease",
             "haematology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Femoral Hernia",
@@ -7637,7 +7738,8 @@
           ],
           "specialties": [
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Hip Osteoarthritis",
@@ -7707,7 +7809,8 @@
           "specialties": [
             "orthopaedics",
             "rheumatology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Iliopsoas Bursitis / Tendinopathy",
@@ -7777,7 +7880,8 @@
           "specialties": [
             "orthopaedics",
             "rheumatology"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -7864,7 +7968,8 @@
           ],
           "specialties": [
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Femoral Hernia",
@@ -7925,7 +8030,8 @@
           ],
           "specialties": [
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Incisional Hernia",
@@ -7987,7 +8093,8 @@
           ],
           "specialties": [
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Umbilical / Paraumbilical Hernia",
@@ -8056,7 +8163,8 @@
           ],
           "specialties": [
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Epigastric Hernia",
@@ -8125,7 +8233,8 @@
           ],
           "specialties": [
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -8200,7 +8309,8 @@
             "colorectalSurgery",
             "generalSurgery",
             "gastroenterology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Anal Fissure",
@@ -8270,7 +8380,8 @@
           "specialties": [
             "colorectalSurgery",
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Perianal Abscess",
@@ -8342,7 +8453,8 @@
             "colorectalSurgery",
             "generalSurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 1
         },
         {
           "name": "Perianal Fistula",
@@ -8412,7 +8524,8 @@
           "specialties": [
             "colorectalSurgery",
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Anal Carcinoma",
@@ -8484,7 +8597,8 @@
             "colorectalSurgery",
             "oncology",
             "radiotherapy"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -8558,7 +8672,8 @@
           "specialties": [
             "breastSurgery",
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Breast Carcinoma",
@@ -8629,7 +8744,8 @@
           "specialties": [
             "breastSurgery",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Breast Cyst",
@@ -8699,7 +8815,8 @@
           "specialties": [
             "breastSurgery",
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Mastitis / Breast Abscess",
@@ -8771,7 +8888,8 @@
             "breastSurgery",
             "generalSurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 1
         },
         {
           "name": "Fat Necrosis",
@@ -8841,7 +8959,8 @@
           "specialties": [
             "breastSurgery",
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -8917,7 +9036,8 @@
             "generalSurgery",
             "infectiousDisease",
             "haematology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Thyroid Nodule / Goitre",
@@ -8988,7 +9108,8 @@
           "specialties": [
             "endocrinology",
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Lymphoma",
@@ -9060,7 +9181,8 @@
             "haematology",
             "oncology",
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Metastatic Neck Node",
@@ -9131,7 +9253,8 @@
           "specialties": [
             "generalSurgery",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Branchial Cyst",
@@ -9200,7 +9323,8 @@
           ],
           "specialties": [
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -9282,7 +9406,8 @@
           "specialties": [
             "endocrinology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Hyperthyroidism / Graves' Disease",
@@ -9353,7 +9478,8 @@
           "specialties": [
             "endocrinology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Thyroid Carcinoma",
@@ -9426,7 +9552,8 @@
             "endocrinology",
             "generalSurgery",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Thyroiditis (Hashimoto's / De Quervain's)",
@@ -9491,7 +9618,8 @@
           "specialties": [
             "endocrinology",
             "rheumatology"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -9575,7 +9703,8 @@
             "internalMedicine",
             "emergency",
             "paediatrics"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Pyelonephritis",
@@ -9648,7 +9777,8 @@
             "nephrology",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Bladder Carcinoma",
@@ -9719,7 +9849,8 @@
           "specialties": [
             "urology",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Overactive Bladder",
@@ -9789,7 +9920,8 @@
           "specialties": [
             "urology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Interstitial Cystitis",
@@ -9860,7 +9992,8 @@
           "specialties": [
             "urology",
             "rheumatology"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -9935,7 +10068,8 @@
             "orthopaedics",
             "rheumatology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Gout",
@@ -10007,7 +10141,8 @@
             "rheumatology",
             "internalMedicine",
             "nephrology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Reactive Arthritis",
@@ -10078,7 +10213,8 @@
           "specialties": [
             "rheumatology",
             "infectiousDisease"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Septic Arthritis",
@@ -10150,7 +10286,8 @@
             "orthopaedics",
             "infectiousDisease",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Dengue Arthralgia",
@@ -10221,7 +10358,8 @@
           "specialties": [
             "infectiousDisease",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -10295,7 +10433,8 @@
           "specialties": [
             "cardiology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Renovascular Hypertension",
@@ -10368,7 +10507,8 @@
             "cardiology",
             "nephrology",
             "vascularSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "White Coat Hypertension",
@@ -10438,7 +10578,8 @@
           "specialties": [
             "cardiology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Hypertensive Urgency / Emergency",
@@ -10510,7 +10651,8 @@
             "cardiology",
             "emergency",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -10588,7 +10730,8 @@
             "internalMedicine",
             "nephrology",
             "cardiology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Poorly Controlled Diabetes",
@@ -10658,7 +10801,8 @@
           "specialties": [
             "endocrinology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Diabetic Complications Review",
@@ -10733,7 +10877,8 @@
             "nephrology",
             "neurology",
             "cardiology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Pre-Diabetes / Impaired Glucose Tolerance",
@@ -10804,7 +10949,8 @@
           "specialties": [
             "endocrinology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -10877,7 +11023,8 @@
           ],
           "specialties": [
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Post-Operative Surgical Site Infection",
@@ -10948,7 +11095,8 @@
           "specialties": [
             "generalSurgery",
             "infectiousDisease"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Post-Operative Deep Vein Thrombosis",
@@ -11020,7 +11168,8 @@
             "vascularSurgery",
             "haematology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Post-Operative Ileus",
@@ -11090,7 +11239,8 @@
           "specialties": [
             "generalSurgery",
             "gastroenterology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Anastomotic Leak",
@@ -11162,7 +11312,8 @@
             "generalSurgery",
             "colorectalSurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -11236,7 +11387,8 @@
           "specialties": [
             "endocrinology",
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Phaeochromocytoma",
@@ -11307,7 +11459,8 @@
           "specialties": [
             "endocrinology",
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Adrenal Incidentaloma",
@@ -11377,7 +11530,8 @@
           "specialties": [
             "endocrinology",
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Cushing's Syndrome",
@@ -11447,7 +11601,8 @@
           "specialties": [
             "endocrinology",
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Adrenocortical Carcinoma",
@@ -11519,7 +11674,8 @@
             "endocrinology",
             "generalSurgery",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -11594,7 +11750,8 @@
           "specialties": [
             "vascularSurgery",
             "cardiology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Peripheral Arterial Disease",
@@ -11666,7 +11823,8 @@
             "vascularSurgery",
             "cardiology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Carotid Artery Disease",
@@ -11738,7 +11896,8 @@
             "vascularSurgery",
             "neurology",
             "cardiology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Chronic Venous Insufficiency / Varicose Veins",
@@ -11808,7 +11967,8 @@
           "specialties": [
             "vascularSurgery",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -11884,7 +12044,8 @@
             "colorectalSurgery",
             "generalSurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 1
         },
         {
           "name": "Chronic Pilonidal Sinus",
@@ -11954,7 +12115,8 @@
           "specialties": [
             "colorectalSurgery",
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Perianal Fistula / Abscess",
@@ -12017,7 +12179,8 @@
               "evidenceLabel": "Prior I&D of perianal abscess LR+ 5.7 for fistula",
               "citation": "Parks AG. Br J Surg 1961."
             }
-          ]
+          ],
+          "urgency": 1
         },
         {
           "name": "Hidradenitis Suppurativa",
@@ -12089,7 +12252,8 @@
             "dermatology",
             "colorectalSurgery",
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -12164,7 +12328,8 @@
           "specialties": [
             "generalSurgery",
             "infectiousDisease"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Deep Surgical Site Infection",
@@ -12234,7 +12399,8 @@
           "specialties": [
             "generalSurgery",
             "infectiousDisease"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Wound Dehiscence",
@@ -12303,7 +12469,8 @@
           ],
           "specialties": [
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Seroma",
@@ -12373,7 +12540,8 @@
           "specialties": [
             "generalSurgery",
             "breastSurgery"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -12456,7 +12624,8 @@
             "vascularSurgery",
             "cardiology",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Acute Thrombosis on Atherosclerosis",
@@ -12528,7 +12697,8 @@
             "vascularSurgery",
             "cardiology",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Popliteal Artery Aneurysm Thrombosis",
@@ -12598,7 +12768,8 @@
           "specialties": [
             "vascularSurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Aortoiliac Occlusion",
@@ -12669,7 +12840,8 @@
           "specialties": [
             "vascularSurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -12752,7 +12924,8 @@
             "dermatology",
             "generalSurgery",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Basal Cell Carcinoma",
@@ -12824,7 +12997,8 @@
             "dermatology",
             "generalSurgery",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Squamous Cell Carcinoma",
@@ -12896,7 +13070,8 @@
             "dermatology",
             "generalSurgery",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Sebaceous / Epidermoid Cyst",
@@ -12966,7 +13141,8 @@
           "specialties": [
             "generalSurgery",
             "dermatology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Lipoma",
@@ -13037,7 +13213,8 @@
           "specialties": [
             "generalSurgery",
             "dermatology"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -13112,7 +13289,8 @@
           "specialties": [
             "urology",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Epididymo-Orchitis",
@@ -13185,7 +13363,8 @@
             "urology",
             "infectiousDisease",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Hydrocele",
@@ -13256,7 +13435,8 @@
           "specialties": [
             "urology",
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Testicular Tumour",
@@ -13328,7 +13508,8 @@
           "specialties": [
             "urology",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -13402,7 +13583,8 @@
           "specialties": [
             "urology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Urethral Stricture",
@@ -13471,7 +13653,8 @@
           ],
           "specialties": [
             "urology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Prostate Cancer with Obstruction",
@@ -13542,7 +13725,8 @@
           "specialties": [
             "urology",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Neurogenic Bladder",
@@ -13613,7 +13797,8 @@
           "specialties": [
             "urology",
             "neurology"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -13687,7 +13872,8 @@
           "specialties": [
             "colorectalSurgery",
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Mucosal Prolapse / Haemorrhoids (grade III/IV)",
@@ -13757,7 +13943,8 @@
           "specialties": [
             "colorectalSurgery",
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Rectocele",
@@ -13828,7 +14015,8 @@
           "specialties": [
             "colorectalSurgery",
             "gynaecology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Solitary Rectal Ulcer Syndrome",
@@ -13898,7 +14086,8 @@
           "specialties": [
             "colorectalSurgery",
             "gastroenterology"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -13971,7 +14160,8 @@
           ],
           "specialties": [
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Parotitis (Acute Suppurative)",
@@ -14042,7 +14232,8 @@
           "specialties": [
             "generalSurgery",
             "infectiousDisease"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Pleomorphic Adenoma",
@@ -14111,7 +14302,8 @@
           ],
           "specialties": [
             "generalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Parotid Carcinoma",
@@ -14182,7 +14374,8 @@
           "specialties": [
             "generalSurgery",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -14260,7 +14453,8 @@
           "specialties": [
             "neurology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Migraine Without Aura",
@@ -14353,7 +14547,8 @@
           "specialties": [
             "neurology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Cluster Headache",
@@ -14425,7 +14620,8 @@
           ],
           "specialties": [
             "neurology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Subarachnoid Haemorrhage",
@@ -14492,7 +14688,8 @@
             "neurosurgery",
             "neurology",
             "emergency"
-          ]
+          ],
+          "urgency": 3
         },
         {
           "name": "Bacterial Meningitis",
@@ -14566,7 +14763,8 @@
             "infectiousDisease",
             "emergency",
             "paediatrics"
-          ]
+          ],
+          "urgency": 3
         },
         {
           "name": "Temporal Arteritis (Giant Cell Arteritis)",
@@ -14631,7 +14829,8 @@
               "logLR": 20,
               "evidenceLabel": "Temporal artery biopsy — granulomatous inflammation"
             }
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -14694,7 +14893,8 @@
           "specialties": [
             "neurology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Vestibular Neuronitis / Labyrinthitis",
@@ -14753,7 +14953,8 @@
           "specialties": [
             "neurology",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Ménière's Disease",
@@ -14798,7 +14999,8 @@
           ],
           "specialties": [
             "neurology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Orthostatic Hypotension / Vasovagal Syncope",
@@ -14875,7 +15077,8 @@
             "cardiology",
             "neurology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Central Vertigo (Posterior Fossa Pathology)",
@@ -14947,7 +15150,8 @@
             "neurology",
             "neurosurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -15027,7 +15231,8 @@
             "orthopaedics",
             "rheumatology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Lumbar Disc Herniation / Sciatica",
@@ -15094,7 +15299,8 @@
             "neurosurgery",
             "orthopaedics",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Cauda Equina Syndrome",
@@ -15150,7 +15356,8 @@
             "neurosurgery",
             "orthopaedics",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Vertebral Fracture (Osteoporotic / Traumatic)",
@@ -15208,7 +15415,8 @@
             "orthopaedics",
             "neurosurgery",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Malignant Spinal Cord Compression",
@@ -15263,7 +15471,8 @@
             "neurosurgery",
             "oncology",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Ankylosing Spondylitis",
@@ -15321,7 +15530,8 @@
               "logLR": 14,
               "evidenceLabel": "Anterior uveitis / iritis"
             }
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -15398,7 +15608,8 @@
             "haematology",
             "gastroenterology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Hypothyroidism",
@@ -15474,7 +15685,8 @@
           "specialties": [
             "endocrinology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Type 2 Diabetes Mellitus",
@@ -15548,7 +15760,8 @@
             "internalMedicine",
             "nephrology",
             "cardiology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Depression",
@@ -15617,7 +15830,8 @@
           "specialties": [
             "psychiatry",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Obstructive Sleep Apnoea",
@@ -15682,7 +15896,8 @@
           "specialties": [
             "respiratoryMedicine",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Chronic Fatigue Syndrome / ME",
@@ -15727,7 +15942,8 @@
               "logLR": 8,
               "evidenceLabel": "Normal routine investigations (exclusion required)"
             }
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -15782,7 +15998,8 @@
           "specialties": [
             "respiratoryMedicine",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Asthma",
@@ -15855,7 +16072,8 @@
             "paediatrics",
             "emergency",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "ACE Inhibitor Cough",
@@ -15913,7 +16131,8 @@
           "specialties": [
             "cardiology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "GERD-Related Cough",
@@ -15965,7 +16184,8 @@
           "specialties": [
             "gastroenterology",
             "respiratoryMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Chronic Obstructive Pulmonary Disease (COPD)",
@@ -16023,7 +16243,8 @@
           "specialties": [
             "respiratoryMedicine",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Pulmonary Tuberculosis",
@@ -16094,7 +16315,8 @@
           "specialties": [
             "respiratoryMedicine",
             "infectiousDisease"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Lung Carcinoma",
@@ -16157,7 +16379,8 @@
               "logLR": 12,
               "evidenceLabel": "Finger clubbing"
             }
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -16214,7 +16437,8 @@
             "cardiology",
             "emergency",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Dehydration / Electrolyte Imbalance",
@@ -16266,7 +16490,8 @@
             "internalMedicine",
             "emergency",
             "paediatrics"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Acute Kidney Injury",
@@ -16318,7 +16543,8 @@
             "nephrology",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Medication Side Effect / Adverse Drug Reaction",
@@ -16358,7 +16584,8 @@
             "internalMedicine",
             "emergency",
             "pharmacology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Anxiety Disorder",
@@ -16416,7 +16643,8 @@
             "psychiatry",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Preventive / Screening Visit",
@@ -16441,7 +16669,8 @@
               "logLR": 14,
               "evidenceLabel": "Preventive care visit"
             }
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -16494,7 +16723,8 @@
             "gynaecology",
             "obstetrics",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Ovarian Cyst / Torsion",
@@ -16536,7 +16766,8 @@
             "gynaecology",
             "generalSurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Pelvic Inflammatory Disease",
@@ -16577,7 +16808,8 @@
             "gynaecology",
             "infectiousDisease",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Endometriosis",
@@ -16617,7 +16849,8 @@
           "specialties": [
             "gynaecology",
             "colorectalSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Uterine Fibroids (Symptomatic)",
@@ -16655,7 +16888,8 @@
           "specialties": [
             "gynaecology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Appendicitis (Gynaecological Mimic)",
@@ -16689,7 +16923,8 @@
             "generalSurgery",
             "gynaecology",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -16727,7 +16962,8 @@
             "obstetrics",
             "gynaecology",
             "emergency"
-          ]
+          ],
+          "urgency": 1
         },
         {
           "name": "Dysfunctional Uterine Bleeding",
@@ -16759,7 +16995,8 @@
           "specialties": [
             "gynaecology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Cervical Carcinoma",
@@ -16799,7 +17036,8 @@
           "specialties": [
             "gynaecology",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Endometrial Pathology (Polyp / Hyperplasia / Carcinoma)",
@@ -16833,7 +17071,8 @@
           "specialties": [
             "gynaecology",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Placenta Praevia / Abruption",
@@ -16865,7 +17104,8 @@
           "specialties": [
             "obstetrics",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         }
       ]
     },
@@ -16909,7 +17149,8 @@
           "specialties": [
             "gynaecology",
             "endocrinology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Primary/Secondary Dysmenorrhoea",
@@ -16935,7 +17176,8 @@
           "specialties": [
             "gynaecology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Menopausal Symptoms",
@@ -16969,7 +17211,8 @@
             "gynaecology",
             "endocrinology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Vulvovaginitis (Candidal / BV / Trichomonal)",
@@ -17009,7 +17252,8 @@
             "gynaecology",
             "infectiousDisease",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Cervical Dysplasia / CIN",
@@ -17042,7 +17286,8 @@
           "specialties": [
             "gynaecology",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -17079,7 +17324,8 @@
           "specialties": [
             "obstetrics",
             "emergency"
-          ]
+          ],
+          "urgency": 1
         },
         {
           "name": "Pre-eclampsia",
@@ -17115,7 +17361,8 @@
             "obstetrics",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Gestational Diabetes",
@@ -17142,7 +17389,8 @@
           "specialties": [
             "obstetrics",
             "endocrinology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Antepartum Haemorrhage",
@@ -17169,7 +17417,8 @@
           "specialties": [
             "obstetrics",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -17207,7 +17456,8 @@
             "paediatrics",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Otitis Media (Acute)",
@@ -17241,7 +17491,8 @@
           "specialties": [
             "paediatrics",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Bacterial Meningitis (Child)",
@@ -17289,7 +17540,8 @@
             "infectiousDisease",
             "emergency",
             "neurology"
-          ]
+          ],
+          "urgency": 3
         },
         {
           "name": "Kawasaki Disease",
@@ -17342,7 +17594,8 @@
           "specialties": [
             "paediatrics",
             "cardiology"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Febrile UTI (Pyelonephritis, Child)",
@@ -17383,7 +17636,8 @@
             "paediatrics",
             "urology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Pneumonia (Childhood)",
@@ -17424,7 +17678,8 @@
             "paediatrics",
             "respiratoryMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 1
         }
       ]
     },
@@ -17474,7 +17729,8 @@
             "paediatricSurgery",
             "paediatrics",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Pyloric Stenosis",
@@ -17512,7 +17768,8 @@
           "specialties": [
             "paediatricSurgery",
             "paediatrics"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Appendicitis (Paediatric)",
@@ -17551,7 +17808,8 @@
             "paediatricSurgery",
             "paediatrics",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Mesenteric Adenitis",
@@ -17585,7 +17843,8 @@
           "specialties": [
             "paediatrics",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Meckel's Diverticulum",
@@ -17611,7 +17870,8 @@
           "specialties": [
             "paediatricSurgery",
             "paediatrics"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -17656,7 +17916,8 @@
             "dermatology",
             "paediatrics",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Psoriasis",
@@ -17697,7 +17958,8 @@
           "specialties": [
             "dermatology",
             "rheumatology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Urticaria (Acute / Chronic)",
@@ -17731,7 +17993,8 @@
             "dermatology",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Tinea (Dermatophytosis)",
@@ -17764,7 +18027,8 @@
           "specialties": [
             "dermatology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Cellulitis / Erysipelas",
@@ -17805,7 +18069,8 @@
             "infectiousDisease",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Contact Dermatitis (Allergic / Irritant)",
@@ -17838,7 +18103,8 @@
           "specialties": [
             "dermatology",
             "rheumatology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Pityriasis Rosea",
@@ -17871,7 +18137,8 @@
           "specialties": [
             "dermatology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -17915,7 +18182,8 @@
           "specialties": [
             "neurosurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Acute Subdural Haematoma",
@@ -17954,7 +18222,8 @@
           "specialties": [
             "neurosurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Cerebral Contusion / Traumatic Brain Injury",
@@ -17987,7 +18256,8 @@
           "specialties": [
             "neurosurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Primary Brain Tumour (Glioma / Meningioma)",
@@ -18028,7 +18298,8 @@
             "neurosurgery",
             "neurology",
             "oncology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Hydrocephalus (Obstructive / NPH)",
@@ -18063,7 +18334,8 @@
             "neurosurgery",
             "neurology",
             "geriatrics"
-          ]
+          ],
+          "urgency": 2
         }
       ]
     },
@@ -18116,7 +18388,8 @@
             "cardiology",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Heart Failure with Preserved EF (HFpEF)",
@@ -18150,7 +18423,8 @@
             "cardiology",
             "internalMedicine",
             "geriatrics"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Dilated Cardiomyopathy",
@@ -18182,7 +18456,8 @@
           "specialties": [
             "cardiology",
             "cardiothoracicSurgery"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Valvular Heart Disease (Aortic Stenosis)",
@@ -18222,7 +18497,8 @@
             "cardiology",
             "cardiothoracicSurgery",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Cardiac Tamponade",
@@ -18256,7 +18532,8 @@
             "cardiology",
             "cardiothoracicSurgery",
             "emergency"
-          ]
+          ],
+          "urgency": 3
         }
       ]
     },
@@ -18302,7 +18579,8 @@
             "neurology",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Supraventricular Tachycardia (SVT)",
@@ -18341,7 +18619,8 @@
             "cardiology",
             "emergency",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Ventricular Tachycardia",
@@ -18379,7 +18658,8 @@
           "specialties": [
             "cardiology",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Complete Heart Block (CHB)",
@@ -18411,7 +18691,8 @@
           "specialties": [
             "cardiology",
             "emergency"
-          ]
+          ],
+          "urgency": 2
         },
         {
           "name": "Wolff-Parkinson-White Syndrome",
@@ -18439,7 +18720,8 @@
           "specialties": [
             "cardiology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -18486,7 +18768,8 @@
             "internalMedicine",
             "endocrinology",
             "cardiology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Acute Kidney Injury on CKD",
@@ -18519,7 +18802,8 @@
             "nephrology",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Nephrotic Syndrome",
@@ -18560,7 +18844,8 @@
             "nephrology",
             "internalMedicine",
             "haematology"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "IgA Nephropathy / Glomerulonephritis",
@@ -18593,7 +18878,8 @@
           "specialties": [
             "nephrology",
             "rheumatology"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     },
@@ -18647,7 +18933,8 @@
             "gastroenterology",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Hepatitis B (Chronic Active)",
@@ -18682,7 +18969,8 @@
             "hepatology",
             "infectiousDisease",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Hepatitis C (Chronic)",
@@ -18717,7 +19005,8 @@
             "hepatology",
             "infectiousDisease",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Non-Alcoholic Fatty Liver Disease (NAFLD/NASH)",
@@ -18759,7 +19048,8 @@
             "gastroenterology",
             "endocrinology",
             "internalMedicine"
-          ]
+          ],
+          "urgency": 0
         },
         {
           "name": "Alcoholic Hepatitis",
@@ -18801,7 +19091,8 @@
             "gastroenterology",
             "internalMedicine",
             "emergency"
-          ]
+          ],
+          "urgency": 0
         }
       ]
     }
