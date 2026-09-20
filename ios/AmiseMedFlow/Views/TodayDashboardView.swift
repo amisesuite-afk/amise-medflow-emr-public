@@ -16,6 +16,7 @@ struct TodayDashboardView: View {
     @State private var calEventActionPatient: Patient? = nil
     @State private var showCalEncounterSheet = false
     @State private var showPreConsultSheet = false
+    @State private var showCalEventDialog = false
 
     private let cal = Calendar.current
 
@@ -198,10 +199,7 @@ struct TodayDashboardView: View {
             }
             .confirmationDialog(
                 calEventActionTarget?.title ?? "Appointment",
-                isPresented: Binding(
-                    get: { calEventActionTarget != nil },
-                    set: { if !$0 { calEventActionTarget = nil } }
-                ),
+                isPresented: $showCalEventDialog,
                 titleVisibility: .visible
             ) {
                 if calEventActionPatient != nil {
@@ -230,7 +228,7 @@ struct TodayDashboardView: View {
                         calEventActionTarget = nil
                     }
                 }
-                Button("Cancel", role: .cancel) { calEventActionTarget = nil }
+                Button("Cancel", role: .cancel) { calEventActionTarget = nil; calEventActionPatient = nil }
             }
             .sheet(isPresented: $showCalEncounterSheet, onDismiss: { calEventActionPatient = nil }) {
                 if let patient = calEventActionPatient {
@@ -574,6 +572,7 @@ struct TodayDashboardView: View {
                         parsed.name.lowercased().trimmingCharacters(in: .whitespaces)
                     }
                     calEventActionTarget = event
+                    showCalEventDialog = true
                 } label: {
                     HStack(spacing: 10) {
                         RoundedRectangle(cornerRadius: 2)
