@@ -988,10 +988,38 @@ enum BayesianDiagnosisEngine {
             mx.systemIndex[system]?.forEach { diseaseNames.insert($0) }
         }
 
-        // Optionally narrow to a specialty intersection
+        // Optionally narrow to a specialty intersection.
+        // UI hint names (e.g. "General & GI Surgery") use human-readable labels;
+        // specialtyIndex keys use camelCase (e.g. "generalSurgery"). The expansion
+        // map handles compound names; bidirectional contains handles simple ones.
         if let hint = specialtyHint, !hint.isEmpty {
             let hintL = hint.lowercased()
-            if let specialtyDiseases = mx.specialtyIndex.first(where: { $0.key.lowercased().contains(hintL) })?.value {
+            let hintExpansion: [String: [String]] = [
+                "general & gi surgery":  ["generalSurgery", "upperGISurgery", "colorectalSurgery", "gastroenterology"],
+                "cardiovascular":        ["cardiology", "vascularSurgery", "cardiothoracicSurgery"],
+                "endocrine & metabolic": ["endocrinology"],
+                "urology & renal":       ["urology", "nephrology"],
+                "musculoskeletal":       ["orthopaedics", "rheumatology"],
+                "infectious & tropical": ["infectiousDisease"],
+                "internal medicine":     ["internalMedicine"],
+            ]
+            var specialtyDiseases = Set<String>()
+            if let keys = hintExpansion[hintL] {
+                for key in keys {
+                    mx.specialtyIndex[key]?.forEach { specialtyDiseases.insert($0) }
+                }
+            } else {
+                // Bidirectional contains handles "neurology", "cardiology",
+                // "psychiatry / mental health" (hint contains "psychiatry"),
+                // "gynaecology & obstetrics" (hint contains both keys), etc.
+                for (key, diseases) in mx.specialtyIndex {
+                    let kL = key.lowercased()
+                    if kL.contains(hintL) || hintL.contains(kL) {
+                        specialtyDiseases.formUnion(diseases)
+                    }
+                }
+            }
+            if !specialtyDiseases.isEmpty {
                 diseaseNames = diseaseNames.intersection(specialtyDiseases)
             }
         }
