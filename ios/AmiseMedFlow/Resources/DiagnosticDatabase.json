@@ -15795,6 +15795,118 @@
               "logLR": -16,
               "evidenceLabel": "CSF clear, normal glucose, normal protein, no pleocytosis \u2014 excludes bacterial meningitis",
               "citation": "Tunkel AR et al. Clin Infect Dis 2004. Normal CSF (clear, glucose >2.5, protein <0.45g/L, WCC <5) has LR- 0.03 for bacterial meningitis. Rare exception: very early bacterial meningitis before pleocytosis develops."
+            },
+            {
+              "key": "character",
+              "value": "Severe diffuse headache",
+              "logLR": 12,
+              "evidenceLabel": "Severe, constant, diffuse headache \u2014 cardinal symptom; worsened by movement and light",
+              "citation": "van de Beek D et al. NEJM 2006. Headache is present in 87% of adult bacterial meningitis; typically described as the worst headache of the patient's life, diffuse, constant, and worsened by head movement, light, and sound. The combination of severe headache, fever, and neck stiffness is present in only 44% at presentation but its absence does not exclude the diagnosis."
+            },
+            {
+              "key": "associations",
+              "value": "Vomiting with fever",
+              "logLR": 10,
+              "evidenceLabel": "Vomiting accompanying fever and headache \u2014 present in ~30% of bacterial meningitis at presentation",
+              "citation": "van de Beek D et al. NEJM 2006. Vomiting occurs in approximately 30% of adult bacterial meningitis cases. In children and adolescents the proportion is higher (~50%). Nausea and vomiting reflect meningeal irritation and raised ICP. The triad of vomiting, fever, and headache without neck stiffness can still represent bacterial meningitis \u2014 particularly in early or partially treated cases."
+            },
+            {
+              "key": "associations",
+              "value": "Confusion / acute delirium",
+              "logLR": 12,
+              "evidenceLabel": "Acute confusion or delirium with fever and headache \u2014 reflects meningoencephalitis or cerebral oedema",
+              "citation": "van de Beek D et al. NEJM 2006. Altered mental status (confusion, disorientation, delirium, agitation) is present in ~70% of bacterial meningitis at diagnosis. It reflects meningoencephalitis, cerebral oedema, SIADH hyponatraemia, or hypoglycaemia. Acute confusion in the context of fever and headache carries a high prior probability for bacterial meningitis and mandates emergency evaluation."
+            },
+            {
+              "key": "exam",
+              "value": "GCS \u226412 at presentation",
+              "logLR": 14,
+              "evidenceLabel": "GCS \u226412 at presentation \u2014 severe meningitis indicator; independent prognostic marker",
+              "citation": "van de Beek D et al. NEJM 2006; Miner JR et al. Ann Emerg Med 1993. GCS \u226412 at presentation is present in 14\u201333% of bacterial meningitis. It is the strongest independent prognostic marker for adverse outcome (death or disability). A depressed GCS with fever and headache demands LP or empirical treatment without delay; CT first only if papilloedema or focal deficit present."
+            },
+            {
+              "key": "exam",
+              "value": "Cranial nerve palsy",
+              "logLR": 12,
+              "evidenceLabel": "Cranial nerve palsies (CN III / VI raised ICP; CN VII / VIII meningococcal) \u2014 present in ~10\u201320%",
+              "citation": "van de Beek D et al. NEJM 2006. Cranial nerve palsies occur in 10\u201320% of bacterial meningitis. CN III and VI palsy reflect raised intracranial pressure (false localising). CN VII (facial palsy) and CN VIII (sensorineural hearing loss) reflect direct inflammatory involvement of nerves in the subarachnoid space; Neisseria meningitidis and Streptococcus pneumoniae are the commonest causes."
+            },
+            {
+              "key": "exam",
+              "value": "Focal neurological deficit",
+              "logLR": 10,
+              "evidenceLabel": "Focal neurological signs \u2014 vasculitis, cerebral venous thrombosis, cerebral abscess, or herniation",
+              "citation": "van de Beek D et al. NEJM 2006. Focal neurological deficits (hemiparesis, aphasia, visual field defects) occur in 20\u201330% of bacterial meningitis; they reflect septic arteritis, cortical venous thrombosis, subdural empyema, or transtentorial herniation. CT imaging before LP is mandatory when focal signs are present; empirical treatment must not be delayed pending imaging."
+            },
+            {
+              "key": "inv",
+              "value": "CSF neutrophil predominance",
+              "logLR": 16,
+              "evidenceLabel": "CSF pleocytosis with neutrophil (PMN) predominance \u2014 hallmark of bacterial over viral meningitis",
+              "citation": "Spanos A et al. JAMA 1989. CSF neutrophil predominance (>80% PMN of total WCC) has a LR+ of 4.2 and LR\u2212 of 0.05 for bacterial vs viral meningitis. Bacterial meningitis typically shows 1000\u201310,000 WCC/\u00b5L with >80% neutrophils; viral aseptic meningitis shows lymphocyte predominance. Early bacterial meningitis may show lower cell counts but retains PMN predominance."
+            },
+            {
+              "key": "inv",
+              "value": "Blood cultures positive",
+              "logLR": 18,
+              "evidenceLabel": "Positive blood cultures \u2014 near-definitive bacteraemia; yield 50\u201380% if drawn before antibiotics",
+              "citation": "Tunkel AR et al. Clin Infect Dis 2004. Blood cultures yield the causative organism in 50\u201380% of bacterial meningitis when drawn before antibiotic administration. They are mandatory before LP and before empirical treatment; a 10-minute delay for blood cultures does not affect outcome, but they become negative within 15\u201330 min of effective antibiotic treatment. Positive blood cultures with meningeal symptoms are definitive."
+            },
+            {
+              "key": "inv",
+              "value": "CRP very elevated",
+              "logLR": 12,
+              "evidenceLabel": "CRP >100 mg/L \u2014 strongly supports bacterial over viral aetiology (LR+ ~4.8)",
+              "citation": "Viallon A et al. Eur J Emerg Med 2011. CRP >100 mg/L has LR+ 4.8 and LR\u2212 0.22 for bacterial vs viral meningitis. In combination with CSF parameters and procalcitonin, CRP contributes to the Bacterial Meningitis Score. A CRP <10 mg/L argues strongly against bacterial meningitis in an immunocompetent adult (LR\u2212 0.06 for CSF pleocytosis + CRP <10)."
+            },
+            {
+              "key": "inv",
+              "value": "CSF opening pressure elevated",
+              "logLR": 10,
+              "evidenceLabel": "LP opening pressure >25 cmH\u2082O \u2014 raised ICP present in majority of bacterial meningitis",
+              "citation": "Tunkel AR et al. Clin Infect Dis 2004. CSF opening pressure is elevated (>25 cmH\u2082O) in the majority of bacterial meningitis cases; pressures >40 cmH\u2082O indicate severe raised ICP and risk of herniation. Monitoring and managing ICP (head elevation, osmotherapy, dexamethasone) is part of the management protocol. Extremely high opening pressure (>50 cmH\u2082O) is an indication for ICP monitoring."
+            },
+            {
+              "key": "inv",
+              "value": "Peripheral neutrophilia",
+              "logLR": 10,
+              "evidenceLabel": "Peripheral blood neutrophilia (WBC >15 \u00d7 10\u2079/L with neutrophil predominance) \u2014 systemic bacterial sepsis",
+              "citation": "van de Beek D et al. NEJM 2006. Peripheral neutrophilia is present in the majority of bacterial meningitis cases and reflects the systemic bacterial sepsis response. In combination with CRP and procalcitonin, it contributes to severity scoring. Leukopenia in the context of meningitis is an ominous sign suggesting Waterhouse-Friderichsen syndrome (meningococcal septicaemia) or overwhelming sepsis."
+            },
+            {
+              "key": "associations",
+              "value": "Hyponatraemia",
+              "logLR": 8,
+              "evidenceLabel": "Hyponatraemia (Na <135 mmol/L) \u2014 SIADH or cerebral salt wasting complication; worsens cerebral oedema",
+              "citation": "Hasan I & Rashid T. Eur J Intern Med 2012. Hyponatraemia occurs in 30\u201360% of bacterial meningitis, from SIADH or cerebral salt wasting. It directly worsens cerebral oedema and contributes to altered consciousness and seizures. Fluid restriction (SIADH) vs isotonic saline replacement (CSW) are different management strategies. Hyponatraemia with meningitis is a marker of severity."
+            },
+            {
+              "key": "inv",
+              "value": "CSF lymphocyte predominance",
+              "logLR": -12,
+              "evidenceLabel": "CSF lymphocytic pleocytosis (>50% lymphocytes) \u2014 viral / TB / cryptococcal / autoimmune pattern",
+              "citation": "Spanos A et al. JAMA 1989. Lymphocyte predominance in CSF (>50% of pleocytosis) strongly favours viral aseptic meningitis (enterovirus, HSV, VZV), TB meningitis, or cryptococcal meningitis over bacterial aetiology. LR\u2212 for bacterial meningitis = 0.08 when CSF is lymphocytic. Early bacterial meningitis may be lymphocytic but this is uncommon; lymphocytic CSF substantially reduces bacterial probability."
+            },
+            {
+              "key": "onset",
+              "value": "Insidious onset over weeks",
+              "logLR": -12,
+              "evidenceLabel": "Insidious onset over weeks \u2014 strongly suggests TB meningitis, cryptococcal, or carcinomatous meningitis",
+              "citation": "Thwaites GE et al. NEJM 2004. Tuberculous meningitis classically presents with a 1\u20136 week prodrome of headache, malaise, low-grade fever, and meningism. An insidious onset over weeks substantially reduces bacterial meningitis probability and should prompt consideration of TB meningitis (India ink, AFB, Lowenstein-Jensen culture, ADA), cryptococcal meningitis (India ink, CrAg), and malignant meningitis."
+            },
+            {
+              "key": "history",
+              "value": "Recent antibiotic course",
+              "logLR": -8,
+              "evidenceLabel": "Recent antibiotic treatment in preceding 48h \u2014 partially treated meningitis; may normalise CSF and cultures",
+              "citation": "Kanegaye JT et al. Pediatrics 2001. Prior antibiotic treatment partially sterilises CSF and normalises cell counts and chemistry within 24\u201348h. Blood and CSF cultures may be negative in partially treated meningitis; CSF Gram stain becomes negative within 4\u20136h of antibiotic therapy. PCR retains sensitivity after partial treatment. A recent antibiotic course in a patient with persisting headache and fever warrants LP regardless."
+            },
+            {
+              "key": "history",
+              "value": "Clear viral prodrome",
+              "logLR": -8,
+              "evidenceLabel": "Distinct viral prodrome (myalgia, sore throat, rash, coryza) days before meningism \u2014 favours viral aetiology",
+              "citation": "Logan SAE & MacMahon E. BMJ 2008. A preceding viral prodrome of 3\u20137 days (myalgia, pharyngitis, coryzal symptoms, viral exanthem) before the onset of meningism argues for viral aseptic meningitis (enteroviral in summer/autumn, herpetic in any season). Bacterial meningitis typically presents acutely over hours with fewer prodromal symptoms. A clear viral prodrome reduces bacterial probability but does not exclude it."
             }
           ],
           "systems": [
