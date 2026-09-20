@@ -1052,6 +1052,161 @@ private let internalMedFatigueEarlyForm: [EFGroup] = [
     ]),
 ]
 
+// MARK: - General Surgery early forms — Abdominal Pain
+
+private let surgAbdominalPainEarlyForm: [EFGroup] = [
+    EFGroup(question: "Pain site (single select)", icon: "mappin.circle.fill", chips: [
+        EFChip(label: "Right iliac fossa (appendix)",  dimId: "site", value: "RLQ",        multiSelect: false),
+        EFChip(label: "Epigastric (PUD / reflux)",     dimId: "site", value: "Epigastric", multiSelect: false),
+        EFChip(label: "Left iliac fossa (diverticula)", dimId: "site", value: "LLQ",       multiSelect: false),
+        EFChip(label: "Loin (renal colic)",             dimId: "site", value: "Loin",      multiSelect: false),
+        EFChip(label: "Generalised / peritonitis",      dimId: "site", value: "Generalised", multiSelect: false),
+    ]),
+    EFGroup(question: "Pain character (single select)", icon: "waveform.path.ecg", chips: [
+        EFChip(label: "Colicky",   dimId: "character", value: "Colicky",  multiSelect: false),
+        EFChip(label: "Burning",   dimId: "character", value: "Burning",  multiSelect: false),
+        EFChip(label: "Cramping",  dimId: "character", value: "Cramping", multiSelect: false),
+        EFChip(label: "Constant",  dimId: "character", value: "Constant", multiSelect: false),
+    ]),
+    EFGroup(question: "Key associated features", icon: "exclamationmark.triangle.fill", chips: [
+        EFChip(label: "Haematuria",              dimId: "associations", value: "Haematuria"),
+        EFChip(label: "Vomiting",                dimId: "associations", value: "Vomiting"),
+        EFChip(label: "Abdominal distension",    dimId: "associations", value: "Distension"),
+        EFChip(label: "No bowel motion / flatus", dimId: "associations", value: "No bowel motion"),
+        EFChip(label: "Rectal bleeding",         dimId: "associations", value: "Rectal bleeding"),
+        EFChip(label: "Heartburn",               dimId: "associations", value: "Heartburn"),
+        EFChip(label: "Melaena",                 dimId: "associations", value: "Melaena"),
+        EFChip(label: "Haematemesis",            dimId: "associations", value: "Haematemesis"),
+    ]),
+    EFGroup(question: "Radiation & modifiers", icon: "arrow.forward.circle.fill", chips: [
+        EFChip(label: "Radiates loin → groin",   dimId: "radiation",   value: "Groin"),
+        EFChip(label: "Relieved by antacids",     dimId: "relieving",  value: "Antacids"),
+        EFChip(label: "Relieved by defaecation",  dimId: "relieving",  value: "Defaecation"),
+        EFChip(label: "Worse lying flat",         dimId: "exacerbating", value: "Lying flat"),
+        EFChip(label: "Worse with NSAIDs",        dimId: "exacerbating", value: "NSAIDs"),
+    ]),
+]
+
+private let surgObstructionEarlyForm: [EFGroup] = [
+    EFGroup(question: "Obstruction features (select all that apply)", icon: "exclamationmark.circle.fill", chips: [
+        EFChip(label: "Colicky abdominal pain",  dimId: "character",    value: "Colicky"),
+        EFChip(label: "Abdominal distension",    dimId: "associations", value: "Distension"),
+        EFChip(label: "Vomiting",                dimId: "associations", value: "Vomiting"),
+        EFChip(label: "Absolute constipation",   dimId: "associations", value: "No bowel motion"),
+        EFChip(label: "Bilious vomit (SBO)",     dimId: "character",    value: "Bilious"),
+        EFChip(label: "Projectile vomit (GOO)",  dimId: "character",    value: "Projectile"),
+        EFChip(label: "High-pitched bowel sounds", dimId: "exam",       value: "high pitched"),
+    ]),
+    EFGroup(question: "Previous history", icon: "clock.arrow.circlepath", chips: [
+        EFChip(label: "Prior laparotomy / adhesions", dimId: "pshx", value: "laparotomy"),
+        EFChip(label: "Known colorectal cancer",      dimId: "pmh",  value: "colorectal"),
+        EFChip(label: "Incisional hernia",            dimId: "pmh",  value: "hernia"),
+    ]),
+]
+
+private let surgHerniaEarlyForm: [EFGroup] = [
+    EFGroup(question: "Hernia type features (single select)", icon: "arrow.down.circle.fill", chips: [
+        EFChip(label: "Groin — above inguinal ligament (inguinal)", dimId: "site",  value: "Groin", multiSelect: false),
+        EFChip(label: "Groin — below inguinal ligament (femoral)",  dimId: "exam",  value: "below inguinal", multiSelect: false),
+        EFChip(label: "Umbilical / paraumbilical",  dimId: "site",  value: "Midline", multiSelect: false),
+        EFChip(label: "Prior laparotomy scar (incisional)", dimId: "pmh", value: "laparotomy", multiSelect: false),
+    ]),
+    EFGroup(question: "Clinical behaviour", icon: "checkmark.seal.fill", chips: [
+        EFChip(label: "Cough impulse present",  dimId: "exam",         value: "cough impulse"),
+        EFChip(label: "Reducible",              dimId: "exam",         value: "reducible"),
+        EFChip(label: "Worse with straining",   dimId: "exacerbating", value: "Straining"),
+        EFChip(label: "Severe irreducible pain (strangulation?)", dimId: "associations", value: "Severe pain"),
+        EFChip(label: "Female sex (↑ femoral)", dimId: "sex_female",   value: ""),
+    ]),
+]
+
+private let surgUpperGIBleedEarlyForm: [EFGroup] = [
+    EFGroup(question: "Bleeding character (single select)", icon: "drop.fill", chips: [
+        EFChip(label: "Melaena (dark / tarry stool)", dimId: "character", value: "Melaena",    multiSelect: false),
+        EFChip(label: "Haematemesis (bright red)",    dimId: "character", value: "Haematemesis", multiSelect: false),
+        EFChip(label: "Coffee-ground vomiting",       dimId: "character", value: "Coffee-ground", multiSelect: false),
+    ]),
+    EFGroup(question: "Prior history (major risk discriminators)", icon: "clock.badge.exclamationmark.fill", chips: [
+        EFChip(label: "Known peptic ulcer",     dimId: "pmh",  value: "peptic ulcer"),
+        EFChip(label: "NSAID / aspirin use",    dimId: "pmh",  value: "nsaid"),
+        EFChip(label: "H. pylori positive",     dimId: "pmh",  value: "h.pylori"),
+        EFChip(label: "Liver cirrhosis",        dimId: "pmh",  value: "cirrhosis"),
+        EFChip(label: "Alcohol excess",         dimId: "pmh",  value: "alcohol"),
+        EFChip(label: "Preceded by retching (Mallory-Weiss)", dimId: "onset", value: "After retching"),
+    ]),
+    EFGroup(question: "Associated features", icon: "list.bullet.clipboard.fill", chips: [
+        EFChip(label: "Epigastric pain",        dimId: "associations", value: "Epigastric pain"),
+        EFChip(label: "Weight loss",            dimId: "associations", value: "Weight loss"),
+        EFChip(label: "Dysphagia",              dimId: "associations", value: "Dysphagia"),
+        EFChip(label: "Ascites on exam",        dimId: "exam",         value: "ascites"),
+    ]),
+]
+
+private let surgRenalColicEarlyForm: [EFGroup] = [
+    EFGroup(question: "Renal colic pattern (single select)", icon: "bolt.circle.fill", chips: [
+        EFChip(label: "Sudden onset",              dimId: "onset",     value: "Sudden",        multiSelect: false),
+        EFChip(label: "Colicky character",         dimId: "character", value: "Colicky",       multiSelect: false),
+    ]),
+    EFGroup(question: "Key features", icon: "list.bullet.circle.fill", chips: [
+        EFChip(label: "Loin to groin radiation",   dimId: "radiation",    value: "Loin to groin"),
+        EFChip(label: "Haematuria",                dimId: "associations", value: "Haematuria"),
+        EFChip(label: "Restlessness (can't settle)", dimId: "associations", value: "Restlessness"),
+        EFChip(label: "Previous renal stones",     dimId: "pmh",          value: "renal stone"),
+        EFChip(label: "Fever (pyelonephritis?)",   dimId: "associations", value: "Fever"),
+        EFChip(label: "Dysuria",                   dimId: "associations", value: "Dysuria"),
+    ]),
+]
+
+private let surgVascularEarlyForm: [EFGroup] = [
+    EFGroup(question: "Vascular red flags (single select)", icon: "heart.circle.fill", chips: [
+        EFChip(label: "Pulsatile abdominal mass (AAA)", dimId: "exam",  value: "pulsatile abdominal mass", multiSelect: false),
+        EFChip(label: "Intermittent claudication (PAD)", dimId: "associations", value: "Intermittent claudication", multiSelect: false),
+        EFChip(label: "Limb rest pain (critical ischaemia)", dimId: "associations", value: "Rest pain", multiSelect: false),
+        EFChip(label: "Absent pedal pulses",              dimId: "exam", value: "absent pulses",          multiSelect: false),
+    ]),
+    EFGroup(question: "Risk factors", icon: "staroflife.circle", chips: [
+        EFChip(label: "Smoking history",      dimId: "pmh", value: "smoking"),
+        EFChip(label: "Diabetes",             dimId: "pmh", value: "diabetes"),
+        EFChip(label: "Family AAA history",   dimId: "pmh", value: "family aneurysm"),
+        EFChip(label: "Age > 65",             dimId: "age_over", value: "65"),
+        EFChip(label: "Male sex",             dimId: "sex_male", value: ""),
+        EFChip(label: "Back pain with AAA sx", dimId: "associations", value: "Back pain"),
+    ]),
+]
+
+private let surgRectalBleedEarlyForm: [EFGroup] = [
+    EFGroup(question: "Bleeding pattern & associated symptoms", icon: "drop.fill", chips: [
+        EFChip(label: "Bright red per rectum",        dimId: "associations", value: "Rectal bleeding"),
+        EFChip(label: "Blood mixed in stool (IBD/Ca)", dimId: "diarrhoea",   value: "bloody_chronic"),
+        EFChip(label: "Severe pain on defaecation (fissure)", dimId: "pain", value: "severe_on_defecation"),
+        EFChip(label: "Change in bowel habit",        dimId: "associations", value: "Change in bowel habit"),
+        EFChip(label: "Weight loss",                  dimId: "associations", value: "Weight loss"),
+        EFChip(label: "Age > 50 (colorectal Ca risk)", dimId: "age_over",   value: "50"),
+    ]),
+    EFGroup(question: "Risk factors & history", icon: "clock.badge.fill", chips: [
+        EFChip(label: "Known diverticular disease",  dimId: "pmh", value: "divert"),
+        EFChip(label: "Known Crohn's / colitis",     dimId: "pmh", value: "crohn"),
+        EFChip(label: "Iron deficiency anaemia",     dimId: "iron_deficiency_anaemia", value: "present"),
+    ]),
+]
+
+private let surgGERDEarlyForm: [EFGroup] = [
+    EFGroup(question: "Reflux symptoms", icon: "flame.fill", chips: [
+        EFChip(label: "Heartburn",                dimId: "associations", value: "Heartburn"),
+        EFChip(label: "Regurgitation",            dimId: "associations", value: "Regurgitation"),
+        EFChip(label: "Burning epigastric pain",  dimId: "character",    value: "Burning"),
+        EFChip(label: "Worse lying flat",         dimId: "exacerbating", value: "Lying flat"),
+        EFChip(label: "Relieved by antacids",     dimId: "relieving",    value: "Antacids"),
+        EFChip(label: "Epigastric site",          dimId: "site",         value: "Epigastric"),
+    ]),
+    EFGroup(question: "Duration & alarm features", icon: "exclamationmark.triangle.fill", chips: [
+        EFChip(label: ">5 years (Barrett's risk)",   dimId: "timing",       value: "years"),
+        EFChip(label: "Dysphagia (alarm)",           dimId: "associations", value: "Dysphagia"),
+        EFChip(label: "Melaena / haematemesis (alarm)", dimId: "associations", value: "Melaena"),
+        EFChip(label: "Weight loss (alarm)",         dimId: "associations", value: "Weight loss"),
+    ]),
+]
+
 // swiftlint:enable line_length
 
 /// Returns the early form chip groups for the given specialty hint + chief complaint.
@@ -1077,6 +1232,16 @@ func specialtyEarlyFormGroups(hint: String, cc: String) -> [EFGroup] {
     case "Internal Medicine":
         if lc.contains("anaemia") || lc.contains("anemia") { return internalMedAnaemiaEarlyForm }
         if lc.contains("fatigue") || lc.contains("tired") || lc.contains("lethargy") { return internalMedFatigueEarlyForm }
+        return []
+    case "General Surgery":
+        if lc.contains("obstruct") || lc.contains("ileus") || lc.contains("volvulus") { return surgObstructionEarlyForm }
+        if lc.contains("hernia") { return surgHerniaEarlyForm }
+        if lc.contains("bleed") && (lc.contains("upper") || lc.contains("gi") || lc.contains("haematemesis") || lc.contains("melaena")) { return surgUpperGIBleedEarlyForm }
+        if lc.contains("rectal") || lc.contains("pr bleed") || lc.contains("haematochezia") { return surgRectalBleedEarlyForm }
+        if lc.contains("renal") || lc.contains("ureteric") || lc.contains("stone") || lc.contains("colic") { return surgRenalColicEarlyForm }
+        if lc.contains("vascular") || lc.contains("aneur") || lc.contains("claudic") || lc.contains("ischaem") { return surgVascularEarlyForm }
+        if lc.contains("reflux") || lc.contains("gerd") || lc.contains("heartburn") || lc.contains("oesophag") { return surgGERDEarlyForm }
+        if lc.contains("abdom") || lc.contains("pain") || lc.contains("appendic") || lc.contains("cholecyst") || lc.contains("pancreati") || lc.contains("divertic") { return surgAbdominalPainEarlyForm }
         return []
     default:
         return []
