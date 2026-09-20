@@ -15521,9 +15521,304 @@
               "value": "biopsy",
               "logLR": 20,
               "evidenceLabel": "Temporal artery biopsy — granulomatous inflammation"
+            },
+            {
+              "key": "exam",
+              "value": "Absent temporal artery pulse",
+              "logLR": 16,
+              "evidenceLabel": "Absent / reduced temporal artery pulse on palpation — ischaemic wall thickening",
+              "citation": "Smetana GW & Shmerling RH. Arch Intern Med 2002. Absent temporal artery pulse LR+ 4.7 for GCA. Combined with beaded/tender artery: LR+ 9.0. Most specific bedside sign alongside jaw claudication."
+            },
+            {
+              "key": "exam",
+              "value": "Beaded nodular temporal artery",
+              "logLR": 14,
+              "evidenceLabel": "Beaded or nodular temporal artery — granulomatous wall thickening",
+              "citation": "Smetana GW & Shmerling RH. Arch Intern Med 2002. Beaded/prominent temporal artery LR+ 4.6; when combined with absent pulse, LR+ 9.0 for positive biopsy. Run finger along full temporal artery course."
+            },
+            {
+              "key": "associations",
+              "value": "Diplopia",
+              "logLR": 14,
+              "evidenceLabel": "Diplopia — oculomotor palsy from ophthalmic / posterior ciliary artery involvement",
+              "citation": "Hayreh SS et al. Ophthalmology 1998. Diplopia in 6–15% of GCA; reflects ischaemia to extraocular muscles or III/IV/VI cranial nerve supply. Precedes permanent visual loss in some patients."
+            },
+            {
+              "key": "associations",
+              "value": "Scalp necrosis",
+              "logLR": 18,
+              "evidenceLabel": "Scalp necrosis — ischaemic infarction from superficial temporal artery occlusion",
+              "citation": "Ting JY et al. JAMA Dermatol 2014. Scalp necrosis is rare (<4%) but nearly pathognomonic for GCA; indicates complete vessel occlusion. Mandates immediate high-dose corticosteroids — delay risks further ischaemia."
+            },
+            {
+              "key": "associations",
+              "value": "Tongue claudication",
+              "logLR": 16,
+              "evidenceLabel": "Tongue pain / claudication on chewing or speaking — facial / lingual artery ischaemia",
+              "citation": "Borg FA & Dasgupta B. Rheumatology 2009. Tongue or facial claudication in 6% of GCA; highly specific. Results from internal maxillary / lingual artery involvement. Risk of tongue infarction if untreated."
+            },
+            {
+              "key": "associations",
+              "value": "Constitutional symptoms",
+              "logLR": 10,
+              "evidenceLabel": "Fever, weight loss, fatigue — systemic inflammatory features",
+              "citation": "Salvarani C et al. Ann Intern Med 2002. Constitutional symptoms (fever ≥37.5°C, weight loss, fatigue) present in 40–50% of GCA. Low-grade fever is more common than high fever; night sweats may occur."
+            },
+            {
+              "key": "associations",
+              "value": "Polymyalgia rheumatica",
+              "logLR": 14,
+              "evidenceLabel": "Polymyalgia rheumatica — bilateral proximal girdle aching and morning stiffness",
+              "citation": "Salvarani C & Hunder GG. Arthritis Rheum 2001. PMR coexists in 40–50% of GCA; presents with bilateral shoulder / hip girdle pain, morning stiffness >45 min. Some patients present with PMR first, then develop GCA."
+            },
+            {
+              "key": "associations",
+              "value": "Morning stiffness",
+              "logLR": 10,
+              "evidenceLabel": "Morning stiffness >45 minutes — PMR component or systemic inflammation",
+              "citation": "Bird HA et al. Ann Rheum Dis 1979. Morning stiffness >45 min is one of the Jones criteria for PMR. When present with new headache in over-50, should raise GCA probability and prompt ESR/CRP."
+            },
+            {
+              "key": "associations",
+              "value": "New-onset headache over 50",
+              "logLR": 10,
+              "evidenceLabel": "New-onset headache in a patient over 50 — any new headache in this age group warrants GCA exclusion",
+              "citation": "ACR/EULAR GCA Classification Criteria 2022. New headache of any type in patients >50y is one of the five ACR criteria. Prevalence of GCA increases sharply after age 70 (peak 70–80y)."
+            },
+            {
+              "key": "risk",
+              "value": "Female sex",
+              "logLR": 6,
+              "evidenceLabel": "Female sex — GCA predominates in women (F:M ratio 3:1)",
+              "citation": "Lawrence RC et al. Arthritis Rheum 1998. GCA incidence: women 18.8/100,000/year vs men 6.9/100,000/year. Hormonal and genetic factors implicated; HLA-DRB1*04 alleles associated."
+            },
+            {
+              "key": "risk",
+              "value": "Northern European",
+              "logLR": 6,
+              "evidenceLabel": "Northern European / Scandinavian ethnicity — highest GCA incidence worldwide",
+              "citation": "Gonzalez-Gay MA et al. Semin Arthritis Rheum 2001. Incidence in Scandinavia 20–30/100,000/>50y; rare in Asian and African populations (<2/100,000). HLA class II allele frequency differences explain geographic variation."
+            },
+            {
+              "key": "inv",
+              "value": "esr very elevated",
+              "logLR": 14,
+              "evidenceLabel": "ESR >50 mm/h (mean 90–100 mm/h in GCA) — markedly elevated",
+              "citation": "Smetana GW & Shmerling RH. Arch Intern Med 2002. ESR >50 mm/h LR+ 1.2 (low discriminating value alone); ESR >47 sensitivity 84%, specificity 56%. Most patients >70 mm/h. ESR normal in <4% — near-exclusion."
+            },
+            {
+              "key": "inv",
+              "value": "ultrasound halo sign",
+              "logLR": 16,
+              "evidenceLabel": "Temporal artery ultrasound — hypoechoic halo sign (vessel wall oedema)",
+              "citation": "Karassa FB et al. Ann Intern Med 2005. Halo sign sensitivity 69%, specificity 82%, LR+ 3.9. EULAR recommends ultrasound as first-line imaging; halo sign may disappear after 1–2 weeks of steroids — scan urgently."
+            },
+            {
+              "key": "inv",
+              "value": "pet large vessel vasculitis",
+              "logLR": 16,
+              "evidenceLabel": "PET-CT — FDG uptake in aorta / subclavian / axillary arteries (large vessel GCA)",
+              "citation": "Blockmans D et al. Ann Rheum Dis 2006. PET-CT sensitivity 80% for large vessel GCA; identifies aortitis (40%) and subclavian involvement. Large vessel GCA carries higher risk of aortic aneurysm."
+            },
+            {
+              "key": "inv",
+              "value": "thrombocytosis",
+              "logLR": 8,
+              "evidenceLabel": "Thrombocytosis (platelets >400×10⁹/L) — acute phase response marker",
+              "citation": "Foroozan R et al. Ophthalmology 2002. Thrombocytosis present in ~50% of biopsy-proven GCA; reflects IL-6-driven thrombopoietin stimulation. Useful supportive finding when ESR/CRP inconclusive."
+            },
+            {
+              "key": "inv",
+              "value": "anaemia",
+              "logLR": 8,
+              "evidenceLabel": "Normochromic normocytic anaemia — anaemia of chronic inflammation",
+              "citation": "Salvarani C et al. Ann Intern Med 2002. Anaemia in 25–50% of GCA; normochromic normocytic pattern from IL-6–mediated suppression of erythropoiesis. Hb typically 100–120 g/L."
+            },
+            {
+              "key": "age_under",
+              "value": "50",
+              "logLR": -18,
+              "evidenceLabel": "Age under 50 — GCA almost never occurs below age 50 (case reports only)",
+              "citation": "Salvarani C et al. Ann Intern Med 2002. Fewer than 2% of biopsy-proven GCA cases occur in patients <50 years. Age under 50 is a near-absolute exclusion criterion for GCA."
+            },
+            {
+              "key": "inv",
+              "value": "normal esr crp",
+              "logLR": -14,
+              "evidenceLabel": "Normal ESR (<20 mm/h) AND normal CRP — near-excludes active GCA",
+              "citation": "Hayreh SS et al. Graefes Arch Clin Exp Ophthalmol 1997. Normal ESR and CRP together have LR- 0.04 for GCA. <4% of confirmed GCA has normal inflammatory markers; if both normal, alternative diagnosis strongly favoured."
+            },
+            {
+              "key": "exam",
+              "value": "Normal temporal arteries bilaterally",
+              "logLR": -10,
+              "evidenceLabel": "Normal temporal arteries bilaterally — no tenderness, pulse present, not nodular",
+              "citation": "Smetana GW & Shmerling RH. Arch Intern Med 2002. Absence of any temporal artery abnormality reduces post-test probability. However, normal exam does not exclude GCA — biopsy required if clinical suspicion remains."
             }
           ],
-          "urgency": 0
+          "urgency": 2
+        },
+        {
+          "name": "Migraine With Aura",
+          "icd": "G43.10",
+          "logPrior": 22,
+          "urgency": 0,
+          "systems": [
+            "neurological"
+          ],
+          "specialties": [
+            "neurology",
+            "general medicine"
+          ],
+          "features": [
+            {
+              "key": "associations",
+              "value": "Scintillating scotoma",
+              "logLR": 20,
+              "evidenceLabel": "Scintillating scotoma — expanding arc of shimmering zigzag (fortification spectra)",
+              "citation": "ICHD-3 2018. Scintillating scotoma is pathognomonic for migraine aura; no other primary headache produces this phenomenon. Expands centrifugally from paracentral fixation over 20–30 min."
+            },
+            {
+              "key": "associations",
+              "value": "Spreading aura over 5 min",
+              "logLR": 16,
+              "evidenceLabel": "Aura symptoms spread gradually over ≥5 minutes — key ICHD-3 criterion distinguishing from TIA",
+              "citation": "Fisher CM. Headache 1986. Gradual spread (march) of visual or sensory aura is the cardinal feature distinguishing migraine from TIA. TIA symptoms are sudden-onset maximal; migraine aura evolves slowly over 5–30 min."
+            },
+            {
+              "key": "associations",
+              "value": "Aura lasts 5 to 60 minutes",
+              "logLR": 14,
+              "evidenceLabel": "Aura duration 5–60 minutes — fully reversible within 1 hour",
+              "citation": "ICHD-3 2018. Each aura symptom must last 5–60 min; if multiple aura types, total duration up to 60 min per symptom. Duration >60 min raises concern for TIA (especially if age >50 or cardiovascular risk factors present)."
+            },
+            {
+              "key": "associations",
+              "value": "Headache follows aura within 60 min",
+              "logLR": 14,
+              "evidenceLabel": "Unilateral pulsating headache follows or accompanies aura within 60 minutes",
+              "citation": "ICHD-3 2018. Headache within 60 min of aura onset is a diagnostic criterion. Headache may precede, accompany, or follow the aura phase. 'Acephalgic migraine' (aura without headache) is a recognised subtype."
+            },
+            {
+              "key": "associations",
+              "value": "Positive visual phenomena",
+              "logLR": 14,
+              "evidenceLabel": "Positive visual phenomena — phosphenes, flashes, geometric patterns",
+              "citation": "Headache Classification Committee. Cephalalgia 2018. Positive aura symptoms (flickering lights, stars, geometric shapes) reflect cortical spreading depolarisation propagating across visual cortex at 3–5 mm/min."
+            },
+            {
+              "key": "associations",
+              "value": "Negative visual phenomena",
+              "logLR": 12,
+              "evidenceLabel": "Negative visual phenomena — scotoma, visual field defect, blurred vision",
+              "citation": "Cutrer FM & Huerter K. Neurologist 2007. Negative symptoms (scotoma, loss of vision) represent cortical depression after spreading depolarisation. Homonymous distribution reflects involvement of posterior visual cortex."
+            },
+            {
+              "key": "associations",
+              "value": "Sensory aura tingling",
+              "logLR": 14,
+              "evidenceLabel": "Unilateral sensory aura — spreading tingling / numbness (cheiro-oral distribution)",
+              "citation": "Russell MB & Olesen J. Brain 1996. Sensory aura in 31% of MwA; cheiro-oral (hand → face → mouth) spreading distribution reflects somatosensory cortex depolarisation. Distinguishes from TIA by gradual spread."
+            },
+            {
+              "key": "associations",
+              "value": "Dysphasic aura",
+              "logLR": 12,
+              "evidenceLabel": "Dysphasic aura — speech difficulties (word-finding, paraphasias) during aura",
+              "citation": "ICHD-3 2018. Speech/language disturbance in 17–20% of MwA; usually expressive dysphasia. Fully reversible. When isolated without other aura features in age >50, TIA exclusion is mandatory."
+            },
+            {
+              "key": "associations",
+              "value": "Hemiplegic aura",
+              "logLR": 14,
+              "evidenceLabel": "Unilateral motor weakness (hemiplegic migraine) — fully reversible motor aura",
+              "citation": "Thomsen LL et al. Brain 2002. Familial (FHM) and sporadic hemiplegic migraine. CACNA1A, ATP1A2, SCN1A gene mutations in familial form. Motor aura lasts up to 72h; mandates TIA/stroke exclusion on first presentation."
+            },
+            {
+              "key": "character",
+              "value": "Unilateral",
+              "logLR": 12,
+              "evidenceLabel": "Unilateral headache following aura (typically ipsilateral to contralateral aura)",
+              "citation": "ICHD-3 2018. Headache is unilateral in 60–70% of MwA; may be contralateral or ipsilateral to the aura. Side-locked headache should prompt secondary cause workup."
+            },
+            {
+              "key": "character",
+              "value": "Pulsating",
+              "logLR": 14,
+              "evidenceLabel": "Pulsating / throbbing headache following aura phase",
+              "citation": "ICHD-3 2018. Pulsating quality is one of the four headache criteria; present in >50% of MwA attacks. Reflects trigeminovascular activation and vasoactive peptide release following cortical spreading depression."
+            },
+            {
+              "key": "associations",
+              "value": "Nausea vomiting",
+              "logLR": 12,
+              "evidenceLabel": "Nausea and/or vomiting during headache phase",
+              "citation": "ICHD-3 2018. Nausea/vomiting is a required associated symptom; present in 80–90% of attacks. May begin during aura phase before headache onset. Severe vomiting may require parenteral antiemetics."
+            },
+            {
+              "key": "associations",
+              "value": "Photophobia phonophobia",
+              "logLR": 12,
+              "evidenceLabel": "Photophobia and phonophobia during headache phase",
+              "citation": "ICHD-3 2018. Photophobia and phonophobia required in MwA headache criteria. Reflect central sensitisation of trigeminovascular pathways. Phonophobia (sound sensitivity) often the first reported associated symptom."
+            },
+            {
+              "key": "exacerbating",
+              "value": "Physical activity",
+              "logLR": 12,
+              "evidenceLabel": "Headache aggravated by routine physical activity (walking, stairs)",
+              "citation": "ICHD-3 2018. Aggravation by physical activity is one of the four headache criteria. Reflects pulsatile component of pain; vasodilation theory partially supported but trigeminovascular model now predominant."
+            },
+            {
+              "key": "pmh",
+              "value": "migraine with aura history",
+              "logLR": 18,
+              "evidenceLabel": "Personal history of confirmed migraine with aura",
+              "citation": "ICHD-3 2018. At least five attacks fulfilling criteria required for MwA diagnosis. In known MwA patient, recurrent typical attack in same pattern has very high positive predictive value."
+            },
+            {
+              "key": "history",
+              "value": "Family history migraine aura",
+              "logLR": 10,
+              "evidenceLabel": "Family history of migraine with aura — heritability 50–65%",
+              "citation": "Mulder EJ et al. Cephalalgia 2003. Heritability of MwA 65% (higher than MwOA 45%). Familial hemiplegic migraine is autosomal dominant with single gene mutations identified (CACNA1A, ATP1A2, SCN1A)."
+            },
+            {
+              "key": "risk",
+              "value": "OCP stroke risk aura",
+              "logLR": 6,
+              "evidenceLabel": "OCP use in MwA — combined OCP is WHO MEC Category 4 (contraindicated) due to stroke risk",
+              "citation": "WHO Medical Eligibility Criteria 2015. MwA + COC: OR 8–13 for ischaemic stroke. MwOA + COC: OR 2. OCP should be discontinued and alternative contraception offered. Progestogen-only acceptable."
+            },
+            {
+              "key": "onset",
+              "value": "Aura sudden onset maximal",
+              "logLR": -14,
+              "evidenceLabel": "Aura of sudden maximal onset (not gradual) — argues for TIA over migraine aura",
+              "citation": "Fisher CM. Headache 1986. Abrupt-onset visual or sensory symptoms without spread are more characteristic of TIA than migraine aura. The spreading march of aura is the key differentiating feature."
+            },
+            {
+              "key": "timing",
+              "value": "Aura over 60 minutes",
+              "logLR": -12,
+              "evidenceLabel": "Aura lasting >60 minutes without resolution — raises concern for TIA / CVST / AVM",
+              "citation": "ICHD-3 2018. Aura >60 min is defined as prolonged aura; onset >50y with first aura >60 min mandates TIA exclusion. Consider carotid imaging and cardiac workup. CVST can mimic prolonged aura."
+            },
+            {
+              "key": "associations",
+              "value": "No headache after aura",
+              "logLR": -8,
+              "evidenceLabel": "Aura without subsequent headache — acephalgic migraine or consider TIA in age >50",
+              "citation": "Fisher CM. Trans Am Neurol Assoc 1980. Acephalgic migraine (aura without headache) is a recognised ICHD-3 subtype (1.2.3). In patients >50y with new-onset aura-like symptoms without headache, TIA investigation required."
+            },
+            {
+              "key": "onset",
+              "value": "New onset over 50",
+              "logLR": -10,
+              "evidenceLabel": "New-onset aura-type symptoms after age 50 — TIA must be excluded before diagnosing MwA",
+              "citation": "ICHD-3 2018. New-onset visual/sensory symptoms in age >50 without prior migraine history requires TIA workup (MRI DWI, carotid duplex, ECG, echocardiogram) before migraine diagnosis. Prior migraine history essential context."
+            }
+          ]
         }
       ]
     },
