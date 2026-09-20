@@ -94,57 +94,71 @@ struct PreConsultEntrySheet: View {
     // MARK: - Sections
 
     private var ccSection: some View {
-        Section {
-            // Tap-to-select chip list
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(ccSurgicalChips) { chip in
+        Group {
+            Section {
+                TextField("Or describe in their own words…",
+                          text: $customCC, axis: .vertical)
+                    .font(.callout)
+                    .lineLimit(2...)
+
+                HStack {
+                    Text("Duration").font(.callout).foregroundStyle(.secondary)
+                    Spacer()
+                    TextField("e.g. 3 weeks", text: $duration)
+                        .multilineTextAlignment(.trailing)
+                        .font(.callout)
+                }
+
+                // Severity picker
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Text("Severity").font(.callout).foregroundStyle(.secondary)
+                        Spacer()
+                        Text(severity == 0 ? "Not specified" : "\(severity)/10")
+                            .font(.callout.monospacedDigit())
+                            .foregroundStyle(severityColor(severity))
+                    }
+                    Slider(value: Binding(get: { Double(severity) }, set: { severity = Int($0) }),
+                           in: 0...10, step: 1)
+                        .tint(severityColor(severity))
+                }
+            } header: {
+                Label("Reason for Visit", systemImage: "person.fill.questionmark")
+            }
+
+            // Specialty-grouped complaint picker
+            ForEach(ccSpecialtyGroups) { group in
+                Section {
+                    ForEach(group.chips) { chip in
                         let selected = selectedCC == chip.label
                         Button {
                             selectedCC = selected ? "" : chip.label
                         } label: {
-                            HStack(spacing: 4) {
-                                Image(systemName: chip.icon).font(.system(size: 10))
-                                Text(chip.label).font(.system(size: 12, weight: selected ? .semibold : .regular))
+                            HStack(spacing: 10) {
+                                Image(systemName: chip.icon)
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(selected ? AMColor.accent : .secondary)
+                                    .frame(width: 16)
+                                Text(chip.label)
+                                    .font(.callout.weight(selected ? .semibold : .regular))
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                if selected {
+                                    Image(systemName: "checkmark")
+                                        .font(.system(size: 11, weight: .semibold))
+                                        .foregroundStyle(AMColor.accent)
+                                }
                             }
-                            .padding(.horizontal, 10).padding(.vertical, 6)
-                            .background(selected ? AMColor.accent : AMColor.accentLt, in: Capsule())
-                            .foregroundStyle(selected ? Color.white : AMColor.accent)
                         }
                         .buttonStyle(.plain)
                     }
+                } header: {
+                    Label(group.name, systemImage: group.icon)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .textCase(nil)
                 }
-                .padding(.vertical, 4)
             }
-
-            TextField("Or describe in their own words…",
-                      text: $customCC, axis: .vertical)
-                .font(.callout)
-                .lineLimit(2...)
-
-            HStack {
-                Text("Duration").font(.callout).foregroundStyle(.secondary)
-                Spacer()
-                TextField("e.g. 3 weeks", text: $duration)
-                    .multilineTextAlignment(.trailing)
-                    .font(.callout)
-            }
-
-            // Severity picker
-            VStack(alignment: .leading, spacing: 6) {
-                HStack {
-                    Text("Severity").font(.callout).foregroundStyle(.secondary)
-                    Spacer()
-                    Text(severity == 0 ? "Not specified" : "\(severity)/10")
-                        .font(.callout.monospacedDigit())
-                        .foregroundStyle(severityColor(severity))
-                }
-                Slider(value: Binding(get: { Double(severity) }, set: { severity = Int($0) }),
-                       in: 0...10, step: 1)
-                    .tint(severityColor(severity))
-            }
-        } header: {
-            Label("Reason for Visit", systemImage: "person.fill.questionmark")
         }
     }
 

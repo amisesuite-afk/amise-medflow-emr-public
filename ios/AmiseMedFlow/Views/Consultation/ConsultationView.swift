@@ -264,37 +264,102 @@ struct CCSurgicalChip: Identifiable {
     let icon: String
 }
 
-let ccSurgicalChips: [CCSurgicalChip] = [
-    CCSurgicalChip(label: "Abdominal pain",        icon: "waveform.path.ecg"),
-    CCSurgicalChip(label: "Hernia",                icon: "arrow.up.left.and.arrow.down.right"),
-    CCSurgicalChip(label: "Breast lump",           icon: "circle.circle"),
-    CCSurgicalChip(label: "Reflux / Heartburn",    icon: "flame"),
-    CCSurgicalChip(label: "Change in bowel habit", icon: "arrow.left.arrow.right"),
-    CCSurgicalChip(label: "Rectal bleeding",       icon: "drop.fill"),
-    CCSurgicalChip(label: "Weight loss",           icon: "arrow.down.circle"),
-    CCSurgicalChip(label: "Jaundice",              icon: "sun.max"),
-    CCSurgicalChip(label: "Dysphagia",             icon: "mouth"),
-    CCSurgicalChip(label: "Wound / Post-op",       icon: "bandage"),
-    CCSurgicalChip(label: "Neck lump",             icon: "person.bust"),
-    CCSurgicalChip(label: "Bloating",              icon: "bubble.left"),
-    CCSurgicalChip(label: "Skin lesion",           icon: "oval.lefthalf.filled"),
-    CCSurgicalChip(label: "Anal pain",             icon: "figure.walk"),
-    CCSurgicalChip(label: "Nausea / Vomiting",     icon: "arrow.up.circle"),
-    // Medical / non-surgical
-    CCSurgicalChip(label: "Chest pain",            icon: "heart.fill"),
-    CCSurgicalChip(label: "Shortness of breath",   icon: "lungs.fill"),
-    CCSurgicalChip(label: "Fever / Infection",     icon: "thermometer.medium"),
-    CCSurgicalChip(label: "Urinary symptoms",      icon: "drop"),
-    CCSurgicalChip(label: "Joint pain",            icon: "figure.walk.motion"),
-    CCSurgicalChip(label: "Hypertension review",   icon: "waveform.path.ecg.rectangle"),
-    CCSurgicalChip(label: "Diabetes review",       icon: "cross.case"),
-    CCSurgicalChip(label: "Thyroid symptoms",      icon: "staroflife"),
-    // Administrative
-    CCSurgicalChip(label: "Follow-up",             icon: "arrow.clockwise"),
-    CCSurgicalChip(label: "Screening",             icon: "magnifyingglass"),
-    CCSurgicalChip(label: "ERCP / Biliary",        icon: "circle.dotted"),
-    CCSurgicalChip(label: "Other",                 icon: "ellipsis.circle"),
+struct CCSpecialtyGroup: Identifiable {
+    let id = UUID()
+    let name: String
+    let icon: String
+    let chips: [CCSurgicalChip]
+}
+
+let ccSpecialtyGroups: [CCSpecialtyGroup] = [
+    CCSpecialtyGroup(name: "General & GI Surgery", icon: "scissors", chips: [
+        CCSurgicalChip(label: "Abdominal pain",           icon: "waveform.path.ecg"),
+        CCSurgicalChip(label: "Nausea / Vomiting",        icon: "arrow.up.circle"),
+        CCSurgicalChip(label: "Hernia",                   icon: "arrow.up.left.and.arrow.down.right"),
+        CCSurgicalChip(label: "Reflux / Heartburn",       icon: "flame"),
+        CCSurgicalChip(label: "Change in bowel habit",    icon: "arrow.left.arrow.right"),
+        CCSurgicalChip(label: "Rectal bleeding",          icon: "drop.fill"),
+        CCSurgicalChip(label: "Anal pain",                icon: "figure.walk"),
+        CCSurgicalChip(label: "Dysphagia",                icon: "mouth"),
+        CCSurgicalChip(label: "Bloating",                 icon: "bubble.left"),
+        CCSurgicalChip(label: "Jaundice",                 icon: "sun.max"),
+        CCSurgicalChip(label: "Upper GI bleed",           icon: "drop.triangle.fill"),
+        CCSurgicalChip(label: "Bowel obstruction",        icon: "stop.circle"),
+        CCSurgicalChip(label: "Weight loss",              icon: "arrow.down.circle"),
+        CCSurgicalChip(label: "Neck lump",                icon: "person.bust"),
+        CCSurgicalChip(label: "Breast lump",              icon: "circle.circle"),
+        CCSurgicalChip(label: "Skin lesion",              icon: "oval.lefthalf.filled"),
+        CCSurgicalChip(label: "Wound / Post-op",          icon: "bandage"),
+        CCSurgicalChip(label: "ERCP / Biliary",           icon: "circle.dotted"),
+    ]),
+    CCSpecialtyGroup(name: "Cardiovascular", icon: "heart.fill", chips: [
+        CCSurgicalChip(label: "Chest pain",               icon: "heart.fill"),
+        CCSurgicalChip(label: "Palpitations",             icon: "waveform"),
+        CCSurgicalChip(label: "Hypertension review",      icon: "waveform.path.ecg.rectangle"),
+        CCSurgicalChip(label: "Shortness of breath",      icon: "lungs.fill"),
+        CCSurgicalChip(label: "Leg swelling / Oedema",    icon: "arrow.down.to.line"),
+        CCSurgicalChip(label: "Syncope / Presyncope",     icon: "bolt.slash"),
+        CCSurgicalChip(label: "Stroke / TIA",             icon: "brain.head.profile"),
+        CCSurgicalChip(label: "Peripheral arterial disease", icon: "arrow.left.arrow.right.circle"),
+    ]),
+    CCSpecialtyGroup(name: "Respiratory", icon: "lungs.fill", chips: [
+        CCSurgicalChip(label: "Cough",                    icon: "waveform.path"),
+        CCSurgicalChip(label: "Wheeze / Asthma",          icon: "wind"),
+        CCSurgicalChip(label: "Haemoptysis",              icon: "drop.fill"),
+        CCSurgicalChip(label: "Pleuritic chest pain",     icon: "lungs"),
+    ]),
+    CCSpecialtyGroup(name: "Endocrine & Metabolic", icon: "staroflife", chips: [
+        CCSurgicalChip(label: "Diabetes review",          icon: "cross.case"),
+        CCSurgicalChip(label: "Thyroid symptoms",         icon: "staroflife"),
+        CCSurgicalChip(label: "Adrenal symptoms",         icon: "bolt.circle"),
+        CCSurgicalChip(label: "Obesity / Weight management", icon: "scalemass"),
+        CCSurgicalChip(label: "Hyperlipidaemia review",   icon: "chart.line.uptrend.xyaxis"),
+    ]),
+    CCSpecialtyGroup(name: "Urology & Renal", icon: "drop", chips: [
+        CCSurgicalChip(label: "Urinary symptoms",         icon: "drop"),
+        CCSurgicalChip(label: "Renal colic",              icon: "bolt.fill"),
+        CCSurgicalChip(label: "Haematuria",               icon: "drop.triangle"),
+        CCSurgicalChip(label: "Urinary retention",        icon: "nosign"),
+        CCSurgicalChip(label: "Scrotal / Testicular",     icon: "circle.grid.2x1"),
+    ]),
+    CCSpecialtyGroup(name: "Musculoskeletal", icon: "figure.walk.motion", chips: [
+        CCSurgicalChip(label: "Joint pain",               icon: "figure.walk.motion"),
+        CCSurgicalChip(label: "Back pain / Sciatica",     icon: "figure.stand"),
+        CCSurgicalChip(label: "Limb swelling",            icon: "arrow.up.and.line.horizontal.and.arrow.down"),
+        CCSurgicalChip(label: "Muscle weakness",          icon: "bolt.horizontal"),
+    ]),
+    CCSpecialtyGroup(name: "Neurology", icon: "brain.head.profile", chips: [
+        CCSurgicalChip(label: "Headache",                 icon: "bolt.fill"),
+        CCSurgicalChip(label: "Dizziness / Vertigo",      icon: "rotate.3d"),
+        CCSurgicalChip(label: "Seizure",                  icon: "waveform.path.ecg"),
+        CCSurgicalChip(label: "Memory / Cognitive",       icon: "brain"),
+        CCSurgicalChip(label: "Numbness / Tingling",      icon: "hand.point.up"),
+    ]),
+    CCSpecialtyGroup(name: "Infectious & Tropical", icon: "thermometer.medium", chips: [
+        CCSurgicalChip(label: "Fever / Infection",        icon: "thermometer.medium"),
+        CCSurgicalChip(label: "Dengue fever",             icon: "thermometer.sun"),
+        CCSurgicalChip(label: "Leptospirosis",            icon: "drop.degreesign"),
+        CCSurgicalChip(label: "Sepsis",                   icon: "exclamationmark.triangle.fill"),
+        CCSurgicalChip(label: "HIV / Immunodeficiency",   icon: "shield.slash"),
+        CCSurgicalChip(label: "Skin / Soft tissue infection", icon: "bandage.fill"),
+        CCSurgicalChip(label: "STI / Genital symptoms",   icon: "cross.circle"),
+    ]),
+    CCSpecialtyGroup(name: "Haematology & Oncology", icon: "drop.circle", chips: [
+        CCSurgicalChip(label: "Anaemia / Fatigue",        icon: "battery.25"),
+        CCSurgicalChip(label: "Lymphadenopathy",          icon: "circle.grid.3x3"),
+        CCSurgicalChip(label: "Bruising / Bleeding",      icon: "bandage"),
+        CCSurgicalChip(label: "Cancer follow-up",         icon: "arrow.clockwise.circle"),
+    ]),
+    CCSpecialtyGroup(name: "Administrative", icon: "calendar", chips: [
+        CCSurgicalChip(label: "Follow-up",                icon: "arrow.clockwise"),
+        CCSurgicalChip(label: "Screening",                icon: "magnifyingglass"),
+        CCSurgicalChip(label: "Pre-operative assessment", icon: "checklist"),
+        CCSurgicalChip(label: "Other",                    icon: "ellipsis.circle"),
+    ]),
 ]
+
+// Flat list derived from groups — used wherever a single array is needed
+let ccSurgicalChips: [CCSurgicalChip] = ccSpecialtyGroups.flatMap(\.chips)
 
 // MARK: - PMH & PSHx chip data
 
@@ -754,6 +819,7 @@ struct ConsultationView: View {
     @State private var newAllergySeverity = "Moderate"
     @State private var newAllergyReaction = ""
     @State private var triageResult: TriageResult?
+    @State private var ccBayesDiff: [BayesianDiagnosisEngine.DiagnosisResult] = []
     @State private var isAssessing = false
     @State private var pathwayTask: Task<Void, Never>?
     @State private var icdQuery = ""
@@ -901,7 +967,27 @@ struct ConsultationView: View {
             dismissedRadiation = false
         }
         .onChange(of: patient.chiefComplaint) { _, newCC in
-            guard let cc = newCC, !cc.isEmpty else { triageResult = nil; return }
+            guard let cc = newCC, !cc.isEmpty else {
+                triageResult = nil
+                ccBayesDiff = []
+                return
+            }
+            // Immediate early Bayesian differential using CC + PMH/PSHx only
+            let pmhNotes  = patient.pmhEntries.map(\.condition).joined(separator: ", ")
+            let pshxNotes = patient.pshxEntries.map(\.procedure).joined(separator: ", ")
+            let earlyDiff = BayesianDiagnosisEngine.infer(
+                chiefComplaint: cc,
+                socratesSelections: [:],
+                pmhNotes: pmhNotes,
+                surgicalHistory: pshxNotes,
+                examAbdo: nil,
+                examGeneral: nil,
+                investigations: [],
+                ageYears: patient.ageYears,
+                sex: patient.sex
+            )
+            ccBayesDiff = Array(earlyDiff.prefix(4))
+            // Debounced full pathway + Bayesian refresh
             pathwayTask?.cancel()
             pathwayTask = Task {
                 try? await Task.sleep(nanoseconds: 800_000_000)
@@ -1316,11 +1402,12 @@ struct ConsultationView: View {
 
     private var selectedChipLabel: String? {
         let cc = patient.chiefComplaint ?? ""
-        return ccSurgicalChips.first(where: { $0.label == cc })?.label
+        return ccSpecialtyGroups.flatMap(\.chips).first(where: { $0.label == cc })?.label
     }
 
     private var ccTab: some View {
         List {
+            // Patient identity + free-text input
             Section {
                 HStack(spacing: 6) {
                     Image(systemName: "person.text.rectangle")
@@ -1350,41 +1437,13 @@ struct ConsultationView: View {
                         Text("Visit type").font(.caption2).foregroundStyle(.tertiary)
                     }
                 }
-
-                // Complaint list
-                ForEach(ccSurgicalChips) { chip in
-                    let isSelected = selectedChipLabel == chip.label
-                    Button {
-                        patient.chiefComplaint = chip.label
-                        touch()
-                    } label: {
-                        HStack(spacing: 10) {
-                            Image(systemName: chip.icon)
-                                .font(.system(size: 11))
-                                .foregroundStyle(isSelected ? AMColor.accent : .secondary)
-                                .frame(width: 16)
-                            Text(chip.label)
-                                .font(.callout.weight(isSelected ? .semibold : .regular))
-                                .foregroundStyle(.primary)
-                            Spacer()
-                            if isSelected {
-                                Image(systemName: "checkmark")
-                                    .font(.system(size: 11, weight: .semibold))
-                                    .foregroundStyle(AMColor.accent)
-                            }
-                        }
-                    }
-                    .buttonStyle(.plain)
-                }
-
                 // Free-text override
-                TextField("Or type a custom complaint…",
+                TextField("Type a complaint or select below…",
                           text: Binding(get: { patient.chiefComplaint ?? "" },
                                         set: { patient.chiefComplaint = $0.isEmpty ? nil : $0; touch() }),
                           axis: .vertical)
                     .font(.callout)
                     .lineLimit(3...)
-
                 if isAssessing {
                     HStack(spacing: 8) {
                         ProgressView().scaleEffect(0.8)
@@ -1396,7 +1455,98 @@ struct ConsultationView: View {
                               filled: !(patient.chiefComplaint ?? "").isEmpty)
             }
 
+            // Inline Bayesian early differential
+            if !ccBayesDiff.isEmpty {
+                ccBayesDifferentialSection
+            }
+
+            // Pathway result
             if let result = triageResult { pathwayResult(result) }
+
+            // Specialty-grouped complaint sections
+            ForEach(ccSpecialtyGroups) { group in
+                Section {
+                    ForEach(group.chips) { chip in
+                        let isSelected = selectedChipLabel == chip.label
+                        Button {
+                            patient.chiefComplaint = chip.label
+                            touch()
+                        } label: {
+                            HStack(spacing: 10) {
+                                Image(systemName: chip.icon)
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(isSelected ? AMColor.accent : .secondary)
+                                    .frame(width: 16)
+                                Text(chip.label)
+                                    .font(.callout.weight(isSelected ? .semibold : .regular))
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                if isSelected {
+                                    Image(systemName: "checkmark")
+                                        .font(.system(size: 11, weight: .semibold))
+                                        .foregroundStyle(AMColor.accent)
+                                }
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
+                } header: {
+                    Label(group.name, systemImage: group.icon)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .textCase(nil)
+                }
+            }
+        }
+    }
+
+    // MARK: - CC Bayesian differential (early, CC-only signal)
+
+    @ViewBuilder private var ccBayesDifferentialSection: some View {
+        Section {
+            ForEach(ccBayesDiff.prefix(4), id: \.name) { dx in
+                HStack(spacing: 8) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(dx.name)
+                            .font(.subheadline.weight(.medium))
+                        Text(dx.icdCode)
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                    }
+                    Spacer()
+                    // Probability bar + label
+                    ZStack(alignment: .leading) {
+                        Capsule()
+                            .fill(Color.secondary.opacity(0.15))
+                            .frame(width: 60, height: 6)
+                        Capsule()
+                            .fill(bayesColor(dx.confidence))
+                            .frame(width: max(4, CGFloat(dx.probability) / 100 * 60), height: 6)
+                    }
+                    Text("\(dx.probability)%")
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(bayesColor(dx.confidence))
+                        .frame(width: 34, alignment: .trailing)
+                }
+            }
+        } header: {
+            Label("Early Differential — tap to confirm", systemImage: "wand.and.stars")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(AMColor.accent)
+                .textCase(nil)
+        } footer: {
+            Text("Based on chief complaint + PMH only. Refines as you add more evidence.")
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+        }
+    }
+
+    private func bayesColor(_ c: BayesianDiagnosisEngine.Confidence) -> Color {
+        switch c {
+        case .certain:  return .red
+        case .high:     return .orange
+        case .moderate: return AMColor.accent
+        case .low:      return .secondary
         }
     }
 
