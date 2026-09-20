@@ -138,7 +138,17 @@ enum BayesianDiagnosisEngine {
              ccL.contains("bloating") || ccL.contains("indigestion") ||
              ccL.contains("dyspepsia") || ccL.contains("regurgitat"):
             candidates = externalPool("refluxGERD") ?? refluxGERD
-        case ccL.contains("groin pain") || ccL.contains("right iliac") || ccL.contains("inguinal pain"):
+        case ccL.contains("right iliac fossa") || ccL.contains("rif pain") ||
+             ccL.contains("appendic") || ccL.contains("rlq pain"):
+            candidates = externalPool("rightIliacFossaPain") ?? []
+        case ccL.contains("biliary colic") || ccL.contains("cholecystit") ||
+             (ccL.contains("gallstone") && !ccL.contains("pancreat")) ||
+             (ccL.contains("gallbladder") && !ccL.contains("pancreat")):
+            candidates = externalPool("biliaryColic") ?? []
+        case ccL.contains("pancreatitis") || ccL.contains("acute pancreatic") ||
+             (ccL.contains("epigast") && ccL.contains("back") && ccL.contains("amylase")):
+            candidates = externalPool("acutePancreatitis") ?? []
+        case ccL.contains("groin pain") || ccL.contains("inguinal pain"):
             candidates = externalPool("groinPain") ?? groinPain
         case ccL.contains("abdom") || ccL.contains("belly") || ccL.contains("stomach") ||
              ccL.contains("upper abdom") || ccL.contains("epigast") ||
@@ -249,7 +259,11 @@ enum BayesianDiagnosisEngine {
              (ccL.contains("follow") && ccL.contains("up")):
             candidates = externalPool("postOpReview") ?? postOpReview
         case ccL.contains("ercp") || (ccL.contains("biliary") && !ccL.contains("hernia")):
-            candidates = externalPool("jaundice") ?? jaundice
+            candidates = externalPool("biliaryColic") ?? []
+        case ccL.contains("endoscopy finding") || ccL.contains("scope finding") ||
+             ccL.contains("colonoscopy finding") || ccL.contains("barrett") ||
+             ccL.contains("polyp") || ccL.contains("varices"):
+            candidates = externalPool("endoscopyFinding") ?? []
         case ccL.contains("screen"):
             candidates = externalPool("weightLoss") ?? weightLoss
 
@@ -404,6 +418,15 @@ enum BayesianDiagnosisEngine {
         if ccL.contains("breathless") || ccL.contains("oedema") || ccL.contains("edema") { mergePool("cardiacFailure") }
         // Secondary pool: jaundice overlay on liver symptoms
         if ccL.contains("jaundice") || ccL.contains("yellow") { mergePool("liverDisease") }
+        // Secondary pool: biliary overlay when RUQ or biliary keywords present
+        if ccL.contains("right upper") || ccL.contains("ruq") || ccL.contains("cholecyst") ||
+           ccL.contains("gallbladder") || ccL.contains("biliary") { mergePool("biliaryColic") }
+        // Secondary pool: pancreatitis overlay on epigastric with back radiation
+        if ccL.contains("pancreat") || ccL.contains("amylase") ||
+           (ccL.contains("epigast") && ccL.contains("back")) { mergePool("acutePancreatitis") }
+        // Secondary pool: appendicitis overlay on RIF or periumbilical pain
+        if ccL.contains("right iliac") || ccL.contains("rif") || ccL.contains("appendic") ||
+           (ccL.contains("periumbilical") && ccL.contains("migrat")) { mergePool("rightIliacFossaPain") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but
