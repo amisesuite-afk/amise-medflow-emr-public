@@ -14539,6 +14539,139 @@
               "value": "Aura",
               "logLR": 16,
               "evidenceLabel": "Visual / sensory aura preceding headache"
+            },
+            {
+              "key": "associations",
+              "value": "Osmophobia",
+              "logLR": 10,
+              "evidenceLabel": "Osmophobia — hypersensitivity to smells (highly specific for migraine vs TTH)",
+              "citation": "Kelman L. Cephalalgia 2004. Osmophobia LR+ 5.8 for migraine vs TTH. Present in 43–95% of migraineurs; rare in TTH and SAH. ICHD-3 supplementary criterion."
+            },
+            {
+              "key": "associations",
+              "value": "Allodynia",
+              "logLR": 8,
+              "evidenceLabel": "Cutaneous allodynia — scalp / skin tenderness during attack",
+              "citation": "Burstein R et al. Ann Neurol 2000. Cutaneous allodynia present in ~70% of migraineurs; peripheral and central sensitisation. Predicts triptan failure if develops before treatment."
+            },
+            {
+              "key": "associations",
+              "value": "Visual aura",
+              "logLR": 16,
+              "evidenceLabel": "Visual aura — scintillating scotoma / fortification spectra preceding headache",
+              "citation": "Olesen J et al. Lancet Neurol 2004. ICHD-3: visual aura must spread over ≥5 min, last 5–60 min, and fully reverse. Scintillating scotoma pathognomonic for migraine aura."
+            },
+            {
+              "key": "associations",
+              "value": "Sensory aura",
+              "logLR": 14,
+              "evidenceLabel": "Sensory aura — unilateral paraesthesia spreading over 20–30 minutes",
+              "citation": "Russell MB & Olesen J. Brain 1996. Sensory aura (unilateral paraesthesia) present in 31% of migraine with aura; spreading Jacksonian march over 20–30 min distinguishes from TIA (onset seconds)."
+            },
+            {
+              "key": "associations",
+              "value": "Brainstem aura",
+              "logLR": 12,
+              "evidenceLabel": "Brainstem aura — vertigo, diplopia, tinnitus, dysarthria (vestibular migraine)",
+              "citation": "Lempert T et al. Neurology 2012. Vestibular migraine: recurrent vertigo + migrainous features. ICHD-3 diagnostic criteria. 1% of migraine cases; most common cause of episodic vertigo + headache."
+            },
+            {
+              "key": "associations",
+              "value": "Prodrome",
+              "logLR": 6,
+              "evidenceLabel": "Prodrome — yawning, food craving, mood change or fatigue hours before headache",
+              "citation": "Giffin NJ et al. Neurology 2003. Prodromal symptoms in 72% of migraineurs; yawning (36%) and food craving (32%) most specific. Reflects hypothalamic activation before trigeminal activation."
+            },
+            {
+              "key": "associations",
+              "value": "Postdrome",
+              "logLR": 6,
+              "evidenceLabel": "Postdrome — cognitive fog, fatigue, difficulty concentrating after headache resolution",
+              "citation": "Giffin NJ et al. Neurology 2016. Postdrome in 80% of attacks; cognitive impairment, fatigue, neck stiffness. Distinguishes migraine from TTH where attack ends cleanly."
+            },
+            {
+              "key": "history",
+              "value": "Family history migraine",
+              "logLR": 10,
+              "evidenceLabel": "Family history of migraine in 1st-degree relative",
+              "citation": "Mulder EJ et al. Cephalalgia 2003. Twin studies: heritability 50%. Family history LR+ 3.0 for migraine. CACNA1A / KCNK18 gene variants identified in familial hemiplegic migraine."
+            },
+            {
+              "key": "relieving",
+              "value": "Sleep",
+              "logLR": 10,
+              "evidenceLabel": "Sleep terminates or relieves attack — characteristic abortive treatment for migraine",
+              "citation": "Blau JN. Lancet 1982. Sleep relieves migraine in >80% when attack allowed to run its natural course. Dark, quiet room + sleep is first-line non-pharmacological treatment."
+            },
+            {
+              "key": "exacerbating",
+              "value": "Stress trigger",
+              "logLR": 6,
+              "evidenceLabel": "Psychological stress or 'let-down' after stress as a precipitant",
+              "citation": "Spierings EL et al. Headache 2001. Stress (emotional / physical) most common trigger in 70–80% of migraineurs. Let-down effect (relaxation after stress) also a recognised trigger."
+            },
+            {
+              "key": "exacerbating",
+              "value": "Alcohol trigger",
+              "logLR": 6,
+              "evidenceLabel": "Alcohol — especially red wine — as a migraine trigger",
+              "citation": "Panconesi A. J Headache Pain 2008. Alcohol triggers migraine in 30–38%; red wine implicated by sulphites, histamine, tyramine. Occurs within hours, distinguishable from hangover headache."
+            },
+            {
+              "key": "exacerbating",
+              "value": "Sleep disruption",
+              "logLR": 6,
+              "evidenceLabel": "Sleep deprivation or oversleeping as a precipitant ('weekend migraine')",
+              "citation": "Kelman L & Rains JC. Headache 2005. Sleep disturbance triggers or worsens migraine in 50%. Both too little and too much sleep are triggers (bidirectional relationship)."
+            },
+            {
+              "key": "severity",
+              "value": "Moderate to severe",
+              "logLR": 8,
+              "evidenceLabel": "Moderate to severe pain intensity (≥6/10) interfering with daily activities",
+              "citation": "Lipton RB et al. Headache 2001. ICHD-3 criterion: headache must be moderate or severe. Also MIDAS disability ≥11 days/3 months is threshold for preventive therapy."
+            },
+            {
+              "key": "history",
+              "value": "OCP / hormonal contraception",
+              "logLR": 4,
+              "evidenceLabel": "Combined oral contraceptive use — hormonal fluctuation as migraine trigger",
+              "citation": "MacGregor EA. Lancet Neurol 2004. Oestrogen withdrawal during pill-free week triggers menstrual migraine. COC contraindicated with migraine with aura (stroke risk Class III/IV WHO-MEC)."
+            },
+            {
+              "key": "character",
+              "value": "Bilateral pressing",
+              "logLR": -8,
+              "evidenceLabel": "Bilateral pressing / tightening quality — argues for tension-type headache",
+              "citation": "ICHD-3 2018. Bilateral non-pulsating (pressing/tightening) quality is a positive criterion for TTH and an exclusion criterion for migraine without aura. LR- 0.19 for migraine."
+            },
+            {
+              "key": "onset",
+              "value": "Thunderclap",
+              "logLR": -14,
+              "evidenceLabel": "Thunderclap onset — argues strongly against migraine (raises SAH / RCVS probability)",
+              "citation": "Ducros A & Bousser MG. BMJ 2013. Thunderclap headache is not caused by migraine. Sudden maximal onset mandates exclusion of SAH, RCVS, CVST before diagnosing primary headache disorder."
+            },
+            {
+              "key": "associations",
+              "value": "No nausea or vomiting",
+              "logLR": -8,
+              "evidenceLabel": "Absence of nausea and vomiting — required symptom absent (reduces ICHD-3 probability)",
+              "citation": "ICHD-3 2018. Migraine without aura requires nausea/vomiting OR photophobia+phonophobia. Absence of all three makes diagnosis unlikely."
+            },
+            {
+              "key": "timing",
+              "value": "Duration under 4 hours",
+              "logLR": -6,
+              "evidenceLabel": "Duration <4h — migraine typically lasts 4–72h untreated; shorter attacks suggest cluster or TAC",
+              "citation": "ICHD-3 2018. 4–72h duration required for migraine. Attacks <4h suggest cluster headache (15–180 min), SUNCT/SUNA, or indomethacin-responsive headache."
+            },
+            {
+              "key": "relieving",
+              "value": "No triptan response",
+              "logLR": -8,
+              "evidenceLabel": "Failure to respond to two different triptans — reduces migraine probability",
+              "citation": "Scher AI et al. Neurology 2003. Non-response to two triptans has positive predictive value for non-migraine diagnosis; consider secondary headache workup. Also consider medication overuse."
             }
           ],
           "systems": [
@@ -14892,6 +15025,146 @@
               "value": "wcc",
               "logLR": 12,
               "evidenceLabel": "Raised WCC / neutrophilia"
+            },
+            {
+              "key": "exam",
+              "value": "Jolt accentuation",
+              "logLR": 12,
+              "evidenceLabel": "Jolt accentuation — headache worsens on rapid horizontal head rotation (2–3 Hz)",
+              "citation": "Uchihara T & Tsukagoshi H. J Neurol Neurosurg Psychiatry 1991. Sensitivity 97%, specificity 60% for meningeal irritation. LR+ 11.0. Useful bedside test when formal Kernig/Brudzinski equivocal."
+            },
+            {
+              "key": "exam",
+              "value": "Papilloedema",
+              "logLR": 12,
+              "evidenceLabel": "Papilloedema — raised intracranial pressure; warrants CT before LP",
+              "citation": "van de Beek D et al. NEJM 2004. Papilloedema in 8% of bacterial meningitis. IDSA guidelines: CT before LP if papilloedema, focal deficit, new-onset seizure, immunocompromised, or altered consciousness."
+            },
+            {
+              "key": "exam",
+              "value": "Non-blanching petechiae",
+              "logLR": 18,
+              "evidenceLabel": "Non-blanching petechial rash — glass test positive (meningococcaemia)",
+              "citation": "Wells LC et al. Arch Dis Child 2001. Non-blanching rash sensitivity 72%, specificity 96% for meningococcal disease. ANY non-blanching rash = immediate parenteral benzylpenicillin before transfer."
+            },
+            {
+              "key": "associations",
+              "value": "Seizure",
+              "logLR": 12,
+              "evidenceLabel": "Seizure at onset or during illness — occurs in ~30% of bacterial meningitis",
+              "citation": "van de Beek D et al. NEJM 2004. New-onset seizure present in 5–28% at onset; associated with higher mortality. Indicates cortical irritation / cerebral oedema / cortical venous thrombosis."
+            },
+            {
+              "key": "associations",
+              "value": "Waterhouse-Friderichsen",
+              "logLR": 18,
+              "evidenceLabel": "Waterhouse-Friderichsen syndrome — bilateral adrenal haemorrhage / purpura fulminans / shock",
+              "citation": "Quagliarello VJ & Scheld WM. NEJM 1997. Fulminant meningococcaemia with bilateral adrenal haemorrhage. Purpura fulminans, haemodynamic collapse; mortality >50% without immediate management."
+            },
+            {
+              "key": "associations",
+              "value": "Hearing loss",
+              "logLR": 8,
+              "evidenceLabel": "Sensorineural hearing loss — cochlear damage from inflammatory mediators",
+              "citation": "Dodge PR et al. NEJM 1984. SNHL in 10–30% of survivors; most common neurological sequela. Due to cochlear labyrinthitis from subarachnoid space inflammation. Dexamethasone reduces risk (de Gans NEJM 2002)."
+            },
+            {
+              "key": "history",
+              "value": "Preceding URTI / sinusitis / otitis media",
+              "logLR": 8,
+              "evidenceLabel": "Preceding upper respiratory tract infection — source of haematogenous spread",
+              "citation": "Stephens DS et al. Lancet 2007. Nasopharyngeal colonisation with N. meningitidis precedes haematogenous spread. Preceding viral URTI disrupts mucosal barriers and facilitates invasion."
+            },
+            {
+              "key": "risk",
+              "value": "Immunocompromised / asplenic",
+              "logLR": 10,
+              "evidenceLabel": "Immunocompromised / asplenic / complement deficiency — high-risk host",
+              "citation": "van de Beek D et al. Clin Infect Dis 2006. Asplenia, complement deficiency (C5-C9), and HIV are major risk factors for encapsulated organism meningitis (Neisseria, Pneumococcus, Haemophilus)."
+            },
+            {
+              "key": "risk",
+              "value": "Close contact / outbreak",
+              "logLR": 12,
+              "evidenceLabel": "Close contact with confirmed case / freshers / military barracks / Hajj travel",
+              "citation": "Caugant DA & Maiden MC. Vaccine 2009. Clustering in closed communities (university, military) reflects shared carriage. Secondary attack rate 500–1200× general population; prophylaxis required for close contacts."
+            },
+            {
+              "key": "risk",
+              "value": "Travel to meningococcal belt",
+              "logLR": 8,
+              "evidenceLabel": "Travel to sub-Saharan African meningitis belt (Niger, Mali, Chad region)",
+              "citation": "Greenwood B. Vaccine 1999. The meningitis belt (10°–15°N) has incidence 10–25/100,000; epidemic serogroup A/W135 disease. MenACWY vaccination required for Hajj by Saudi MOH."
+            },
+            {
+              "key": "inv",
+              "value": "csf glucose low",
+              "logLR": 16,
+              "evidenceLabel": "CSF glucose <2.2 mmol/L or CSF:serum ratio <0.4 — hallmark of bacterial meningitis",
+              "citation": "Spanos A et al. JAMA 1989. CSF glucose <2.2 mmol/L LR+ 18.3; CSF:serum ratio <0.4 LR+ 14.7. Glucose consumed by bacteria and neutrophils. Check paired serum glucose at LP."
+            },
+            {
+              "key": "inv",
+              "value": "csf protein elevated",
+              "logLR": 14,
+              "evidenceLabel": "CSF protein >1 g/L — elevated protein from blood-brain barrier breakdown",
+              "citation": "Spanos A et al. JAMA 1989. CSF protein >1g/L LR+ 11.1 for bacterial vs viral meningitis. Protein >3g/L associated with poor prognosis (obliterative vasculitis)."
+            },
+            {
+              "key": "inv",
+              "value": "csf lactate",
+              "logLR": 14,
+              "evidenceLabel": "CSF lactate >3.5 mmol/L — anaerobic metabolism by bacteria / ischaemic neurons",
+              "citation": "Sakushima K et al. J Infect 2011. CSF lactate LR+ 21.3 for bacterial vs viral meningitis (sensitivity 93%, specificity 96%). Particularly useful post-antibiotics when cultures may be negative."
+            },
+            {
+              "key": "inv",
+              "value": "gram stain positive",
+              "logLR": 20,
+              "evidenceLabel": "CSF Gram stain positive — organisms visualised (Gram-negative diplococci, Gram-positive cocci)",
+              "citation": "Tunkel AR et al. Clin Infect Dis 2004. Gram stain sensitivity 60–90% (highest for pneumococcal); specificity ~100%. Identifies organism in 80% of untreated cases. Start empirical treatment before result."
+            },
+            {
+              "key": "inv",
+              "value": "pcr meningococcal",
+              "logLR": 20,
+              "evidenceLabel": "Meningococcal / pneumococcal PCR or antigen detection positive",
+              "citation": "Thulin Hedberg S et al. FEMS Microbiol Rev 2022. PCR sensitivity 95% vs culture 80%; remains positive after antibiotics. N. meningitidis PCR (ctrA gene) recommended for all suspected cases."
+            },
+            {
+              "key": "inv",
+              "value": "procalcitonin",
+              "logLR": 12,
+              "evidenceLabel": "Procalcitonin >0.5 ng/mL — elevated in bacterial, normal in viral meningitis",
+              "citation": "Vikse J et al. Infect Dis 2015. Serum procalcitonin LR+ 8.0, LR- 0.08 for bacterial vs viral/aseptic meningitis. Distinguishes bacterial from viral in emergency settings before CSF results available."
+            },
+            {
+              "key": "associations",
+              "value": "No fever",
+              "logLR": -12,
+              "evidenceLabel": "Afebrile at presentation — absence of fever argues strongly against bacterial meningitis",
+              "citation": "van de Beek D et al. NEJM 2004. Fever present in 95% of adult bacterial meningitis. Afebrile presentation unusual (immunosuppressed, elderly on NSAIDs); absence should prompt alternative diagnosis."
+            },
+            {
+              "key": "history",
+              "value": "Fully vaccinated Hib MenACWY PCV",
+              "logLR": -12,
+              "evidenceLabel": "Fully vaccinated against Hib, MenACWY, and PCV — significantly reduces probability",
+              "citation": "Meningitis Research Foundation 2020. MenC vaccination reduced incidence 99% in UK. PCV13 reduced pneumococcal meningitis 64%. Vaccination history is the most important negative risk factor."
+            },
+            {
+              "key": "onset",
+              "value": "Subacute over days",
+              "logLR": -8,
+              "evidenceLabel": "Subacute onset over days — suggests TB meningitis, viral, or fungal rather than bacterial",
+              "citation": "Thwaites GE et al. NEJM 2004. TB meningitis onset 14–40 days; bacterial meningitis typically <24h. Subacute course with prodromal illness favours TB meningitis or viral / cryptococcal aetiology."
+            },
+            {
+              "key": "inv",
+              "value": "csf clear normal",
+              "logLR": -16,
+              "evidenceLabel": "CSF clear, normal glucose, normal protein, no pleocytosis — excludes bacterial meningitis",
+              "citation": "Tunkel AR et al. Clin Infect Dis 2004. Normal CSF (clear, glucose >2.5, protein <0.45g/L, WCC <5) has LR- 0.03 for bacterial meningitis. Rare exception: very early bacterial meningitis before pleocytosis develops."
             }
           ],
           "systems": [
