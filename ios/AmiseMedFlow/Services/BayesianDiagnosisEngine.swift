@@ -270,6 +270,100 @@ enum BayesianDiagnosisEngine {
              ccL.contains("hemoptysis") || ccL.contains("coughing"):
             candidates = externalPool("cough") ?? []
 
+        // ── Gynaecology & Obstetrics ──────────────────────────────────────
+        case ccL.contains("pelvic pain") || ccL.contains("pelvi") && ccL.contains("pain"):
+            candidates = externalPool("pelvicPain") ?? []
+        case ccL.contains("vaginal bleed") || ccL.contains("per vaginum") ||
+             ccL.contains("pvb") || ccL.contains("postcoital") ||
+             ccL.contains("intermenstrual") || ccL.contains("postmenopausal bleed") ||
+             (ccL.contains("bleed") && (ccL.contains("uterine") || ccL.contains("womb"))):
+            candidates = externalPool("vaginalBleeding") ?? []
+        case ccL.contains("amenorrh") || ccL.contains("irregular period") ||
+             ccL.contains("dysmenorrh") || ccL.contains("menstrual") ||
+             ccL.contains("period pain") || ccL.contains("pcos") ||
+             ccL.contains("polycystic") || ccL.contains("vulv") ||
+             ccL.contains("vaginal discharge") || ccL.contains("dyspareunia") ||
+             ccL.contains("menopaus") || ccL.contains("gynaecolog") ||
+             ccL.contains("gynecolog") || ccL.contains("fertility") ||
+             ccL.contains("contraception"):
+            candidates = externalPool("gynaecologyGeneral") ?? []
+        case ccL.contains("pregnancy") || ccL.contains("pregnant") ||
+             ccL.contains("antenatal") || ccL.contains("obstetric") ||
+             ccL.contains("hyperemesis") || ccL.contains("eclampsia") ||
+             ccL.contains("gestational") || ccL.contains("antepartum") ||
+             ccL.contains("postpartum") || ccL.contains("postnatal"):
+            candidates = externalPool("obstetricComplications") ?? []
+
+        // ── Paediatrics ───────────────────────────────────────────────────
+        case (ccL.contains("child") || ccL.contains("infant") || ccL.contains("paediatric") ||
+              ccL.contains("pediatric") || ccL.contains("neonat")) &&
+             (ccL.contains("fever") || ccL.contains("febrile") || ccL.contains("infection") ||
+              ccL.contains("rash") || ccL.contains("ear") || ccL.contains("throat")):
+            candidates = externalPool("paediatricFebrile") ?? []
+        case (ccL.contains("child") || ccL.contains("infant") || ccL.contains("paediatric")) &&
+             (ccL.contains("abdom") || ccL.contains("vomit") || ccL.contains("bowel") ||
+              ccL.contains("gut") || ccL.contains("intussuscep") || ccL.contains("pyloric")):
+            candidates = externalPool("paediatricAbdomen") ?? []
+        case ccL.contains("intussuscep") || ccL.contains("pyloric stenosis") ||
+             ccL.contains("meckel") || ccL.contains("failure to thrive") ||
+             ccL.contains("developmental concern") || ccL.contains("growth concern") ||
+             ccL.contains("paediatric") || ccL.contains("pediatric"):
+            candidates = externalPool("paediatricFebrile") ?? []
+
+        // ── Dermatology ───────────────────────────────────────────────────
+        case ccL.contains("eczema") || ccL.contains("dermatitis") ||
+             ccL.contains("psoriasis") || ccL.contains("urticaria") || ccL.contains("hives") ||
+             ccL.contains("rash") && !ccL.contains("child") ||
+             ccL.contains("tinea") || ccL.contains("ringworm") || ccL.contains("fungal skin") ||
+             ccL.contains("pityriasis") || ccL.contains("pruritus") ||
+             ccL.contains("itch") && !ccL.contains("anal") ||
+             ccL.contains("alopecia") || ccL.contains("hair loss") ||
+             ccL.contains("nail disorder") || ccL.contains("pigmentation"):
+            candidates = externalPool("dermatologyRash") ?? []
+
+        // ── Neurosurgery ──────────────────────────────────────────────────
+        case ccL.contains("head injur") || ccL.contains("head trauma") ||
+             ccL.contains("skull fracture") || ccL.contains("brain injur") ||
+             ccL.contains("subdural") || ccL.contains("extradural") ||
+             ccL.contains("intracranial") || ccL.contains("cranial") ||
+             ccL.contains("hydrocephal") || ccL.contains("brain tumour") ||
+             ccL.contains("brain tumor") || ccL.contains("intracranial pressure") ||
+             ccL.contains("space-occupying") || ccL.contains("raised icp"):
+            candidates = externalPool("neurosurgicalHead") ?? []
+
+        // ── Cardiology (expanded) ─────────────────────────────────────────
+        case ccL.contains("heart failure") || ccL.contains("cardiac failure") ||
+             ccL.contains("cardiomyopathy") || ccL.contains("valvular") ||
+             ccL.contains("aortic stenosis") || ccL.contains("mitral") ||
+             ccL.contains("tamponade") || ccL.contains("low ejection fraction") ||
+             ccL.contains("hfref") || ccL.contains("hfpef"):
+            candidates = externalPool("cardiacFailure") ?? []
+        case ccL.contains("atrial fibrillation") || ccL.contains("af ") || ccL == "af" ||
+             ccL.contains("arrhythmia") || ccL.contains("svt") ||
+             ccL.contains("tachycardia") || ccL.contains("bradycardia") ||
+             ccL.contains("heart block") || ccL.contains("wpw") ||
+             ccL.contains("ventricular tachycard") || ccL.contains("vt ") || ccL == "vt":
+            candidates = externalPool("arrhythmia") ?? []
+
+        // ── Internal Medicine ─────────────────────────────────────────────
+        case ccL.contains("ckd") || ccL.contains("chronic kidney") ||
+             ccL.contains("renal disease") || ccL.contains("renal failure") ||
+             ccL.contains("glomerulonephritis") || ccL.contains("nephrotic") ||
+             ccL.contains("nephritis") || ccL.contains("proteinuria review") ||
+             ccL.contains("aki") || ccL.contains("acute kidney"):
+            candidates = externalPool("chronicKidney") ?? []
+        case ccL.contains("liver disease") || ccL.contains("cirrhosis") ||
+             ccL.contains("hepatitis") || ccL.contains("nafld") || ccL.contains("nash") ||
+             ccL.contains("alcoholic liver") || ccL.contains("portal hypertension") ||
+             ccL.contains("ascites") || ccL.contains("hepatic encephal") ||
+             ccL.contains("varices") || ccL.contains("hbv") || ccL.contains("hcv"):
+            candidates = externalPool("liverDisease") ?? []
+        // Mental health → generalMedicine catch-all (depression, anxiety flagged in that pool)
+        case ccL.contains("depression") || ccL.contains("anxiety") || ccL.contains("psychosis") ||
+             ccL.contains("mental health") || ccL.contains("insomnia") ||
+             ccL.contains("substance") || ccL.contains("ptsd") || ccL.contains("eating disorder"):
+            candidates = externalPool("generalMedicine") ?? []
+
         default:
             // Wide-net general medicine catch-all — no longer surgical-biased
             candidates = externalPool("generalMedicine") ?? []
@@ -298,8 +392,16 @@ enum BayesianDiagnosisEngine {
         if ccL.contains("chest pain") || ccL.contains("chest tightness") { mergePool("chestPain") }
         // Secondary pool: weight loss / constitutional overlay
         if ccL.contains("weight loss") || ccL.contains("losing weight") { mergePool("weightLoss") }
-        // Cap total candidates at 30 to keep scoring fast
-        if candidates.count > 30 { candidates = Array(candidates.prefix(30)) }
+        // Secondary pool: pelvic / gynaecological overlay
+        if ccL.contains("pelvic") || ccL.contains("menstrual") || ccL.contains("vaginal") { mergePool("pelvicPain") }
+        // Secondary pool: arrhythmia overlay on palpitations / chest pain
+        if ccL.contains("palpitation") || ccL.contains("atrial") { mergePool("arrhythmia") }
+        // Secondary pool: heart failure overlay on dyspnoea
+        if ccL.contains("breathless") || ccL.contains("oedema") || ccL.contains("edema") { mergePool("cardiacFailure") }
+        // Secondary pool: jaundice overlay on liver symptoms
+        if ccL.contains("jaundice") || ccL.contains("yellow") { mergePool("liverDisease") }
+        // Cap total candidates at 35 to keep scoring fast
+        if candidates.count > 35 { candidates = Array(candidates.prefix(35)) }
 
         // Merge longitudinal context into scoring inputs.
         // Confirmed past diagnoses are appended to pmh so existing "pmh" feature

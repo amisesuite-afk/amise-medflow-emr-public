@@ -14660,6 +14660,1833 @@
           ]
         }
       ]
+    },
+    "pelvicPain": {
+      "candidates": [
+        {
+          "name": "Ectopic Pregnancy",
+          "icd": "O00",
+          "logPrior": 1,
+          "features": [
+            {
+              "key": "positive_pregnancy_test",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Positive bHCG with adnexal pain LR+ 11",
+              "citation": "Mol BW et al. BMJ 1999."
+            },
+            {
+              "key": "adnexal_mass",
+              "value": "present_on_ultrasound",
+              "logLR": 12,
+              "evidenceLabel": "Adnexal mass on US LR+ 8.7",
+              "citation": "Barnhart KT. NEJM 2009."
+            },
+            {
+              "key": "haemoperitoneum",
+              "value": "free_fluid",
+              "logLR": 14,
+              "evidenceLabel": "Free fluid on TVUS LR+ 10",
+              "citation": "Barnhart KT. NEJM 2009."
+            },
+            {
+              "key": "pain",
+              "value": "acute_unilateral_lower",
+              "logLR": 7,
+              "evidenceLabel": "Acute unilateral pelvic pain in early pregnancy"
+            },
+            {
+              "key": "shock",
+              "value": "haemodynamic_instability",
+              "logLR": 10,
+              "evidenceLabel": "Haemodynamic instability indicates ruptured ectopic"
+            }
+          ]
+        },
+        {
+          "name": "Ovarian Cyst / Torsion",
+          "icd": "N83.2",
+          "logPrior": 2,
+          "features": [
+            {
+              "key": "adnexal_mass",
+              "value": "cyst_on_ultrasound",
+              "logLR": 12,
+              "evidenceLabel": "Ovarian cyst on TVUS LR+ 8",
+              "citation": "American College of Radiology guidelines."
+            },
+            {
+              "key": "sudden_onset_pain",
+              "value": "present",
+              "logLR": 9,
+              "evidenceLabel": "Sudden-onset unilateral pain, torsion LR+ 6",
+              "citation": "Huchon C et al. Fertil Steril 2010."
+            },
+            {
+              "key": "nausea_vomiting",
+              "value": "present",
+              "logLR": 6,
+              "evidenceLabel": "Nausea with adnexal pain supports torsion"
+            },
+            {
+              "key": "doppler",
+              "value": "absent_flow",
+              "logLR": 13,
+              "evidenceLabel": "Absent Doppler flow LR+ 9.7 for torsion",
+              "citation": "Houry D, Abbott JT. Ann Emerg Med 2001."
+            }
+          ]
+        },
+        {
+          "name": "Pelvic Inflammatory Disease",
+          "icd": "N73.0",
+          "logPrior": 2,
+          "features": [
+            {
+              "key": "cervical_motion_tenderness",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "CMT on examination LR+ 7",
+              "citation": "CDC STI Treatment Guidelines 2021."
+            },
+            {
+              "key": "vaginal_discharge",
+              "value": "mucopurulent",
+              "logLR": 8,
+              "evidenceLabel": "Mucopurulent discharge LR+ 5"
+            },
+            {
+              "key": "fever",
+              "value": "above_38",
+              "logLR": 6,
+              "evidenceLabel": "Fever in PID (less sensitive, more specific)"
+            },
+            {
+              "key": "sti_screen",
+              "value": "positive_chlamydia_gonorrhoea",
+              "logLR": 12,
+              "evidenceLabel": "Positive GC/Chlamydia LR+ 9"
+            }
+          ]
+        },
+        {
+          "name": "Endometriosis",
+          "icd": "N80",
+          "logPrior": 3,
+          "features": [
+            {
+              "key": "pain",
+              "value": "cyclic_dysmenorrhoea",
+              "logLR": 8,
+              "evidenceLabel": "Cyclic dysmenorrhoea worsening over years"
+            },
+            {
+              "key": "dyspareunia",
+              "value": "deep",
+              "logLR": 9,
+              "evidenceLabel": "Deep dyspareunia LR+ 6",
+              "citation": "Kennedy S et al. Hum Reprod 2005."
+            },
+            {
+              "key": "uterosacral_nodularity",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "Uterosacral nodularity on exam LR+ 9"
+            },
+            {
+              "key": "ca125",
+              "value": "elevated",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CA-125 (non-specific) LR+ 3"
+            }
+          ]
+        },
+        {
+          "name": "Uterine Fibroids (Symptomatic)",
+          "icd": "D25",
+          "logPrior": 3,
+          "features": [
+            {
+              "key": "heavy_menstrual_bleeding",
+              "value": "present",
+              "logLR": 7,
+              "evidenceLabel": "HMB with pelvic heaviness"
+            },
+            {
+              "key": "uterus",
+              "value": "enlarged_irregular",
+              "logLR": 9,
+              "evidenceLabel": "Enlarged irregular uterus on exam LR+ 6"
+            },
+            {
+              "key": "ultrasound",
+              "value": "fibroid_confirmed",
+              "logLR": 14,
+              "evidenceLabel": "Fibroid on ultrasound diagnostic"
+            },
+            {
+              "key": "bulk_symptoms",
+              "value": "urinary_pressure",
+              "logLR": 7,
+              "evidenceLabel": "Urinary pressure/frequency from fibroid bulk"
+            }
+          ]
+        },
+        {
+          "name": "Appendicitis (Gynaecological Mimic)",
+          "icd": "K37",
+          "logPrior": 2,
+          "features": [
+            {
+              "key": "migration",
+              "value": "periumbilical_to_ruq",
+              "logLR": 8,
+              "evidenceLabel": "Migratory pain to RIF"
+            },
+            {
+              "key": "rebound",
+              "value": "present",
+              "logLR": 9,
+              "evidenceLabel": "Rebound tenderness LR+ 6.3"
+            },
+            {
+              "key": "negative_pregnancy_test",
+              "value": "present",
+              "logLR": 6,
+              "evidenceLabel": "Negative bHCG makes ectopic unlikely"
+            }
+          ]
+        }
+      ]
+    },
+    "vaginalBleeding": {
+      "candidates": [
+        {
+          "name": "Threatened / Inevitable Miscarriage",
+          "icd": "O20",
+          "logPrior": 3,
+          "features": [
+            {
+              "key": "positive_pregnancy_test",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "bHCG positive with bleeding in first trimester"
+            },
+            {
+              "key": "cervical_os",
+              "value": "closed_threatened_open_inevitable",
+              "logLR": 12,
+              "evidenceLabel": "Closed OS = threatened; open = inevitable"
+            },
+            {
+              "key": "ultrasound",
+              "value": "viable_or_nonviable",
+              "logLR": 14,
+              "evidenceLabel": "TVUS cardiac activity distinguishes threatened vs missed"
+            }
+          ]
+        },
+        {
+          "name": "Dysfunctional Uterine Bleeding",
+          "icd": "N93.8",
+          "logPrior": 4,
+          "features": [
+            {
+              "key": "negative_pregnancy_test",
+              "value": "present",
+              "logLR": 7,
+              "evidenceLabel": "No organic cause found after workup"
+            },
+            {
+              "key": "irregular_cycles",
+              "value": "present",
+              "logLR": 6,
+              "evidenceLabel": "Irregular heavy periods, anovulatory pattern"
+            },
+            {
+              "key": "ultrasound",
+              "value": "normal_endometrium",
+              "logLR": 8,
+              "evidenceLabel": "Normal TVUS endometrial thickness"
+            }
+          ]
+        },
+        {
+          "name": "Cervical Carcinoma",
+          "icd": "C53",
+          "logPrior": 0,
+          "features": [
+            {
+              "key": "postcoital_bleeding",
+              "value": "present",
+              "logLR": 9,
+              "evidenceLabel": "Postcoital bleeding LR+ 6",
+              "citation": "Marth C et al. Ann Oncol 2017."
+            },
+            {
+              "key": "cervix",
+              "value": "friable_irregular",
+              "logLR": 14,
+              "evidenceLabel": "Visible cervical lesion — biopsy mandatory"
+            },
+            {
+              "key": "smear_history",
+              "value": "abnormal_or_absent",
+              "logLR": 7,
+              "evidenceLabel": "Abnormal/absent cervical screening"
+            },
+            {
+              "key": "hpv",
+              "value": "high_risk_positive",
+              "logLR": 9,
+              "evidenceLabel": "High-risk HPV positive LR+ 6"
+            }
+          ]
+        },
+        {
+          "name": "Endometrial Pathology (Polyp / Hyperplasia / Carcinoma)",
+          "icd": "N84.0",
+          "logPrior": 1,
+          "features": [
+            {
+              "key": "postmenopausal_bleeding",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "PMB — endometrial Ca until proven otherwise",
+              "citation": "Clarke MA et al. Ann Intern Med 2018."
+            },
+            {
+              "key": "endometrial_thickness",
+              "value": "above_4mm_postmenop",
+              "logLR": 12,
+              "evidenceLabel": "ET >4mm postmenopause LR+ 8.6"
+            },
+            {
+              "key": "hysteroscopy_biopsy",
+              "value": "confirms_pathology",
+              "logLR": 15,
+              "evidenceLabel": "Hysteroscopy + biopsy diagnostic"
+            }
+          ]
+        },
+        {
+          "name": "Placenta Praevia / Abruption",
+          "icd": "O44",
+          "logPrior": 0,
+          "features": [
+            {
+              "key": "second_third_trimester",
+              "value": "antepartum_bleed",
+              "logLR": 12,
+              "evidenceLabel": "Painless antepartum bleed — praevia until excluded"
+            },
+            {
+              "key": "painful_rigid_uterus",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "Painful rigid uterus + bleed = abruption"
+            },
+            {
+              "key": "ultrasound",
+              "value": "low_lying_placenta",
+              "logLR": 14,
+              "evidenceLabel": "Low-lying placenta on US confirms praevia"
+            }
+          ]
+        }
+      ]
+    },
+    "gynaecologyGeneral": {
+      "candidates": [
+        {
+          "name": "Polycystic Ovary Syndrome (PCOS)",
+          "icd": "E28.2",
+          "logPrior": 4,
+          "features": [
+            {
+              "key": "oligomenorrhoea",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "Oligo/amenorrhoea LR+ 5 for PCOS",
+              "citation": "Rotterdam consensus 2004."
+            },
+            {
+              "key": "androgen_excess",
+              "value": "hirsutism_acne",
+              "logLR": 8,
+              "evidenceLabel": "Clinical androgen excess"
+            },
+            {
+              "key": "ultrasound",
+              "value": "polycystic_morphology",
+              "logLR": 9,
+              "evidenceLabel": "PCO morphology on US LR+ 6.8"
+            },
+            {
+              "key": "lh_fsh_ratio",
+              "value": "elevated",
+              "logLR": 7,
+              "evidenceLabel": "LH:FSH ratio >2 supportive"
+            }
+          ]
+        },
+        {
+          "name": "Primary/Secondary Dysmenorrhoea",
+          "icd": "N94.4",
+          "logPrior": 5,
+          "features": [
+            {
+              "key": "pain",
+              "value": "cyclic_cramping_menstrual",
+              "logLR": 9,
+              "evidenceLabel": "Cyclic cramping with menstruation"
+            },
+            {
+              "key": "normal_pelvic_exam",
+              "value": "primary",
+              "logLR": 7,
+              "evidenceLabel": "Normal exam = primary; pathology on exam = secondary"
+            }
+          ]
+        },
+        {
+          "name": "Menopausal Symptoms",
+          "icd": "N95.1",
+          "logPrior": 3,
+          "features": [
+            {
+              "key": "vasomotor",
+              "value": "hot_flushes_night_sweats",
+              "logLR": 9,
+              "evidenceLabel": "Hot flushes + night sweats hallmark"
+            },
+            {
+              "key": "age",
+              "value": "perimenopause_45_55",
+              "logLR": 6,
+              "evidenceLabel": "Perimenopausal age range"
+            },
+            {
+              "key": "fsh",
+              "value": "elevated_above_40",
+              "logLR": 9,
+              "evidenceLabel": "FSH >40 IU/L confirms menopause"
+            }
+          ]
+        },
+        {
+          "name": "Vulvovaginitis (Candidal / BV / Trichomonal)",
+          "icd": "N76.0",
+          "logPrior": 5,
+          "features": [
+            {
+              "key": "discharge",
+              "value": "abnormal_character",
+              "logLR": 7,
+              "evidenceLabel": "Abnormal discharge character/odour"
+            },
+            {
+              "key": "vulval_itching",
+              "value": "candidal_pattern",
+              "logLR": 8,
+              "evidenceLabel": "Itch + cottage-cheese discharge: candida"
+            },
+            {
+              "key": "ph",
+              "value": "elevated_above_4_5",
+              "logLR": 8,
+              "evidenceLabel": "Vaginal pH >4.5: BV/trichomonas"
+            },
+            {
+              "key": "wet_mount",
+              "value": "clue_cells_hyphae",
+              "logLR": 12,
+              "evidenceLabel": "Wet mount diagnostic"
+            }
+          ]
+        },
+        {
+          "name": "Cervical Dysplasia / CIN",
+          "icd": "N87",
+          "logPrior": 2,
+          "features": [
+            {
+              "key": "smear",
+              "value": "abnormal_high_grade",
+              "logLR": 12,
+              "evidenceLabel": "High-grade cervical smear result"
+            },
+            {
+              "key": "hpv",
+              "value": "high_risk_positive",
+              "logLR": 10,
+              "evidenceLabel": "High-risk HPV positive"
+            },
+            {
+              "key": "colposcopy",
+              "value": "abnormal_transformation_zone",
+              "logLR": 14,
+              "evidenceLabel": "Colposcopy-directed biopsy diagnostic"
+            }
+          ]
+        }
+      ]
+    },
+    "obstetricComplications": {
+      "candidates": [
+        {
+          "name": "Hyperemesis Gravidarum",
+          "icd": "O21.1",
+          "logPrior": 2,
+          "features": [
+            {
+              "key": "trimester",
+              "value": "first_trimester_vomiting",
+              "logLR": 9,
+              "evidenceLabel": "Intractable vomiting first trimester"
+            },
+            {
+              "key": "ketonuria",
+              "value": "present",
+              "logLR": 9,
+              "evidenceLabel": "Ketonuria + weight loss >5%"
+            },
+            {
+              "key": "positive_pregnancy_test",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "bHCG positive mandatory"
+            }
+          ]
+        },
+        {
+          "name": "Pre-eclampsia",
+          "icd": "O14",
+          "logPrior": 1,
+          "features": [
+            {
+              "key": "hypertension",
+              "value": "above_140_90_after_20_weeks",
+              "logLR": 12,
+              "evidenceLabel": "BP >140/90 after 20 weeks LR+ 9",
+              "citation": "ACOG Bulletin 2020."
+            },
+            {
+              "key": "proteinuria",
+              "value": "above_300mg_24h",
+              "logLR": 12,
+              "evidenceLabel": "Proteinuria >300mg/24h"
+            },
+            {
+              "key": "headache_visual_disturbance",
+              "value": "severe",
+              "logLR": 9,
+              "evidenceLabel": "Severe features: headache, visual scotomata"
+            }
+          ]
+        },
+        {
+          "name": "Gestational Diabetes",
+          "icd": "O24.4",
+          "logPrior": 2,
+          "features": [
+            {
+              "key": "ogtt",
+              "value": "abnormal_pregnancy",
+              "logLR": 14,
+              "evidenceLabel": "Abnormal OGTT diagnostic"
+            },
+            {
+              "key": "risk_factors",
+              "value": "obesity_family_history",
+              "logLR": 6,
+              "evidenceLabel": "BMI >30, FHx, previous GDM"
+            }
+          ]
+        },
+        {
+          "name": "Antepartum Haemorrhage",
+          "icd": "O46",
+          "logPrior": 1,
+          "features": [
+            {
+              "key": "bleeding",
+              "value": "after_20_weeks",
+              "logLR": 12,
+              "evidenceLabel": "Any vaginal bleed after 20 weeks = APH"
+            },
+            {
+              "key": "ctg",
+              "value": "fetal_distress",
+              "logLR": 12,
+              "evidenceLabel": "CTG abnormality indicates urgency"
+            }
+          ]
+        }
+      ]
+    },
+    "paediatricFebrile": {
+      "candidates": [
+        {
+          "name": "Viral Upper Respiratory Tract Infection",
+          "icd": "J06.9",
+          "logPrior": 6,
+          "features": [
+            {
+              "key": "age",
+              "value": "under_5",
+              "logLR": 5,
+              "evidenceLabel": "URTI most common febrile illness in children"
+            },
+            {
+              "key": "coryzal_symptoms",
+              "value": "rhinorrhoea_cough",
+              "logLR": 8,
+              "evidenceLabel": "Rhinorrhoea, cough, mild fever — viral pattern"
+            },
+            {
+              "key": "no_focal_source",
+              "value": "present",
+              "logLR": 6,
+              "evidenceLabel": "No focal bacterial source on examination"
+            }
+          ]
+        },
+        {
+          "name": "Otitis Media (Acute)",
+          "icd": "H65",
+          "logPrior": 5,
+          "features": [
+            {
+              "key": "ear_pulling_pain",
+              "value": "present",
+              "logLR": 7,
+              "evidenceLabel": "Ear pain/pulling in febrile child LR+ 3.0"
+            },
+            {
+              "key": "otoscopy",
+              "value": "bulging_erythematous_membrane",
+              "logLR": 12,
+              "evidenceLabel": "Bulging TM LR+ 7.6",
+              "citation": "Hayden GF et al. Pediatrics 1999."
+            },
+            {
+              "key": "age",
+              "value": "6_months_to_2_years",
+              "logLR": 5,
+              "evidenceLabel": "Peak incidence 6m–2y"
+            }
+          ]
+        },
+        {
+          "name": "Bacterial Meningitis (Child)",
+          "icd": "G00",
+          "logPrior": 0,
+          "features": [
+            {
+              "key": "neck_stiffness",
+              "value": "present",
+              "logLR": 9,
+              "evidenceLabel": "Neck stiffness LR+ 6 in paediatric meningitis",
+              "citation": "Amarilyo G et al. Arch Dis Child 2011."
+            },
+            {
+              "key": "petechiae_purpura",
+              "value": "non_blanching",
+              "logLR": 14,
+              "evidenceLabel": "Non-blanching rash — septicaemia until proven otherwise"
+            },
+            {
+              "key": "photophobia",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "Photophobia + headache in child"
+            },
+            {
+              "key": "bulging_fontanelle",
+              "value": "in_infant",
+              "logLR": 12,
+              "evidenceLabel": "Bulging fontanelle in infant — emergency"
+            },
+            {
+              "key": "csf",
+              "value": "turbid_high_wbc",
+              "logLR": 15,
+              "evidenceLabel": "CSF: cloudy, high WBC, low glucose diagnostic"
+            }
+          ]
+        },
+        {
+          "name": "Kawasaki Disease",
+          "icd": "M30.3",
+          "logPrior": 0,
+          "features": [
+            {
+              "key": "fever",
+              "value": "5_days_or_more",
+              "logLR": 9,
+              "evidenceLabel": "Fever ≥5 days mandatory criterion",
+              "citation": "McCrindle BW et al. Circulation 2017."
+            },
+            {
+              "key": "conjunctival_injection",
+              "value": "bilateral_non_purulent",
+              "logLR": 8,
+              "evidenceLabel": "Bilateral non-purulent conjunctivitis"
+            },
+            {
+              "key": "rash",
+              "value": "polymorphous",
+              "logLR": 7,
+              "evidenceLabel": "Polymorphous rash"
+            },
+            {
+              "key": "lymphadenopathy",
+              "value": "cervical_unilateral",
+              "logLR": 7,
+              "evidenceLabel": "Cervical lymphadenopathy >1.5cm"
+            },
+            {
+              "key": "lips_mouth",
+              "value": "cracked_red_strawberry_tongue",
+              "logLR": 8,
+              "evidenceLabel": "Cracked lips/strawberry tongue"
+            },
+            {
+              "key": "hands_feet",
+              "value": "erythema_oedema_peeling",
+              "logLR": 9,
+              "evidenceLabel": "Erythema/oedema/peeling hands and feet"
+            }
+          ]
+        },
+        {
+          "name": "Febrile UTI (Pyelonephritis, Child)",
+          "icd": "N10",
+          "logPrior": 2,
+          "features": [
+            {
+              "key": "urine",
+              "value": "positive_nitrites_leucocytes",
+              "logLR": 10,
+              "evidenceLabel": "Dipstick nitrites+leucocytes LR+ 6"
+            },
+            {
+              "key": "age",
+              "value": "infant_or_young_child",
+              "logLR": 6,
+              "evidenceLabel": "UTI common cause of fever in infants"
+            },
+            {
+              "key": "dysuria_frequency",
+              "value": "in_older_child",
+              "logLR": 7,
+              "evidenceLabel": "Dysuria in verbal child"
+            },
+            {
+              "key": "mssu",
+              "value": "growth_significant",
+              "logLR": 14,
+              "evidenceLabel": "Culture >10⁵ CFU/ml diagnostic"
+            }
+          ]
+        },
+        {
+          "name": "Pneumonia (Childhood)",
+          "icd": "J18",
+          "logPrior": 2,
+          "features": [
+            {
+              "key": "tachypnoea",
+              "value": "age_specific_threshold",
+              "logLR": 9,
+              "evidenceLabel": "WHO tachypnoea threshold by age LR+ 7",
+              "citation": "WHO IMCI guidelines."
+            },
+            {
+              "key": "chest_xray",
+              "value": "consolidation",
+              "logLR": 12,
+              "evidenceLabel": "Consolidation on CXR diagnostic"
+            },
+            {
+              "key": "crackles",
+              "value": "localised",
+              "logLR": 8,
+              "evidenceLabel": "Localised crackles LR+ 5"
+            },
+            {
+              "key": "oxygen_saturation",
+              "value": "below_95",
+              "logLR": 9,
+              "evidenceLabel": "SpO₂ <95% indicates significant respiratory compromise"
+            }
+          ]
+        }
+      ]
+    },
+    "paediatricAbdomen": {
+      "candidates": [
+        {
+          "name": "Intussusception",
+          "icd": "K56.1",
+          "logPrior": 1,
+          "features": [
+            {
+              "key": "age",
+              "value": "6_months_to_2_years",
+              "logLR": 8,
+              "evidenceLabel": "Peak 6m–2y, uncommon outside this range"
+            },
+            {
+              "key": "colicky_pain",
+              "value": "intermittent_drawing_up_legs",
+              "logLR": 10,
+              "evidenceLabel": "Episodic colicky pain — drawing-up legs"
+            },
+            {
+              "key": "currant_jelly_stool",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "Blood per rectum ('redcurrant jelly') LR+ 8",
+              "citation": "Henderson AA et al. Arch Dis Child 1984."
+            },
+            {
+              "key": "abdominal_mass",
+              "value": "sausage_shaped_ruq",
+              "logLR": 12,
+              "evidenceLabel": "Sausage-shaped mass RUQ LR+ 10"
+            },
+            {
+              "key": "ultrasound",
+              "value": "target_sign",
+              "logLR": 15,
+              "evidenceLabel": "Target sign on US — diagnostic"
+            }
+          ]
+        },
+        {
+          "name": "Pyloric Stenosis",
+          "icd": "Q40.0",
+          "logPrior": 1,
+          "features": [
+            {
+              "key": "age",
+              "value": "2_to_8_weeks",
+              "logLR": 9,
+              "evidenceLabel": "Classic: 2–8 weeks, male > female"
+            },
+            {
+              "key": "vomiting",
+              "value": "projectile_non_bilious",
+              "logLR": 12,
+              "evidenceLabel": "Projectile non-bilious vomiting after feeds"
+            },
+            {
+              "key": "olive_mass",
+              "value": "palpable_ruq",
+              "logLR": 12,
+              "evidenceLabel": "Palpable pyloric 'olive' LR+ 8"
+            },
+            {
+              "key": "ultrasound",
+              "value": "pyloric_thickening",
+              "logLR": 15,
+              "evidenceLabel": "US: pyloric wall ≥4mm / channel ≥17mm diagnostic"
+            }
+          ]
+        },
+        {
+          "name": "Appendicitis (Paediatric)",
+          "icd": "K37",
+          "logPrior": 2,
+          "features": [
+            {
+              "key": "pain",
+              "value": "periumbilical_migrating_rif",
+              "logLR": 8,
+              "evidenceLabel": "Migratory pain to RIF"
+            },
+            {
+              "key": "guarding",
+              "value": "right_iliac_fossa",
+              "logLR": 9,
+              "evidenceLabel": "RIF guarding/rebound LR+ 6"
+            },
+            {
+              "key": "fever",
+              "value": "low_grade",
+              "logLR": 5,
+              "evidenceLabel": "Low-grade fever + anorexia"
+            },
+            {
+              "key": "alvarado",
+              "value": "above_7",
+              "logLR": 9,
+              "evidenceLabel": "Alvarado/PAS score ≥7 LR+ 7"
+            }
+          ]
+        },
+        {
+          "name": "Mesenteric Adenitis",
+          "icd": "I88.0",
+          "logPrior": 3,
+          "features": [
+            {
+              "key": "preceding_urti",
+              "value": "present",
+              "logLR": 7,
+              "evidenceLabel": "Recent URTI preceding abdominal pain"
+            },
+            {
+              "key": "pain",
+              "value": "diffuse_or_shifting",
+              "logLR": 6,
+              "evidenceLabel": "Less localised than appendicitis"
+            },
+            {
+              "key": "lymphadenopathy",
+              "value": "mesenteric_on_us",
+              "logLR": 10,
+              "evidenceLabel": "Mesenteric nodes >10mm on US"
+            }
+          ]
+        },
+        {
+          "name": "Meckel's Diverticulum",
+          "icd": "Q43.0",
+          "logPrior": 0,
+          "features": [
+            {
+              "key": "painless_rectal_bleeding",
+              "value": "in_child",
+              "logLR": 9,
+              "evidenceLabel": "Painless rectal bleeding in child <2y LR+ 5"
+            },
+            {
+              "key": "technetium_scan",
+              "value": "positive",
+              "logLR": 14,
+              "evidenceLabel": "Tc-99m pertechnetate scan positive LR+ 9"
+            }
+          ]
+        }
+      ]
+    },
+    "dermatologyRash": {
+      "candidates": [
+        {
+          "name": "Atopic Eczema / Dermatitis",
+          "icd": "L20",
+          "logPrior": 5,
+          "features": [
+            {
+              "key": "pruritus",
+              "value": "chronic_persistent",
+              "logLR": 9,
+              "evidenceLabel": "Pruritus: cardinal feature of eczema",
+              "citation": "Williams HC. BMJ 2005."
+            },
+            {
+              "key": "distribution",
+              "value": "flexural_antecubital_popliteal",
+              "logLR": 10,
+              "evidenceLabel": "Flexural distribution in adults; extensor in infants"
+            },
+            {
+              "key": "skin_morphology",
+              "value": "lichenification_excoriations",
+              "logLR": 9,
+              "evidenceLabel": "Lichenification with excoriations"
+            },
+            {
+              "key": "personal_atopic_history",
+              "value": "asthma_rhinitis",
+              "logLR": 7,
+              "evidenceLabel": "Personal/family history of asthma or allergic rhinitis"
+            }
+          ]
+        },
+        {
+          "name": "Psoriasis",
+          "icd": "L40",
+          "logPrior": 4,
+          "features": [
+            {
+              "key": "plaques",
+              "value": "well_demarcated_silvery_scale",
+              "logLR": 12,
+              "evidenceLabel": "Well-demarcated erythematous plaques + silver scale"
+            },
+            {
+              "key": "distribution",
+              "value": "extensor_scalp_nails",
+              "logLR": 9,
+              "evidenceLabel": "Extensor surfaces, scalp, nails hallmark"
+            },
+            {
+              "key": "nail_changes",
+              "value": "pitting_onycholysis",
+              "logLR": 9,
+              "evidenceLabel": "Nail pitting/onycholysis LR+ 6",
+              "citation": "Gudjonsson JE et al. Lancet 2016."
+            },
+            {
+              "key": "auspitz_sign",
+              "value": "pinpoint_bleeding",
+              "logLR": 8,
+              "evidenceLabel": "Auspitz sign (pinpoint bleeding on scale removal)"
+            }
+          ]
+        },
+        {
+          "name": "Urticaria (Acute / Chronic)",
+          "icd": "L50",
+          "logPrior": 4,
+          "features": [
+            {
+              "key": "wheals",
+              "value": "migratory_blanching_pruritic",
+              "logLR": 12,
+              "evidenceLabel": "Transient migratory wheals resolving <24h each"
+            },
+            {
+              "key": "angioedema",
+              "value": "lips_tongue_periorbital",
+              "logLR": 8,
+              "evidenceLabel": "Angioedema in 40% of chronic urticaria"
+            },
+            {
+              "key": "trigger",
+              "value": "allergen_nsaid_infection",
+              "logLR": 7,
+              "evidenceLabel": "Allergen, NSAID, or infection trigger"
+            }
+          ]
+        },
+        {
+          "name": "Tinea (Dermatophytosis)",
+          "icd": "B35",
+          "logPrior": 4,
+          "features": [
+            {
+              "key": "morphology",
+              "value": "annular_scaly_clearing_centre",
+              "logLR": 10,
+              "evidenceLabel": "Annular lesion with central clearing: tinea corporis"
+            },
+            {
+              "key": "koh_scraping",
+              "value": "positive_hyphae",
+              "logLR": 14,
+              "evidenceLabel": "KOH scraping positive for hyphae diagnostic"
+            },
+            {
+              "key": "distribution",
+              "value": "feet_groin_nails",
+              "logLR": 8,
+              "evidenceLabel": "Tinea pedis / cruris / unguium distribution"
+            }
+          ]
+        },
+        {
+          "name": "Cellulitis / Erysipelas",
+          "icd": "L03",
+          "logPrior": 3,
+          "features": [
+            {
+              "key": "erythema",
+              "value": "spreading_warm_tender",
+              "logLR": 9,
+              "evidenceLabel": "Spreading erythema, warmth, tenderness"
+            },
+            {
+              "key": "entry_point",
+              "value": "wound_ulcer_tinea",
+              "logLR": 7,
+              "evidenceLabel": "Skin breach / tinea as entry point"
+            },
+            {
+              "key": "fever_systemic",
+              "value": "present",
+              "logLR": 7,
+              "evidenceLabel": "Systemic features in severe cellulitis"
+            },
+            {
+              "key": "raised_crp_wbc",
+              "value": "present",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP/WBC supports bacterial aetiology"
+            }
+          ]
+        },
+        {
+          "name": "Contact Dermatitis (Allergic / Irritant)",
+          "icd": "L25",
+          "logPrior": 4,
+          "features": [
+            {
+              "key": "distribution",
+              "value": "matches_contact_pattern",
+              "logLR": 10,
+              "evidenceLabel": "Distribution matching contact area (hands, face, neck)"
+            },
+            {
+              "key": "exposure_history",
+              "value": "new_product_chemical",
+              "logLR": 9,
+              "evidenceLabel": "New product / occupational chemical exposure"
+            },
+            {
+              "key": "patch_test",
+              "value": "positive",
+              "logLR": 13,
+              "evidenceLabel": "Patch test positive for allergen (allergic CD)"
+            }
+          ]
+        },
+        {
+          "name": "Pityriasis Rosea",
+          "icd": "L42",
+          "logPrior": 2,
+          "features": [
+            {
+              "key": "herald_patch",
+              "value": "single_ovoid_salmon",
+              "logLR": 12,
+              "evidenceLabel": "Herald patch preceding eruption by 1–2 weeks"
+            },
+            {
+              "key": "distribution",
+              "value": "christmas_tree_trunk",
+              "logLR": 10,
+              "evidenceLabel": "'Christmas tree' distribution on trunk"
+            },
+            {
+              "key": "age",
+              "value": "young_adult",
+              "logLR": 5,
+              "evidenceLabel": "Young adult, self-limiting 6–8 weeks"
+            }
+          ]
+        }
+      ]
+    },
+    "neurosurgicalHead": {
+      "candidates": [
+        {
+          "name": "Extradural Haematoma",
+          "icd": "S06.4",
+          "logPrior": 0,
+          "features": [
+            {
+              "key": "mechanism",
+              "value": "temporal_blow_low_velocity",
+              "logLR": 9,
+              "evidenceLabel": "Temporal blow — MMA rupture",
+              "citation": "NICE Head Injury CG176."
+            },
+            {
+              "key": "lucid_interval",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "Lucid interval followed by rapid deterioration LR+ 8"
+            },
+            {
+              "key": "ct_head",
+              "value": "biconvex_hyperdense_lemon_shaped",
+              "logLR": 15,
+              "evidenceLabel": "Biconvex lenticular haematoma CT diagnostic"
+            },
+            {
+              "key": "pupil",
+              "value": "ipsilateral_dilation",
+              "logLR": 10,
+              "evidenceLabel": "Ipsilateral fixed dilated pupil: uncal herniation"
+            }
+          ]
+        },
+        {
+          "name": "Acute Subdural Haematoma",
+          "icd": "S06.5",
+          "logPrior": 0,
+          "features": [
+            {
+              "key": "mechanism",
+              "value": "high_velocity_or_elderly_fall",
+              "logLR": 8,
+              "evidenceLabel": "High-energy or elderly fall / minor trauma"
+            },
+            {
+              "key": "ct_head",
+              "value": "crescent_hyperdense_bridging_veins",
+              "logLR": 15,
+              "evidenceLabel": "Crescent-shaped extra-axial haematoma on CT"
+            },
+            {
+              "key": "midline_shift",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "Midline shift indicates significant mass effect"
+            },
+            {
+              "key": "gcs",
+              "value": "declining",
+              "logLR": 9,
+              "evidenceLabel": "Declining GCS — neurosurgical emergency"
+            }
+          ]
+        },
+        {
+          "name": "Cerebral Contusion / Traumatic Brain Injury",
+          "icd": "S06.3",
+          "logPrior": 1,
+          "features": [
+            {
+              "key": "mechanism",
+              "value": "direct_head_trauma",
+              "logLR": 8,
+              "evidenceLabel": "Direct impact or rapid deceleration"
+            },
+            {
+              "key": "loss_of_consciousness",
+              "value": "brief_or_prolonged",
+              "logLR": 9,
+              "evidenceLabel": "LOC / post-traumatic amnesia"
+            },
+            {
+              "key": "ct_head",
+              "value": "contusion_haemorrhage_oedema",
+              "logLR": 12,
+              "evidenceLabel": "Cortical contusion/haemorrhage on CT"
+            }
+          ]
+        },
+        {
+          "name": "Primary Brain Tumour (Glioma / Meningioma)",
+          "icd": "C71",
+          "logPrior": 0,
+          "features": [
+            {
+              "key": "headache",
+              "value": "progressive_morning_worse",
+              "logLR": 8,
+              "evidenceLabel": "Progressive morning headache worsening over weeks"
+            },
+            {
+              "key": "new_focal_deficit",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "New focal neurological deficit"
+            },
+            {
+              "key": "seizure",
+              "value": "new_onset_adult",
+              "logLR": 10,
+              "evidenceLabel": "New-onset seizure in adult LR+ 7"
+            },
+            {
+              "key": "mri_brain",
+              "value": "enhancing_mass",
+              "logLR": 15,
+              "evidenceLabel": "Enhancing mass on MRI with brain parenchymal features"
+            }
+          ]
+        },
+        {
+          "name": "Hydrocephalus (Obstructive / NPH)",
+          "icd": "G91",
+          "logPrior": 0,
+          "features": [
+            {
+              "key": "triad_nph",
+              "value": "gait_cognitive_incontinence",
+              "logLR": 12,
+              "evidenceLabel": "Hakim triad: gait apraxia + dementia + incontinence",
+              "citation": "Relkin N et al. Neurosurgery 2005."
+            },
+            {
+              "key": "ct_mri",
+              "value": "ventriculomegaly",
+              "logLR": 12,
+              "evidenceLabel": "Ventriculomegaly disproportionate to sulcal atrophy"
+            },
+            {
+              "key": "response_to_tap_test",
+              "value": "gait_improvement",
+              "logLR": 10,
+              "evidenceLabel": "Gait improvement after CSF tap test LR+ 7"
+            }
+          ]
+        }
+      ]
+    },
+    "cardiacFailure": {
+      "candidates": [
+        {
+          "name": "Heart Failure with Reduced EF (HFrEF)",
+          "icd": "I50.2",
+          "logPrior": 2,
+          "features": [
+            {
+              "key": "dyspnoea",
+              "value": "exertional_orthopnoea_pnd",
+              "logLR": 8,
+              "evidenceLabel": "Orthopnoea + PND LR+ 5",
+              "citation": "Wang CS et al. JAMA 2005."
+            },
+            {
+              "key": "echo",
+              "value": "ef_below_40",
+              "logLR": 14,
+              "evidenceLabel": "EF <40% on echocardiogram — diagnostic"
+            },
+            {
+              "key": "bnp_ntprobnp",
+              "value": "elevated",
+              "logLR": 11,
+              "evidenceLabel": "BNP >100pg/mL LR+ 6.4",
+              "citation": "Maisel AS et al. NEJM 2002."
+            },
+            {
+              "key": "s3_gallop",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "S3 gallop LR+ 8.0",
+              "citation": "Wang CS et al. JAMA 2005."
+            },
+            {
+              "key": "displaced_apex",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "Displaced apex beat LR+ 5.1"
+            }
+          ]
+        },
+        {
+          "name": "Heart Failure with Preserved EF (HFpEF)",
+          "icd": "I50.3",
+          "logPrior": 2,
+          "features": [
+            {
+              "key": "dyspnoea",
+              "value": "exertional_bibasal_crackles",
+              "logLR": 7,
+              "evidenceLabel": "Exertional dyspnoea, elderly hypertensive female"
+            },
+            {
+              "key": "echo",
+              "value": "ef_above_50_diastolic_dysfunction",
+              "logLR": 12,
+              "evidenceLabel": "EF ≥50% + diastolic dysfunction on TDI"
+            },
+            {
+              "key": "bnp_ntprobnp",
+              "value": "elevated",
+              "logLR": 10,
+              "evidenceLabel": "Elevated BNP supports diagnosis"
+            }
+          ]
+        },
+        {
+          "name": "Dilated Cardiomyopathy",
+          "icd": "I42.0",
+          "logPrior": 1,
+          "features": [
+            {
+              "key": "echo",
+              "value": "dilated_lv_poor_ef",
+              "logLR": 15,
+              "evidenceLabel": "Dilated LV + global hypokinesis on echo"
+            },
+            {
+              "key": "family_history",
+              "value": "dcm_or_scd",
+              "logLR": 8,
+              "evidenceLabel": "FHx dilated cardiomyopathy or sudden cardiac death"
+            },
+            {
+              "key": "new_onset_af",
+              "value": "trigger",
+              "logLR": 6,
+              "evidenceLabel": "AF as presenting arrhythmia of DCM"
+            }
+          ]
+        },
+        {
+          "name": "Valvular Heart Disease (Aortic Stenosis)",
+          "icd": "I35.0",
+          "logPrior": 2,
+          "features": [
+            {
+              "key": "murmur",
+              "value": "systolic_ejection_crescendo_decrescendo_2r",
+              "logLR": 9,
+              "evidenceLabel": "Harsh systolic ejection murmur 2RSB LR+ 6",
+              "citation": "Etchells E et al. JGIM 1997."
+            },
+            {
+              "key": "symptoms",
+              "value": "angina_syncope_sob_triad",
+              "logLR": 10,
+              "evidenceLabel": "SAD triad: syncope, angina, dyspnoea"
+            },
+            {
+              "key": "echo",
+              "value": "avoa_below_1_cm2",
+              "logLR": 14,
+              "evidenceLabel": "Aortic valve area <1cm² — severe AS"
+            },
+            {
+              "key": "slow_rising_pulse",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "Slow-rising pulsus parvus et tardus LR+ 5"
+            }
+          ]
+        },
+        {
+          "name": "Cardiac Tamponade",
+          "icd": "I31.9",
+          "logPrior": 0,
+          "features": [
+            {
+              "key": "becks_triad",
+              "value": "jvp_muffled_hypotension",
+              "logLR": 12,
+              "evidenceLabel": "Beck's triad: JVP↑ + muffled HS + hypotension"
+            },
+            {
+              "key": "pulsus_paradoxus",
+              "value": "above_10mmhg",
+              "logLR": 11,
+              "evidenceLabel": "Pulsus paradoxus >10mmHg LR+ 8",
+              "citation": "Roy CL et al. JAMA 2007."
+            },
+            {
+              "key": "echo",
+              "value": "pericardial_effusion_ra_rv_collapse",
+              "logLR": 15,
+              "evidenceLabel": "RA/RV diastolic collapse on echo diagnostic"
+            }
+          ]
+        }
+      ]
+    },
+    "arrhythmia": {
+      "candidates": [
+        {
+          "name": "Atrial Fibrillation",
+          "icd": "I48",
+          "logPrior": 4,
+          "features": [
+            {
+              "key": "pulse",
+              "value": "irregularly_irregular",
+              "logLR": 12,
+              "evidenceLabel": "Irregularly irregular pulse LR+ 10",
+              "citation": "Lip GYH et al. Lancet 2016."
+            },
+            {
+              "key": "ecg",
+              "value": "no_p_waves_irregular_rhythm",
+              "logLR": 15,
+              "evidenceLabel": "ECG: absent P waves + irregular RR interval — diagnostic"
+            },
+            {
+              "key": "palpitations",
+              "value": "persistent_or_paroxysmal",
+              "logLR": 6,
+              "evidenceLabel": "Palpitations ± dyspnoea ± fatigue"
+            },
+            {
+              "key": "risk_factors",
+              "value": "hypertension_age_valvular",
+              "logLR": 7,
+              "evidenceLabel": "Hypertension, age >65, valvular disease risk factors"
+            }
+          ]
+        },
+        {
+          "name": "Supraventricular Tachycardia (SVT)",
+          "icd": "I47.1",
+          "logPrior": 2,
+          "features": [
+            {
+              "key": "onset",
+              "value": "sudden_termination_sudden",
+              "logLR": 9,
+              "evidenceLabel": "Abrupt onset and offset hallmark"
+            },
+            {
+              "key": "rate",
+              "value": "150_to_250_regular",
+              "logLR": 9,
+              "evidenceLabel": "Regular narrow complex tachycardia 150–250bpm"
+            },
+            {
+              "key": "ecg",
+              "value": "narrow_qrs_no_p_or_retrograde_p",
+              "logLR": 12,
+              "evidenceLabel": "Narrow QRS complex ± retrograde P waves"
+            },
+            {
+              "key": "vagal_response",
+              "value": "terminates",
+              "logLR": 10,
+              "evidenceLabel": "Terminates with Valsalva/carotid sinus massage"
+            }
+          ]
+        },
+        {
+          "name": "Ventricular Tachycardia",
+          "icd": "I47.2",
+          "logPrior": 1,
+          "features": [
+            {
+              "key": "ecg",
+              "value": "wide_qrs_regular_above_100",
+              "logLR": 12,
+              "evidenceLabel": "Wide QRS ≥120ms, rate >100bpm"
+            },
+            {
+              "key": "structural_heart_disease",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "Prior MI / cardiomyopathy dramatically increases VT probability"
+            },
+            {
+              "key": "av_dissociation",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "AV dissociation on ECG: VT until proven otherwise"
+            },
+            {
+              "key": "haemodynamic_compromise",
+              "value": "present",
+              "logLR": 9,
+              "evidenceLabel": "Haemodynamic instability favours VT over SVT"
+            }
+          ]
+        },
+        {
+          "name": "Complete Heart Block (CHB)",
+          "icd": "I44.2",
+          "logPrior": 1,
+          "features": [
+            {
+              "key": "ecg",
+              "value": "p_waves_independent_qrs",
+              "logLR": 15,
+              "evidenceLabel": "AV dissociation with P rate > QRS rate — diagnostic"
+            },
+            {
+              "key": "bradycardia",
+              "value": "below_40",
+              "logLR": 9,
+              "evidenceLabel": "Ventricular escape rate <40bpm"
+            },
+            {
+              "key": "syncope",
+              "value": "stokes_adams_attacks",
+              "logLR": 9,
+              "evidenceLabel": "Sudden syncope without warning (Stokes-Adams)"
+            }
+          ]
+        },
+        {
+          "name": "Wolff-Parkinson-White Syndrome",
+          "icd": "I45.6",
+          "logPrior": 0,
+          "features": [
+            {
+              "key": "ecg",
+              "value": "short_pr_delta_wave",
+              "logLR": 15,
+              "evidenceLabel": "Short PR <120ms + delta wave — diagnostic",
+              "citation": "Blomström-Lundqvist C et al. Circulation 2003."
+            },
+            {
+              "key": "palpitations",
+              "value": "episodic_young_patient",
+              "logLR": 7,
+              "evidenceLabel": "Young patient with episodic SVT"
+            }
+          ]
+        }
+      ]
+    },
+    "chronicKidney": {
+      "candidates": [
+        {
+          "name": "Chronic Kidney Disease (Stage 3–5)",
+          "icd": "N18",
+          "logPrior": 3,
+          "features": [
+            {
+              "key": "gfr",
+              "value": "below_60_three_months",
+              "logLR": 12,
+              "evidenceLabel": "eGFR <60mL/min/1.73m² ×3 months — CKD definition",
+              "citation": "KDIGO 2012 CKD guidelines."
+            },
+            {
+              "key": "proteinuria",
+              "value": "persistent_above_30mg_mmol",
+              "logLR": 9,
+              "evidenceLabel": "ACR >30mg/mmol persistent proteinuria"
+            },
+            {
+              "key": "risk_factors",
+              "value": "diabetes_hypertension_glomerulonephritis",
+              "logLR": 7,
+              "evidenceLabel": "DM/HTN/GN as common aetiologies"
+            },
+            {
+              "key": "anaemia_normochromic",
+              "value": "present",
+              "logLR": 7,
+              "evidenceLabel": "Normochromic normocytic anaemia of CKD"
+            }
+          ]
+        },
+        {
+          "name": "Acute Kidney Injury on CKD",
+          "icd": "N17",
+          "logPrior": 2,
+          "features": [
+            {
+              "key": "creatinine",
+              "value": "rise_above_26_in_48h",
+              "logLR": 12,
+              "evidenceLabel": "Creatinine rise ≥26μmol/L in 48h or ×1.5 in 7d — KDIGO AKI"
+            },
+            {
+              "key": "urine_output",
+              "value": "below_0_5ml_kg_6h",
+              "logLR": 9,
+              "evidenceLabel": "Oliguria <0.5mL/kg/h ≥6h"
+            },
+            {
+              "key": "precipitant",
+              "value": "sepsis_nephrotoxin_dehydration",
+              "logLR": 7,
+              "evidenceLabel": "Sepsis, NSAIDs, contrast, dehydration precipitants"
+            }
+          ]
+        },
+        {
+          "name": "Nephrotic Syndrome",
+          "icd": "N04",
+          "logPrior": 1,
+          "features": [
+            {
+              "key": "proteinuria",
+              "value": "above_3_5g_24h",
+              "logLR": 14,
+              "evidenceLabel": "Heavy proteinuria >3.5g/24h — nephrotic range"
+            },
+            {
+              "key": "oedema",
+              "value": "periorbital_facial_dependent",
+              "logLR": 9,
+              "evidenceLabel": "Periorbital ± dependent oedema"
+            },
+            {
+              "key": "albumin",
+              "value": "below_25",
+              "logLR": 9,
+              "evidenceLabel": "Hypoalbuminaemia <25g/L"
+            },
+            {
+              "key": "hyperlipidaemia_lipiduria",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "Hyperlipidaemia + lipiduria ('oval fat bodies')"
+            }
+          ]
+        },
+        {
+          "name": "IgA Nephropathy / Glomerulonephritis",
+          "icd": "N02",
+          "logPrior": 1,
+          "features": [
+            {
+              "key": "haematuria",
+              "value": "macroscopic_synpharyngitic",
+              "logLR": 10,
+              "evidenceLabel": "Macroscopic haematuria 24–48h after URTI (synpharyngitic)"
+            },
+            {
+              "key": "rbc_casts",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "RBC casts on urinalysis — glomerular origin"
+            },
+            {
+              "key": "biopsy",
+              "value": "iga_mesangial_deposits",
+              "logLR": 15,
+              "evidenceLabel": "Biopsy: mesangial IgA deposits diagnostic"
+            }
+          ]
+        }
+      ]
+    },
+    "liverDisease": {
+      "candidates": [
+        {
+          "name": "Liver Cirrhosis (Decompensated)",
+          "icd": "K74.6",
+          "logPrior": 1,
+          "features": [
+            {
+              "key": "ascites",
+              "value": "clinically_detectable",
+              "logLR": 10,
+              "evidenceLabel": "Ascites LR+ 7 for cirrhosis",
+              "citation": "Udell JA et al. JAMA 2012."
+            },
+            {
+              "key": "splenomegaly",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "Splenomegaly + portal hypertension stigmata"
+            },
+            {
+              "key": "spider_naevi",
+              "value": "above_5",
+              "logLR": 9,
+              "evidenceLabel": ">5 spider naevi LR+ 4.3"
+            },
+            {
+              "key": "variceal_bleed",
+              "value": "haematemesis_melaena",
+              "logLR": 10,
+              "evidenceLabel": "Variceal bleed: haematemesis/melaena"
+            },
+            {
+              "key": "encephalopathy",
+              "value": "flapping_tremor_confusion",
+              "logLR": 10,
+              "evidenceLabel": "Hepatic encephalopathy: flapping tremor, confusion"
+            }
+          ]
+        },
+        {
+          "name": "Hepatitis B (Chronic Active)",
+          "icd": "B18.1",
+          "logPrior": 1,
+          "features": [
+            {
+              "key": "hbsag",
+              "value": "positive_above_6_months",
+              "logLR": 15,
+              "evidenceLabel": "HBsAg positive >6 months — chronic hepatitis B definition"
+            },
+            {
+              "key": "hbv_dna",
+              "value": "elevated",
+              "logLR": 10,
+              "evidenceLabel": "High HBV DNA correlates with liver disease activity"
+            },
+            {
+              "key": "alt",
+              "value": "elevated_above_2x_uln",
+              "logLR": 8,
+              "evidenceLabel": "ALT >2×ULN indicates hepatic inflammation"
+            }
+          ]
+        },
+        {
+          "name": "Hepatitis C (Chronic)",
+          "icd": "B18.2",
+          "logPrior": 1,
+          "features": [
+            {
+              "key": "hcv_antibody",
+              "value": "positive",
+              "logLR": 13,
+              "evidenceLabel": "Anti-HCV positive — screen test"
+            },
+            {
+              "key": "hcv_rna",
+              "value": "detectable",
+              "logLR": 15,
+              "evidenceLabel": "Detectable HCV RNA confirms active infection"
+            },
+            {
+              "key": "risk_factors",
+              "value": "ivdu_transfusion_tattoo",
+              "logLR": 8,
+              "evidenceLabel": "IVDU, pre-1992 transfusion, tattooing"
+            }
+          ]
+        },
+        {
+          "name": "Non-Alcoholic Fatty Liver Disease (NAFLD/NASH)",
+          "icd": "K76.0",
+          "logPrior": 4,
+          "features": [
+            {
+              "key": "ultrasound",
+              "value": "bright_liver_fatty_infiltration",
+              "logLR": 9,
+              "evidenceLabel": "Bright liver on US — steatosis"
+            },
+            {
+              "key": "metabolic_syndrome",
+              "value": "obesity_dm_dyslipidaemia",
+              "logLR": 8,
+              "evidenceLabel": "Metabolic syndrome: central obesity, DM, dyslipidaemia"
+            },
+            {
+              "key": "alt_ast",
+              "value": "mildly_elevated_alt_ast",
+              "logLR": 7,
+              "evidenceLabel": "Mild ALT/AST elevation, AST:ALT <1"
+            },
+            {
+              "key": "alcohol",
+              "value": "below_safe_limits",
+              "logLR": 8,
+              "evidenceLabel": "No excess alcohol: distinguishes from ALD"
+            }
+          ]
+        },
+        {
+          "name": "Alcoholic Hepatitis",
+          "icd": "K70.1",
+          "logPrior": 1,
+          "features": [
+            {
+              "key": "alcohol",
+              "value": "heavy_recent_binge",
+              "logLR": 9,
+              "evidenceLabel": "Heavy alcohol ± recent binge"
+            },
+            {
+              "key": "ast_alt",
+              "value": "ratio_above_2",
+              "logLR": 9,
+              "evidenceLabel": "AST:ALT >2:1 (alcoholic pattern) LR+ 6",
+              "citation": "Cohen JA et al. JAMA 1979."
+            },
+            {
+              "key": "fever_jaundice_ruf",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "Fever, jaundice, tender hepatomegaly"
+            },
+            {
+              "key": "maddrey",
+              "value": "discriminant_above_32",
+              "logLR": 9,
+              "evidenceLabel": "Maddrey DF >32 — severe, consider steroids"
+            }
+          ]
+        }
+      ]
     }
   }
 }
