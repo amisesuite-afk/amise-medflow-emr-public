@@ -44,6 +44,16 @@ struct VitalsHistoryView: View {
                             .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 8, trailing: 16))
                     }
 
+                    let labs = LabPanel.parse(from: patient.investigations)
+                    let hasLabs = labs.haemoglobin != nil || labs.inr != nil ||
+                                  labs.creatinine != nil || labs.platelets != nil ||
+                                  labs.sodium != nil || labs.alt != nil
+                    if hasLabs {
+                        LabSummaryStrip(labs: labs)
+                            .listRowBackground(Color.clear)
+                            .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 8, trailing: 16))
+                    }
+
                     ForEach(sortedEntries) { entry in
                         VitalsRow(entry: entry)
                             .swipeActions(edge: .trailing) {
@@ -373,6 +383,74 @@ struct VitalTrendLine: View {
                 .font(.system(size: 9))
                 .foregroundStyle(.secondary)
                 .frame(width: 26, alignment: .leading)
+        }
+    }
+}
+
+// MARK: - Lab summary strip
+
+struct LabSummaryStrip: View {
+    let labs: LabPanel
+
+    private struct LabItem: Identifiable {
+        let id = UUID()
+        let label: String
+        let value: String
+        let critical: Bool
+    }
+
+    private var items: [LabItem] {
+        var result: [LabItem] = []
+        if let hb = labs.haemoglobin {
+            result.append(.init(label: "Hb", value: String(format: "%.1f g/dL", hb.value),
+                               critical: hb.value < 8.0))
+        }
+        if let pl = labs.platelets {
+            result.append(.init(label: "Plt", value: "\(Int(pl.value)) ×10⁹",
+                               critical: pl.value < 50))
+        }
+        if let cr = labs.creatinine {
+            result.append(.init(label: "Cr", value: "\(Int(cr.value)) µmol/L",
+                               critical: cr.value > 300))
+        }
+        if let ir = labs.inr {
+            result.append(.init(label: "INR", value: String(format: "%.1f", ir.value),
+                               critical: ir.value > 2.5))
+        }
+        if let na = labs.sodium {
+            result.append(.init(label: "Na", value: "\(Int(na.value)) mmol/L",
+                               critical: na.value < 120 || na.value > 155))
+        }
+        if let al = labs.alt {
+            result.append(.init(label: "ALT", value: "\(Int(al.value)) U/L",
+                               critical: false))
+        }
+        if let la = labs.lactate {
+            result.append(.init(label: "Lactate", value: String(format: "%.1f mmol/L", la.value),
+                               critical: la.value >= 4.0))
+        }
+        return result
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 4) {
+                Image(systemName: labs.hasCriticalValues ? "flask.fill" : "flask")
+                    .font(.system(size: 9, weight: labs.hasCriticalValues ? .bold : .regular))
+                    .foregroundStyle(labs.hasCriticalValues ? .red : .teal)
+                Text("Latest lab results")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(labs.hasCriticalValues ? .red : .teal)
+                    .textCase(.uppercase)
+            }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    ForEach(items) { item in
+                        VitalChip(label: item.label, value: item.value, unit: "",
+                                  alert: item.critical)
+                    }
+                }
+            }
         }
     }
 }
