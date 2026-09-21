@@ -436,7 +436,8 @@ struct PatientOverviewContent: View {
             labs.inr.flatMap { $0.value > 2.5 ? String(format: "INR %.1f", $0.value) : nil },
             labs.potassium.flatMap { ($0.value < 2.5 || $0.value > 6.0) ? String(format: "K %.1f mmol/L", $0.value) : nil },
             labs.sodium.flatMap { ($0.value < 120 || $0.value > 155) ? "Na \(Int($0.value)) mmol/L" : nil },
-            labs.lactate.flatMap { $0.value >= 4.0 ? String(format: "Lactate %.1f mmol/L", $0.value) : nil }
+            labs.lactate.flatMap { $0.value >= 4.0 ? String(format: "Lactate %.1f mmol/L", $0.value) : nil },
+            labs.calcium.flatMap { ($0.value < 1.75 || $0.value > 3.0) ? String(format: "Ca %.2f mmol/L", $0.value) : nil }
         ]
         return tokens.compactMap { $0 }.joined(separator: " · ")
     }

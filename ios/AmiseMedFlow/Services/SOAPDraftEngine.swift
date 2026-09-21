@@ -176,8 +176,16 @@ struct SOAPDraftEngine {
                 let flag = alt.value > 120 ? " [ABNL]" : ""
                 labTokens.append("ALT \(Int(alt.value)) U/L" + flag)
             }
+            if let ast = labs.ast {
+                let flag = ast.value >= 1000 ? " [CRITICAL]" : ast.value > 120 ? " [ABNL]" : ""
+                labTokens.append("AST \(Int(ast.value)) U/L" + flag)
+            }
             if let alp = labs.alp {
                 labTokens.append("ALP \(Int(alp.value)) U/L")
+            }
+            if let ca = labs.calcium {
+                let flag = (ca.value < 1.75 || ca.value > 3.0) ? " [CRITICAL]" : (ca.value < 2.1 || ca.value > 2.6) ? " [ABNL]" : ""
+                labTokens.append(String(format: "Ca %.2f mmol/L", ca.value) + flag)
             }
             if let lac = labs.lactate {
                 let flag = lac.value >= 4.0 ? " [CRITICAL]" : lac.value >= 2.0 ? " [ABNL]" : ""

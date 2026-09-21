@@ -60,8 +60,10 @@ struct LabPanel {
     var urea: FusedValue<Double>?        // mmol/L
     var bilirubin: FusedValue<Double>?   // µmol/L
     var alt: FusedValue<Double>?         // U/L
+    var ast: FusedValue<Double>?         // U/L
     var alp: FusedValue<Double>?         // U/L
     var albumin: FusedValue<Double>?     // g/dL
+    var calcium: FusedValue<Double>?     // mmol/L
     var amylase: FusedValue<Double>?     // U/L
     var lipase: FusedValue<Double>?      // U/L
     var lactate: FusedValue<Double>?     // mmol/L
@@ -80,6 +82,8 @@ struct LabPanel {
     var amylaseElevated: Bool { (amylase?.value ?? 0) > 100 }
     var bilirubinElevated: Bool { (bilirubin?.value ?? 0) > 20 }
     var dDimerElevated: Bool  { (dDimer?.value ?? 0) > 500 }
+    // Calcium < 1.75 mmol/L = critical hypocalcaemia; > 3.0 = hypercalcaemia crisis
+    var calciumCritical: Bool { calcium.map { $0.value < 1.75 || $0.value > 3.0 } ?? false }
 
     // True when any result meets a pre-operative critical threshold
     var hasCriticalValues: Bool {
@@ -89,7 +93,8 @@ struct LabPanel {
         (inr.map         { $0.value > 2.5  } ?? false) ||
         (sodium.map      { $0.value < 120 || $0.value > 155 } ?? false) ||
         (potassium.map   { $0.value < 2.5 || $0.value > 6.0 } ?? false) ||
-        (lactate.map     { $0.value >= 4.0 } ?? false)
+        (lactate.map     { $0.value >= 4.0 } ?? false) ||
+        calciumCritical
     }
 }
 
@@ -349,8 +354,10 @@ extension LabPanel {
             else if n.contains("urea") || n.contains("bun")                                                   { if lab.urea == nil { lab.urea = val } }
             else if n.contains("bilirubin")                                                                    { if lab.bilirubin == nil { lab.bilirubin = val } }
             else if n.contains("alt") || n.contains("alanine")                                                 { if lab.alt == nil { lab.alt = val } }
+            else if n.contains("ast") || n.contains("aspartate")                                               { if lab.ast == nil { lab.ast = val } }
             else if n.contains("alp") || n.contains("alkaline phosphatase")                                    { if lab.alp == nil { lab.alp = val } }
             else if n.contains("albumin")                                                                      { if lab.albumin == nil { lab.albumin = val } }
+            else if (n.contains("calcium") || n == "ca") && !n.contains("bicarbonate")                        { if lab.calcium == nil { lab.calcium = val } }
             else if n.contains("amylase") && !n.contains("lipase")                                             { if lab.amylase == nil { lab.amylase = val } }
             else if n.contains("lipase")                                                                       { if lab.lipase == nil { lab.lipase = val } }
             else if n.contains("lactate")                                                                      { if lab.lactate == nil { lab.lactate = val } }
