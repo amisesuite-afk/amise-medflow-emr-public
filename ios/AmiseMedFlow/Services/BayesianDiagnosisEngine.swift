@@ -102,8 +102,17 @@ enum BayesianDiagnosisEngine {
         qsofaScore: Int? = nil,
         specialtyHint: String? = nil  // e.g. "cardiology" — narrows matrix cross-query to that specialty
     ) -> [DiagnosisResult] {
-        guard let cc = chiefComplaint, !cc.isEmpty else { return [] }
-        let ccL = cc.lowercased()
+        // Build a synthetic CC string from investigation names + results so that
+        // investigation findings also drive pool routing (not just scoring).
+        // Combines real CC + inv terms so existing keyword cases fire unchanged.
+        let invTerms = investigations.flatMap { inv -> [String] in
+            var t = [inv.name.lowercased()]
+            if inv.status == .resulted { t.append(inv.result.lowercased()) }
+            return t
+        }.joined(separator: " ")
+        let baseCCL = (chiefComplaint ?? "").lowercased()
+        guard !baseCCL.isEmpty || !invTerms.isEmpty else { return [] }
+        let ccL = baseCCL.isEmpty ? invTerms : (invTerms.isEmpty ? baseCCL : baseCCL + " " + invTerms)
 
         var candidates: [Candidate]
         switch true {
