@@ -91,6 +91,7 @@ struct PreOpChecklistView: View {
 
     var body: some View {
         Form {
+            preOpSafetySection
             teamSection
             signInSection
             timeOutSection
@@ -128,10 +129,91 @@ struct PreOpChecklistView: View {
             if data.circulatingNurseName.isEmpty { data.circulatingNurseName = sx.circNurse }
 
             save()
+
+            // Auto-seed known allergy from patient record
+            if !data.si_knownAllergy && !patient.allergies.isEmpty {
+                data.si_knownAllergy = true
+                if data.si_allergyDetails.isEmpty {
+                    data.si_allergyDetails = patient.allergies
+                        .map { "\($0.name) (\($0.severity))" }
+                        .joined(separator: ", ")
+                }
+                save()
+            }
+
+            // Auto-flag blood loss risk from pre-op lab values
+            let labs = LabPanel.parse(from: patient.investigations)
+            let anaemia = labs.haemoglobin.map { $0.value < 100 } ?? false
+            let lowPlts = labs.platelets.map   { $0.value < 100 } ?? false
+            if !data.si_bloodLossRisk && (anaemia || lowPlts || patient.hasAnticoagulation) {
+                data.si_bloodLossRisk = true
+                if data.si_bloodLossPrep.isEmpty {
+                    var reasons: [String] = []
+                    if anaemia, let hb = labs.haemoglobin {
+                        reasons.append("Hb \(String(format: "%.1f", hb.value)) g/dL")
+                    }
+                    if lowPlts, let plt = labs.platelets {
+                        reasons.append("Plt \(Int(plt.value))")
+                    }
+                    if patient.hasAnticoagulation { reasons.append("anticoagulation") }
+                    data.si_bloodLossPrep = "Large-bore IV × 2; G&S/crossmatch. [\(reasons.joined(separator: ", "))]"
+                }
+                save()
+            }
         }
     }
 
     // MARK: - Sections
+
+    @ViewBuilder
+    private var preOpSafetySection: some View {
+        let labs = LabPanel.parse(from: patient.investigations)
+        if labs.hasCriticalValues || patient.hasCriticalAllergy {
+            Section {
+                if labs.hasCriticalValues {
+                    HStack(alignment: .top, spacing: 10) {
+                        Image(systemName: "flask.fill")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(.red)
+                            .frame(width: 20)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Critical lab values present")
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(.red)
+                            Text("Review FBC, coagulation, and renal function before induction of anaesthesia.")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                if patient.hasCriticalAllergy {
+                    HStack(alignment: .top, spacing: 10) {
+                        Image(systemName: "exclamationmark.shield.fill")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(.red)
+                            .frame(width: 20)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Critical allergy")
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(.red)
+                            let crit = patient.allergies.filter {
+                                $0.severity.lowercased().contains("severe") ||
+                                $0.severity.lowercased().contains("anaphyl")
+                            }
+                            if !crit.isEmpty {
+                                Text(crit.map { "\($0.name) — \($0.severity)" }.joined(separator: "\n"))
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                }
+            } header: {
+                Label("Pre-op Safety Flags", systemImage: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.red)
+            }
+        }
+    }
 
     private var teamSection: some View {
         Section("Team & Date") {

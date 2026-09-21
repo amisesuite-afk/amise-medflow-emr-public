@@ -157,6 +157,27 @@ struct PostOpReviewView: View {
                 data.drainPresent = true
                 save()
             }
+
+            // Pre-fill NEWS2 from latest recorded vitals
+            if data.news2.isEmpty,
+               let latest = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+               latest.hasAnyValue {
+                data.news2 = "\(latest.news2Score)"
+                save()
+            }
+
+            // Pre-fill lab notes with resulted investigations if not yet recorded
+            if data.labNotes.isEmpty {
+                let resulted = patient.investigations
+                    .filter { $0.status == .resulted && !$0.result.isEmpty }
+                    .sorted { ($0.resultedAt ?? $0.orderedAt) > ($1.resultedAt ?? $1.orderedAt) }
+                if !resulted.isEmpty {
+                    data.labNotes = resulted.prefix(8)
+                        .map { "\($0.name): \($0.result)" }
+                        .joined(separator: "\n")
+                    save()
+                }
+            }
         }
     }
 
@@ -330,6 +351,35 @@ struct PostOpReviewView: View {
 
     private var labsSection: some View {
         Section("Investigations") {
+            let resultedInvs = patient.investigations
+                .filter { $0.status == .resulted && !$0.result.isEmpty }
+                .sorted { ($0.resultedAt ?? $0.orderedAt) > ($1.resultedAt ?? $1.orderedAt) }
+            if !resultedInvs.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    Label("Resulted investigations", systemImage: "flask.fill")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(.teal)
+                    ForEach(Array(resultedInvs.prefix(8)), id: \.id) { inv in
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: inv.category.icon)
+                                .font(.system(size: 10))
+                                .foregroundStyle(.teal)
+                                .frame(width: 14)
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text(inv.name)
+                                    .font(.system(size: 12, weight: .medium))
+                                Text(inv.result)
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    if resultedInvs.count > 8 {
+                        Text("+\(resultedInvs.count - 8) more")
+                            .font(.caption2).foregroundStyle(.secondary)
+                    }
+                }
+            }
             chipMultiSelect("Labs ordered", options: labOptions, selected: $data.labsOrdered)
                 .onChange(of: data.labsOrdered) { _, _ in save() }
             TextField("Lab / investigation notes", text: $data.labNotes, axis: .vertical)
