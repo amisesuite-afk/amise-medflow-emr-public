@@ -1370,6 +1370,36 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("abscess") || ccL.contains("fistula") { mergePool("anorectalFunctional") }
             if ccL.contains("stricture") || ccL.contains("obstruction") { mergePool("intestinalObstruction") }
 
+        // Cardiac surgical conditions
+        case ccL.contains("acute coronary syndrome") || ccL.contains("acs") ||
+             ccL.contains("aortic dissection") || ccL.contains("cardiac tamponade") ||
+             ccL.contains("infective endocarditis") || ccL.contains("stemi") ||
+             ccL.contains("nstemi") || ccL.contains("heart failure") ||
+             ccL.contains("hypertrophic cardiomyopathy") || ccL.contains("hocm") ||
+             ccL.contains("pulmonary hypertension") || ccL.contains("mediastinitis") ||
+             ccL.contains("post-cabg") || ccL.contains("post cardiac surgery") ||
+             (ccL.contains("troponin") && ccL.contains("elevated")) ||
+             (ccL.contains("chest pain") && ccL.contains("diaphoresis")) ||
+             (ccL.contains("pericardial") && ccL.contains("effusion")):
+            candidates = externalPool("cardiacSurgical") ?? []
+            if ccL.contains("dissection") || ccL.contains("aortic") { mergePool("aorticConditions") }
+            if ccL.contains("sepsis") || ccL.contains("endocarditis") { mergePool("sepsisConditions") }
+
+        // Spinal and neurosurgical conditions
+        case ccL.contains("disc herniation") || ccL.contains("cauda equina") ||
+             ccL.contains("spinal cord compression") || ccL.contains("cervical myelopathy") ||
+             ccL.contains("spinal stenosis") || ccL.contains("epidural abscess") ||
+             ccL.contains("vertebral osteomyelitis") || ccL.contains("radiculopathy") ||
+             ccL.contains("sciatica") || ccL.contains("myelopathy") ||
+             ccL.contains("neurogenic claudication") || ccL.contains("sacral fracture") ||
+             ccL.contains("spinal metastasis") || ccL.contains("saddle anaesthesia") ||
+             (ccL.contains("back pain") && ccL.contains("neurological")) ||
+             (ccL.contains("leg weakness") && ccL.contains("back pain")) ||
+             (ccL.contains("urinary retention") && ccL.contains("back pain")):
+            candidates = externalPool("spinalNeurosurgical") ?? []
+            if ccL.contains("malignancy") || ccL.contains("metastasis") { mergePool("oncologyComplications") }
+            if ccL.contains("sepsis") || ccL.contains("abscess") { mergePool("sepsisConditions") }
+
         // Gynaecological surgical conditions
         case ccL.contains("ovarian torsion") || ccL.contains("ectopic pregnancy") ||
              ccL.contains("pelvic inflammatory disease") || ccL.contains("pid") ||
@@ -1732,6 +1762,14 @@ enum BayesianDiagnosisEngine {
            ccL.contains("pelvic inflammatory") || ccL.contains("endometriosis") ||
            ccL.contains("ovarian cancer") || ccL.contains("bartholin") ||
            (ccL.contains("adnexal") && ccL.contains("mass")) { mergePool("gynaecologicalSurgical") }
+        if ccL.contains("acs") || ccL.contains("stemi") || ccL.contains("nstemi") ||
+           ccL.contains("aortic dissection") || ccL.contains("cardiac tamponade") ||
+           ccL.contains("endocarditis") || ccL.contains("heart failure") ||
+           ccL.contains("hocm") || ccL.contains("mediastinitis") { mergePool("cardiacSurgical") }
+        if ccL.contains("cauda equina") || ccL.contains("disc herniation") ||
+           ccL.contains("cervical myelopathy") || ccL.contains("spinal stenosis") ||
+           ccL.contains("epidural abscess") || ccL.contains("vertebral osteomyelitis") ||
+           ccL.contains("neurogenic claudication") || ccL.contains("saddle anaesthesia") { mergePool("spinalNeurosurgical") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but

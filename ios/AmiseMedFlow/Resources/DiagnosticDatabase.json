@@ -76313,6 +76313,1163 @@
           ]
         }
       ]
+    },
+    "cardiacSurgical": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Acute Coronary Syndrome",
+          "icd": "I24.9",
+          "logPrior": -17,
+          "systems": [
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiology",
+            "cardiac_surgery"
+          ],
+          "urgency": 3,
+          "features": [
+            {
+              "key": "troponin_rise",
+              "value": "positive",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "ESC NSTEMI Guidelines 2023"
+            },
+            {
+              "key": "ecg_st_changes",
+              "value": "yes",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "ACC/AHA STEMI Guidelines 2022"
+            },
+            {
+              "key": "chest_pain_character",
+              "value": "crushing_radiating",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2000;342:226"
+            },
+            {
+              "key": "diaphoresis",
+              "value": "yes",
+              "logLR": 10,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2000;342:226"
+            },
+            {
+              "key": "risk_factors",
+              "value": "multiple_cardiac",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "JACC 2014;63:2935"
+            },
+            {
+              "key": "response_to_nitrates",
+              "value": "yes",
+              "logLR": 6,
+              "evidenceLabel": "Mild+",
+              "citation": "ESC NSTEMI Guidelines 2023"
+            },
+            {
+              "key": "wall_motion_abnormality",
+              "value": "yes",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "JACC 2014;63:2935"
+            },
+            {
+              "key": "pain_duration",
+              "value": "greater_20_min",
+              "logLR": 8,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2000;342:226"
+            }
+          ]
+        },
+        {
+          "name": "Aortic Dissection (Type A)",
+          "icd": "I71.0",
+          "logPrior": -35,
+          "systems": [
+            "cardiovascular",
+            "vascular"
+          ],
+          "specialties": [
+            "cardiac_surgery",
+            "vascular_surgery"
+          ],
+          "urgency": 3,
+          "features": [
+            {
+              "key": "tearing_chest_pain",
+              "value": "anterior_sudden",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "JAMA 2002;287:2262"
+            },
+            {
+              "key": "pulse_deficit",
+              "value": "yes",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "JAMA 2002;287:2262"
+            },
+            {
+              "key": "widened_mediastinum",
+              "value": "yes",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2015;385:800"
+            },
+            {
+              "key": "aortic_regurgitation",
+              "value": "new",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "JAMA 2002;287:2262"
+            },
+            {
+              "key": "d_dimer",
+              "value": "markedly_elevated",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "Ann Emerg Med 2011;58:452"
+            },
+            {
+              "key": "pain_radiation",
+              "value": "interscapular",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "JAMA 2002;287:2262"
+            },
+            {
+              "key": "ct_aorta",
+              "value": "intimal_flap",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "Lancet 2015;385:800"
+            },
+            {
+              "key": "marfan_features",
+              "value": "yes",
+              "logLR": 10,
+              "evidenceLabel": "Moderate+",
+              "citation": "JAMA 2002;287:2262"
+            }
+          ]
+        },
+        {
+          "name": "Cardiac Tamponade",
+          "icd": "I31.9",
+          "logPrior": -39,
+          "systems": [
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiac_surgery",
+            "cardiology"
+          ],
+          "urgency": 3,
+          "features": [
+            {
+              "key": "becks_triad",
+              "value": "hypotension_jvd_muffled",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "JACC 2013;62:e201"
+            },
+            {
+              "key": "pulsus_paradoxus",
+              "value": "greater_10mmhg",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2004;351:2195"
+            },
+            {
+              "key": "echocardiogram",
+              "value": "ra_rv_collapse",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "JACC 2013;62:e201"
+            },
+            {
+              "key": "electrical_alternans",
+              "value": "yes",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "JACC 2013;62:e201"
+            },
+            {
+              "key": "pericardial_effusion_cause",
+              "value": "malignancy_trauma_infection",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "JACC 2013;62:e201"
+            },
+            {
+              "key": "jvp_elevated",
+              "value": "yes",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2004;351:2195"
+            },
+            {
+              "key": "hypotension",
+              "value": "refractory",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "JACC 2013;62:e201"
+            },
+            {
+              "key": "tachycardia",
+              "value": "compensatory",
+              "logLR": 8,
+              "evidenceLabel": "Mild+",
+              "citation": "NEJM 2004;351:2195"
+            }
+          ]
+        },
+        {
+          "name": "Post-Cardiac Surgery Complications",
+          "icd": "I97.1",
+          "logPrior": -29,
+          "systems": [
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiac_surgery"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "recent_cardiac_surgery",
+              "value": "yes",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "JACC 2013;62:e201"
+            },
+            {
+              "key": "mediastinitis_signs",
+              "value": "wound_erythema_fever",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Ann Thorac Surg 2017;103:987"
+            },
+            {
+              "key": "low_cardiac_output",
+              "value": "refractory",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "JACC 2013;62:e201"
+            },
+            {
+              "key": "sternal_instability",
+              "value": "yes",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Ann Thorac Surg 2017;103:987"
+            },
+            {
+              "key": "postpericardiotomy_syndrome",
+              "value": "pericardial_friction_rub",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2013;369:2123"
+            },
+            {
+              "key": "bypass_graft_failure",
+              "value": "ecg_evidence",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "JACC 2013;62:e201"
+            },
+            {
+              "key": "atrial_fibrillation_new",
+              "value": "yes",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "JACC 2013;62:e201"
+            },
+            {
+              "key": "pleural_effusion",
+              "value": "significant",
+              "logLR": 10,
+              "evidenceLabel": "Moderate+",
+              "citation": "JACC 2013;62:e201"
+            }
+          ]
+        },
+        {
+          "name": "Infective Endocarditis",
+          "icd": "I33.0",
+          "logPrior": -32,
+          "systems": [
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiac_surgery",
+            "cardiology",
+            "infectious_disease"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "duke_criteria_major",
+              "value": "positive_blood_cultures_echo",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "ESC Endocarditis Guidelines 2023"
+            },
+            {
+              "key": "fever_persistent",
+              "value": "yes",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "ESC Endocarditis Guidelines 2023"
+            },
+            {
+              "key": "vegetation_echo",
+              "value": "yes",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "ESC Endocarditis Guidelines 2023"
+            },
+            {
+              "key": "new_regurgitant_murmur",
+              "value": "yes",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "ESC Endocarditis Guidelines 2023"
+            },
+            {
+              "key": "embolic_events",
+              "value": "splenic_cerebral_pulmonary",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "ESC Endocarditis Guidelines 2023"
+            },
+            {
+              "key": "prosthetic_valve_ivdu",
+              "value": "yes",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "ESC Endocarditis Guidelines 2023"
+            },
+            {
+              "key": "janeway_osler_roth",
+              "value": "yes",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2013;368:1238"
+            },
+            {
+              "key": "strep_staph_bacteraemia",
+              "value": "yes",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "ESC Endocarditis Guidelines 2023"
+            }
+          ]
+        },
+        {
+          "name": "Pulmonary Hypertension",
+          "icd": "I27.0",
+          "logPrior": -32,
+          "systems": [
+            "cardiovascular",
+            "respiratory"
+          ],
+          "specialties": [
+            "cardiology",
+            "respiratory_medicine"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "echo_rvsp",
+              "value": "greater_40mmhg",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "ESC PH Guidelines 2022"
+            },
+            {
+              "key": "six_minute_walk",
+              "value": "reduced",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "ESC PH Guidelines 2022"
+            },
+            {
+              "key": "bnp_elevated",
+              "value": "yes",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "ESC PH Guidelines 2022"
+            },
+            {
+              "key": "right_heart_catheter",
+              "value": "mPAP_greater_20",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "ESC PH Guidelines 2022"
+            },
+            {
+              "key": "rv_hypertrophy_ecg",
+              "value": "yes",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "ESC PH Guidelines 2022"
+            },
+            {
+              "key": "dyspnoea_on_exertion",
+              "value": "progressive",
+              "logLR": 10,
+              "evidenceLabel": "Mild+",
+              "citation": "ESC PH Guidelines 2022"
+            },
+            {
+              "key": "ctd_connective_tissue",
+              "value": "scleroderma_sle",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "ESC PH Guidelines 2022"
+            },
+            {
+              "key": "tricuspid_regurgitation",
+              "value": "severe",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "ESC PH Guidelines 2022"
+            }
+          ]
+        },
+        {
+          "name": "Heart Failure with Reduced EF",
+          "icd": "I50.2",
+          "logPrior": -22,
+          "systems": [
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiology",
+            "cardiac_surgery"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "lvef",
+              "value": "less_40_percent",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "ESC HF Guidelines 2021"
+            },
+            {
+              "key": "bnp_probnp",
+              "value": "markedly_elevated",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "ESC HF Guidelines 2021"
+            },
+            {
+              "key": "orthopnoea_pnd",
+              "value": "yes",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2010;362:228"
+            },
+            {
+              "key": "bilateral_crepitations",
+              "value": "yes",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2010;362:228"
+            },
+            {
+              "key": "s3_gallop",
+              "value": "yes",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2010;362:228"
+            },
+            {
+              "key": "chest_xray",
+              "value": "pulmonary_oedema_cardiomegaly",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "ESC HF Guidelines 2021"
+            },
+            {
+              "key": "peripheral_oedema",
+              "value": "bilateral_pitting",
+              "logLR": 8,
+              "evidenceLabel": "Mild+",
+              "citation": "ESC HF Guidelines 2021"
+            },
+            {
+              "key": "raised_jvp",
+              "value": "yes",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "ESC HF Guidelines 2021"
+            }
+          ]
+        },
+        {
+          "name": "Hypertrophic Obstructive Cardiomyopathy",
+          "icd": "I42.1",
+          "logPrior": -35,
+          "systems": [
+            "cardiovascular"
+          ],
+          "specialties": [
+            "cardiology",
+            "cardiac_surgery"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "lv_hypertrophy_echo",
+              "value": "asymmetric_septal_gt15mm",
+              "logLR": 32,
+              "evidenceLabel": "Strong+",
+              "citation": "ESC HCM Guidelines 2023"
+            },
+            {
+              "key": "systolic_murmur_dynamic",
+              "value": "increases_valsalva",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "ESC HCM Guidelines 2023"
+            },
+            {
+              "key": "sam_mitral_valve",
+              "value": "yes",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "ESC HCM Guidelines 2023"
+            },
+            {
+              "key": "family_history_hcm_scd",
+              "value": "yes",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "ESC HCM Guidelines 2023"
+            },
+            {
+              "key": "exertional_syncope",
+              "value": "yes",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "ESC HCM Guidelines 2023"
+            },
+            {
+              "key": "lvot_obstruction",
+              "value": "gradient_gt30mmhg",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "ESC HCM Guidelines 2023"
+            },
+            {
+              "key": "ecg_lv_strain_pattern",
+              "value": "yes",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "ESC HCM Guidelines 2023"
+            },
+            {
+              "key": "sarcomere_gene_mutation",
+              "value": "myh7_mybpc3",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "ESC HCM Guidelines 2023"
+            }
+          ]
+        }
+      ]
+    },
+    "spinalNeurosurgical": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Lumbar Disc Herniation",
+          "icd": "M51.1",
+          "logPrior": -14,
+          "systems": [
+            "musculoskeletal",
+            "neurological"
+          ],
+          "specialties": [
+            "spinal_surgery",
+            "neurosurgery"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "radiculopathy",
+              "value": "dermatomal_distribution",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2008;358:1083"
+            },
+            {
+              "key": "straight_leg_raise",
+              "value": "positive_lt60",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2008;358:1083"
+            },
+            {
+              "key": "mri_lumbar",
+              "value": "disc_herniation_nerve_compression",
+              "logLR": 30,
+              "evidenceLabel": "Definitive+",
+              "citation": "NEJM 2008;358:1083"
+            },
+            {
+              "key": "neurological_deficit",
+              "value": "foot_drop_weakness",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2008;358:1083"
+            },
+            {
+              "key": "pain_onset",
+              "value": "lifting_bending",
+              "logLR": 8,
+              "evidenceLabel": "Mild+",
+              "citation": "NEJM 2008;358:1083"
+            },
+            {
+              "key": "pain_worse_sitting",
+              "value": "yes",
+              "logLR": 8,
+              "evidenceLabel": "Mild+",
+              "citation": "Spine J 2018;18:1093"
+            },
+            {
+              "key": "reflexes_absent",
+              "value": "ankle_knee",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2008;358:1083"
+            },
+            {
+              "key": "age_peak",
+              "value": "30_50_years",
+              "logLR": 5,
+              "evidenceLabel": "Mild+",
+              "citation": "NEJM 2008;358:1083"
+            }
+          ]
+        },
+        {
+          "name": "Cauda Equina Syndrome",
+          "icd": "G83.4",
+          "logPrior": -39,
+          "systems": [
+            "musculoskeletal",
+            "neurological"
+          ],
+          "specialties": [
+            "spinal_surgery",
+            "neurosurgery"
+          ],
+          "urgency": 3,
+          "features": [
+            {
+              "key": "saddle_anaesthesia",
+              "value": "yes",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "Spine 2009;34:857"
+            },
+            {
+              "key": "urinary_retention_incontinence",
+              "value": "yes",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "Spine 2009;34:857"
+            },
+            {
+              "key": "bilateral_leg_weakness",
+              "value": "yes",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Spine 2009;34:857"
+            },
+            {
+              "key": "bowel_dysfunction",
+              "value": "incontinence_constipation",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Spine 2009;34:857"
+            },
+            {
+              "key": "mri_central_disc",
+              "value": "large_central_herniation",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "Spine 2009;34:857"
+            },
+            {
+              "key": "sexual_dysfunction",
+              "value": "new_onset",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Spine 2009;34:857"
+            },
+            {
+              "key": "reduced_anal_tone",
+              "value": "yes",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Spine 2009;34:857"
+            },
+            {
+              "key": "progressive_worsening",
+              "value": "hours_days",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "Spine 2009;34:857"
+            }
+          ]
+        },
+        {
+          "name": "Spinal Cord Compression (Malignant)",
+          "icd": "G99.2",
+          "logPrior": -35,
+          "systems": [
+            "neurological",
+            "oncology"
+          ],
+          "specialties": [
+            "spinal_surgery",
+            "neurosurgery",
+            "oncology"
+          ],
+          "urgency": 3,
+          "features": [
+            {
+              "key": "known_malignancy",
+              "value": "breast_lung_prostate_myeloma",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NICE CG75 2008"
+            },
+            {
+              "key": "back_pain_nocturnal",
+              "value": "constant_progressive",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NICE CG75 2008"
+            },
+            {
+              "key": "mri_spine",
+              "value": "epidural_metastasis_cord_oedema",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "NICE CG75 2008"
+            },
+            {
+              "key": "limb_weakness",
+              "value": "bilateral_progressive",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "NICE CG75 2008"
+            },
+            {
+              "key": "sensory_level",
+              "value": "defined_dermatomal",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NICE CG75 2008"
+            },
+            {
+              "key": "bowel_bladder_dysfunction",
+              "value": "new_onset",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "NICE CG75 2008"
+            },
+            {
+              "key": "hypercalcaemia",
+              "value": "yes",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "NICE CG75 2008"
+            },
+            {
+              "key": "weight_loss_anorexia",
+              "value": "yes",
+              "logLR": 10,
+              "evidenceLabel": "Mild+",
+              "citation": "NICE CG75 2008"
+            }
+          ]
+        },
+        {
+          "name": "Cervical Myelopathy",
+          "icd": "M47.1",
+          "logPrior": -29,
+          "systems": [
+            "neurological",
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "spinal_surgery",
+            "neurosurgery"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "mri_cervical",
+              "value": "cord_compression_signal_change",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2019;381:1873"
+            },
+            {
+              "key": "hand_clumsiness",
+              "value": "progressive",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2019;381:1873"
+            },
+            {
+              "key": "gait_disturbance",
+              "value": "spastic_wide_based",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2019;381:1873"
+            },
+            {
+              "key": "lhermitte_sign",
+              "value": "yes",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2019;381:1873"
+            },
+            {
+              "key": "hyperreflexia",
+              "value": "upper_and_lower_limb",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2019;381:1873"
+            },
+            {
+              "key": "babinski_sign",
+              "value": "positive",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2019;381:1873"
+            },
+            {
+              "key": "nurick_grade",
+              "value": "2_or_higher",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2019;381:1873"
+            },
+            {
+              "key": "age",
+              "value": "greater_50_spondylotic",
+              "logLR": 8,
+              "evidenceLabel": "Mild+",
+              "citation": "NEJM 2019;381:1873"
+            }
+          ]
+        },
+        {
+          "name": "Spinal Epidural Abscess",
+          "icd": "G06.1",
+          "logPrior": -39,
+          "systems": [
+            "neurological",
+            "infectious"
+          ],
+          "specialties": [
+            "spinal_surgery",
+            "neurosurgery",
+            "infectious_disease"
+          ],
+          "urgency": 3,
+          "features": [
+            {
+              "key": "fever_back_pain_neuro",
+              "value": "triad",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2017;376:2167"
+            },
+            {
+              "key": "mri_gadolinium",
+              "value": "epidural_collection_enhancement",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "NEJM 2017;376:2167"
+            },
+            {
+              "key": "crp_esr_elevated",
+              "value": "markedly",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2017;376:2167"
+            },
+            {
+              "key": "staph_aureus_bacteraemia",
+              "value": "yes",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2017;376:2167"
+            },
+            {
+              "key": "risk_factors",
+              "value": "ivdu_recent_spinal_procedure_dm",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2017;376:2167"
+            },
+            {
+              "key": "point_tenderness_spine",
+              "value": "yes",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2017;376:2167"
+            },
+            {
+              "key": "progressive_weakness",
+              "value": "hours_to_days",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2017;376:2167"
+            },
+            {
+              "key": "white_cell_count",
+              "value": "elevated",
+              "logLR": 10,
+              "evidenceLabel": "Mild+",
+              "citation": "NEJM 2017;376:2167"
+            }
+          ]
+        },
+        {
+          "name": "Lumbar Spinal Stenosis",
+          "icd": "M48.0",
+          "logPrior": -22,
+          "systems": [
+            "musculoskeletal",
+            "neurological"
+          ],
+          "specialties": [
+            "spinal_surgery",
+            "neurosurgery"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "neurogenic_claudication",
+              "value": "bilateral_lower_limb",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2016;374:1424"
+            },
+            {
+              "key": "relief_with_flexion",
+              "value": "shopping_cart_sign",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2016;374:1424"
+            },
+            {
+              "key": "mri_stenosis",
+              "value": "thecal_sac_compression",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2016;374:1424"
+            },
+            {
+              "key": "walking_distance_limited",
+              "value": "yes",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2016;374:1424"
+            },
+            {
+              "key": "age",
+              "value": "greater_60",
+              "logLR": 10,
+              "evidenceLabel": "Mild+",
+              "citation": "NEJM 2016;374:1424"
+            },
+            {
+              "key": "normal_peripheral_pulses",
+              "value": "differentiates_from_vascular",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2016;374:1424"
+            },
+            {
+              "key": "pain_worse_extension",
+              "value": "yes",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2016;374:1424"
+            },
+            {
+              "key": "degenerative_changes_mri",
+              "value": "spondylolisthesis_osteophytes",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2016;374:1424"
+            }
+          ]
+        },
+        {
+          "name": "Vertebral Osteomyelitis",
+          "icd": "M46.2",
+          "logPrior": -35,
+          "systems": [
+            "musculoskeletal",
+            "infectious"
+          ],
+          "specialties": [
+            "spinal_surgery",
+            "infectious_disease"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "back_pain_nocturnal",
+              "value": "rest_pain_progressive",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2010;375:318"
+            },
+            {
+              "key": "mri_disc_vertebral",
+              "value": "discitis_endplate_oedema",
+              "logLR": 32,
+              "evidenceLabel": "Definitive+",
+              "citation": "Lancet 2010;375:318"
+            },
+            {
+              "key": "blood_cultures",
+              "value": "positive_staph_strep",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2010;375:318"
+            },
+            {
+              "key": "esr_crp",
+              "value": "significantly_elevated",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2010;375:318"
+            },
+            {
+              "key": "risk_factors",
+              "value": "ivdu_immunosuppression_recent_bacteraemia",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2010;375:318"
+            },
+            {
+              "key": "fever",
+              "value": "low_grade_persistent",
+              "logLR": 10,
+              "evidenceLabel": "Mild+",
+              "citation": "Lancet 2010;375:318"
+            },
+            {
+              "key": "spinal_tenderness",
+              "value": "percussion",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2010;375:318"
+            },
+            {
+              "key": "nuclear_bone_scan",
+              "value": "increased_uptake",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2010;375:318"
+            }
+          ]
+        },
+        {
+          "name": "Sacral Insufficiency Fracture",
+          "icd": "M84.58",
+          "logPrior": -29,
+          "systems": [
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "spinal_surgery",
+            "orthopaedics"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "elderly_osteoporotic",
+              "value": "female_post_menopausal",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Clin Orthop 2014;472:735"
+            },
+            {
+              "key": "sacral_pain",
+              "value": "axial_bilateral",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Clin Orthop 2014;472:735"
+            },
+            {
+              "key": "mri_sacrum",
+              "value": "h_sign_marrow_oedema",
+              "logLR": 32,
+              "evidenceLabel": "Definitive+",
+              "citation": "Clin Orthop 2014;472:735"
+            },
+            {
+              "key": "dexa_scan",
+              "value": "osteoporosis_t_less_negative2pt5",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Clin Orthop 2014;472:735"
+            },
+            {
+              "key": "recent_pelvic_radiotherapy",
+              "value": "yes",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "Clin Orthop 2014;472:735"
+            },
+            {
+              "key": "standing_walking",
+              "value": "pain_worse",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "Clin Orthop 2014;472:735"
+            },
+            {
+              "key": "xray_often_normal",
+              "value": "mri_needed",
+              "logLR": 10,
+              "evidenceLabel": "Mild+",
+              "citation": "Clin Orthop 2014;472:735"
+            },
+            {
+              "key": "steroid_use",
+              "value": "chronic",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "Clin Orthop 2014;472:735"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {
