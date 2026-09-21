@@ -10,7 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.125.0",
+    "@anthropic-ai/sdk": "^0.127.0",
     "@supabase/supabase-js": "^2.116.0",
     "@workspace/triage-engine": "workspace:*",
     "googleapis": "^173.0.0",
@@ -23,7 +23,7 @@
     "@types/node": "^26",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "autoprefixer": "^10.5.6",
+    "autoprefixer": "^10.6.1",
     "eslint": "^8",
     "eslint-config-next": "^14.2.35",
     "postcss": "^8",
