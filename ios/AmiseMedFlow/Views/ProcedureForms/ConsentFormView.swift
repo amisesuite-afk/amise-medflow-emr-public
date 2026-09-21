@@ -128,6 +128,7 @@ struct ConsentFormView: View {
         Form {
             templatePickerSection
             headerSection
+            preOpInvestigationsSection
             procedureSection
             generalRisksSection
             specificRisksSection
@@ -201,6 +202,52 @@ struct ConsentFormView: View {
         } footer: {
             Text("Selecting a template pre-fills procedure-specific risks and plain-language description. Review all content with the patient before signing.")
                 .font(.caption2)
+        }
+    }
+
+    // MARK: - Pre-operative investigations (read-only)
+
+    @ViewBuilder
+    private var preOpInvestigationsSection: some View {
+        let labs = LabPanel.parse(from: patient.investigations)
+        let resulted = patient.investigations.filter { $0.status == .resulted }
+        let pending = patient.investigations.filter { $0.status == .ordered || $0.status == .pending }
+
+        if !resulted.isEmpty || !pending.isEmpty {
+            Section {
+                if labs.hasCriticalValues {
+                    Label("Critical lab values — review before signing consent", systemImage: "exclamationmark.triangle.fill")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.red)
+                }
+                let labTokens: [String] = [
+                    labs.haemoglobin.map { String(format: "Hb %.1f g/dL", $0.value) },
+                    labs.platelets.map { "Plt \(Int($0.value)) ×10⁹/L" },
+                    labs.inr.map { String(format: "INR %.1f", $0.value) },
+                    labs.sodium.map { "Na \(Int($0.value)) mmol/L" },
+                    labs.potassium.map { String(format: "K %.1f mmol/L", $0.value) },
+                    labs.creatinine.map { "Cr \(Int($0.value)) µmol/L" }
+                ].compactMap { $0 }
+                if !labTokens.isEmpty {
+                    Text(labTokens.joined(separator: "  ·  "))
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundStyle(labs.hasCriticalValues ? .red : .primary)
+                }
+                let imaging = resulted.filter { $0.category != .blood && !$0.result.isEmpty }
+                ForEach(Array(imaging.prefix(3))) { inv in
+                    HStack(alignment: .top) {
+                        Text(inv.name).font(.caption.weight(.medium))
+                        Spacer()
+                        Text(inv.result).font(.caption).foregroundStyle(.secondary).lineLimit(2)
+                    }
+                }
+                if !pending.isEmpty {
+                    Text("\(pending.count) investigation\(pending.count == 1 ? "" : "s") still pending")
+                        .font(.caption).foregroundStyle(.orange)
+                }
+            } header: {
+                Text("Pre-operative Investigations")
+            }
         }
     }
 

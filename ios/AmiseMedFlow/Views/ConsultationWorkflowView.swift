@@ -81,6 +81,18 @@ struct ConsultationWorkflowView: View {
     private var completedCount: Int { Stage.allCases.filter { isComplete($0) }.count }
     private var total: Int { Stage.allCases.count }
 
+    private var investigationDetail: String {
+        let resulted = patient.investigations.filter { $0.status == .resulted }.count
+        let pending = patient.investigations.filter { $0.status == .ordered || $0.status == .pending }.count
+        if resulted == 0 && pending == 0 { return Stage.investigations.detail }
+        var parts: [String] = []
+        if resulted > 0 { parts.append("\(resulted) resulted") }
+        if pending > 0  { parts.append("\(pending) pending") }
+        let labs = LabPanel.parse(from: patient.investigations)
+        if labs.hasCriticalValues { parts.append("⚠ critical values") }
+        return parts.joined(separator: " · ")
+    }
+
     var body: some View {
         List {
             Section {
@@ -146,7 +158,7 @@ struct ConsultationWorkflowView: View {
                             .background(AMColor.accent.opacity(0.12), in: Capsule())
                     }
                 }
-                Text(stage.detail)
+                Text(stage == .investigations ? investigationDetail : stage.detail)
                     .font(.system(size: 12)).foregroundStyle(.secondary)
             }
             Spacer()
