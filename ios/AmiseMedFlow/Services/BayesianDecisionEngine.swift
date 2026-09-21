@@ -76,6 +76,7 @@ struct DecisionContext {
     var acuity: Acuity
     var clinicalScores: [ClinicalScore]
     var vitalsAlerts: [ChangePointAlert]
+    var labs: LabPanel
 }
 
 // MARK: - Engine
@@ -324,8 +325,8 @@ enum BayesianDecisionEngine {
     ) -> ClinicalDecision? {
         let p = Int(hyp.probability * 100)
 
-        // Look up from ManagementEngine
-        let plans = ManagementEngine.plans(forDiagnosis: hyp.name)
+        // Look up from ManagementEngine with lab-aware urgency modulation
+        let plans = ManagementEngine.plans(forDiagnosis: hyp.name, withLab: context.labs)
         guard let plan = plans.first else { return nil }
 
         let priority: DecisionPriority

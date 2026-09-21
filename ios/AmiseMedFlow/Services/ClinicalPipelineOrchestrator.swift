@@ -256,7 +256,8 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
             asaClass:       patient.asaClass,
             acuity:         patient.acuity,
             clinicalScores: psv.clinicalScores,
-            vitalsAlerts:   cpAlerts
+            vitalsAlerts:   cpAlerts,
+            labs:           psv.labs
         )
         let dec = BayesianDecisionEngine.decide(hypotheses: seeded, context: context)
         psv.decisions = dec
