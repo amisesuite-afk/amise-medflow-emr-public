@@ -191,6 +191,42 @@ struct SOAPDraftEngine {
                 let flag = lac.value >= 4.0 ? " [CRITICAL]" : lac.value >= 2.0 ? " [ABNL]" : ""
                 labTokens.append(String(format: "Lactate %.1f mmol/L", lac.value) + flag)
             }
+            if let glu = labs.glucose {
+                let flag = (glu.value < 3.0 || glu.value > 20.0) ? " [CRITICAL]" : (glu.value < 4.0 || glu.value > 11.0) ? " [ABNL]" : ""
+                labTokens.append(String(format: "Gluc %.1f mmol/L", glu.value) + flag)
+            }
+            if let alb = labs.albumin {
+                let flag = alb.value < 2.5 ? " [CRITICAL]" : alb.value < 3.5 ? " [ABNL]" : ""
+                labTokens.append(String(format: "Alb %.1f g/dL", alb.value) + flag)
+            }
+            if let amy = labs.amylase {
+                let flag = amy.value > 300 ? " [CRITICAL]" : amy.value > 100 ? " [ABNL]" : ""
+                labTokens.append("Amylase \(Int(amy.value)) U/L" + flag)
+            }
+            if let lip = labs.lipase {
+                let flag = lip.value > 600 ? " [CRITICAL]" : lip.value > 200 ? " [ABNL]" : ""
+                labTokens.append("Lipase \(Int(lip.value)) U/L" + flag)
+            }
+            if let trop = labs.troponin {
+                let flag = trop.value > 52 ? " [CRITICAL]" : trop.value > 14 ? " [ABNL]" : ""
+                labTokens.append(String(format: "Trop %.0f ng/L", trop.value) + flag)
+            }
+            if let dd = labs.dDimer {
+                let flag = dd.value > 2000 ? " [CRITICAL]" : dd.value > 500 ? " [ABNL]" : ""
+                labTokens.append("D-Dimer \(Int(dd.value)) µg/L" + flag)
+            }
+            if let crp = labs.crp {
+                let flag = crp.value > 200 ? " [CRITICAL]" : crp.value > 10 ? " [ABNL]" : ""
+                labTokens.append(String(format: "CRP %.0f mg/L", crp.value) + flag)
+            }
+            if let esr = labs.esr {
+                let flag = esr.value > 100 ? " [CRITICAL]" : esr.value > 20 ? " [ABNL]" : ""
+                labTokens.append("ESR \(Int(esr.value)) mm/h" + flag)
+            }
+            if let hba = labs.hba1c {
+                let flag = hba.value > 10 ? " [CRITICAL]" : hba.value > 6.5 ? " [ABNL]" : ""
+                labTokens.append(String(format: "HbA1c %.1f%%", hba.value) + flag)
+            }
 
             if !labTokens.isEmpty {
                 let critPrefix = labs.hasCriticalValues ? "⚠ " : ""

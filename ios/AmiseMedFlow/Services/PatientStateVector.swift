@@ -94,6 +94,8 @@ struct LabPanel {
         (sodium.map      { $0.value < 120 || $0.value > 155 } ?? false) ||
         (potassium.map   { $0.value < 2.5 || $0.value > 6.0 } ?? false) ||
         (lactate.map     { $0.value >= 4.0 } ?? false) ||
+        (glucose.map     { $0.value < 3.0 || $0.value > 20.0 } ?? false) ||
+        (troponin.map    { $0.value > 52  } ?? false) ||
         calciumCritical
     }
 }
