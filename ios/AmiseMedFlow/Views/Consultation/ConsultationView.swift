@@ -4612,6 +4612,9 @@ struct ConsultationView: View {
                 DiagnosisRadiationCard(
                     radiation: radiation,
                     patientAge: computedAge(from: patient.dateOfBirth),
+                    alreadyOrderedNames: Set(patient.investigations
+                        .filter { $0.status != .cancelled }
+                        .map { $0.name }),
                     onAddInvestigation: { inv in
                         let entry = InvestigationEntry(
                             name: inv.name, category: inv.category,

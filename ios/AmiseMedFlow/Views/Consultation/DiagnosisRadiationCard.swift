@@ -11,6 +11,9 @@ struct DiagnosisRadiationCard: View {
     let onDismiss: () -> Void
 
     var patientAge: Int? = nil
+    /// Names of investigations already present on the patient (any non-cancelled status).
+    /// Pre-populates addedNames so the card shows them as already added.
+    var alreadyOrderedNames: Set<String> = []
 
     @State private var expanded = true
     @State private var addedNames: Set<String> = []
@@ -25,6 +28,9 @@ struct DiagnosisRadiationCard: View {
                     content
                 }
             }
+        }
+        .onAppear {
+            addedNames = addedNames.union(alreadyOrderedNames)
         }
     }
 
