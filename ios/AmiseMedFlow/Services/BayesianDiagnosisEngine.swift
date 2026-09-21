@@ -432,6 +432,27 @@ enum BayesianDiagnosisEngine {
              ccL.contains("blood from nose"):
             candidates = externalPool("epistaxis") ?? []
 
+        // ── ENT — Ear complaints ──────────────────────────────────────────
+        case ccL.contains("ear pain") || ccL.contains("otalgia") ||
+             ccL.contains("hearing loss") || ccL.contains("tinnitus") ||
+             ccL.contains("ear discharge") || ccL.contains("otorrhoea") ||
+             ccL.contains("ear fullness") || ccL.contains("otitis") ||
+             ccL.contains("ear infect") || ccL.contains("glue ear") ||
+             ccL.contains("cholesteatoma") || ccL.contains("bppv") ||
+             (ccL.contains("ear") && (ccL.contains("block") || ccL.contains("fluid") || ccL.contains("wax"))):
+            candidates = externalPool("earComplaint") ?? []
+
+        // ── Oral / dental ─────────────────────────────────────────────────
+        case ccL.contains("mouth ulcer") || ccL.contains("oral ulcer") ||
+             ccL.contains("tongue lesion") || ccL.contains("tongue ulcer") ||
+             ccL.contains("dental abscess") || ccL.contains("tooth abscess") ||
+             ccL.contains("tooth pain") || ccL.contains("toothache") ||
+             ccL.contains("jaw pain") || ccL.contains("tmj") ||
+             ccL.contains("trismus") || ccL.contains("oral thrush") ||
+             ccL.contains("mouth pain") || ccL.contains("oral lesion") ||
+             (ccL.contains("mouth") && (ccL.contains("sore") || ccL.contains("bleed") || ccL.contains("white"))):
+            candidates = externalPool("oralComplaint") ?? []
+
         // ── Ophthalmology ─────────────────────────────────────────────────
         case ccL.contains("eye pain") || ccL.contains("red eye") ||
              ccL.contains("visual loss") || ccL.contains("vision loss") ||
@@ -535,6 +556,12 @@ enum BayesianDiagnosisEngine {
         // Secondary pool: VTE overlay on leg swelling / breathlessness combination
         if (ccL.contains("leg") && ccL.contains("swelling")) ||
            (ccL.contains("breathless") && ccL.contains("leg")) { mergePool("venousThromboEmbolism") }
+        // Secondary pool: ear overlay on dizziness/vertigo with auditory symptoms
+        if ccL.contains("tinnitus") || (ccL.contains("hearing") && ccL.contains("loss")) ||
+           (ccL.contains("ear") && ccL.contains("pain")) { mergePool("earComplaint") }
+        // Secondary pool: oral overlay on neck lump / sore throat when mouth symptoms present
+        if ccL.contains("mouth") || ccL.contains("tongue") ||
+           ccL.contains("dental") || ccL.contains("jaw") { mergePool("oralComplaint") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but
