@@ -148,9 +148,22 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
         }
 
         // ── Stage 3: Dynamic Bayesian Network ─────────────────────────────
+        // Build a lab-observation snapshot so DBN trajectory models can factor
+        // in investigation results (lactate, WBC, CRP, imaging) alongside vitals.
+        var labObs = DBNObservation(vitals: nil)
+        let lab = psv.labs
+        labObs.lactateElevated  = lab.lactateElevated
+        labObs.wbcAbnormal      = lab.wbcElevated
+        labObs.crpElevated      = lab.crpElevated || lab.crpHigh
+        labObs.imagingWorstened = psv.investigationEntries.contains {
+            $0.status == .resulted &&
+            ($0.category == .imaging || $0.category == .endoscopy) &&
+            !$0.result.isEmpty
+        }
         let dbn = DynamicBayesianNetwork.trajectories(
             forHypotheses: seeded,
-            vitals: patient.vitalsEntries
+            vitals: patient.vitalsEntries,
+            extraObservations: [labObs]
         )
         psv.trajectories = dbn
         trajectories = dbn
