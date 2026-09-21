@@ -70631,6 +70631,1716 @@
           ]
         }
       ]
+    },
+    "thyroidNoduleAssessment": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Papillary Thyroid Carcinoma",
+          "icd": "C73",
+          "logPrior": -17,
+          "urgency": 1,
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrine_surgery"
+          ],
+          "features": [
+            {
+              "key": "bethesda_v_vi",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Bethesda V/VI cytology",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "microcalcifications_us",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Microcalcifications on US",
+              "citation": "Horvath 2009"
+            },
+            {
+              "key": "irregular_margins_us",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Irregular margins on US",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "tall_shape_nodule",
+              "value": "true",
+              "logLR": 15,
+              "evidenceLabel": "Taller-than-wide shape",
+              "citation": "Kim 2002"
+            },
+            {
+              "key": "lymph_node_metastasis",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Cervical LN metastasis",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "extrathyroidal_extension",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Extrathyroidal extension",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "young_female_patient",
+              "value": "true",
+              "logLR": 8,
+              "evidenceLabel": "Young female patient",
+              "citation": "Surveillance Epi"
+            },
+            {
+              "key": "family_history_thyroid_cancer",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "FH thyroid cancer",
+              "citation": "ATA 2015"
+            }
+          ]
+        },
+        {
+          "name": "Follicular Thyroid Carcinoma",
+          "icd": "C73",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrine_surgery"
+          ],
+          "features": [
+            {
+              "key": "bethesda_iv_cytology",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Bethesda IV (follicular neoplasm)",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "hyperfunctioning_nodule",
+              "value": "false",
+              "logLR": 8,
+              "evidenceLabel": "Non-hyperfunctioning nodule",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "capsular_invasion_histology",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Capsular/vascular invasion",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "solitary_large_nodule",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Solitary large nodule >4cm",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "distant_metastasis",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Distant metastasis (bone/lung)",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "older_age_patient",
+              "value": "true",
+              "logLR": 8,
+              "evidenceLabel": "Age >50 years",
+              "citation": "Surveillance Epi"
+            },
+            {
+              "key": "ras_mutation",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "RAS mutation detected",
+              "citation": "Nikiforov 2011"
+            },
+            {
+              "key": "normal_tsh",
+              "value": "true",
+              "logLR": 6,
+              "evidenceLabel": "Normal/elevated TSH",
+              "citation": "ATA 2015"
+            }
+          ]
+        },
+        {
+          "name": "Benign Thyroid Adenoma",
+          "icd": "D34",
+          "logPrior": -14,
+          "urgency": 0,
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrine_surgery"
+          ],
+          "features": [
+            {
+              "key": "bethesda_ii_cytology",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Bethesda II (benign)",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "smooth_margins_us",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Smooth margins on US",
+              "citation": "Horvath 2009"
+            },
+            {
+              "key": "comet_tail_artefact",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Comet-tail artefact (colloid)",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "isoechoic_nodule",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Isoechoic or hyperechoic",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "no_lymphadenopathy",
+              "value": "true",
+              "logLR": 8,
+              "evidenceLabel": "No cervical lymphadenopathy",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "long_standing_stable",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Stable on serial imaging",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "soft_tissue_consistency",
+              "value": "true",
+              "logLR": 6,
+              "evidenceLabel": "Soft, mobile on palpation",
+              "citation": "Clinical"
+            },
+            {
+              "key": "normal_calcitonin",
+              "value": "true",
+              "logLR": 6,
+              "evidenceLabel": "Normal calcitonin level",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Medullary Thyroid Carcinoma",
+          "icd": "C73",
+          "logPrior": -29,
+          "urgency": 1,
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrine_surgery"
+          ],
+          "features": [
+            {
+              "key": "elevated_calcitonin",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Elevated serum calcitonin",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "elevated_cea",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Elevated CEA",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "ret_mutation",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "RET proto-oncogene mutation",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "family_history_men2",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "FH MEN2/FMTC",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "diarrhoea_flushing",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Diarrhoea/flushing (metastatic)",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "hyalinisation_histology",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Amyloid stroma (pathology)",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "bilateral_nodules",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Bilateral thyroid nodules",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "concomitant_phaeochromocytoma",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Concurrent phaeochromocytoma",
+              "citation": "ATA 2015"
+            }
+          ]
+        },
+        {
+          "name": "Multinodular Goitre",
+          "icd": "E04.2",
+          "logPrior": -14,
+          "urgency": 0,
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrine_surgery"
+          ],
+          "features": [
+            {
+              "key": "multiple_nodules_us",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Multiple nodules on US",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "diffusely_enlarged_thyroid",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Diffusely enlarged gland",
+              "citation": "Clinical"
+            },
+            {
+              "key": "normal_thyroid_function",
+              "value": "true",
+              "logLR": 8,
+              "evidenceLabel": "Euthyroid status",
+              "citation": "Clinical"
+            },
+            {
+              "key": "compressive_symptoms",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Compressive symptoms (dysphagia/SOB)",
+              "citation": "Clinical"
+            },
+            {
+              "key": "iodine_deficiency_endemic",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Iodine deficiency/endemic area",
+              "citation": "WHO"
+            },
+            {
+              "key": "gradual_progression",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Gradual progression over years",
+              "citation": "Clinical"
+            },
+            {
+              "key": "bethesda_ii_multiple",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Bethesda II on dominant nodule",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "retrosternal_extension",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Retrosternal extension",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Toxic Multinodular Goitre",
+          "icd": "E05.2",
+          "logPrior": -17,
+          "urgency": 0,
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrine_surgery"
+          ],
+          "features": [
+            {
+              "key": "suppressed_tsh",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Suppressed TSH",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "elevated_t3_t4",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Elevated T3/T4",
+              "citation": "Clinical"
+            },
+            {
+              "key": "hyperthyroid_symptoms",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Tremor, palpitations, weight loss",
+              "citation": "Clinical"
+            },
+            {
+              "key": "hot_nodule_scan",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Hot/autonomous nodule on scan",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "older_patient_nodular",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Age >60 years with nodular goitre",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "atrial_fibrillation_new",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "New-onset atrial fibrillation",
+              "citation": "Clinical"
+            },
+            {
+              "key": "weight_loss_significant",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Significant weight loss",
+              "citation": "Clinical"
+            },
+            {
+              "key": "iodine_load_precipitant",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Recent iodine load (CT contrast)",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Thyroid Lymphoma",
+          "icd": "C83.3",
+          "logPrior": -35,
+          "urgency": 1,
+          "systems": [
+            "endocrine",
+            "haematology"
+          ],
+          "specialties": [
+            "endocrine_surgery"
+          ],
+          "features": [
+            {
+              "key": "hashimoto_thyroiditis_background",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Background Hashimoto thyroiditis",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "rapid_enlargement_weeks",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Rapid enlargement over weeks",
+              "citation": "Clinical"
+            },
+            {
+              "key": "dysphagia_stridor",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Dysphagia/stridor (compressive)",
+              "citation": "Clinical"
+            },
+            {
+              "key": "b_symptoms_present",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "B-symptoms (fever, sweats, weight loss)",
+              "citation": "Clinical"
+            },
+            {
+              "key": "core_biopsy_lymphoma",
+              "value": "true",
+              "logLR": 32,
+              "evidenceLabel": "Core biopsy confirms lymphoma",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "elevated_ldh",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Elevated serum LDH",
+              "citation": "Clinical"
+            },
+            {
+              "key": "bilateral_diffuse_disease",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Bilateral diffuse disease",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "soft_compressible_texture",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Soft, compressible texture",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Subacute Thyroiditis (De Quervain)",
+          "icd": "E06.1",
+          "logPrior": -22,
+          "urgency": 0,
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrine_surgery"
+          ],
+          "features": [
+            {
+              "key": "tender_thyroid",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Tender thyroid gland",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "preceding_viral_illness",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Preceding viral URTI",
+              "citation": "Clinical"
+            },
+            {
+              "key": "elevated_esr_crp",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Elevated ESR/CRP",
+              "citation": "Clinical"
+            },
+            {
+              "key": "transient_hyperthyroidism",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Transient hyperthyroidism phase",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "low_radioiodine_uptake",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Low radioiodine uptake",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "spontaneous_resolution",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Spontaneous resolution over weeks",
+              "citation": "Clinical"
+            },
+            {
+              "key": "normal_antibodies",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Negative thyroid antibodies",
+              "citation": "Clinical"
+            },
+            {
+              "key": "nsaid_response",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Responds to NSAIDs/corticosteroids",
+              "citation": "Clinical"
+            }
+          ]
+        }
+      ]
+    },
+    "carotidEndovascular": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Carotid Artery Stenosis (Symptomatic)",
+          "icd": "I65.2",
+          "logPrior": -20,
+          "urgency": 2,
+          "systems": [
+            "vascular",
+            "neurology"
+          ],
+          "specialties": [
+            "vascular_surgery"
+          ],
+          "features": [
+            {
+              "key": "tia_ipsilateral",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Ipsilateral TIA within 6 months",
+              "citation": "NASCET 1998"
+            },
+            {
+              "key": "amaurosis_fugax",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Amaurosis fugax",
+              "citation": "NASCET 1998"
+            },
+            {
+              "key": "stenosis_greater_70",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Stenosis >70% on duplex",
+              "citation": "NASCET 1998"
+            },
+            {
+              "key": "ulcerated_plaque",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Ulcerated plaque on imaging",
+              "citation": "NASCET 1998"
+            },
+            {
+              "key": "stroke_minor_completed",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Minor completed stroke",
+              "citation": "AHA/ASA 2021"
+            },
+            {
+              "key": "carotid_bruit_auscultation",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Carotid bruit on auscultation",
+              "citation": "NASCET 1998"
+            },
+            {
+              "key": "contralateral_occlusion",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Contralateral carotid occlusion",
+              "citation": "NASCET 1998"
+            },
+            {
+              "key": "hypertension_dyslipidaemia_smoking",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Hypertension/dyslipidaemia/smoking",
+              "citation": "NASCET 1998"
+            }
+          ]
+        },
+        {
+          "name": "Carotid Artery Stenosis (Asymptomatic)",
+          "icd": "I65.2",
+          "logPrior": -22,
+          "urgency": 0,
+          "systems": [
+            "vascular"
+          ],
+          "specialties": [
+            "vascular_surgery"
+          ],
+          "features": [
+            {
+              "key": "stenosis_60_to_99_asymptomatic",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "60\u201399% stenosis on duplex (no symptoms)",
+              "citation": "ACAS 1995"
+            },
+            {
+              "key": "progressive_stenosis_serial",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Progressive stenosis on serial imaging",
+              "citation": "Clinical"
+            },
+            {
+              "key": "incidental_finding_carotid",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Incidental finding on neck imaging",
+              "citation": "Clinical"
+            },
+            {
+              "key": "high_plaque_burden",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "High plaque burden/calcification",
+              "citation": "AHA 2021"
+            },
+            {
+              "key": "cardiovascular_risk_factors",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Multiple cardiovascular risk factors",
+              "citation": "AHA 2021"
+            },
+            {
+              "key": "contralateral_stroke_history",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Contralateral stroke history",
+              "citation": "ACAS 1995"
+            },
+            {
+              "key": "male_sex_age_60",
+              "value": "true",
+              "logLR": 8,
+              "evidenceLabel": "Male sex, age >60 years",
+              "citation": "ACAS 1995"
+            },
+            {
+              "key": "no_recent_neurological_event",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "No neurological event in past 6 months",
+              "citation": "ACAS 1995"
+            }
+          ]
+        },
+        {
+          "name": "Carotid Body Tumour (Paraganglioma)",
+          "icd": "D35.5",
+          "logPrior": -35,
+          "urgency": 0,
+          "systems": [
+            "vascular",
+            "endocrine"
+          ],
+          "specialties": [
+            "vascular_surgery"
+          ],
+          "features": [
+            {
+              "key": "carotid_bifurcation_mass",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Pulsatile mass at carotid bifurcation",
+              "citation": "Lee 2011"
+            },
+            {
+              "key": "lyre_sign_angiography",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Lyre sign on angiography/MRA",
+              "citation": "Lee 2011"
+            },
+            {
+              "key": "mobile_horizontal_not_vertical",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Mobile horizontally not vertically (Fontaine sign)",
+              "citation": "Clinical"
+            },
+            {
+              "key": "family_history_paraganglioma",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "FH paraganglioma/phaeochromocytoma",
+              "citation": "Lee 2011"
+            },
+            {
+              "key": "sdh_mutation",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "SDH gene mutation",
+              "citation": "Lee 2011"
+            },
+            {
+              "key": "bilateral_lesions",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Bilateral carotid body tumours",
+              "citation": "Lee 2011"
+            },
+            {
+              "key": "elevated_catecholamines",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Elevated urine catecholamines (functional)",
+              "citation": "Clinical"
+            },
+            {
+              "key": "slow_painless_growth",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Slow painless growth over years",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Internal Carotid Artery Dissection",
+          "icd": "I77.71",
+          "logPrior": -29,
+          "urgency": 2,
+          "systems": [
+            "vascular",
+            "neurology"
+          ],
+          "specialties": [
+            "vascular_surgery"
+          ],
+          "features": [
+            {
+              "key": "ipsilateral_neck_pain_headache",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Ipsilateral neck pain/headache",
+              "citation": "Debette 2009"
+            },
+            {
+              "key": "horner_syndrome_ipsilateral",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Ipsilateral Horner syndrome",
+              "citation": "Debette 2009"
+            },
+            {
+              "key": "young_patient_no_risk_factors",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Young patient, few traditional risk factors",
+              "citation": "Debette 2009"
+            },
+            {
+              "key": "trauma_neck_recent",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Recent neck trauma/manipulation",
+              "citation": "Debette 2009"
+            },
+            {
+              "key": "mri_string_sign",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "MRI/MRA string sign or flap",
+              "citation": "Debette 2009"
+            },
+            {
+              "key": "connective_tissue_disease",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Connective tissue disorder (Marfan/EDS)",
+              "citation": "Debette 2009"
+            },
+            {
+              "key": "pulsatile_tinnitus",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Pulsatile tinnitus",
+              "citation": "Clinical"
+            },
+            {
+              "key": "contralateral_hemiplegia",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Contralateral hemiplegia/TIA",
+              "citation": "Debette 2009"
+            }
+          ]
+        },
+        {
+          "name": "Vertebral Artery Stenosis",
+          "icd": "I65.0",
+          "logPrior": -28,
+          "urgency": 1,
+          "systems": [
+            "vascular",
+            "neurology"
+          ],
+          "specialties": [
+            "vascular_surgery"
+          ],
+          "features": [
+            {
+              "key": "posterior_circulation_tia",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Posterior circulation TIA/stroke",
+              "citation": "AHA/ASA 2021"
+            },
+            {
+              "key": "vertigo_diplopia_ataxia",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Vertigo, diplopia, ataxia",
+              "citation": "AHA/ASA 2021"
+            },
+            {
+              "key": "drop_attacks",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Drop attacks",
+              "citation": "Clinical"
+            },
+            {
+              "key": "duplex_vertebral_stenosis",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Duplex/CTA confirms VA stenosis",
+              "citation": "Clinical"
+            },
+            {
+              "key": "subclavian_steal_syndrome",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Subclavian steal syndrome",
+              "citation": "Clinical"
+            },
+            {
+              "key": "bilateral_arm_bp_difference",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": ">15mmHg arm BP difference",
+              "citation": "Clinical"
+            },
+            {
+              "key": "atherosclerosis_burden",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "High atherosclerotic burden",
+              "citation": "AHA/ASA 2021"
+            },
+            {
+              "key": "no_cardiac_source_embolism",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "No cardiac source of embolism",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Aortoiliac Occlusive Disease (Leriche Syndrome)",
+          "icd": "I74.09",
+          "logPrior": -25,
+          "urgency": 1,
+          "systems": [
+            "vascular"
+          ],
+          "specialties": [
+            "vascular_surgery"
+          ],
+          "features": [
+            {
+              "key": "bilateral_leg_claudication",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Bilateral leg/buttock claudication",
+              "citation": "TASC II"
+            },
+            {
+              "key": "absent_femoral_pulses",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Absent femoral pulses bilaterally",
+              "citation": "TASC II"
+            },
+            {
+              "key": "erectile_dysfunction",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Erectile dysfunction (Leriche triad)",
+              "citation": "TASC II"
+            },
+            {
+              "key": "buttock_thigh_claudication",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Buttock/thigh claudication",
+              "citation": "TASC II"
+            },
+            {
+              "key": "ct_aortiliac_occlusion",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "CTA confirms aortoiliac occlusion",
+              "citation": "TASC II"
+            },
+            {
+              "key": "prolonged_heavy_smoking",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Prolonged heavy smoking",
+              "citation": "TASC II"
+            },
+            {
+              "key": "hypoplastic_aorta_young",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Hypoplastic aorta in young woman",
+              "citation": "TASC II"
+            },
+            {
+              "key": "distal_pulse_deficit",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Distal pulse deficits bilaterally",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Renal Artery Stenosis",
+          "icd": "I70.1",
+          "logPrior": -25,
+          "urgency": 1,
+          "systems": [
+            "vascular",
+            "renal"
+          ],
+          "specialties": [
+            "vascular_surgery"
+          ],
+          "features": [
+            {
+              "key": "resistant_hypertension",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Resistant hypertension (\u22653 drugs)",
+              "citation": "AHA 2017"
+            },
+            {
+              "key": "flash_pulmonary_oedema",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Flash pulmonary oedema",
+              "citation": "Caps 1991"
+            },
+            {
+              "key": "ace_inhibitor_creatinine_rise",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Creatinine rise >20% on ACEi/ARB",
+              "citation": "AHA 2017"
+            },
+            {
+              "key": "duplex_velocities_elevated",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Elevated renal artery velocities on duplex",
+              "citation": "AHA 2017"
+            },
+            {
+              "key": "unilateral_small_kidney",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Unilateral small kidney",
+              "citation": "AHA 2017"
+            },
+            {
+              "key": "fibromuscular_dysplasia_young",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "FMD in young woman",
+              "citation": "AHA 2017"
+            },
+            {
+              "key": "peripheral_arterial_disease",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Generalised peripheral arterial disease",
+              "citation": "AHA 2017"
+            },
+            {
+              "key": "renal_bruit_abdominal",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Abdominal bruit over renal area",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Visceral Artery Aneurysm",
+          "icd": "I72.8",
+          "logPrior": -32,
+          "urgency": 2,
+          "systems": [
+            "vascular"
+          ],
+          "specialties": [
+            "vascular_surgery"
+          ],
+          "features": [
+            {
+              "key": "splenic_artery_aneurysm",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Splenic artery aneurysm on CT",
+              "citation": "Carr 2001"
+            },
+            {
+              "key": "incidental_ct_finding",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Incidental CT finding",
+              "citation": "Clinical"
+            },
+            {
+              "key": "portal_hypertension_cause",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Portal hypertension (splenic artery)",
+              "citation": "Carr 2001"
+            },
+            {
+              "key": "female_multiparous",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Female, multiparous (splenic)",
+              "citation": "Carr 2001"
+            },
+            {
+              "key": "symptomatic_epigastric_pain",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Epigastric/back pain (symptomatic)",
+              "citation": "Clinical"
+            },
+            {
+              "key": "aneurysm_size_greater_2cm",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Aneurysm diameter >2cm",
+              "citation": "SVS 2020"
+            },
+            {
+              "key": "rupture_haemoperitoneum",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Rupture/haemoperitoneum",
+              "citation": "Clinical"
+            },
+            {
+              "key": "fibrodysplasia_connective",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Fibrodysplasia/connective tissue disorder",
+              "citation": "Carr 2001"
+            }
+          ]
+        }
+      ]
+    },
+    "postThoracotomyComplications": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Bronchopleural Fistula",
+          "icd": "J86.0",
+          "logPrior": -28,
+          "urgency": 2,
+          "systems": [
+            "thoracic",
+            "respiratory"
+          ],
+          "specialties": [
+            "thoracic_surgery"
+          ],
+          "features": [
+            {
+              "key": "air_leak_persistent_chest_drain",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Persistent air leak on chest drain",
+              "citation": "Sarkar 2010"
+            },
+            {
+              "key": "subcutaneous_emphysema_increasing",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Increasing subcutaneous emphysema",
+              "citation": "Sarkar 2010"
+            },
+            {
+              "key": "post_pneumonectomy_context",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Post-pneumonectomy/lobectomy",
+              "citation": "Sarkar 2010"
+            },
+            {
+              "key": "empyema_coexisting",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Coexisting empyema",
+              "citation": "Sarkar 2010"
+            },
+            {
+              "key": "tension_pneumothorax_risk",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Tension pneumothorax if drain removed",
+              "citation": "Clinical"
+            },
+            {
+              "key": "bronchoscopy_confirms_fistula",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Bronchoscopy confirms fistula",
+              "citation": "Sarkar 2010"
+            },
+            {
+              "key": "fever_purulent_sputum",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Fever and purulent sputum",
+              "citation": "Clinical"
+            },
+            {
+              "key": "methylene_blue_test",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Positive methylene blue test",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Post-Thoracotomy Empyema",
+          "icd": "J86.9",
+          "logPrior": -28,
+          "urgency": 2,
+          "systems": [
+            "thoracic",
+            "respiratory"
+          ],
+          "specialties": [
+            "thoracic_surgery"
+          ],
+          "features": [
+            {
+              "key": "pleural_fluid_purulent",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Purulent pleural fluid on aspiration",
+              "citation": "British Thoracic Soc 2010"
+            },
+            {
+              "key": "persistent_fever_post_op",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Persistent fever >72h post-op",
+              "citation": "Clinical"
+            },
+            {
+              "key": "pleural_fluid_ph_low",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Pleural fluid pH <7.2/LDH>1000",
+              "citation": "BTS 2010"
+            },
+            {
+              "key": "loculated_pleural_ct",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Loculated pleural collection on CT",
+              "citation": "BTS 2010"
+            },
+            {
+              "key": "pneumonectomy_space_infected",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Pneumonectomy space infection",
+              "citation": "Sarkar 2010"
+            },
+            {
+              "key": "positive_pleural_culture",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Positive pleural fluid culture",
+              "citation": "BTS 2010"
+            },
+            {
+              "key": "elevated_wbc_crp",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Elevated WBC/CRP",
+              "citation": "Clinical"
+            },
+            {
+              "key": "failure_conservative_drainage",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Failure of conservative drainage",
+              "citation": "BTS 2010"
+            }
+          ]
+        },
+        {
+          "name": "Chylothorax Post-Thoracotomy",
+          "icd": "J94.0",
+          "logPrior": -29,
+          "urgency": 1,
+          "systems": [
+            "thoracic",
+            "lymphatic"
+          ],
+          "specialties": [
+            "thoracic_surgery"
+          ],
+          "features": [
+            {
+              "key": "milky_pleural_fluid",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Milky/turbid pleural fluid",
+              "citation": "Doerr 2005"
+            },
+            {
+              "key": "high_triglycerides_fluid",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Pleural triglycerides >110mg/dL",
+              "citation": "Doerr 2005"
+            },
+            {
+              "key": "chylomicrons_confirmed",
+              "value": "true",
+              "logLR": 32,
+              "evidenceLabel": "Chylomicrons confirmed in fluid",
+              "citation": "Doerr 2005"
+            },
+            {
+              "key": "high_output_chest_drain",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "High output chest drain (>500mL/day)",
+              "citation": "Doerr 2005"
+            },
+            {
+              "key": "oesophagectomy_lymphadenectomy",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Post-oesophagectomy/lymphadenectomy",
+              "citation": "Clinical"
+            },
+            {
+              "key": "increases_with_enteral_feed",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Increases with enteral feeding",
+              "citation": "Doerr 2005"
+            },
+            {
+              "key": "lymphocyte_predominant_fluid",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Lymphocyte-predominant fluid",
+              "citation": "Doerr 2005"
+            },
+            {
+              "key": "nutritional_depletion",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Progressive nutritional depletion",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Post-Thoracotomy Pain Syndrome",
+          "icd": "G89.28",
+          "logPrior": -17,
+          "urgency": 0,
+          "systems": [
+            "thoracic",
+            "pain"
+          ],
+          "specialties": [
+            "thoracic_surgery"
+          ],
+          "features": [
+            {
+              "key": "persistent_pain_2_months",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Pain persisting >2 months post-thoracotomy",
+              "citation": "Kehlet 2006"
+            },
+            {
+              "key": "neuropathic_character_pain",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Neuropathic pain character (burning/shooting)",
+              "citation": "Kehlet 2006"
+            },
+            {
+              "key": "intercostal_distribution",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Intercostal distribution",
+              "citation": "Clinical"
+            },
+            {
+              "key": "allodynia_scar_area",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Allodynia around scar",
+              "citation": "Clinical"
+            },
+            {
+              "key": "open_thoracotomy_not_vats",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Open thoracotomy (higher risk than VATS)",
+              "citation": "Kehlet 2006"
+            },
+            {
+              "key": "young_female_patient_risk",
+              "value": "true",
+              "logLR": 8,
+              "evidenceLabel": "Young female patient (higher risk)",
+              "citation": "Kehlet 2006"
+            },
+            {
+              "key": "pre_op_anxiety_depression",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Pre-op anxiety/depression",
+              "citation": "Kehlet 2006"
+            },
+            {
+              "key": "no_surgical_complication",
+              "value": "true",
+              "logLR": 8,
+              "evidenceLabel": "No identifiable surgical complication",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Haemothorax Post-Thoracotomy",
+          "icd": "J94.2",
+          "logPrior": -25,
+          "urgency": 2,
+          "systems": [
+            "thoracic"
+          ],
+          "specialties": [
+            "thoracic_surgery"
+          ],
+          "features": [
+            {
+              "key": "bloody_chest_drain_output",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Bloody chest drain output >200mL/h",
+              "citation": "ATLS 2018"
+            },
+            {
+              "key": "haemodynamic_instability",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Haemodynamic instability",
+              "citation": "ATLS 2018"
+            },
+            {
+              "key": "ct_haemothorax_confirmed",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "CT confirms haemothorax",
+              "citation": "Clinical"
+            },
+            {
+              "key": "falling_haemoglobin_serial",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Serially falling haemoglobin",
+              "citation": "Clinical"
+            },
+            {
+              "key": "dull_percussion_base",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Dull percussion at base",
+              "citation": "Clinical"
+            },
+            {
+              "key": "coagulopathy_contributing",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Coagulopathy contributing",
+              "citation": "Clinical"
+            },
+            {
+              "key": "blood_transfusion_required",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Requires blood transfusion",
+              "citation": "Clinical"
+            },
+            {
+              "key": "re_exploration_needed",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Requires surgical re-exploration",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Post-Pneumonectomy Syndrome",
+          "icd": "J95.89",
+          "logPrior": -35,
+          "urgency": 1,
+          "systems": [
+            "thoracic",
+            "respiratory"
+          ],
+          "specialties": [
+            "thoracic_surgery"
+          ],
+          "features": [
+            {
+              "key": "right_pneumonectomy_context",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Right pneumonectomy (higher risk)",
+              "citation": "Soll 1990"
+            },
+            {
+              "key": "progressive_dyspnoea_months",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Progressive dyspnoea months post-op",
+              "citation": "Soll 1990"
+            },
+            {
+              "key": "mediastinal_shift_ct",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Mediastinal shift/herniation on CT",
+              "citation": "Soll 1990"
+            },
+            {
+              "key": "main_bronchus_compression",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Main bronchus compression",
+              "citation": "Soll 1990"
+            },
+            {
+              "key": "stridor_intermittent",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Intermittent stridor",
+              "citation": "Clinical"
+            },
+            {
+              "key": "recurrent_infections_remaining",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Recurrent infections in remaining lung",
+              "citation": "Soll 1990"
+            },
+            {
+              "key": "paediatric_adult_onset",
+              "value": "true",
+              "logLR": 8,
+              "evidenceLabel": "Childhood or early adult onset",
+              "citation": "Soll 1990"
+            },
+            {
+              "key": "worsening_exercise_tolerance",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Worsening exercise tolerance",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Oesophageal Anastomotic Leak (Post-Oesophagectomy)",
+          "icd": "K22.3",
+          "logPrior": -22,
+          "urgency": 3,
+          "systems": [
+            "thoracic",
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "thoracic_surgery",
+            "upper_gi_surgery"
+          ],
+          "features": [
+            {
+              "key": "contrast_swallow_leak",
+              "value": "true",
+              "logLR": 32,
+              "evidenceLabel": "Contrast swallow confirms leak",
+              "citation": "Biere 2012"
+            },
+            {
+              "key": "saliva_bile_drain",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Saliva/bile in chest drain",
+              "citation": "Biere 2012"
+            },
+            {
+              "key": "sepsis_post_oesophagectomy",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Sepsis post-oesophagectomy",
+              "citation": "Biere 2012"
+            },
+            {
+              "key": "subcutaneous_emphysema_neck",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Cervical subcutaneous emphysema",
+              "citation": "Clinical"
+            },
+            {
+              "key": "ct_pneumomediastinum",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Pneumomediastinum/mediastinitis on CT",
+              "citation": "Biere 2012"
+            },
+            {
+              "key": "day_3_to_7_post_op",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Presentation day 3\u20137 post-op",
+              "citation": "Biere 2012"
+            },
+            {
+              "key": "fever_tachycardia",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Fever and tachycardia",
+              "citation": "Clinical"
+            },
+            {
+              "key": "cervical_anastomosis_location",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Cervical anastomosis (more common site)",
+              "citation": "Biere 2012"
+            }
+          ]
+        },
+        {
+          "name": "Recurrent Laryngeal Nerve Injury (Post-Op)",
+          "icd": "J38.01",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "thoracic",
+            "laryngeal"
+          ],
+          "specialties": [
+            "thoracic_surgery",
+            "endocrine_surgery"
+          ],
+          "features": [
+            {
+              "key": "hoarseness_post_thyroid_oeso",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Hoarseness after thyroid/oesophageal surgery",
+              "citation": "Clinical"
+            },
+            {
+              "key": "vocal_cord_palsy_nasolaryngoscopy",
+              "value": "true",
+              "logLR": 32,
+              "evidenceLabel": "Vocal cord palsy on nasolaryngoscopy",
+              "citation": "Clinical"
+            },
+            {
+              "key": "aspiration_pneumonia_risk",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Aspiration pneumonia risk",
+              "citation": "Clinical"
+            },
+            {
+              "key": "bovine_cough",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Bovine/ineffective cough",
+              "citation": "Clinical"
+            },
+            {
+              "key": "swallowing_difficulty_thin_liquids",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Difficulty with thin liquids",
+              "citation": "Clinical"
+            },
+            {
+              "key": "bilateral_cord_palsy_stridor",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Bilateral palsy \u2192 stridor/airway risk",
+              "citation": "Clinical"
+            },
+            {
+              "key": "high_risk_dissection_context",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "High-risk dissection context (redo/cancer)",
+              "citation": "Clinical"
+            },
+            {
+              "key": "recovery_3_to_6_months",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Spontaneous recovery possible 3\u20136 months",
+              "citation": "Clinical"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {

@@ -1253,6 +1253,45 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("fournier") || ccL.contains("necrotising") { mergePool("necrotisingSoftTissue") }
             if ccL.contains("sepsis") { mergePool("sepsisConditions") }
 
+        // Thyroid nodule assessment
+        case ccL.contains("thyroid nodule") || ccL.contains("thyroid mass") ||
+             ccL.contains("goitre") || ccL.contains("goiter") ||
+             ccL.contains("thyroid cancer") || ccL.contains("papillary thyroid") ||
+             ccL.contains("follicular thyroid") || ccL.contains("medullary thyroid") ||
+             ccL.contains("bethesda") || ccL.contains("fnac thyroid") ||
+             ccL.contains("thyroid lymphoma") || ccL.contains("de quervain") ||
+             ccL.contains("subacute thyroiditis") ||
+             (ccL.contains("neck mass") && ccL.contains("thyroid")) ||
+             (ccL.contains("calcitonin") && ccL.contains("elevated")):
+            candidates = externalPool("thyroidNoduleAssessment") ?? []
+            if ccL.contains("men2") || ccL.contains("ret mutation") { mergePool("adrenalEndocrine") }
+            if ccL.contains("cancer") || ccL.contains("malignant") { mergePool("oncologyComplications") }
+
+        // Carotid and endovascular conditions
+        case ccL.contains("carotid stenosis") || ccL.contains("carotid endarterectomy") ||
+             ccL.contains("carotid body tumour") || ccL.contains("carotid dissection") ||
+             ccL.contains("vertebral artery") || ccL.contains("leriche") ||
+             ccL.contains("aortoiliac") || ccL.contains("renal artery stenosis") ||
+             ccL.contains("visceral aneurysm") || ccL.contains("splenic artery aneurysm") ||
+             (ccL.contains("tia") && ccL.contains("carotid")) ||
+             (ccL.contains("stroke") && ccL.contains("carotid")) ||
+             (ccL.contains("amaurosis") && ccL.contains("fugax")):
+            candidates = externalPool("carotidEndovascular") ?? []
+            if ccL.contains("stroke") || ccL.contains("tia") { mergePool("peripheralVascular") }
+            if ccL.contains("aneurysm") { mergePool("aorticConditions") }
+
+        // Post-thoracotomy complications
+        case ccL.contains("bronchopleural fistula") || ccL.contains("post-thoracotomy") ||
+             ccL.contains("chylothorax") || ccL.contains("haemothorax") ||
+             ccL.contains("empyema") || ccL.contains("post-pneumonectomy") ||
+             ccL.contains("oesophagectomy leak") || ccL.contains("anastomotic leak") && ccL.contains("oesophageal") ||
+             ccL.contains("recurrent laryngeal") || ccL.contains("vocal cord palsy") ||
+             (ccL.contains("thoracotomy") && ccL.contains("complication")) ||
+             (ccL.contains("air leak") && ccL.contains("chest drain")):
+            candidates = externalPool("postThoracotomyComplications") ?? []
+            if ccL.contains("sepsis") || ccL.contains("empyema") { mergePool("sepsisConditions") }
+            if ccL.contains("leak") || ccL.contains("anastomotic") { mergePool("postOpComplications") }
+
         // Skin and soft tissue tumours
         case ccL.contains("melanoma") || ccL.contains("basal cell") ||
              ccL.contains("squamous cell carcinoma") || ccL.contains("skin cancer") ||
@@ -1570,6 +1609,15 @@ enum BayesianDiagnosisEngine {
         if ccL.contains("surgical site infection") || ccL.contains("wound infection") ||
            ccL.contains("infected mesh") || ccL.contains("fournier") ||
            (ccL.contains("wound") && ccL.contains("purulent")) { mergePool("surgicalSiteInfection") }
+        if ccL.contains("thyroid nodule") || ccL.contains("goitre") ||
+           ccL.contains("bethesda") || ccL.contains("de quervain") ||
+           (ccL.contains("neck mass") && ccL.contains("thyroid")) { mergePool("thyroidNoduleAssessment") }
+        if ccL.contains("carotid") || ccL.contains("amaurosis fugax") ||
+           ccL.contains("renal artery stenosis") || ccL.contains("leriche") ||
+           ccL.contains("visceral aneurysm") { mergePool("carotidEndovascular") }
+        if ccL.contains("bronchopleural") || ccL.contains("chylothorax") ||
+           ccL.contains("post-thoracotomy") || ccL.contains("empyema") ||
+           (ccL.contains("air leak") && ccL.contains("chest")) { mergePool("postThoracotomyComplications") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but
