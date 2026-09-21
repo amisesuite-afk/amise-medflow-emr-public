@@ -2026,6 +2026,31 @@ enum BayesianDiagnosisEngine {
            ccL.contains("elevated alt") || ccL.contains("elevated ast") { mergePool("jaundice") }
         if (ccL.contains("iron deficiency") || ccL.contains("ida ") || ccL.contains("microcytic anaemia")) &&
            !ccL.contains("menorrhagia") { mergePool("colorectalMalignancy") }
+        // Lab-finding-driven secondary merges — investigation results as chief complaints.
+        // invTerms (investigation names + results) flows into ccL above, so these fire
+        // whenever a resulted investigation contains the matching term.
+        if ccL.contains("troponin") { mergePool("chestPain"); mergePool("arrhythmia") }
+        if ccL.contains("d-dimer") || ccL.contains("ddimer") || ccL.contains("d dimer") {
+            mergePool("venousThromboEmbolism")
+        }
+        if ccL.contains("amylase") || ccL.contains("lipase") { mergePool("acutePancreatitis") }
+        if ccL.contains("lactate") {
+            mergePool("sepsisConditions"); mergePool("mesentericVascular")
+        }
+        if ccL.contains("bnp") || ccL.contains("pro-bnp") || ccL.contains("nt-pro") ||
+           ccL.contains("brain natriuretic") { mergePool("cardiacFailure") }
+        if ccL.contains("hypercalcaemia") ||
+           (ccL.contains("calcium") && (ccL.contains("elevated") || ccL.contains("raised") || ccL.contains("high"))) {
+            mergePool("adrenalEndocrine"); mergePool("oncologyComplications")
+        }
+        if ccL.contains("raised inr") || ccL.contains("elevated inr") ||
+           (ccL.contains("inr") && (ccL.contains("elevated") || ccL.contains("raised") || ccL.contains("high"))) {
+            mergePool("coagulationDisorder")
+        }
+        if ccL.contains("raised crp") || ccL.contains("elevated crp") ||
+           (ccL.contains("crp") && (ccL.contains("elevated") || ccL.contains("raised") || ccL.contains("high"))) {
+            if !candidates.isEmpty { /* crp is non-specific — enrich existing pool only, no redirect */ }
+        }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but
@@ -2053,9 +2078,97 @@ enum BayesianDiagnosisEngine {
             .filter { !$0.isEmpty }.joined(separator: " ")
         let mergedInvestigations = investigations + longitudinal.cumulativeInvestigations
 
+        // Build lab-derived association chips from resulted investigations.
+        // Maps recognised lab abnormalities to standardised chip strings that
+        // match the "associations" feature values in DiagnosticDatabase.json,
+        // fulfilling the "investigations as chief complaints" directive:
+        // lab findings now contribute Bayesian weight inside every selected pool.
+        var labAssocChips: Set<String> = []
+        for inv in mergedInvestigations where inv.status == .resulted {
+            let name    = inv.name.lowercased()
+            let result  = inv.result.lowercased()
+            let combined = name + " " + result
+            let isHigh  = combined.contains("elevated") || combined.contains("raised") ||
+                          combined.contains(" high") || result.hasPrefix("high") ||
+                          combined.contains(">") || combined.contains("abnormal")
+            let isLow   = combined.contains(" low") || result.hasPrefix("low") ||
+                          combined.contains("decreased") || combined.contains("deficient") ||
+                          combined.contains("<")
+
+            if name.contains("wbc") || name.contains("white cell") ||
+               name.contains("leukocyte") || name.contains("leucocyte") ||
+               name.contains("neutrophil") || name.contains("white blood cell") {
+                if isHigh { labAssocChips.insert("raised wbc") }
+                if isLow  { labAssocChips.insert("leukopenia") }
+            }
+            if name.contains("crp") || name.contains("c-reactive") {
+                if isHigh { labAssocChips.insert("elevated crp") }
+            }
+            if name.contains("lactate") || name.contains("lactic acid") {
+                if isHigh { labAssocChips.insert("elevated lactate") }
+            }
+            if name.contains("troponin") {
+                if isHigh { labAssocChips.insert("elevated troponin") }
+            }
+            if name.contains("d-dimer") || name.contains("d dimer") || name.contains("ddimer") {
+                if isHigh { labAssocChips.insert("elevated d-dimer") }
+            }
+            if name.contains("alt") || name.contains("ast") || name.contains("alp") ||
+               name.contains("ggt") || name.contains("lft") ||
+               name.contains("liver function") || name.contains("transaminase") ||
+               name.contains("alkaline phosphatase") {
+                if isHigh { labAssocChips.insert("elevated liver enzymes") }
+            }
+            if name.contains("bilirubin") {
+                if isHigh { labAssocChips.insert("raised bilirubin") }
+            }
+            if name.contains("inr") || (name.contains("prothrombin") && name.contains("time")) {
+                if isHigh { labAssocChips.insert("raised inr") }
+            }
+            if name.contains("creatinine") || name.contains("egfr") ||
+               (name.contains("urea") && !name.contains("uric")) ||
+               name.contains("bun") || name.contains("renal function") {
+                if isHigh || (name.contains("egfr") && isLow) {
+                    labAssocChips.insert("renal impairment")
+                }
+            }
+            if name.contains("calcium") && !name.contains("channel") {
+                if isHigh { labAssocChips.insert("hypercalcaemia") }
+            }
+            if name.contains("esr") || name.contains("erythrocyte sedimentation") {
+                if isHigh { labAssocChips.insert("elevated esr") }
+            }
+            if name.contains("amylase") {
+                if isHigh { labAssocChips.insert("elevated amylase") }
+            }
+            if name.contains("lipase") {
+                if isHigh { labAssocChips.insert("elevated lipase") }
+            }
+            if name.contains("glucose") || name.contains("blood sugar") || name.contains("bgl") {
+                if isHigh { labAssocChips.insert("elevated glucose") }
+            }
+            if name.contains("ldh") || name.contains("lactate dehydrogenase") {
+                if isHigh { labAssocChips.insert("elevated ldh") }
+            }
+            if name.contains("haemoglobin") || name.contains("hemoglobin") ||
+               name.contains("hgb") ||
+               (name.count <= 4 && name.hasPrefix("hb")) ||
+               (name.contains("fbc") && result.contains("anaemi")) {
+                if isLow { labAssocChips.insert("Anaemia symptoms") }
+            }
+        }
+        // Merge lab chips into socratesSelections["associations"] so that every
+        // DiagnosticDatabase.json "associations" feature fires from lab results.
+        var enrichedSocrates = socratesSelections
+        if !labAssocChips.isEmpty {
+            var assocSet = enrichedSocrates["associations"] ?? Set<String>()
+            assocSet.formUnion(labAssocChips)
+            enrichedSocrates["associations"] = assocSet
+        }
+
         var scored = score(
             candidates: candidates,
-            socrates: socratesSelections,
+            socrates: enrichedSocrates,
             pmh: mergedPMH,
             pshx: mergedPSHx,
             examAbdo: examAbdo ?? "",
