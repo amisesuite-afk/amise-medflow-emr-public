@@ -123,14 +123,21 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
         // Injecting these routing keywords here bridges that gap.
         var ccHints: [String] = []
         let lab = psv.labs
-        if lab.troponinElevated              { ccHints.append("chest pain elevated troponin") }
-        if lab.anaemia                        { ccHints.append("anaemia low haemoglobin pallor") }
-        if lab.dDimerElevated                { ccHints.append("breathless chest pain leg dvt pulmonary embol") }
-        if lab.amylaseElevated || lab.lipaseElevated { ccHints.append("epigastric back amylase pancreatitis") }
-        if lab.lactateElevated && lab.wbcElevated    { ccHints.append("fever sepsis septic") }
-        if lab.glucoseLow                    { ccHints.append("glucose diabetes hypoglycaemia") }
-        if lab.glucoseHigh                   { ccHints.append("glucose hba1c diabetes hyperglycaemia") }
-        if lab.bilirubinElevated             { ccHints.append("jaundice raised bilirubin") }
+        if lab.troponinElevated              { ccHints.append("chest pain elevated troponin cardiac acs mi") }
+        if lab.anaemia                        { ccHints.append("anaemia low haemoglobin pallor tiredness fatigue") }
+        if lab.dDimerElevated                { ccHints.append("breathless chest pain leg swelling dvt pulmonary embolism") }
+        if lab.amylaseElevated || lab.lipaseElevated { ccHints.append("epigastric back pain amylase pancreatitis") }
+        if lab.lactateElevated && lab.wbcElevated    { ccHints.append("fever sepsis septic shock infection") }
+        if lab.glucoseLow                    { ccHints.append("glucose low diabetes hypoglycaemia confusion sweating") }
+        if lab.glucoseHigh                   { ccHints.append("glucose high hba1c diabetes hyperglycaemia polyuria") }
+        if lab.bilirubinElevated             { ccHints.append("jaundice raised bilirubin yellow skin obstructive") }
+        if lab.akiMarker                     { ccHints.append("renal impairment creatinine aki oliguria") }
+        if lab.inrElevated                   { ccHints.append("coagulopathy inr bleeding bruising liver") }
+        if lab.hypercalcaemia                { ccHints.append("hypercalcaemia calcium bones stones groans moans") }
+        if lab.hypocalcaemia                 { ccHints.append("hypocalcaemia calcium tetany spasm muscle cramp") }
+        if lab.esrHigh || lab.crpHigh        { ccHints.append("inflammation infection malignancy arthritis weight loss") }
+        if lab.wbcLow                        { ccHints.append("leukopenia neutropenia immunocompromised infection risk") }
+        if lab.altElevated || lab.astElevated { ccHints.append("liver hepatitis jaundice right upper quadrant hepatic") }
         let resultedInvs = patient.investigations.filter { $0.status == .resulted && !$0.result.isEmpty }
         for inv in resultedInvs {
             let n = inv.name.lowercased(), r = inv.result.lowercased()
@@ -201,6 +208,13 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
         labObs.lactateElevated  = lab.lactateElevated
         labObs.wbcAbnormal      = lab.wbcElevated
         labObs.crpElevated      = lab.crpElevated || lab.crpHigh
+        // Organ dysfunction: creatinine >200, bilirubin >50, INR >2.0, or platelets <100
+        // aligns with SOFA score organ-failure thresholds for trajectory severity classification
+        labObs.hasOrganDysfunction =
+            (lab.creatinine?.value ?? 0) > 200 ||
+            (lab.bilirubin?.value ?? 0) > 50 ||
+            (lab.inr?.value ?? 1) > 2.0 ||
+            (lab.platelets?.value ?? 200) < 100
         labObs.imagingWorstened = psv.investigationEntries.contains {
             $0.status == .resulted &&
             ($0.category == .imaging || $0.category == .endoscopy) &&
