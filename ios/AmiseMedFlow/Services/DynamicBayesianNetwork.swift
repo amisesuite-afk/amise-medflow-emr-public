@@ -77,10 +77,12 @@ struct DBNObservation {
     }
 
     var observationClass: Int {
-        let flags = [hasFever, hasHypotension, hasTachycardia, hasOrganDysfunction, lactateElevated, imagingWorstened]
+        // Primary sepsis/deterioration flags (each counts once toward severity tier)
+        let flags = [hasFever, hasHypotension, hasTachycardia, hasOrganDysfunction,
+                     lactateElevated, imagingWorstened, wbcAbnormal, crpElevated]
         let count = flags.filter { $0 }.count
         let n2 = news2Score
-        if n2 >= 7 || count >= 4 || (lactateElevated && hasHypotension) { return 3 }
+        if n2 >= 7 || count >= 5 || (lactateElevated && hasHypotension) { return 3 }
         if n2 >= 5 || count >= 3 { return 2 }
         if n2 >= 3 || count >= 1 { return 1 }
         return 0
