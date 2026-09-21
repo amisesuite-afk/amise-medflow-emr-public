@@ -168,6 +168,29 @@ struct WardRoundProgressSheet: View {
                             .italic()
                     }
                 }
+
+                // Critical lab / pending investigation alerts
+                let labs = LabPanel.parse(from: patient.investigations)
+                if labs.hasCriticalValues {
+                    HStack(spacing: 6) {
+                        Image(systemName: "flask.fill")
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(.red)
+                        Text("Critical lab values — review before rounds")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.red)
+                    }
+                } else if patient.investigations.contains(where: { $0.status == .resulted && !$0.result.isEmpty }) {
+                    let count = patient.investigations.filter { $0.status == .resulted && !$0.result.isEmpty }.count
+                    HStack(spacing: 6) {
+                        Image(systemName: "flask")
+                            .font(.caption2)
+                            .foregroundStyle(.teal)
+                        Text("\(count) investigation result\(count == 1 ? "" : "s") available")
+                            .font(.caption)
+                            .foregroundStyle(.teal)
+                    }
+                }
             }
             .padding(.vertical, 4)
         }
