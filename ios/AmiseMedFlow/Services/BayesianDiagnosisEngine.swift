@@ -670,6 +670,73 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("depression") || ccL.contains("anxiety") { mergePool("psychiatryMental") }
             if ccL.contains("sleep") { mergePool("sleepDisorders") }
 
+        // Allergy / immunology / anaphylaxis / urticaria / drug allergy
+        case ccL.contains("anaphylaxis") || ccL.contains("anaphylactic") ||
+             ccL.contains("urticaria") || ccL.contains("hives") || ccL.contains("angioedema") ||
+             ccL.contains("drug allergy") || ccL.contains("penicillin allergy") ||
+             ccL.contains("drug reaction") || ccL.contains("food allergy") ||
+             ccL.contains("nut allergy") || ccL.contains("shellfish allergy") ||
+             ccL.contains("hay fever") || ccL.contains("allergic rhinitis") ||
+             ccL.contains("hereditary angioedema") || ccL.contains("hae") ||
+             ccL.contains("mcas") || ccL.contains("mast cell") ||
+             ccL.contains("eosinophilic oesophagitis") || ccL.contains("eoe") ||
+             ccL.contains("allergy review") || ccL.contains("allergic") ||
+             (ccL.contains("swelling") && (ccL.contains("lip") || ccL.contains("tongue") ||
+              ccL.contains("throat"))) ||
+             (ccL.contains("reaction") && ccL.contains("food")):
+            candidates = externalPool("allergyImmunology") ?? []
+            if ccL.contains("throat") || ccL.contains("dysphagia") { mergePool("dysphagia") }
+
+        // Metabolic syndrome / obesity / diabetes / dyslipidaemia / NAFLD
+        case ccL.contains("metabolic syndrome") || ccL.contains("obesity review") ||
+             ccL.contains("weight management") || ccL.contains("bariatric") ||
+             ccL.contains("morbid obesity") || ccL.contains("fatty liver") ||
+             ccL.contains("nafld") || ccL.contains("nash") ||
+             ccL.contains("dyslipidaemia") || ccL.contains("dyslipidemia") ||
+             ccL.contains("high cholesterol") || ccL.contains("hypercholesterolaemia") ||
+             ccL.contains("cholesterol review") || ccL.contains("lipids review") ||
+             ccL.contains("prediabetes") || ccL.contains("impaired fasting") ||
+             ccL.contains("insulin resistance") || ccL.contains("hyperuricaemia") ||
+             ccL.contains("hyperuricemia") || ccL.contains("gout review") ||
+             ccL.contains("cushing") ||
+             (ccL.contains("bmi") && ccL.contains("high")) ||
+             (ccL.contains("diabetes") && (ccL.contains("type 2") || ccL.contains("t2"))):
+            candidates = externalPool("metabolicSyndrome") ?? []
+            if ccL.contains("liver") || ccL.contains("fatty") { mergePool("liverDisease") }
+            if ccL.contains("gout") || ccL.contains("joint") { mergePool("jointPain") }
+
+        // Oncology complications / CUP / paraneoplastic / cancer complication
+        case ccL.contains("cancer complication") || ccL.contains("unknown primary") ||
+             ccL.contains("cup ") || ccL == "cup" ||
+             ccL.contains("paraneoplastic") || ccL.contains("cancer cachexia") ||
+             ccL.contains("tumour lysis") || ccL.contains("tumor lysis") ||
+             ccL.contains("tls ") || ccL.contains("hypercalcaemia of malignancy") ||
+             ccL.contains("hypercalcemia of malignancy") || ccL.contains("bone metastases") ||
+             ccL.contains("bone mets") || ccL.contains("spinal cord compression") ||
+             ccL.contains("svc obstruction") || ccL.contains("superior vena cava") ||
+             (ccL.contains("metastatic") && ccL.contains("unknown")) ||
+             (ccL.contains("oncology") && (ccL.contains("complication") || ccL.contains("review"))):
+            candidates = externalPool("oncologyComplications") ?? []
+            if ccL.contains("lymphoma") || ccL.contains("myeloma") { mergePool("haematologicalMalignancy") }
+            if ccL.contains("back pain") || ccL.contains("spine") { mergePool("backPain") }
+
+        // Sports medicine / athletic injury / exercise-related condition
+        case ccL.contains("sports injury") || ccL.contains("athletic injury") ||
+             ccL.contains("tennis elbow") || ccL.contains("lateral epicondylitis") ||
+             ccL.contains("exertional") || ccL.contains("exercise-induced") ||
+             ccL.contains("rhabdomyolysis") || ccL.contains("heat stroke") ||
+             ccL.contains("heat exhaustion") || ccL.contains("exertional heat") ||
+             ccL.contains("concussion") || ccL.contains("head injury sport") ||
+             ccL.contains("acl tear") || ccL.contains("cruciate ligament") ||
+             ccL.contains("stress fracture") || ccL.contains("compartment syndrome") ||
+             ccL.contains("overuse injury") || ccL.contains("sports medicine") ||
+             ccL.contains("return to sport") || ccL.contains("pre-participation") ||
+             (ccL.contains("injury") && (ccL.contains("sport") || ccL.contains("training") ||
+              ccL.contains("running") || ccL.contains("football") || ccL.contains("cricket"))):
+            candidates = externalPool("sportsMedicine") ?? []
+            if ccL.contains("shoulder") { mergePool("orthopaedicTrauma") }
+            if ccL.contains("knee") || ccL.contains("fracture") { mergePool("orthopaedicTrauma") }
+
         default:
             // Wide-net general medicine catch-all — no longer surgical-biased
             candidates = externalPool("generalMedicine") ?? []
@@ -779,6 +846,18 @@ enum BayesianDiagnosisEngine {
         // Secondary pool: fibromyalgia/chronic pain overlay on widespread pain / fatigue / functional presentations
         if ccL.contains("widespread pain") || ccL.contains("fibromyalgia") ||
            ccL.contains("chronic fatigue") || ccL.contains("myofascial") { mergePool("fibromyalgiaChronic") }
+        // Secondary pool: allergy overlay on urticaria / angioedema / drug reaction
+        if ccL.contains("allergy") || ccL.contains("urticaria") || ccL.contains("angioedema") ||
+           ccL.contains("anaphyla") { mergePool("allergyImmunology") }
+        // Secondary pool: metabolic syndrome overlay on obesity / lipids / NAFLD / gout
+        if ccL.contains("cholesterol") || ccL.contains("lipid") || ccL.contains("obesity") ||
+           ccL.contains("metabolic") { mergePool("metabolicSyndrome") }
+        // Secondary pool: oncology complications overlay on known cancer with new symptom
+        if ccL.contains("cancer") && (ccL.contains("complication") || ccL.contains("back pain") ||
+           ccL.contains("confusion") || ccL.contains("calcium")) { mergePool("oncologyComplications") }
+        // Secondary pool: sports medicine overlay on athletic/exertional presentations
+        if ccL.contains("sport") || ccL.contains("athletic") || ccL.contains("exertional") ||
+           ccL.contains("rhabdomyo") { mergePool("sportsMedicine") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but

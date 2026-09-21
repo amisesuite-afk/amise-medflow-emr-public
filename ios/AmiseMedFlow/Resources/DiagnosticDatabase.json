@@ -45768,6 +45768,2305 @@
           ]
         }
       ]
+    },
+    "allergyImmunology": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Anaphylaxis",
+          "icd": "T78.2",
+          "logPrior": -29,
+          "urgency": 3,
+          "systems": [
+            "immunology"
+          ],
+          "specialties": [
+            "allergy"
+          ],
+          "features": [
+            {
+              "key": "urticaria_angioedema",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Urticaria/angioedema with systemic features",
+              "citation": "WAO Anaphylaxis Guidelines 2020"
+            },
+            {
+              "key": "hypotension_collapse",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Hypotension or collapse",
+              "citation": "WAO 2020"
+            },
+            {
+              "key": "bronchospasm_stridor",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Bronchospasm or stridor",
+              "citation": "WAO 2020"
+            },
+            {
+              "key": "allergen_exposure",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Clear allergen exposure (food, drug, insect)",
+              "citation": "WAO 2020"
+            },
+            {
+              "key": "tryptase_elevated",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Serum tryptase >11.4 ng/mL",
+              "citation": "WAO 2020"
+            },
+            {
+              "key": "adrenaline_response",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Rapid response to adrenaline",
+              "citation": "NICE CG134"
+            },
+            {
+              "key": "gi_symptoms_allergy",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "GI symptoms (nausea, vomiting, cramping)",
+              "citation": "WAO 2020"
+            },
+            {
+              "key": "onset_minutes",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Onset within minutes of exposure",
+              "citation": "WAO 2020"
+            }
+          ]
+        },
+        {
+          "name": "Urticaria / Angioedema",
+          "icd": "L50.9",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "immunology",
+            "dermatology"
+          ],
+          "specialties": [
+            "allergy",
+            "dermatology"
+          ],
+          "features": [
+            {
+              "key": "wheals_transient",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Transient wheals (<24h) resolving without scarring",
+              "citation": "EAACI/GA\u00b2LEN Urticaria Guidelines 2022"
+            },
+            {
+              "key": "angioedema_lips_tongue",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Lip/tongue/laryngeal angioedema",
+              "citation": "EAACI 2022"
+            },
+            {
+              "key": "chronic_6weeks",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Symptoms >6 weeks (chronic urticaria)",
+              "citation": "EAACI 2022"
+            },
+            {
+              "key": "trigger_identified",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "Identifiable trigger (food, drug, pressure)",
+              "citation": "EAACI 2022"
+            },
+            {
+              "key": "antihistamine_response",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Response to non-sedating antihistamine",
+              "citation": "EAACI 2022"
+            },
+            {
+              "key": "ige_elevated",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Total IgE elevated",
+              "citation": "EAACI 2022"
+            },
+            {
+              "key": "no_hereditary_family",
+              "value": "absent",
+              "logLR": 7,
+              "evidenceLabel": "No family history of HAE",
+              "citation": "EAACI 2022"
+            },
+            {
+              "key": "uca_score",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "UAS7 \u226516 (moderate-severe activity)",
+              "citation": "EAACI 2022"
+            }
+          ]
+        },
+        {
+          "name": "Drug Allergy / Adverse Drug Reaction",
+          "icd": "T88.7",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "immunology",
+            "pharmacology"
+          ],
+          "specialties": [
+            "allergy"
+          ],
+          "features": [
+            {
+              "key": "temporal_drug_relation",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Reaction within hours of drug administration",
+              "citation": "EAACI Drug Hypersensitivity Guidelines 2019"
+            },
+            {
+              "key": "prior_tolerance",
+              "value": "absent",
+              "logLR": 14,
+              "evidenceLabel": "No prior tolerance established",
+              "citation": "EAACI 2019"
+            },
+            {
+              "key": "skin_test_positive",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Positive intradermal or prick test",
+              "citation": "EAACI 2019"
+            },
+            {
+              "key": "drug_specific_ige",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Drug-specific IgE detected (RAST)",
+              "citation": "EAACI 2019"
+            },
+            {
+              "key": "penicillin_class",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "Beta-lactam antibiotic implicated",
+              "citation": "EAACI 2019"
+            },
+            {
+              "key": "nsaid_trigger",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "NSAID-exacerbated respiratory disease pattern",
+              "citation": "EAACI 2019"
+            },
+            {
+              "key": "recurrence_rechallenge",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Reproducible on re-exposure (rechallenge)",
+              "citation": "EAACI 2019"
+            },
+            {
+              "key": "alternative_tolerated",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Alternative drug class tolerated",
+              "citation": "EAACI 2019"
+            }
+          ]
+        },
+        {
+          "name": "Food Allergy",
+          "icd": "L27.2",
+          "logPrior": -28,
+          "urgency": 1,
+          "systems": [
+            "immunology",
+            "gastroenterology"
+          ],
+          "specialties": [
+            "allergy",
+            "paediatrics"
+          ],
+          "features": [
+            {
+              "key": "ige_mediated_food",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "IgE-mediated food-specific reaction pattern",
+              "citation": "NICE CG116"
+            },
+            {
+              "key": "skin_prick_food",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Positive skin prick test to culprit food",
+              "citation": "NICE CG116"
+            },
+            {
+              "key": "specific_food_trigger",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Clear link to specific food (nuts, shellfish, milk)",
+              "citation": "NICE CG116"
+            },
+            {
+              "key": "oral_allergy_syndrome",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Oral allergy syndrome (mouth/lip tingling)",
+              "citation": "EAACI FA Guidelines"
+            },
+            {
+              "key": "food_diary_positive",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Food diary confirms culprit",
+              "citation": "NICE CG116"
+            },
+            {
+              "key": "elimination_improvement",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Symptoms resolve on food elimination",
+              "citation": "NICE CG116"
+            },
+            {
+              "key": "total_ige_elevated_food",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Total IgE >100 IU/mL",
+              "citation": "NICE CG116"
+            },
+            {
+              "key": "atopic_background",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "Atopic background (eczema, asthma, rhinitis)",
+              "citation": "NICE CG116"
+            }
+          ]
+        },
+        {
+          "name": "Hereditary Angioedema (HAE)",
+          "icd": "D84.1",
+          "logPrior": -46,
+          "urgency": 2,
+          "systems": [
+            "immunology"
+          ],
+          "specialties": [
+            "allergy"
+          ],
+          "features": [
+            {
+              "key": "c1_inhibitor_low",
+              "value": "present",
+              "logLR": 30,
+              "evidenceLabel": "C1-inhibitor level/function low (Type I/II HAE)",
+              "citation": "Hereditary Angioedema Guidelines 2017"
+            },
+            {
+              "key": "family_history_hae",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Family history of recurrent angioedema",
+              "citation": "HAE Guidelines 2017"
+            },
+            {
+              "key": "no_urticaria",
+              "value": "absent",
+              "logLR": 21,
+              "evidenceLabel": "Angioedema without urticaria",
+              "citation": "HAE Guidelines 2017"
+            },
+            {
+              "key": "abdominal_pain_episodes",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Recurrent abdominal pain episodes",
+              "citation": "HAE Guidelines 2017"
+            },
+            {
+              "key": "laryngeal_involvement",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Laryngeal involvement",
+              "citation": "HAE Guidelines 2017"
+            },
+            {
+              "key": "antihistamine_no_response",
+              "value": "absent",
+              "logLR": 19,
+              "evidenceLabel": "No response to antihistamines",
+              "citation": "HAE Guidelines 2017"
+            },
+            {
+              "key": "c4_persistently_low",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "C4 persistently low (screening test)",
+              "citation": "HAE Guidelines 2017"
+            },
+            {
+              "key": "bradykinin_mediated",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Oestrogen/ACE-inhibitor trigger history",
+              "citation": "HAE Guidelines 2017"
+            }
+          ]
+        },
+        {
+          "name": "Eosinophilic Oesophagitis",
+          "icd": "K20.0",
+          "logPrior": -35,
+          "urgency": 0,
+          "systems": [
+            "gastroenterology",
+            "immunology"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "allergy"
+          ],
+          "features": [
+            {
+              "key": "dysphagia_solid_food",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Dysphagia for solid foods (young male)",
+              "citation": "AGA/ACG EoE Guidelines 2022"
+            },
+            {
+              "key": "food_bolus_impaction",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Recurrent food bolus impaction",
+              "citation": "AGA/ACG 2022"
+            },
+            {
+              "key": "oesophageal_biopsy_eos",
+              "value": "present",
+              "logLR": 30,
+              "evidenceLabel": "\u226515 eosinophils/HPF on oesophageal biopsy",
+              "citation": "AGA/ACG 2022"
+            },
+            {
+              "key": "endoscopic_rings_furrows",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Endoscopic rings/furrows/exudates",
+              "citation": "AGA/ACG 2022"
+            },
+            {
+              "key": "ppi_no_response",
+              "value": "absent",
+              "logLR": 16,
+              "evidenceLabel": "Partial/no response to PPI",
+              "citation": "AGA/ACG 2022"
+            },
+            {
+              "key": "peripheral_eosinophilia",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Peripheral eosinophilia",
+              "citation": "AGA/ACG 2022"
+            },
+            {
+              "key": "atopic_history_eoe",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Atopic history (asthma, eczema, rhinitis)",
+              "citation": "AGA/ACG 2022"
+            },
+            {
+              "key": "dietary_elimination_response",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Response to elemental/elimination diet",
+              "citation": "AGA/ACG 2022"
+            }
+          ]
+        },
+        {
+          "name": "Mast Cell Activation Syndrome (MCAS)",
+          "icd": "D89.4",
+          "logPrior": -39,
+          "urgency": 1,
+          "systems": [
+            "immunology"
+          ],
+          "specialties": [
+            "allergy",
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "multisystem_episodes",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Recurrent multisystem episodes (skin + GI + CV)",
+              "citation": "Consensus MCAS Criteria 2020"
+            },
+            {
+              "key": "tryptase_spike",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Serum tryptase rise \u226520% +2 ng/mL during episode",
+              "citation": "Consensus 2020"
+            },
+            {
+              "key": "urinary_prostaglandin",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Elevated urinary prostaglandin D2 metabolites",
+              "citation": "Consensus 2020"
+            },
+            {
+              "key": "mediator_symptom_pattern",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Flushing, urticaria, GI cramping, palpitations pattern",
+              "citation": "Consensus 2020"
+            },
+            {
+              "key": "response_mediator_blockers",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Response to antihistamines/cromolyn/aspirin",
+              "citation": "Consensus 2020"
+            },
+            {
+              "key": "no_systemic_mastocytosis",
+              "value": "absent",
+              "logLR": 16,
+              "evidenceLabel": "Bone marrow biopsy negative for systemic mastocytosis",
+              "citation": "Consensus 2020"
+            },
+            {
+              "key": "triggers_identifiable",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Identifiable triggers (stress, heat, alcohol, exercise)",
+              "citation": "Consensus 2020"
+            },
+            {
+              "key": "hypermobility_overlap",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "Hypermobility/POTS overlap",
+              "citation": "Consensus 2020"
+            }
+          ]
+        },
+        {
+          "name": "Allergic Rhinitis",
+          "icd": "J30.1",
+          "logPrior": -20,
+          "urgency": 0,
+          "systems": [
+            "immunology",
+            "ent"
+          ],
+          "specialties": [
+            "allergy",
+            "ent"
+          ],
+          "features": [
+            {
+              "key": "seasonal_perennial",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Clear seasonal or perennial pattern",
+              "citation": "ARIA 2020"
+            },
+            {
+              "key": "nasal_eosinophilia",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Nasal eosinophilia on smear",
+              "citation": "ARIA 2020"
+            },
+            {
+              "key": "spt_aeroallergen",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Positive SPT to aeroallergen",
+              "citation": "ARIA 2020"
+            },
+            {
+              "key": "sneezing_watery_rhinorrhoea",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Paroxysmal sneezing + watery rhinorrhoea",
+              "citation": "ARIA 2020"
+            },
+            {
+              "key": "nasal_steroid_response",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Improvement with intranasal corticosteroids",
+              "citation": "ARIA 2020"
+            },
+            {
+              "key": "conjunctivitis_coexist",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Concomitant allergic conjunctivitis",
+              "citation": "ARIA 2020"
+            },
+            {
+              "key": "specific_ige_aeroallergen",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Specific IgE to aeroallergen (RAST)",
+              "citation": "ARIA 2020"
+            },
+            {
+              "key": "total_nasal_symptom_score",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "TNSS \u22658 (moderate-severe)",
+              "citation": "ARIA 2020"
+            }
+          ]
+        }
+      ]
+    },
+    "metabolicSyndrome": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Metabolic Syndrome",
+          "icd": "E88.81",
+          "logPrior": -15,
+          "urgency": 0,
+          "systems": [
+            "endocrine",
+            "cardiology"
+          ],
+          "specialties": [
+            "endocrinology",
+            "cardiology"
+          ],
+          "features": [
+            {
+              "key": "central_obesity",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Waist circumference >102 cm (M) / >88 cm (F)",
+              "citation": "IDF Metabolic Syndrome Criteria 2006"
+            },
+            {
+              "key": "hypertriglyceridaemia",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Triglycerides \u22651.7 mmol/L",
+              "citation": "IDF 2006"
+            },
+            {
+              "key": "low_hdl",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "HDL <1.0 mmol/L (M) / <1.3 mmol/L (F)",
+              "citation": "IDF 2006"
+            },
+            {
+              "key": "elevated_bp_met",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "BP \u2265130/85 mmHg or on antihypertensive",
+              "citation": "IDF 2006"
+            },
+            {
+              "key": "impaired_fasting_glucose",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Fasting glucose \u22655.6 mmol/L or on treatment",
+              "citation": "IDF 2006"
+            },
+            {
+              "key": "three_criteria_met",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "\u22653 of 5 IDF criteria met",
+              "citation": "IDF 2006"
+            },
+            {
+              "key": "nafld_on_imaging",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "NAFLD on ultrasound (hepatic steatosis)",
+              "citation": "IDF 2006"
+            },
+            {
+              "key": "cardiovascular_risk",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "10-year CVD risk >10% (Framingham)",
+              "citation": "IDF 2006"
+            }
+          ]
+        },
+        {
+          "name": "Obesity / Morbid Obesity",
+          "icd": "E66.9",
+          "logPrior": -14,
+          "urgency": 0,
+          "systems": [
+            "endocrine",
+            "metabolic"
+          ],
+          "specialties": [
+            "endocrinology",
+            "surgery"
+          ],
+          "features": [
+            {
+              "key": "bmi_30_plus",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "BMI \u226530 kg/m\u00b2",
+              "citation": "WHO Obesity Classification"
+            },
+            {
+              "key": "bmi_35_plus",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "BMI \u226535 kg/m\u00b2 (Class II obesity)",
+              "citation": "WHO"
+            },
+            {
+              "key": "bmi_40_plus",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "BMI \u226540 kg/m\u00b2 (Class III / morbid obesity)",
+              "citation": "WHO"
+            },
+            {
+              "key": "waist_hip_ratio",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Waist-hip ratio >0.9 (M) / >0.85 (F)",
+              "citation": "WHO"
+            },
+            {
+              "key": "comorbidity_burden",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "\u22652 obesity-related comorbidities (HTN, T2DM, OSA)",
+              "citation": "NICE CG189"
+            },
+            {
+              "key": "bariatric_candidate",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Meets bariatric surgery criteria (BMI \u226535 + comorbidity)",
+              "citation": "NICE CG189"
+            },
+            {
+              "key": "adipose_visceral",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Visceral adiposity on CT/MRI",
+              "citation": "NICE CG189"
+            },
+            {
+              "key": "edas_score",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "Obesity Impact Score indicating functional impairment",
+              "citation": "NICE CG189"
+            }
+          ]
+        },
+        {
+          "name": "Non-Alcoholic Fatty Liver Disease (NAFLD/NASH)",
+          "icd": "K76.0",
+          "logPrior": -20,
+          "urgency": 0,
+          "systems": [
+            "hepatobiliary",
+            "endocrine"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "endocrinology"
+          ],
+          "features": [
+            {
+              "key": "hepatic_steatosis_us",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Hepatic steatosis on ultrasound",
+              "citation": "EASL NAFLD Guidelines 2016"
+            },
+            {
+              "key": "alt_raised",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "ALT persistently elevated (>1.5\u00d7 ULN)",
+              "citation": "EASL 2016"
+            },
+            {
+              "key": "fibrosis_score_elevated",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "NAFLD Fibrosis Score or FIB-4 suggesting advanced fibrosis",
+              "citation": "EASL 2016"
+            },
+            {
+              "key": "histology_nash",
+              "value": "present",
+              "logLR": 27,
+              "evidenceLabel": "Liver biopsy: steatohepatitis (NAS \u22654)",
+              "citation": "EASL 2016"
+            },
+            {
+              "key": "no_significant_alcohol",
+              "value": "absent",
+              "logLR": 18,
+              "evidenceLabel": "Alcohol intake <20 g/day (F) / <30 g/day (M)",
+              "citation": "EASL 2016"
+            },
+            {
+              "key": "metabolic_risk_factors",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Metabolic risk factors (obesity, T2DM, dyslipidaemia)",
+              "citation": "EASL 2016"
+            },
+            {
+              "key": "controlled_attenuation",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Controlled attenuation parameter \u2265248 dB/m (FibroScan)",
+              "citation": "EASL 2016"
+            },
+            {
+              "key": "ferritin_elevated_nafld",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "Ferritin elevated (NASH marker)",
+              "citation": "EASL 2016"
+            }
+          ]
+        },
+        {
+          "name": "Type 2 Diabetes Mellitus",
+          "icd": "E11.9",
+          "logPrior": -17,
+          "urgency": 0,
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrinology"
+          ],
+          "features": [
+            {
+              "key": "hba1c_48",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "HbA1c \u226548 mmol/mol (\u22656.5%) on two occasions",
+              "citation": "WHO T2DM Diagnostic Criteria 2019"
+            },
+            {
+              "key": "fasting_glucose_7",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Fasting plasma glucose \u22657.0 mmol/L",
+              "citation": "WHO 2019"
+            },
+            {
+              "key": "ogtt_2h_11",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "OGTT 2-hour glucose \u226511.1 mmol/L",
+              "citation": "WHO 2019"
+            },
+            {
+              "key": "polyuria_polydipsia",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Classic triad (polyuria, polydipsia, weight loss)",
+              "citation": "WHO 2019"
+            },
+            {
+              "key": "diabetes_complications",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Microvascular complications (retinopathy/nephropathy/neuropathy)",
+              "citation": "WHO 2019"
+            },
+            {
+              "key": "insulin_resistance_markers",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Insulin resistance markers (acanthosis nigricans, PCOS)",
+              "citation": "WHO 2019"
+            },
+            {
+              "key": "family_history_t2dm",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "First-degree relative with T2DM",
+              "citation": "WHO 2019"
+            },
+            {
+              "key": "response_oral_agents",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Response to oral hypoglycaemics (metformin)",
+              "citation": "WHO 2019"
+            }
+          ]
+        },
+        {
+          "name": "Dyslipidaemia / Hypercholesterolaemia",
+          "icd": "E78.5",
+          "logPrior": -13,
+          "urgency": 0,
+          "systems": [
+            "cardiology",
+            "metabolic"
+          ],
+          "specialties": [
+            "cardiology",
+            "endocrinology"
+          ],
+          "features": [
+            {
+              "key": "ldl_elevated",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "LDL-C \u22653.0 mmol/L",
+              "citation": "ESC Dyslipidaemia Guidelines 2019"
+            },
+            {
+              "key": "total_chol_raised",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Total cholesterol >5.0 mmol/L",
+              "citation": "ESC 2019"
+            },
+            {
+              "key": "familial_hypercholesterolaemia",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Dutch Lipid Clinic score \u22656 (probable FH)",
+              "citation": "ESC 2019"
+            },
+            {
+              "key": "xanthelasma_xanthoma",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Tendon xanthomata or xanthelasma",
+              "citation": "ESC 2019"
+            },
+            {
+              "key": "premature_cardiovascular",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Premature CVD (<55 M / <65 F) or family history",
+              "citation": "ESC 2019"
+            },
+            {
+              "key": "statin_response",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "LDL reduction \u226540% on statin therapy",
+              "citation": "ESC 2019"
+            },
+            {
+              "key": "triglyceride_raised",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Triglycerides \u22651.7 mmol/L",
+              "citation": "ESC 2019"
+            },
+            {
+              "key": "carotid_imt_increased",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Increased carotid IMT on ultrasound",
+              "citation": "ESC 2019"
+            }
+          ]
+        },
+        {
+          "name": "Cushing's Syndrome",
+          "icd": "E24.9",
+          "logPrior": -46,
+          "urgency": 1,
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrinology"
+          ],
+          "features": [
+            {
+              "key": "central_obesity_moon_face",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Central obesity + moon face + buffalo hump",
+              "citation": "Endocrine Society Cushing's Guidelines 2008"
+            },
+            {
+              "key": "purple_striae",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Wide purple striae (>1 cm)",
+              "citation": "Endocrine Society 2008"
+            },
+            {
+              "key": "overnight_dexamethasone",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Cortisol >50 nmol/L after 1 mg overnight DST",
+              "citation": "Endocrine Society 2008"
+            },
+            {
+              "key": "urine_free_cortisol",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "24-hour UFC >3\u00d7 ULN",
+              "citation": "Endocrine Society 2008"
+            },
+            {
+              "key": "late_night_salivary_cortisol",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Late-night salivary cortisol elevated \u00d72",
+              "citation": "Endocrine Society 2008"
+            },
+            {
+              "key": "proximal_myopathy",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Proximal myopathy (difficulty rising from chair)",
+              "citation": "Endocrine Society 2008"
+            },
+            {
+              "key": "hypokalaemia_cushing",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Hypokalaemia / easy bruising",
+              "citation": "Endocrine Society 2008"
+            },
+            {
+              "key": "pituitary_adenoma_mri",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Pituitary microadenoma on MRI (Cushing's disease)",
+              "citation": "Endocrine Society 2008"
+            }
+          ]
+        },
+        {
+          "name": "Prediabetes / Insulin Resistance",
+          "icd": "R73.09",
+          "logPrior": -15,
+          "urgency": 0,
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrinology"
+          ],
+          "features": [
+            {
+              "key": "hba1c_42_47",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "HbA1c 42\u201347 mmol/mol (6.0\u20136.4%) \u2014 impaired glucose regulation",
+              "citation": "NICE NG28"
+            },
+            {
+              "key": "ifg_5_6_to_7",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Fasting plasma glucose 5.6\u20136.9 mmol/L (IFG)",
+              "citation": "NICE NG28"
+            },
+            {
+              "key": "ogtt_igt",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "OGTT 2-hour 7.8\u201311.0 mmol/L (IGT)",
+              "citation": "NICE NG28"
+            },
+            {
+              "key": "high_risk_factors",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "\u22653 risk factors (BMI, family history, ethnicity, age)",
+              "citation": "NICE NG28"
+            },
+            {
+              "key": "lifestyle_programme",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "Referred to NHS Diabetes Prevention Programme",
+              "citation": "NICE NG28"
+            },
+            {
+              "key": "fasting_insulin_high",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Fasting insulin elevated / HOMA-IR >2.5",
+              "citation": "NICE NG28"
+            },
+            {
+              "key": "waist_circumference_risk",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "Waist circumference in high-risk category",
+              "citation": "NICE NG28"
+            },
+            {
+              "key": "annual_review_positive",
+              "value": "present",
+              "logLR": 7,
+              "evidenceLabel": "Annual review confirming ongoing IGR",
+              "citation": "NICE NG28"
+            }
+          ]
+        },
+        {
+          "name": "Hyperuricaemia / Gout",
+          "icd": "M10.9",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "musculoskeletal",
+            "metabolic"
+          ],
+          "specialties": [
+            "rheumatology"
+          ],
+          "features": [
+            {
+              "key": "monosodium_urate_crystals",
+              "value": "present",
+              "logLR": 32,
+              "evidenceLabel": "MSU crystals on joint aspiration (gold standard)",
+              "citation": "EULAR Gout Guidelines 2016"
+            },
+            {
+              "key": "serum_urate_elevated",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Serum urate >360 \u03bcmol/L",
+              "citation": "EULAR 2016"
+            },
+            {
+              "key": "first_mtp_podagra",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "First MTP joint (podagra) \u2014 classic site",
+              "citation": "EULAR 2016"
+            },
+            {
+              "key": "tophi_present",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Tophi on examination",
+              "citation": "EULAR 2016"
+            },
+            {
+              "key": "acute_monoarthritis",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Acute monoarthritis with erythema and tenderness",
+              "citation": "EULAR 2016"
+            },
+            {
+              "key": "dual_energy_ct",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "Urate deposition on dual-energy CT",
+              "citation": "EULAR 2016"
+            },
+            {
+              "key": "trigger_alcohol_diet",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "Precipitant: alcohol, purine-rich diet, diuretics",
+              "citation": "EULAR 2016"
+            },
+            {
+              "key": "colchicine_response",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Rapid response to colchicine",
+              "citation": "EULAR 2016"
+            }
+          ]
+        }
+      ]
+    },
+    "oncologyComplications": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Cancer of Unknown Primary (CUP)",
+          "icd": "C80.1",
+          "logPrior": -35,
+          "urgency": 1,
+          "systems": [
+            "oncology"
+          ],
+          "specialties": [
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "biopsy_metastatic_no_primary",
+              "value": "present",
+              "logLR": 30,
+              "evidenceLabel": "Biopsy confirms metastatic carcinoma, primary unidentified",
+              "citation": "ESMO CUP Guidelines 2023"
+            },
+            {
+              "key": "pan_ct_negative",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "CT chest/abdomen/pelvis: no primary identified",
+              "citation": "ESMO 2023"
+            },
+            {
+              "key": "pet_no_primary",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "PET-CT: no primary lesion identified",
+              "citation": "ESMO 2023"
+            },
+            {
+              "key": "immunohistochemistry",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "IHC pattern suggests tissue of origin (CK7/CK20, TTF-1, PSA)",
+              "citation": "ESMO 2023"
+            },
+            {
+              "key": "multisite_metastases",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Multiple site metastases at presentation",
+              "citation": "ESMO 2023"
+            },
+            {
+              "key": "tumour_markers_elevated",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "CEA / CA-125 / CA19-9 / AFP elevated",
+              "citation": "ESMO 2023"
+            },
+            {
+              "key": "molecular_profiling",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Genomic/molecular profiling identifies possible primary",
+              "citation": "ESMO 2023"
+            },
+            {
+              "key": "poor_prognosis_subgroup",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "Unfavourable subgroup (visceral + non-SCC lymph node)",
+              "citation": "ESMO 2023"
+            }
+          ]
+        },
+        {
+          "name": "Malignant Hypercalcaemia",
+          "icd": "E83.52",
+          "logPrior": -32,
+          "urgency": 2,
+          "systems": [
+            "oncology",
+            "endocrine"
+          ],
+          "specialties": [
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "corrected_calcium_high",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Corrected calcium >2.65 mmol/L with known malignancy",
+              "citation": "ESMO Hypercalcaemia Guidelines"
+            },
+            {
+              "key": "pth_rp_elevated",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "PTHrP elevated (humoral hypercalcaemia of malignancy)",
+              "citation": "ESMO"
+            },
+            {
+              "key": "pth_suppressed",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "PTH suppressed (differentiates from hyperparathyroidism)",
+              "citation": "ESMO"
+            },
+            {
+              "key": "polyuria_confusion_malignancy",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Polyuria, polydipsia, constipation, confusion with cancer",
+              "citation": "ESMO"
+            },
+            {
+              "key": "rehydration_bisphosphonate",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Response to IV fluids + bisphosphonate (zoledronic acid)",
+              "citation": "ESMO"
+            },
+            {
+              "key": "lytic_bone_mets",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Lytic bone metastases on imaging",
+              "citation": "ESMO"
+            },
+            {
+              "key": "myeloma_association",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Myeloma / PTHrP-secreting tumour (breast, lung, renal)",
+              "citation": "ESMO"
+            },
+            {
+              "key": "ecg_short_qt",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "ECG: short QT interval",
+              "citation": "ESMO"
+            }
+          ]
+        },
+        {
+          "name": "Spinal Cord Compression (Malignant)",
+          "icd": "G55",
+          "logPrior": -39,
+          "urgency": 3,
+          "systems": [
+            "oncology",
+            "neurology"
+          ],
+          "specialties": [
+            "oncology",
+            "neurosurgery"
+          ],
+          "features": [
+            {
+              "key": "progressive_back_pain_cancer",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Progressive thoracic back pain in cancer patient",
+              "citation": "NICE CG75 Metastatic Spinal Cord Compression"
+            },
+            {
+              "key": "weakness_sensory_level",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Limb weakness + sensory level",
+              "citation": "NICE CG75"
+            },
+            {
+              "key": "bladder_bowel_dysfunction",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Bladder/bowel dysfunction (urinary retention, incontinence)",
+              "citation": "NICE CG75"
+            },
+            {
+              "key": "mri_cord_compression",
+              "value": "present",
+              "logLR": 30,
+              "evidenceLabel": "MRI whole spine: cord compression confirmed",
+              "citation": "NICE CG75"
+            },
+            {
+              "key": "dexamethasone_response",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Response to high-dose dexamethasone",
+              "citation": "NICE CG75"
+            },
+            {
+              "key": "known_metastatic_cancer",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Known metastatic cancer (breast, prostate, lung, myeloma)",
+              "citation": "NICE CG75"
+            },
+            {
+              "key": "bilateral_leg_symptoms",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Bilateral lower limb symptoms / hyperreflexia",
+              "citation": "NICE CG75"
+            },
+            {
+              "key": "pain_worsened_supine",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Pain worse supine / at night (venous distension)",
+              "citation": "NICE CG75"
+            }
+          ]
+        },
+        {
+          "name": "Superior Vena Cava Obstruction",
+          "icd": "I87.1",
+          "logPrior": -39,
+          "urgency": 2,
+          "systems": [
+            "oncology",
+            "vascular"
+          ],
+          "specialties": [
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "facial_neck_swelling",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Facial / neck / arm oedema",
+              "citation": "ESMO SVC Guidelines"
+            },
+            {
+              "key": "venous_distension_chest",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Distended chest wall collateral veins",
+              "citation": "ESMO"
+            },
+            {
+              "key": "plethora_cyanosis",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Facial plethora / cyanosis (worsened bending forward)",
+              "citation": "ESMO"
+            },
+            {
+              "key": "ct_svc_compression",
+              "value": "present",
+              "logLR": 29,
+              "evidenceLabel": "CT: SVC compression / thrombosis",
+              "citation": "ESMO"
+            },
+            {
+              "key": "lung_malignancy_underlying",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Lung cancer / lymphoma underlying",
+              "citation": "ESMO"
+            },
+            {
+              "key": "dyspnoea_orthopnoea",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Progressive dyspnoea / orthopnoea",
+              "citation": "ESMO"
+            },
+            {
+              "key": "stent_response",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Symptom relief after SVC stenting",
+              "citation": "ESMO"
+            },
+            {
+              "key": "pemberton_sign",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Pemberton's sign (facial congestion on arm elevation)",
+              "citation": "ESMO"
+            }
+          ]
+        },
+        {
+          "name": "Tumour Lysis Syndrome",
+          "icd": "E88.3",
+          "logPrior": -39,
+          "urgency": 3,
+          "systems": [
+            "oncology",
+            "nephrology"
+          ],
+          "specialties": [
+            "oncology",
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "uric_acid_elevated_tls",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Serum uric acid >476 \u03bcmol/L",
+              "citation": "Cairo-Bishop TLS Criteria 2004"
+            },
+            {
+              "key": "potassium_elevated_tls",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Potassium \u22656.0 mmol/L (acute hyperkalaemia)",
+              "citation": "Cairo-Bishop 2004"
+            },
+            {
+              "key": "phosphate_elevated_tls",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Phosphate \u22651.45 mmol/L",
+              "citation": "Cairo-Bishop 2004"
+            },
+            {
+              "key": "calcium_low_tls",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Calcium \u22641.75 mmol/L (precipitate from phosphate)",
+              "citation": "Cairo-Bishop 2004"
+            },
+            {
+              "key": "renal_impairment_tls",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Creatinine \u22651.5\u00d7 ULN (clinical TLS marker)",
+              "citation": "Cairo-Bishop 2004"
+            },
+            {
+              "key": "chemotherapy_recent",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Within 72 hours of chemotherapy / tumour cytoreduction",
+              "citation": "Cairo-Bishop 2004"
+            },
+            {
+              "key": "high_risk_tumour",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "High-risk tumour (Burkitt's lymphoma, AML, ALL)",
+              "citation": "Cairo-Bishop 2004"
+            },
+            {
+              "key": "cardiac_arrhythmia_tls",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Cardiac arrhythmia / seizure (clinical TLS)",
+              "citation": "Cairo-Bishop 2004"
+            }
+          ]
+        },
+        {
+          "name": "Paraneoplastic Syndrome",
+          "icd": "G13.0",
+          "logPrior": -39,
+          "urgency": 1,
+          "systems": [
+            "oncology",
+            "neurology"
+          ],
+          "specialties": [
+            "oncology",
+            "neurology"
+          ],
+          "features": [
+            {
+              "key": "antineuronal_antibody",
+              "value": "present",
+              "logLR": 27,
+              "evidenceLabel": "Antineuronal antibody positive (anti-Hu, anti-Yo, anti-NMDAR)",
+              "citation": "Graus Paraneoplastic Criteria 2004"
+            },
+            {
+              "key": "neurological_before_cancer",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Neurological syndrome preceding cancer diagnosis",
+              "citation": "Graus 2004"
+            },
+            {
+              "key": "rapid_neurological_progression",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Rapid neurological deterioration over weeks",
+              "citation": "Graus 2004"
+            },
+            {
+              "key": "paraneoplastic_encephalitis",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Limbic encephalitis / cerebellar degeneration pattern",
+              "citation": "Graus 2004"
+            },
+            {
+              "key": "cancer_found_3_years",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Cancer found within 5 years of neurological onset",
+              "citation": "Graus 2004"
+            },
+            {
+              "key": "siadh_paraneoplastic",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "SIADH pattern (hyponatraemia, concentrated urine)",
+              "citation": "Graus 2004"
+            },
+            {
+              "key": "dermatomyositis_overlap",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Dermatomyositis / polymyositis with cancer",
+              "citation": "Graus 2004"
+            },
+            {
+              "key": "trousseau_migratory",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Trousseau's migratory thrombophlebitis",
+              "citation": "Graus 2004"
+            }
+          ]
+        },
+        {
+          "name": "Cancer Cachexia",
+          "icd": "C80.0",
+          "logPrior": -29,
+          "urgency": 1,
+          "systems": [
+            "oncology"
+          ],
+          "specialties": [
+            "oncology",
+            "palliative"
+          ],
+          "features": [
+            {
+              "key": "involuntary_weight_loss_5",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Involuntary weight loss \u22655% over 6 months with cancer",
+              "citation": "Fearon Cachexia Consensus 2011"
+            },
+            {
+              "key": "reduced_food_intake",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Reduced food intake <70% usual",
+              "citation": "Fearon 2011"
+            },
+            {
+              "key": "systemic_inflammation",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Systemic inflammation (CRP >10, elevated IL-6)",
+              "citation": "Fearon 2011"
+            },
+            {
+              "key": "skeletal_muscle_loss",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "CT evidence of skeletal muscle loss (L3 SMI)",
+              "citation": "Fearon 2011"
+            },
+            {
+              "key": "pif_mac_elevated",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Proteolysis-inducing factor / tumour-derived factors",
+              "citation": "Fearon 2011"
+            },
+            {
+              "key": "anorexia_fatigue_cachexia",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Anorexia + profound fatigue",
+              "citation": "Fearon 2011"
+            },
+            {
+              "key": "albumin_low",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Serum albumin <35 g/L (nutritional compromise)",
+              "citation": "Fearon 2011"
+            },
+            {
+              "key": "performance_status_decline",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Declining ECOG performance status",
+              "citation": "Fearon 2011"
+            }
+          ]
+        },
+        {
+          "name": "Bone Metastases",
+          "icd": "C79.5",
+          "logPrior": -32,
+          "urgency": 1,
+          "systems": [
+            "oncology",
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "bone_pain_cancer_history",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Bone pain with known primary cancer",
+              "citation": "ESMO Bone Metastases Guidelines"
+            },
+            {
+              "key": "isotope_bone_scan_positive",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Hot spots on 99mTc bone scan",
+              "citation": "ESMO"
+            },
+            {
+              "key": "ct_lytic_blastic",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "CT: lytic or blastic bony lesions",
+              "citation": "ESMO"
+            },
+            {
+              "key": "alkphos_elevated",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "ALP elevated (bone isoenzyme)",
+              "citation": "ESMO"
+            },
+            {
+              "key": "pathological_fracture",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Pathological fracture",
+              "citation": "ESMO"
+            },
+            {
+              "key": "mirel_score_high",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Mirel score \u22659 (prophylactic fixation indicated)",
+              "citation": "ESMO"
+            },
+            {
+              "key": "bisphosphonate_denosumab",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Receiving bisphosphonate / denosumab",
+              "citation": "ESMO"
+            },
+            {
+              "key": "breast_prostate_lung",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Primary tumour is breast, prostate, or lung (commonest)",
+              "citation": "ESMO"
+            }
+          ]
+        }
+      ]
+    },
+    "sportsMedicine": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Rotator Cuff Tear",
+          "icd": "M75.1",
+          "logPrior": -24,
+          "urgency": 0,
+          "systems": [
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "orthopaedics",
+            "sport"
+          ],
+          "features": [
+            {
+              "key": "shoulder_pain_overhead",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Shoulder pain on overhead activity / abduction",
+              "citation": "NICE Shoulder Pain Guidelines"
+            },
+            {
+              "key": "painful_arc",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Painful arc 60\u2013120\u00b0",
+              "citation": "NICE"
+            },
+            {
+              "key": "empty_can_drop_arm",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Positive empty-can or drop-arm test",
+              "citation": "NICE"
+            },
+            {
+              "key": "mri_rotator_cuff",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "MRI: partial or full-thickness rotator cuff tear",
+              "citation": "NICE"
+            },
+            {
+              "key": "ultrasound_rotator_cuff",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Ultrasound: rotator cuff tear confirmed",
+              "citation": "NICE"
+            },
+            {
+              "key": "night_pain_shoulder",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Night pain / sleeping on affected side",
+              "citation": "NICE"
+            },
+            {
+              "key": "weakness_abduction",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Weakness on resisted abduction/external rotation",
+              "citation": "NICE"
+            },
+            {
+              "key": "over_50_dominant_arm",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "Age >50, dominant arm, degenerative tear pattern",
+              "citation": "NICE"
+            }
+          ]
+        },
+        {
+          "name": "Anterior Cruciate Ligament (ACL) Rupture",
+          "icd": "M23.61",
+          "logPrior": -32,
+          "urgency": 1,
+          "systems": [
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "orthopaedics",
+            "sport"
+          ],
+          "features": [
+            {
+              "key": "acl_pop_twist",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Audible 'pop' at time of twisting/deceleration injury",
+              "citation": "NICE ACL Guidelines"
+            },
+            {
+              "key": "haemarthrosis_acute",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Rapid haemarthrosis within 2 hours of injury",
+              "citation": "NICE"
+            },
+            {
+              "key": "anterior_drawer_positive",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Positive anterior drawer / Lachman test",
+              "citation": "NICE"
+            },
+            {
+              "key": "pivot_shift_positive",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Positive pivot-shift test",
+              "citation": "NICE"
+            },
+            {
+              "key": "mri_acl_rupture",
+              "value": "present",
+              "logLR": 28,
+              "evidenceLabel": "MRI: ACL disruption confirmed",
+              "citation": "NICE"
+            },
+            {
+              "key": "giving_way_instability",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Functional instability / giving way",
+              "citation": "NICE"
+            },
+            {
+              "key": "contact_sport_mechanism",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Contact or pivoting sport mechanism (football, basketball)",
+              "citation": "NICE"
+            },
+            {
+              "key": "young_active_athlete",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "Young active athlete requesting return to pivoting sport",
+              "citation": "NICE"
+            }
+          ]
+        },
+        {
+          "name": "Stress Fracture",
+          "icd": "M84.30",
+          "logPrior": -35,
+          "urgency": 1,
+          "systems": [
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "orthopaedics",
+            "sport"
+          ],
+          "features": [
+            {
+              "key": "insidious_onset_activity",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Insidious onset localised bone pain related to activity",
+              "citation": "ACSM Stress Fracture Guidelines"
+            },
+            {
+              "key": "point_tenderness_bone",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Point tenderness on palpation of bone",
+              "citation": "ACSM"
+            },
+            {
+              "key": "mri_bone_oedema",
+              "value": "present",
+              "logLR": 27,
+              "evidenceLabel": "MRI: periosteal / bone marrow oedema (gold standard)",
+              "citation": "ACSM"
+            },
+            {
+              "key": "xray_negative_early",
+              "value": "absent",
+              "logLR": 11,
+              "evidenceLabel": "X-ray normal in first 2 weeks",
+              "citation": "ACSM"
+            },
+            {
+              "key": "overtraining_history",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Abrupt increase in training load / hard surface",
+              "citation": "ACSM"
+            },
+            {
+              "key": "female_athlete_triad",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Female athlete triad (low energy, amenorrhoea, low BMD)",
+              "citation": "ACSM"
+            },
+            {
+              "key": "high_risk_site",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "High-risk site: navicular, femoral neck, anterior tibia, 5th metatarsal",
+              "citation": "ACSM"
+            },
+            {
+              "key": "vibration_tuning_fork",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Pain on 128 Hz tuning fork / fulcrum test",
+              "citation": "ACSM"
+            }
+          ]
+        },
+        {
+          "name": "Exertional Compartment Syndrome",
+          "icd": "M79.A3",
+          "logPrior": -39,
+          "urgency": 1,
+          "systems": [
+            "vascular",
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "orthopaedics",
+            "sport"
+          ],
+          "features": [
+            {
+              "key": "exertional_leg_tightness",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Leg tightness/pain reproducibly brought on by exercise",
+              "citation": "BJSM Compartment Syndrome Review"
+            },
+            {
+              "key": "full_resolution_rest",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Full resolution within 20\u201330 minutes of stopping",
+              "citation": "BJSM"
+            },
+            {
+              "key": "compartment_pressure_post",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "Post-exercise compartment pressure \u226530 mmHg",
+              "citation": "BJSM"
+            },
+            {
+              "key": "normal_vascular_exam",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Normal pulses / ABI (excludes vascular claudication)",
+              "citation": "BJSM"
+            },
+            {
+              "key": "bilateral_presentation",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Bilateral involvement (common in chronic ECS)",
+              "citation": "BJSM"
+            },
+            {
+              "key": "fasciotomy_response",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Resolution of symptoms following fasciotomy",
+              "citation": "BJSM"
+            },
+            {
+              "key": "mri_muscle_signal",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "MRI: elevated signal in affected compartment post-exercise",
+              "citation": "BJSM"
+            },
+            {
+              "key": "anterior_lateral_compartment",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Anterior / lateral compartment involvement (tibialis anterior)",
+              "citation": "BJSM"
+            }
+          ]
+        },
+        {
+          "name": "Rhabdomyolysis",
+          "icd": "M62.82",
+          "logPrior": -39,
+          "urgency": 2,
+          "systems": [
+            "musculoskeletal",
+            "nephrology"
+          ],
+          "specialties": [
+            "sport",
+            "nephrology"
+          ],
+          "features": [
+            {
+              "key": "ck_markedly_elevated",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "CK >10,000 IU/L (markedly elevated)",
+              "citation": "BJSM Rhabdomyolysis Guidelines"
+            },
+            {
+              "key": "myoglobinuria",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Dark / tea-coloured urine (myoglobinuria)",
+              "citation": "BJSM"
+            },
+            {
+              "key": "muscle_pain_weakness_swelling",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Muscle pain, weakness, and swelling",
+              "citation": "BJSM"
+            },
+            {
+              "key": "ari_from_myoglobin",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Acute kidney injury (creatinine rise, oliguria)",
+              "citation": "BJSM"
+            },
+            {
+              "key": "extreme_exertion_trigger",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Extreme unaccustomed exertion / heat stroke / crush",
+              "citation": "BJSM"
+            },
+            {
+              "key": "electrolyte_disturbance",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Hyperkalaemia / hyperphosphataemia / hyponatraemia",
+              "citation": "BJSM"
+            },
+            {
+              "key": "ldh_ast_elevated",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "LDH and AST elevated (muscle isoenzymes)",
+              "citation": "BJSM"
+            },
+            {
+              "key": "iv_fluids_response",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Rapid CK fall with aggressive IV fluid resuscitation",
+              "citation": "BJSM"
+            }
+          ]
+        },
+        {
+          "name": "Heat Stroke",
+          "icd": "T67.01",
+          "logPrior": -39,
+          "urgency": 3,
+          "systems": [
+            "environmental"
+          ],
+          "specialties": [
+            "sport",
+            "emergency"
+          ],
+          "features": [
+            {
+              "key": "core_temp_40",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Core temperature \u226540\u00b0C (rectal)",
+              "citation": "ACSM Exertional Heat Stroke Position Statement"
+            },
+            {
+              "key": "cns_dysfunction",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "CNS dysfunction (confusion, ataxia, combativeness, coma)",
+              "citation": "ACSM"
+            },
+            {
+              "key": "hot_dry_or_sweating",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Hot dry skin (classic) or sweating (exertional)",
+              "citation": "ACSM"
+            },
+            {
+              "key": "cooling_response",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "CNS improvement with rapid cooling (cold water immersion)",
+              "citation": "ACSM"
+            },
+            {
+              "key": "coagulopathy_dic",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "DIC / rhabdomyolysis / multi-organ failure",
+              "citation": "ACSM"
+            },
+            {
+              "key": "exercise_in_heat",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Vigorous exercise in hot/humid environment",
+              "citation": "ACSM"
+            },
+            {
+              "key": "troponin_ck_elevated",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Troponin + CK elevated (cardiac and muscle injury)",
+              "citation": "ACSM"
+            },
+            {
+              "key": "transaminitis_heat",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Transaminitis (hepatic injury from hyperthermia)",
+              "citation": "ACSM"
+            }
+          ]
+        },
+        {
+          "name": "Concussion / Mild Traumatic Brain Injury",
+          "icd": "S09.90",
+          "logPrior": -29,
+          "urgency": 1,
+          "systems": [
+            "neurology"
+          ],
+          "specialties": [
+            "sport",
+            "neurosurgery"
+          ],
+          "features": [
+            {
+              "key": "head_impact_mechanism",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Head impact with direct or indirect force",
+              "citation": "Consensus Statement on Concussion in Sport 2023"
+            },
+            {
+              "key": "immediate_symptom_onset",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Symptoms within 1\u20132 hours of impact",
+              "citation": "Consensus 2023"
+            },
+            {
+              "key": "cognitive_symptoms",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Cognitive symptoms: fog, confusion, memory gap, slowed processing",
+              "citation": "Consensus 2023"
+            },
+            {
+              "key": "scat5_positive",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "SCAT5 \u22651 or positive Maddocks questions",
+              "citation": "Consensus 2023"
+            },
+            {
+              "key": "normal_ct_head",
+              "value": "absent",
+              "logLR": 11,
+              "evidenceLabel": "CT head normal (no structural lesion)",
+              "citation": "Consensus 2023"
+            },
+            {
+              "key": "vestibulo_ocular_dysfunction",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Vestibulo-ocular motor dysfunction (VOMS positive)",
+              "citation": "Consensus 2023"
+            },
+            {
+              "key": "balance_disorder",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Balance / coordination deficit on examination",
+              "citation": "Consensus 2023"
+            },
+            {
+              "key": "graded_return_sport",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Graded return-to-sport protocol initiated",
+              "citation": "Consensus 2023"
+            }
+          ]
+        },
+        {
+          "name": "Lateral Epicondylitis (Tennis Elbow)",
+          "icd": "M77.1",
+          "logPrior": -28,
+          "urgency": 0,
+          "systems": [
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "orthopaedics",
+            "sport"
+          ],
+          "features": [
+            {
+              "key": "lateral_epicondyle_tenderness",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Tenderness over lateral epicondyle / ECRB origin",
+              "citation": "NICE Tennis Elbow Guidelines"
+            },
+            {
+              "key": "cozen_mills_positive",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Positive Cozen's / Mill's test",
+              "citation": "NICE"
+            },
+            {
+              "key": "pain_gripping_twisting",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Pain with gripping / wrist extension / forearm rotation",
+              "citation": "NICE"
+            },
+            {
+              "key": "dominant_arm",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "Dominant arm in manual worker / racquet sport player",
+              "citation": "NICE"
+            },
+            {
+              "key": "ultrasound_tendinopathy",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Ultrasound: ECRB tendinopathy / partial tear",
+              "citation": "NICE"
+            },
+            {
+              "key": "gradual_onset_repetitive",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Gradual onset with repetitive activity history",
+              "citation": "NICE"
+            },
+            {
+              "key": "physiotherapy_response",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Improvement with eccentric strengthening programme",
+              "citation": "NICE"
+            },
+            {
+              "key": "normal_elbow_xray",
+              "value": "absent",
+              "logLR": 7,
+              "evidenceLabel": "X-ray: no bony pathology",
+              "citation": "NICE"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {
