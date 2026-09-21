@@ -1329,6 +1329,34 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("strangulated") { mergePool("intestinalObstruction") }
             if ccL.contains("testicular") || ccL.contains("torsion") { mergePool("urologicalEmergency") }
 
+        // Renal and urological conditions
+        case ccL.contains("renal colic") || ccL.contains("ureteric colic") ||
+             ccL.contains("nephrolithiasis") || ccL.contains("kidney stone") ||
+             ccL.contains("hydronephrosis") || ccL.contains("renal cell carcinoma") ||
+             ccL.contains("bladder cancer") || ccL.contains("prostate cancer") ||
+             ccL.contains("haematuria") || ccL.contains("luts") ||
+             ccL.contains("urothelial") || ccL.contains("testicular torsion") ||
+             ccL.contains("benign prostatic") || ccL.contains("bph") ||
+             (ccL.contains("loin") && ccL.contains("pain")) ||
+             (ccL.contains("flank pain") && ccL.contains("blood")):
+            candidates = externalPool("renalUrolithiasis") ?? []
+            if ccL.contains("sepsis") || ccL.contains("pyelonephritis") { mergePool("sepsisConditions") }
+            if ccL.contains("obstruction") { mergePool("intestinalObstruction") }
+
+        // Primary GI lymphoma and rare GI tumours
+        case ccL.contains("gi lymphoma") || ccL.contains("malt lymphoma") ||
+             ccL.contains("gastric lymphoma") || ccL.contains("dlbcl") ||
+             ccL.contains("eatl") || ccL.contains("gist") ||
+             ccL.contains("gastrointestinal stromal") || ccL.contains("carcinoid") ||
+             ccL.contains("neuroendocrine") || ccL.contains("net") ||
+             ccL.contains("peritoneal mesothelioma") || ccL.contains("desmoid") ||
+             ccL.contains("chromogranin") || ccL.contains("5-hiaa") ||
+             (ccL.contains("abdominal mass") && ccL.contains("lymphoma")) ||
+             (ccL.contains("flushing") && ccL.contains("diarrhoea")):
+            candidates = externalPool("primaryGILymphoma") ?? []
+            if ccL.contains("h. pylori") || ccL.contains("helicobacter") { mergePool("upperGIDisease") }
+            if ccL.contains("b-symptoms") || ccL.contains("lymphadenopathy") { mergePool("oncologyComplications") }
+
         // Skin and soft tissue tumours
         case ccL.contains("melanoma") || ccL.contains("basal cell") ||
              ccL.contains("squamous cell carcinoma") || ccL.contains("skin cancer") ||
@@ -1663,6 +1691,12 @@ enum BayesianDiagnosisEngine {
         if ccL.contains("inguinal hernia") || ccL.contains("femoral hernia") ||
            ccL.contains("groin pain") || ccL.contains("hydrocele") ||
            ccL.contains("varicocele") || ccL.contains("sports hernia") { mergePool("groinSportsHernia") }
+        if ccL.contains("haematuria") || ccL.contains("renal colic") ||
+           ccL.contains("kidney stone") || ccL.contains("ureteric colic") ||
+           ccL.contains("testicular torsion") || ccL.contains("prostate") { mergePool("renalUrolithiasis") }
+        if ccL.contains("carcinoid") || ccL.contains("neuroendocrine") ||
+           ccL.contains("gist") || ccL.contains("gi lymphoma") ||
+           ccL.contains("malt lymphoma") || ccL.contains("desmoid") { mergePool("primaryGILymphoma") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but

@@ -74039,6 +74039,1147 @@
           ]
         }
       ]
+    },
+    "renalUrolithiasis": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Ureteric Colic (Nephrolithiasis)",
+          "icd": "N20.1",
+          "logPrior": -14,
+          "urgency": 1,
+          "systems": [
+            "renal",
+            "urological"
+          ],
+          "specialties": [
+            "urology"
+          ],
+          "features": [
+            {
+              "key": "severe_loin_to_groin_pain",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Severe loin-to-groin colicky pain",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "haematuria_visible_non_visible",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Visible or non-visible haematuria",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "nausea_vomiting_associated",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Nausea/vomiting",
+              "citation": "Clinical"
+            },
+            {
+              "key": "ct_kub_confirms_stone",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "CT KUB confirms ureteric stone",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "unable_to_find_comfortable_position",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Unable to find comfortable position",
+              "citation": "Clinical"
+            },
+            {
+              "key": "prior_stone_history",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Prior nephrolithiasis history",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "positive_urine_dipstick_blood",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Positive urine dipstick for blood",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "costovertebral_angle_tenderness",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Costovertebral angle tenderness",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Obstructive Uropathy / Hydronephrosis",
+          "icd": "N13.30",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "renal",
+            "urological"
+          ],
+          "specialties": [
+            "urology"
+          ],
+          "features": [
+            {
+              "key": "hydronephrosis_us_ct",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Hydronephrosis on US/CT",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "obstructive_stone_ureter",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Obstructing stone in ureter",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "impaired_renal_function",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Impaired renal function",
+              "citation": "Clinical"
+            },
+            {
+              "key": "fever_pyonephrosis",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Fever suggesting pyonephrosis",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "post_void_residual_high",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "High post-void residual (BPO)",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "bilateral_hydronephrosis",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Bilateral hydronephrosis (extrinsic)",
+              "citation": "Clinical"
+            },
+            {
+              "key": "retroperitoneal_fibrosis",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Retroperitoneal fibrosis on CT",
+              "citation": "Clinical"
+            },
+            {
+              "key": "urosepsis_signs",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Urosepsis (infected obstructed system)",
+              "citation": "EAU 2022"
+            }
+          ]
+        },
+        {
+          "name": "Renal Cell Carcinoma",
+          "icd": "C64",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "renal",
+            "oncology"
+          ],
+          "specialties": [
+            "urology"
+          ],
+          "features": [
+            {
+              "key": "incidental_renal_mass_ct",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Incidental renal mass on CT",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "classical_triad_haematuria_pain_mass",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Classical triad (haematuria, pain, mass)",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "paraneoplastic_syndrome",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Paraneoplastic syndrome (hypercalcaemia/polycythaemia)",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "heterogeneous_enhancing_mass",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Heterogeneous enhancing mass on CT",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "vhl_disease_context",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "VHL disease context (clear cell)",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "right_varicocele_new",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "New right-sided varicocele (IVC thrombus)",
+              "citation": "Clinical"
+            },
+            {
+              "key": "smoking_obesity_risk",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Smoking/obesity risk factors",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "distant_metastasis_bone_lung",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Distant metastasis (bone, lung)",
+              "citation": "EAU 2022"
+            }
+          ]
+        },
+        {
+          "name": "Bladder Cancer",
+          "icd": "C67.9",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "renal",
+            "urological"
+          ],
+          "specialties": [
+            "urology"
+          ],
+          "features": [
+            {
+              "key": "painless_visible_haematuria",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Painless visible haematuria",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "cystoscopy_tumour_confirmed",
+              "value": "true",
+              "logLR": 32,
+              "evidenceLabel": "Cystoscopy confirms bladder tumour",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "smoking_history_30_pack_years",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Heavy smoking history",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "occupational_amine_exposure",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Occupational aromatic amine exposure",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "ct_urography_filling_defect",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "CT urography filling defect",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "irritative_luts_persistent",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Persistent irritative LUTS",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "urine_cytology_positive",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Positive urine cytology",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "prior_tcc_history",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Prior TCC/bladder cancer",
+              "citation": "EAU 2022"
+            }
+          ]
+        },
+        {
+          "name": "Prostate Cancer",
+          "icd": "C61",
+          "logPrior": -17,
+          "urgency": 0,
+          "systems": [
+            "urological"
+          ],
+          "specialties": [
+            "urology"
+          ],
+          "features": [
+            {
+              "key": "elevated_psa",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Elevated PSA (age-adjusted)",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "hard_irregular_dre",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Hard/irregular prostate on DRE",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "biopsy_confirms_adenocarcinoma",
+              "value": "true",
+              "logLR": 32,
+              "evidenceLabel": "Biopsy confirms adenocarcinoma",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "mri_pirads_4_5",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "MRI PI-RADS 4/5 lesion",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "bone_metastasis_pain",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Bone metastasis/skeletal pain",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "obstructive_luts",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Obstructive LUTS",
+              "citation": "Clinical"
+            },
+            {
+              "key": "family_history_prostate_ca",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Family history of prostate/BRCA2",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "african_caribbean_ethnicity",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "African/Caribbean ethnicity (higher risk)",
+              "citation": "EAU 2022"
+            }
+          ]
+        },
+        {
+          "name": "Benign Prostatic Hyperplasia / LUTS",
+          "icd": "N40.1",
+          "logPrior": -14,
+          "urgency": 0,
+          "systems": [
+            "urological"
+          ],
+          "specialties": [
+            "urology"
+          ],
+          "features": [
+            {
+              "key": "ipss_score_elevated",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "IPSS score \u22658",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "enlarged_smooth_prostate_dre",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Enlarged, smooth prostate on DRE",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "reduced_peak_flow_rate",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Reduced peak flow rate <10mL/s",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "post_void_residual_elevated",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Elevated post-void residual",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "normal_psa_for_age",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "PSA in benign range for age",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "older_male_age_60",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Male age >60",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "nocturnal_frequency",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Nocturia/frequency dominant symptoms",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "urinary_retention_acute",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Episode of acute urinary retention",
+              "citation": "EAU 2022"
+            }
+          ]
+        },
+        {
+          "name": "Urothelial Carcinoma of Renal Pelvis/Ureter",
+          "icd": "C65",
+          "logPrior": -29,
+          "urgency": 1,
+          "systems": [
+            "renal",
+            "urological"
+          ],
+          "specialties": [
+            "urology"
+          ],
+          "features": [
+            {
+              "key": "haematuria_upper_tract",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Upper tract haematuria",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "ct_urography_filling_defect_upper",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "CT urography upper tract filling defect",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "prior_bladder_tcc",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Prior bladder TCC (field change)",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "ureterorenoscopy_tumour",
+              "value": "true",
+              "logLR": 32,
+              "evidenceLabel": "Ureterorenoscopy confirms tumour",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "lynch_syndrome_context",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Lynch syndrome (HNPCC) context",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "analgesic_phenacetin_exposure",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Phenacetin/aristolochic acid exposure",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "urothelial_cytology_positive",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Positive urothelial cytology",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "ipsilateral_hydronephrosis",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Ipsilateral hydronephrosis",
+              "citation": "EAU 2022"
+            }
+          ]
+        },
+        {
+          "name": "Testicular Torsion",
+          "icd": "N44.00",
+          "logPrior": -25,
+          "urgency": 3,
+          "systems": [
+            "urological"
+          ],
+          "specialties": [
+            "urology"
+          ],
+          "features": [
+            {
+              "key": "sudden_severe_scrotal_pain",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Sudden severe scrotal pain",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "high_riding_testis",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "High-riding testis on examination",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "absent_cremasteric_reflex",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Absent cremasteric reflex",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "young_adolescent_patient",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Young/adolescent patient",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "colour_doppler_absent_flow",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Absent testicular flow on colour Doppler",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "nausea_vomiting_associated_torsion",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Nausea/vomiting",
+              "citation": "Clinical"
+            },
+            {
+              "key": "bell_clapper_deformity",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Bell-clapper deformity",
+              "citation": "EAU 2022"
+            },
+            {
+              "key": "previous_torsion_episode",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Previous torsion episode",
+              "citation": "Clinical"
+            }
+          ]
+        }
+      ]
+    },
+    "primaryGILymphoma": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Gastric MALT Lymphoma",
+          "icd": "C88.4",
+          "logPrior": -32,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "haematology"
+          ],
+          "specialties": [
+            "upper_gi_surgery"
+          ],
+          "features": [
+            {
+              "key": "h_pylori_positive",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "H. pylori positive (95% associated)",
+              "citation": "Isaacson 2005"
+            },
+            {
+              "key": "gastric_biopsy_malt",
+              "value": "true",
+              "logLR": 32,
+              "evidenceLabel": "Gastric biopsy confirms MALT",
+              "citation": "Isaacson 2005"
+            },
+            {
+              "key": "dyspepsia_weight_loss",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Dyspepsia/weight loss",
+              "citation": "Clinical"
+            },
+            {
+              "key": "ct_gastric_wall_thickening",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Gastric wall thickening on CT",
+              "citation": "Isaacson 2005"
+            },
+            {
+              "key": "endoscopy_mucosal_nodularity",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Mucosal nodularity on endoscopy",
+              "citation": "Clinical"
+            },
+            {
+              "key": "b_cell_immunophenotype",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "B-cell immunophenotype",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "responds_to_hp_eradication",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Responds to H. pylori eradication",
+              "citation": "Isaacson 2005"
+            },
+            {
+              "key": "stage_i_ii_localised",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Localised disease (Stage I/II)",
+              "citation": "Isaacson 2005"
+            }
+          ]
+        },
+        {
+          "name": "Diffuse Large B-Cell Lymphoma (GI)",
+          "icd": "C83.3",
+          "logPrior": -29,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "haematology"
+          ],
+          "specialties": [
+            "upper_gi_surgery"
+          ],
+          "features": [
+            {
+              "key": "rapid_growth_abdominal_mass",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Rapidly growing abdominal mass",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "b_symptoms_fever_sweats_wl",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "B-symptoms (fever, night sweats, >10% weight loss)",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "elevated_ldh_urate",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Elevated LDH/urate",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "ct_bulky_lymphadenopathy",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Bulky lymphadenopathy on CT",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "core_biopsy_dlbcl",
+              "value": "true",
+              "logLR": 32,
+              "evidenceLabel": "Core biopsy confirms DLBCL",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "pet_avid_lesion",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "FDG-avid lesion on PET-CT",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "bone_marrow_involvement",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Bone marrow involvement",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "immunosuppression_hiv_transplant",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Immunosuppression/HIV/transplant",
+              "citation": "WHO 2022"
+            }
+          ]
+        },
+        {
+          "name": "Small Intestinal Lymphoma (EATL)",
+          "icd": "C86.1",
+          "logPrior": -35,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal",
+            "haematology"
+          ],
+          "specialties": [
+            "upper_gi_surgery"
+          ],
+          "features": [
+            {
+              "key": "coeliac_disease_background",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Known/undiagnosed coeliac disease",
+              "citation": "Catassi 2005"
+            },
+            {
+              "key": "refractory_coeliac_symptoms",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Coeliac refractory to gluten-free diet",
+              "citation": "Catassi 2005"
+            },
+            {
+              "key": "small_bowel_perforation_obstruction",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Small bowel perforation/obstruction",
+              "citation": "Clinical"
+            },
+            {
+              "key": "abdominal_pain_weight_loss_diarrhoea",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Abdominal pain, weight loss, diarrhoea",
+              "citation": "Clinical"
+            },
+            {
+              "key": "ct_small_bowel_thickening_mass",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Small bowel thickening/mass on CT",
+              "citation": "Clinical"
+            },
+            {
+              "key": "t_cell_phenotype_eatl",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "T-cell phenotype on histology",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "capsule_endoscopy_ulcerations",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Ulcerations on capsule endoscopy",
+              "citation": "Clinical"
+            },
+            {
+              "key": "poor_prognosis_aggressive",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Aggressive clinical course",
+              "citation": "WHO 2022"
+            }
+          ]
+        },
+        {
+          "name": "Colorectal Lymphoma",
+          "icd": "C83.9",
+          "logPrior": -35,
+          "urgency": 1,
+          "systems": [
+            "colorectal",
+            "haematology"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "rectal_colonic_mass_biopsy",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Rectal/colonic mass on endoscopy",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "submucosal_appearance",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Submucosal appearance on endoscopy",
+              "citation": "Clinical"
+            },
+            {
+              "key": "lymphoma_histology_confirmed",
+              "value": "true",
+              "logLR": 32,
+              "evidenceLabel": "Lymphoma confirmed on biopsy/resection",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "bulky_mesenteric_nodes",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Bulky mesenteric lymph nodes on CT",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "age_over_50",
+              "value": "true",
+              "logLR": 8,
+              "evidenceLabel": "Age >50 years",
+              "citation": "Clinical"
+            },
+            {
+              "key": "hiv_immunosuppression",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "HIV/immunosuppression",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "mantle_cell_cecal_predilection",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Caecal predominance (mantle cell)",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "no_crc_features",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "No CRC histological features",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "GIST \u2014 Gastrointestinal Stromal Tumour",
+          "icd": "C49.A0",
+          "logPrior": -28,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "upper_gi_surgery"
+          ],
+          "features": [
+            {
+              "key": "kit_mutation_positive",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "KIT/PDGFRA mutation confirmed",
+              "citation": "Miettinen 2006"
+            },
+            {
+              "key": "spindle_cell_histology",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Spindle cell histology on biopsy",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "submucosal_gastric_mass",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Submucosal gastric mass",
+              "citation": "Miettinen 2006"
+            },
+            {
+              "key": "cd117_positive",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "CD117 (c-kit) positive IHC",
+              "citation": "Miettinen 2006"
+            },
+            {
+              "key": "eus_confirms_submucosal",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "EUS confirms submucosal origin",
+              "citation": "Clinical"
+            },
+            {
+              "key": "gi_bleed_or_incidental",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "GI bleed or incidental CT finding",
+              "citation": "Clinical"
+            },
+            {
+              "key": "neurofibromatosis_sdh_mutation",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "NF1/SDH mutation (paediatric/wild-type)",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "imatinib_response",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Response to imatinib therapy",
+              "citation": "Miettinen 2006"
+            }
+          ]
+        },
+        {
+          "name": "Carcinoid Tumour / Neuroendocrine Tumour GI",
+          "icd": "C7A.00",
+          "logPrior": -25,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "endocrine"
+          ],
+          "specialties": [
+            "upper_gi_surgery"
+          ],
+          "features": [
+            {
+              "key": "carcinoid_syndrome_symptoms",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Carcinoid syndrome (flushing, diarrhoea)",
+              "citation": "Modlin 2008"
+            },
+            {
+              "key": "elevated_chromogranin_a",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Elevated serum chromogranin A",
+              "citation": "Modlin 2008"
+            },
+            {
+              "key": "elevated_5_hiaa_urine",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Elevated 24h urinary 5-HIAA",
+              "citation": "Modlin 2008"
+            },
+            {
+              "key": "gallium_68_pet_avid",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "68Ga-DOTATATE PET avid lesion",
+              "citation": "Modlin 2008"
+            },
+            {
+              "key": "ileal_primary_commonest",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Ileal location (commonest)",
+              "citation": "Modlin 2008"
+            },
+            {
+              "key": "liver_metastases_present",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Liver metastases (carcinoid syndrome trigger)",
+              "citation": "Modlin 2008"
+            },
+            {
+              "key": "right_heart_disease_tricuspid",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Right heart disease (tricuspid regurgitation)",
+              "citation": "Modlin 2008"
+            },
+            {
+              "key": "mesenteric_desmoplasia_ct",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Mesenteric desmoplasia on CT",
+              "citation": "Modlin 2008"
+            }
+          ]
+        },
+        {
+          "name": "Peritoneal Mesothelioma",
+          "icd": "C45.1",
+          "logPrior": -35,
+          "urgency": 1,
+          "systems": [
+            "peritoneal"
+          ],
+          "specialties": [
+            "upper_gi_surgery"
+          ],
+          "features": [
+            {
+              "key": "asbestos_exposure_history",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Asbestos exposure history",
+              "citation": "Sugarbaker 2012"
+            },
+            {
+              "key": "ct_omental_caking_ascites",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Omental caking/ascites on CT",
+              "citation": "Sugarbaker 2012"
+            },
+            {
+              "key": "peritoneal_biopsy_mesothelioma",
+              "value": "true",
+              "logLR": 32,
+              "evidenceLabel": "Peritoneal biopsy confirms mesothelioma",
+              "citation": "Sugarbaker 2012"
+            },
+            {
+              "key": "calretinin_positive_ihc",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Calretinin positive on IHC",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "worsening_ascites_no_cause",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Worsening ascites without obvious cause",
+              "citation": "Clinical"
+            },
+            {
+              "key": "diffuse_peritoneal_disease",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Diffuse peritoneal disease on staging",
+              "citation": "Sugarbaker 2012"
+            },
+            {
+              "key": "bap1_mutation",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "BAP1 germline mutation",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "cytology_cells_ascites",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Malignant cells in ascitic fluid",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Desmoid Tumour / Fibromatosis",
+          "icd": "D48.1",
+          "logPrior": -35,
+          "urgency": 0,
+          "systems": [
+            "abdominal_wall",
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "fap_apc_mutation_context",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "FAP/APC mutation context",
+              "citation": "Clark 2012"
+            },
+            {
+              "key": "abdominal_wall_mesenteric_mass",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Abdominal wall/mesenteric fibromatosis",
+              "citation": "Clark 2012"
+            },
+            {
+              "key": "prior_surgery_trauma_trigger",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Prior surgery/trauma as trigger",
+              "citation": "Clark 2012"
+            },
+            {
+              "key": "ct_infiltrating_low_grade",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "CT: infiltrating low-grade mass",
+              "citation": "Clark 2012"
+            },
+            {
+              "key": "ctnnb1_beta_catenin_mutation",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "CTNNB1/\u03b2-catenin mutation",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "young_female_post_partum",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Young female/post-partum",
+              "citation": "Clark 2012"
+            },
+            {
+              "key": "no_metastatic_potential",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "No metastatic potential (local recurrence)",
+              "citation": "Clark 2012"
+            },
+            {
+              "key": "slow_growth_indolent",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Slow-growing, often indolent",
+              "citation": "Clark 2012"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {
