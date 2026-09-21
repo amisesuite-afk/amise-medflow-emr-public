@@ -37710,6 +37710,1170 @@
           ]
         }
       ]
+    },
+    "rhinosinusitis": {
+      "description": "Nasal congestion, sinusitis, rhinitis, nasal polyps, post-nasal drip",
+      "candidates": [
+        {
+          "name": "Acute Bacterial Rhinosinusitis",
+          "icd": "J01.90",
+          "logPrior": -1.2,
+          "urgency": 1,
+          "systems": [
+            "ent",
+            "infectious"
+          ],
+          "specialties": [
+            "ent",
+            "general"
+          ],
+          "features": [
+            {
+              "key": "facial_pain",
+              "value": "unilateral facial pain or pressure over sinuses",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "IDSA 2012"
+            },
+            {
+              "key": "purulent",
+              "value": "purulent nasal discharge",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "IDSA 2012"
+            },
+            {
+              "key": "duration",
+              "value": "symptoms > 10 days without improvement or worsening after 5–7 days",
+              "logLR": 2.8,
+              "evidenceLabel": "Strong",
+              "citation": "IDSA 2012"
+            },
+            {
+              "key": "fever",
+              "value": "fever ≥ 38°C",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "IDSA 2012"
+            },
+            {
+              "key": "maxillary",
+              "value": "maxillary tooth pain (maxillary sinusitis)",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "IDSA 2012"
+            },
+            {
+              "key": "smell",
+              "value": "anosmia or hyposmia",
+              "logLR": 1.2,
+              "evidenceLabel": "Moderate",
+              "citation": "IDSA 2012"
+            },
+            {
+              "key": "nasal",
+              "value": "nasal obstruction or congestion",
+              "logLR": 1.0,
+              "evidenceLabel": "Moderate",
+              "citation": "IDSA 2012"
+            },
+            {
+              "key": "headache",
+              "value": "frontal headache worse on bending forwards",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "IDSA 2012"
+            }
+          ]
+        },
+        {
+          "name": "Chronic Rhinosinusitis without Polyps",
+          "icd": "J32.9",
+          "logPrior": -1.8,
+          "urgency": 0,
+          "systems": [
+            "ent"
+          ],
+          "specialties": [
+            "ent"
+          ],
+          "features": [
+            {
+              "key": "duration",
+              "value": "nasal symptoms > 12 weeks",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "EPOS 2020"
+            },
+            {
+              "key": "congestion",
+              "value": "nasal blockage or discharge",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "EPOS 2020"
+            },
+            {
+              "key": "facial_pressure",
+              "value": "facial pressure or fullness",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "EPOS 2020"
+            },
+            {
+              "key": "smell",
+              "value": "anosmia or hyposmia",
+              "logLR": 2.0,
+              "evidenceLabel": "Strong",
+              "citation": "EPOS 2020"
+            },
+            {
+              "key": "ct",
+              "value": "mucosal thickening or air-fluid levels on CT sinuses",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "EPOS 2020"
+            },
+            {
+              "key": "endoscopy",
+              "value": "mucosal oedema on nasal endoscopy",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "EPOS 2020"
+            },
+            {
+              "key": "no_polyps",
+              "value": "no nasal polyps seen",
+              "logLR": 0.5,
+              "evidenceLabel": "Weak",
+              "citation": "EPOS 2020"
+            },
+            {
+              "key": "post_nasal",
+              "value": "post-nasal drip with chronic throat clearing",
+              "logLR": 1.2,
+              "evidenceLabel": "Moderate",
+              "citation": "EPOS 2020"
+            }
+          ]
+        },
+        {
+          "name": "Chronic Rhinosinusitis with Nasal Polyps",
+          "icd": "J33.9",
+          "logPrior": -2.5,
+          "urgency": 0,
+          "systems": [
+            "ent",
+            "immunological"
+          ],
+          "specialties": [
+            "ent"
+          ],
+          "features": [
+            {
+              "key": "polyps",
+              "value": "bilateral nasal polyps on examination or endoscopy",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "EPOS 2020"
+            },
+            {
+              "key": "smell",
+              "value": "severe anosmia",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "EPOS 2020"
+            },
+            {
+              "key": "asthma",
+              "value": "comorbid asthma",
+              "logLR": 2.0,
+              "evidenceLabel": "Strong",
+              "citation": "EPOS 2020"
+            },
+            {
+              "key": "aspirin",
+              "value": "NSAID/aspirin intolerance (Samter's triad)",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "EPOS 2020"
+            },
+            {
+              "key": "eosinophilia",
+              "value": "peripheral blood eosinophilia",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "EPOS 2020"
+            },
+            {
+              "key": "recurrence",
+              "value": "polyp recurrence after surgical removal",
+              "logLR": 2.0,
+              "evidenceLabel": "Strong",
+              "citation": "EPOS 2020"
+            },
+            {
+              "key": "bilateral",
+              "value": "bilateral obstruction from polyps",
+              "logLR": 2.0,
+              "evidenceLabel": "Strong",
+              "citation": "EPOS 2020"
+            },
+            {
+              "key": "biologic",
+              "value": "response to biologic therapy (dupilumab)",
+              "logLR": 2.5,
+              "evidenceLabel": "Moderate",
+              "citation": "EPOS 2020"
+            }
+          ]
+        },
+        {
+          "name": "Allergic Rhinitis",
+          "icd": "J30.9",
+          "logPrior": -0.8,
+          "urgency": 0,
+          "systems": [
+            "ent",
+            "immunological"
+          ],
+          "specialties": [
+            "ent",
+            "allergy",
+            "general"
+          ],
+          "features": [
+            {
+              "key": "sneezing",
+              "value": "paroxysmal sneezing",
+              "logLR": 2.2,
+              "evidenceLabel": "Strong",
+              "citation": "ARIA 2016"
+            },
+            {
+              "key": "rhinorrhoea",
+              "value": "watery rhinorrhoea",
+              "logLR": 2.0,
+              "evidenceLabel": "Strong",
+              "citation": "ARIA 2016"
+            },
+            {
+              "key": "seasonal",
+              "value": "seasonal or perennial pattern",
+              "logLR": 2.0,
+              "evidenceLabel": "Strong",
+              "citation": "ARIA 2016"
+            },
+            {
+              "key": "allergen",
+              "value": "specific allergen trigger identifiable",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "ARIA 2016"
+            },
+            {
+              "key": "itching",
+              "value": "nasal and ocular itching",
+              "logLR": 2.2,
+              "evidenceLabel": "Strong",
+              "citation": "ARIA 2016"
+            },
+            {
+              "key": "atopy",
+              "value": "personal or family history of atopy/asthma/eczema",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "ARIA 2016"
+            },
+            {
+              "key": "skin_test",
+              "value": "positive specific IgE or skin prick test",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "ARIA 2016"
+            },
+            {
+              "key": "antihistamine",
+              "value": "response to antihistamine or intranasal steroid",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "ARIA 2016"
+            }
+          ]
+        },
+        {
+          "name": "Deviated Nasal Septum",
+          "icd": "J34.2",
+          "logPrior": -2.0,
+          "urgency": 0,
+          "systems": [
+            "ent"
+          ],
+          "specialties": [
+            "ent"
+          ],
+          "features": [
+            {
+              "key": "unilateral_block",
+              "value": "persistent unilateral nasal obstruction",
+              "logLR": 2.8,
+              "evidenceLabel": "Strong",
+              "citation": "NICE"
+            },
+            {
+              "key": "examination",
+              "value": "deviated septum on anterior rhinoscopy",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "NICE"
+            },
+            {
+              "key": "trauma",
+              "value": "history of nasal trauma or fracture",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "NICE"
+            },
+            {
+              "key": "snoring",
+              "value": "snoring or sleep disturbance",
+              "logLR": 1.2,
+              "evidenceLabel": "Moderate",
+              "citation": "NICE"
+            },
+            {
+              "key": "headache",
+              "value": "contact point headache from septal spur",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "NICE"
+            },
+            {
+              "key": "epistaxis",
+              "value": "recurrent epistaxis from deviated septum",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "NICE"
+            },
+            {
+              "key": "ct",
+              "value": "septal deviation confirmed on CT",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "NICE"
+            },
+            {
+              "key": "congenital",
+              "value": "congenital or birth injury cause",
+              "logLR": 0.8,
+              "evidenceLabel": "Weak",
+              "citation": "NICE"
+            }
+          ]
+        },
+        {
+          "name": "Post-Nasal Drip Syndrome (UACS)",
+          "icd": "J39.2",
+          "logPrior": -1.5,
+          "urgency": 0,
+          "systems": [
+            "ent",
+            "respiratory"
+          ],
+          "specialties": [
+            "ent",
+            "general"
+          ],
+          "features": [
+            {
+              "key": "throat_clear",
+              "value": "chronic throat clearing",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Irwin 2006"
+            },
+            {
+              "key": "cough",
+              "value": "chronic cough, especially nocturnal",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Irwin 2006"
+            },
+            {
+              "key": "mucus",
+              "value": "sensation of mucus dripping down back of throat",
+              "logLR": 2.8,
+              "evidenceLabel": "Strong",
+              "citation": "Irwin 2006"
+            },
+            {
+              "key": "rhinorrhoea",
+              "value": "chronic rhinorrhoea",
+              "logLR": 2.0,
+              "evidenceLabel": "Strong",
+              "citation": "Irwin 2006"
+            },
+            {
+              "key": "morning",
+              "value": "worse on waking in morning",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Irwin 2006"
+            },
+            {
+              "key": "pharynx",
+              "value": "cobblestone appearance of posterior pharynx",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Irwin 2006"
+            },
+            {
+              "key": "no_wheeze",
+              "value": "no wheeze or dyspnoea",
+              "logLR": 0.8,
+              "evidenceLabel": "Weak",
+              "citation": "Irwin 2006"
+            },
+            {
+              "key": "treatment",
+              "value": "response to antihistamine/decongestant",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "Irwin 2006"
+            }
+          ]
+        },
+        {
+          "name": "Sinonasal / Olfactory Neuroblastoma (Esthesioneuroblastoma)",
+          "icd": "C30.0",
+          "logPrior": -5.5,
+          "urgency": 1,
+          "systems": [
+            "ent",
+            "neurological",
+            "oncological"
+          ],
+          "specialties": [
+            "ent",
+            "neurosurgery",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "anosmia",
+              "value": "progressive anosmia",
+              "logLR": 2.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Dulguerov 2001"
+            },
+            {
+              "key": "mass",
+              "value": "nasal mass extending to skull base on imaging",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "Dulguerov 2001"
+            },
+            {
+              "key": "epistaxis",
+              "value": "recurrent unilateral epistaxis",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Dulguerov 2001"
+            },
+            {
+              "key": "biopsy",
+              "value": "neuroendocrine differentiation on histology",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "Dulguerov 2001"
+            },
+            {
+              "key": "mri",
+              "value": "dumbbell-shaped tumour crossing cribriform plate on MRI",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "Dulguerov 2001"
+            },
+            {
+              "key": "vision",
+              "value": "diplopia or proptosis from orbital extension",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Dulguerov 2001"
+            },
+            {
+              "key": "bimodal_age",
+              "value": "bimodal age distribution (11–20 and 50–60 years)",
+              "logLR": 1.0,
+              "evidenceLabel": "Weak",
+              "citation": "Dulguerov 2001"
+            },
+            {
+              "key": "lymph_node",
+              "value": "cervical lymphadenopathy",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "Dulguerov 2001"
+            }
+          ]
+        },
+        {
+          "name": "Obstructive Sleep Apnoea (OSA)",
+          "icd": "G47.33",
+          "logPrior": -1.5,
+          "urgency": 0,
+          "systems": [
+            "ent",
+            "respiratory",
+            "neurological"
+          ],
+          "specialties": [
+            "ent",
+            "respiratory",
+            "general"
+          ],
+          "features": [
+            {
+              "key": "snoring",
+              "value": "loud, habitual snoring reported by partner",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "NICE NG202"
+            },
+            {
+              "key": "apnoea",
+              "value": "witnessed apnoeic episodes",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "NICE NG202"
+            },
+            {
+              "key": "daytime",
+              "value": "excessive daytime sleepiness (Epworth > 10)",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "NICE NG202"
+            },
+            {
+              "key": "obesity",
+              "value": "obesity (BMI > 30)",
+              "logLR": 2.0,
+              "evidenceLabel": "Strong",
+              "citation": "NICE NG202"
+            },
+            {
+              "key": "neck",
+              "value": "neck circumference > 43 cm (men) or > 41 cm (women)",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "NICE NG202"
+            },
+            {
+              "key": "hypertension",
+              "value": "resistant hypertension",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "NICE NG202"
+            },
+            {
+              "key": "polysomnography",
+              "value": "AHI ≥ 5 on home sleep study",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "NICE NG202"
+            },
+            {
+              "key": "morning_headache",
+              "value": "morning headache or nocturia",
+              "logLR": 1.2,
+              "evidenceLabel": "Moderate",
+              "citation": "NICE NG202"
+            }
+          ]
+        }
+      ]
+    },
+    "peripheralNeuropathy": {
+      "description": "Numbness, tingling, weakness in limbs; nerve entrapment, peripheral nerve disease",
+      "candidates": [
+        {
+          "name": "Carpal Tunnel Syndrome",
+          "icd": "G56.009",
+          "logPrior": -1.2,
+          "urgency": 0,
+          "systems": [
+            "neurological",
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "neurology",
+            "orthopaedics",
+            "surgery"
+          ],
+          "features": [
+            {
+              "key": "nocturnal",
+              "value": "nocturnal hand tingling or pain waking from sleep",
+              "logLR": 2.8,
+              "evidenceLabel": "Strong",
+              "citation": "Graham 2016"
+            },
+            {
+              "key": "distribution",
+              "value": "median nerve distribution (thumb, index, middle, half ring finger)",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "Graham 2016"
+            },
+            {
+              "key": "tinel",
+              "value": "positive Tinel's sign at wrist",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Graham 2016"
+            },
+            {
+              "key": "phalen",
+              "value": "positive Phalen's test (60 seconds)",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Graham 2016"
+            },
+            {
+              "key": "thenar",
+              "value": "thenar muscle wasting in advanced disease",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Graham 2016"
+            },
+            {
+              "key": "nerve_conduction",
+              "value": "prolonged median nerve distal motor latency on NCS",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "Graham 2016"
+            },
+            {
+              "key": "female",
+              "value": "female sex and middle age",
+              "logLR": 1.2,
+              "evidenceLabel": "Moderate",
+              "citation": "Graham 2016"
+            },
+            {
+              "key": "occupational",
+              "value": "repetitive hand use or vibratory tool exposure",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Graham 2016"
+            }
+          ]
+        },
+        {
+          "name": "Diabetic Peripheral Neuropathy",
+          "icd": "E11.40",
+          "logPrior": -1.5,
+          "urgency": 0,
+          "systems": [
+            "neurological",
+            "endocrine"
+          ],
+          "specialties": [
+            "neurology",
+            "endocrinology",
+            "general"
+          ],
+          "features": [
+            {
+              "key": "diabetes",
+              "value": "known diabetes mellitus (type 1 or 2)",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "Pop-Busui 2017"
+            },
+            {
+              "key": "stocking_glove",
+              "value": "symmetric length-dependent stocking-glove distribution",
+              "logLR": 3.2,
+              "evidenceLabel": "Strong",
+              "citation": "Pop-Busui 2017"
+            },
+            {
+              "key": "vibration",
+              "value": "reduced vibration sense at great toe",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Pop-Busui 2017"
+            },
+            {
+              "key": "burning",
+              "value": "burning or electric pain in feet",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Pop-Busui 2017"
+            },
+            {
+              "key": "hba1c",
+              "value": "elevated HbA1c indicating poor glycaemic control",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "Pop-Busui 2017"
+            },
+            {
+              "key": "ankle_reflex",
+              "value": "absent ankle reflexes bilaterally",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Pop-Busui 2017"
+            },
+            {
+              "key": "ncs",
+              "value": "reduced nerve conduction velocity on NCS",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Pop-Busui 2017"
+            },
+            {
+              "key": "duration",
+              "value": "long duration of diabetes > 10 years",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Pop-Busui 2017"
+            }
+          ]
+        },
+        {
+          "name": "Cervical Radiculopathy",
+          "icd": "M54.12",
+          "logPrior": -1.8,
+          "urgency": 1,
+          "systems": [
+            "neurological",
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "neurology",
+            "neurosurgery",
+            "orthopaedics"
+          ],
+          "features": [
+            {
+              "key": "neck_pain",
+              "value": "neck pain radiating to arm in dermatomal pattern",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "Childress 2016"
+            },
+            {
+              "key": "dermatomal",
+              "value": "sensory loss in dermatomal distribution (C5–T1)",
+              "logLR": 2.8,
+              "evidenceLabel": "Strong",
+              "citation": "Childress 2016"
+            },
+            {
+              "key": "spurling",
+              "value": "positive Spurling's test (extension + lateral flexion)",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "Childress 2016"
+            },
+            {
+              "key": "motor",
+              "value": "myotomal weakness",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Childress 2016"
+            },
+            {
+              "key": "reflex",
+              "value": "diminished or absent deep tendon reflex",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Childress 2016"
+            },
+            {
+              "key": "mri",
+              "value": "disc herniation or foraminal stenosis on MRI cervical spine",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "Childress 2016"
+            },
+            {
+              "key": "valsalva",
+              "value": "Valsalva manoeuvre worsening pain",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Childress 2016"
+            },
+            {
+              "key": "age",
+              "value": "age 40–60 years",
+              "logLR": 0.8,
+              "evidenceLabel": "Weak",
+              "citation": "Childress 2016"
+            }
+          ]
+        },
+        {
+          "name": "Ulnar Neuropathy (Cubital Tunnel Syndrome)",
+          "icd": "G56.209",
+          "logPrior": -2.2,
+          "urgency": 0,
+          "systems": [
+            "neurological",
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "neurology",
+            "orthopaedics"
+          ],
+          "features": [
+            {
+              "key": "distribution",
+              "value": "ring and little finger tingling or numbness",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "Staples 2014"
+            },
+            {
+              "key": "elbow",
+              "value": "pain or tenderness at medial elbow (cubital tunnel)",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Staples 2014"
+            },
+            {
+              "key": "tinel_elbow",
+              "value": "positive Tinel's sign at medial elbow",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Staples 2014"
+            },
+            {
+              "key": "interosseous",
+              "value": "first dorsal interosseous wasting",
+              "logLR": 2.8,
+              "evidenceLabel": "Strong",
+              "citation": "Staples 2014"
+            },
+            {
+              "key": "clawing",
+              "value": "ring and little finger clawing",
+              "logLR": 2.0,
+              "evidenceLabel": "Strong",
+              "citation": "Staples 2014"
+            },
+            {
+              "key": "ncs",
+              "value": "slowed ulnar nerve conduction at elbow on NCS",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "Staples 2014"
+            },
+            {
+              "key": "occupational",
+              "value": "prolonged elbow flexion or leaning on elbow",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Staples 2014"
+            },
+            {
+              "key": "grip",
+              "value": "reduced grip strength",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "Staples 2014"
+            }
+          ]
+        },
+        {
+          "name": "Peripheral Neuropathy — Alcohol-related",
+          "icd": "G62.1",
+          "logPrior": -2.5,
+          "urgency": 0,
+          "systems": [
+            "neurological",
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "neurology",
+            "general"
+          ],
+          "features": [
+            {
+              "key": "alcohol",
+              "value": "chronic heavy alcohol use",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "Julian 2019"
+            },
+            {
+              "key": "symmetric",
+              "value": "symmetric distal sensorimotor neuropathy",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Julian 2019"
+            },
+            {
+              "key": "burning_feet",
+              "value": "burning pain in feet",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Julian 2019"
+            },
+            {
+              "key": "thiamine",
+              "value": "thiamine or B12 deficiency",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Julian 2019"
+            },
+            {
+              "key": "reflexes",
+              "value": "absent ankle reflexes",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Julian 2019"
+            },
+            {
+              "key": "gait",
+              "value": "wide-based or ataxic gait",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "Julian 2019"
+            },
+            {
+              "key": "autonomic",
+              "value": "autonomic features (postural hypotension, impotence)",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Julian 2019"
+            },
+            {
+              "key": "liver",
+              "value": "alcoholic liver disease co-existent",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Julian 2019"
+            }
+          ]
+        },
+        {
+          "name": "Guillain-Barré Syndrome",
+          "icd": "G61.0",
+          "logPrior": -4.5,
+          "urgency": 2,
+          "systems": [
+            "neurological",
+            "immunological"
+          ],
+          "specialties": [
+            "neurology"
+          ],
+          "features": [
+            {
+              "key": "ascending",
+              "value": "ascending weakness starting in lower limbs",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "Leonhard 2019"
+            },
+            {
+              "key": "areflexia",
+              "value": "absent or reduced deep tendon reflexes",
+              "logLR": 3.2,
+              "evidenceLabel": "Strong",
+              "citation": "Leonhard 2019"
+            },
+            {
+              "key": "preceding",
+              "value": "preceding infection 2–4 weeks prior (GI or respiratory)",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Leonhard 2019"
+            },
+            {
+              "key": "csf",
+              "value": "cyto-albuminous dissociation in CSF",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "Leonhard 2019"
+            },
+            {
+              "key": "ncs",
+              "value": "demyelinating pattern on nerve conduction studies",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "Leonhard 2019"
+            },
+            {
+              "key": "pain",
+              "value": "back or limb pain at onset",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "Leonhard 2019"
+            },
+            {
+              "key": "autonomic",
+              "value": "autonomic instability (BP fluctuation, arrhythmia)",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Leonhard 2019"
+            },
+            {
+              "key": "respiratory",
+              "value": "respiratory failure requiring ventilation in severe cases",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Leonhard 2019"
+            }
+          ]
+        },
+        {
+          "name": "Vitamin B12 Deficiency Neuropathy",
+          "icd": "E53.8",
+          "logPrior": -2.0,
+          "urgency": 0,
+          "systems": [
+            "neurological",
+            "haematological"
+          ],
+          "specialties": [
+            "neurology",
+            "general"
+          ],
+          "features": [
+            {
+              "key": "b12",
+              "value": "serum B12 < 200 pmol/L",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "Green 2017"
+            },
+            {
+              "key": "subacute_combined",
+              "value": "subacute combined degeneration pattern (dorsal column + corticospinal)",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "Green 2017"
+            },
+            {
+              "key": "macrocytosis",
+              "value": "macrocytic anaemia on FBC",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Green 2017"
+            },
+            {
+              "key": "paresthesia",
+              "value": "symmetrical tingling in hands and feet",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Green 2017"
+            },
+            {
+              "key": "gait",
+              "value": "ataxic gait from dorsal column loss",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Green 2017"
+            },
+            {
+              "key": "pernicious",
+              "value": "pernicious anaemia or anti-IF antibodies",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Green 2017"
+            },
+            {
+              "key": "vegan",
+              "value": "vegan diet or malabsorption",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Green 2017"
+            },
+            {
+              "key": "cognitive",
+              "value": "cognitive impairment or psychiatric symptoms",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Green 2017"
+            }
+          ]
+        },
+        {
+          "name": "Meralgia Paraesthetica (Lateral Femoral Cutaneous Nerve)",
+          "icd": "G57.10",
+          "logPrior": -2.8,
+          "urgency": 0,
+          "systems": [
+            "neurological",
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "neurology",
+            "general"
+          ],
+          "features": [
+            {
+              "key": "distribution",
+              "value": "burning or numbness over lateral thigh",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "Harney 2007"
+            },
+            {
+              "key": "obesity",
+              "value": "obesity or pregnancy as predisposing factor",
+              "logLR": 2.0,
+              "evidenceLabel": "Strong",
+              "citation": "Harney 2007"
+            },
+            {
+              "key": "belt",
+              "value": "tight belt or clothing at waist level",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Harney 2007"
+            },
+            {
+              "key": "sitting",
+              "value": "relief when lying down, worse when standing or walking",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Harney 2007"
+            },
+            {
+              "key": "asis_point",
+              "value": "tenderness at ASIS where nerve exits",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Harney 2007"
+            },
+            {
+              "key": "no_weakness",
+              "value": "no motor deficit in the thigh",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Harney 2007"
+            },
+            {
+              "key": "recent_weight_gain",
+              "value": "recent weight gain",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Harney 2007"
+            },
+            {
+              "key": "nerve_block",
+              "value": "relief with LFCN nerve block",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "Harney 2007"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {
@@ -38132,7 +39296,12 @@
         "Provoked Seizure Metabolic",
         "Brain Tumour Seizure",
         "Meningitis Encephalitis with Seizure",
-        "Non-Epileptic Attack Disorder"
+        "Non-Epileptic Attack Disorder",
+        "Carpal Tunnel Syndrome",
+        "Diabetic Peripheral Neuropathy",
+        "Cervical Radiculopathy",
+        "Guillain-Barré Syndrome",
+        "Vitamin B12 Deficiency Neuropathy"
       ],
       "neurosurgical": [
         "Haemorrhagic Stroke",
@@ -38291,7 +39460,14 @@
         "Cholesteatoma",
         "Acoustic Neuroma (Vestibular Schwannoma)",
         "Eustachian Tube Dysfunction",
-        "Malignant (Necrotising) Otitis Externa"
+        "Malignant (Necrotising) Otitis Externa",
+        "Acute Bacterial Rhinosinusitis",
+        "Chronic Rhinosinusitis without Polyps",
+        "Chronic Rhinosinusitis with Nasal Polyps",
+        "Allergic Rhinitis",
+        "Deviated Nasal Septum",
+        "Post-Nasal Drip Syndrome (UACS)",
+        "Obstructive Sleep Apnoea (OSA)"
       ],
       "ophthalmic": [
         "Acute Angle-Closure Glaucoma",
@@ -39109,7 +40285,11 @@
         "Posterior Epistaxis",
         "Hereditary Haemorrhagic Telangiectasia",
         "Nasal Polyps Sinusitis Epistaxis",
-        "Nasopharyngeal Carcinoma"
+        "Nasopharyngeal Carcinoma",
+        "Acute Bacterial Rhinosinusitis",
+        "Chronic Rhinosinusitis with Nasal Polyps",
+        "Deviated Nasal Septum",
+        "Obstructive Sleep Apnoea (OSA)"
       ],
       "ophthalmology": [
         "Acute Angle-Closure Glaucoma",
@@ -39596,6 +40776,77 @@
       ],
       "oral complaint": [
         "gastrointestinal"
+      ],
+      "sinusitis": [
+        "ent"
+      ],
+      "rhinosinusitis": [
+        "ent"
+      ],
+      "nasal congestion": [
+        "ent"
+      ],
+      "blocked nose": [
+        "ent"
+      ],
+      "runny nose": [
+        "ent"
+      ],
+      "nasal polyp": [
+        "ent"
+      ],
+      "post-nasal drip": [
+        "ent",
+        "respiratory"
+      ],
+      "rhinitis": [
+        "ent",
+        "immunological"
+      ],
+      "hay fever": [
+        "ent",
+        "immunological"
+      ],
+      "allergic rhinitis": [
+        "ent",
+        "immunological"
+      ],
+      "snoring": [
+        "ent",
+        "respiratory"
+      ],
+      "sleep apnoea": [
+        "ent",
+        "respiratory",
+        "neurological"
+      ],
+      "numbness tingling": [
+        "neurological",
+        "musculoskeletal"
+      ],
+      "peripheral neuropathy": [
+        "neurological"
+      ],
+      "carpal tunnel": [
+        "neurological",
+        "musculoskeletal"
+      ],
+      "tingling hands": [
+        "neurological",
+        "musculoskeletal"
+      ],
+      "tingling feet": [
+        "neurological"
+      ],
+      "numb hands": [
+        "neurological",
+        "musculoskeletal"
+      ],
+      "numb feet": [
+        "neurological"
+      ],
+      "nerve pain": [
+        "neurological"
       ]
     },
     "urgencyIndex": {
@@ -39657,7 +40908,8 @@
         "Giant Cell Arteritis with Visual Threat",
         "Pulmonary Embolism with Syncope",
         "Malignant (Necrotising) Otitis Externa",
-        "Sudden Sensorineural Hearing Loss"
+        "Sudden Sensorineural Hearing Loss",
+        "Guillain-Barré Syndrome"
       ],
       "urgent": [
         "Acute Cholecystitis",
@@ -39711,7 +40963,8 @@
         "Scleritis",
         "Cholesteatoma",
         "Dental Abscess (Periapical / Periodontal)",
-        "Acoustic Neuroma (Vestibular Schwannoma)"
+        "Acoustic Neuroma (Vestibular Schwannoma)",
+        "Cervical Radiculopathy"
       ],
       "routine": [
         "ACE Inhibitor Cough",

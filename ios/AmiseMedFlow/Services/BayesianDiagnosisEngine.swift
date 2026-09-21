@@ -432,6 +432,17 @@ enum BayesianDiagnosisEngine {
              ccL.contains("blood from nose"):
             candidates = externalPool("epistaxis") ?? []
 
+        // ── ENT — Rhinosinusitis / nasal ─────────────────────────────────
+        case ccL.contains("sinusitis") || ccL.contains("rhinosinusitis") ||
+             ccL.contains("nasal polyp") || ccL.contains("blocked nose") ||
+             ccL.contains("nasal congestion") || ccL.contains("rhinitis") ||
+             ccL.contains("hay fever") || ccL.contains("allergic rhinitis") ||
+             ccL.contains("post-nasal drip") || ccL.contains("postnasal drip") ||
+             ccL.contains("snoring") || ccL.contains("sleep apnoea") || ccL.contains("sleep apnea") ||
+             ccL.contains("osa ") || ccL == "osa" || ccL.contains("deviated septum") ||
+             (ccL.contains("nasal") && (ccL.contains("block") || ccL.contains("discharge") || ccL.contains("smell"))):
+            candidates = externalPool("rhinosinusitis") ?? []
+
         // ── ENT — Ear complaints ──────────────────────────────────────────
         case ccL.contains("ear pain") || ccL.contains("otalgia") ||
              ccL.contains("hearing loss") || ccL.contains("tinnitus") ||
@@ -496,6 +507,17 @@ enum BayesianDiagnosisEngine {
              (ccL.contains("sweat") && ccL.contains("night")):
             candidates = externalPool("feverInfection") ?? feverInfection
 
+        // ── Peripheral neuropathy / numbness / tingling ───────────────────
+        case ccL.contains("peripheral neuropathy") || ccL.contains("neuropathy") ||
+             ccL.contains("carpal tunnel") || ccL.contains("tingling") ||
+             ccL.contains("numbness") || ccL.contains("paresthesia") || ccL.contains("paraesthesia") ||
+             ccL.contains("pins and needles") || ccL.contains("nerve pain") ||
+             ccL.contains("numb hands") || ccL.contains("numb feet") ||
+             ccL.contains("tingling hands") || ccL.contains("tingling feet") ||
+             ccL.contains("ulnar neuropathy") || ccL.contains("guillain") ||
+             ccL.contains("meralgia") || ccL.contains("radiculopathy"):
+            candidates = externalPool("peripheralNeuropathy") ?? []
+
         default:
             // Wide-net general medicine catch-all — no longer surgical-biased
             candidates = externalPool("generalMedicine") ?? []
@@ -559,6 +581,12 @@ enum BayesianDiagnosisEngine {
         // Secondary pool: ear overlay on dizziness/vertigo with auditory symptoms
         if ccL.contains("tinnitus") || (ccL.contains("hearing") && ccL.contains("loss")) ||
            (ccL.contains("ear") && ccL.contains("pain")) { mergePool("earComplaint") }
+        // Secondary pool: rhinosinusitis overlay on cough or headache with nasal symptoms
+        if ccL.contains("nasal") || ccL.contains("sinus") ||
+           (ccL.contains("cough") && ccL.contains("post-nasal")) { mergePool("rhinosinusitis") }
+        // Secondary pool: peripheral neuropathy overlay on diabetic or B12-related presentations
+        if (ccL.contains("diabet") && ccL.contains("numb")) ||
+           (ccL.contains("b12") || ccL.contains("vitamin b")) { mergePool("peripheralNeuropathy") }
         // Secondary pool: oral overlay on neck lump / sore throat when mouth symptoms present
         if ccL.contains("mouth") || ccL.contains("tongue") ||
            ccL.contains("dental") || ccL.contains("jaw") { mergePool("oralComplaint") }
