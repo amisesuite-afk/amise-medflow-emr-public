@@ -987,6 +987,50 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("septic") || ccL.contains("bacteraemia") { mergePool("bacteraemia") }
             if ccL.contains("diabetes") { mergePool("diabeticFoot") }
 
+        // Anorectal and benign colorectal conditions
+        case ccL.contains("haemorrhoid") || ccL.contains("hemorrhoid") ||
+             ccL.contains("anal fissure") || ccL.contains("perianal abscess") ||
+             ccL.contains("anal fistula") || ccL.contains("fistula in ano") ||
+             ccL.contains("pilonidal") || ccL.contains("rectal prolapse") ||
+             ccL.contains("pruritus ani") || ccL.contains("anal cancer") ||
+             ccL.contains("anal carcinoma") || ccL.contains("perianal") ||
+             ccL.contains("anorectal") ||
+             (ccL.contains("anal") && (ccL.contains("pain") || ccL.contains("bleeding") || ccL.contains("discharge"))) ||
+             (ccL.contains("rectal") && ccL.contains("prolapse")):
+            candidates = externalPool("anorectaColonBenign") ?? []
+            if ccL.contains("crohn") || ccL.contains("ibd") { mergePool("inflammatoryBowel") }
+            if ccL.contains("cancer") || ccL.contains("carcinoma") { mergePool("oncologyComplications") }
+
+        // Urological surgical conditions
+        case ccL.contains("testicular torsion") || ccL.contains("torsion testis") ||
+             ccL.contains("epididymo-orchitis") || ccL.contains("epididymitis") ||
+             ccL.contains("orchitis") || ccL.contains("bladder cancer") ||
+             ccL.contains("renal cell") || ccL.contains("prostate cancer") ||
+             ccL.contains("urethral stricture") || ccL.contains("hydrocele") ||
+             ccL.contains("varicocele") || ccL.contains("bph") ||
+             ccL.contains("benign prostatic") || ccL.contains("urinary retention") ||
+             ccL.contains("haematuria") || ccL.contains("hematuria") ||
+             ccL.contains("scrotal swelling") || ccL.contains("testicular pain") ||
+             (ccL.contains("psa") && ccL.contains("elevated")) ||
+             (ccL.contains("prostate") && ccL.contains("enlarged")):
+            candidates = externalPool("urologicalSurgical") ?? []
+            if ccL.contains("cancer") { mergePool("oncologyComplications") }
+            if ccL.contains("infection") || ccL.contains("uti") { mergePool("urinaryTractInfection") }
+
+        // Inflammatory bowel disease and related enteropathies
+        case ccL.contains("crohn") || ccL.contains("ulcerative colitis") ||
+             ccL.contains("inflammatory bowel") || ccL.contains("ibd ") ||
+             ccL.contains("coeliac") || ccL.contains("celiac") ||
+             ccL.contains("microscopic colitis") || ccL.contains("radiation enteritis") ||
+             ccL.contains("radiation proctitis") || ccL.contains("nsaid enteropathy") ||
+             ccL.contains("calprotectin") || ccL.contains("villous atrophy") ||
+             ccL.contains("intestinal tb") || ccL.contains("bowel tb") ||
+             (ccL.contains("bloody diarrhoea") && ccL.contains("mucus")) ||
+             (ccL.contains("diarrhoea") && ccL.contains("weight loss") && ccL.contains("young")):
+            candidates = externalPool("inflammatoryBowel") ?? []
+            if ccL.contains("perianal") { mergePool("anorectaColonBenign") }
+            if ccL.contains("cancer") || ccL.contains("dysplasia") { mergePool("oncologyComplications") }
+
         default:
             // Wide-net general medicine catch-all — no longer surgical-biased
             candidates = externalPool("generalMedicine") ?? []
@@ -1158,6 +1202,15 @@ enum BayesianDiagnosisEngine {
            ccL.contains("fournier") || ccL.contains("gas gangrene") || ccL.contains("pyomyositis") ||
            ccL.contains("ludwig") || ccL.contains("lymphoedema") ||
            (ccL.contains("crepitus") && ccL.contains("wound")) { mergePool("necroSoftTissue") }
+        if ccL.contains("haemorrhoid") || ccL.contains("anal fissure") ||
+           ccL.contains("perianal") || ccL.contains("pilonidal") ||
+           (ccL.contains("anal") && ccL.contains("pain")) { mergePool("anorectaColonBenign") }
+        if ccL.contains("testicular") || ccL.contains("haematuria") ||
+           ccL.contains("prostate") || ccL.contains("bladder cancer") ||
+           ccL.contains("urinary retention") { mergePool("urologicalSurgical") }
+        if ccL.contains("crohn") || ccL.contains("ulcerative colitis") ||
+           ccL.contains("coeliac") || ccL.contains("calprotectin") ||
+           ccL.contains("ibd") { mergePool("inflammatoryBowel") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but

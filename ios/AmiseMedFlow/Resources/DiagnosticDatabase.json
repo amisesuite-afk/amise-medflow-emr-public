@@ -57271,6 +57271,1734 @@
           ]
         }
       ]
+    },
+    "anorectaColonBenign": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Haemorrhoids (Internal / External)",
+          "icd": "K64.9",
+          "logPrior": -4,
+          "urgency": 0,
+          "systems": [
+            "gastrointestinal",
+            "colorectal"
+          ],
+          "specialties": [
+            "general_surgery",
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "bright_blood_toilet",
+              "value": "bright red blood per rectum on paper, pan, or splashing (not mixed with stool)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2017"
+            },
+            {
+              "key": "prolapsing_tissue",
+              "value": "prolapsing anal tissue on straining (Goligher grades II–IV)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "proctoscopy_haemorrhoids",
+              "value": "haemorrhoids visible at 3, 7, and 11 o'clock on proctoscopy",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG60 2019"
+            },
+            {
+              "key": "painless_bleeding",
+              "value": "painless rectal bleeding (internal haemorrhoids — above dentate line, no pain fibres)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "perianal_itching",
+              "value": "perianal pruritus and mucus discharge",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2017"
+            },
+            {
+              "key": "chronic_constipation",
+              "value": "chronic constipation and prolonged straining at stool",
+              "logLR": 11,
+              "evidenceLabel": "weak positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "anaemia_haemorrhoids",
+              "value": "iron deficiency anaemia from chronic haemorrhoidal blood loss",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NICE NG60 2019"
+            },
+            {
+              "key": "sentinel_skin_tag",
+              "value": "external sentinel skin tag or thrombosed external haemorrhoid",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2017"
+            }
+          ]
+        },
+        {
+          "name": "Anal Fissure (Acute / Chronic)",
+          "icd": "K60.2",
+          "logPrior": -14,
+          "urgency": 0,
+          "systems": [
+            "gastrointestinal",
+            "colorectal"
+          ],
+          "specialties": [
+            "general_surgery",
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "severe_pain_defecation",
+              "value": "severe sharp tearing anal pain on defecation persisting minutes to hours",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG60 2019"
+            },
+            {
+              "key": "blood_paper_pain",
+              "value": "small amount of bright red blood on paper with severe anal pain",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2016"
+            },
+            {
+              "key": "posterior_midline_fissure",
+              "value": "fissure in posterior midline (90% location) on gentle anal inspection",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "sentinel_pile_papilla",
+              "value": "sentinel skin tag and hypertrophied anal papilla at fissure margins",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG60 2019"
+            },
+            {
+              "key": "fear_defecation",
+              "value": "fear of defecation leading to worsening constipation cycle",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2016"
+            },
+            {
+              "key": "hard_stool_trigger",
+              "value": "onset following hard stool passage or obstetric perineal trauma",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "lateral_fissure_alarm",
+              "value": "fissure in atypical lateral or anterior position (raises concern for Crohn's, TB, syphilis)",
+              "logLR": -12,
+              "evidenceLabel": "negative",
+              "citation": "BMJ 2016"
+            },
+            {
+              "key": "young_adult_fissure",
+              "value": "typically young or middle-aged adult with recent constipation episode",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "NICE NG60 2019"
+            }
+          ]
+        },
+        {
+          "name": "Perianal Abscess",
+          "icd": "K61.0",
+          "logPrior": -17,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "colorectal",
+            "infectious"
+          ],
+          "specialties": [
+            "general_surgery",
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "acute_tender_perianal",
+              "value": "acute tender, erythematous perianal swelling with localised induration",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG61 2019"
+            },
+            {
+              "key": "constant_throbbing",
+              "value": "constant throbbing perianal pain unrelated to defecation",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2017"
+            },
+            {
+              "key": "fluctuant_pointing",
+              "value": "fluctuant swelling on palpation (pointing, ready for drainage)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG61 2019"
+            },
+            {
+              "key": "fever_systemic_abscess",
+              "value": "fever and systemic toxicity with perianal swelling",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2020"
+            },
+            {
+              "key": "horseshoe_posterior",
+              "value": "horseshoe extension from posterior midline (complex abscess)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2017"
+            },
+            {
+              "key": "diabetes_crohn_risk",
+              "value": "diabetes mellitus or Crohn's disease as predisposing factor",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2020"
+            },
+            {
+              "key": "mri_pelvis_abscess",
+              "value": "perianal abscess confirmed and mapped on MRI pelvis",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG61 2019"
+            },
+            {
+              "key": "cryptoglandular",
+              "value": "cryptoglandular origin (abscess tracking from anal gland infection)",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2017"
+            }
+          ]
+        },
+        {
+          "name": "Anal Fistula (Fistula-in-Ano)",
+          "icd": "K60.3",
+          "logPrior": -20,
+          "urgency": 0,
+          "systems": [
+            "gastrointestinal",
+            "colorectal"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "external_fistula_opening",
+              "value": "external fistula opening near anus with intermittent purulent discharge",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG61 2019"
+            },
+            {
+              "key": "prior_perianal_abscess",
+              "value": "history of perianal abscess (90% of fistulae follow anorectal abscess)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "internal_opening_dentate",
+              "value": "internal opening at dentate line identified on EUA",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG61 2019"
+            },
+            {
+              "key": "mri_fistula_tract",
+              "value": "fistula tract classified on MRI pelvis (Parks/St Mark's classification)",
+              "logLR": 27,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Radiology 2012"
+            },
+            {
+              "key": "goodsall_rule",
+              "value": "fistula tract following Goodsall's rule (posterior → curved to posterior midline)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "probe_tracks",
+              "value": "fistula probe tracking to internal opening on EUA",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG61 2019"
+            },
+            {
+              "key": "complex_branching",
+              "value": "complex branching or multiple fistulae (suggests Crohn's disease — reassess)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "chronic_watery_discharge",
+              "value": "chronic watery or purulent perianal discharge soiling undergarments",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2018"
+            }
+          ]
+        },
+        {
+          "name": "Pilonidal Sinus / Pilonidal Abscess",
+          "icd": "L05.9",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "integumentary",
+            "colorectal"
+          ],
+          "specialties": [
+            "general_surgery",
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "natal_cleft_pit",
+              "value": "sinus pit or opening in natal cleft overlying sacrococcyx",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG60 2019"
+            },
+            {
+              "key": "natal_cleft_abscess",
+              "value": "acute abscess in natal cleft (pilonidal abscess — requires drainage)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2015"
+            },
+            {
+              "key": "hairs_protruding",
+              "value": "hairs protruding from sinus opening",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG60 2019"
+            },
+            {
+              "key": "young_hirsute_male",
+              "value": "young hirsute male aged 15–30 years (peak incidence group)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "chronic_discharge_natal",
+              "value": "chronic intermittent discharge from natal cleft sinus",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2015"
+            },
+            {
+              "key": "distance_from_anus",
+              "value": "sinus distant (>5cm) from anus (distinguishes from perianal fistula)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NICE NG60 2019"
+            },
+            {
+              "key": "sedentary_occupation",
+              "value": "sedentary occupation or prolonged sitting (driver, office worker)",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "recurrent_infection",
+              "value": "recurrent infection following prior incision and drainage",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2015"
+            }
+          ]
+        },
+        {
+          "name": "Complete Rectal Prolapse",
+          "icd": "K62.3",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "colorectal"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "full_thickness_protrusion",
+              "value": "full-thickness rectal mucosa protruding through anus on straining",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2017"
+            },
+            {
+              "key": "concentric_folds",
+              "value": "circular (concentric) mucosal folds — distinguishes from haemorrhoidal prolapse",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2017"
+            },
+            {
+              "key": "elderly_female_prolapse",
+              "value": "elderly female with pelvic floor weakness and multiparity",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "faecal_incontinence_prolapse",
+              "value": "faecal incontinence associated with prolapse (>50% of cases)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE 2017"
+            },
+            {
+              "key": "mucus_wet_sensation",
+              "value": "constant mucus discharge and wet perianal sensation",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2017"
+            },
+            {
+              "key": "manual_reduction",
+              "value": "requires manual reduction or reduces spontaneously on standing",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "defecography",
+              "value": "full-thickness prolapse confirmed on defecography or dynamic MRI pelvis",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Radiology 2015"
+            },
+            {
+              "key": "chronic_straining_prolapse",
+              "value": "chronic straining and constipation with sensation of incomplete evacuation",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "NICE 2017"
+            }
+          ]
+        },
+        {
+          "name": "Anal Squamous Cell Carcinoma",
+          "icd": "C21.0",
+          "logPrior": -29,
+          "urgency": 1,
+          "systems": [
+            "oncological",
+            "colorectal"
+          ],
+          "specialties": [
+            "colorectal_surgery",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "indurated_anal_mass",
+              "value": "indurated, ulcerated, or exophytic anal mass on examination",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG151 2020"
+            },
+            {
+              "key": "rectal_bleeding_mass",
+              "value": "rectal bleeding with palpable anal or perianal mass",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2015"
+            },
+            {
+              "key": "hpv_risk_anal",
+              "value": "HPV infection history or receptive anal intercourse risk",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "NEJM 2012"
+            },
+            {
+              "key": "inguinal_adenopathy_anal",
+              "value": "inguinal lymphadenopathy (regional nodal metastasis)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG151 2020"
+            },
+            {
+              "key": "anal_scc_biopsy",
+              "value": "squamous cell carcinoma on anal biopsy (diagnostic)",
+              "logLR": 27,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet Oncol 2015"
+            },
+            {
+              "key": "hiv_immunosuppression_anal",
+              "value": "HIV infection or chronic immunosuppression (10× increased risk)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "NEJM 2012"
+            },
+            {
+              "key": "mri_local_invasion",
+              "value": "tumour with local sphincter or vaginal invasion on MRI pelvis",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG151 2020"
+            },
+            {
+              "key": "perianal_induration",
+              "value": "perianal induration and anal discomfort in at-risk patient",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2015"
+            }
+          ]
+        },
+        {
+          "name": "Pruritus Ani",
+          "icd": "L29.0",
+          "logPrior": -22,
+          "urgency": 0,
+          "systems": [
+            "gastrointestinal",
+            "dermatological"
+          ],
+          "specialties": [
+            "general_surgery",
+            "dermatology"
+          ],
+          "features": [
+            {
+              "key": "chronic_perianal_itch",
+              "value": "chronic perianal itching, especially nocturnal",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "excoriation_lichenification",
+              "value": "perianal excoriation and lichenification on examination",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "JAAD 2017"
+            },
+            {
+              "key": "secondary_cause_identified",
+              "value": "secondary cause identified: haemorrhoids, fissure, threadworms, or candida",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "nocturnal_worsening",
+              "value": "nocturnal worsening (suggests Enterobius pinworm infection)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2020"
+            },
+            {
+              "key": "tape_test_enterobius",
+              "value": "sticky tape test positive for Enterobius vermicularis eggs",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "lichen_sclerosus",
+              "value": "perianal skin thickening with white atrophic plaques (lichen sclerosus)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "JAAD 2017"
+            },
+            {
+              "key": "dietary_irritants",
+              "value": "dietary irritants aggravating symptoms (caffeine, spicy food, citrus)",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "excessive_cleaning",
+              "value": "excessive cleaning or inadequate hygiene as perpetuating factors",
+              "logLR": 11,
+              "evidenceLabel": "weak positive",
+              "citation": "JAAD 2017"
+            }
+          ]
+        }
+      ]
+    },
+    "urologicalSurgical": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Testicular Torsion",
+          "icd": "N44.0",
+          "logPrior": -24,
+          "urgency": 3,
+          "systems": [
+            "urological"
+          ],
+          "specialties": [
+            "urology",
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "sudden_testicular_pain",
+              "value": "sudden severe unilateral testicular or scrotal pain (onset <6 hours)",
+              "logLR": 25,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG61 2020"
+            },
+            {
+              "key": "high_riding_horizontal",
+              "value": "high-riding testis with abnormal horizontal lie (bell-clapper deformity)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2013"
+            },
+            {
+              "key": "absent_cremasteric",
+              "value": "absent cremasteric reflex on ipsilateral side",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NEJM 2019"
+            },
+            {
+              "key": "young_adolescent_torsion",
+              "value": "young adolescent or prepubertal male aged 12–18 years (peak incidence)",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG61 2020"
+            },
+            {
+              "key": "nausea_vomiting_torsion",
+              "value": "nausea and vomiting with acute testicular pain",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2013"
+            },
+            {
+              "key": "doppler_absent",
+              "value": "absent testicular blood flow on Doppler USS (salvage requires <6 hours)",
+              "logLR": 27,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Radiology 2010"
+            },
+            {
+              "key": "diffuse_tender_swelling",
+              "value": "diffusely swollen, tender testis with loss of epididymal landmarks",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NEJM 2019"
+            },
+            {
+              "key": "no_fever_early",
+              "value": "absence of fever in early torsion (distinguishes from epididymo-orchitis)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG61 2020"
+            }
+          ]
+        },
+        {
+          "name": "Acute Epididymo-orchitis",
+          "icd": "N45.1",
+          "logPrior": -14,
+          "urgency": 1,
+          "systems": [
+            "urological",
+            "infectious"
+          ],
+          "specialties": [
+            "urology",
+            "infectious_disease"
+          ],
+          "features": [
+            {
+              "key": "gradual_testicular_pain",
+              "value": "gradual onset unilateral testicular and epididymal tenderness over hours to days",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG60 2020"
+            },
+            {
+              "key": "fever_orchitis",
+              "value": "fever and systemic upset (distinguishes from torsion — torsion usually afebrile)",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2016"
+            },
+            {
+              "key": "cremasteric_present",
+              "value": "cremasteric reflex present (suggests epididymo-orchitis, not torsion)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NEJM 2019"
+            },
+            {
+              "key": "epididymal_tenderness",
+              "value": "posterior or inferior epididymal tenderness on palpation",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG60 2020"
+            },
+            {
+              "key": "prehn_sign_positive",
+              "value": "relief of pain on testicular elevation (Prehn's sign positive)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2016"
+            },
+            {
+              "key": "sti_risk_young",
+              "value": "STI risk in young sexually active male (Chlamydia trachomatis, Neisseria gonorrhoeae)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG60 2020"
+            },
+            {
+              "key": "uti_older_male",
+              "value": "UTI symptoms in middle-aged or older male (enteric organisms)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NEJM 2019"
+            },
+            {
+              "key": "doppler_increased_flow",
+              "value": "increased testicular blood flow on Doppler USS (hyperaemia)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Radiology 2012"
+            }
+          ]
+        },
+        {
+          "name": "Benign Prostatic Hyperplasia / Urinary Retention",
+          "icd": "N40.1",
+          "logPrior": -11,
+          "urgency": 1,
+          "systems": [
+            "urological"
+          ],
+          "specialties": [
+            "urology"
+          ],
+          "features": [
+            {
+              "key": "voiding_luts",
+              "value": "lower urinary tract symptoms: hesitancy, poor stream, terminal dribbling",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG123 2019"
+            },
+            {
+              "key": "acute_urinary_retention",
+              "value": "acute painful urinary retention — unable to void despite urge",
+              "logLR": 25,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG123 2019"
+            },
+            {
+              "key": "dre_enlarged_prostate",
+              "value": "smoothly enlarged, rubbery, non-tender prostate on DRE",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2014"
+            },
+            {
+              "key": "ipss_score",
+              "value": "IPSS score >7 (moderate to severe lower urinary tract symptoms)",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG123 2019"
+            },
+            {
+              "key": "male_over_50",
+              "value": "male >50 years with progressive LUTS (BPH incidence rises with age)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2016"
+            },
+            {
+              "key": "post_void_residual",
+              "value": "post-void residual >150mL on bladder USS",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG123 2019"
+            },
+            {
+              "key": "psa_grey_zone",
+              "value": "PSA 4–10 ng/mL ('grey zone' — requires cancer exclusion)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NEJM 2018"
+            },
+            {
+              "key": "nocturia_frequency",
+              "value": "nocturia ≥2 episodes per night and daytime frequency >8 voids",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2014"
+            }
+          ]
+        },
+        {
+          "name": "Bladder Cancer (Urothelial Carcinoma)",
+          "icd": "C67.9",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "urological",
+            "oncological"
+          ],
+          "specialties": [
+            "urology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "painless_haematuria",
+              "value": "painless macroscopic haematuria (hallmark feature — visible blood in urine)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG12 2020"
+            },
+            {
+              "key": "microscopic_haematuria",
+              "value": "persistent microscopic haematuria in at-risk patient (>50, smoker)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2015"
+            },
+            {
+              "key": "irritative_voiding",
+              "value": "irritative voiding symptoms without infection (carcinoma in situ pattern)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG12 2020"
+            },
+            {
+              "key": "cystoscopy_lesion",
+              "value": "papillary or sessile lesion on flexible cystoscopy",
+              "logLR": 27,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NEJM 2016"
+            },
+            {
+              "key": "smoking_bladder_risk",
+              "value": "heavy smoking history (most common bladder cancer risk factor)",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2017"
+            },
+            {
+              "key": "ct_urogram_defect",
+              "value": "filling defect on CT urogram (upper tract involvement)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Radiology 2013"
+            },
+            {
+              "key": "chemical_dye_exposure",
+              "value": "occupational exposure to aromatic amines or aniline dyes",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "IARC 2018"
+            },
+            {
+              "key": "recurrence_post_turbt",
+              "value": "tumour recurrence following TURBT (50–70% recurrence rate)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG12 2020"
+            }
+          ]
+        },
+        {
+          "name": "Renal Cell Carcinoma (RCC)",
+          "icd": "C64.9",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "urological",
+            "oncological"
+          ],
+          "specialties": [
+            "urology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "classic_triad_rcc",
+              "value": "classic triad: haematuria, flank pain, and palpable flank mass (only 10% of cases now)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NEJM 2017"
+            },
+            {
+              "key": "incidental_renal_mass",
+              "value": "incidentally discovered renal mass on USS or CT for other indication",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "paraneoplastic_rcc",
+              "value": "paraneoplastic features: polycythaemia, hypercalcaemia, hypertension",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2016"
+            },
+            {
+              "key": "ct_enhancing_mass",
+              "value": "heterogeneous enhancing renal mass >10 HU on contrast CT",
+              "logLR": 27,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Radiology 2014"
+            },
+            {
+              "key": "painless_haematuria_rcc",
+              "value": "painless haematuria in middle-aged or elderly patient",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NEJM 2017"
+            },
+            {
+              "key": "left_varicocele_sudden_rcc",
+              "value": "sudden-onset left-sided varicocele (left renal vein occlusion by tumour)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2016"
+            },
+            {
+              "key": "ivc_thrombus",
+              "value": "renal vein or IVC tumour thrombus on CT or MRI",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NEJM 2017"
+            },
+            {
+              "key": "smoking_obesity_rcc",
+              "value": "smoking and obesity as modifiable risk factors",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2019"
+            }
+          ]
+        },
+        {
+          "name": "Prostate Cancer",
+          "icd": "C61",
+          "logPrior": -17,
+          "urgency": 1,
+          "systems": [
+            "urological",
+            "oncological"
+          ],
+          "specialties": [
+            "urology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "elevated_psa",
+              "value": "PSA >10 ng/mL or rapidly rising PSA velocity >0.75 ng/mL/year",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG131 2021"
+            },
+            {
+              "key": "hard_irregular_dre",
+              "value": "hard, irregular, or nodular prostate on digital rectal examination",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG131 2021"
+            },
+            {
+              "key": "bone_pain_metastatic",
+              "value": "bone pain with elevated PSA (lytic/sclerotic skeletal metastases)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "mri_pirads_45",
+              "value": "PI-RADS score 4–5 on multiparametric MRI prostate",
+              "logLR": 25,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Radiology 2016"
+            },
+            {
+              "key": "biopsy_gleason",
+              "value": "adenocarcinoma on prostate biopsy with Gleason grade group",
+              "logLR": 27,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG131 2021"
+            },
+            {
+              "key": "caribbean_black_risk",
+              "value": "Afro-Caribbean male (2–3× higher incidence — highest-risk population)",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2018"
+            },
+            {
+              "key": "family_history_pca",
+              "value": "first-degree relative with prostate cancer (<70 years)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NICE NG131 2021"
+            },
+            {
+              "key": "obstructive_luts_elderly",
+              "value": "obstructive LUTS in elderly male >70 with elevated PSA",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2017"
+            }
+          ]
+        },
+        {
+          "name": "Hydrocele / Varicocele / Benign Scrotal Swelling",
+          "icd": "N43.3",
+          "logPrior": -20,
+          "urgency": 0,
+          "systems": [
+            "urological"
+          ],
+          "specialties": [
+            "urology",
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "transilluminates",
+              "value": "scrotal swelling transilluminates fully (hydrocele or spermatocele)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2016"
+            },
+            {
+              "key": "bag_of_worms",
+              "value": "'bag of worms' sensation on palpation — varicocele enlarging on standing",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE 2020"
+            },
+            {
+              "key": "separate_from_testis",
+              "value": "swelling clearly separate from and distinct from testis on palpation",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2016"
+            },
+            {
+              "key": "non_tender_gradual",
+              "value": "gradual onset, non-tender scrotal enlargement without pain",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2017"
+            },
+            {
+              "key": "male_infertility_varicocele",
+              "value": "male factor subfertility with left-sided varicocele",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NEJM 2016"
+            },
+            {
+              "key": "uss_confirms_benign",
+              "value": "USS confirming hydrocele, varicocele, or spermatocele with normal testis",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Radiology 2014"
+            },
+            {
+              "key": "secondary_reactive",
+              "value": "reactive hydrocele in setting of epididymo-orchitis or ipsilateral tumour",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2016"
+            },
+            {
+              "key": "left_predominantly_varico",
+              "value": "predominantly left-sided varicocele (left testicular vein drains 90° into renal vein)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NEJM 2016"
+            }
+          ]
+        },
+        {
+          "name": "Urethral Stricture",
+          "icd": "N35.9",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "urological"
+          ],
+          "specialties": [
+            "urology"
+          ],
+          "features": [
+            {
+              "key": "progressive_poor_stream",
+              "value": "progressively poor urinary stream with spraying or forked stream",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG60 2019"
+            },
+            {
+              "key": "prior_trauma_catheter",
+              "value": "prior urethral trauma, indwelling catheter, or gonorrhoeal urethritis",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BJU Int 2017"
+            },
+            {
+              "key": "urethroscopy_stricture",
+              "value": "stricture confirmed on flexible urethroscopy or urethrography",
+              "logLR": 27,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BJU Int 2017"
+            },
+            {
+              "key": "uroflowmetry_reduced",
+              "value": "maximum flow rate <10 mL/s on uroflowmetry",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG60 2019"
+            },
+            {
+              "key": "recurrent_uti_male",
+              "value": "recurrent UTI in male (anatomical predisposition from incomplete emptying)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BJU Int 2017"
+            },
+            {
+              "key": "butterfly_haematoma",
+              "value": "perineal butterfly haematoma following straddle injury (bulbar stricture)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "incomplete_emptying_urethra",
+              "value": "sensation of incomplete bladder emptying with residual urine",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NICE NG60 2019"
+            },
+            {
+              "key": "post_catheterisation",
+              "value": "post-indwelling or intermittent catheterisation stricture formation",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BJU Int 2017"
+            }
+          ]
+        }
+      ]
+    },
+    "inflammatoryBowel": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Crohn's Disease",
+          "icd": "K50.9",
+          "logPrior": -17,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "transmural_skip_lesions",
+              "value": "transmural inflammation with skip lesions on colonoscopy or CT",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG129 2019"
+            },
+            {
+              "key": "perianal_crohn",
+              "value": "complex perianal disease: fistulae, fissures, skin tags (pathognomonic for Crohn's)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG129 2019"
+            },
+            {
+              "key": "ril_tenderness",
+              "value": "right iliac fossa mass or tenderness (terminal ileal Crohn's involvement)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2017"
+            },
+            {
+              "key": "cobblestone_mucosa",
+              "value": "cobblestone mucosa with aphthous ulcers and skip areas on colonoscopy",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG129 2019"
+            },
+            {
+              "key": "granulomata_biopsy_crohn",
+              "value": "non-caseating granulomata on mucosal biopsy",
+              "logLR": 25,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NEJM 2017"
+            },
+            {
+              "key": "mre_fat_wrapping",
+              "value": "transmural wall thickening with mesenteric fat wrapping on MR enterography",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Radiology 2016"
+            },
+            {
+              "key": "extraintestinal_crohn",
+              "value": "extraintestinal manifestations: erythema nodosum, pyoderma, uveitis, arthritis",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2017"
+            },
+            {
+              "key": "calprotectin_crohn",
+              "value": "faecal calprotectin >200 µg/g (high sensitivity for active IBD)",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG129 2019"
+            }
+          ]
+        },
+        {
+          "name": "Ulcerative Colitis",
+          "icd": "K51.9",
+          "logPrior": -17,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "bloody_diarrhoea_mucus_uc",
+              "value": "bloody diarrhoea with mucus — hallmark of ulcerative colitis",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG130 2019"
+            },
+            {
+              "key": "continuous_colitis",
+              "value": "continuous mucosal inflammation extending proximally from rectum (colonoscopy)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG130 2019"
+            },
+            {
+              "key": "rectal_involvement_uc",
+              "value": "universal rectal involvement (distinguishes UC from Crohn's)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2017"
+            },
+            {
+              "key": "crypt_abscess_biopsy",
+              "value": "crypt abscesses with goblet cell depletion on colonic biopsy",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG130 2019"
+            },
+            {
+              "key": "toxic_megacolon",
+              "value": "toxic megacolon on AXR (transverse colon >5.5cm with mucosal oedema)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NEJM 2016"
+            },
+            {
+              "key": "panca_uc",
+              "value": "pANCA positive (found in 60–80% of UC patients)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2017"
+            },
+            {
+              "key": "calprotectin_uc",
+              "value": "faecal calprotectin >200 µg/g",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG130 2019"
+            },
+            {
+              "key": "backwash_ileitis",
+              "value": "backwash ileitis with pancolitis (terminal ileal involvement in severe UC)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NEJM 2016"
+            }
+          ]
+        },
+        {
+          "name": "Coeliac Disease (Gluten-sensitive Enteropathy)",
+          "icd": "K90.0",
+          "logPrior": -20,
+          "urgency": 0,
+          "systems": [
+            "gastrointestinal",
+            "immune"
+          ],
+          "specialties": [
+            "gastroenterology"
+          ],
+          "features": [
+            {
+              "key": "chronic_malabsorption",
+              "value": "chronic diarrhoea with steatorrhoea, weight loss, and malabsorption",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG20 2015"
+            },
+            {
+              "key": "ttg_iga_positive",
+              "value": "elevated tTG-IgA antibodies (high sensitivity and specificity)",
+              "logLR": 25,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "villous_atrophy",
+              "value": "villous atrophy with crypt hyperplasia on duodenal biopsy (Marsh III)",
+              "logLR": 27,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG20 2015"
+            },
+            {
+              "key": "gluten_trigger",
+              "value": "symptoms triggered or worsened by gluten-containing foods",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "iron_folate_anaemia",
+              "value": "iron deficiency or folate deficiency anaemia without other cause",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG20 2015"
+            },
+            {
+              "key": "dermatitis_herpetiformis",
+              "value": "dermatitis herpetiformis (intensely itchy vesicular rash — gluten-sensitive skin disease)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "hla_dq2_dq8",
+              "value": "HLA-DQ2 or HLA-DQ8 positive (negative result excludes coeliac disease)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "response_gfd",
+              "value": "clinical and serological response to strict gluten-free diet",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG20 2015"
+            }
+          ]
+        },
+        {
+          "name": "Intestinal Tuberculosis",
+          "icd": "A18.3",
+          "logPrior": -28,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "infectious"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "infectious_disease"
+          ],
+          "features": [
+            {
+              "key": "tb_endemic_region",
+              "value": "origin from or travel to TB-endemic region (Caribbean, Africa, South Asia)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "ileocaecal_predominance",
+              "value": "ileocaecal predominance (most common site — 75% of intestinal TB)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2011"
+            },
+            {
+              "key": "constitutional_tb",
+              "value": "constitutional symptoms: weight loss, night sweats, low-grade fever",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "caseating_granulomata",
+              "value": "caseating granulomata on biopsy (distinguishes from Crohn's disease)",
+              "logLR": 25,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NEJM 2017"
+            },
+            {
+              "key": "tb_peritoneal",
+              "value": "peritoneal TB with ascites and omental thickening on CT",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "igra_mantoux_positive",
+              "value": "positive IGRA (QuantiFERON) or Mantoux test",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG33 2016"
+            },
+            {
+              "key": "afb_positive",
+              "value": "acid-fast bacilli on tissue biopsy or culture",
+              "logLR": 25,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NEJM 2017"
+            },
+            {
+              "key": "stierlin_sign",
+              "value": "Stierlin's sign — pull-out of barium from terminal ileum (lead-pipe rigidity)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2011"
+            }
+          ]
+        },
+        {
+          "name": "Radiation Enteritis / Proctitis",
+          "icd": "K52.0",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "colorectal_surgery",
+            "radiation_oncology"
+          ],
+          "features": [
+            {
+              "key": "prior_pelvic_rt",
+              "value": "prior pelvic or abdominal radiotherapy (prostate, cervical, rectal cancer)",
+              "logLR": 25,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG151 2020"
+            },
+            {
+              "key": "chronic_rectal_bleeding_rt",
+              "value": "chronic rectal bleeding following completion of radiotherapy",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet Oncol 2017"
+            },
+            {
+              "key": "rt_telangiectasias",
+              "value": "mucosal telangiectasias and friability on sigmoidoscopy/colonoscopy",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG151 2020"
+            },
+            {
+              "key": "rt_stricture_fistula",
+              "value": "bowel stricture or recto-vaginal fistula formation post-radiation",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2017"
+            },
+            {
+              "key": "months_years_post_rt",
+              "value": "onset months to years after completion of radiotherapy (late effect)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG151 2020"
+            },
+            {
+              "key": "diarrhoea_urgency_rt",
+              "value": "frequent loose stools with urgency and tenesmus",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "ct_bowel_wall_rt",
+              "value": "bowel wall thickening in radiation field on CT with peri-intestinal fat stranding",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Radiology 2014"
+            },
+            {
+              "key": "apc_treatment",
+              "value": "rectal bleeding controlled with argon plasma coagulation endotherapy",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2017"
+            }
+          ]
+        },
+        {
+          "name": "Microscopic Colitis (Collagenous / Lymphocytic)",
+          "icd": "K52.8",
+          "logPrior": -24,
+          "urgency": 0,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology"
+          ],
+          "features": [
+            {
+              "key": "watery_non_bloody_mc",
+              "value": "chronic watery non-bloody diarrhoea >3 loose stools per day",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE 2020"
+            },
+            {
+              "key": "normal_colonoscopy_mc",
+              "value": "normal or near-normal gross mucosal appearance on colonoscopy",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Gut 2016"
+            },
+            {
+              "key": "biopsy_only_diagnosis",
+              "value": "diagnosis only possible on colonic biopsy (subepithelial collagen band or lymphocytosis)",
+              "logLR": 27,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Gut 2016"
+            },
+            {
+              "key": "middle_aged_female_mc",
+              "value": "middle-aged or elderly female (F:M ratio 4:1)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE 2020"
+            },
+            {
+              "key": "nsaid_ppi_trigger_mc",
+              "value": "NSAID or proton pump inhibitor use as potential trigger",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Gut 2016"
+            },
+            {
+              "key": "nocturnal_diarrhoea_mc",
+              "value": "nocturnal diarrhoea (helps exclude IBS — IBS does not cause nocturnal symptoms)",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE 2020"
+            },
+            {
+              "key": "autoimmune_association_mc",
+              "value": "associated autoimmune conditions (thyroid disease, coeliac, rheumatoid arthritis)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Gut 2016"
+            },
+            {
+              "key": "budesonide_response",
+              "value": "clinical response to budesonide treatment",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE 2020"
+            }
+          ]
+        },
+        {
+          "name": "Irritable Bowel Syndrome (IBS)",
+          "icd": "K58.9",
+          "logPrior": -14,
+          "urgency": 0,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "general_practice"
+          ],
+          "features": [
+            {
+              "key": "rome_iv_criteria",
+              "value": "Rome IV criteria: abdominal pain ≥1 day/week for 3 months related to defecation or stool change",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE CG61 2017"
+            },
+            {
+              "key": "bloating_distension_ibs",
+              "value": "bloating and visible abdominal distension",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2017"
+            },
+            {
+              "key": "mixed_stool_habits",
+              "value": "alternating constipation and diarrhoea (IBS-Mixed)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE CG61 2017"
+            },
+            {
+              "key": "young_adult_onset",
+              "value": "onset in young adult <45 years without gastrointestinal alarm features",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2017"
+            },
+            {
+              "key": "normal_investigations",
+              "value": "normal blood count, CRP, faecal calprotectin, and colonoscopy",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE CG61 2017"
+            },
+            {
+              "key": "no_alarm_features",
+              "value": "absence of alarm features: no rectal bleeding, weight loss, or age >50 onset",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE CG61 2017"
+            },
+            {
+              "key": "stress_dietary_triggers",
+              "value": "symptoms triggered by psychological stress or dietary factors (FODMAPs)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2017"
+            },
+            {
+              "key": "symptom_duration_ibs",
+              "value": "symptoms >6 months without structural pathology on investigation",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE CG61 2017"
+            }
+          ]
+        },
+        {
+          "name": "NSAID Enteropathy / Small Bowel Mucosal Injury",
+          "icd": "K52.1",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "gastroenterology"
+          ],
+          "features": [
+            {
+              "key": "nsaid_current_use",
+              "value": "current or recent NSAID, aspirin, or COX-2 inhibitor use",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Gut 2013"
+            },
+            {
+              "key": "small_bowel_erosions",
+              "value": "mucosal erosions or ulcers in small bowel on capsule endoscopy",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet 2013"
+            },
+            {
+              "key": "unexplained_ida_nsaid",
+              "value": "unexplained iron deficiency anaemia in chronic NSAID user",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Gut 2013"
+            },
+            {
+              "key": "diaphragm_stricture_nsaid",
+              "value": "'diaphragm disease' — multiple thin circumferential strictures in small bowel",
+              "logLR": 25,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet 2013"
+            },
+            {
+              "key": "small_bowel_bleeding",
+              "value": "small bowel bleeding source identified on capsule or device-assisted enteroscopy",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Gut 2013"
+            },
+            {
+              "key": "elevated_calprotectin_normal_endo",
+              "value": "elevated faecal calprotectin with negative upper and lower GI endoscopy",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2017"
+            },
+            {
+              "key": "improvement_nsaid_stop",
+              "value": "clinical improvement following cessation of causative NSAID",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Gut 2013"
+            },
+            {
+              "key": "negative_upper_gi",
+              "value": "negative upper GI endoscopy — iron deficiency without obvious upper GI source",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2013"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {
