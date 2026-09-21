@@ -1481,6 +1481,147 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("ectopic") || ccL.contains("haemoperitoneum") { mergePool("acuteAbdominalPain") }
             if ccL.contains("cancer") || ccL.contains("malignant") { mergePool("oncologyComplications") }
 
+        // ── Investigation-first chief complaints ──────────────────────────────
+        // Fired when the presenting reason IS an investigation result, not a
+        // symptom: incidental imaging findings, elevated tumour markers,
+        // positive endoscopy/biopsy/lab — routes to the specialty pool whose
+        // candidates carry matching `inv` features.
+
+        // Elevated tumour markers — hepatobiliary / pancreatic / colorectal
+        case ccL.contains("elevated afp") || ccL.contains("afp elevated") ||
+             ccL.contains("afp raised") || ccL.contains("raised afp") ||
+             (ccL.contains("afp") && ccL.contains("abnormal")) ||
+             ccL.contains("liver lesion") || ccL.contains("liver mass") ||
+             ccL.contains("hepatic lesion") || ccL.contains("hepatic mass") ||
+             ccL.contains("hcc surveillance") || ccL.contains("hepatocellular") ||
+             (ccL.contains("liver") && (ccL.contains("incidental") || ccL.contains("finding on ct") || ccL.contains("finding on mri"))) ||
+             (ccL.contains("ct") && ccL.contains("liver") && ccL.contains("mass")):
+            candidates = externalPool("hepatobiliaryMalignancy") ?? []
+            if ccL.contains("cirrhosis") || ccL.contains("portal hypertension") { mergePool("liverCirrhosisComplications") }
+            if ccL.contains("metastasis") || ccL.contains("mets") { mergePool("oncologyComplications") }
+
+        // Elevated CA19-9 / pancreatic cyst / IPMN
+        case ccL.contains("elevated ca19-9") || ccL.contains("ca19-9 elevated") ||
+             ccL.contains("ca 19-9") || ccL.contains("raised ca19-9") ||
+             ccL.contains("pancreatic cyst") || ccL.contains("pancreatic lesion") ||
+             ccL.contains("ipmn") || ccL.contains("intraductal papillary") ||
+             ccL.contains("pancreatic mass") || ccL.contains("pancreatic incidentaloma") ||
+             (ccL.contains("pancreas") && (ccL.contains("cyst") || ccL.contains("lesion") || ccL.contains("mass"))) ||
+             (ccL.contains("ct") && ccL.contains("pancreas") && ccL.contains("finding")):
+            candidates = externalPool("pancreaticSurgical") ?? []
+            if ccL.contains("jaundice") || ccL.contains("biliary") { mergePool("jaundice") }
+            if ccL.contains("ca19-9") || ccL.contains("weight loss") { mergePool("oncologyComplications") }
+
+        // Elevated CEA / colorectal surveillance / positive FIT
+        case ccL.contains("elevated cea") || ccL.contains("cea elevated") ||
+             ccL.contains("raised cea") || ccL.contains("cea rising") ||
+             ccL.contains("positive fit") || ccL.contains("fit positive") ||
+             ccL.contains("fit test positive") || ccL.contains("fob positive") ||
+             ccL.contains("fob test positive") || ccL.contains("colonoscopy finding") ||
+             ccL.contains("polyp on colonoscopy") || ccL.contains("colorectal polyp") ||
+             ccL.contains("colonic mass") || ccL.contains("ct colonography") ||
+             (ccL.contains("cea") && ccL.contains("surveillance")) ||
+             (ccL.contains("bowel cancer") && ccL.contains("screening")):
+            candidates = externalPool("colorectalMalignancy") ?? []
+            if ccL.contains("polyp") || ccL.contains("adenoma") { mergePool("colonoscopyPathology") }
+            if ccL.contains("lynch") || ccL.contains("hnpcc") { mergePool("oncologyComplications") }
+
+        // Elevated CA-125 / adnexal / ovarian finding
+        case ccL.contains("elevated ca-125") || ccL.contains("ca-125 elevated") ||
+             ccL.contains("ca125 elevated") || ccL.contains("raised ca125") ||
+             ccL.contains("adnexal mass") || ccL.contains("adnexal cyst") ||
+             ccL.contains("ovarian cyst") || ccL.contains("ovarian mass") ||
+             ccL.contains("complex ovarian") || ccL.contains("pelvic mass on") ||
+             (ccL.contains("ca-125") && ccL.contains("abnormal")) ||
+             (ccL.contains("ultrasound") && ccL.contains("ovarian") && ccL.contains("mass")):
+            candidates = externalPool("gynaecologicalSurgical") ?? []
+            if ccL.contains("ascites") || ccL.contains("omental") { mergePool("oncologyComplications") }
+
+        // Elevated PSA / prostate finding / renal mass / bladder mass
+        case ccL.contains("elevated psa") || ccL.contains("psa elevated") ||
+             ccL.contains("raised psa") || ccL.contains("psa rising") ||
+             ccL.contains("renal mass") || ccL.contains("renal lesion") ||
+             ccL.contains("renal incidentaloma") || ccL.contains("kidney mass") ||
+             ccL.contains("bladder mass") || ccL.contains("bladder lesion") ||
+             ccL.contains("pirads") || ccL.contains("mpMRI prostate") ||
+             ccL.contains("haematuria investigation") ||
+             (ccL.contains("ct") && ccL.contains("renal") && ccL.contains("lesion")) ||
+             (ccL.contains("psa") && ccL.contains("screening")) ||
+             (ccL.contains("prostate") && ccL.contains("biopsy")):
+            candidates = externalPool("urologicalSurgical") ?? []
+            if ccL.contains("haematuria") || ccL.contains("bladder") { mergePool("renalUrolithiasis") }
+            if ccL.contains("renal") && ccL.contains("cancer") { mergePool("oncologyComplications") }
+
+        // Elevated PTH / hypercalcaemia / adrenal mass / phaeochromocytoma
+        case ccL.contains("elevated pth") || ccL.contains("pth elevated") ||
+             ccL.contains("raised pth") || ccL.contains("hyperparathyroid") ||
+             ccL.contains("adrenal mass") || ccL.contains("adrenal lesion") ||
+             ccL.contains("adrenal incidentaloma") || ccL.contains("incidental adrenal") ||
+             ccL.contains("elevated metanephrine") || ccL.contains("metanephrine elevated") ||
+             ccL.contains("elevated aldosterone") || ccL.contains("aldo:renin") ||
+             ccL.contains("aldosterone renin") || ccL.contains("elevated cortisol") ||
+             (ccL.contains("ct") && ccL.contains("adrenal") && (ccL.contains("mass") || ccL.contains("lesion"))) ||
+             (ccL.contains("conn") && ccL.contains("screen")) ||
+             (ccL.contains("cushing") && ccL.contains("screen")):
+            candidates = externalPool("parathyroidAdrenal") ?? []
+            if ccL.contains("men") || ccL.contains("multiple endocrine") { mergePool("endocrineSurgical") }
+            if ccL.contains("phaeochromocytoma") || ccL.contains("crisis") { mergePool("sepsisConditions") }
+
+        // Elevated calcitonin / thyroid nodule cytology / FNAC result
+        case ccL.contains("elevated calcitonin") || ccL.contains("calcitonin elevated") ||
+             ccL.contains("raised calcitonin") || ccL.contains("calcitonin abnormal") ||
+             ccL.contains("bethesda") || ccL.contains("fnac result") ||
+             ccL.contains("thyroid cytology") || ccL.contains("tirads") ||
+             ccL.contains("thyroid nodule") || ccL.contains("thyroid incidentaloma") ||
+             (ccL.contains("ultrasound") && ccL.contains("thyroid") && (ccL.contains("nodule") || ccL.contains("mass"))) ||
+             (ccL.contains("thyroid") && (ccL.contains("biopsy") || ccL.contains("fnac") || ccL.contains("fna"))):
+            candidates = externalPool("thyroidNoduleAssessment") ?? []
+            if ccL.contains("medullary") || ccL.contains("calcitonin") { mergePool("endocrineSurgical") }
+            if ccL.contains("men2") || ccL.contains("ret mutation") { mergePool("parathyroidAdrenal") }
+
+        // Lung nodule / pulmonary incidentaloma
+        case ccL.contains("lung nodule") || ccL.contains("pulmonary nodule") ||
+             ccL.contains("lung lesion") || ccL.contains("pulmonary lesion") ||
+             ccL.contains("lung mass") || ccL.contains("lung incidentaloma") ||
+             ccL.contains("ct chest finding") || ccL.contains("ground glass opacity") ||
+             (ccL.contains("ct chest") && (ccL.contains("nodule") || ccL.contains("mass") || ccL.contains("lesion"))) ||
+             (ccL.contains("incidental") && ccL.contains("pulmonary")):
+            candidates = externalPool("thoracicSurgical") ?? []
+            if ccL.contains("pleural") { mergePool("pleural") }
+            if ccL.contains("cancer") || ccL.contains("malignant") { mergePool("oncologyComplications") }
+
+        // Elevated amylase / lipase — investigation-first acute pancreatitis
+        case (ccL.contains("elevated amylase") || ccL.contains("amylase elevated") ||
+              ccL.contains("raised amylase") || ccL.contains("lipase elevated") ||
+              ccL.contains("elevated lipase") || ccL.contains("raised lipase")) &&
+             !ccL.contains("chest pain"):
+            candidates = externalPool("acutePancreatitis") ?? biliaryColic
+            if ccL.contains("gallstone") || ccL.contains("biliary") { mergePool("biliaryColic") }
+
+        // Abnormal LFTs / elevated bilirubin — investigation-first jaundice workup
+        case ccL.contains("abnormal lfts") || ccL.contains("deranged lfts") ||
+             ccL.contains("elevated bilirubin") || ccL.contains("elevated alt") ||
+             ccL.contains("elevated ast") || ccL.contains("elevated ggt") ||
+             ccL.contains("elevated alp") || ccL.contains("lft abnormal") ||
+             ccL.contains("liver function abnormal") || ccL.contains("hepatitis screen") ||
+             (ccL.contains("liver") && ccL.contains("blood test") && ccL.contains("abnormal")) ||
+             (ccL.contains("lfts") && (ccL.contains("raised") || ccL.contains("high") || ccL.contains("abnormal"))):
+            candidates = externalPool("jaundice") ?? jaundice
+            if ccL.contains("gallstone") || ccL.contains("biliary") { mergePool("biliaryColic") }
+            if ccL.contains("hepatitis") { mergePool("liverDisease") }
+
+        // Iron deficiency anaemia — investigation-first GI malignancy workup
+        case (ccL.contains("iron deficiency anaemia") || ccL.contains("iron deficiency anemia") ||
+              ccL.contains("ida ") || ccL.contains("microcytic anaemia") ||
+              ccL.contains("unexplained anaemia") || ccL.contains("occult gi bleed") ||
+              ccL.contains("positive faecal occult") || ccL.contains("fob positive")) &&
+             !ccL.contains("heavy period") && !ccL.contains("menorrhagia") && !ccL.contains("child"):
+            candidates = externalPool("colorectalMalignancy") ?? []
+            if ccL.contains("oesophagus") || ccL.contains("stomach") || ccL.contains("gastric") { mergePool("oesophagogastricSurgical") }
+            mergePool("anaemia")
+
+        // ── End investigation-first routing ────────────────────────────────
+
         // Skin and soft tissue tumours
         case ccL.contains("melanoma") || ccL.contains("basal cell") ||
              ccL.contains("squamous cell carcinoma") || ccL.contains("skin cancer") ||
@@ -1855,6 +1996,27 @@ enum BayesianDiagnosisEngine {
            ccL.contains("cervical myelopathy") || ccL.contains("spinal stenosis") ||
            ccL.contains("epidural abscess") || ccL.contains("vertebral osteomyelitis") ||
            ccL.contains("neurogenic claudication") || ccL.contains("saddle anaesthesia") { mergePool("spinalNeurosurgical") }
+        // Secondary merges: investigation-first overlays
+        if ccL.contains("afp") || ccL.contains("liver lesion") || ccL.contains("hepatic mass") ||
+           ccL.contains("hcc") || ccL.contains("hepatocellular") { mergePool("hepatobiliaryMalignancy") }
+        if ccL.contains("ca19-9") || ccL.contains("pancreatic cyst") || ccL.contains("ipmn") ||
+           ccL.contains("pancreatic mass") { mergePool("pancreaticSurgical") }
+        if ccL.contains("cea") || ccL.contains("positive fit") || ccL.contains("fit positive") ||
+           ccL.contains("colonic mass") || ccL.contains("colonoscopy finding") { mergePool("colorectalMalignancy") }
+        if ccL.contains("ca-125") || ccL.contains("ca125") || ccL.contains("adnexal mass") ||
+           ccL.contains("ovarian cyst") || ccL.contains("ovarian mass") { mergePool("gynaecologicalSurgical") }
+        if ccL.contains("psa elevated") || ccL.contains("elevated psa") || ccL.contains("pirads") ||
+           ccL.contains("renal mass") || ccL.contains("renal lesion") || ccL.contains("bladder mass") { mergePool("urologicalSurgical") }
+        if ccL.contains("adrenal mass") || ccL.contains("adrenal lesion") || ccL.contains("adrenal incidentaloma") ||
+           ccL.contains("metanephrine") || ccL.contains("aldosterone renin") { mergePool("parathyroidAdrenal") }
+        if ccL.contains("bethesda") || ccL.contains("tirads") || ccL.contains("thyroid nodule") ||
+           ccL.contains("calcitonin elevated") || ccL.contains("fnac") { mergePool("thyroidNoduleAssessment") }
+        if ccL.contains("lung nodule") || ccL.contains("pulmonary nodule") ||
+           ccL.contains("lung lesion") || ccL.contains("lung mass") { mergePool("thoracicSurgical") }
+        if ccL.contains("abnormal lfts") || ccL.contains("deranged lfts") || ccL.contains("elevated bilirubin") ||
+           ccL.contains("elevated alt") || ccL.contains("elevated ast") { mergePool("jaundice") }
+        if (ccL.contains("iron deficiency") || ccL.contains("ida ") || ccL.contains("microcytic anaemia")) &&
+           !ccL.contains("menorrhagia") { mergePool("colorectalMalignancy") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but

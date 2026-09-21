@@ -57923,6 +57923,13 @@
               "logLR": 18,
               "evidenceLabel": "strong positive",
               "citation": "NICE NG61 2020"
+            },
+            {
+              "key": "inv",
+              "value": "absent doppler testis",
+              "logLR": 18,
+              "evidenceLabel": "Absent Doppler flow on scrotal USS",
+              "citation": "EAU 2023"
             }
           ]
         },
@@ -57995,6 +58002,20 @@
               "logLR": 23,
               "evidenceLabel": "near-diagnostic",
               "citation": "Radiology 2012"
+            },
+            {
+              "key": "inv",
+              "value": "increased doppler",
+              "logLR": 12,
+              "evidenceLabel": "Increased Doppler flow on scrotal USS",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "inv",
+              "value": "leucocyturia",
+              "logLR": 8,
+              "evidenceLabel": "Leucocyturia/positive dipstick",
+              "citation": "EAU 2023"
             }
           ]
         },
@@ -58065,6 +58086,20 @@
               "logLR": 16,
               "evidenceLabel": "moderate positive",
               "citation": "BMJ 2014"
+            },
+            {
+              "key": "inv",
+              "value": "psa elevated",
+              "logLR": 8,
+              "evidenceLabel": "PSA 4\u201310 ng/mL (grey zone)",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "inv",
+              "value": "post void residual",
+              "logLR": 10,
+              "evidenceLabel": "Elevated post-void residual on USS",
+              "citation": "EAU 2023"
             }
           ]
         },
@@ -58137,6 +58172,20 @@
               "logLR": 21,
               "evidenceLabel": "strong positive",
               "citation": "NICE NG12 2020"
+            },
+            {
+              "key": "inv",
+              "value": "haematuria",
+              "logLR": 10,
+              "evidenceLabel": "Haematuria (macro or micro)",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "inv",
+              "value": "bladder mass cystoscopy",
+              "logLR": 18,
+              "evidenceLabel": "Bladder mass on cystoscopy",
+              "citation": "EAU 2023"
             }
           ]
         },
@@ -58209,6 +58258,20 @@
               "logLR": 16,
               "evidenceLabel": "moderate positive",
               "citation": "BMJ 2019"
+            },
+            {
+              "key": "inv",
+              "value": "renal mass",
+              "logLR": 12,
+              "evidenceLabel": "Renal mass on CT/MRI",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "inv",
+              "value": "incidental renal lesion",
+              "logLR": 10,
+              "evidenceLabel": "Incidental renal lesion on imaging",
+              "citation": "EAU 2023"
             }
           ]
         },
@@ -58281,6 +58344,27 @@
               "logLR": 16,
               "evidenceLabel": "moderate positive",
               "citation": "BMJ 2017"
+            },
+            {
+              "key": "inv",
+              "value": "psa elevated",
+              "logLR": 12,
+              "evidenceLabel": "PSA > 10 ng/mL",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "inv",
+              "value": "pirads 4",
+              "logLR": 16,
+              "evidenceLabel": "PI-RADS 4/5 on mpMRI",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "inv",
+              "value": "prostate biopsy adenocarcinoma",
+              "logLR": 20,
+              "evidenceLabel": "Biopsy: prostate adenocarcinoma",
+              "citation": "EAU 2023"
             }
           ]
         },
@@ -59074,6 +59158,27 @@
               "logLR": 14,
               "evidenceLabel": "moderate positive",
               "citation": "Lancet 2022"
+            },
+            {
+              "key": "inv",
+              "value": "afp elevated",
+              "logLR": 12,
+              "evidenceLabel": "AFP elevated (HCC marker)",
+              "citation": "EASL HCC Guidelines 2022"
+            },
+            {
+              "key": "inv",
+              "value": "arterial enhancement washout",
+              "logLR": 16,
+              "evidenceLabel": "LI-RADS 4/5: arterial enhancement + washout",
+              "citation": "EASL 2022"
+            },
+            {
+              "key": "inv",
+              "value": "liver lesion cirrhosis",
+              "logLR": 10,
+              "evidenceLabel": "Liver lesion on background of cirrhosis",
+              "citation": "EASL 2022"
             }
           ]
         },
@@ -59148,6 +59253,27 @@
               "logLR": 14,
               "evidenceLabel": "moderate positive",
               "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "inv",
+              "value": "ca19-9 elevated",
+              "logLR": 10,
+              "evidenceLabel": "CA 19-9 elevated",
+              "citation": "ESMO 2023"
+            },
+            {
+              "key": "inv",
+              "value": "biliary stricture",
+              "logLR": 14,
+              "evidenceLabel": "Biliary stricture on MRCP/ERCP",
+              "citation": "ESMO 2023"
+            },
+            {
+              "key": "inv",
+              "value": "hilar mass",
+              "logLR": 12,
+              "evidenceLabel": "Hilar mass on CT/MRI",
+              "citation": "ESMO 2023"
             }
           ]
         },
@@ -59221,6 +59347,20 @@
               "logLR": 11,
               "evidenceLabel": "weak positive",
               "citation": "EJSO 2020"
+            },
+            {
+              "key": "inv",
+              "value": "gallbladder mass",
+              "logLR": 14,
+              "evidenceLabel": "Gallbladder mass on USS/CT",
+              "citation": "ESMO 2023"
+            },
+            {
+              "key": "inv",
+              "value": "incidental t2",
+              "logLR": 12,
+              "evidenceLabel": "Incidental T2 lesion on cholecystectomy specimen",
+              "citation": "ESMO 2023"
             }
           ]
         },
@@ -59444,6 +59584,20 @@
               "logLR": 16,
               "evidenceLabel": "moderate positive",
               "citation": "BMJ 2019"
+            },
+            {
+              "key": "inv",
+              "value": "liver abscess",
+              "logLR": 16,
+              "evidenceLabel": "Liver abscess on USS/CT",
+              "citation": "AASLD 2021"
+            },
+            {
+              "key": "inv",
+              "value": "blood culture",
+              "logLR": 10,
+              "evidenceLabel": "Bacteraemia on blood cultures",
+              "citation": "AASLD 2021"
             }
           ]
         },
@@ -59670,6 +59824,27 @@
               "logLR": 11,
               "evidenceLabel": "weak positive",
               "citation": "NCCN 2022"
+            },
+            {
+              "key": "inv",
+              "value": "ca19-9 elevated",
+              "logLR": 10,
+              "evidenceLabel": "CA 19-9 elevated",
+              "citation": "ESMO Pancreatic Cancer 2023"
+            },
+            {
+              "key": "inv",
+              "value": "pancreatic mass ct",
+              "logLR": 16,
+              "evidenceLabel": "Hypoenhancing pancreatic mass on CT",
+              "citation": "ESMO 2023"
+            },
+            {
+              "key": "inv",
+              "value": "pancreatic adenocarcinoma biopsy",
+              "logLR": 20,
+              "evidenceLabel": "Biopsy: pancreatic adenocarcinoma",
+              "citation": "ESMO 2023"
             }
           ]
         },
@@ -59741,6 +59916,27 @@
               "value": "high-risk stigmata: jaundice, enhancing mural nodule, main duct \u2265 10 mm \u2014 resection indicated",
               "logLR": 21,
               "evidenceLabel": "strong positive",
+              "citation": "IAP 2017"
+            },
+            {
+              "key": "inv",
+              "value": "pancreatic cyst",
+              "logLR": 12,
+              "evidenceLabel": "Pancreatic cyst on CT/MRI",
+              "citation": "IAP Guidelines 2017"
+            },
+            {
+              "key": "inv",
+              "value": "main duct dilatation",
+              "logLR": 14,
+              "evidenceLabel": "Main pancreatic duct dilatation on MRCP",
+              "citation": "IAP 2017"
+            },
+            {
+              "key": "inv",
+              "value": "mural nodule",
+              "logLR": 16,
+              "evidenceLabel": "Mural nodule in pancreatic cyst",
               "citation": "IAP 2017"
             }
           ]
@@ -59814,6 +60010,20 @@
               "logLR": 19,
               "evidenceLabel": "strong positive",
               "citation": "Gut 2020"
+            },
+            {
+              "key": "inv",
+              "value": "pancreatic calcification",
+              "logLR": 16,
+              "evidenceLabel": "Pancreatic calcification on CT/AXR",
+              "citation": "UEG 2017"
+            },
+            {
+              "key": "inv",
+              "value": "chain of lakes mrcp",
+              "logLR": 14,
+              "evidenceLabel": "Chain-of-lakes appearance on MRCP",
+              "citation": "UEG 2017"
             }
           ]
         },
@@ -61439,6 +61649,27 @@
               "logLR": 16,
               "evidenceLabel": "moderate positive",
               "citation": "BMJ 2018"
+            },
+            {
+              "key": "inv",
+              "value": "positive fit",
+              "logLR": 10,
+              "evidenceLabel": "Positive FIT test",
+              "citation": "BSG 2021"
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy mass caecum",
+              "logLR": 18,
+              "evidenceLabel": "Colonoscopy: caecal/right colon mass",
+              "citation": "BSG 2021"
+            },
+            {
+              "key": "inv",
+              "value": "ct colonic thickening",
+              "logLR": 12,
+              "evidenceLabel": "Colonic wall thickening on CT",
+              "citation": "BSG 2021"
             }
           ]
         },
@@ -61513,6 +61744,20 @@
               "logLR": 19,
               "evidenceLabel": "strong positive",
               "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "inv",
+              "value": "cea elevated",
+              "logLR": 8,
+              "evidenceLabel": "CEA elevated",
+              "citation": "ESMO CRC 2022"
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy sigmoid mass",
+              "logLR": 18,
+              "evidenceLabel": "Colonoscopy: sigmoid/left colon mass",
+              "citation": "ESMO 2022"
             }
           ]
         },
@@ -61587,6 +61832,20 @@
               "logLR": 16,
               "evidenceLabel": "moderate positive",
               "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "inv",
+              "value": "mri t3 t4 rectal",
+              "logLR": 14,
+              "evidenceLabel": "MRI: T3/T4 rectal tumour",
+              "citation": "ESMO CRC 2022"
+            },
+            {
+              "key": "inv",
+              "value": "rectal mass rigid",
+              "logLR": 16,
+              "evidenceLabel": "Rectal mass on rigid sigmoidoscopy",
+              "citation": "ESMO 2022"
             }
           ]
         },
@@ -62037,6 +62296,20 @@
               "logLR": 11,
               "evidenceLabel": "weak positive",
               "citation": "NICE NG44 2016"
+            },
+            {
+              "key": "inv",
+              "value": "fnac malignant",
+              "logLR": 20,
+              "evidenceLabel": "FNA cytology: papillary carcinoma",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "inv",
+              "value": "tirads 5 thyroid",
+              "logLR": 12,
+              "evidenceLabel": "TI-RADS 5 nodule on USS",
+              "citation": "ACR TI-RADS 2017"
             }
           ]
         },
@@ -62111,6 +62384,13 @@
               "logLR": 11,
               "evidenceLabel": "weak positive",
               "citation": "NICE NG44 2016"
+            },
+            {
+              "key": "inv",
+              "value": "bethesda iv fnac",
+              "logLR": 12,
+              "evidenceLabel": "Bethesda IV FNA (follicular neoplasm)",
+              "citation": "Bethesda System 2017"
             }
           ]
         },
@@ -62185,6 +62465,13 @@
               "logLR": 16,
               "evidenceLabel": "moderate positive",
               "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "inv",
+              "value": "calcitonin elevated",
+              "logLR": 18,
+              "evidenceLabel": "Elevated serum calcitonin",
+              "citation": "ATA 2015"
             }
           ]
         },
@@ -62476,6 +62763,20 @@
               "logLR": 14,
               "evidenceLabel": "moderate positive",
               "citation": "BTA 2019"
+            },
+            {
+              "key": "inv",
+              "value": "tsh suppressed t4 elevated",
+              "logLR": 14,
+              "evidenceLabel": "Suppressed TSH + elevated T3/T4",
+              "citation": "ETA 2018"
+            },
+            {
+              "key": "inv",
+              "value": "uptake scan homogeneous",
+              "logLR": 12,
+              "evidenceLabel": "Diffuse homogeneous uptake on scintigraphy",
+              "citation": "ETA 2018"
             }
           ]
         },
@@ -70702,6 +71003,27 @@
               "logLR": 12,
               "evidenceLabel": "FH thyroid cancer",
               "citation": "ATA 2015"
+            },
+            {
+              "key": "inv",
+              "value": "bethesda v",
+              "logLR": 16,
+              "evidenceLabel": "Bethesda V cytology (suspicious for malignancy)",
+              "citation": "Bethesda System 2017"
+            },
+            {
+              "key": "inv",
+              "value": "bethesda vi",
+              "logLR": 18,
+              "evidenceLabel": "Bethesda VI cytology (malignant)",
+              "citation": "Bethesda System 2017"
+            },
+            {
+              "key": "inv",
+              "value": "tirads 5",
+              "logLR": 12,
+              "evidenceLabel": "TI-RADS 5 on USS",
+              "citation": "ACR TI-RADS 2017"
             }
           ]
         },
@@ -70772,6 +71094,20 @@
               "logLR": 6,
               "evidenceLabel": "Normal/elevated TSH",
               "citation": "ATA 2015"
+            },
+            {
+              "key": "inv",
+              "value": "bethesda iv",
+              "logLR": 12,
+              "evidenceLabel": "Bethesda IV (follicular neoplasm)",
+              "citation": "Bethesda System 2017"
+            },
+            {
+              "key": "inv",
+              "value": "tirads 4",
+              "logLR": 8,
+              "evidenceLabel": "TI-RADS 4 nodule on USS",
+              "citation": "ACR TI-RADS 2017"
             }
           ]
         },
@@ -70842,6 +71178,20 @@
               "logLR": 6,
               "evidenceLabel": "Normal calcitonin level",
               "citation": "Clinical"
+            },
+            {
+              "key": "inv",
+              "value": "bethesda ii",
+              "logLR": 12,
+              "evidenceLabel": "Bethesda II cytology (benign)",
+              "citation": "Bethesda System 2017"
+            },
+            {
+              "key": "inv",
+              "value": "tirads 2",
+              "logLR": 10,
+              "evidenceLabel": "TI-RADS 2 benign nodule",
+              "citation": "ACR TI-RADS 2017"
             }
           ]
         },
@@ -70911,6 +71261,20 @@
               "value": "true",
               "logLR": 20,
               "evidenceLabel": "Concurrent phaeochromocytoma",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "inv",
+              "value": "calcitonin elevated",
+              "logLR": 18,
+              "evidenceLabel": "Calcitonin elevated (MTC marker)",
+              "citation": "ATA 2015"
+            },
+            {
+              "key": "inv",
+              "value": "bethesda v",
+              "logLR": 14,
+              "evidenceLabel": "Bethesda V: suspicious for MTC",
               "citation": "ATA 2015"
             }
           ]
@@ -70982,6 +71346,20 @@
               "logLR": 12,
               "evidenceLabel": "Retrosternal extension",
               "citation": "Clinical"
+            },
+            {
+              "key": "inv",
+              "value": "multiple nodules ultrasound",
+              "logLR": 14,
+              "evidenceLabel": "Multiple thyroid nodules on USS",
+              "citation": "ETA 2019"
+            },
+            {
+              "key": "inv",
+              "value": "bethesda ii",
+              "logLR": 8,
+              "evidenceLabel": "Bethesda II on dominant nodule FNA",
+              "citation": "Bethesda System 2017"
             }
           ]
         },
@@ -71052,6 +71430,20 @@
               "logLR": 12,
               "evidenceLabel": "Recent iodine load (CT contrast)",
               "citation": "Clinical"
+            },
+            {
+              "key": "inv",
+              "value": "multiple nodules ultrasound",
+              "logLR": 14,
+              "evidenceLabel": "Multiple thyroid nodules on USS",
+              "citation": "ETA 2019"
+            },
+            {
+              "key": "inv",
+              "value": "bethesda ii",
+              "logLR": 8,
+              "evidenceLabel": "Bethesda II on dominant nodule FNA",
+              "citation": "Bethesda System 2017"
             }
           ]
         },
@@ -75816,6 +76208,20 @@
               "logLR": 32,
               "evidenceLabel": "Laparoscopy confirms torsion",
               "citation": "ACOG 2019"
+            },
+            {
+              "key": "inv",
+              "value": "absent ovarian doppler",
+              "logLR": 16,
+              "evidenceLabel": "Absent ovarian Doppler flow on USS",
+              "citation": "RCOG 2020"
+            },
+            {
+              "key": "inv",
+              "value": "adnexal mass enlarged",
+              "logLR": 12,
+              "evidenceLabel": "Enlarged adnexal mass on USS",
+              "citation": "RCOG 2020"
             }
           ]
         },
@@ -75885,6 +76291,20 @@
               "value": "true",
               "logLR": 18,
               "evidenceLabel": "\u03b2hCG not doubling appropriately",
+              "citation": "RCOG 2016"
+            },
+            {
+              "key": "inv",
+              "value": "empty uterus bhcg",
+              "logLR": 16,
+              "evidenceLabel": "Empty uterus + positive \u03b2-hCG",
+              "citation": "RCOG 2016"
+            },
+            {
+              "key": "inv",
+              "value": "adnexal mass ectopic",
+              "logLR": 14,
+              "evidenceLabel": "Adnexal mass on USS with +ve bhCG",
               "citation": "RCOG 2016"
             }
           ]
@@ -76098,6 +76518,27 @@
               "logLR": 12,
               "evidenceLabel": "Change in bowel habit/bloating",
               "citation": "Clinical"
+            },
+            {
+              "key": "inv",
+              "value": "ca-125 elevated",
+              "logLR": 10,
+              "evidenceLabel": "CA-125 elevated",
+              "citation": "RCOG 2011"
+            },
+            {
+              "key": "inv",
+              "value": "complex adnexal mass",
+              "logLR": 14,
+              "evidenceLabel": "Complex adnexal mass on USS",
+              "citation": "RCOG 2011"
+            },
+            {
+              "key": "inv",
+              "value": "omental cake ct",
+              "logLR": 16,
+              "evidenceLabel": "Omental caking on CT (peritoneal spread)",
+              "citation": "ESMO 2022"
             }
           ]
         },
@@ -76168,6 +76609,13 @@
               "logLR": 10,
               "evidenceLabel": "Normal CA-125",
               "citation": "Clinical"
+            },
+            {
+              "key": "inv",
+              "value": "uterine fibroid",
+              "logLR": 14,
+              "evidenceLabel": "Uterine fibroids on USS/MRI",
+              "citation": "ESHRE 2023"
             }
           ]
         },
@@ -77541,6 +77989,27 @@
               "logLR": 5,
               "evidenceLabel": "Mild+",
               "citation": "NEJM 2018;378:540"
+            },
+            {
+              "key": "inv",
+              "value": "calcium elevated",
+              "logLR": 12,
+              "evidenceLabel": "Serum calcium elevated",
+              "citation": "AAE 2022"
+            },
+            {
+              "key": "inv",
+              "value": "pth elevated",
+              "logLR": 16,
+              "evidenceLabel": "PTH inappropriately elevated",
+              "citation": "AAE 2022"
+            },
+            {
+              "key": "inv",
+              "value": "sestamibi parathyroid",
+              "logLR": 14,
+              "evidenceLabel": "Sestamibi scan: parathyroid adenoma",
+              "citation": "AAE 2022"
             }
           ]
         },
@@ -77613,6 +78082,20 @@
               "logLR": 18,
               "evidenceLabel": "Strong+",
               "citation": "NEJM 2021;384:252"
+            },
+            {
+              "key": "inv",
+              "value": "adrenal mass ct",
+              "logLR": 12,
+              "evidenceLabel": "Adrenal mass on CT (>4cm, irregular)",
+              "citation": "ENSAT 2018"
+            },
+            {
+              "key": "inv",
+              "value": "cortisol elevated",
+              "logLR": 10,
+              "evidenceLabel": "Elevated cortisol/24h UFC",
+              "citation": "ENSAT 2018"
             }
           ]
         },
@@ -77683,6 +78166,20 @@
               "logLR": 12,
               "evidenceLabel": "Moderate+",
               "citation": "ESE Phaeochromocytoma Guidelines 2022"
+            },
+            {
+              "key": "inv",
+              "value": "metanephrine elevated",
+              "logLR": 18,
+              "evidenceLabel": "Elevated plasma/urine metanephrines",
+              "citation": "ES 2014"
+            },
+            {
+              "key": "inv",
+              "value": "adrenal mass mibg",
+              "logLR": 16,
+              "evidenceLabel": "MIBG-avid adrenal mass",
+              "citation": "ES 2014"
             }
           ]
         },
@@ -77753,6 +78250,20 @@
               "logLR": 12,
               "evidenceLabel": "Moderate+",
               "citation": "Lancet Diabetes Endocrinol 2016;4:895"
+            },
+            {
+              "key": "inv",
+              "value": "aldosterone renin ratio",
+              "logLR": 14,
+              "evidenceLabel": "Elevated aldosterone:renin ratio",
+              "citation": "ES 2016"
+            },
+            {
+              "key": "inv",
+              "value": "adrenal adenoma ct",
+              "logLR": 12,
+              "evidenceLabel": "Adrenal adenoma on CT",
+              "citation": "ES 2016"
             }
           ]
         },
@@ -77823,6 +78334,20 @@
               "logLR": 18,
               "evidenceLabel": "Strong+",
               "citation": "ESE/ENSAT Guidelines 2023"
+            },
+            {
+              "key": "inv",
+              "value": "incidental adrenal mass",
+              "logLR": 16,
+              "evidenceLabel": "Incidental adrenal mass on CT",
+              "citation": "ESE 2016"
+            },
+            {
+              "key": "inv",
+              "value": "adrenal lesion lipid rich",
+              "logLR": 12,
+              "evidenceLabel": "Lipid-rich adrenal adenoma (HU <10)",
+              "citation": "ESE 2016"
             }
           ]
         },
@@ -78036,6 +78561,20 @@
               "logLR": 32,
               "evidenceLabel": "Definitive+",
               "citation": "NEJM 2017;376:1451"
+            },
+            {
+              "key": "inv",
+              "value": "24h ufc elevated",
+              "logLR": 14,
+              "evidenceLabel": "24h urinary free cortisol elevated",
+              "citation": "ES 2020"
+            },
+            {
+              "key": "inv",
+              "value": "low dose dexamethasone",
+              "logLR": 14,
+              "evidenceLabel": "Failed overnight dexamethasone suppression",
+              "citation": "ES 2020"
             }
           ]
         }
