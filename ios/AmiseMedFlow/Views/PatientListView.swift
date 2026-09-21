@@ -278,6 +278,18 @@ struct PatientRow: View {
                             .foregroundStyle(.purple)
                             .labelStyle(.iconOnly)
                     }
+                    let critLabs = LabPanel.parse(from: patient.investigations)
+                    if critLabs.hasCriticalValues {
+                        Label("Critical labs", systemImage: "flask.fill")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.red)
+                            .labelStyle(.iconOnly)
+                    } else if patient.investigations.contains(where: { $0.status == .ordered || $0.status == .pending }) {
+                        Label("Pending labs", systemImage: "clock.badge.exclamationmark")
+                            .font(.system(size: 9))
+                            .foregroundStyle(.orange)
+                            .labelStyle(.iconOnly)
+                    }
                 }
             }
             .padding(.leading, 10)
