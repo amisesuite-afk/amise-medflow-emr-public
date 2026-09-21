@@ -58999,6 +58999,2371 @@
           ]
         }
       ]
+    },
+    "hepatobiliaryMalignancy": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Hepatocellular Carcinoma (HCC)",
+          "icd": "C22.0",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "hepatobiliary",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "cirrhosis_background",
+              "value": "known cirrhosis (hepatitis B/C, alcoholic, NASH) — greatest single risk factor for HCC",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "EASL 2018"
+            },
+            {
+              "key": "raised_afp",
+              "value": "serum AFP > 400 ng/mL (highly specific, less sensitive — many HCCs are AFP-negative)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet 2022"
+            },
+            {
+              "key": "arterial_washout_mri",
+              "value": "hepatic arterial phase enhancement with venous washout on MRI/CT (LI-RADS 5 pattern)",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "EASL 2018"
+            },
+            {
+              "key": "hbsag_positive",
+              "value": "chronic hepatitis B surface antigen positivity — Caribbean pool high prevalence",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2022"
+            },
+            {
+              "key": "right_upper_quadrant_mass",
+              "value": "right upper quadrant mass with hepatomegaly in cirrhotic patient",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "EASL 2018"
+            },
+            {
+              "key": "portal_vein_thrombus",
+              "value": "tumour portal vein thrombosis on imaging (macrovascular invasion)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2022"
+            },
+            {
+              "key": "weight_loss_anorexia",
+              "value": "significant weight loss, anorexia, and right upper quadrant pain in cirrhotic",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "EASL 2018"
+            },
+            {
+              "key": "decompensated_cirrhosis",
+              "value": "new decompensation (ascites, jaundice, encephalopathy) in previously compensated cirrhotic",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2022"
+            }
+          ]
+        },
+        {
+          "name": "Cholangiocarcinoma (Klatskin / Intrahepatic / Distal)",
+          "icd": "C22.1",
+          "logPrior": -29,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "hepatobiliary",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "painless_jaundice_biliary",
+              "value": "painless progressive jaundice with pale stools and dark urine (biliary obstruction pattern)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "biliary_stricture_hilar",
+              "value": "hilar biliary stricture on MRCP (Bismuth-Corlette classification)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "raised_ca19-9",
+              "value": "CA 19-9 > 129 U/mL in biliary obstruction context (moderate specificity — also elevated in PSC, cholangitis)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Gut 2019"
+            },
+            {
+              "key": "psc_background",
+              "value": "primary sclerosing cholangitis — lifetime cholangiocarcinoma risk 10–15%",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "biliary_ductal_wall_thickening",
+              "value": "thickened bile duct wall with periductal infiltration on CT/MRI",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Gut 2019"
+            },
+            {
+              "key": "pruritus_weight_loss",
+              "value": "generalised pruritus, weight loss, and right upper quadrant discomfort",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "hepatolithiasis",
+              "value": "intrahepatic bile duct stones (hepatolithiasis) — risk factor in endemic regions",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Gut 2019"
+            },
+            {
+              "key": "late_presentation",
+              "value": "typically presents late — resectable in < 30% at diagnosis",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet Oncol 2021"
+            }
+          ]
+        },
+        {
+          "name": "Gallbladder Carcinoma",
+          "icd": "C23",
+          "logPrior": -29,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "hepatobiliary",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "incidental_cholecystectomy",
+              "value": "incidental finding of gallbladder carcinoma on cholecystectomy histology (T1/T2 — potentially curable)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "EJSO 2020"
+            },
+            {
+              "key": "gallbladder_mass_stones",
+              "value": "gallbladder mass or focal wall thickening > 3 mm on ultrasound with gallstones",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "EJSO 2020"
+            },
+            {
+              "key": "porcelain_gallbladder",
+              "value": "porcelain gallbladder (calcified wall) with focal calcification pattern — elevated risk",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Ann Surg 2019"
+            },
+            {
+              "key": "chronic_cholelithiasis_risk",
+              "value": "long-standing gallstones (> 3 cm) — primary risk factor for gallbladder carcinoma",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "EJSO 2020"
+            },
+            {
+              "key": "jaundice_late",
+              "value": "jaundice in gallbladder cancer indicates biliary infiltration — advanced stage",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Ann Surg 2019"
+            },
+            {
+              "key": "right_upper_pain_weight_loss",
+              "value": "right upper quadrant pain, weight loss, anorexia progressing over weeks",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "EJSO 2020"
+            },
+            {
+              "key": "ct_gallbladder_invasion",
+              "value": "CT showing gallbladder mass with hepatic invasion or lymphadenopathy",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Ann Surg 2019"
+            },
+            {
+              "key": "female_hispanic_risk",
+              "value": "higher incidence in women and in indigenous/Caribbean populations with gallstone prevalence",
+              "logLR": 11,
+              "evidenceLabel": "weak positive",
+              "citation": "EJSO 2020"
+            }
+          ]
+        },
+        {
+          "name": "Colorectal Liver Metastases",
+          "icd": "C78.7",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "hepatobiliary",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "oncology",
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "known_crc_history",
+              "value": "known prior colorectal cancer — synchronous metastases in 20–25%, metachronous in further 30%",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Ann Surg 2020"
+            },
+            {
+              "key": "multiple_hepatic_lesions",
+              "value": "multiple hypovascular hepatic lesions with peripheral enhancement on contrast CT",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "raised_cea",
+              "value": "elevated CEA > 5 ng/mL — most useful as surveillance marker for metachronous disease",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Ann Surg 2020"
+            },
+            {
+              "key": "right_lobe_predilection",
+              "value": "lesions predominantly right hepatic lobe (portal venous drainage from right colon)",
+              "logLR": 11,
+              "evidenceLabel": "weak positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "hepatomegaly_palpable",
+              "value": "hepatomegaly or palpable hepatic nodules on examination",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Ann Surg 2020"
+            },
+            {
+              "key": "weight_loss_fatigue_crc",
+              "value": "weight loss, fatigue, and right upper quadrant discomfort after CRC treatment",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "raised_alk_phos",
+              "value": "raised alkaline phosphatase and GGT with hepatic lesions",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "Ann Surg 2020"
+            },
+            {
+              "key": "resectable_metastases",
+              "value": "up to 25% of hepatic metastases are resectable with curative intent — crucial to assess",
+              "logLR": 11,
+              "evidenceLabel": "weak positive",
+              "citation": "Lancet Oncol 2021"
+            }
+          ]
+        },
+        {
+          "name": "Periampullary / Pancreatic Head Carcinoma",
+          "icd": "C25.0",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "hepatobiliary",
+            "pancreatic",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "painless_progressive_jaundice",
+              "value": "painless progressive obstructive jaundice — Courvoisier's sign (palpable gallbladder)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NCCN 2022"
+            },
+            {
+              "key": "triple_duct_sign",
+              "value": "'double duct sign' on MRCP/ERCP — simultaneous pancreatic duct and CBD dilatation",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NCCN 2022"
+            },
+            {
+              "key": "ct_pancreatic_head_mass",
+              "value": "hypodense mass in pancreatic head on CT with vascular encasement",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Gut 2021"
+            },
+            {
+              "key": "new_onset_diabetes",
+              "value": "new-onset diabetes mellitus in patient > 50 years — can be paraneoplastic",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NCCN 2022"
+            },
+            {
+              "key": "ca19-9_elevated",
+              "value": "CA 19-9 > 37 U/mL — most useful in combination with imaging, not standalone",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Gut 2021"
+            },
+            {
+              "key": "weight_loss_anorexia_upper",
+              "value": "significant weight loss, anorexia, and epigastric/back pain radiating to spine",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "NCCN 2022"
+            },
+            {
+              "key": "eus_fine_needle",
+              "value": "EUS with fine-needle aspiration — sensitivity 85–90% for pancreatic mass",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Gut 2021"
+            },
+            {
+              "key": "venous_thrombosis_trousseau",
+              "value": "migratory thrombophlebitis (Trousseau's syndrome) in context of weight loss",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NCCN 2022"
+            }
+          ]
+        },
+        {
+          "name": "Hepatic Abscess (Pyogenic / Amoebic)",
+          "icd": "K75.0",
+          "logPrior": -24,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal",
+            "hepatobiliary",
+            "infectious"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology",
+            "infectious_disease"
+          ],
+          "features": [
+            {
+              "key": "fever_rigors_rub",
+              "value": "fever, rigors, and right upper quadrant pain — classic triad of hepatic abscess",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2021"
+            },
+            {
+              "key": "hyperechoic_hypoechoic_lesion",
+              "value": "hyperechoic or hypoechoic hepatic lesion(s) on ultrasound with internal echoes/debris",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "raised_wbc_crp",
+              "value": "raised WBC > 15 × 10⁹/L and CRP > 100 mg/L",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2021"
+            },
+            {
+              "key": "amoebiasis_travel",
+              "value": "travel to or residence in endemic region (Caribbean, South America) — raises amoebic abscess probability",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "positive_entamoeba_serology",
+              "value": "positive Entamoeba histolytica serology (amoebic abscess — responds to metronidazole)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet 2021"
+            },
+            {
+              "key": "biliary_source",
+              "value": "biliary source (cholangitis, cholecystitis, biliary stent) as underlying cause — pyogenic",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "right_lobe_single",
+              "value": "single large right lobe abscess (more typical of amoebic) vs. multiple small (more pyogenic)",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2021"
+            },
+            {
+              "key": "pleural_effusion_right",
+              "value": "right-sided sympathetic pleural effusion from hepatic inflammation",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2019"
+            }
+          ]
+        },
+        {
+          "name": "Portal Hypertension Complications",
+          "icd": "K76.6",
+          "logPrior": -20,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal",
+            "hepatobiliary",
+            "vascular"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology"
+          ],
+          "features": [
+            {
+              "key": "oesophageal_varices_bleed",
+              "value": "haematemesis or melaena in known cirrhotic — variceal bleed until proven otherwise",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "AASLD 2021"
+            },
+            {
+              "key": "splenomegaly_hypersplenism",
+              "value": "splenomegaly with thrombocytopaenia and leukopenia (hypersplenism from portal hypertension)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "AASLD 2021"
+            },
+            {
+              "key": "ascites_shifting_dullness",
+              "value": "ascites on examination (shifting dullness, fluid thrill) — commonest presentation of portal hypertension",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE CG165 2016"
+            },
+            {
+              "key": "caput_medusae",
+              "value": "dilated periumbilical veins (caput medusae) — pathognomonic venous collateral pattern",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "AASLD 2021"
+            },
+            {
+              "key": "hepatic_encephalopathy",
+              "value": "hepatic encephalopathy (confusion, asterixis, elevated ammonia) in cirrhotic context",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE CG165 2016"
+            },
+            {
+              "key": "sbp_signs",
+              "value": "spontaneous bacterial peritonitis features: fever, abdominal pain, worsening encephalopathy in ascitic patient",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "AASLD 2021"
+            },
+            {
+              "key": "hepatic_venous_gradient",
+              "value": "hepatic venous pressure gradient (HVPG) > 10 mmHg on measurement",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "AASLD 2021"
+            },
+            {
+              "key": "gastric_varices",
+              "value": "gastric fundal varices on endoscopy — higher rebleed risk than oesophageal varices",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "AASLD 2021"
+            }
+          ]
+        },
+        {
+          "name": "Hydatid Cyst / Liver Cyst",
+          "icd": "B67.0",
+          "logPrior": -29,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "hepatobiliary",
+            "infectious"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology",
+            "infectious_disease"
+          ],
+          "features": [
+            {
+              "key": "cystic_hepatic_lesion",
+              "value": "cystic hepatic lesion on ultrasound with internal daughter cysts or 'water lily' sign",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "WHO 2018"
+            },
+            {
+              "key": "hydatid_serology",
+              "value": "positive Echinococcus IgG serology (ELISA or IHA) — sensitivity 80–90% for hepatic hydatid",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "WHO 2018"
+            },
+            {
+              "key": "endemic_exposure",
+              "value": "exposure to endemic area (Caribbean rural setting, South America) or contact with sheep/dogs",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "WHO 2018"
+            },
+            {
+              "key": "eosinophilia",
+              "value": "peripheral blood eosinophilia (> 5%) — present in 25–40% of hydatid disease",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "calcified_cyst_wall",
+              "value": "calcified cyst wall on CT — pathognomonic of old or treated hydatid cyst",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "WHO 2018"
+            },
+            {
+              "key": "anaphylaxis_rupture",
+              "value": "acute anaphylaxis following rupture — classic diagnostic clue if cyst leak occurs",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "simple_cyst_no_septae",
+              "value": "simple unilocular cyst without septae — more consistent with simple hepatic cyst (benign)",
+              "logLR": -14,
+              "evidenceLabel": "negative",
+              "citation": "WHO 2018"
+            },
+            {
+              "key": "right_lobe_location",
+              "value": "70% of hydatid cysts are in the right hepatic lobe",
+              "logLR": 11,
+              "evidenceLabel": "weak positive",
+              "citation": "WHO 2018"
+            }
+          ]
+        }
+      ]
+    },
+    "pancreaticSurgical": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Pancreatic Ductal Adenocarcinoma",
+          "icd": "C25.9",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "pancreatic",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "epigastric_back_pain",
+              "value": "epigastric pain radiating to back, relieved by sitting forward (retroperitoneal invasion)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "NCCN 2022"
+            },
+            {
+              "key": "painless_jaundice_head",
+              "value": "painless obstructive jaundice from pancreatic head mass compressing CBD",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NCCN 2022"
+            },
+            {
+              "key": "weight_loss_profound",
+              "value": "profound weight loss (> 10% body weight) over weeks to months",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Gut 2021"
+            },
+            {
+              "key": "new_diabetes_50plus",
+              "value": "new-onset diabetes mellitus after age 50 — paraneoplastic in up to 50% of PDAC",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NCCN 2022"
+            },
+            {
+              "key": "ct_pdac_hypodense",
+              "value": "hypodense pancreatic mass with vascular encasement on portal-venous phase CT",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Gut 2021"
+            },
+            {
+              "key": "ca19-9_high",
+              "value": "CA 19-9 > 100 U/mL in context of pancreatic mass and symptoms",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NCCN 2022"
+            },
+            {
+              "key": "steatorrhoea",
+              "value": "steatorrhoea and exocrine insufficiency from pancreatic duct obstruction",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Gut 2021"
+            },
+            {
+              "key": "depression_preceding",
+              "value": "new-onset depression preceding diagnosis — recognised paraneoplastic association with PDAC",
+              "logLR": 11,
+              "evidenceLabel": "weak positive",
+              "citation": "NCCN 2022"
+            }
+          ]
+        },
+        {
+          "name": "Intraductal Papillary Mucinous Neoplasm (IPMN)",
+          "icd": "D13.6",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "pancreatic"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology"
+          ],
+          "features": [
+            {
+              "key": "pancreatic_duct_dilatation",
+              "value": "main pancreatic duct dilatation ≥ 5 mm on MRCP/EUS without other cause",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "IAP 2017"
+            },
+            {
+              "key": "mucin_extrusion_papilla",
+              "value": "mucin extrusion from patulous ampulla of Vater on endoscopy — pathognomonic of IPMN",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "IAP 2017"
+            },
+            {
+              "key": "mural_nodule",
+              "value": "mural nodule ≥ 5 mm within cyst on EUS — high-risk stigma for malignancy",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "IAP 2017"
+            },
+            {
+              "key": "branch_duct_ipmn",
+              "value": "branch-duct IPMN: cystic lesion communicating with main pancreatic duct on MRCP",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "IAP 2017"
+            },
+            {
+              "key": "abdominal_pain_recurrent",
+              "value": "recurrent episodes of acute pancreatitis from mucus plugging of pancreatic duct",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Gut 2019"
+            },
+            {
+              "key": "incidental_cyst",
+              "value": "incidental finding of pancreatic cystic lesion on CT/MRI performed for other reasons (frequent scenario)",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "IAP 2017"
+            },
+            {
+              "key": "raised_cyst_cea",
+              "value": "elevated CEA in pancreatic cyst fluid (EUS-FNA) > 192 ng/mL — mucinous lesion",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Gut 2019"
+            },
+            {
+              "key": "high_risk_stigmata",
+              "value": "high-risk stigmata: jaundice, enhancing mural nodule, main duct ≥ 10 mm — resection indicated",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "IAP 2017"
+            }
+          ]
+        },
+        {
+          "name": "Chronic Pancreatitis",
+          "icd": "K86.1",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "pancreatic"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology"
+          ],
+          "features": [
+            {
+              "key": "recurrent_epigastric_episodes",
+              "value": "recurrent severe epigastric pain episodes, often requiring hospitalisation over years",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "EASD 2022"
+            },
+            {
+              "key": "heavy_alcohol_history",
+              "value": "heavy alcohol use (> 5 drinks/day) for > 5 years — commonest cause in Caribbean males",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Gut 2020"
+            },
+            {
+              "key": "pancreatic_calcification",
+              "value": "pancreatic calcification (calculi within ducts) on plain AXR or CT — near-pathognomonic",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Gut 2020"
+            },
+            {
+              "key": "steatorrhoea_exocrine",
+              "value": "steatorrhoea (oily, difficult-to-flush stools) from exocrine pancreatic insufficiency",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "EASD 2022"
+            },
+            {
+              "key": "type3c_diabetes",
+              "value": "type 3c (pancreatogenic) diabetes with brittle control from endocrine insufficiency",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Gut 2020"
+            },
+            {
+              "key": "chain_of_lakes_mrcp",
+              "value": "'chain of lakes' appearance of pancreatic duct on MRCP — alternating strictures and dilatation",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Gut 2020"
+            },
+            {
+              "key": "weight_loss_chronic_pain",
+              "value": "progressive weight loss with chronic upper abdominal pain and nutritional deficiency",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "EASD 2022"
+            },
+            {
+              "key": "tropical_pancreatitis",
+              "value": "tropical (fibrocalculous) pancreatitis — distinctive variant seen in Caribbean and South Asia",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Gut 2020"
+            }
+          ]
+        },
+        {
+          "name": "Pancreatic Pseudocyst",
+          "icd": "K86.3",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "pancreatic"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology"
+          ],
+          "features": [
+            {
+              "key": "acute_pancreatitis_preceding",
+              "value": "persistent abdominal pain 4–6 weeks after acute pancreatitis episode",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "AGA 2020"
+            },
+            {
+              "key": "cystic_peripancreatic",
+              "value": "cystic peripancreatic collection on CT > 4 weeks after acute pancreatitis — pseudocyst criteria",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "AGA 2020"
+            },
+            {
+              "key": "epigastric_fullness",
+              "value": "epigastric fullness and tender palpable upper abdominal mass",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "amylase_elevation",
+              "value": "persistently elevated serum amylase > 4 weeks after acute pancreatitis",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "AGA 2020"
+            },
+            {
+              "key": "eus_pseudocyst_confirm",
+              "value": "EUS confirming homogeneous fluid collection communicating with main duct — ideal for drainage planning",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "AGA 2020"
+            },
+            {
+              "key": "walled_off_necrosis",
+              "value": "heterogeneous collection with solid debris on CT — walled-off necrosis (not pure pseudocyst)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "ductal_communication",
+              "value": "main pancreatic duct communication on MRCP — important for drainage route selection",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "AGA 2020"
+            },
+            {
+              "key": "infection_pain_fever",
+              "value": "fever and worsening pain in known pseudocyst — infected pseudocyst/abscess requiring drainage",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2019"
+            }
+          ]
+        },
+        {
+          "name": "Insulinoma",
+          "icd": "D13.7",
+          "logPrior": -35,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal",
+            "pancreatic",
+            "endocrine"
+          ],
+          "specialties": [
+            "general_surgery",
+            "endocrinology"
+          ],
+          "features": [
+            {
+              "key": "whipple_triad",
+              "value": "Whipple's triad: symptoms of hypoglycaemia during fasting, glucose < 2.8 mmol/L, relief with glucose",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "fasting_hypoglycaemia",
+              "value": "episodic neuroglycopenic symptoms (confusion, seizure) after fasting or exercise — relieved by eating",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "suppressed_c_peptide",
+              "value": "inappropriately elevated insulin with C-peptide during documented hypoglycaemia (not exogenous insulin)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "supervised_fast",
+              "value": "prolonged supervised fast (72-hour fast) provoking symptomatic hypoglycaemia — gold standard diagnostic test",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "eus_localisation",
+              "value": "EUS superior to CT for localisation of small (< 2 cm) intrapancreatic insulinoma",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "weight_gain",
+              "value": "paradoxical weight gain from frequent carbohydrate ingestion to counter hypoglycaemia",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet DEM 2021"
+            },
+            {
+              "key": "men1_association",
+              "value": "insulinoma in MEN1 context — multiple pancreatic NETs, familial history",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "benign_single_tumour",
+              "value": "90% of insulinomas are benign, single, < 2 cm — excellent prognosis with enucleation",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet DEM 2021"
+            }
+          ]
+        },
+        {
+          "name": "Pancreatic Neuroendocrine Tumour (Non-functioning)",
+          "icd": "D37.7",
+          "logPrior": -28,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "pancreatic",
+            "endocrine",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "incidental_pancreatic_mass",
+              "value": "incidental hypervascular pancreatic mass on CT/MRI (arterial phase enhancement) without hormone syndrome",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "elevated_chromogranin_a",
+              "value": "elevated serum chromogranin A — non-specific but supportive marker for pancreatic NETs",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "somatostatin_receptor_pet",
+              "value": "positive Ga-68 DOTATATE PET — highly sensitive for somatostatin receptor expressing NETs",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "liver_metastases_net",
+              "value": "hepatic metastases from well-differentiated NET (hypervascular, 'target' lesion pattern)",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "grading_ki67",
+              "value": "Ki-67 index guides grade (G1 < 3%, G2 3–20%, G3 > 20%) — determines prognosis and treatment",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "abdominal_pain_vague",
+              "value": "vague non-specific abdominal pain, weight loss — presentation of non-functioning PNET",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "men1_vpoma_gastrinoma",
+              "value": "MEN1-associated pancreatic NET (VIPoma, gastrinoma, non-functioning) — familial context",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "slow_growing_prognosis",
+              "value": "G1/G2 PNETs are slow-growing — even with metastases, 5-year survival 50–70%",
+              "logLR": 11,
+              "evidenceLabel": "weak positive",
+              "citation": "Lancet Oncol 2021"
+            }
+          ]
+        },
+        {
+          "name": "Acute Pancreatitis — Severe / Necrotising",
+          "icd": "K85.9",
+          "logPrior": -20,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal",
+            "pancreatic"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology"
+          ],
+          "features": [
+            {
+              "key": "severe_epigastric_band_pain",
+              "value": "severe constant epigastric pain radiating to back in band-like distribution",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2021"
+            },
+            {
+              "key": "amylase_3x_upper",
+              "value": "serum amylase or lipase > 3× upper limit of normal",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2021"
+            },
+            {
+              "key": "gallstone_aetiology",
+              "value": "gallstones on ultrasound — commonest cause of acute pancreatitis globally",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2021"
+            },
+            {
+              "key": "modified_glasgow_3plus",
+              "value": "modified Glasgow score ≥ 3 within 48 hours — predicts severe acute pancreatitis",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2021"
+            },
+            {
+              "key": "ct_necrosis",
+              "value": "CT necrotising pancreatitis: ≥ 30% necrosis of pancreatic parenchyma with peripancreatic fluid collections",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Gut 2020"
+            },
+            {
+              "key": "organ_failure",
+              "value": "organ failure (respiratory, renal, cardiovascular) in acute pancreatitis — defines severe AP",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Gut 2020"
+            },
+            {
+              "key": "cullen_grey_turner",
+              "value": "periumbilical (Cullen's sign) or flank (Grey Turner's sign) ecchymosis — haemorrhagic pancreatitis",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2021"
+            },
+            {
+              "key": "alcohol_binge_trigger",
+              "value": "alcohol binge preceding episode by 12–48 hours (alcoholic acute pancreatitis)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Gut 2020"
+            }
+          ]
+        },
+        {
+          "name": "Zollinger-Ellison Syndrome (Gastrinoma)",
+          "icd": "E16.4",
+          "logPrior": -35,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "pancreatic",
+            "endocrine"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology",
+            "endocrinology"
+          ],
+          "features": [
+            {
+              "key": "refractory_peptic_ulcer",
+              "value": "refractory or recurrent peptic ulcers despite adequate PPI therapy",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "multiple_distal_ulcers",
+              "value": "multiple ulcers in distal duodenum and jejunum (unusual locations)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "fasting_gastrin_elevated",
+              "value": "fasting serum gastrin > 1000 pg/mL (off PPIs) with gastric acid hypersecretion",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "secretin_stimulation",
+              "value": "paradoxical rise in gastrin > 200 pg/mL after IV secretin — gold standard provocation test",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "diarrhoea_watery",
+              "value": "profuse watery diarrhoea from hypersecretory acid state damaging small bowel",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Gut 2019"
+            },
+            {
+              "key": "men1_setting",
+              "value": "gastrinoma in MEN1 context — parathyroid hyperplasia, pituitary adenoma, pancreatic NET",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "oesophagitis_reflux",
+              "value": "severe erosive oesophagitis resistant to standard acid suppression",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Gut 2019"
+            },
+            {
+              "key": "duodenal_gastrinoma",
+              "value": "most gastrinomas are in the 'gastrinoma triangle' — duodenum, pancreatic head, peripancreatic nodes",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "ENETS 2022"
+            }
+          ]
+        }
+      ]
+    },
+    "oesophagogastricSurgical": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Oesophageal Adenocarcinoma",
+          "icd": "C15.9",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "oesophagogastric",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "progressive_dysphagia_solids",
+              "value": "progressive dysphagia for solids first then liquids over weeks to months",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG83 2018"
+            },
+            {
+              "key": "barrett_oesophagus_hgd",
+              "value": "known Barrett's oesophagus progressing to high-grade dysplasia on surveillance",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG83 2018"
+            },
+            {
+              "key": "ct_oesophageal_mass",
+              "value": "oesophageal mass or thickening on CT with adjacent lymphadenopathy",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "gerd_obesity_risk",
+              "value": "long-standing GERD, obesity, male sex — primary risk factors for oesophageal adenocarcinoma",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NICE NG83 2018"
+            },
+            {
+              "key": "weight_loss_anorexia_dys",
+              "value": "weight loss, anorexia, and progressive dysphagia — typical late presentation",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "endoscopy_oac_biopsy",
+              "value": "irregular, ulcerated or fungating lesion in distal oesophagus/GOJ on OGD with positive biopsy",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG83 2018"
+            },
+            {
+              "key": "odynophagia",
+              "value": "odynophagia (painful swallowing) indicating mucosal invasion",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "alarm_symptoms_age50",
+              "value": "new dysphagia or dyspepsia with alarm features in patient > 55 years — mandatory OGD",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG83 2018"
+            }
+          ]
+        },
+        {
+          "name": "Oesophageal Squamous Cell Carcinoma",
+          "icd": "C15.9",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "oesophagogastric",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "mid_upper_oesophagus",
+              "value": "tumour in mid or upper oesophagus (more typical of SCC than adenocarcinoma at GOJ)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "alcohol_tobacco_risk",
+              "value": "heavy alcohol and tobacco use — primary combined risk for oesophageal SCC",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG83 2018"
+            },
+            {
+              "key": "achalasia_longstanding",
+              "value": "longstanding achalasia — 16× increased risk of oesophageal SCC from stasis carcinogen exposure",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "progressive_dysphagia_scc",
+              "value": "progressive dysphagia from solid to semi-solid to liquid — typical obstructive pattern",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG83 2018"
+            },
+            {
+              "key": "hypopharyngeal_laryngeal",
+              "value": "concurrent hypopharyngeal or laryngeal SCC — field cancerisation from common risk factors",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "weight_loss_cachexia_oesoph",
+              "value": "severe weight loss and cachexia — typically already advanced at diagnosis",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "tracheo_oesoph_fistula",
+              "value": "tracheooesophageal fistula — coughing with swallowing, pulmonary soiling from advanced disease",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG83 2018"
+            },
+            {
+              "key": "plummer_vinson",
+              "value": "Plummer-Vinson syndrome (iron deficiency anaemia, dysphagia, postcricoid webs) — risk state for SCC",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet Oncol 2021"
+            }
+          ]
+        },
+        {
+          "name": "Gastric Carcinoma",
+          "icd": "C16.9",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "oesophagogastric",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "epigastric_pain_weight_loss",
+              "value": "epigastric pain, early satiety, and unintentional weight loss",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG12 2019"
+            },
+            {
+              "key": "helicobacter_atrophic",
+              "value": "H. pylori infection with atrophic gastritis/intestinal metaplasia — primary risk factor for intestinal-type gastric cancer",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NCCN 2022"
+            },
+            {
+              "key": "ogd_ulcerated_mass",
+              "value": "irregular ulcerated gastric mass or non-healing ulcer on OGD with positive biopsy",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG12 2019"
+            },
+            {
+              "key": "virchow_node",
+              "value": "left supraclavicular (Virchow's) lymphadenopathy — classic distant metastatic sign",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NCCN 2022"
+            },
+            {
+              "key": "krukenberg_tumour",
+              "value": "bilateral ovarian masses (Krukenberg tumour) from trans-coelomic gastric cancer spread in female",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NCCN 2022"
+            },
+            {
+              "key": "sister_mary_joseph",
+              "value": "umbilical metastatic nodule (Sister Mary Joseph's node) — trans-coelomic peritoneal spread",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG12 2019"
+            },
+            {
+              "key": "family_gastric_cancer",
+              "value": "first-degree relative with gastric cancer or CDH1 germline mutation (hereditary diffuse gastric cancer)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NCCN 2022"
+            },
+            {
+              "key": "dyspepsia_alarm_55",
+              "value": "new dyspepsia after age 55 with alarm features — NICE mandates 2-week OGD referral",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG12 2019"
+            }
+          ]
+        },
+        {
+          "name": "Achalasia",
+          "icd": "K22.0",
+          "logPrior": -24,
+          "urgency": 0,
+          "systems": [
+            "gastrointestinal",
+            "oesophagogastric"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology"
+          ],
+          "features": [
+            {
+              "key": "dysphagia_solids_liquids",
+              "value": "dysphagia for BOTH solids AND liquids from outset (unlike malignancy which starts with solids)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "ACG 2020"
+            },
+            {
+              "key": "regurgitation_undigested",
+              "value": "regurgitation of undigested food (no acid taste) — oesophageal stasis above LOS",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "ACG 2020"
+            },
+            {
+              "key": "bird_beak_barium",
+              "value": "'bird beak' tapering of gastro-oesophageal junction on barium swallow",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "ACG 2020"
+            },
+            {
+              "key": "manometry_aperistalsis",
+              "value": "high-resolution manometry: absent peristalsis plus elevated LOS pressure — gold standard diagnosis",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "ACG 2020"
+            },
+            {
+              "key": "nocturnal_cough_aspiration",
+              "value": "nocturnal cough, aspiration, and recurrent chest infections from oesophageal overflow",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "ACG 2020"
+            },
+            {
+              "key": "weight_loss_dysphagia",
+              "value": "weight loss from inadequate oral intake due to dysphagia, not due to malignancy",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "ACG 2020"
+            },
+            {
+              "key": "chest_pain_achalasia",
+              "value": "non-cardiac chest pain from oesophageal spasm in achalasia — Type III most common",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "ACG 2020"
+            },
+            {
+              "key": "chagas_endemic",
+              "value": "Chagas disease aetiology in Caribbean/South American patient (Trypanosoma cruzi destroys myenteric plexus)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "ACG 2020"
+            }
+          ]
+        },
+        {
+          "name": "Boerhaave Syndrome (Spontaneous Oesophageal Perforation)",
+          "icd": "K22.3",
+          "logPrior": -35,
+          "urgency": 3,
+          "systems": [
+            "gastrointestinal",
+            "oesophagogastric",
+            "thoracic"
+          ],
+          "specialties": [
+            "general_surgery",
+            "thoracic_surgery"
+          ],
+          "features": [
+            {
+              "key": "mackler_triad",
+              "value": "Mackler's triad: vomiting → chest pain → subcutaneous emphysema — < 50% present with all three",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "subcutaneous_emphysema_neck",
+              "value": "subcutaneous emphysema in neck and chest wall after forceful vomiting",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "left_pleural_effusion_gas",
+              "value": "left-sided hydropneumothorax or pleural effusion with high amylase on CT",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "mediastinal_gas_ct",
+              "value": "mediastinal gas (pneumomediastinum) on CT — diagnostic of oesophageal perforation",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "prolonged_vomiting_preceded",
+              "value": "forceful vomiting episode (e.g. after large meal, alcohol) immediately preceding severe chest pain",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "gastrograffin_swallow",
+              "value": "contrast oesophageal swallow (Gastrograffin first, then dilute barium) confirming leak site",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "septic_shock_rapid",
+              "value": "rapid progression to septic shock within hours without drainage/repair — mortality > 50% if delayed",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "epigastric_aortic_mimics",
+              "value": "presentation mimics aortic dissection and MI — CT thorax/abdomen differentiates rapidly",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2019"
+            }
+          ]
+        },
+        {
+          "name": "Peptic Ulcer Perforation",
+          "icd": "K27.1",
+          "logPrior": -22,
+          "urgency": 3,
+          "systems": [
+            "gastrointestinal",
+            "oesophagogastric"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "sudden_onset_epigastric",
+              "value": "sudden onset ('thunderclap') severe epigastric pain — 'like a knife' perforation moment",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "board_rigid_abdomen",
+              "value": "board-like rigid abdomen with generalised peritonism — chemical peritonitis from gastric acid",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "free_air_erect_cxr",
+              "value": "free air under diaphragm on erect chest X-ray — present in 70–80%",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet 2020"
+            },
+            {
+              "key": "ct_free_air_exudate",
+              "value": "CT confirming free intraperitoneal air and periduodenal/perigastric exudate",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet 2020"
+            },
+            {
+              "key": "nsaid_helicobacter_use",
+              "value": "regular NSAID use or known H. pylori infection — primary risk factors",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "previous_dyspepsia",
+              "value": "antecedent history of epigastric pain/dyspepsia before acute perforation",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2020"
+            },
+            {
+              "key": "pulse_normal_initially",
+              "value": "paradoxically normal pulse initially (vagal inhibition from peritoneal shock) then tachycardic",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "steroid_anticoagulant_risk",
+              "value": "concurrent steroid use or anticoagulation masking signs — higher risk of silent large perforation",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2020"
+            }
+          ]
+        },
+        {
+          "name": "Gastric Outlet Obstruction",
+          "icd": "K31.1",
+          "logPrior": -24,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal",
+            "oesophagogastric"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology"
+          ],
+          "features": [
+            {
+              "key": "projectile_vomiting",
+              "value": "projectile, non-bilious vomiting (bile-free confirms obstruction above ampulla)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "succussion_splash",
+              "value": "succussion splash on auscultation > 3 hours after last meal",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "hypochloraemic_alkalosis",
+              "value": "hypochloraemic, hypokalaemic metabolic alkalosis with paradoxical aciduria",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "malignant_vs_benign",
+              "value": "causes: malignant (gastric/pancreatic cancer, >50y) vs benign (PUD scarring, adult hypertrophic PS)",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2020"
+            },
+            {
+              "key": "ct_dilated_stomach",
+              "value": "markedly dilated stomach with retained food and debris on CT — gastric outlet obstruction",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "weight_loss_dehydration",
+              "value": "significant weight loss and dehydration from repeated vomiting and poor intake",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2020"
+            },
+            {
+              "key": "pyloric_channel_ulcer",
+              "value": "pyloric channel or duodenal bulb ulcer on OGD — benign cause of gastric outlet obstruction",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "gastric_retention_delay",
+              "value": "markedly delayed gastric emptying on nuclear medicine scan — confirms outlet obstruction",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2020"
+            }
+          ]
+        },
+        {
+          "name": "Mallory-Weiss Tear",
+          "icd": "K22.6",
+          "logPrior": -17,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "oesophagogastric"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology"
+          ],
+          "features": [
+            {
+              "key": "haematemesis_after_vomiting",
+              "value": "haematemesis following repeated vomiting or retching — Mallory-Weiss tear mechanism",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "fresh_red_blood_vomit",
+              "value": "fresh bright red blood in vomit after initial non-bloody vomiting episodes",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "alcohol_binge_context",
+              "value": "alcohol binge preceding retching — most common precipitant of Mallory-Weiss tears",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "endoscopy_longitudinal_tear",
+              "value": "longitudinal mucosal tear at gastro-oesophageal junction on emergency OGD",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "self_limiting",
+              "value": "self-limiting in 80–90% — most stop bleeding spontaneously",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "no_portal_hypertension",
+              "value": "absence of portal hypertension features — distinguishes from variceal bleed",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "pregnancy_hyperemesis",
+              "value": "pregnancy with hyperemesis gravidarum — risk factor in young women",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "low_rockall_score",
+              "value": "typically low Rockall score — outpatient management often appropriate after haemostasis",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2019"
+            }
+          ]
+        }
+      ]
+    },
+    "thoracicSurgical": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Primary Spontaneous Pneumothorax",
+          "icd": "J93.1",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "respiratory",
+            "thoracic"
+          ],
+          "specialties": [
+            "general_surgery",
+            "thoracic_surgery",
+            "respiratory_medicine"
+          ],
+          "features": [
+            {
+              "key": "tall_thin_young_male",
+              "value": "tall thin young male (15–34 years) with no prior lung disease — classic demographic",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BTS 2010"
+            },
+            {
+              "key": "acute_unilateral_pleuritic",
+              "value": "sudden onset unilateral pleuritic chest pain with ipsilateral dyspnoea",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BTS 2010"
+            },
+            {
+              "key": "absent_breath_sounds",
+              "value": "absent or reduced breath sounds on ipsilateral auscultation",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BTS 2010"
+            },
+            {
+              "key": "cxr_lung_edge",
+              "value": "visible lung edge on CXR with no lung markings peripheral to it",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BTS 2010"
+            },
+            {
+              "key": "ct_visceral_pleural_line",
+              "value": "CT thorax confirming visceral pleural line with pleural gas — superior to CXR for small PTX",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BTS 2010"
+            },
+            {
+              "key": "smoking_marfan_risk",
+              "value": "smoking or Marfan syndrome / connective tissue disorder — risk factors for PSP",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "BTS 2010"
+            },
+            {
+              "key": "no_copd_interstitial",
+              "value": "no prior COPD, asthma, or interstitial lung disease (distinguishes from secondary PTX)",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "BTS 2010"
+            },
+            {
+              "key": "contralateral_recurrence",
+              "value": "contralateral presentation in patient with prior PSP — bilateral blebs typical",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BTS 2010"
+            }
+          ]
+        },
+        {
+          "name": "Tension Pneumothorax",
+          "icd": "J93.0",
+          "logPrior": -28,
+          "urgency": 3,
+          "systems": [
+            "respiratory",
+            "thoracic",
+            "cardiovascular"
+          ],
+          "specialties": [
+            "general_surgery",
+            "thoracic_surgery",
+            "emergency_medicine"
+          ],
+          "features": [
+            {
+              "key": "haemodynamic_compromise",
+              "value": "haemodynamic compromise (tachycardia, hypotension) with respiratory distress — cardinal signs",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "ATLS 2018"
+            },
+            {
+              "key": "tracheal_deviation",
+              "value": "tracheal deviation away from affected side (late sign — unreliable in practice)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "ATLS 2018"
+            },
+            {
+              "key": "distended_neck_veins",
+              "value": "distended neck veins (elevated JVP from mediastinal compression)",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "ATLS 2018"
+            },
+            {
+              "key": "absent_ipsilateral_sounds",
+              "value": "absent breath sounds ipsilateral with haemodynamic instability",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "ATLS 2018"
+            },
+            {
+              "key": "rib_fracture_ventilated",
+              "value": "trauma context: rib fractures or positive pressure ventilation preceding clinical deterioration",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "ATLS 2018"
+            },
+            {
+              "key": "pulsus_paradoxus",
+              "value": "pulsus paradoxus from cardiac tamponade physiology — mediastinal shift compresses heart",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "ATLS 2018"
+            },
+            {
+              "key": "clinical_diagnosis_treat",
+              "value": "tension PTX is a CLINICAL diagnosis — do not delay treatment for CXR confirmation",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "ATLS 2018"
+            },
+            {
+              "key": "needle_decompression",
+              "value": "emergency needle decompression (2nd intercostal space midclavicular line) relieves immediately",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "ATLS 2018"
+            }
+          ]
+        },
+        {
+          "name": "Empyema Thoracis",
+          "icd": "J86.9",
+          "logPrior": -22,
+          "urgency": 2,
+          "systems": [
+            "respiratory",
+            "thoracic",
+            "infectious"
+          ],
+          "specialties": [
+            "general_surgery",
+            "thoracic_surgery",
+            "respiratory_medicine"
+          ],
+          "features": [
+            {
+              "key": "parapneumonic_effusion_fever",
+              "value": "persistent fever and non-resolving pneumonia with pleural effusion despite antibiotics",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BTS 2010"
+            },
+            {
+              "key": "pleural_fluid_purulent",
+              "value": "aspiration of frank pus (pH < 7.2, glucose < 3.4, LDH > 1000) from pleural space — exudate criteria",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BTS 2010"
+            },
+            {
+              "key": "ultrasound_septations",
+              "value": "pleural fluid with internal septations/loculations on thoracic ultrasound",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BTS 2010"
+            },
+            {
+              "key": "ct_pleural_enhancement",
+              "value": "CT showing pleural wall thickening and enhancement with loculated collection",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BTS 2010"
+            },
+            {
+              "key": "positive_pleural_culture",
+              "value": "positive pleural fluid Gram stain or culture (most common: S. pneumoniae, S. aureus, gram-negative)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BTS 2010"
+            },
+            {
+              "key": "tb_risk_caribbean",
+              "value": "Streptococcal or TB empyema in Caribbean/HIV context — consider Mycobacterium tuberculosis",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "pleural_peel_fibrosis",
+              "value": "fibrothorax or pleural peel on CT — organised empyema requiring decortication",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BTS 2010"
+            },
+            {
+              "key": "splinting_reduced_expansion",
+              "value": "splinting of affected hemithorax with reduced expansion and stony dull percussion",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2018"
+            }
+          ]
+        },
+        {
+          "name": "Non-Small Cell Lung Cancer (NSCLC)",
+          "icd": "C34.9",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "respiratory",
+            "thoracic",
+            "oncology"
+          ],
+          "specialties": [
+            "thoracic_surgery",
+            "respiratory_medicine",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "new_haemoptysis_smoker",
+              "value": "new haemoptysis in smoker > 40 years — urgent 2-week-wait CXR and CT",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG122 2019"
+            },
+            {
+              "key": "ct_lung_mass_spiculation",
+              "value": "spiculated lung mass with pleural tethering or satellite nodules on CT thorax",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG122 2019"
+            },
+            {
+              "key": "pancoast_syndrome",
+              "value": "Pancoast syndrome: shoulder/arm pain, Horner's syndrome, atrophy of hand muscles (superior sulcus tumour)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "smoking_40py_risk",
+              "value": "heavy smoking history (> 40 pack-years) — primary risk factor for all lung cancers",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG122 2019"
+            },
+            {
+              "key": "svc_syndrome",
+              "value": "SVC syndrome (facial oedema, arm oedema, distended neck veins) from mediastinal compression",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "hilar_lymphadenopathy",
+              "value": "ipsilateral hilar or mediastinal lymphadenopathy on CT — staging-critical finding",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG122 2019"
+            },
+            {
+              "key": "persistent_new_cough",
+              "value": "persistent new or changed cough > 3 weeks in a smoker without other explanation",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NICE NG122 2019"
+            },
+            {
+              "key": "paraneoplastic_features",
+              "value": "paraneoplastic syndromes: SIADH, hypercalcaemia (squamous), Eaton-Lambert (small cell)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            }
+          ]
+        },
+        {
+          "name": "Malignant Pleural Mesothelioma",
+          "icd": "C45.0",
+          "logPrior": -29,
+          "urgency": 1,
+          "systems": [
+            "respiratory",
+            "thoracic",
+            "oncology"
+          ],
+          "specialties": [
+            "thoracic_surgery",
+            "respiratory_medicine",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "asbestos_exposure",
+              "value": "occupational or environmental asbestos exposure (latency 20–50 years) — primary risk factor",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "progressive_dyspnoea_effusion",
+              "value": "progressive dyspnoea with large unilateral pleural effusion — recurs rapidly after drainage",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BTS 2018"
+            },
+            {
+              "key": "pleural_thickening_ct",
+              "value": "circumferential or nodular pleural thickening > 1 cm on CT with effusion",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BTS 2018"
+            },
+            {
+              "key": "pleuroscopy_biopsy",
+              "value": "pleuroscopy with pleural biopsy — highest diagnostic yield for mesothelioma (> 90%)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BTS 2018"
+            },
+            {
+              "key": "chest_wall_invasion",
+              "value": "CT or MRI showing rib invasion or chest wall infiltration — locally advanced disease",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "serositis_calcification",
+              "value": "pleural calcification or plaques from prior asbestos exposure (asbestosis — risk context)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BTS 2018"
+            },
+            {
+              "key": "cytokeratin_calretinin",
+              "value": "immunohistochemistry: positive calretinin, CK5/6, WT-1 — epithelioid mesothelioma panel",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "unilateral_weight_loss",
+              "value": "unilateral chest pain, progressive dyspnoea, weight loss — non-specific but typical triad",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BTS 2018"
+            }
+          ]
+        },
+        {
+          "name": "Mediastinal Mass",
+          "icd": "J98.5",
+          "logPrior": -28,
+          "urgency": 1,
+          "systems": [
+            "thoracic",
+            "oncology"
+          ],
+          "specialties": [
+            "thoracic_surgery",
+            "respiratory_medicine",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "anterior_mediastinal_mass",
+              "value": "anterior mediastinal mass — 4 Ts: Thymoma, Teratoma, Terrible lymphoma, Thyroid (ectopic)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2020"
+            },
+            {
+              "key": "thymoma_myasthenia",
+              "value": "thymoma with paraneoplastic myasthenia gravis — ptosis, diplopia, proximal weakness",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2020"
+            },
+            {
+              "key": "lymphoma_b_symptoms",
+              "value": "mediastinal mass with B symptoms (fever, night sweats, weight loss) — lymphoma (Hodgkin's or DLBCL)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2020"
+            },
+            {
+              "key": "germ_cell_markers",
+              "value": "elevated AFP or β-hCG in young male with anterior mediastinal mass — germ cell tumour",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2020"
+            },
+            {
+              "key": "middle_mediastinal_mass",
+              "value": "middle mediastinal mass — bronchogenic cyst, lymphoma, aortic aneurysm, foregut cyst",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet Oncol 2020"
+            },
+            {
+              "key": "posterior_mediastinal_mass",
+              "value": "posterior mediastinal (paravertebral) mass — neurogenic tumour (schwannoma, neurofibroma) most likely",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet Oncol 2020"
+            },
+            {
+              "key": "svc_syndrome_compress",
+              "value": "SVC syndrome from mass compression — facial plethora, oedema, distended veins",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2020"
+            },
+            {
+              "key": "ct_pet_staging",
+              "value": "CT thorax/abdomen/pelvis + PET-CT for characterisation and staging of mediastinal mass",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2020"
+            }
+          ]
+        },
+        {
+          "name": "Malignant Pleural Effusion",
+          "icd": "J91.0",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "respiratory",
+            "thoracic",
+            "oncology"
+          ],
+          "specialties": [
+            "thoracic_surgery",
+            "respiratory_medicine",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "known_malignancy_effusion",
+              "value": "known primary malignancy (lung, breast, ovary, lymphoma) with new pleural effusion",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BTS 2018"
+            },
+            {
+              "key": "exudative_light_criteria",
+              "value": "exudative effusion by Light's criteria (protein ratio > 0.5, LDH ratio > 0.6, LDH > 2/3 upper limit)",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BTS 2018"
+            },
+            {
+              "key": "positive_pleural_cytology",
+              "value": "malignant cells on pleural fluid cytology — sensitivity 60–70% for malignant pleural effusion",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BTS 2018"
+            },
+            {
+              "key": "large_unilateral_effusion",
+              "value": "large unilateral effusion with mediastinal shift away — malignant until proven otherwise",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BTS 2018"
+            },
+            {
+              "key": "pleurodesis_indication",
+              "value": "recurrent rapidly reaccumulating effusion post-drainage — talc pleurodesis or indwelling catheter",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BTS 2018"
+            },
+            {
+              "key": "thoracoscopy_biopsy",
+              "value": "thoracoscopic pleural biopsy with talc poudrage — diagnostic and therapeutic in one procedure",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BTS 2018"
+            },
+            {
+              "key": "bilateral_effusions",
+              "value": "bilateral pleural effusions — raises likelihood of cardiac failure, hypoalbuminaemia, or bilateral pleural disease",
+              "logLR": -8,
+              "evidenceLabel": "negative",
+              "citation": "BTS 2018"
+            },
+            {
+              "key": "trapped_lung",
+              "value": "trapped lung (failure of expansion post-drainage) — indwelling pleural catheter preferred over pleurodesis",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BTS 2018"
+            }
+          ]
+        },
+        {
+          "name": "Diaphragmatic Hernia (Acquired / Traumatic)",
+          "icd": "K44.9",
+          "logPrior": -29,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal",
+            "thoracic"
+          ],
+          "specialties": [
+            "general_surgery",
+            "thoracic_surgery"
+          ],
+          "features": [
+            {
+              "key": "bowel_sounds_chest",
+              "value": "bowel sounds audible in chest — virtually diagnostic of diaphragmatic herniation",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2017"
+            },
+            {
+              "key": "cxr_bowel_thorax",
+              "value": "bowel loops visible in thorax on CXR (loop of colon or stomach above diaphragm)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2017"
+            },
+            {
+              "key": "trauma_left_diaphragm",
+              "value": "left-sided diaphragmatic rupture following blunt thoracoabdominal trauma",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2017"
+            },
+            {
+              "key": "nasogastric_intrathoracic",
+              "value": "nasogastric tube curling up into left chest on CXR — confirms intrathoracic stomach",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2017"
+            },
+            {
+              "key": "strangulated_contents",
+              "value": "signs of obstruction or strangulation of herniated bowel — surgical emergency",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2017"
+            },
+            {
+              "key": "delayed_presentation",
+              "value": "delayed presentation months to years after trauma — small defect with episodic herniation",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "ct_defect_confirmed",
+              "value": "CT chest/abdomen confirming diaphragmatic defect with herniated abdominal contents",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2017"
+            },
+            {
+              "key": "left_side_90pct",
+              "value": "90% of traumatic diaphragmatic hernias are left-sided (liver protects right hemidiaphragm)",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2018"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {

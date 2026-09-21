@@ -1031,6 +1031,71 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("perianal") { mergePool("anorectaColonBenign") }
             if ccL.contains("cancer") || ccL.contains("dysplasia") { mergePool("oncologyComplications") }
 
+        // Hepatobiliary malignancy and liver surgical conditions
+        case ccL.contains("hepatocellular") || ccL.contains("hcc") ||
+             ccL.contains("cholangiocarcinoma") || ccL.contains("klatskin") ||
+             ccL.contains("gallbladder cancer") || ccL.contains("gallbladder carcinoma") ||
+             ccL.contains("liver metastases") || ccL.contains("hepatic metastases") ||
+             ccL.contains("liver cancer") || ccL.contains("hepatic abscess") ||
+             ccL.contains("hydatid") || ccL.contains("echinococcus") ||
+             ccL.contains("portal hypertension") || ccL.contains("oesophageal varices") ||
+             ccL.contains("esophageal varices") || ccL.contains("periampullary") ||
+             ccL.contains("bile duct cancer") || ccL.contains("biliary stricture") ||
+             (ccL.contains("cirrhosis") && ccL.contains("mass")) ||
+             (ccL.contains("afp") && ccL.contains("elevated")) ||
+             (ccL.contains("ca19-9") && ccL.contains("elevated")):
+            candidates = externalPool("hepatobiliaryMalignancy") ?? []
+            if ccL.contains("cancer") || ccL.contains("metastases") { mergePool("oncologyComplications") }
+            if ccL.contains("jaundice") { mergePool("jaundice") }
+
+        // Pancreatic surgical conditions
+        case ccL.contains("pancreatic cancer") || ccL.contains("pancreatic adenocarcinoma") ||
+             ccL.contains("ipmn") || ccL.contains("pancreatic cyst") ||
+             ccL.contains("insulinoma") || ccL.contains("gastrinoma") ||
+             ccL.contains("zollinger") || ccL.contains("pancreatic net") ||
+             ccL.contains("pancreatic neuroendocrine") || ccL.contains("pseudocyst") ||
+             ccL.contains("chronic pancreatitis") || ccL.contains("tropical pancreatitis") ||
+             ccL.contains("pancreatic duct") || ccL.contains("pancreatic head") ||
+             ccL.contains("whipple") ||
+             (ccL.contains("fasting") && ccL.contains("hypoglycaemia")) ||
+             (ccL.contains("double duct") || ccL.contains("chain of lakes")):
+            candidates = externalPool("pancreaticSurgical") ?? []
+            if ccL.contains("jaundice") { mergePool("hepatobiliaryMalignancy") }
+            if ccL.contains("cancer") { mergePool("oncologyComplications") }
+
+        // Oesophagogastric surgical conditions
+        case ccL.contains("oesophageal cancer") || ccL.contains("esophageal cancer") ||
+             ccL.contains("gastric cancer") || ccL.contains("stomach cancer") ||
+             ccL.contains("boerhaave") || ccL.contains("oesophageal perforation") ||
+             ccL.contains("achalasia") || ccL.contains("gastric outlet obstruction") ||
+             ccL.contains("mallory-weiss") || ccL.contains("mallory weiss") ||
+             ccL.contains("barrett") ||
+             ccL.contains("peptic ulcer perforation") || ccL.contains("perforated ulcer") ||
+             ccL.contains("pneumomediastinum") || ccL.contains("subcutaneous emphysema") ||
+             ccL.contains("virchow") || ccL.contains("krukenberg") ||
+             (ccL.contains("dysphagia") && (ccL.contains("cancer") || ccL.contains("weight loss") || ccL.contains("progressive"))) ||
+             (ccL.contains("vomiting") && ccL.contains("haematemesis") && ccL.contains("retching")):
+            candidates = externalPool("oesophagogastricSurgical") ?? []
+            if ccL.contains("cancer") { mergePool("oncologyComplications") }
+            if ccL.contains("perforation") || ccL.contains("peritonitis") { mergePool("sepsisConditions") }
+
+        // Thoracic surgical conditions
+        case ccL.contains("pneumothorax") || ccL.contains("tension pneumothorax") ||
+             ccL.contains("empyema") || ccL.contains("lung cancer") ||
+             ccL.contains("mesothelioma") || ccL.contains("mediastinal mass") ||
+             ccL.contains("malignant pleural effusion") || ccL.contains("diaphragmatic hernia") ||
+             ccL.contains("diaphragmatic rupture") || ccL.contains("pancoast") ||
+             ccL.contains("svc syndrome") || ccL.contains("thymoma") ||
+             ccL.contains("haemothorax") || ccL.contains("chylothorax") ||
+             ccL.contains("pleural mesothelioma") || ccL.contains("pleural biopsy") ||
+             ccL.contains("trapped lung") || ccL.contains("pleurodesis") ||
+             (ccL.contains("collapsed lung") || ccL.contains("lung collapse")) ||
+             (ccL.contains("absent breath sounds") && ccL.contains("chest pain")) ||
+             (ccL.contains("bowel sounds") && ccL.contains("chest")):
+            candidates = externalPool("thoracicSurgical") ?? []
+            if ccL.contains("cancer") || ccL.contains("malignant") { mergePool("oncologyComplications") }
+            if ccL.contains("infection") || ccL.contains("empyema") { mergePool("sepsisConditions") }
+
         default:
             // Wide-net general medicine catch-all — no longer surgical-biased
             candidates = externalPool("generalMedicine") ?? []
@@ -1211,6 +1276,21 @@ enum BayesianDiagnosisEngine {
         if ccL.contains("crohn") || ccL.contains("ulcerative colitis") ||
            ccL.contains("coeliac") || ccL.contains("calprotectin") ||
            ccL.contains("ibd") { mergePool("inflammatoryBowel") }
+        if ccL.contains("hepatocellular") || ccL.contains("hcc") ||
+           ccL.contains("cholangiocarcinoma") || ccL.contains("portal hypertension") ||
+           ccL.contains("liver metastases") || ccL.contains("hepatic abscess") ||
+           (ccL.contains("cirrhosis") && ccL.contains("mass")) { mergePool("hepatobiliaryMalignancy") }
+        if ccL.contains("insulinoma") || ccL.contains("ipmn") || ccL.contains("gastrinoma") ||
+           ccL.contains("pancreatic cyst") || ccL.contains("chronic pancreatitis") ||
+           (ccL.contains("fasting") && ccL.contains("hypoglycaemia")) { mergePool("pancreaticSurgical") }
+        if ccL.contains("achalasia") || ccL.contains("barrett") || ccL.contains("mallory-weiss") ||
+           ccL.contains("oesophageal cancer") || ccL.contains("gastric cancer") ||
+           ccL.contains("boerhaave") || ccL.contains("gastric outlet obstruction") ||
+           (ccL.contains("dysphagia") && ccL.contains("weight loss")) { mergePool("oesophagogastricSurgical") }
+        if ccL.contains("pneumothorax") || ccL.contains("empyema") ||
+           ccL.contains("lung cancer") || ccL.contains("mesothelioma") ||
+           ccL.contains("pleural effusion") || ccL.contains("mediastinal mass") ||
+           (ccL.contains("absent breath sounds") && ccL.contains("chest")) { mergePool("thoracicSurgical") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but
