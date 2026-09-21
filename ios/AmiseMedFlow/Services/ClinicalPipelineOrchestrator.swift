@@ -95,14 +95,54 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
         do {
             let lab = psv.labs
             var extraAssoc = augmentedSocrates["associations"] ?? []
-            if lab.wbcElevated      { extraAssoc.insert("raised wbc") }
-            if lab.crpHigh          { extraAssoc.insert("markedly elevated crp") }
-            else if lab.crpElevated { extraAssoc.insert("elevated crp") }
-            if lab.lactateElevated  { extraAssoc.insert("elevated lactate") }
-            if lab.amylaseElevated  { extraAssoc.insert("elevated amylase") }
-            if lab.bilirubinElevated{ extraAssoc.insert("raised bilirubin") }
-            if lab.dDimerElevated   { extraAssoc.insert("elevated d-dimer") }
+            if lab.wbcElevated        { extraAssoc.insert("raised wbc") }
+            if lab.wbcLow             { extraAssoc.insert("leukopenia") }
+            if lab.crpHigh            { extraAssoc.insert("markedly elevated crp") }
+            else if lab.crpElevated   { extraAssoc.insert("elevated crp") }
+            if lab.lactateElevated    { extraAssoc.insert("elevated lactate") }
+            if lab.amylaseElevated    { extraAssoc.insert("elevated amylase") }
+            if lab.lipaseElevated     { extraAssoc.insert("elevated lipase") }
+            if lab.bilirubinElevated  { extraAssoc.insert("raised bilirubin") }
+            if lab.dDimerElevated     { extraAssoc.insert("elevated d-dimer") }
+            if lab.troponinElevated   { extraAssoc.insert("elevated troponin") }
+            if lab.anaemia            { extraAssoc.insert("anaemia") }
+            if lab.akiMarker          { extraAssoc.insert("renal impairment") }
+            if lab.inrElevated        { extraAssoc.insert("raised inr") }
+            if lab.altElevated || lab.astElevated { extraAssoc.insert("elevated liver enzymes") }
+            if lab.glucoseLow         { extraAssoc.insert("hypoglycaemia") }
+            if lab.glucoseHigh        { extraAssoc.insert("hyperglycaemia") }
+            if lab.hypercalcaemia     { extraAssoc.insert("hypercalcaemia") }
+            if lab.hypocalcaemia      { extraAssoc.insert("hypocalcaemia") }
+            if lab.esrHigh            { extraAssoc.insert("elevated esr") }
             if !extraAssoc.isEmpty { augmentedSocrates["associations"] = extraAssoc }
+        }
+
+        // Inject critical investigation findings as auxiliary chief-complaint signals
+        // so the Bayesian seeder routes to the correct diagnostic pools.
+        let criticalResultKeywords: [(name: String, feature: String)] = [
+            ("ct abdomen", "positive imaging abdomen"),
+            ("ultrasound", "positive imaging abdomen"),
+            ("mri", "positive mri"),
+            ("chest x-ray", "positive chest imaging"),
+            ("cxr", "positive chest imaging"),
+            ("ecg", "ecg abnormality"),
+            ("echo", "echocardiogram abnormality"),
+            ("biopsy", "tissue biopsy result"),
+            ("culture", "positive culture"),
+            ("endoscopy", "endoscopic finding"),
+            ("ogd", "upper gi endoscopic finding"),
+            ("colonoscopy", "lower gi endoscopic finding"),
+        ]
+        let resultedInvs = patient.investigations.filter { $0.status == .resulted && !$0.result.isEmpty }
+        if !resultedInvs.isEmpty {
+            var extraCC = augmentedSocrates["investigation_findings"] ?? []
+            for inv in resultedInvs {
+                let lower = inv.name.lowercased()
+                for kw in criticalResultKeywords where lower.contains(kw.name) {
+                    extraCC.insert(kw.feature)
+                }
+            }
+            if !extraCC.isEmpty { augmentedSocrates["investigation_findings"] = extraCC }
         }
 
         sequentialEngine.seed(

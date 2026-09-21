@@ -80,8 +80,20 @@ struct LabPanel {
     var crpHigh: Bool     { (crp?.value ?? 0) > 100 }
     var lactateElevated: Bool { (lactate?.value ?? 0) >= 2.0 }
     var amylaseElevated: Bool { (amylase?.value ?? 0) > 100 }
+    var lipaseElevated: Bool  { (lipase?.value ?? 0) > 200 }
     var bilirubinElevated: Bool { (bilirubin?.value ?? 0) > 20 }
     var dDimerElevated: Bool  { (dDimer?.value ?? 0) > 500 }
+    var troponinElevated: Bool { (troponin?.value ?? 0) > 14 }
+    var anaemia: Bool     { (haemoglobin?.value ?? 99) < 10 }
+    var akiMarker: Bool   { (creatinine?.value ?? 0) > 130 }
+    var inrElevated: Bool { (inr?.value ?? 0) > 1.5 }
+    var altElevated: Bool { (alt?.value ?? 0) > 40 }
+    var astElevated: Bool { (ast?.value ?? 0) > 40 }
+    var glucoseLow: Bool  { glucose.map { $0.value < 4.0 } ?? false }
+    var glucoseHigh: Bool { glucose.map { $0.value > 11.0 } ?? false }
+    var hypercalcaemia: Bool { calcium.map { $0.value > 2.6 } ?? false }
+    var hypocalcaemia: Bool  { calcium.map { $0.value < 2.1 } ?? false }
+    var esrHigh: Bool     { (esr?.value ?? 0) > 50 }
     // Calcium < 1.75 mmol/L = critical hypocalcaemia; > 3.0 = hypercalcaemia crisis
     var calciumCritical: Bool { calcium.map { $0.value < 1.75 || $0.value > 3.0 } ?? false }
 
