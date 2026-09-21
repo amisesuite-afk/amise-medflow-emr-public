@@ -12,7 +12,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",
     "chokidar": "^4.0.3",
-    "dotenv": "^17.4.2"
+    "dotenv": "^18.0.0"
   },
   "engines": {
     "node": ">=18"
