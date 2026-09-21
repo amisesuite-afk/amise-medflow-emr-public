@@ -327,6 +327,44 @@ enum ClinicalTextParser {
             ))
         }
 
+        // Aortic dissection — commonly appears in CT report text
+        if any(["aortic dissection", "type a dissection", "type b dissection",
+                "intimal flap", "aortic intramural haematoma", "dissecting aorta"]) {
+            alarms.append(ClinicalAlarm(
+                title: "Aortic Dissection Detected",
+                detail: "Aortic dissection confirmed or suspected — immediate cardiothoracic/vascular referral",
+                severity: .emergency,
+                systemImage: "waveform.path.ecg",
+                action: "Type A → emergency cardiothoracic surgery. Type B → IV labetalol (HR <60, SBP 100–120). Morphine for pain. No anticoagulation. ICU."
+            ))
+        }
+
+        // Imaging-confirmed perforation / pneumoperitoneum
+        if any(["pneumoperitoneum", "free gas", "free air", "subdiaphragmatic air",
+                "confirmed perforation", "bowel perforation", "hollow viscus perforation"]) &&
+           !any(["no pneumoperitoneum", "no free gas", "no free air"]) {
+            alarms.append(ClinicalAlarm(
+                title: "Pneumoperitoneum — Perforation",
+                detail: "Free intraperitoneal gas confirmed on imaging",
+                severity: .emergency,
+                systemImage: "exclamationmark.triangle.fill",
+                action: "Emergency laparotomy. NBM + IV antibiotics + IV fluids + analgesia. Cross-match × 2. Consent for laparotomy. Anaesthetic review."
+            ))
+        }
+
+        // Imaging suspicion of malignancy — flag for urgent outpatient pathway
+        if any(["malignancy suspected", "suspicious for malignancy", "cannot exclude malignancy",
+                "possible malignancy", "features of malignancy", "carcinoma suspected",
+                "adenocarcinoma", "squamous cell carcinoma", "metastatic", "lymphoma"]) {
+            alarms.append(ClinicalAlarm(
+                title: "Malignancy Suspected on Imaging",
+                detail: "Radiology report raises concern for malignancy — urgent MDT pathway required",
+                severity: .critical,
+                systemImage: "magnifyingglass.circle.fill",
+                action: "2-week-wait referral. CT staging if not already done. MDT discussion. Biopsy plan. Break-bad-news consultation with patient."
+            ))
+        }
+
         return ParseResult(
             featureAugments: features,
             clinicalAlarms: alarms,
