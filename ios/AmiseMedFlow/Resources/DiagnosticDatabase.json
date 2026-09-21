@@ -43481,6 +43481,2293 @@
           ]
         }
       ]
+    },
+    "haematologicalMalignancy": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Hodgkin Lymphoma",
+          "icd": "C81.9",
+          "logPrior": -32,
+          "urgency": 1,
+          "systems": [
+            "haematological"
+          ],
+          "specialties": [
+            "haematology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "painless_lymphadenopathy",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Painless cervical/axillary lymphadenopathy",
+              "citation": "NEJM 2018"
+            },
+            {
+              "key": "b_symptoms",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "B symptoms (fever/night sweats/weight loss)",
+              "citation": "NCCN 2020"
+            },
+            {
+              "key": "young_adult_bimodal",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Young adult (15\u201335) or >55 \u2014 bimodal",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "alcohol_pain_nodes",
+              "value": "true",
+              "logLR": 29,
+              "evidenceLabel": "Alcohol-induced nodal pain (pathognomonic)",
+              "citation": "Lancet Oncol 2015"
+            },
+            {
+              "key": "mediastinal_mass_xray",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "Mediastinal mass on CXR",
+              "citation": "NEJM 2018"
+            },
+            {
+              "key": "reed_sternberg_biopsy",
+              "value": "true",
+              "logLR": 31,
+              "evidenceLabel": "Reed-Sternberg cells on biopsy",
+              "citation": "WHO 2017"
+            },
+            {
+              "key": "elevated_esr_ldh",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Elevated ESR / LDH",
+              "citation": "NCCN 2020"
+            },
+            {
+              "key": "pruritus",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Generalised pruritus without rash",
+              "citation": "Lancet 2015"
+            }
+          ]
+        },
+        {
+          "name": "Non-Hodgkin Lymphoma",
+          "icd": "C85.9",
+          "logPrior": -28,
+          "urgency": 1,
+          "systems": [
+            "haematological"
+          ],
+          "specialties": [
+            "haematology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "lymphadenopathy_progressive",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Progressive painless lymphadenopathy",
+              "citation": "NEJM 2019"
+            },
+            {
+              "key": "extranodal_involvement",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Extranodal involvement (GI/skin/CNS)",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "b_symptoms_nhl",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "B symptoms",
+              "citation": "NCCN 2021"
+            },
+            {
+              "key": "older_adult",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Age >60 (DLBCL commonest)",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "elevated_ldh",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Elevated LDH",
+              "citation": "JCO 2018"
+            },
+            {
+              "key": "immunosuppression",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "HIV / organ transplant / immunosuppression",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "lymph_node_biopsy",
+              "value": "true",
+              "logLR": 30,
+              "evidenceLabel": "Lymph node biopsy confirms NHL",
+              "citation": "WHO 2017"
+            },
+            {
+              "key": "splenomegaly",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Splenomegaly",
+              "citation": "NEJM 2019"
+            }
+          ]
+        },
+        {
+          "name": "Chronic Lymphocytic Leukaemia",
+          "icd": "C91.1",
+          "logPrior": -29,
+          "urgency": 0,
+          "systems": [
+            "haematological"
+          ],
+          "specialties": [
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "lymphocytosis_incidental",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Incidental lymphocytosis on FBC (>5\u00d710\u2079/L)",
+              "citation": "NEJM 2018"
+            },
+            {
+              "key": "generalised_lymphadenopathy",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Generalised lymphadenopathy",
+              "citation": "Blood 2018"
+            },
+            {
+              "key": "older_male",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Male >60 years",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "recurrent_infections",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Recurrent infections (hypogammaglobulinaemia)",
+              "citation": "Blood 2019"
+            },
+            {
+              "key": "autoimmune_haemolysis",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Autoimmune haemolytic anaemia",
+              "citation": "NEJM 2017"
+            },
+            {
+              "key": "flow_cytometry_cll",
+              "value": "true",
+              "logLR": 31,
+              "evidenceLabel": "Flow cytometry: CLL immunophenotype",
+              "citation": "IWCLL 2018"
+            },
+            {
+              "key": "splenomegaly_cll",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Splenomegaly",
+              "citation": "Blood 2018"
+            },
+            {
+              "key": "b_symptoms_mild",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Constitutional B symptoms",
+              "citation": "IWCLL 2018"
+            }
+          ]
+        },
+        {
+          "name": "Multiple Myeloma",
+          "icd": "C90.0",
+          "logPrior": -32,
+          "urgency": 1,
+          "systems": [
+            "haematological"
+          ],
+          "specialties": [
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "bone_pain_back_ribs",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Bone pain \u2014 back, ribs, long bones",
+              "citation": "NEJM 2011"
+            },
+            {
+              "key": "crab_criteria",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "CRAB: hyperCalcaemia/Renal/Anaemia/Bone",
+              "citation": "IMWG 2014"
+            },
+            {
+              "key": "paraprotein_serum",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Serum paraprotein (M-protein)",
+              "citation": "NEJM 2016"
+            },
+            {
+              "key": "anaemia_unexplained",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Unexplained normocytic anaemia",
+              "citation": "Lancet 2017"
+            },
+            {
+              "key": "hypercalcaemia",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Hypercalcaemia",
+              "citation": "NEJM 2011"
+            },
+            {
+              "key": "renal_impairment_unexplained",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Unexplained renal impairment",
+              "citation": "NEJM 2016"
+            },
+            {
+              "key": "lytic_lesions_xray",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "Lytic bone lesions on X-ray / CT",
+              "citation": "Radiology 2018"
+            },
+            {
+              "key": "plasma_cells_bone_marrow",
+              "value": "true",
+              "logLR": 30,
+              "evidenceLabel": "Bone marrow plasma cells \u226510%",
+              "citation": "IMWG 2014"
+            }
+          ]
+        },
+        {
+          "name": "Acute Myeloid Leukaemia",
+          "icd": "C92.0",
+          "logPrior": -39,
+          "urgency": 3,
+          "systems": [
+            "haematological"
+          ],
+          "specialties": [
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "pancytopenia_acute",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Acute pancytopenia",
+              "citation": "NEJM 2019"
+            },
+            {
+              "key": "blasts_peripheral_blood",
+              "value": "true",
+              "logLR": 30,
+              "evidenceLabel": "Blasts on peripheral blood film \u226520%",
+              "citation": "WHO 2016"
+            },
+            {
+              "key": "rapid_onset_fatigue",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Rapid-onset fatigue / dyspnoea",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "fever_infection_neutropenic",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Fever / infection with neutropenia",
+              "citation": "NEJM 2017"
+            },
+            {
+              "key": "bruising_bleeding",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Easy bruising / mucosal bleeding",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "gum_hypertrophy",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "Gingival hypertrophy (monocytic AML)",
+              "citation": "Blood 2018"
+            },
+            {
+              "key": "bone_marrow_biopsy_aml",
+              "value": "true",
+              "logLR": 31,
+              "evidenceLabel": "Bone marrow biopsy confirms AML",
+              "citation": "WHO 2016"
+            },
+            {
+              "key": "dic_coagulopathy",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "DIC / coagulopathy (APL variant)",
+              "citation": "NEJM 2016"
+            }
+          ]
+        },
+        {
+          "name": "Chronic Myeloid Leukaemia",
+          "icd": "C92.1",
+          "logPrior": -35,
+          "urgency": 1,
+          "systems": [
+            "haematological"
+          ],
+          "specialties": [
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "massive_splenomegaly",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "Massive splenomegaly",
+              "citation": "NEJM 2015"
+            },
+            {
+              "key": "leukocytosis_high",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Marked leukocytosis (WBC >25\u00d710\u2079/L)",
+              "citation": "Blood 2017"
+            },
+            {
+              "key": "philadelphia_chromosome",
+              "value": "true",
+              "logLR": 31,
+              "evidenceLabel": "Philadelphia chromosome (BCR-ABL1)",
+              "citation": "NEJM 2014"
+            },
+            {
+              "key": "left_shift_fbc",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Left shift with basophilia / eosinophilia",
+              "citation": "Blood 2017"
+            },
+            {
+              "key": "early_satiety_weight_loss",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Early satiety / left-sided abdominal fullness",
+              "citation": "NEJM 2015"
+            },
+            {
+              "key": "middle_aged_adult",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Middle-aged adult (peak 45\u201365)",
+              "citation": "Lancet Oncol 2016"
+            },
+            {
+              "key": "elevated_uric_acid",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Elevated uric acid / LDH",
+              "citation": "NEJM 2015"
+            },
+            {
+              "key": "fatigue_weight_loss_cml",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Fatigue / unintentional weight loss",
+              "citation": "NEJM 2015"
+            }
+          ]
+        },
+        {
+          "name": "Myelodysplastic Syndrome",
+          "icd": "D46.9",
+          "logPrior": -32,
+          "urgency": 1,
+          "systems": [
+            "haematological"
+          ],
+          "specialties": [
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "refractory_anaemia",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Refractory anaemia unresponsive to iron/B12",
+              "citation": "NEJM 2017"
+            },
+            {
+              "key": "macrocytosis_unexplained",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Unexplained macrocytosis",
+              "citation": "Blood 2018"
+            },
+            {
+              "key": "dysplastic_fbc",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "Dysplastic features on blood film",
+              "citation": "WHO 2016"
+            },
+            {
+              "key": "elderly_patient",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Patient >65 years",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "cytopenia_unexplained",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Unexplained cytopenias (\u22651 lineage)",
+              "citation": "NEJM 2017"
+            },
+            {
+              "key": "prior_chemotherapy",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Prior chemotherapy / radiation (therapy-related)",
+              "citation": "Blood 2019"
+            },
+            {
+              "key": "bone_marrow_mds",
+              "value": "true",
+              "logLR": 30,
+              "evidenceLabel": "Bone marrow biopsy confirms MDS",
+              "citation": "WHO 2016"
+            },
+            {
+              "key": "ringed_sideroblasts",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "Ringed sideroblasts \u226515% (MDS-RS)",
+              "citation": "WHO 2016"
+            }
+          ]
+        },
+        {
+          "name": "Monoclonal Gammopathy of Undetermined Significance",
+          "icd": "D47.2",
+          "logPrior": -24,
+          "urgency": 0,
+          "systems": [
+            "haematological"
+          ],
+          "specialties": [
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "paraprotein_incidental",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Incidental paraprotein M-protein <30 g/L",
+              "citation": "NEJM 2018"
+            },
+            {
+              "key": "no_crab_criteria",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "No CRAB criteria met",
+              "citation": "IMWG 2014"
+            },
+            {
+              "key": "plasma_cells_under_10",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "Bone marrow plasma cells <10%",
+              "citation": "IMWG 2014"
+            },
+            {
+              "key": "older_adult_incidental",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Incidental finding in patient >50",
+              "citation": "NEJM 2018"
+            },
+            {
+              "key": "normal_fbc",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Normal or near-normal FBC",
+              "citation": "IMWG 2014"
+            },
+            {
+              "key": "serum_free_light_chain_ratio",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Abnormal serum free light chain ratio (risk stratification)",
+              "citation": "Leukemia 2018"
+            },
+            {
+              "key": "normal_renal_calcium",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Normal renal function and calcium",
+              "citation": "IMWG 2014"
+            },
+            {
+              "key": "annual_progression_rate",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "~1% annual risk of progression to myeloma",
+              "citation": "NEJM 2018"
+            }
+          ]
+        }
+      ]
+    },
+    "geriatricSyndrome": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Frailty Syndrome",
+          "icd": "R54",
+          "logPrior": -18,
+          "urgency": 0,
+          "systems": [
+            "geriatric"
+          ],
+          "specialties": [
+            "geriatrics",
+            "general_medicine"
+          ],
+          "features": [
+            {
+              "key": "unintentional_weight_loss_frail",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Unintentional weight loss >4.5 kg/year",
+              "citation": "JGS 2001"
+            },
+            {
+              "key": "exhaustion_self_reported",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Self-reported exhaustion",
+              "citation": "JGS 2001"
+            },
+            {
+              "key": "low_grip_strength",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Low grip strength (sarcopenia marker)",
+              "citation": "JGS 2001"
+            },
+            {
+              "key": "slow_gait_speed",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Slow gait speed <0.8 m/s",
+              "citation": "JGS 2001"
+            },
+            {
+              "key": "low_physical_activity",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Low physical activity",
+              "citation": "JGS 2001"
+            },
+            {
+              "key": "fried_criteria_3_or_more",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Fried phenotype: \u22653 of 5 criteria",
+              "citation": "JGS 2001"
+            },
+            {
+              "key": "age_over_75",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Age >75 years",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "multiple_comorbidities",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Multiple comorbidities / polypharmacy",
+              "citation": "JAMA 2018"
+            }
+          ]
+        },
+        {
+          "name": "Delirium",
+          "icd": "F05",
+          "logPrior": -22,
+          "urgency": 2,
+          "systems": [
+            "geriatric",
+            "neurological"
+          ],
+          "specialties": [
+            "geriatrics"
+          ],
+          "features": [
+            {
+              "key": "acute_confusion_onset",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "Acute-onset confusion",
+              "citation": "NEJM 2017"
+            },
+            {
+              "key": "fluctuating_consciousness",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "Fluctuating level of consciousness",
+              "citation": "NEJM 2017"
+            },
+            {
+              "key": "inattention",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Inattention \u2014 unable to follow conversation",
+              "citation": "CAM 1990"
+            },
+            {
+              "key": "disorganised_thinking",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Disorganised thinking / incoherent speech",
+              "citation": "CAM 1990"
+            },
+            {
+              "key": "cam_positive",
+              "value": "true",
+              "logLR": 29,
+              "evidenceLabel": "+Confusion Assessment Method (CAM)",
+              "citation": "JAMA 2014"
+            },
+            {
+              "key": "precipitant_identified",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Precipitant identified (infection/drugs/pain)",
+              "citation": "NEJM 2017"
+            },
+            {
+              "key": "elderly_prior_cognitive_impairment",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Elderly / prior cognitive impairment (risk factor)",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "abnormal_vitals",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Abnormal vital signs (infection/metabolic)",
+              "citation": "NEJM 2017"
+            }
+          ]
+        },
+        {
+          "name": "Dementia (Alzheimer Type)",
+          "icd": "G30.9",
+          "logPrior": -20,
+          "urgency": 0,
+          "systems": [
+            "neurological",
+            "geriatric"
+          ],
+          "specialties": [
+            "geriatrics",
+            "neurology"
+          ],
+          "features": [
+            {
+              "key": "progressive_memory_loss",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Progressive episodic memory loss",
+              "citation": "NEJM 2010"
+            },
+            {
+              "key": "functional_decline",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "ADL functional decline",
+              "citation": "NEJM 2010"
+            },
+            {
+              "key": "mmse_low",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "MMSE <24 / MoCA <26",
+              "citation": "Neurology 2018"
+            },
+            {
+              "key": "insidious_onset",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Insidious onset over months-years",
+              "citation": "NEJM 2010"
+            },
+            {
+              "key": "age_over_65",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Age >65 (risk doubles every 5 years)",
+              "citation": "Lancet 2020"
+            },
+            {
+              "key": "normal_structural_mri",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Hippocampal atrophy on MRI",
+              "citation": "Radiology 2019"
+            },
+            {
+              "key": "apoe4_carrier",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "APOE \u03b54 carrier (genetic risk)",
+              "citation": "NEJM 2018"
+            },
+            {
+              "key": "neuropsychiatric_symptoms",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Neuropsychiatric symptoms (anxiety/depression)",
+              "citation": "Lancet 2017"
+            }
+          ]
+        },
+        {
+          "name": "Polypharmacy Adverse Event",
+          "icd": "T36",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "geriatric"
+          ],
+          "specialties": [
+            "geriatrics",
+            "general_medicine"
+          ],
+          "features": [
+            {
+              "key": "five_or_more_medications",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Taking \u22655 regular medications",
+              "citation": "BMJ 2017"
+            },
+            {
+              "key": "new_symptom_after_new_drug",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "New symptom temporally linked to new drug",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "falls_dizziness_drug",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Falls / dizziness \u2014 anticholinergic/sedative",
+              "citation": "JAGS 2019"
+            },
+            {
+              "key": "renal_hepatic_impairment",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Renal / hepatic impairment (drug accumulation)",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "beers_stopp_drugs",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Beers/STOPP potentially inappropriate medication",
+              "citation": "JAGS 2019"
+            },
+            {
+              "key": "drug_interaction_detected",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Drug-drug interaction detected",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "delirium_from_drug",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Drug-induced delirium / confusion",
+              "citation": "NEJM 2017"
+            },
+            {
+              "key": "symptom_resolves_on_withdrawal",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "Symptom resolves on drug withdrawal",
+              "citation": "BMJ 2017"
+            }
+          ]
+        },
+        {
+          "name": "Recurrent Falls",
+          "icd": "W19",
+          "logPrior": -18,
+          "urgency": 1,
+          "systems": [
+            "geriatric"
+          ],
+          "specialties": [
+            "geriatrics"
+          ],
+          "features": [
+            {
+              "key": "two_or_more_falls_year",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "\u22652 falls in 12 months",
+              "citation": "NICE 2013"
+            },
+            {
+              "key": "gait_balance_abnormal",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Abnormal gait / balance (TUG >12s)",
+              "citation": "JGS 2019"
+            },
+            {
+              "key": "postural_hypotension",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Orthostatic hypotension (BP drop \u226520 mmHg)",
+              "citation": "NICE 2013"
+            },
+            {
+              "key": "visual_impairment",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Visual impairment",
+              "citation": "Age Ageing 2018"
+            },
+            {
+              "key": "muscle_weakness_lower_limb",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Lower limb muscle weakness",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "sedative_psychotropic_use",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Sedative / psychotropic medication use",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "osteoporosis_hip_fracture_risk",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Osteoporosis / high fracture risk",
+              "citation": "IOF 2019"
+            },
+            {
+              "key": "home_hazard_environment",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Environmental hazards identified at home assessment",
+              "citation": "NICE 2013"
+            }
+          ]
+        },
+        {
+          "name": "Parkinson's Disease",
+          "icd": "G20",
+          "logPrior": -28,
+          "urgency": 0,
+          "systems": [
+            "neurological",
+            "geriatric"
+          ],
+          "specialties": [
+            "neurology"
+          ],
+          "features": [
+            {
+              "key": "resting_tremor",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Pill-rolling resting tremor",
+              "citation": "Lancet Neurol 2015"
+            },
+            {
+              "key": "bradykinesia",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "Bradykinesia (slow fine movements)",
+              "citation": "MDS 2015"
+            },
+            {
+              "key": "rigidity",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Cogwheel / lead-pipe rigidity",
+              "citation": "MDS 2015"
+            },
+            {
+              "key": "postural_instability",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Postural instability / stooped gait",
+              "citation": "Lancet 2015"
+            },
+            {
+              "key": "asymmetric_onset",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Unilateral onset",
+              "citation": "MDS 2015"
+            },
+            {
+              "key": "levodopa_response",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "Marked response to levodopa",
+              "citation": "Lancet Neurol 2015"
+            },
+            {
+              "key": "anosmia_hyposmia",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Anosmia / hyposmia (prodromal)",
+              "citation": "Lancet Neurol 2019"
+            },
+            {
+              "key": "rem_behaviour_disorder_pd",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "REM sleep behaviour disorder (prodromal)",
+              "citation": "NEJM 2017"
+            }
+          ]
+        },
+        {
+          "name": "Elder Abuse / Neglect",
+          "icd": "T74.0",
+          "logPrior": -32,
+          "urgency": 2,
+          "systems": [
+            "geriatric"
+          ],
+          "specialties": [
+            "geriatrics"
+          ],
+          "features": [
+            {
+              "key": "unexplained_injuries",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "Unexplained or inconsistently explained injuries",
+              "citation": "JAMA 2017"
+            },
+            {
+              "key": "patient_fearful_carer",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "Patient fearful or anxious around carer",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "poor_hygiene_malnutrition",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Poor hygiene / malnutrition / dehydration",
+              "citation": "JAMA 2017"
+            },
+            {
+              "key": "financial_mismanagement",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Unexplained financial mismanagement",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "delayed_presentation_injury",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Delayed presentation of injury",
+              "citation": "JAMA 2017"
+            },
+            {
+              "key": "recurrent_ed_presentations",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Recurrent ED presentations",
+              "citation": "Age Ageing 2018"
+            },
+            {
+              "key": "social_isolation",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Social isolation / controlled access",
+              "citation": "JAMA 2017"
+            },
+            {
+              "key": "cognitive_impairment_vulnerability",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Cognitive impairment (vulnerability factor)",
+              "citation": "Lancet 2018"
+            }
+          ]
+        },
+        {
+          "name": "Sarcopenia",
+          "icd": "M62.5",
+          "logPrior": -22,
+          "urgency": 0,
+          "systems": [
+            "musculoskeletal",
+            "geriatric"
+          ],
+          "specialties": [
+            "geriatrics"
+          ],
+          "features": [
+            {
+              "key": "low_muscle_mass",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "Low appendicular muscle mass (DXA/BIA)",
+              "citation": "EWGSOP2 2019"
+            },
+            {
+              "key": "low_grip_strength_sarcop",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "Low handgrip strength (<27 kg M, <16 kg F)",
+              "citation": "EWGSOP2 2019"
+            },
+            {
+              "key": "slow_gait_sarcop",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Slow gait speed or SPPB \u22649",
+              "citation": "EWGSOP2 2019"
+            },
+            {
+              "key": "unintentional_weight_loss_sarcop",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Unintentional weight loss",
+              "citation": "EWGSOP2 2019"
+            },
+            {
+              "key": "sarc_f_positive",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "SARC-F score \u22654",
+              "citation": "JCSM 2019"
+            },
+            {
+              "key": "sedentary_lifestyle",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Sedentary lifestyle / prolonged bedrest",
+              "citation": "EWGSOP2 2019"
+            },
+            {
+              "key": "malnutrition_low_protein",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Malnutrition / low protein intake",
+              "citation": "Clin Nutr 2019"
+            },
+            {
+              "key": "age_over_65_sarcop",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Age >65 (prevalence ~10%)",
+              "citation": "Ageing Res Rev 2018"
+            }
+          ]
+        }
+      ]
+    },
+    "nutritionDeficiency": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Iron Deficiency Anaemia",
+          "icd": "D50.9",
+          "logPrior": -15,
+          "urgency": 0,
+          "systems": [
+            "haematological"
+          ],
+          "specialties": [
+            "general_medicine",
+            "gastroenterology"
+          ],
+          "features": [
+            {
+              "key": "microcytic_hypochromic",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Microcytic hypochromic anaemia (FBC)",
+              "citation": "NEJM 2015"
+            },
+            {
+              "key": "low_ferritin",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "Low ferritin (<15 mcg/L)",
+              "citation": "BMJ 2017"
+            },
+            {
+              "key": "low_serum_iron",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Low serum iron / raised TIBC",
+              "citation": "NEJM 2015"
+            },
+            {
+              "key": "fatigue_pallor_koilonychia",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Fatigue / pallor / koilonychia",
+              "citation": "BMJ 2016"
+            },
+            {
+              "key": "menorrhagia_premenopausal",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Menorrhagia (commonest cause in women)",
+              "citation": "BJOG 2018"
+            },
+            {
+              "key": "gi_blood_loss",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "GI blood loss identified",
+              "citation": "Gut 2019"
+            },
+            {
+              "key": "dietary_deficiency",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Poor dietary iron intake / vegan diet",
+              "citation": "BMJ 2016"
+            },
+            {
+              "key": "response_to_iron",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "Haemoglobin response to iron supplementation",
+              "citation": "NEJM 2015"
+            }
+          ]
+        },
+        {
+          "name": "Vitamin B12 Deficiency",
+          "icd": "E53.8",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "haematological",
+            "neurological"
+          ],
+          "specialties": [
+            "general_medicine",
+            "neurology"
+          ],
+          "features": [
+            {
+              "key": "macrocytic_anaemia",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Macrocytic anaemia (MCV >95 fL)",
+              "citation": "NEJM 2013"
+            },
+            {
+              "key": "low_serum_b12",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "Serum B12 <150 pmol/L",
+              "citation": "BMJ 2014"
+            },
+            {
+              "key": "peripheral_neuropathy_b12",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Peripheral neuropathy (subacute combined)",
+              "citation": "NEJM 2013"
+            },
+            {
+              "key": "glossitis_angular_chelitis",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Glossitis / angular cheilitis",
+              "citation": "BMJ 2016"
+            },
+            {
+              "key": "vegan_vegetarian",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Vegan / strict vegetarian diet",
+              "citation": "Nutrients 2019"
+            },
+            {
+              "key": "metformin_ppi_use",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Metformin or long-term PPI use",
+              "citation": "Diabetes Care 2016"
+            },
+            {
+              "key": "pernicious_anaemia_antibodies",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "+Anti-intrinsic factor antibodies (pernicious anaemia)",
+              "citation": "NEJM 2012"
+            },
+            {
+              "key": "cognitive_decline_b12",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Cognitive decline / dementia-like symptoms",
+              "citation": "Lancet 2018"
+            }
+          ]
+        },
+        {
+          "name": "Vitamin D Deficiency",
+          "icd": "E55.9",
+          "logPrior": -14,
+          "urgency": 0,
+          "systems": [
+            "musculoskeletal",
+            "endocrine"
+          ],
+          "specialties": [
+            "general_medicine",
+            "endocrinology"
+          ],
+          "features": [
+            {
+              "key": "low_25ohd",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "25-OH Vitamin D <50 nmol/L",
+              "citation": "NEJM 2011"
+            },
+            {
+              "key": "musculoskeletal_pain_proximal",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Proximal muscle pain / myopathy",
+              "citation": "BMJ 2014"
+            },
+            {
+              "key": "bone_pain_tenderness",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Diffuse bone pain / tenderness (osteomalacia)",
+              "citation": "Lancet 2016"
+            },
+            {
+              "key": "low_sun_exposure",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Minimal sun exposure / dark skin / indoor lifestyle",
+              "citation": "NEJM 2011"
+            },
+            {
+              "key": "malabsorption_gast_bypass",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Malabsorption / gastric bypass / IBD",
+              "citation": "Gut 2018"
+            },
+            {
+              "key": "raised_pth",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Elevated PTH (secondary hyperparathyroidism)",
+              "citation": "NEJM 2011"
+            },
+            {
+              "key": "osteoporosis_low_bmd",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Low bone mineral density (DEXA)",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "fatigue_widespread_d",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Fatigue / widespread pain (non-specific)",
+              "citation": "BMJ 2014"
+            }
+          ]
+        },
+        {
+          "name": "Folate Deficiency",
+          "icd": "E53.8",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "haematological"
+          ],
+          "specialties": [
+            "general_medicine"
+          ],
+          "features": [
+            {
+              "key": "macrocytic_anaemia_folate",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Macrocytic anaemia",
+              "citation": "NEJM 2013"
+            },
+            {
+              "key": "low_serum_folate",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "Serum folate <7 nmol/L",
+              "citation": "BMJ 2015"
+            },
+            {
+              "key": "poor_diet_alcohol",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Poor diet / excessive alcohol use",
+              "citation": "BMJ 2014"
+            },
+            {
+              "key": "malabsorption_folate",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Malabsorption (coeliac / IBD)",
+              "citation": "Gut 2018"
+            },
+            {
+              "key": "methotrexate_anticonvulsant",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Methotrexate / anticonvulsant use (drug-induced)",
+              "citation": "Lancet 2016"
+            },
+            {
+              "key": "pregnancy_periconceptual",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Pregnancy / periconceptual period (increased demand)",
+              "citation": "NEJM 2012"
+            },
+            {
+              "key": "neural_tube_defect_hx",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Prior pregnancy with neural tube defect",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "megaloblastic_marrow",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "Megaloblastic changes on bone marrow",
+              "citation": "NEJM 2013"
+            }
+          ]
+        },
+        {
+          "name": "Malnutrition",
+          "icd": "E46",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "geriatric",
+            "general_medicine"
+          ],
+          "specialties": [
+            "general_medicine"
+          ],
+          "features": [
+            {
+              "key": "must_score_2_or_more",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "MUST score \u22652 (high risk)",
+              "citation": "BAPEN 2003"
+            },
+            {
+              "key": "unintentional_weight_loss_10",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "Unintentional weight loss \u226510% over 3\u20136 months",
+              "citation": "ESPEN 2019"
+            },
+            {
+              "key": "low_bmi",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "BMI <18.5 kg/m\u00b2",
+              "citation": "ESPEN 2019"
+            },
+            {
+              "key": "reduced_food_intake",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Markedly reduced food intake >2 weeks",
+              "citation": "ESPEN 2019"
+            },
+            {
+              "key": "low_albumin",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Low serum albumin <30 g/L",
+              "citation": "Clin Nutr 2019"
+            },
+            {
+              "key": "chronic_illness",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Chronic illness driving malnutrition",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "muscle_wasting_temporal",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Temporal / thenar muscle wasting",
+              "citation": "ESPEN 2019"
+            },
+            {
+              "key": "poor_wound_healing",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Poor wound healing / pressure sores",
+              "citation": "Clin Nutr 2018"
+            }
+          ]
+        },
+        {
+          "name": "Magnesium Deficiency",
+          "icd": "E83.4",
+          "logPrior": -23,
+          "urgency": 1,
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "general_medicine"
+          ],
+          "features": [
+            {
+              "key": "low_serum_magnesium",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Serum magnesium <0.7 mmol/L",
+              "citation": "NEJM 2015"
+            },
+            {
+              "key": "muscle_cramps_spasms",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Muscle cramps / spasms / tremor",
+              "citation": "Lancet 2016"
+            },
+            {
+              "key": "diuretic_use",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Loop or thiazide diuretic use",
+              "citation": "NEJM 2015"
+            },
+            {
+              "key": "ppi_long_term",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Long-term PPI use (>1 year)",
+              "citation": "JAMA 2011"
+            },
+            {
+              "key": "diabetes_alcoholism",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Diabetes / alcoholism (renal wasting)",
+              "citation": "Lancet 2016"
+            },
+            {
+              "key": "cardiac_arrhythmia_mg",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Cardiac arrhythmia / prolonged QTc",
+              "citation": "NEJM 2015"
+            },
+            {
+              "key": "hypocalcaemia_refractory",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Refractory hypocalcaemia (Mg required to restore PTH)",
+              "citation": "NEJM 2014"
+            },
+            {
+              "key": "gi_malabsorption_diarrhoea",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "GI malabsorption / chronic diarrhoea",
+              "citation": "Gut 2018"
+            }
+          ]
+        },
+        {
+          "name": "Zinc Deficiency",
+          "icd": "E60",
+          "logPrior": -26,
+          "urgency": 0,
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "general_medicine"
+          ],
+          "features": [
+            {
+              "key": "poor_wound_healing_zinc",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Poor wound healing / skin ulcers",
+              "citation": "Nutrients 2018"
+            },
+            {
+              "key": "ageusia_anosmia_zinc",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Loss of taste / smell (ageusia/anosmia)",
+              "citation": "NEJM 2015"
+            },
+            {
+              "key": "low_serum_zinc",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "Low serum zinc <70 mcg/dL",
+              "citation": "Nutrients 2018"
+            },
+            {
+              "key": "acrodermatitis_enteropathica",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Periorificial / acral dermatitis",
+              "citation": "Dermatology 2017"
+            },
+            {
+              "key": "recurrent_infections_zinc",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Recurrent infections (immune impairment)",
+              "citation": "Nutrients 2018"
+            },
+            {
+              "key": "malabsorption_crohns",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Malabsorption / Crohn's disease",
+              "citation": "IBD 2018"
+            },
+            {
+              "key": "vegan_diet_zinc",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Vegan / plant-based diet (phytate binding)",
+              "citation": "Nutrients 2019"
+            },
+            {
+              "key": "alopecia_zinc",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Diffuse alopecia",
+              "citation": "J Dermatol 2019"
+            }
+          ]
+        },
+        {
+          "name": "Thiamine Deficiency (Wernicke Encephalopathy)",
+          "icd": "E51.2",
+          "logPrior": -35,
+          "urgency": 3,
+          "systems": [
+            "neurological",
+            "haematological"
+          ],
+          "specialties": [
+            "neurology",
+            "general_medicine"
+          ],
+          "features": [
+            {
+              "key": "wernicke_triad",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Wernicke triad: confusion+ophthalmoplegia+ataxia",
+              "citation": "NEJM 2012"
+            },
+            {
+              "key": "alcohol_dependence_thiamine",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Alcohol dependence / poor nutrition",
+              "citation": "Lancet Neurol 2015"
+            },
+            {
+              "key": "ophthalmoplegia_nystagmus",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "Ophthalmoplegia / nystagmus",
+              "citation": "NEJM 2012"
+            },
+            {
+              "key": "ataxia_gait",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Cerebellar ataxia / gait disturbance",
+              "citation": "Lancet Neurol 2015"
+            },
+            {
+              "key": "confusion_altered_consciousness",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Confusion / altered consciousness",
+              "citation": "NEJM 2012"
+            },
+            {
+              "key": "iv_glucose_without_thiamine",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "IV glucose given without thiamine (precipitant)",
+              "citation": "Lancet Neurol 2015"
+            },
+            {
+              "key": "low_thiamine_blood",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "Low blood thiamine level",
+              "citation": "NEJM 2012"
+            },
+            {
+              "key": "mri_mammillary_bodies",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "MRI: mammillary body / periaqueductal signal",
+              "citation": "Radiology 2017"
+            }
+          ]
+        }
+      ]
+    },
+    "fibromyalgiaChronic": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Fibromyalgia",
+          "icd": "M79.7",
+          "logPrior": -22,
+          "urgency": 0,
+          "systems": [
+            "musculoskeletal",
+            "psychiatric"
+          ],
+          "specialties": [
+            "rheumatology",
+            "general_medicine"
+          ],
+          "features": [
+            {
+              "key": "widespread_pain_3_months",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Widespread pain \u22653 months",
+              "citation": "ACR 2016"
+            },
+            {
+              "key": "widespread_pain_index_7",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "WPI \u22657 + SS score \u22655 (ACR 2016)",
+              "citation": "ACR 2016"
+            },
+            {
+              "key": "fatigue_unrefreshing_sleep",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Fatigue / unrefreshing sleep",
+              "citation": "ACR 2016"
+            },
+            {
+              "key": "cognitive_fog",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Cognitive fog / fibro fog",
+              "citation": "Arthritis Res Ther 2018"
+            },
+            {
+              "key": "normal_investigations",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Normal inflammatory markers / investigations",
+              "citation": "ACR 2016"
+            },
+            {
+              "key": "female_middle_age_fibro",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Female, middle-aged (4:1 female:male ratio)",
+              "citation": "Nat Rev Rheumatol 2019"
+            },
+            {
+              "key": "comorbid_ibs_migraine_pots",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Comorbid IBS / migraine / POTS",
+              "citation": "Arthritis Res Ther 2019"
+            },
+            {
+              "key": "allodynia_hyperalgesia",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Allodynia / central sensitisation features",
+              "citation": "Pain 2018"
+            }
+          ]
+        },
+        {
+          "name": "Complex Regional Pain Syndrome",
+          "icd": "G90.5",
+          "logPrior": -35,
+          "urgency": 1,
+          "systems": [
+            "neurological",
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "neurology",
+            "pain_medicine"
+          ],
+          "features": [
+            {
+              "key": "pain_disproportionate_trauma",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "Disproportionate pain to precipitating injury",
+              "citation": "Lancet Neurol 2019"
+            },
+            {
+              "key": "budapest_criteria",
+              "value": "true",
+              "logLR": 29,
+              "evidenceLabel": "Budapest criteria met (4 categories)",
+              "citation": "Pain 2007"
+            },
+            {
+              "key": "allodynia_crps",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Allodynia / hyperalgesia in affected limb",
+              "citation": "Lancet Neurol 2019"
+            },
+            {
+              "key": "autonomic_changes",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Autonomic changes: temperature/colour/sweat asymmetry",
+              "citation": "NEJM 2015"
+            },
+            {
+              "key": "trophic_changes",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Trophic changes: hair/nail/skin changes",
+              "citation": "Pain 2018"
+            },
+            {
+              "key": "oedema_crps",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Oedema in affected limb",
+              "citation": "Lancet Neurol 2019"
+            },
+            {
+              "key": "motor_dysfunction",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Motor dysfunction: tremor/dystonia/weakness",
+              "citation": "NEJM 2015"
+            },
+            {
+              "key": "precipitating_injury_fracture",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Precipitating fracture / surgery / immobilisation",
+              "citation": "Lancet Neurol 2019"
+            }
+          ]
+        },
+        {
+          "name": "Chronic Fatigue Syndrome / ME",
+          "icd": "G93.3",
+          "logPrior": -28,
+          "urgency": 0,
+          "systems": [
+            "neurological",
+            "psychiatric"
+          ],
+          "specialties": [
+            "general_medicine"
+          ],
+          "features": [
+            {
+              "key": "post_exertional_malaise",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Post-exertional malaise (hallmark)",
+              "citation": "IOM 2015"
+            },
+            {
+              "key": "fatigue_6_months_cfs",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Profound fatigue \u22656 months not relieved by rest",
+              "citation": "IOM 2015"
+            },
+            {
+              "key": "unrefreshing_sleep_cfs",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Unrefreshing sleep",
+              "citation": "IOM 2015"
+            },
+            {
+              "key": "cognitive_impairment_cfs",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Cognitive impairment (memory / processing speed)",
+              "citation": "IOM 2015"
+            },
+            {
+              "key": "orthostatic_intolerance_cfs",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Orthostatic intolerance / POTS features",
+              "citation": "IOM 2015"
+            },
+            {
+              "key": "preceded_viral_illness",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Preceded by viral illness / COVID-19",
+              "citation": "JAMA 2020"
+            },
+            {
+              "key": "normal_standard_tests",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Normal standard investigation panel",
+              "citation": "IOM 2015"
+            },
+            {
+              "key": "severe_functional_impairment",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Severe functional impairment (housebound/bedbound)",
+              "citation": "Lancet 2019"
+            }
+          ]
+        },
+        {
+          "name": "Myofascial Pain Syndrome",
+          "icd": "M79.1",
+          "logPrior": -20,
+          "urgency": 0,
+          "systems": [
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "pain_medicine",
+            "rheumatology"
+          ],
+          "features": [
+            {
+              "key": "trigger_point_palpation",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "Palpable taut band with trigger point",
+              "citation": "Pain Physician 2018"
+            },
+            {
+              "key": "referred_pain_pattern",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Characteristic referred pain pattern on pressure",
+              "citation": "Pain 2015"
+            },
+            {
+              "key": "local_twitch_response",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Local twitch response on needling",
+              "citation": "Pain Physician 2018"
+            },
+            {
+              "key": "poor_posture_repetitive_strain",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Poor posture / repetitive mechanical strain",
+              "citation": "J Musculoskeletal Pain 2018"
+            },
+            {
+              "key": "normal_esr_crp",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Normal ESR/CRP (no systemic inflammation)",
+              "citation": "Pain 2015"
+            },
+            {
+              "key": "regional_distribution",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Regional pain (not widespread)",
+              "citation": "Pain 2015"
+            },
+            {
+              "key": "relief_dry_needling",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Relief with dry needling / trigger point injection",
+              "citation": "Pain Physician 2018"
+            },
+            {
+              "key": "muscle_stiffness_morning",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Morning stiffness in affected muscles",
+              "citation": "Pain 2018"
+            }
+          ]
+        },
+        {
+          "name": "Hypermobility Spectrum Disorder / hEDS",
+          "icd": "M35.7",
+          "logPrior": -29,
+          "urgency": 0,
+          "systems": [
+            "musculoskeletal",
+            "neurological"
+          ],
+          "specialties": [
+            "rheumatology"
+          ],
+          "features": [
+            {
+              "key": "beighton_score_high",
+              "value": "true",
+              "logLR": 25,
+              "evidenceLabel": "Beighton score \u22655 (adult) \u2014 hypermobility",
+              "citation": "Am J Med Genet 2017"
+            },
+            {
+              "key": "joint_pain_multiple",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Chronic musculoskeletal pain in multiple joints",
+              "citation": "Am J Med Genet 2017"
+            },
+            {
+              "key": "recurrent_dislocations",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Recurrent joint dislocations / subluxations",
+              "citation": "Am J Med Genet 2017"
+            },
+            {
+              "key": "soft_velvety_extensible_skin",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Soft, velvety, extensible skin",
+              "citation": "Am J Med Genet 2017"
+            },
+            {
+              "key": "pots_dysautonomia",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "POTS / dysautonomia features",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "gi_dysmotility_ibs",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "GI dysmotility / IBS overlap",
+              "citation": "Neurogastroenterol Motil 2019"
+            },
+            {
+              "key": "family_history_heds",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Family history of hypermobility",
+              "citation": "Am J Med Genet 2017"
+            },
+            {
+              "key": "female_young_adult_heds",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Young female (commonest demographic)",
+              "citation": "Am J Med Genet 2017"
+            }
+          ]
+        },
+        {
+          "name": "Central Sensitisation / Chronic Widespread Pain",
+          "icd": "M79.3",
+          "logPrior": -24,
+          "urgency": 0,
+          "systems": [
+            "neurological",
+            "psychiatric"
+          ],
+          "specialties": [
+            "pain_medicine"
+          ],
+          "features": [
+            {
+              "key": "widespread_pain_multiple_sites",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Pain in multiple anatomical sites",
+              "citation": "Pain 2017"
+            },
+            {
+              "key": "hyperalgesia_widespread",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Widespread hyperalgesia / allodynia",
+              "citation": "Nat Rev Neurol 2018"
+            },
+            {
+              "key": "cssi_score_high",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Central Sensitisation Inventory \u226540",
+              "citation": "J Pain 2012"
+            },
+            {
+              "key": "pain_not_explained_tissue",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Pain disproportionate to tissue findings",
+              "citation": "Pain 2017"
+            },
+            {
+              "key": "multiple_pain_conditions",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Multiple overlapping pain conditions (IBS/FM/headache)",
+              "citation": "Arthritis Rheum 2017"
+            },
+            {
+              "key": "sleep_disturbance_cognition",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Sleep disturbance / cognitive symptoms",
+              "citation": "Pain 2018"
+            },
+            {
+              "key": "psychosocial_amplification",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Catastrophising / fear-avoidance behaviour",
+              "citation": "JAMA 2019"
+            },
+            {
+              "key": "response_central_analgesia",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Response to centrallyacting agents (SNRIs/gabapentinoids)",
+              "citation": "Lancet 2016"
+            }
+          ]
+        },
+        {
+          "name": "Temporomandibular Joint Disorder",
+          "icd": "M26.6",
+          "logPrior": -24,
+          "urgency": 0,
+          "systems": [
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "oral_maxillofacial",
+            "rheumatology"
+          ],
+          "features": [
+            {
+              "key": "jaw_pain_clicking",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Jaw pain / clicking / crepitus",
+              "citation": "JADA 2019"
+            },
+            {
+              "key": "limited_mouth_opening",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Limited mouth opening (<40 mm)",
+              "citation": "JADA 2019"
+            },
+            {
+              "key": "preauricular_tenderness",
+              "value": "true",
+              "logLR": 23,
+              "evidenceLabel": "Preauricular tenderness",
+              "citation": "JADA 2019"
+            },
+            {
+              "key": "morning_jaw_stiffness",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Morning jaw stiffness",
+              "citation": "JADA 2019"
+            },
+            {
+              "key": "bruxism_tooth_wear",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Bruxism / tooth wear",
+              "citation": "Sleep Med 2018"
+            },
+            {
+              "key": "referred_ear_pain_tmj",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "Referred ear pain / headache from TMJ",
+              "citation": "JADA 2018"
+            },
+            {
+              "key": "stress_anxiety_association",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Associated with stress / anxiety",
+              "citation": "Pain 2019"
+            },
+            {
+              "key": "dental_occlusion_abnormal",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Abnormal dental occlusion / asymmetry",
+              "citation": "JADA 2019"
+            }
+          ]
+        },
+        {
+          "name": "Chronic Low Back Pain (Non-Specific)",
+          "icd": "M54.5",
+          "logPrior": -14,
+          "urgency": 0,
+          "systems": [
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "general_medicine",
+            "orthopaedics"
+          ],
+          "features": [
+            {
+              "key": "back_pain_12_weeks",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Low back pain >12 weeks (chronic)",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "no_red_flags",
+              "value": "true",
+              "logLR": 19,
+              "evidenceLabel": "No red flags (NCECAT criteria negative)",
+              "citation": "NICE 2016"
+            },
+            {
+              "key": "activity_related_pain",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Mechanical pain (worse activity, better rest)",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "normal_neurology",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Normal neurological examination",
+              "citation": "NICE 2016"
+            },
+            {
+              "key": "psychosocial_yellow_flags",
+              "value": "true",
+              "logLR": 21,
+              "evidenceLabel": "Yellow flags: fear-avoidance / catastrophising",
+              "citation": "Pain 2019"
+            },
+            {
+              "key": "prior_acute_episode",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Prior acute back pain episodes",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "work_disability",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Work disability / functional limitation",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "poor_response_analgesia",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Poor response to simple analgesia",
+              "citation": "BMJ 2018"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {
@@ -46079,6 +48366,77 @@
     "osteoporosis": [
       "musculoskeletal",
       "endocrine"
+    ],
+    "lymphoma": [
+      "haematological"
+    ],
+    "leukaemia": [
+      "haematological"
+    ],
+    "myeloma": [
+      "haematological"
+    ],
+    "lymphadenopathy": [
+      "haematological"
+    ],
+    "b symptoms": [
+      "haematological"
+    ],
+    "frailty": [
+      "geriatric"
+    ],
+    "delirium": [
+      "geriatric",
+      "neurological"
+    ],
+    "dementia": [
+      "neurological",
+      "geriatric"
+    ],
+    "falls": [
+      "geriatric"
+    ],
+    "parkinson": [
+      "neurological"
+    ],
+    "vitamin b12": [
+      "haematological",
+      "neurological"
+    ],
+    "vitamin d": [
+      "musculoskeletal",
+      "endocrine"
+    ],
+    "folate deficiency": [
+      "haematological"
+    ],
+    "malnutrition": [
+      "geriatric"
+    ],
+    "fibromyalgia": [
+      "musculoskeletal",
+      "psychiatric"
+    ],
+    "chronic fatigue": [
+      "neurological"
+    ],
+    "me/cfs": [
+      "neurological"
+    ],
+    "crps": [
+      "neurological"
+    ],
+    "hypermobility": [
+      "musculoskeletal"
+    ],
+    "tmj": [
+      "musculoskeletal"
+    ],
+    "jaw pain": [
+      "musculoskeletal"
+    ],
+    "chronic back pain": [
+      "musculoskeletal"
     ]
   },
   "systemIndex": {
@@ -46111,6 +48469,39 @@
       "Achilles Tendon Rupture",
       "Stress Fracture",
       "Carpal Tunnel Syndrome"
+    ],
+    "haematological": [
+      "Hodgkin Lymphoma",
+      "Non-Hodgkin Lymphoma",
+      "Chronic Lymphocytic Leukaemia",
+      "Multiple Myeloma",
+      "Acute Myeloid Leukaemia",
+      "Chronic Myeloid Leukaemia",
+      "Myelodysplastic Syndrome",
+      "Monoclonal Gammopathy of Undetermined Significance",
+      "Iron Deficiency Anaemia",
+      "Vitamin B12 Deficiency",
+      "Folate Deficiency"
+    ],
+    "geriatric": [
+      "Frailty Syndrome",
+      "Delirium",
+      "Dementia (Alzheimer Type)",
+      "Polypharmacy Adverse Event",
+      "Recurrent Falls",
+      "Elder Abuse / Neglect",
+      "Sarcopenia",
+      "Malnutrition"
+    ],
+    "chronic_pain": [
+      "Fibromyalgia",
+      "Complex Regional Pain Syndrome",
+      "Chronic Fatigue Syndrome / ME",
+      "Myofascial Pain Syndrome",
+      "Hypermobility Spectrum Disorder / hEDS",
+      "Central Sensitisation / Chronic Widespread Pain",
+      "Temporomandibular Joint Disorder",
+      "Chronic Low Back Pain (Non-Specific)"
     ]
   },
   "specialtyIndex": {
@@ -46154,6 +48545,33 @@
     "andrology": [
       "Male Hypogonadism (Testosterone Deficiency)",
       "Erectile Dysfunction"
+    ],
+    "haematology": [
+      "Hodgkin Lymphoma",
+      "Non-Hodgkin Lymphoma",
+      "Chronic Lymphocytic Leukaemia",
+      "Multiple Myeloma",
+      "Acute Myeloid Leukaemia",
+      "Chronic Myeloid Leukaemia",
+      "Myelodysplastic Syndrome",
+      "Monoclonal Gammopathy of Undetermined Significance"
+    ],
+    "geriatrics": [
+      "Frailty Syndrome",
+      "Delirium",
+      "Dementia (Alzheimer Type)",
+      "Polypharmacy Adverse Event",
+      "Recurrent Falls",
+      "Elder Abuse / Neglect",
+      "Sarcopenia"
+    ],
+    "pain_medicine": [
+      "Fibromyalgia",
+      "Complex Regional Pain Syndrome",
+      "Myofascial Pain Syndrome",
+      "Central Sensitisation / Chronic Widespread Pain",
+      "Temporomandibular Joint Disorder",
+      "Chronic Low Back Pain (Non-Specific)"
     ]
   },
   "urgencyIndex": {
@@ -46187,6 +48605,66 @@
     },
     "central_csa": {
       "disease": "Central Sleep Apnoea",
+      "urgency": 1
+    },
+    "aml_critical": {
+      "disease": "Acute Myeloid Leukaemia",
+      "urgency": 3
+    },
+    "wernicke_enceph": {
+      "disease": "Thiamine Deficiency (Wernicke Encephalopathy)",
+      "urgency": 3
+    },
+    "delirium_acute": {
+      "disease": "Delirium",
+      "urgency": 2
+    },
+    "elder_abuse": {
+      "disease": "Elder Abuse / Neglect",
+      "urgency": 2
+    },
+    "crps_severe": {
+      "disease": "Complex Regional Pain Syndrome",
+      "urgency": 1
+    },
+    "nhl_urgent": {
+      "disease": "Non-Hodgkin Lymphoma",
+      "urgency": 1
+    },
+    "myeloma_urgent": {
+      "disease": "Multiple Myeloma",
+      "urgency": 1
+    },
+    "cml_urgent": {
+      "disease": "Chronic Myeloid Leukaemia",
+      "urgency": 1
+    },
+    "mds_urgent": {
+      "disease": "Myelodysplastic Syndrome",
+      "urgency": 1
+    },
+    "b12_deficiency_neuro": {
+      "disease": "Vitamin B12 Deficiency",
+      "urgency": 1
+    },
+    "folate_pregnancy": {
+      "disease": "Folate Deficiency",
+      "urgency": 1
+    },
+    "malnutrition_severe": {
+      "disease": "Malnutrition",
+      "urgency": 1
+    },
+    "magnesium_arrhythmia": {
+      "disease": "Magnesium Deficiency",
+      "urgency": 1
+    },
+    "cfs_severe": {
+      "disease": "Chronic Fatigue Syndrome / ME",
+      "urgency": 0
+    },
+    "recurrent_falls": {
+      "disease": "Recurrent Falls",
       "urgency": 1
     }
   }

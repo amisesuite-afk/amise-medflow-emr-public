@@ -612,6 +612,64 @@ enum BayesianDiagnosisEngine {
             candidates = externalPool("menopauseAndrology") ?? []
             if ccL.contains("pelvic pain") || ccL.contains("dysmenorrhoea") { mergePool("pelvicPain") }
 
+        // Haematological malignancy / lymphoma / leukaemia / myeloma
+        case ccL.contains("lymphoma") || ccL.contains("hodgkin") || ccL.contains("non-hodgkin") ||
+             ccL.contains("leukaemia") || ccL.contains("leukemia") || ccL.contains("aml") ||
+             ccL.contains("cll") || ccL.contains("cml") || ccL.contains("myeloma") ||
+             ccL.contains("multiple myeloma") || ccL.contains("paraprotein") ||
+             ccL.contains("mds") || ccL.contains("myelodysplastic") || ccL.contains("mgus") ||
+             ccL.contains("b-symptoms") || ccL.contains("b symptoms") ||
+             ccL.contains("bone marrow") || ccL.contains("blast") ||
+             (ccL.contains("night sweats") && ccL.contains("lymph")) ||
+             (ccL.contains("drenching") && ccL.contains("sweat")) ||
+             (ccL.contains("painless") && ccL.contains("lymph node")):
+            candidates = externalPool("haematologicalMalignancy") ?? []
+            if ccL.contains("anaemia") || ccL.contains("anemia") { mergePool("anaemia") }
+
+        // Geriatric syndromes / frailty / delirium / dementia / falls
+        case ccL.contains("frailty") || ccL.contains("frail") ||
+             ccL.contains("delirium") || ccL.contains("acute confusion") ||
+             ccL.contains("dementia") || ccL.contains("memory loss") || ccL.contains("memory problem") ||
+             ccL.contains("alzheimer") || ccL.contains("cognitive decline") ||
+             ccL.contains("recurrent falls") || ccL.contains("frequent falls") ||
+             ccL.contains("parkinson") || ccL.contains("resting tremor") ||
+             ccL.contains("elder abuse") || ccL.contains("polypharmacy") ||
+             ccL.contains("sarcopenia") || ccL.contains("muscle wasting") ||
+             (ccL.contains("falls") && ccL.contains("elderly")) ||
+             (ccL.contains("confusion") && ccL.contains("older")):
+            candidates = externalPool("geriatricSyndrome") ?? []
+            if ccL.contains("memory") || ccL.contains("cognitive") { mergePool("neurosurgicalHead") }
+
+        // Nutritional / vitamin deficiency / malnutrition
+        case ccL.contains("vitamin deficiency") || ccL.contains("b12 deficiency") ||
+             ccL.contains("vitamin b12") || ccL.contains("folate deficiency") ||
+             ccL.contains("vitamin d deficiency") || ccL.contains("low vitamin d") ||
+             ccL.contains("iron deficiency") || ccL.contains("malnutrition") ||
+             ccL.contains("wernicke") || ccL.contains("thiamine") ||
+             ccL.contains("magnesium deficiency") || ccL.contains("zinc deficiency") ||
+             ccL.contains("nutritional") || ccL.contains("micronutrient") ||
+             ccL.contains("deficiency anaemia") ||
+             (ccL.contains("pernicious") && ccL.contains("anaemia")):
+            candidates = externalPool("nutritionDeficiency") ?? []
+            if ccL.contains("anaemia") || ccL.contains("anemia") { mergePool("anaemia") }
+            if ccL.contains("numb") || ccL.contains("tingling") { mergePool("peripheralNeuropathy") }
+
+        // Fibromyalgia / chronic pain / CFS / CRPS / hypermobility
+        case ccL.contains("fibromyalgia") || ccL.contains("fibromyalgia") ||
+             ccL.contains("crps") || ccL.contains("complex regional pain") ||
+             ccL.contains("chronic fatigue") || ccL.contains("cfs") || ccL.contains("me/cfs") ||
+             ccL.contains("myalgic encephalomyelitis") ||
+             ccL.contains("hypermobility") || ccL.contains("ehlers-danlos") || ccL.contains("heds") ||
+             ccL.contains("central sensitisation") || ccL.contains("central sensitization") ||
+             ccL.contains("tmj") || ccL.contains("temporomandibular") ||
+             ccL.contains("myofascial") || ccL.contains("trigger point") ||
+             ccL.contains("chronic widespread pain") ||
+             (ccL.contains("chronic") && ccL.contains("pain") &&
+              (ccL.contains("no cause") || ccL.contains("unexplained") || ccL.contains("functional"))):
+            candidates = externalPool("fibromyalgiaChronic") ?? []
+            if ccL.contains("depression") || ccL.contains("anxiety") { mergePool("psychiatryMental") }
+            if ccL.contains("sleep") { mergePool("sleepDisorders") }
+
         default:
             // Wide-net general medicine catch-all — no longer surgical-biased
             candidates = externalPool("generalMedicine") ?? []
@@ -708,6 +766,19 @@ enum BayesianDiagnosisEngine {
         // Secondary pool: menopause/andrology overlay on hormonal / climacteric presentations
         if ccL.contains("hot flush") || ccL.contains("night sweat") || ccL.contains("hrt") ||
            ccL.contains("testosterone") || ccL.contains("menopause") { mergePool("menopauseAndrology") }
+        // Secondary pool: haematological malignancy overlay on lymphadenopathy / B-symptoms / paraprotein
+        if ccL.contains("lymph node") || ccL.contains("lymphadenopathy") ||
+           ccL.contains("night sweats") || ccL.contains("paraprotein") ||
+           (ccL.contains("weight loss") && ccL.contains("sweat")) { mergePool("haematologicalMalignancy") }
+        // Secondary pool: geriatric overlay on confusion / falls / frailty in elderly context
+        if ccL.contains("confusion") || ccL.contains("delirium") || ccL.contains("falls") ||
+           ccL.contains("frail") || ccL.contains("dementia") { mergePool("geriatricSyndrome") }
+        // Secondary pool: nutritional deficiency overlay on anaemia / neuropathy / fatigue
+        if ccL.contains("deficiency") || ccL.contains("vitamin") || ccL.contains("malnutrition") ||
+           (ccL.contains("anaemia") && ccL.contains("diet")) { mergePool("nutritionDeficiency") }
+        // Secondary pool: fibromyalgia/chronic pain overlay on widespread pain / fatigue / functional presentations
+        if ccL.contains("widespread pain") || ccL.contains("fibromyalgia") ||
+           ccL.contains("chronic fatigue") || ccL.contains("myofascial") { mergePool("fibromyalgiaChronic") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but
