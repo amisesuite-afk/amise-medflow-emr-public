@@ -1400,6 +1400,19 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("men") || ccL.contains("multiple endocrine") { mergePool("thyroidNoduleAssessment") }
             if ccL.contains("cancer") || ccL.contains("malignant") { mergePool("oncologyComplications") }
 
+        // Bariatric and metabolic surgery complications
+        case ccL.contains("bariatric") || ccL.contains("sleeve gastrectomy") ||
+             ccL.contains("gastric bypass") || ccL.contains("rygb") ||
+             ccL.contains("dumping syndrome") || ccL.contains("marginal ulcer") ||
+             ccL.contains("internal hernia post bypass") || ccL.contains("anastomotic leak") && ccL.contains("bariatric") ||
+             ccL.contains("nutritional deficiency post bariatric") ||
+             (ccL.contains("weight loss surgery") && ccL.contains("complication")) ||
+             (ccL.contains("gerd") && ccL.contains("sleeve")) ||
+             (ccL.contains("gallstone") && ccL.contains("post bariatric")):
+            candidates = externalPool("bariatricMetabolic") ?? []
+            if ccL.contains("gallstone") || ccL.contains("biliary") { mergePool("hepatobiliaryAcute") }
+            if ccL.contains("leak") || ccL.contains("peritonitis") { mergePool("postOpComplications") }
+
         // Transplant surgery complications
         case ccL.contains("transplant rejection") || ccL.contains("graft rejection") ||
              ccL.contains("hepatic artery thrombosis") || ccL.contains("ptld") ||
@@ -1831,6 +1844,9 @@ enum BayesianDiagnosisEngine {
         if ccL.contains("transplant rejection") || ccL.contains("post-transplant") ||
            ccL.contains("hepatic artery thrombosis") || ccL.contains("ptld") ||
            ccL.contains("tacrolimus") || ccL.contains("cyclosporine") { mergePool("transplantSurgery") }
+        if ccL.contains("bariatric") || ccL.contains("rygb") || ccL.contains("sleeve gastrectomy") ||
+           ccL.contains("dumping syndrome") || ccL.contains("marginal ulcer") ||
+           ccL.contains("internal hernia") { mergePool("bariatricMetabolic") }
         if ccL.contains("diabetic foot") || ccL.contains("venous ulcer") ||
            ccL.contains("pressure ulcer") || ccL.contains("calciphylaxis") ||
            ccL.contains("pyoderma gangrenosum") || ccL.contains("hidradenitis") ||

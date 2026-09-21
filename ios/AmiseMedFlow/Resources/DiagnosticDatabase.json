@@ -79764,6 +79764,572 @@
           ]
         }
       ]
+    },
+    "bariatricMetabolic": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Anastomotic Leak (Post-Sleeve/Bypass)",
+          "icd": "K91.81",
+          "logPrior": -29,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "bariatric_surgery"
+          ],
+          "urgency": 3,
+          "features": [
+            {
+              "key": "tachycardia_early_post_op",
+              "value": "persistent_gt120",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2018;14:291"
+            },
+            {
+              "key": "ct_leak_study",
+              "value": "free_air_fluid_contrast_extravasation",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "Surg Obes Relat Dis 2018;14:291"
+            },
+            {
+              "key": "day_1_5_post_bariatric",
+              "value": "timing",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2018;14:291"
+            },
+            {
+              "key": "left_shoulder_tip_pain",
+              "value": "diaphragmatic_irritation",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2018;14:291"
+            },
+            {
+              "key": "fever_peritonism",
+              "value": "yes",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2018;14:291"
+            },
+            {
+              "key": "drain_output",
+              "value": "bile_or_enteric_content",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2018;14:291"
+            },
+            {
+              "key": "sleeve_staple_line",
+              "value": "proximal_leak_commoner",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "Surg Obes Relat Dis 2018;14:291"
+            },
+            {
+              "key": "wbc_crp_rising",
+              "value": "yes",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "Surg Obes Relat Dis 2018;14:291"
+            }
+          ]
+        },
+        {
+          "name": "Internal Hernia (Post-RYGB)",
+          "icd": "K43.9",
+          "logPrior": -28,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "bariatric_surgery"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "rygb_history",
+              "value": "yes",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Endosc 2015;29:1867"
+            },
+            {
+              "key": "episodic_abdominal_pain",
+              "value": "post_prandial_self_resolving",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Endosc 2015;29:1867"
+            },
+            {
+              "key": "ct_abdomen",
+              "value": "small_bowel_volvulus_whirl_sign",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Endosc 2015;29:1867"
+            },
+            {
+              "key": "low_bmi_significant_weight_loss",
+              "value": "risk_factor",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "Surg Endosc 2015;29:1867"
+            },
+            {
+              "key": "Peterson_space_defect",
+              "value": "transverse_mesocolon",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Endosc 2015;29:1867"
+            },
+            {
+              "key": "nausea_vomiting",
+              "value": "crampy_post_prandial",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "Surg Endosc 2015;29:1867"
+            },
+            {
+              "key": "laparoscopy_diagnosis",
+              "value": "required_ct_often_normal",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Endosc 2015;29:1867"
+            },
+            {
+              "key": "bowel_strangulation",
+              "value": "elevated_lactate",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Endosc 2015;29:1867"
+            }
+          ]
+        },
+        {
+          "name": "Dumping Syndrome",
+          "icd": "K91.1",
+          "logPrior": -24,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "bariatric_surgery"
+          ],
+          "urgency": 0,
+          "features": [
+            {
+              "key": "bariatric_or_gastric_surgery",
+              "value": "yes",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2019;15:1740"
+            },
+            {
+              "key": "post_prandial_symptoms",
+              "value": "sweating_palpitation_flushing_15_30min",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2019;15:1740"
+            },
+            {
+              "key": "late_dumping_hypoglycaemia",
+              "value": "1_3hr_neuroglycopaenic",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2019;15:1740"
+            },
+            {
+              "key": "liquid_meal_glucose_test",
+              "value": "peak_glucose_then_hypoglycaemia",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2019;15:1740"
+            },
+            {
+              "key": "diarrhoea_post_prandial",
+              "value": "osmotic",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2019;15:1740"
+            },
+            {
+              "key": "dietary_modification_improvement",
+              "value": "small_low_carb_meals",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "Surg Obes Relat Dis 2019;15:1740"
+            },
+            {
+              "key": "gastric_emptying_study",
+              "value": "rapid_transit",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2019;15:1740"
+            },
+            {
+              "key": "glucagon_like_peptide1",
+              "value": "exaggerated_response",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2019;15:1740"
+            }
+          ]
+        },
+        {
+          "name": "Nutritional Deficiency (Post-Bariatric)",
+          "icd": "E63.9",
+          "logPrior": -17,
+          "systems": [
+            "metabolic"
+          ],
+          "specialties": [
+            "bariatric_surgery"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "iron_deficiency_anaemia",
+              "value": "microcytic_low_ferritin",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2016;12:1715"
+            },
+            {
+              "key": "vitamin_b12",
+              "value": "low_neuropathy",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2016;12:1715"
+            },
+            {
+              "key": "thiamine_b1",
+              "value": "low_wernicke_risk",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2016;12:1715"
+            },
+            {
+              "key": "vitamin_d_calcium",
+              "value": "low_secondary_hyperparathyroidism",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2016;12:1715"
+            },
+            {
+              "key": "zinc_deficiency",
+              "value": "hair_loss_taste_changes",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2016;12:1715"
+            },
+            {
+              "key": "protein_malnutrition",
+              "value": "hypoalbuminaemia",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2016;12:1715"
+            },
+            {
+              "key": "rygb_vs_sleeve",
+              "value": "rygb_higher_risk",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "Surg Obes Relat Dis 2016;12:1715"
+            },
+            {
+              "key": "compliance_supplementation",
+              "value": "poor",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2016;12:1715"
+            }
+          ]
+        },
+        {
+          "name": "Marginal Ulcer (Post-Bypass)",
+          "icd": "K28.9",
+          "logPrior": -24,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "bariatric_surgery"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "rygb_history",
+              "value": "yes",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2017;13:955"
+            },
+            {
+              "key": "endoscopy",
+              "value": "ulcer_at_gastrojejunostomy",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "Surg Obes Relat Dis 2017;13:955"
+            },
+            {
+              "key": "abdominal_pain_post_prandial",
+              "value": "yes",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2017;13:955"
+            },
+            {
+              "key": "nsaid_smoking_use",
+              "value": "risk_factor",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2017;13:955"
+            },
+            {
+              "key": "h_pylori",
+              "value": "present_or_not_treated_preop",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "Surg Obes Relat Dis 2017;13:955"
+            },
+            {
+              "key": "gi_bleeding",
+              "value": "upper_haematemesis",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2017;13:955"
+            },
+            {
+              "key": "ppi_response",
+              "value": "partial_or_refractory",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "Surg Obes Relat Dis 2017;13:955"
+            },
+            {
+              "key": "bile_exposure",
+              "value": "anastomotic_fistula",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2017;13:955"
+            }
+          ]
+        },
+        {
+          "name": "GERD/Reflux After Sleeve Gastrectomy",
+          "icd": "K21.0",
+          "logPrior": -17,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "bariatric_surgery"
+          ],
+          "urgency": 0,
+          "features": [
+            {
+              "key": "sleeve_gastrectomy_history",
+              "value": "yes",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2020;16:1466"
+            },
+            {
+              "key": "heartburn_regurgitation",
+              "value": "worsened_post_sleeve",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2020;16:1466"
+            },
+            {
+              "key": "impedance_ph_monitoring",
+              "value": "abnormal_acid_exposure",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2020;16:1466"
+            },
+            {
+              "key": "pre_existing_hiatus_hernia",
+              "value": "risk_factor",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2020;16:1466"
+            },
+            {
+              "key": "de_novo_gerd",
+              "value": "post_sleeve",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2020;16:1466"
+            },
+            {
+              "key": "conversion_to_rygb_considered",
+              "value": "refractory_reflux",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "Surg Obes Relat Dis 2020;16:1466"
+            },
+            {
+              "key": "barrett_oesophagus_risk",
+              "value": "worsening_gerd",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2020;16:1466"
+            },
+            {
+              "key": "oesophageal_manometry",
+              "value": "low_les_pressure",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Surg Obes Relat Dis 2020;16:1466"
+            }
+          ]
+        },
+        {
+          "name": "Type 2 Diabetes Remission Post-Bariatric",
+          "icd": "Z87.39",
+          "logPrior": -20,
+          "systems": [
+            "metabolic"
+          ],
+          "specialties": [
+            "bariatric_surgery"
+          ],
+          "urgency": 0,
+          "features": [
+            {
+              "key": "bariatric_surgery_history",
+              "value": "rygb_or_sleeve",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;366:1567"
+            },
+            {
+              "key": "hba1c_normal",
+              "value": "lt6pt5_off_medications",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;366:1567"
+            },
+            {
+              "key": "weight_loss_significant",
+              "value": "greater_20_percent_tbw",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;366:1567"
+            },
+            {
+              "key": "fasting_glucose_normal",
+              "value": "lt7_mmol",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;366:1567"
+            },
+            {
+              "key": "medication_reduction",
+              "value": "insulin_oral_agents_stopped",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;366:1567"
+            },
+            {
+              "key": "rygb_higher_remission",
+              "value": "vs_sleeve",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2012;366:1567"
+            },
+            {
+              "key": "relapse_risk",
+              "value": "weight_regain_longer_duration_dm",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2012;366:1567"
+            },
+            {
+              "key": "c_peptide",
+              "value": "preserved_beta_cell_function",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;366:1567"
+            }
+          ]
+        },
+        {
+          "name": "Gallstone Disease Post-Bariatric",
+          "icd": "K80.20",
+          "logPrior": -14,
+          "systems": [
+            "hepatobiliary"
+          ],
+          "specialties": [
+            "bariatric_surgery",
+            "general_surgery"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "rapid_weight_loss",
+              "value": "gt1pt5kg_week",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Obes Surg 2014;24:1789"
+            },
+            {
+              "key": "ultrasound_gallstones",
+              "value": "new_post_bariatric",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Obes Surg 2014;24:1789"
+            },
+            {
+              "key": "biliary_colic",
+              "value": "right_upper_quadrant",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Obes Surg 2014;24:1789"
+            },
+            {
+              "key": "ursodiol_prophylaxis",
+              "value": "not_used",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "Obes Surg 2014;24:1789"
+            },
+            {
+              "key": "first_6_months_post_op",
+              "value": "highest_risk_period",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Obes Surg 2014;24:1789"
+            },
+            {
+              "key": "acute_cholecystitis",
+              "value": "biliary_complication",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Obes Surg 2014;24:1789"
+            },
+            {
+              "key": "altered_anatomy_rygb",
+              "value": "ercp_access_difficult",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "Obes Surg 2014;24:1789"
+            },
+            {
+              "key": "choledocholithiasis",
+              "value": "altered_anatomy",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Obes Surg 2014;24:1789"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {
