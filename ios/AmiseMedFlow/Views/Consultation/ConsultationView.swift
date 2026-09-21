@@ -4569,8 +4569,12 @@ struct ConsultationView: View {
             // ── Value of Information Panel ─────────────────────────────────
             if !pipeline.informationItems.isEmpty {
                 Section {
-                    ForEach(pipeline.informationItems.prefix(5)) { item in
-                        VOIRow(item: item)
+                    ForEach(Array(pipeline.informationItems.prefix(5))) { item in
+                        VOIRow(item: item,
+                               alreadyResulted: patient.investigations.contains {
+                                   $0.status == .resulted &&
+                                   $0.name.lowercased().contains(item.name.lowercased())
+                               })
                     }
                 } header: {
                     HStack(spacing: 6) {
