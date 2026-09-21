@@ -1203,6 +1203,56 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("infection") || ccL.contains("mrsa") { mergePool("necrotisingSoftTissue") }
             if ccL.contains("diabetic") { mergePool("diabeticFoot") }
 
+        // Liver cirrhosis complications
+        case ccL.contains("spontaneous bacterial peritonitis") || ccL.contains("sbp") ||
+             ccL.contains("hepatic encephalopathy") || ccL.contains("hepatorenal syndrome") ||
+             ccL.contains("oesophageal varices") || ccL.contains("variceal bleeding") ||
+             ccL.contains("hepatic hydrothorax") || ccL.contains("aclf") ||
+             ccL.contains("acute-on-chronic liver") || ccL.contains("hepatic artery thrombosis") ||
+             (ccL.contains("cirrhosis") && (ccL.contains("ascites") || ccL.contains("encephalopathy"))) ||
+             (ccL.contains("cirrhotic") && ccL.contains("bleeding")):
+            candidates = externalPool("liverCirrhosisComplications") ?? []
+            if ccL.contains("varices") || ccL.contains("portal") { mergePool("hepatobiliaryMalignancy") }
+            if ccL.contains("sepsis") { mergePool("sepsisConditions") }
+
+        // Colonoscopy pathology and CRC surveillance
+        case ccL.contains("adenoma") || ccL.contains("colorectal polyp") ||
+             ccL.contains("sessile serrated") || ccL.contains("fap") ||
+             ccL.contains("familial adenomatous polyposis") ||
+             ccL.contains("diverticular disease") || ccL.contains("diverticulitis") ||
+             ccL.contains("colonoscopy surveillance") || ccL.contains("crc surveillance") ||
+             (ccL.contains("fit positive") && ccL.contains("colonoscopy")) ||
+             (ccL.contains("polyp") && ccL.contains("colonoscopy")) ||
+             (ccL.contains("diverticul") && ccL.contains("colon")):
+            candidates = externalPool("colonoscopyPathology") ?? []
+            if ccL.contains("cancer") || ccL.contains("malignant") { mergePool("colorectalMalignancy") }
+            if ccL.contains("lynch") || ccL.contains("fap") { mergePool("geneticsSyndromic") }
+
+        // Critical care surgical complications
+        case ccL.contains("mods") || ccL.contains("multi-organ dysfunction") ||
+             ccL.contains("ards") || ccL.contains("clostridium difficile") ||
+             ccL.contains("c. diff") || ccL.contains("cdiff") ||
+             ccL.contains("post-operative pe") ||
+             ccL.contains("stress ulcer") || ccL.contains("post-operative pneumonia") ||
+             (ccL.contains("pulmonary embolism") && ccL.contains("post")) ||
+             (ccL.contains("icu") && ccL.contains("surgical") && ccL.contains("complication")) ||
+             (ccL.contains("mechanical ventilation") && ccL.contains("abdominal")):
+            candidates = externalPool("criticalCareSurgical") ?? []
+            if ccL.contains("sepsis") { mergePool("sepsisConditions") }
+            if ccL.contains("pe") || ccL.contains("dvt") { mergePool("peripheralVascular") }
+
+        // Surgical site infections
+        case ccL.contains("surgical site infection") || ccL.contains("ssi") ||
+             ccL.contains("wound infection") || ccL.contains("mrsa") ||
+             ccL.contains("infected mesh") || ccL.contains("fournier") ||
+             ccL.contains("crbsi") || ccL.contains("gas gangrene") ||
+             ccL.contains("catheter infection") || ccL.contains("clostridial") ||
+             (ccL.contains("wound") && (ccL.contains("purulent") || ccL.contains("discharge") || ccL.contains("infected"))) ||
+             (ccL.contains("mesh") && ccL.contains("infection")):
+            candidates = externalPool("surgicalSiteInfection") ?? []
+            if ccL.contains("fournier") || ccL.contains("necrotising") { mergePool("necrotisingSoftTissue") }
+            if ccL.contains("sepsis") { mergePool("sepsisConditions") }
+
         // Skin and soft tissue tumours
         case ccL.contains("melanoma") || ccL.contains("basal cell") ||
              ccL.contains("squamous cell carcinoma") || ccL.contains("skin cancer") ||
@@ -1507,6 +1557,19 @@ enum BayesianDiagnosisEngine {
            ccL.contains("pilonidal") || ccL.contains("wound vac") ||
            ccL.contains("skin graft") ||
            (ccL.contains("non-healing") && ccL.contains("wound")) { mergePool("chronicWoundManagement") }
+        if ccL.contains("sbp") || ccL.contains("hepatic encephalopathy") ||
+           ccL.contains("hepatorenal") || ccL.contains("variceal bleeding") ||
+           ccL.contains("aclf") || ccL.contains("hepatic hydrothorax") ||
+           (ccL.contains("cirrhosis") && ccL.contains("ascites")) { mergePool("liverCirrhosisComplications") }
+        if ccL.contains("adenoma") || ccL.contains("colorectal polyp") ||
+           ccL.contains("diverticulitis") || ccL.contains("colonoscopy surveillance") ||
+           (ccL.contains("polyp") && ccL.contains("colonoscopy")) { mergePool("colonoscopyPathology") }
+        if ccL.contains("mods") || ccL.contains("ards") || ccL.contains("c. diff") ||
+           ccL.contains("stress ulcer") ||
+           (ccL.contains("icu") && ccL.contains("surgical")) { mergePool("criticalCareSurgical") }
+        if ccL.contains("surgical site infection") || ccL.contains("wound infection") ||
+           ccL.contains("infected mesh") || ccL.contains("fournier") ||
+           (ccL.contains("wound") && ccL.contains("purulent")) { mergePool("surgicalSiteInfection") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but
