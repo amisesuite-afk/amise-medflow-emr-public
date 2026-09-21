@@ -1150,6 +1150,59 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("septic") || ccL.contains("peritonitis") { mergePool("sepsisConditions") }
             if ccL.contains("haemorrhage") || ccL.contains("bleeding") { mergePool("upperGIBleed") }
 
+        // Mesenteric vascular conditions
+        case ccL.contains("mesenteric ischaemia") || ccL.contains("mesenteric ischemia") ||
+             ccL.contains("ischaemic colitis") || ccL.contains("ischemic colitis") ||
+             ccL.contains("mesenteric venous thrombosis") || ccL.contains("portal vein thrombosis") ||
+             ccL.contains("nomi") || ccL.contains("non-occlusive mesenteric") ||
+             ccL.contains("visceral aneurysm") || ccL.contains("splenic artery aneurysm") ||
+             ccL.contains("mesenteric artery") || ccL.contains("angiodysplasia") ||
+             (ccL.contains("abdominal pain") && ccL.contains("atrial fibrillation") && ccL.contains("severe")) ||
+             (ccL.contains("postprandial") && ccL.contains("weight loss") && ccL.contains("abdominal pain")) ||
+             (ccL.contains("pain") && ccL.contains("out of proportion")):
+            candidates = externalPool("mesentericVascular") ?? []
+            if ccL.contains("perforation") || ccL.contains("peritonitis") { mergePool("sepsisConditions") }
+            if ccL.contains("portal") || ccL.contains("cirrhosis") { mergePool("hepatobiliaryMalignancy") }
+
+        // Endoscopy and ERCP complications
+        case ccL.contains("post-ercp pancreatitis") || ccL.contains("ercp perforation") ||
+             ccL.contains("ercp complication") || ccL.contains("sphincterotomy bleeding") ||
+             ccL.contains("biliary stent") || ccL.contains("stent occlusion") ||
+             ccL.contains("stent migration") || ccL.contains("post-polypectomy") ||
+             ccL.contains("polypectomy bleeding") || ccL.contains("colonoscopy perforation") ||
+             ccL.contains("esd complication") || ccL.contains("emr complication") ||
+             ccL.contains("endoscopic perforation") ||
+             (ccL.contains("pain") && ccL.contains("after ercp")) ||
+             (ccL.contains("bleeding") && ccL.contains("colonoscopy")):
+            candidates = externalPool("surgicalEndoscopyComplications") ?? []
+            if ccL.contains("pancreatitis") { mergePool("pancreaticSurgical") }
+            if ccL.contains("perforation") { mergePool("sepsisConditions") }
+
+        // Abdominal compartment syndrome and open abdomen
+        case ccL.contains("abdominal compartment syndrome") ||
+             ccL.contains("intra-abdominal hypertension") ||
+             ccL.contains("open abdomen") || ccL.contains("damage control laparotomy") ||
+             ccL.contains("enterocutaneous fistula") || ccL.contains("enteric fistula") ||
+             ccL.contains("abdominal wall haematoma") || ccL.contains("rectus sheath haematoma") ||
+             ccL.contains("fascial dehiscence") ||
+             (ccL.contains("bowel") && ccL.contains("visible") && ccL.contains("wound")) ||
+             (ccL.contains("bladder pressure") && ccL.contains("oliguria")):
+            candidates = externalPool("abdominalCompartmentSyndrome") ?? []
+            if ccL.contains("septic") { mergePool("sepsisConditions") }
+            if ccL.contains("haemorrhage") { mergePool("postOpComplications") }
+
+        // Chronic wound management
+        case ccL.contains("pressure ulcer") || ccL.contains("decubitus ulcer") ||
+             ccL.contains("venous leg ulcer") || ccL.contains("arterial ulcer") ||
+             ccL.contains("wound vac") || ccL.contains("npwt") ||
+             ccL.contains("negative pressure wound") || ccL.contains("skin graft") ||
+             ccL.contains("wound biofilm") || ccL.contains("pilonidal") ||
+             (ccL.contains("non-healing") && ccL.contains("wound")) ||
+             (ccL.contains("chronic") && ccL.contains("wound") && ccL.contains("not healing")):
+            candidates = externalPool("chronicWoundManagement") ?? []
+            if ccL.contains("infection") || ccL.contains("mrsa") { mergePool("necrotisingSoftTissue") }
+            if ccL.contains("diabetic") { mergePool("diabeticFoot") }
+
         // Skin and soft tissue tumours
         case ccL.contains("melanoma") || ccL.contains("basal cell") ||
              ccL.contains("squamous cell carcinoma") || ccL.contains("skin cancer") ||
@@ -1438,6 +1491,22 @@ enum BayesianDiagnosisEngine {
            ccL.contains("gallstone ileus") || ccL.contains("intussusception") ||
            ccL.contains("ogilvie") ||
            (ccL.contains("bowel obstruction") && ccL.contains("adhesion")) { mergePool("intestinalObstruction") }
+        if ccL.contains("mesenteric ischaemia") || ccL.contains("ischaemic colitis") ||
+           ccL.contains("portal vein thrombosis") || ccL.contains("angiodysplasia") ||
+           ccL.contains("nomi") || ccL.contains("splenic artery aneurysm") ||
+           (ccL.contains("postprandial") && ccL.contains("weight loss")) { mergePool("mesentericVascular") }
+        if ccL.contains("post-ercp") || ccL.contains("ercp complication") ||
+           ccL.contains("biliary stent") || ccL.contains("stent occlusion") ||
+           ccL.contains("post-polypectomy") ||
+           ccL.contains("colonoscopy perforation") { mergePool("surgicalEndoscopyComplications") }
+        if ccL.contains("abdominal compartment") ||
+           ccL.contains("intra-abdominal hypertension") ||
+           ccL.contains("open abdomen") || ccL.contains("enterocutaneous fistula") ||
+           ccL.contains("rectus sheath haematoma") { mergePool("abdominalCompartmentSyndrome") }
+        if ccL.contains("pressure ulcer") || ccL.contains("venous ulcer") ||
+           ccL.contains("pilonidal") || ccL.contains("wound vac") ||
+           ccL.contains("skin graft") ||
+           (ccL.contains("non-healing") && ccL.contains("wound")) { mergePool("chronicWoundManagement") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but

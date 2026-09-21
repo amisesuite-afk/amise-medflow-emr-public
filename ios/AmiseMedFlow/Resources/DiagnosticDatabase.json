@@ -66022,6 +66022,2309 @@
           ]
         }
       ]
+    },
+    "mesentericVascular": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Acute Mesenteric Ischaemia (Arterial Embolism)",
+          "icd": "K55.059",
+          "logPrior": -24,
+          "urgency": 3,
+          "systems": [
+            "gastrointestinal",
+            "vascular"
+          ],
+          "specialties": [
+            "general_surgery",
+            "vascular_surgery"
+          ],
+          "features": [
+            {
+              "key": "sudden_severe_abdominal_pain_out_of_proportion",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "AMI hallmark"
+            },
+            {
+              "key": "atrial_fibrillation_or_cardiac_history",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Embolic source"
+            },
+            {
+              "key": "elevated_serum_lactate",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Bowel ischaemia marker"
+            },
+            {
+              "key": "ct_angiography_sma_occlusion",
+              "value": "present",
+              "logLR": 24,
+              "evidenceLabel": "definitive",
+              "citation": "CT diagnosis"
+            },
+            {
+              "key": "empty_bowel_on_ct_thumbprinting",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Ischaemic bowel sign"
+            },
+            {
+              "key": "peritonism_late_sign",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "Transmural infarction"
+            },
+            {
+              "key": "elevated_d_dimer",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Thromboembolic marker"
+            },
+            {
+              "key": "bloody_diarrhoea_late",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Mucosal sloughing"
+            }
+          ]
+        },
+        {
+          "name": "Chronic Mesenteric Ischaemia",
+          "icd": "K55.1",
+          "logPrior": -28,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "vascular"
+          ],
+          "specialties": [
+            "vascular_surgery",
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "postprandial_abdominal_angina",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "Intestinal angina"
+            },
+            {
+              "key": "food_fear_weight_loss",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "CMI classic triad"
+            },
+            {
+              "key": "generalised_atherosclerosis",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Risk factor"
+            },
+            {
+              "key": "ct_angio_two_vessel_coeliac_sma_stenosis",
+              "value": "present",
+              "logLR": 20,
+              "evidenceLabel": "definitive",
+              "citation": "Imaging criteria"
+            },
+            {
+              "key": "bruit_over_epigastrium",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Physical sign"
+            },
+            {
+              "key": "duplex_ultrasound_sma_stenosis",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "Duplex diagnosis"
+            },
+            {
+              "key": "normal_endoscopy_and_colonoscopy",
+              "value": "present",
+              "logLR": 6,
+              "evidenceLabel": "weak",
+              "citation": "Exclusion of mucosal disease"
+            },
+            {
+              "key": "relief_with_revascularisation",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "Diagnostic criterion"
+            }
+          ]
+        },
+        {
+          "name": "Non-Occlusive Mesenteric Ischaemia (NOMI)",
+          "icd": "K55.051",
+          "logPrior": -28,
+          "urgency": 3,
+          "systems": [
+            "gastrointestinal",
+            "vascular"
+          ],
+          "specialties": [
+            "general_surgery",
+            "critical_care"
+          ],
+          "features": [
+            {
+              "key": "low_flow_state_cardiogenic_shock",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "NOMI mechanism"
+            },
+            {
+              "key": "on_vasopressors_in_icu",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Vasopressor-induced"
+            },
+            {
+              "key": "no_sma_occlusion_on_ct",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Exclusion criteria"
+            },
+            {
+              "key": "rising_lactate_on_icu",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Ischaemia marker"
+            },
+            {
+              "key": "postoperative_cardiac_surgery_patient",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Classic setting"
+            },
+            {
+              "key": "angiography_vasoconstriction_pattern",
+              "value": "present",
+              "logLR": 20,
+              "evidenceLabel": "definitive",
+              "citation": "Angiographic diagnosis"
+            },
+            {
+              "key": "pr_dialysis_or_haemofiltration",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Renal failure co-factor"
+            },
+            {
+              "key": "bloody_ng_aspirate",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Gastric ischaemia sign"
+            }
+          ]
+        },
+        {
+          "name": "Ischaemic Colitis",
+          "icd": "K55.032",
+          "logPrior": -22,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal",
+            "vascular"
+          ],
+          "specialties": [
+            "colorectal_surgery",
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "sudden_left_sided_cramping_bleeding",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "Ischaemic colitis presentation"
+            },
+            {
+              "key": "watershed_areas_splenic_flexure_sigmoid",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Watershed zones"
+            },
+            {
+              "key": "ct_bowel_wall_thickening_left_colon",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "CT findings"
+            },
+            {
+              "key": "thumbprinting_on_colonoscopy",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "Endoscopic sign"
+            },
+            {
+              "key": "recent_aortic_surgery",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Post-aortic ischaemia"
+            },
+            {
+              "key": "spontaneous_resolution_in_mild_cases",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Transient ischaemia"
+            },
+            {
+              "key": "transmural_necrosis_with_peritonitis",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "Full-thickness infarction"
+            },
+            {
+              "key": "hypercoagulable_state",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Venous ischaemia"
+            }
+          ]
+        },
+        {
+          "name": "Mesenteric Venous Thrombosis",
+          "icd": "K55.041",
+          "logPrior": -28,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal",
+            "vascular"
+          ],
+          "specialties": [
+            "general_surgery",
+            "vascular_surgery"
+          ],
+          "features": [
+            {
+              "key": "subacute_vague_abdominal_pain_days_weeks",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "MVT presentation"
+            },
+            {
+              "key": "hypercoagulable_state_thrombophilia",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "MVT risk"
+            },
+            {
+              "key": "portal_or_smv_thrombus_on_ct",
+              "value": "present",
+              "logLR": 24,
+              "evidenceLabel": "definitive",
+              "citation": "CT diagnosis"
+            },
+            {
+              "key": "ascites",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Portal obstruction"
+            },
+            {
+              "key": "elevated_d_dimer",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Thrombosis marker"
+            },
+            {
+              "key": "cirrhosis_or_portal_hypertension",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Predisposing condition"
+            },
+            {
+              "key": "inflammatory_bowel_disease",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "IBD thrombosis risk"
+            },
+            {
+              "key": "recent_intra_abdominal_infection",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Septic MVT"
+            }
+          ]
+        },
+        {
+          "name": "Colonic Angiodysplasia",
+          "icd": "K55.20",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectal_surgery",
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "recurrent_lower_gi_bleeding_elderly",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Angiodysplasia epidemiology"
+            },
+            {
+              "key": "right_colon_lesions_on_colonoscopy",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "Caecal/ascending location"
+            },
+            {
+              "key": "aortic_stenosis_heyde_syndrome",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Heyde syndrome"
+            },
+            {
+              "key": "iron_deficiency_anaemia_chronic",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Chronic blood loss"
+            },
+            {
+              "key": "cherry_red_flat_lesions_on_endoscopy",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "Colonoscopic appearance"
+            },
+            {
+              "key": "ct_angiography_active_blush",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "Active bleeding CT"
+            },
+            {
+              "key": "ckd_or_von_willebrand_disorder",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Risk factors"
+            },
+            {
+              "key": "spontaneous_cessation_with_rebleed",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Clinical course"
+            }
+          ]
+        },
+        {
+          "name": "Portal Vein Thrombosis",
+          "icd": "I81",
+          "logPrior": -24,
+          "urgency": 2,
+          "systems": [
+            "hepatic",
+            "vascular"
+          ],
+          "specialties": [
+            "general_surgery",
+            "hepatology"
+          ],
+          "features": [
+            {
+              "key": "portal_vein_thrombus_on_us_or_ct",
+              "value": "present",
+              "logLR": 24,
+              "evidenceLabel": "definitive",
+              "citation": "Imaging diagnosis"
+            },
+            {
+              "key": "splenomegaly",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Portal hypertension"
+            },
+            {
+              "key": "cirrhosis_or_hepatocellular_carcinoma",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Underlying cause"
+            },
+            {
+              "key": "varices_on_endoscopy",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Portal hypertension consequence"
+            },
+            {
+              "key": "recent_intra_abdominal_surgery",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Post-surgical PVT"
+            },
+            {
+              "key": "myeloproliferative_disorder",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "JAK2 mutation"
+            },
+            {
+              "key": "abdominal_pain_ascites_acute",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Acute PVT"
+            },
+            {
+              "key": "cavernous_transformation",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Chronic PVT finding"
+            }
+          ]
+        },
+        {
+          "name": "Mesenteric Artery Aneurysm",
+          "icd": "I72.8",
+          "logPrior": -35,
+          "urgency": 2,
+          "systems": [
+            "vascular"
+          ],
+          "specialties": [
+            "vascular_surgery",
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "incidental_abdominal_mass_on_ct",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Incidental finding"
+            },
+            {
+              "key": "splenic_artery_aneurysm_most_common",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "SAA 60% of visceral aneurysms"
+            },
+            {
+              "key": "female_multiparous_patient",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "SAA risk factor"
+            },
+            {
+              "key": "portal_hypertension_and_splenomegaly",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "PHT-associated SAA"
+            },
+            {
+              "key": "sudden_abdominal_pain_haemodynamic_collapse",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "Rupture presentation"
+            },
+            {
+              "key": "ct_angio_confirms_visceral_aneurysm",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "definitive",
+              "citation": "CTA diagnosis"
+            },
+            {
+              "key": "diameter_over_2cm_risk_rupture",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Intervention threshold"
+            },
+            {
+              "key": "hepatic_artery_aneurysm_haemobilia",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "Quincke triad"
+            }
+          ]
+        }
+      ]
+    },
+    "surgicalEndoscopyComplications": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Post-ERCP Pancreatitis",
+          "icd": "K85.10",
+          "logPrior": -17,
+          "urgency": 2,
+          "systems": [
+            "pancreatic",
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology"
+          ],
+          "features": [
+            {
+              "key": "new_onset_abdominal_pain_within_24h_ercp",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "PEP definition (Cotton criteria)"
+            },
+            {
+              "key": "serum_amylase_3x_uln_at_24h",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "definitive",
+              "citation": "PEP biochemical criterion"
+            },
+            {
+              "key": "young_female_normal_bile_duct",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "High-risk patient profile"
+            },
+            {
+              "key": "sphincter_of_oddi_dysfunction",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "SOD risk factor"
+            },
+            {
+              "key": "difficult_cannulation_multiple_attempts",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Technical risk factor"
+            },
+            {
+              "key": "pancreatic_duct_opacification_during_ercp",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "PD injection risk"
+            },
+            {
+              "key": "nausea_vomiting_with_epigastric_pain",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "PEP symptoms"
+            },
+            {
+              "key": "peripancreatic_fluid_on_ct_within_48h",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Imaging confirmation"
+            }
+          ]
+        },
+        {
+          "name": "ERCP Perforation",
+          "icd": "K91.61",
+          "logPrior": -28,
+          "urgency": 3,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology"
+          ],
+          "features": [
+            {
+              "key": "sudden_severe_pain_during_or_after_ercp",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "Perforation presentation"
+            },
+            {
+              "key": "retroperitoneal_air_on_ct",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "definitive",
+              "citation": "Stapfer type I/III"
+            },
+            {
+              "key": "pneumoperitoneum_after_ercp",
+              "value": "present",
+              "logLR": 20,
+              "evidenceLabel": "definitive",
+              "citation": "Stapfer type I free perforation"
+            },
+            {
+              "key": "haemodynamic_instability_post_ercp",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Perforation severity"
+            },
+            {
+              "key": "sphincterotomy_performed",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Periampullary perforation risk"
+            },
+            {
+              "key": "contrast_extravasation_on_fluoroscopy",
+              "value": "present",
+              "logLR": 20,
+              "evidenceLabel": "definitive",
+              "citation": "Fluoroscopic sign"
+            },
+            {
+              "key": "leukocytosis_and_fever_24_48h",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Delayed presentation"
+            },
+            {
+              "key": "sepsis_signs",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Perforation complication"
+            }
+          ]
+        },
+        {
+          "name": "Endoscopic Sphincterotomy Bleeding",
+          "icd": "K91.840",
+          "logPrior": -22,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology"
+          ],
+          "features": [
+            {
+              "key": "blood_from_papilla_during_ercp",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "definitive",
+              "citation": "Immediate bleeding"
+            },
+            {
+              "key": "melaena_or_haematemesis_within_2_weeks",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Delayed bleeding"
+            },
+            {
+              "key": "coagulopathy_or_anticoagulation",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Bleeding risk factor"
+            },
+            {
+              "key": "precut_sphincterotomy_performed",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Technical risk"
+            },
+            {
+              "key": "liver_cirrhosis_or_portal_hypertension",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Coagulopathy risk"
+            },
+            {
+              "key": "haemoglobin_drop_over_2g",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Significant bleeding criterion"
+            },
+            {
+              "key": "endoscopic_haemostasis_required",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Treatment requirement"
+            },
+            {
+              "key": "angiographic_embolisation_needed",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "Refractory bleeding"
+            }
+          ]
+        },
+        {
+          "name": "Biliary Stent Occlusion / Migration",
+          "icd": "T85.518A",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "hepatobiliary",
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology"
+          ],
+          "features": [
+            {
+              "key": "recurrent_jaundice_with_stent_in_situ",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "Stent occlusion"
+            },
+            {
+              "key": "cholangitis_fever_rigors",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Obstructed stent sepsis"
+            },
+            {
+              "key": "rising_bilirubin_post_ercp",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Stent failure marker"
+            },
+            {
+              "key": "stent_not_visible_on_xray",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Stent migration"
+            },
+            {
+              "key": "ct_or_mrcp_biliary_dilatation",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Upstream obstruction"
+            },
+            {
+              "key": "stent_in_duodenum_distal_migration",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Distal migration"
+            },
+            {
+              "key": "plastic_stent_over_3_months",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Plastic stent lifespan"
+            },
+            {
+              "key": "malignant_stricture_growing_into_metal_stent",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Tumour in-growth"
+            }
+          ]
+        },
+        {
+          "name": "Post-Polypectomy Syndrome",
+          "icd": "K91.89",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectal_surgery",
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "localised_pain_fever_after_polypectomy",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "PPS definition"
+            },
+            {
+              "key": "no_free_air_on_imaging",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Distinguishes from perforation"
+            },
+            {
+              "key": "leukocytosis_with_localised_tenderness",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Transmural burn without perforation"
+            },
+            {
+              "key": "large_sessile_polyp_removed",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Risk factor"
+            },
+            {
+              "key": "hot_biopsy_or_snare_cautery_used",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Cautery injury"
+            },
+            {
+              "key": "response_to_conservative_management",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Resolves without surgery"
+            },
+            {
+              "key": "within_12h_of_procedure",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Timing of PPS"
+            },
+            {
+              "key": "right_colon_location",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Thin wall risk site"
+            }
+          ]
+        },
+        {
+          "name": "Delayed Post-Polypectomy Bleeding",
+          "icd": "K57.91",
+          "logPrior": -22,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectal_surgery",
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "rectal_bleeding_up_to_14_days_post_polypectomy",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "Delayed bleed definition"
+            },
+            {
+              "key": "anticoagulation_or_antiplatelet_use",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Bleeding risk factor"
+            },
+            {
+              "key": "large_polyp_over_2cm",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Large polyp risk"
+            },
+            {
+              "key": "right_colon_polypectomy_site",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Location risk"
+            },
+            {
+              "key": "haemoglobin_drop_with_normal_vitals",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Severity assessment"
+            },
+            {
+              "key": "oozing_vessel_on_repeat_colonoscopy",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "Endoscopic finding"
+            },
+            {
+              "key": "clip_or_adrenaline_injection_haemostasis",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Treatment response"
+            },
+            {
+              "key": "diverticulosis_coexisting",
+              "value": "present",
+              "logLR": 6,
+              "evidenceLabel": "weak",
+              "citation": "Alternative source confusion"
+            }
+          ]
+        },
+        {
+          "name": "Colonoscopic Perforation",
+          "icd": "K57.20",
+          "logPrior": -28,
+          "urgency": 3,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectal_surgery",
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "immediate_abdominal_pain_during_colonoscopy",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "Intra-procedural perforation"
+            },
+            {
+              "key": "free_air_on_erect_cxr_or_ct",
+              "value": "present",
+              "logLR": 24,
+              "evidenceLabel": "definitive",
+              "citation": "Pneumoperitoneum"
+            },
+            {
+              "key": "peritonism_post_colonoscopy",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "Peritonitis"
+            },
+            {
+              "key": "sigmoid_colon_site_most_common",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Location"
+            },
+            {
+              "key": "therapeutic_procedure_higher_risk",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Polypectomy risk"
+            },
+            {
+              "key": "diverticular_disease_or_adhesions",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Predisposing factors"
+            },
+            {
+              "key": "delayed_presentation_12_24h",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Small perforation"
+            },
+            {
+              "key": "haemodynamic_stability_guides_management",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Triage criterion"
+            }
+          ]
+        },
+        {
+          "name": "ESD / EMR Complication",
+          "icd": "K91.89",
+          "logPrior": -28,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "general_surgery",
+            "gastroenterology"
+          ],
+          "features": [
+            {
+              "key": "bleeding_during_or_after_esd_emr",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "ESD bleeding rate 5-10%"
+            },
+            {
+              "key": "perforation_on_post_esd_xray",
+              "value": "present",
+              "logLR": 20,
+              "evidenceLabel": "definitive",
+              "citation": "ESD perforation"
+            },
+            {
+              "key": "fever_chest_pain_after_oesophageal_esd",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Oesophageal ESD complication"
+            },
+            {
+              "key": "stricture_formation_post_oesophageal_esd",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Post-ESD stenosis"
+            },
+            {
+              "key": "large_en_bloc_resection_area",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "ESD risk factor"
+            },
+            {
+              "key": "endoscopic_clip_closure_performed",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Conservative management"
+            },
+            {
+              "key": "haemoglobin_fall_requiring_transfusion",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Significant bleeding"
+            },
+            {
+              "key": "ct_confirming_contained_perforation",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Imaging assessment"
+            }
+          ]
+        }
+      ]
+    },
+    "abdominalCompartmentSyndrome": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Intra-Abdominal Hypertension",
+          "icd": "K66.1",
+          "logPrior": -22,
+          "urgency": 2,
+          "systems": [
+            "abdominal"
+          ],
+          "specialties": [
+            "general_surgery",
+            "critical_care"
+          ],
+          "features": [
+            {
+              "key": "bladder_pressure_12_20_mmhg",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "WSACS IAH definition"
+            },
+            {
+              "key": "abdominal_distension_in_icu_patient",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Clinical sign"
+            },
+            {
+              "key": "massive_fluid_resuscitation",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "IAH risk factor"
+            },
+            {
+              "key": "oliguria_despite_adequate_filling",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Renal IAH effect"
+            },
+            {
+              "key": "elevated_peak_airway_pressures",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Respiratory IAH effect"
+            },
+            {
+              "key": "major_abdominal_surgery_or_trauma",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Post-surgical IAH"
+            },
+            {
+              "key": "bowel_oedema_on_ct",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "IAH imaging"
+            },
+            {
+              "key": "serial_bladder_pressures_rising",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Monitoring trend"
+            }
+          ]
+        },
+        {
+          "name": "Abdominal Compartment Syndrome",
+          "icd": "K66.1",
+          "logPrior": -24,
+          "urgency": 3,
+          "systems": [
+            "abdominal"
+          ],
+          "specialties": [
+            "general_surgery",
+            "critical_care"
+          ],
+          "features": [
+            {
+              "key": "bladder_pressure_over_20_mmhg",
+              "value": "present",
+              "logLR": 20,
+              "evidenceLabel": "definitive",
+              "citation": "WSACS ACS definition"
+            },
+            {
+              "key": "new_organ_failure_with_high_iap",
+              "value": "present",
+              "logLR": 20,
+              "evidenceLabel": "definitive",
+              "citation": "ACS diagnostic criterion"
+            },
+            {
+              "key": "renal_failure_anuria",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Renal ACS"
+            },
+            {
+              "key": "cardiovascular_failure_raised_cvp",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Cardiac ACS"
+            },
+            {
+              "key": "respiratory_failure_co2_retention",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Pulmonary ACS"
+            },
+            {
+              "key": "decompressive_laparotomy_required",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "Definitive treatment"
+            },
+            {
+              "key": "secondary_acs_in_septic_shock",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Secondary ACS"
+            },
+            {
+              "key": "resolution_after_decompression",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "Diagnostic confirmation"
+            }
+          ]
+        },
+        {
+          "name": "Open Abdomen / Damage Control Surgery",
+          "icd": "T81.32XA",
+          "logPrior": -24,
+          "urgency": 3,
+          "systems": [
+            "abdominal"
+          ],
+          "specialties": [
+            "general_surgery",
+            "trauma_surgery"
+          ],
+          "features": [
+            {
+              "key": "temporary_abdominal_closure_in_place",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "definitive",
+              "citation": "Open abdomen"
+            },
+            {
+              "key": "damage_control_laparotomy_for_haemorrhage",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "DCL indication"
+            },
+            {
+              "key": "hypothermia_acidosis_coagulopathy_triad",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "Lethal triad"
+            },
+            {
+              "key": "vac_or_bogota_bag_closure",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Temporary closure type"
+            },
+            {
+              "key": "fascial_oedema_prevents_primary_closure",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Failure to close"
+            },
+            {
+              "key": "enteric_fistula_from_open_abdomen",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Devastating complication"
+            },
+            {
+              "key": "planned_second_look_laparotomy",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "DCL strategy"
+            },
+            {
+              "key": "delayed_primary_fascial_closure_achieved",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Goal of management"
+            }
+          ]
+        },
+        {
+          "name": "Fascial Dehiscence / Burst Abdomen (post-op)",
+          "icd": "T81.32XA",
+          "logPrior": -24,
+          "urgency": 3,
+          "systems": [
+            "abdominal_wall"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "serosanguinous_wound_discharge_day_5_8",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "Herald discharge sign"
+            },
+            {
+              "key": "bowel_visible_in_wound",
+              "value": "present",
+              "logLR": 24,
+              "evidenceLabel": "definitive",
+              "citation": "Complete dehiscence"
+            },
+            {
+              "key": "midline_laparotomy_wound",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Risk site"
+            },
+            {
+              "key": "wound_infection_preceding_dehiscence",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Infection cause"
+            },
+            {
+              "key": "malnutrition_hypoalbuminaemia",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Nutritional risk"
+            },
+            {
+              "key": "emergency_surgery_patient",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Emergency surgery risk"
+            },
+            {
+              "key": "coughing_straining_precipitates",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Precipitating cause"
+            },
+            {
+              "key": "obesity_impairing_healing",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Obesity risk"
+            }
+          ]
+        },
+        {
+          "name": "Abdominal Hypertension in Ascites",
+          "icd": "K66.1",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "hepatic",
+            "abdominal"
+          ],
+          "specialties": [
+            "general_surgery",
+            "hepatology"
+          ],
+          "features": [
+            {
+              "key": "tense_ascites_with_respiratory_compromise",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Tense ascites IAH"
+            },
+            {
+              "key": "elevated_bladder_pressure_with_ascites",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "IAH ascites measurement"
+            },
+            {
+              "key": "relief_after_large_volume_paracentesis",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Decompressive response"
+            },
+            {
+              "key": "cirrhosis_portal_hypertension_underlying",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Hepatic cause"
+            },
+            {
+              "key": "abdominal_pain_from_tense_ascites",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Pressure symptom"
+            },
+            {
+              "key": "oliguria_with_ascites",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Hepatorenal contribution"
+            },
+            {
+              "key": "malignant_ascites_rapid_accumulation",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Malignant cause"
+            },
+            {
+              "key": "peritoneal_dialysis_patient",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "PD fluid overload"
+            }
+          ]
+        },
+        {
+          "name": "Enterocutaneous Fistula",
+          "icd": "K63.2",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "abdominal_wall"
+          ],
+          "specialties": [
+            "general_surgery",
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "enteric_output_from_wound_or_drain_site",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "definitive",
+              "citation": "ECF definition"
+            },
+            {
+              "key": "post_operative_bowel_anastomosis",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Anastomotic fistula"
+            },
+            {
+              "key": "high_output_over_500ml_per_day",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "High-output ECF"
+            },
+            {
+              "key": "crohn_disease_as_aetiology",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Crohn fistula"
+            },
+            {
+              "key": "malnutrition_from_fistula_losses",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Nutritional consequence"
+            },
+            {
+              "key": "fistulogram_confirms_bowel_communication",
+              "value": "present",
+              "logLR": 20,
+              "evidenceLabel": "definitive",
+              "citation": "Imaging diagnosis"
+            },
+            {
+              "key": "friends_acronym_factors",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "FRIENDS failure predictors"
+            },
+            {
+              "key": "spontaneous_closure_with_conservative_management",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Closure rate"
+            }
+          ]
+        },
+        {
+          "name": "Abdominal Adhesions / Chronic Obstruction",
+          "icd": "K66.0",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "general_surgery",
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "recurrent_partial_sbo_episodes",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Adhesion obstruction pattern"
+            },
+            {
+              "key": "multiple_prior_laparotomies",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Adhesion risk"
+            },
+            {
+              "key": "resolves_with_conservative_management",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Partial obstruction"
+            },
+            {
+              "key": "gastrografin_challenge_predicts_resolution",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Gastrografin test"
+            },
+            {
+              "key": "chronic_pelvic_or_abdominal_pain_post_surgery",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Adhesion pain syndrome"
+            },
+            {
+              "key": "no_transition_point_on_ct",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Partial obstruction CT"
+            },
+            {
+              "key": "peritonitis_or_endometriosis_history",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Inflammatory adhesions"
+            },
+            {
+              "key": "laparoscopy_dense_adhesions_confirmed",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "Operative finding"
+            }
+          ]
+        },
+        {
+          "name": "Abdominal Wall Haematoma",
+          "icd": "M79.81",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "abdominal_wall"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "painful_abdominal_wall_mass_post_procedure",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Post-procedural haematoma"
+            },
+            {
+              "key": "anticoagulation_use",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Bleeding risk factor"
+            },
+            {
+              "key": "ct_hyperdense_abdominal_wall_collection",
+              "value": "present",
+              "logLR": 20,
+              "evidenceLabel": "definitive",
+              "citation": "CT diagnosis"
+            },
+            {
+              "key": "rectus_sheath_location_most_common",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Rectus sheath haematoma"
+            },
+            {
+              "key": "inferior_epigastric_artery_injury",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Vessel injury cause"
+            },
+            {
+              "key": "expanding_haematoma_haemodynamic_compromise",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "Intervention threshold"
+            },
+            {
+              "key": "post_trocar_insertion_site",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Laparoscopic port haematoma"
+            },
+            {
+              "key": "mass_non_reducible_does_not_cross_midline",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Distinguishes from hernia"
+            }
+          ]
+        }
+      ]
+    },
+    "chronicWoundManagement": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Pressure Ulcer / Decubitus Ulcer",
+          "icd": "L89.90",
+          "logPrior": -17,
+          "urgency": 1,
+          "systems": [
+            "skin"
+          ],
+          "specialties": [
+            "general_surgery",
+            "plastic_surgery"
+          ],
+          "features": [
+            {
+              "key": "ulcer_over_bony_prominence",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "NPUAP staging"
+            },
+            {
+              "key": "immobility_or_bed_bound_patient",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Pressure ulcer cause"
+            },
+            {
+              "key": "depth_to_bone_tendon_stage_4",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "Stage IV criteria"
+            },
+            {
+              "key": "sacral_heel_or_trochanteric_site",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Common sites"
+            },
+            {
+              "key": "slough_or_necrotic_base",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Wound bed condition"
+            },
+            {
+              "key": "malnutrition_hypoalbuminaemia",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Nutritional risk"
+            },
+            {
+              "key": "osteomyelitis_under_ulcer",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "Bone infection complication"
+            },
+            {
+              "key": "spinal_cord_injury_or_paraplegia",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Neurological risk"
+            }
+          ]
+        },
+        {
+          "name": "Venous Leg Ulcer",
+          "icd": "I83.009",
+          "logPrior": -17,
+          "urgency": 0,
+          "systems": [
+            "skin",
+            "vascular"
+          ],
+          "specialties": [
+            "general_surgery",
+            "vascular_surgery"
+          ],
+          "features": [
+            {
+              "key": "medial_gaiter_area_ulcer",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "Venous ulcer location"
+            },
+            {
+              "key": "varicose_veins_or_cvi_history",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Underlying venous disease"
+            },
+            {
+              "key": "lipodermatosclerosis_haemosiderin_staining",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Venous skin changes"
+            },
+            {
+              "key": "ankle_brachial_index_over_0_8",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Adequate arterial supply"
+            },
+            {
+              "key": "shallow_irregular_border_sloughy_base",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Venous ulcer morphology"
+            },
+            {
+              "key": "response_to_compression_therapy",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Venous healing response"
+            },
+            {
+              "key": "duplex_reflux_confirmed",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Venous duplex"
+            },
+            {
+              "key": "recurrent_ulceration_same_site",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Chronic venous insufficiency"
+            }
+          ]
+        },
+        {
+          "name": "Arterial Leg Ulcer",
+          "icd": "I70.249",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "skin",
+            "vascular"
+          ],
+          "specialties": [
+            "vascular_surgery",
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "punched_out_ulcer_toes_heel_dorsum",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "Arterial ulcer morphology"
+            },
+            {
+              "key": "abi_under_0_5",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "Critical ischaemia ABI"
+            },
+            {
+              "key": "rest_pain_nocturnal",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Critical limb ischaemia"
+            },
+            {
+              "key": "absent_peripheral_pulses",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Peripheral arterial disease"
+            },
+            {
+              "key": "pallor_on_elevation_rubour_dependency",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Buerger's test"
+            },
+            {
+              "key": "painful_ulcer_unlike_venous",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Pain distinguishes arterial"
+            },
+            {
+              "key": "duplex_or_cta_shows_occlusion",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "Imaging diagnosis"
+            },
+            {
+              "key": "cardiovascular_risk_factors",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Atherosclerosis risk"
+            }
+          ]
+        },
+        {
+          "name": "Necrotising Wound Infection / SSI",
+          "icd": "T81.40XA",
+          "logPrior": -20,
+          "urgency": 2,
+          "systems": [
+            "skin",
+            "infection"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "wound_erythema_induration_drainage",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "SSI CDC criteria"
+            },
+            {
+              "key": "purulent_discharge_from_surgical_site",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "SSI definition"
+            },
+            {
+              "key": "fever_leukocytosis_post_operatively",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Systemic infection"
+            },
+            {
+              "key": "crepitus_in_wound_tissues",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "Gas-forming organism"
+            },
+            {
+              "key": "gas_in_soft_tissues_on_ct",
+              "value": "present",
+              "logLR": 20,
+              "evidenceLabel": "definitive",
+              "citation": "Deep SSI with gas"
+            },
+            {
+              "key": "methicillin_resistant_staphylococcus",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "MRSA SSI"
+            },
+            {
+              "key": "diabetes_or_immunosuppression",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "SSI risk factor"
+            },
+            {
+              "key": "requires_surgical_debridement",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Deep SSI treatment"
+            }
+          ]
+        },
+        {
+          "name": "Pilonidal Disease",
+          "icd": "L05.01",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "skin"
+          ],
+          "specialties": [
+            "colorectal_surgery",
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "midline_pit_natal_cleft_abscess",
+              "value": "present",
+              "logLR": 20,
+              "evidenceLabel": "definitive",
+              "citation": "Pilonidal abscess"
+            },
+            {
+              "key": "young_male_hirsute_patient",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Epidemiology"
+            },
+            {
+              "key": "chronic_sinus_with_hair_tufts",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "Chronic pilonidal sinus"
+            },
+            {
+              "key": "off_midline_secondary_opening",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Complex disease"
+            },
+            {
+              "key": "recurrence_after_prior_surgery",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Recurrent pilonidal"
+            },
+            {
+              "key": "sedentary_occupation_or_prolonged_sitting",
+              "value": "present",
+              "logLR": 6,
+              "evidenceLabel": "weak",
+              "citation": "Occupational risk"
+            },
+            {
+              "key": "abscess_drainage_heals_temporarily",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Conservative course"
+            },
+            {
+              "key": "natal_cleft_location_pathognomonic",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "strong",
+              "citation": "Anatomical diagnosis"
+            }
+          ]
+        },
+        {
+          "name": "Wound VAC / Negative Pressure Wound Therapy Indication",
+          "icd": "Z48.815",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "skin",
+            "wound_care"
+          ],
+          "specialties": [
+            "general_surgery",
+            "plastic_surgery"
+          ],
+          "features": [
+            {
+              "key": "large_open_wound_with_granulation_tissue",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "NPWT indication"
+            },
+            {
+              "key": "dehisced_surgical_wound",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "NPWT application"
+            },
+            {
+              "key": "diabetic_foot_wound_after_debridement",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Diabetic wound NPWT"
+            },
+            {
+              "key": "high_wound_exudate",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Exudate management"
+            },
+            {
+              "key": "flap_or_graft_take_enhancement",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "NPWT graft"
+            },
+            {
+              "key": "no_exposed_bowel_or_anastomosis",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Safety contraindication"
+            },
+            {
+              "key": "accelerated_granulation_with_npwt",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "NPWT efficacy"
+            },
+            {
+              "key": "sternal_wound_post_cardiac_surgery",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Mediastinal NPWT"
+            }
+          ]
+        },
+        {
+          "name": "Wound Infection with Biofilm",
+          "icd": "L08.89",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "skin",
+            "infection"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "non_healing_wound_despite_treatment",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Biofilm signature"
+            },
+            {
+              "key": "low_grade_inflammation_without_systemic_signs",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Subclinical infection"
+            },
+            {
+              "key": "slippery_gelatinous_wound_surface",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Biofilm appearance"
+            },
+            {
+              "key": "relapses_after_antibiotic_course",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Antibiotic resistance"
+            },
+            {
+              "key": "pseudomonas_or_mrsa_on_culture",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Biofilm organisms"
+            },
+            {
+              "key": "chronic_wound_over_4_weeks_duration",
+              "value": "present",
+              "logLR": 8,
+              "evidenceLabel": "moderate",
+              "citation": "Chronicity"
+            },
+            {
+              "key": "peri_wound_erythema_induration",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Wound infection signs"
+            },
+            {
+              "key": "debridement_improves_then_relapses",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Biofilm cycle"
+            }
+          ]
+        },
+        {
+          "name": "Skin Graft Failure",
+          "icd": "T86.820",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "skin"
+          ],
+          "specialties": [
+            "plastic_surgery",
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "graft_non_adherent_or_lifted_off",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "strong",
+              "citation": "Graft non-take"
+            },
+            {
+              "key": "haematoma_seroma_under_graft",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Mechanical failure cause"
+            },
+            {
+              "key": "wound_bed_infection_pseudomonas",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Infective cause"
+            },
+            {
+              "key": "inadequate_immobilisation_post_graft",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Movement failure"
+            },
+            {
+              "key": "graft_colour_grey_or_black",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "strong",
+              "citation": "Graft necrosis"
+            },
+            {
+              "key": "irradiated_or_devascularised_recipient_bed",
+              "value": "present",
+              "logLR": 12,
+              "evidenceLabel": "strong",
+              "citation": "Poor bed quality"
+            },
+            {
+              "key": "partial_take_with_areas_of_loss",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Partial graft failure"
+            },
+            {
+              "key": "regrafting_required",
+              "value": "present",
+              "logLR": 10,
+              "evidenceLabel": "moderate",
+              "citation": "Failure outcome"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {
