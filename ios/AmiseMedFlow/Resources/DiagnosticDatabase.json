@@ -3393,6 +3393,12 @@
               "key": "inv",
               "value": "pH impedance study DeMeester >14.7 acid chest pain GERD confirmed",
               "logLR": 17
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP (oesophagitis)"
             }
           ],
           "systems": [
@@ -8610,6 +8616,12 @@
               "key": "inv",
               "value": "CTC CT colonography polyp >6 mm confirmed colonoscopy biopsy planned",
               "logLR": 17
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia (occult blood loss from large polyp)"
             }
           ],
           "systems": [
@@ -13297,6 +13309,18 @@
               "key": "inv",
               "value": "CT incisional hernia mesh defect contents",
               "logLR": 24
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC (if strangulated)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 6,
+              "evidenceLabel": "Elevated lactate (if strangulated)"
             }
           ],
           "systems": [
@@ -14767,6 +14791,12 @@
               "key": "inv",
               "value": "core biopsy Phyllodes tumour benign borderline malignant stromal confirmed",
               "logLR": 21
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP (malignant variant)"
             }
           ],
           "systems": [
@@ -36083,6 +36113,12 @@
               "key": "inv",
               "value": "cardiac MRI HCM hypertrophy LGE fibrosis",
               "logLR": 28
+            },
+            {
+              "key": "associations",
+              "value": "elevated troponin",
+              "logLR": 4,
+              "evidenceLabel": "Troponin elevation (myocardial injury)"
             }
           ],
           "systems": [
@@ -36550,6 +36586,12 @@
               "key": "inv",
               "value": "EP study accessory pathway WPW ablation",
               "logLR": 46
+            },
+            {
+              "key": "associations",
+              "value": "elevated troponin",
+              "logLR": 4,
+              "evidenceLabel": "Troponin (demand ischaemia in rapid AF with WPW)"
             }
           ],
           "systems": [
@@ -38987,6 +39029,18 @@
               "key": "inv",
               "value": "USS post-op CBD dilated retained stone",
               "logLR": 12
+            },
+            {
+              "key": "associations",
+              "value": "elevated liver enzymes",
+              "logLR": 4,
+              "evidenceLabel": "Elevated LFTs (bile leak / biliary stricture)"
+            },
+            {
+              "key": "associations",
+              "value": "raised bilirubin",
+              "logLR": 4,
+              "evidenceLabel": "Elevated bilirubin (retained stone)"
             }
           ]
         }
@@ -48868,6 +48922,12 @@
               "key": "inv",
               "value": "USS chest wall costochondral junction inflammation no fracture",
               "logLR": 10
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP (mild, if inflammatory)"
             }
           ]
         },
@@ -55885,6 +55945,12 @@
               "key": "inv",
               "value": "C4 low C1-inhibitor low hereditary angioedema screen",
               "logLR": 24
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC (eosinophilia)"
             }
           ]
         },
@@ -56140,6 +56206,12 @@
               "key": "inv",
               "value": "C1-inhibitor functional assay <50% normal HAE type I/II",
               "logLR": 25
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP (during acute attack)"
             }
           ]
         },
@@ -56309,6 +56381,18 @@
               "key": "inv",
               "value": "24h urine N-methylhistamine or prostaglandin D2 metabolites elevated",
               "logLR": 14
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC (eosinophilia)"
             }
           ]
         },
@@ -63411,6 +63495,12 @@
               "key": "inv",
               "value": "specific bronchial challenge test positive to workplace agent",
               "logLR": 21
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC (eosinophilia)"
             }
           ]
         },
@@ -65800,6 +65890,18 @@
               "key": "inv",
               "value": "mammogram duct ectasia rod-like calcification",
               "logLR": 16
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC (if infected)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
             }
           ]
         },
@@ -65881,6 +65983,12 @@
               "key": "inv",
               "value": "USS breast large rapidly growing mass phyllodes",
               "logLR": 16
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP (malignant variant)"
             }
           ]
         },
@@ -70654,6 +70762,12 @@
               "key": "inv",
               "value": "flexible sigmoidoscopy haemorrhoids no other lesion",
               "logLR": 17
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia (chronic blood loss from haemorrhoids)"
             }
           ]
         },
@@ -73643,6 +73757,24 @@
               "key": "inv",
               "value": "Echinococcus IgG serology ELISA positive hydatid confirmed endemic travel",
               "logLR": 17
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP (if secondary infection)"
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC (eosinophilia — parasitic)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 4,
+              "evidenceLabel": "Elevated ESR"
             }
           ]
         }
@@ -79933,6 +80065,18 @@
               "key": "inv",
               "value": "USS stoma site parastomal bulge hernia contents peristomal",
               "logLR": 18
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC (if strangulated)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 4,
+              "evidenceLabel": "Elevated lactate (strangulation)"
             }
           ]
         },
@@ -80014,6 +80158,12 @@
               "key": "inv",
               "value": "CT abdomen stoma prolapse bowel viability assessment ischaemia",
               "logLR": 13
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP (if ischaemic prolapse)"
             }
           ]
         },
@@ -81082,6 +81232,18 @@
               "key": "inv",
               "value": "CT abdomen clustered afferent limb closed loop obstruction post RYGB",
               "logLR": 18
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 6,
+              "evidenceLabel": "Elevated lactate (bowel ischaemia)"
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC"
             }
           ]
         },
@@ -81163,6 +81325,12 @@
               "key": "inv",
               "value": "OGD stomal stricture failed passage of 9mm endoscope",
               "logLR": 21
+            },
+            {
+              "key": "associations",
+              "value": "renal impairment",
+              "logLR": 4,
+              "evidenceLabel": "Renal impairment (severe dehydration)"
             }
           ]
         },
@@ -84792,6 +84960,18 @@
               "key": "inv",
               "value": "USS natal cleft sinus abscess pilonidal pit",
               "logLR": 15
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
             }
           ]
         },
@@ -89027,6 +89207,12 @@
               "key": "inv",
               "value": "MRA or CTA carotid stenosis >70% asymptomatic",
               "logLR": 24
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP (atherosclerosis)"
             }
           ]
         },
@@ -89108,6 +89294,12 @@
               "key": "inv",
               "value": "MRI lyre sign paraganglioma carotid bifurcation",
               "logLR": 21
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
             }
           ]
         },
@@ -89276,6 +89468,12 @@
               "key": "inv",
               "value": "CT angiography vertebral ostial stenosis atherosclerotic",
               "logLR": 18
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP (atherosclerosis)"
             }
           ]
         },
@@ -90346,6 +90544,12 @@
               "key": "inv",
               "value": "flexible sigmoidoscopy haemorrhoids excluded other cause",
               "logLR": 15
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia (chronic blood loss)"
             }
           ]
         },
@@ -91496,6 +91700,24 @@
               "key": "inv",
               "value": "CT pelvis Howship-Romberg sign obturator hernia",
               "logLR": 21
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 6,
+              "evidenceLabel": "Raised WBC (strangulation — high risk in elderly)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 8,
+              "evidenceLabel": "Elevated lactate (bowel ischaemia)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
             }
           ]
         },
@@ -91576,6 +91798,24 @@
               "key": "inv",
               "value": "CT abdomen anti-mesenteric bowel wall in hernia defect",
               "logLR": 18
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 6,
+              "evidenceLabel": "Raised WBC (strangulation)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 8,
+              "evidenceLabel": "Elevated lactate (bowel ischaemia)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
             }
           ]
         }
@@ -91821,6 +92061,18 @@
               "key": "inv",
               "value": "CT abdomen femoral hernia medial to femoral vein strangulation",
               "logLR": 21
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 6,
+              "evidenceLabel": "Raised WBC (strangulation risk)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 6,
+              "evidenceLabel": "Elevated lactate (strangulation)"
             }
           ]
         },
@@ -100070,6 +100322,18 @@
               "key": "inv",
               "value": "CT abdomen clustered small bowel loops ischaemia post bypass",
               "logLR": 17
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 6,
+              "evidenceLabel": "Elevated lactate (bowel ischaemia)"
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC"
             }
           ]
         },
@@ -101623,6 +101887,12 @@
               "key": "pmh",
               "value": "previous DVT pregnancy",
               "logLR": 1
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP (if superficial thrombophlebitis)"
             }
           ]
         }
@@ -104377,6 +104647,12 @@
               "key": "associated",
               "value": "rectal bleeding multiple adenomas young",
               "logLR": 12
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia (colorectal cancer / polyp bleeding)"
             }
           ]
         },
@@ -104542,6 +104818,18 @@
               "key": "pmh",
               "value": "Ashkenazi Jewish ancestry",
               "logLR": 6
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP (if active cancer)"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia (if active malignancy)"
             }
           ]
         },
@@ -104591,6 +104879,18 @@
               "key": "age_over",
               "value": 5,
               "logLR": -1
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia (GI bleeding)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
             }
           ]
         },
@@ -104707,6 +105007,12 @@
               "key": "exam",
               "value": "bilateral acoustic neuromas NF2",
               "logLR": 25
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP (malignant peripheral nerve sheath tumour)"
             }
           ]
         }
@@ -107149,6 +107455,24 @@
               "key": "pmh",
               "value": "previous episodes bowel obstruction unclear aetiology",
               "logLR": 5
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 6,
+              "evidenceLabel": "Raised WBC (strangulation)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 8,
+              "evidenceLabel": "Elevated lactate"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
             }
           ]
         },
@@ -107199,6 +107523,24 @@
               "key": "sex_female",
               "value": true,
               "logLR": 2
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 6,
+              "evidenceLabel": "Raised WBC (strangulation)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 8,
+              "evidenceLabel": "Elevated lactate (bowel ischaemia)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
             }
           ]
         }
@@ -107261,6 +107603,18 @@
               "key": "aggravating",
               "value": "standing straining lifting",
               "logLR": 6
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC (if strangulated)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 6,
+              "evidenceLabel": "Elevated lactate (strangulation)"
             }
           ]
         },
@@ -107311,6 +107665,24 @@
               "key": "exam",
               "value": "reducible poorly reducible",
               "logLR": 5
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 6,
+              "evidenceLabel": "Raised WBC (strangulation — high risk)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 8,
+              "evidenceLabel": "Elevated lactate (strangulated femoral hernia)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
             }
           ]
         },
