@@ -1150,6 +1150,62 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("septic") || ccL.contains("peritonitis") { mergePool("sepsisConditions") }
             if ccL.contains("haemorrhage") || ccL.contains("bleeding") { mergePool("upperGIBleed") }
 
+        // Skin and soft tissue tumours
+        case ccL.contains("melanoma") || ccL.contains("basal cell") ||
+             ccL.contains("squamous cell carcinoma") || ccL.contains("skin cancer") ||
+             ccL.contains("gist") || ccL.contains("gastrointestinal stromal") ||
+             ccL.contains("desmoid") || ccL.contains("retroperitoneal sarcoma") ||
+             ccL.contains("merkel cell") || ccL.contains("soft tissue sarcoma") ||
+             ccL.contains("lipoma") || ccL.contains("subcutaneous mass") ||
+             ccL.contains("marjolin") || ccL.contains("pseudomyxoma peritonei") ||
+             (ccL.contains("skin") && (ccL.contains("lesion") || ccL.contains("mass") || ccL.contains("nodule"))) ||
+             (ccL.contains("pigmented") && ccL.contains("lesion")):
+            candidates = externalPool("softTissueTumours") ?? []
+            if ccL.contains("cancer") || ccL.contains("sarcoma") || ccL.contains("melanoma") { mergePool("oncologyComplications") }
+            if ccL.contains("retroperitoneal") { mergePool("abdominalTrauma") }
+
+        // Stoma and peristomal complications
+        case ccL.contains("parastomal hernia") || ccL.contains("stoma prolapse") ||
+             ccL.contains("stoma retraction") || ccL.contains("stomal ischaemia") ||
+             ccL.contains("stoma necrosis") || ccL.contains("stoma stenosis") ||
+             ccL.contains("high output stoma") || ccL.contains("high-output stoma") ||
+             ccL.contains("peristomal") || ccL.contains("loop stoma") ||
+             (ccL.contains("stoma") && (ccL.contains("problem") || ccL.contains("complication") || ccL.contains("leaking") || ccL.contains("pain"))) ||
+             (ccL.contains("colostomy") && ccL.contains("prolapse")) ||
+             (ccL.contains("ileostomy") && (ccL.contains("high output") || ccL.contains("dehydration"))):
+            candidates = externalPool("stomaComplications") ?? []
+            if ccL.contains("crohn") || ccL.contains("ibd") { mergePool("inflammatoryBowel") }
+            if ccL.contains("hernia") { mergePool("abdominalWallHernia") }
+
+        // Bariatric and metabolic surgery complications
+        case ccL.contains("marginal ulcer") || ccL.contains("staple line leak") ||
+             ccL.contains("dumping syndrome") || ccL.contains("post-bariatric") ||
+             ccL.contains("postbariatric") || ccL.contains("gastric bypass") ||
+             ccL.contains("sleeve gastrectomy") || ccL.contains("rygb") ||
+             ccL.contains("gastric band") || ccL.contains("band slippage") ||
+             ccL.contains("band erosion") || ccL.contains("internal hernia") && ccL.contains("bypass") ||
+             ccL.contains("bariatric") || ccL.contains("petersen defect") ||
+             (ccL.contains("weight regain") && ccL.contains("surgery")) ||
+             (ccL.contains("nutritional deficiency") && ccL.contains("bariatric")):
+            candidates = externalPool("bariatricSurgical") ?? []
+            if ccL.contains("leak") || ccL.contains("septic") { mergePool("postOpComplications") }
+            if ccL.contains("nutritional") || ccL.contains("deficiency") { mergePool("nutritionalDeficiency") }
+
+        // Intestinal obstruction (mechanical)
+        case ccL.contains("small bowel obstruction") || ccL.contains("large bowel obstruction") ||
+             ccL.contains("sigmoid volvulus") || ccL.contains("caecal volvulus") ||
+             ccL.contains("gallstone ileus") || ccL.contains("intussusception") ||
+             ccL.contains("ogilvie") || ccL.contains("pseudo-obstruction") ||
+             ccL.contains("colonic pseudo-obstruction") ||
+             (ccL.contains("bowel obstruction") && (ccL.contains("adhesion") || ccL.contains("hernia") || ccL.contains("cancer"))) ||
+             (ccL.contains("volvulus") && (ccL.contains("sigmoid") || ccL.contains("caecal"))) ||
+             (ccL.contains("air fluid levels") && ccL.contains("distension")) ||
+             (ccL.contains("colicky") && ccL.contains("distension") && ccL.contains("vomiting")):
+            candidates = externalPool("intestinalObstruction") ?? []
+            if ccL.contains("strangulated") || ccL.contains("ischaemia") { mergePool("sepsisConditions") }
+            if ccL.contains("cancer") || ccL.contains("malignant") { mergePool("colorectalMalignancy") }
+            if ccL.contains("hernia") { mergePool("abdominalWallHernia") }
+
         default:
             // Wide-net general medicine catch-all — no longer surgical-biased
             candidates = externalPool("generalMedicine") ?? []
@@ -1365,6 +1421,23 @@ enum BayesianDiagnosisEngine {
            ccL.contains("burst abdomen") || ccL.contains("wound dehiscence") ||
            (ccL.contains("post") && ccL.contains("operative") && ccL.contains("fever")) ||
            (ccL.contains("drain") && ccL.contains("bile")) { mergePool("postOpComplications") }
+        if ccL.contains("melanoma") || ccL.contains("basal cell") ||
+           ccL.contains("gist") || ccL.contains("desmoid") ||
+           ccL.contains("retroperitoneal sarcoma") || ccL.contains("merkel cell") ||
+           ccL.contains("soft tissue sarcoma") || ccL.contains("lipoma") ||
+           (ccL.contains("skin") && ccL.contains("lesion")) { mergePool("softTissueTumours") }
+        if (ccL.contains("stoma") && (ccL.contains("problem") || ccL.contains("complication"))) ||
+           ccL.contains("parastomal") || ccL.contains("peristomal") ||
+           ccL.contains("stoma prolapse") || ccL.contains("high output stoma") { mergePool("stomaComplications") }
+        if ccL.contains("bariatric") || ccL.contains("sleeve gastrectomy") ||
+           ccL.contains("gastric bypass") || ccL.contains("rygb") ||
+           ccL.contains("marginal ulcer") || ccL.contains("dumping syndrome") ||
+           ccL.contains("petersen defect") { mergePool("bariatricSurgical") }
+        if ccL.contains("small bowel obstruction") || ccL.contains("large bowel obstruction") ||
+           ccL.contains("sigmoid volvulus") || ccL.contains("caecal volvulus") ||
+           ccL.contains("gallstone ileus") || ccL.contains("intussusception") ||
+           ccL.contains("ogilvie") ||
+           (ccL.contains("bowel obstruction") && ccL.contains("adhesion")) { mergePool("intestinalObstruction") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but
