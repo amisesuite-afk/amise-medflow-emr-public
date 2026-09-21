@@ -150,6 +150,7 @@ struct ColonoscopyFormView: View {
 
     var body: some View {
         Form {
+            preProcedureLabsSection
             preProcedureSection
             bowelPrepSection
             procedureSection
@@ -205,6 +206,58 @@ struct ColonoscopyFormView: View {
             }
 
             save()
+        }
+    }
+
+    // MARK: Pre-procedure Labs (read-only)
+
+    @ViewBuilder
+    private var preProcedureLabsSection: some View {
+        let labs = LabPanel.parse(from: patient.investigations)
+        let hasRelevant = labs.haemoglobin != nil || labs.platelets != nil || labs.inr != nil
+
+        if hasRelevant {
+            Section {
+                if let hb = labs.haemoglobin {
+                    colonLabRow("Haemoglobin", value: String(format: "%.1f g/dL", hb.value),
+                                flag: hb.value < 10 ? "Low — anaemia" : nil, critical: hb.value < 8)
+                }
+                if let plt = labs.platelets {
+                    colonLabRow("Platelets", value: "\(Int(plt.value)) ×10⁹/L",
+                                flag: plt.value < 100 ? "Low — polypectomy risk" : nil, critical: plt.value < 50)
+                }
+                if let inr = labs.inr {
+                    colonLabRow("INR", value: String(format: "%.1f", inr.value),
+                                flag: inr.value > 1.5 ? "Elevated — bleeding risk" : nil, critical: inr.value > 2.5)
+                }
+                if let cr = labs.creatinine {
+                    colonLabRow("Creatinine", value: "\(Int(cr.value)) µmol/L", flag: nil, critical: cr.value > 300)
+                }
+            } header: {
+                Text("Pre-procedure Results")
+            } footer: {
+                if labs.hasCriticalValues {
+                    Label("Critical lab values — review before proceeding", systemImage: "exclamationmark.triangle.fill")
+                        .font(.caption2).foregroundStyle(.red)
+                }
+            }
+        }
+    }
+
+    private func colonLabRow(_ name: String, value: String, flag: String?, critical: Bool) -> some View {
+        HStack {
+            Text(name).foregroundStyle(.primary)
+            Spacer()
+            if let f = flag {
+                Text(f)
+                    .font(.caption)
+                    .foregroundStyle(critical ? .red : .orange)
+                    .padding(.horizontal, 6).padding(.vertical, 2)
+                    .background((critical ? Color.red : Color.orange).opacity(0.1), in: Capsule())
+            }
+            Text(value)
+                .font(.system(.subheadline, design: .monospaced))
+                .foregroundStyle(critical ? .red : flag != nil ? .orange : .secondary)
         }
     }
 

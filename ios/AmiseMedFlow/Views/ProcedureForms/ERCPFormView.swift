@@ -145,6 +145,7 @@ struct ERCPFormView: View {
 
     var body: some View {
         Form {
+            preProcedureLabsSection
             preProcedureSection
             aiGenerateSection
             ampullaSection
@@ -244,6 +245,22 @@ struct ERCPFormView: View {
             if !result.impression.isEmpty      { data.impression = result.impression }
             if !result.recommendations.isEmpty { data.recommendations = result.recommendations }
             save()
+        } catch is AIError {
+            // AI disabled pending HIPAA BAA — generate local impression from available data
+            let labs = LabPanel.parse(from: patient.investigations)
+            let indStr = data.indication.isEmpty ? (patient.workingDiagnosis ?? "ERCP") : data.indication.joined(separator: ", ")
+            var imp = "ERCP performed for: \(indStr)."
+            if let bil = labs.bilirubin {
+                imp += String(format: " Bilirubin %.1f µmol/L%@.", bil.value, bil.value > 100 ? " [elevated]" : "")
+            }
+            if let inr = labs.inr {
+                imp += String(format: " INR %.1f%@.", inr.value, inr.value > 1.5 ? " [elevated]" : "")
+            }
+            data.impression = imp.isEmpty ? data.impression : imp
+            if data.recommendations.isEmpty {
+                data.recommendations = "Review pathology/cytology results when available. Follow-up in \(data.followUpWeeks) weeks."
+            }
+            save()
         } catch {
             aiError = error.localizedDescription
         }
@@ -294,6 +311,72 @@ struct ERCPFormView: View {
         } footer: {
             Text("AI-generated content is pre-filled as a draft. Review and edit before signing.")
                 .font(.caption2)
+        }
+    }
+
+    // MARK: Pre-procedure Labs (read-only)
+
+    @ViewBuilder
+    private var preProcedureLabsSection: some View {
+        let labs = LabPanel.parse(from: patient.investigations)
+        let nonLabResults = patient.investigations.filter { $0.status == .resulted && $0.category != .blood }
+        let hasAny = labs.bilirubin != nil || labs.alt != nil || labs.alp != nil ||
+                     labs.inr != nil || labs.haemoglobin != nil || labs.creatinine != nil ||
+                     !nonLabResults.isEmpty
+
+        if hasAny {
+            Section {
+                if let bil = labs.bilirubin {
+                    labRow("Bilirubin", value: String(format: "%.1f µmol/L", bil.value),
+                           flag: bil.value > 100 ? "Elevated" : nil, critical: bil.value > 200)
+                }
+                if let alt = labs.alt {
+                    labRow("ALT", value: "\(Int(alt.value)) U/L",
+                           flag: alt.value > 120 ? "Elevated" : nil, critical: alt.value > 400)
+                }
+                if let alp = labs.alp {
+                    labRow("ALP", value: "\(Int(alp.value)) U/L", flag: nil, critical: false)
+                }
+                if let inr = labs.inr {
+                    labRow("INR", value: String(format: "%.1f", inr.value),
+                           flag: inr.value > 1.5 ? "Elevated — bleeding risk" : nil, critical: inr.value > 2.5)
+                }
+                if let hb = labs.haemoglobin {
+                    labRow("Haemoglobin", value: String(format: "%.1f g/dL", hb.value),
+                           flag: hb.value < 10 ? "Low — anaemia" : nil, critical: hb.value < 8)
+                }
+                if let cr = labs.creatinine {
+                    labRow("Creatinine", value: "\(Int(cr.value)) µmol/L",
+                           flag: cr.value > 130 ? "Elevated — contrast risk" : nil, critical: cr.value > 300)
+                }
+                ForEach(Array(nonLabResults.prefix(4))) { inv in
+                    labRow(inv.name, value: inv.result.isEmpty ? "Resulted" : inv.result, flag: nil, critical: false)
+                }
+            } header: {
+                Text("Pre-procedure Results")
+            } footer: {
+                if labs.hasCriticalValues {
+                    Label("Critical lab values — review before proceeding", systemImage: "exclamationmark.triangle.fill")
+                        .font(.caption2).foregroundStyle(.red)
+                }
+            }
+        }
+    }
+
+    private func labRow(_ name: String, value: String, flag: String?, critical: Bool) -> some View {
+        HStack {
+            Text(name).foregroundStyle(.primary)
+            Spacer()
+            if let f = flag {
+                Text(f)
+                    .font(.caption)
+                    .foregroundStyle(critical ? .red : .orange)
+                    .padding(.horizontal, 6).padding(.vertical, 2)
+                    .background((critical ? Color.red : Color.orange).opacity(0.1), in: Capsule())
+            }
+            Text(value)
+                .font(.system(.subheadline, design: .monospaced))
+                .foregroundStyle(critical ? .red : flag != nil ? .orange : .secondary)
         }
     }
 

@@ -124,6 +124,7 @@ struct SurgeryNoteView: View {
             teamSection
             anaesthesiaSection
             whoChecklistSection
+            preOpLabsSection
             procedureSection
             aiGenerateSection
             findingsSection
@@ -227,8 +228,92 @@ struct SurgeryNoteView: View {
             if !result.closure.isEmpty               { data.closure = result.closure }
             if !result.postOpOrders.isEmpty          { data.postOpOrders = result.postOpOrders }
             save()
+        } catch is AIError {
+            // AI disabled pending HIPAA BAA — pre-fill from available structured data
+            let proc = data.procedureName.isEmpty ? (patient.workingDiagnosis ?? "surgical procedure") : data.procedureName
+            if data.indication.isEmpty {
+                data.indication = patient.chiefComplaint ?? patient.workingDiagnosis ?? ""
+            }
+            let labs = LabPanel.parse(from: patient.investigations)
+            var labNote = ""
+            if let hb = labs.haemoglobin { labNote += String(format: " Pre-op Hb %.1f g/dL.", hb.value) }
+            if let inr = labs.inr        { labNote += String(format: " INR %.1f.", inr.value) }
+            if data.findingsIntraoperative.isEmpty {
+                data.findingsIntraoperative = "Intraoperative findings for \(proc) to be documented.\(labNote)"
+            }
+            if data.postOpOrders.isEmpty {
+                data.postOpOrders = "Routine post-operative care. Follow-up in \(data.followUpWeeks) weeks."
+            }
+            save()
         } catch {
             aiError = error.localizedDescription
+        }
+    }
+
+    // MARK: Pre-op Labs (read-only)
+
+    @ViewBuilder
+    private var preOpLabsSection: some View {
+        let labs = LabPanel.parse(from: patient.investigations)
+        let hasAny = labs.haemoglobin != nil || labs.wbc != nil || labs.platelets != nil ||
+                     labs.inr != nil || labs.sodium != nil || labs.potassium != nil || labs.creatinine != nil
+
+        if hasAny {
+            Section {
+                if let hb = labs.haemoglobin {
+                    surgLabRow("Haemoglobin", value: String(format: "%.1f g/dL", hb.value),
+                               flag: hb.value < 10 ? "Low" : nil, critical: hb.value < 8)
+                }
+                if let wbc = labs.wbc {
+                    surgLabRow("WBC", value: String(format: "%.1f ×10⁹/L", wbc.value), flag: nil, critical: false)
+                }
+                if let plt = labs.platelets {
+                    surgLabRow("Platelets", value: "\(Int(plt.value)) ×10⁹/L",
+                               flag: plt.value < 100 ? "Low" : nil, critical: plt.value < 50)
+                }
+                if let inr = labs.inr {
+                    surgLabRow("INR", value: String(format: "%.1f", inr.value),
+                               flag: inr.value > 1.5 ? "Elevated — coagulopathy" : nil, critical: inr.value > 2.5)
+                }
+                if let na = labs.sodium {
+                    surgLabRow("Sodium", value: "\(Int(na.value)) mmol/L",
+                               flag: (na.value < 130 || na.value > 150) ? "Abnormal" : nil,
+                               critical: na.value < 120 || na.value > 155)
+                }
+                if let k = labs.potassium {
+                    surgLabRow("Potassium", value: String(format: "%.1f mmol/L", k.value),
+                               flag: (k.value < 3.0 || k.value > 5.5) ? "Abnormal" : nil,
+                               critical: k.value < 2.5 || k.value > 6.0)
+                }
+                if let cr = labs.creatinine {
+                    surgLabRow("Creatinine", value: "\(Int(cr.value)) µmol/L",
+                               flag: cr.value > 130 ? "Elevated" : nil, critical: cr.value > 300)
+                }
+            } header: {
+                Text("Pre-operative Results")
+            } footer: {
+                if labs.hasCriticalValues {
+                    Label("Critical lab values — anaesthetist must be informed", systemImage: "exclamationmark.triangle.fill")
+                        .font(.caption2).foregroundStyle(.red)
+                }
+            }
+        }
+    }
+
+    private func surgLabRow(_ name: String, value: String, flag: String?, critical: Bool) -> some View {
+        HStack {
+            Text(name).foregroundStyle(.primary)
+            Spacer()
+            if let f = flag {
+                Text(f)
+                    .font(.caption)
+                    .foregroundStyle(critical ? .red : .orange)
+                    .padding(.horizontal, 6).padding(.vertical, 2)
+                    .background((critical ? Color.red : Color.orange).opacity(0.1), in: Capsule())
+            }
+            Text(value)
+                .font(.system(.subheadline, design: .monospaced))
+                .foregroundStyle(critical ? .red : flag != nil ? .orange : .secondary)
         }
     }
 
