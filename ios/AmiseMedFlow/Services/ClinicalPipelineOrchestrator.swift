@@ -117,36 +117,42 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
             if !extraAssoc.isEmpty { augmentedSocrates["associations"] = extraAssoc }
         }
 
-        // Inject critical investigation findings as auxiliary chief-complaint signals
-        // so the Bayesian seeder routes to the correct diagnostic pools.
-        let criticalResultKeywords: [(name: String, feature: String)] = [
-            ("ct abdomen", "positive imaging abdomen"),
-            ("ultrasound", "positive imaging abdomen"),
-            ("mri", "positive mri"),
-            ("chest x-ray", "positive chest imaging"),
-            ("cxr", "positive chest imaging"),
-            ("ecg", "ecg abnormality"),
-            ("echo", "echocardiogram abnormality"),
-            ("biopsy", "tissue biopsy result"),
-            ("culture", "positive culture"),
-            ("endoscopy", "endoscopic finding"),
-            ("ogd", "upper gi endoscopic finding"),
-            ("colonoscopy", "lower gi endoscopic finding"),
-        ]
+        // Build a synthetic CC augment so investigation findings drive pool routing.
+        // BDE combines chiefComplaint with invTerms for routing, but the pool conditions
+        // are phrase-based; lab flags that don't match those phrases never reach the right pool.
+        // Injecting these routing keywords here bridges that gap.
+        var ccHints: [String] = []
+        let lab = psv.labs
+        if lab.troponinElevated              { ccHints.append("chest pain elevated troponin") }
+        if lab.anaemia                        { ccHints.append("anaemia low haemoglobin pallor") }
+        if lab.dDimerElevated                { ccHints.append("breathless chest pain leg dvt pulmonary embol") }
+        if lab.amylaseElevated || lab.lipaseElevated { ccHints.append("epigastric back amylase pancreatitis") }
+        if lab.lactateElevated && lab.wbcElevated    { ccHints.append("fever sepsis septic") }
+        if lab.glucoseLow                    { ccHints.append("glucose diabetes hypoglycaemia") }
+        if lab.glucoseHigh                   { ccHints.append("glucose hba1c diabetes hyperglycaemia") }
+        if lab.bilirubinElevated             { ccHints.append("jaundice raised bilirubin") }
         let resultedInvs = patient.investigations.filter { $0.status == .resulted && !$0.result.isEmpty }
-        if !resultedInvs.isEmpty {
-            var extraCC = augmentedSocrates["investigation_findings"] ?? []
-            for inv in resultedInvs {
-                let lower = inv.name.lowercased()
-                for kw in criticalResultKeywords where lower.contains(kw.name) {
-                    extraCC.insert(kw.feature)
-                }
+        for inv in resultedInvs {
+            let n = inv.name.lowercased(), r = inv.result.lowercased()
+            if n.contains("culture") && (r.contains("positive") || r.contains("growth")) {
+                ccHints.append("fever infection bacteraemia positive culture")
             }
-            if !extraCC.isEmpty { augmentedSocrates["investigation_findings"] = extraCC }
+            if (n.contains("endoscopy") || n.contains("ogd") || n.contains("scope")) && !r.isEmpty {
+                ccHints.append("endoscopy finding upper gi endoscopic finding")
+            }
+            if n.contains("colonoscopy") && !r.isEmpty {
+                ccHints.append("colonoscopy finding lower gi endoscopic finding")
+            }
         }
+        let augmentedCC: String? = {
+            let base = patient.chiefComplaint ?? ""
+            let hints = ccHints.joined(separator: " ")
+            let combined = [base, hints].filter { !$0.isEmpty }.joined(separator: " ")
+            return combined.isEmpty ? nil : combined
+        }()
 
         sequentialEngine.seed(
-            chiefComplaint:    patient.chiefComplaint,
+            chiefComplaint:    augmentedCC,
             socratesSelections: augmentedSocrates,
             pmhNotes:           patient.pmhNotes,
             surgicalHistory:    patient.surgicalHistory,
