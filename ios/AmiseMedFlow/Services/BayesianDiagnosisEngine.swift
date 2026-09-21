@@ -559,6 +559,59 @@ enum BayesianDiagnosisEngine {
              ccL.contains("psa screening") || ccL.contains("prostate screening"):
             candidates = externalPool("prostateCancer") ?? []
 
+        // Orthopaedic / trauma / musculoskeletal injury
+        case ccL.contains("shoulder pain") || ccL.contains("rotator cuff") ||
+             ccL.contains("acl") || ccL.contains("anterior cruciate") ||
+             ccL.contains("meniscal") || ccL.contains("knee ligament") ||
+             ccL.contains("hip fracture") || ccL.contains("colles") || ccL.contains("wrist fracture") ||
+             ccL.contains("achilles") || ccL.contains("stress fracture") ||
+             ccL.contains("carpal tunnel") ||
+             (ccL.contains("knee") && (ccL.contains("injury") || ccL.contains("giving way") || ccL.contains("locking"))) ||
+             (ccL.contains("shoulder") && (ccL.contains("injury") || ccL.contains("unable to lift"))) ||
+             (ccL.contains("fracture") && !ccL.contains("hip fracture")):
+            candidates = externalPool("orthopaedicTrauma") ?? []
+            if ccL.contains("pain") { mergePool("jointPain") }
+
+        // Mental health / psychiatric presentations
+        case ccL.contains("depression") || ccL.contains("depressed") || ccL.contains("low mood") ||
+             ccL.contains("anxiety") || ccL.contains("anxious") || ccL.contains("panic attack") ||
+             ccL.contains("ptsd") || ccL.contains("trauma") ||
+             ccL.contains("mental health") || ccL.contains("psychiatric") ||
+             ccL.contains("suicidal") || ccL.contains("self-harm") || ccL.contains("self harm") ||
+             ccL.contains("phq") || ccL.contains("gad-7") || ccL.contains("bipolar") ||
+             ccL.contains("alcohol use") || ccL.contains("substance") ||
+             ccL.contains("somatic") || ccL.contains("medically unexplained") ||
+             (ccL.contains("feeling") && (ccL.contains("hopeless") || ccL.contains("worthless"))):
+            candidates = externalPool("psychiatryMental") ?? []
+
+        // Sleep disorders
+        case ccL.contains("sleep apnoea") || ccL.contains("sleep apnea") ||
+             ccL.contains("insomnia") || ccL.contains("restless legs") || ccL.contains("rls") ||
+             ccL.contains("narcolepsy") || ccL.contains("excessive daytime sleepiness") ||
+             ccL.contains("cataplexy") || ccL.contains("sleep paralysis") ||
+             ccL.contains("circadian") || ccL.contains("shift work sleep") ||
+             ccL.contains("rem behaviour") || ccL.contains("acting out dreams") ||
+             (ccL.contains("sleep") && (ccL.contains("problem") || ccL.contains("disorder") ||
+              ccL.contains("difficult") || ccL.contains("snoring"))):
+            candidates = externalPool("sleepDisorders") ?? []
+            if ccL.contains("snoring") || ccL.contains("apnoea") { mergePool("rhinosinusitis") }
+
+        // Menopause / andrology / PCOS / endometriosis
+        case ccL.contains("menopause") || ccL.contains("perimenopause") || ccL.contains("hot flush") ||
+             ccL.contains("hot flash") || ccL.contains("night sweat") ||
+             ccL.contains("premature ovarian") || ccL.contains("poi ") || ccL == "poi" ||
+             ccL.contains("hrt") || ccL.contains("hormone replacement") ||
+             ccL.contains("erectile dysfunction") || ccL.contains("ed ") ||
+             ccL.contains("low testosterone") || ccL.contains("hypogonadism") ||
+             ccL.contains("andropause") || ccL.contains("testosterone deficiency") ||
+             ccL.contains("osteoporosis") || ccL.contains("osteopenia") ||
+             ccL.contains("pcos") || ccL.contains("polycystic ovary") ||
+             ccL.contains("endometriosis") || ccL.contains("dysmenorrhoea") || ccL.contains("dysmenorrhea") ||
+             ccL.contains("genitourinary syndrome") || ccL.contains("vaginal atrophy") ||
+             (ccL.contains("vaginal") && ccL.contains("dryness")):
+            candidates = externalPool("menopauseAndrology") ?? []
+            if ccL.contains("pelvic pain") || ccL.contains("dysmenorrhoea") { mergePool("pelvicPain") }
+
         default:
             // Wide-net general medicine catch-all — no longer surgical-biased
             candidates = externalPool("generalMedicine") ?? []
@@ -643,6 +696,18 @@ enum BayesianDiagnosisEngine {
         // Secondary pool: urological oncology overlay on haematuria / voiding / psa context
         if ccL.contains("haematuria") || ccL.contains("hematuria") ||
            ccL.contains("psa") || (ccL.contains("bladder") && ccL.contains("blood")) { mergePool("prostateCancer") }
+        // Secondary pool: orthopaedic overlay on joint/limb injury or fracture context
+        if (ccL.contains("fracture") || ccL.contains("ligament") || ccL.contains("tendon")) ||
+           (ccL.contains("joint") && ccL.contains("injury")) { mergePool("orthopaedicTrauma") }
+        // Secondary pool: psychiatric overlay on unexplained somatic / chronic fatigue context
+        if ccL.contains("medically unexplained") || ccL.contains("somatic") ||
+           (ccL.contains("depression") || ccL.contains("anxiety")) { mergePool("psychiatryMental") }
+        // Secondary pool: sleep overlay on OSA / daytime fatigue / snoring context
+        if ccL.contains("daytime sleepiness") || ccL.contains("snoring") ||
+           (ccL.contains("sleep") && ccL.contains("problem")) { mergePool("sleepDisorders") }
+        // Secondary pool: menopause/andrology overlay on hormonal / climacteric presentations
+        if ccL.contains("hot flush") || ccL.contains("night sweat") || ccL.contains("hrt") ||
+           ccL.contains("testosterone") || ccL.contains("menopause") { mergePool("menopauseAndrology") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but
