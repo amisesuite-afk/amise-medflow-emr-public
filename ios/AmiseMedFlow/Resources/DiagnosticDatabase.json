@@ -78615,6 +78615,1155 @@
           ]
         }
       ]
+    },
+    "transplantSurgery": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Acute Cellular Rejection (Liver)",
+          "icd": "T86.4",
+          "logPrior": -22,
+          "systems": [
+            "transplant"
+          ],
+          "specialties": [
+            "transplant_surgery"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "liver_biopsy_banff",
+              "value": "rai_gt3",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "Transplantation 2016;100:1119"
+            },
+            {
+              "key": "ast_alt_rise",
+              "value": "greater_3x_baseline",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Transplantation 2016;100:1119"
+            },
+            {
+              "key": "timing",
+              "value": "5_30_days_post_transplant",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Transplantation 2016;100:1119"
+            },
+            {
+              "key": "fever_malaise",
+              "value": "yes",
+              "logLR": 10,
+              "evidenceLabel": "Mild+",
+              "citation": "Transplantation 2016;100:1119"
+            },
+            {
+              "key": "portal_tract_inflammation",
+              "value": "histological",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "Transplantation 2016;100:1119"
+            },
+            {
+              "key": "immunosuppression_compliance",
+              "value": "reduced",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Transplantation 2016;100:1119"
+            },
+            {
+              "key": "donor_specific_antibodies",
+              "value": "negative_acr",
+              "logLR": 8,
+              "evidenceLabel": "Mild+",
+              "citation": "Transplantation 2016;100:1119"
+            },
+            {
+              "key": "response_to_steroids",
+              "value": "reversal_80_percent",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Transplantation 2016;100:1119"
+            }
+          ]
+        },
+        {
+          "name": "Hepatic Artery Thrombosis (Post-Transplant)",
+          "icd": "T86.4",
+          "logPrior": -29,
+          "systems": [
+            "transplant",
+            "vascular"
+          ],
+          "specialties": [
+            "transplant_surgery"
+          ],
+          "urgency": 3,
+          "features": [
+            {
+              "key": "doppler_ultrasound",
+              "value": "absent_hepatic_artery_flow",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "Liver Transpl 2015;21:1168"
+            },
+            {
+              "key": "ischaemic_cholangiopathy",
+              "value": "biliary_necrosis",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "Liver Transpl 2015;21:1168"
+            },
+            {
+              "key": "ast_alt_massive_rise",
+              "value": "10x_upper_normal",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Liver Transpl 2015;21:1168"
+            },
+            {
+              "key": "early_post_transplant",
+              "value": "within_30_days",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Liver Transpl 2015;21:1168"
+            },
+            {
+              "key": "ct_angiography",
+              "value": "no_hepatic_arterial_opacification",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "Liver Transpl 2015;21:1168"
+            },
+            {
+              "key": "acute_liver_failure",
+              "value": "fulminant",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Liver Transpl 2015;21:1168"
+            },
+            {
+              "key": "biloma_abscess",
+              "value": "perihepatic",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Liver Transpl 2015;21:1168"
+            },
+            {
+              "key": "paediatric_recipient",
+              "value": "higher_risk",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "Liver Transpl 2015;21:1168"
+            }
+          ]
+        },
+        {
+          "name": "Renal Transplant Rejection",
+          "icd": "T86.1",
+          "logPrior": -20,
+          "systems": [
+            "transplant"
+          ],
+          "specialties": [
+            "transplant_surgery",
+            "nephrology"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "creatinine_rise",
+              "value": "gt25_percent_baseline",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "KDIGO Transplant Guidelines 2022"
+            },
+            {
+              "key": "transplant_biopsy_banff",
+              "value": "rejection_grade",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "KDIGO Transplant Guidelines 2022"
+            },
+            {
+              "key": "donor_specific_antibodies",
+              "value": "positive_dsa",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "KDIGO Transplant Guidelines 2022"
+            },
+            {
+              "key": "graft_tenderness",
+              "value": "yes",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "KDIGO Transplant Guidelines 2022"
+            },
+            {
+              "key": "oliguria_anuria",
+              "value": "new",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "KDIGO Transplant Guidelines 2022"
+            },
+            {
+              "key": "c4d_staining",
+              "value": "positive_peritubular_capillaries",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "KDIGO Transplant Guidelines 2022"
+            },
+            {
+              "key": "tacrolimus_level",
+              "value": "subtherapeutic",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "KDIGO Transplant Guidelines 2022"
+            },
+            {
+              "key": "hypertension_worsening",
+              "value": "yes",
+              "logLR": 10,
+              "evidenceLabel": "Mild+",
+              "citation": "KDIGO Transplant Guidelines 2022"
+            }
+          ]
+        },
+        {
+          "name": "Biliary Stricture (Post-Transplant)",
+          "icd": "K83.1",
+          "logPrior": -24,
+          "systems": [
+            "transplant",
+            "hepatobiliary"
+          ],
+          "specialties": [
+            "transplant_surgery"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "cholestasis_biochemistry",
+              "value": "elevated_alp_ggt_bilirubin",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Liver Transpl 2012;18:741"
+            },
+            {
+              "key": "mrcp_ercp",
+              "value": "anastomotic_or_non_anastomotic_stricture",
+              "logLR": 32,
+              "evidenceLabel": "Definitive+",
+              "citation": "Liver Transpl 2012;18:741"
+            },
+            {
+              "key": "timing",
+              "value": "weeks_to_months_post_transplant",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Liver Transpl 2012;18:741"
+            },
+            {
+              "key": "hepatic_artery_patency",
+              "value": "confirmed_normal",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "Liver Transpl 2012;18:741"
+            },
+            {
+              "key": "pruritis_jaundice",
+              "value": "progressive",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Liver Transpl 2012;18:741"
+            },
+            {
+              "key": "biliary_cast_syndrome",
+              "value": "non_anastomotic",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Liver Transpl 2012;18:741"
+            },
+            {
+              "key": "ischaemic_cholangiopathy",
+              "value": "diffuse_non_anastomotic",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Liver Transpl 2012;18:741"
+            },
+            {
+              "key": "cmv_hepatitis",
+              "value": "associated",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "Liver Transpl 2012;18:741"
+            }
+          ]
+        },
+        {
+          "name": "PTLD (Post-Transplant Lymphoproliferative)",
+          "icd": "C85.87",
+          "logPrior": -35,
+          "systems": [
+            "transplant",
+            "oncology"
+          ],
+          "specialties": [
+            "transplant_surgery",
+            "oncology"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "ebv_viraemia",
+              "value": "rising_post_transplant",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "Transplantation 2017;101:1209"
+            },
+            {
+              "key": "lymphadenopathy_mass",
+              "value": "nodal_extranodal",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Transplantation 2017;101:1209"
+            },
+            {
+              "key": "ct_pet_scan",
+              "value": "fdg_avid_lesion",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Transplantation 2017;101:1209"
+            },
+            {
+              "key": "biopsy",
+              "value": "b_cell_proliferation_ebv_positive",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "Transplantation 2017;101:1209"
+            },
+            {
+              "key": "heavy_immunosuppression",
+              "value": "t_cell_depleting_agents",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Transplantation 2017;101:1209"
+            },
+            {
+              "key": "fever_night_sweats",
+              "value": "b_symptoms",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "Transplantation 2017;101:1209"
+            },
+            {
+              "key": "gut_involvement",
+              "value": "perforation_obstruction",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Transplantation 2017;101:1209"
+            },
+            {
+              "key": "response_to_is_reduction",
+              "value": "partial_regression",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Transplantation 2017;101:1209"
+            }
+          ]
+        },
+        {
+          "name": "Cyclosporine/Tacrolimus Nephrotoxicity",
+          "icd": "T45.1",
+          "logPrior": -22,
+          "systems": [
+            "transplant",
+            "renal"
+          ],
+          "specialties": [
+            "transplant_surgery",
+            "nephrology"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "cni_trough_level",
+              "value": "supratherapeutic",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "KDIGO Transplant Guidelines 2022"
+            },
+            {
+              "key": "creatinine_rise",
+              "value": "progressive_chronic",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "KDIGO Transplant Guidelines 2022"
+            },
+            {
+              "key": "biopsy",
+              "value": "arteriolar_hyalinosis_striped_fibrosis",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "KDIGO Transplant Guidelines 2022"
+            },
+            {
+              "key": "htn_hyperuricaemia",
+              "value": "yes",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "KDIGO Transplant Guidelines 2022"
+            },
+            {
+              "key": "electrolyte_disturbance",
+              "value": "hyperkalaemia_hypomagnesaemia",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "KDIGO Transplant Guidelines 2022"
+            },
+            {
+              "key": "response_to_reduction",
+              "value": "stabilisation_after_dose_reduction",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "KDIGO Transplant Guidelines 2022"
+            },
+            {
+              "key": "no_rejection_on_biopsy",
+              "value": "cni_toxicity_pattern",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "KDIGO Transplant Guidelines 2022"
+            },
+            {
+              "key": "new_onset_dm",
+              "value": "tacrolimus_induced",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "KDIGO Transplant Guidelines 2022"
+            }
+          ]
+        },
+        {
+          "name": "Primary Non-Function (Liver)",
+          "icd": "T86.4",
+          "logPrior": -35,
+          "systems": [
+            "transplant"
+          ],
+          "specialties": [
+            "transplant_surgery"
+          ],
+          "urgency": 3,
+          "features": [
+            {
+              "key": "timing",
+              "value": "within_72h_transplant",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Liver Transpl 2010;16:786"
+            },
+            {
+              "key": "ast_alt",
+              "value": "gt5000_iu_l",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "Liver Transpl 2010;16:786"
+            },
+            {
+              "key": "coagulopathy",
+              "value": "inr_gt3_no_improvement",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Liver Transpl 2010;16:786"
+            },
+            {
+              "key": "bile_production",
+              "value": "absent_ischaemic_bile",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Liver Transpl 2010;16:786"
+            },
+            {
+              "key": "donor_risk_index",
+              "value": "extended_criteria",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Liver Transpl 2010;16:786"
+            },
+            {
+              "key": "hepatic_artery_patent",
+              "value": "yes_ruling_out_hat",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "Liver Transpl 2010;16:786"
+            },
+            {
+              "key": "encephalopathy",
+              "value": "rapid_onset",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Liver Transpl 2010;16:786"
+            },
+            {
+              "key": "lactate",
+              "value": "progressive_rise",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Liver Transpl 2010;16:786"
+            }
+          ]
+        },
+        {
+          "name": "Opportunistic Infection (Post-Transplant)",
+          "icd": "T86.0",
+          "logPrior": -24,
+          "systems": [
+            "transplant",
+            "infectious"
+          ],
+          "specialties": [
+            "transplant_surgery",
+            "infectious_disease"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "cmv_viraemia",
+              "value": "rising_copies",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "Transplantation 2018;102:900"
+            },
+            {
+              "key": "timing",
+              "value": "1_6_months_post_transplant",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "Transplantation 2018;102:900"
+            },
+            {
+              "key": "pcp_pneumonia",
+              "value": "bilateral_infiltrates_ldh",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Transplantation 2018;102:900"
+            },
+            {
+              "key": "immunosuppression_burden",
+              "value": "heavy_augmented",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Transplantation 2018;102:900"
+            },
+            {
+              "key": "aspergillus_galactomannan",
+              "value": "positive",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Transplantation 2018;102:900"
+            },
+            {
+              "key": "cryptococcal_antigen",
+              "value": "positive",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "Transplantation 2018;102:900"
+            },
+            {
+              "key": "prophylaxis_lapse",
+              "value": "cotrimoxazole_valganciclovir",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Transplantation 2018;102:900"
+            },
+            {
+              "key": "fever_without_source",
+              "value": "post_transplant",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "Transplantation 2018;102:900"
+            }
+          ]
+        }
+      ]
+    },
+    "chronicWoundCare": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Diabetic Foot Ulcer",
+          "icd": "E11.621",
+          "logPrior": -20,
+          "systems": [
+            "metabolic",
+            "vascular"
+          ],
+          "specialties": [
+            "vascular_surgery",
+            "general_surgery",
+            "podiatry"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "diabetes_duration",
+              "value": "gt10_years",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2017;389:1631"
+            },
+            {
+              "key": "wagner_grade",
+              "value": "2_or_above",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2017;389:1631"
+            },
+            {
+              "key": "abpi",
+              "value": "lt0pt9_ischaemic_component",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2017;389:1631"
+            },
+            {
+              "key": "peripheral_neuropathy",
+              "value": "absent_10g_monofilament",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet 2017;389:1631"
+            },
+            {
+              "key": "osteomyelitis_probe_to_bone",
+              "value": "positive",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "IDSA Diabetic Foot Guidelines 2012"
+            },
+            {
+              "key": "mri_foot",
+              "value": "bone_marrow_signal_change",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "IDSA Diabetic Foot Guidelines 2012"
+            },
+            {
+              "key": "hba1c",
+              "value": "poorly_controlled",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet 2017;389:1631"
+            },
+            {
+              "key": "biofilm_organisms",
+              "value": "polymicrobial",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "IDSA Diabetic Foot Guidelines 2012"
+            }
+          ]
+        },
+        {
+          "name": "Venous Leg Ulcer",
+          "icd": "I83.0",
+          "logPrior": -17,
+          "systems": [
+            "vascular"
+          ],
+          "specialties": [
+            "vascular_surgery"
+          ],
+          "urgency": 0,
+          "features": [
+            {
+              "key": "duplex_venous_reflux",
+              "value": "greater_0pt5sec",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NICE NG168 2020"
+            },
+            {
+              "key": "ulcer_location",
+              "value": "gaiter_area_medial_malleolus",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "NICE NG168 2020"
+            },
+            {
+              "key": "varicose_veins_venous_eczema",
+              "value": "lipodermatosclerosis",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "NICE NG168 2020"
+            },
+            {
+              "key": "abpi",
+              "value": "gt0pt8_compression_safe",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NICE NG168 2020"
+            },
+            {
+              "key": "chronicity",
+              "value": "gt6_weeks",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "NICE NG168 2020"
+            },
+            {
+              "key": "haemosiderin_staining",
+              "value": "periulcer",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NICE NG168 2020"
+            },
+            {
+              "key": "previous_dvt",
+              "value": "post_thrombotic_syndrome",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NICE NG168 2020"
+            },
+            {
+              "key": "compression_therapy_response",
+              "value": "improved",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NICE NG168 2020"
+            }
+          ]
+        },
+        {
+          "name": "Pressure Ulcer (Decubitus)",
+          "icd": "L89.90",
+          "logPrior": -24,
+          "systems": [
+            "skin_soft_tissue"
+          ],
+          "specialties": [
+            "general_surgery",
+            "plastic_surgery"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "npuap_grade",
+              "value": "iii_iv",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "EPUAP/NPUAP Guidelines 2019"
+            },
+            {
+              "key": "location",
+              "value": "sacrum_heel_ischium",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "EPUAP/NPUAP Guidelines 2019"
+            },
+            {
+              "key": "immobility",
+              "value": "prolonged_bedbound",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "EPUAP/NPUAP Guidelines 2019"
+            },
+            {
+              "key": "braden_score",
+              "value": "lt12",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "EPUAP/NPUAP Guidelines 2019"
+            },
+            {
+              "key": "wound_depth",
+              "value": "full_thickness_bone_visible",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "EPUAP/NPUAP Guidelines 2019"
+            },
+            {
+              "key": "osteomyelitis",
+              "value": "bone_biopsy_positive",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "EPUAP/NPUAP Guidelines 2019"
+            },
+            {
+              "key": "malnutrition",
+              "value": "low_albumin_prealbumin",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "EPUAP/NPUAP Guidelines 2019"
+            },
+            {
+              "key": "undermining_tunnelling",
+              "value": "yes",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "EPUAP/NPUAP Guidelines 2019"
+            }
+          ]
+        },
+        {
+          "name": "Calciphylaxis",
+          "icd": "E83.59",
+          "logPrior": -39,
+          "systems": [
+            "metabolic",
+            "vascular"
+          ],
+          "specialties": [
+            "general_surgery",
+            "nephrology"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "end_stage_renal_disease",
+              "value": "on_dialysis",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2018;378:1704"
+            },
+            {
+              "key": "skin_biopsy",
+              "value": "medial_calcification_arterioles",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "NEJM 2018;378:1704"
+            },
+            {
+              "key": "painful_skin_lesions",
+              "value": "violaceous_reticulate_eschar",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2018;378:1704"
+            },
+            {
+              "key": "calcium_phosphate_product",
+              "value": "elevated",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2018;378:1704"
+            },
+            {
+              "key": "warfarin_use",
+              "value": "vitamin_k_antagonist",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2018;378:1704"
+            },
+            {
+              "key": "obesity_female",
+              "value": "risk_factors",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2018;378:1704"
+            },
+            {
+              "key": "hyperparathyroidism_secondary",
+              "value": "pth_very_elevated",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2018;378:1704"
+            },
+            {
+              "key": "secondary_infection",
+              "value": "sepsis_mortality_risk",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2018;378:1704"
+            }
+          ]
+        },
+        {
+          "name": "Pyoderma Gangrenosum",
+          "icd": "L88",
+          "logPrior": -39,
+          "systems": [
+            "skin_soft_tissue"
+          ],
+          "specialties": [
+            "general_surgery",
+            "dermatology"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "ulcer_characteristics",
+              "value": "violaceous_undermined_edge_rapid_progression",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2023;388:132"
+            },
+            {
+              "key": "pathergy",
+              "value": "worsening_after_debridement",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2023;388:132"
+            },
+            {
+              "key": "associated_ibd",
+              "value": "crohn_uc",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2023;388:132"
+            },
+            {
+              "key": "response_to_immunosuppression",
+              "value": "steroids_ciclosporin",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2023;388:132"
+            },
+            {
+              "key": "biopsy",
+              "value": "neutrophilic_dermatosis_no_vasculitis",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2023;388:132"
+            },
+            {
+              "key": "haematological_malignancy",
+              "value": "paraprotein",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2023;388:132"
+            },
+            {
+              "key": "rheumatoid_arthritis",
+              "value": "associated",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2023;388:132"
+            },
+            {
+              "key": "culture_negative",
+              "value": "no_infective_cause",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2023;388:132"
+            }
+          ]
+        },
+        {
+          "name": "Keloid and Hypertrophic Scar",
+          "icd": "L91.0",
+          "logPrior": -28,
+          "systems": [
+            "skin_soft_tissue"
+          ],
+          "specialties": [
+            "plastic_surgery"
+          ],
+          "urgency": 0,
+          "features": [
+            {
+              "key": "scar_extends_beyond_wound",
+              "value": "keloid",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "Plast Reconstr Surg 2014;134:70e"
+            },
+            {
+              "key": "pruritus_pain",
+              "value": "yes",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "Plast Reconstr Surg 2014;134:70e"
+            },
+            {
+              "key": "skin_of_colour",
+              "value": "african_caribbean_hispanic",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Plast Reconstr Surg 2014;134:70e"
+            },
+            {
+              "key": "post_traumatic_post_surgical",
+              "value": "yes",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "Plast Reconstr Surg 2014;134:70e"
+            },
+            {
+              "key": "family_history_keloid",
+              "value": "yes",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Plast Reconstr Surg 2014;134:70e"
+            },
+            {
+              "key": "recurrence_after_excision",
+              "value": "high_rate",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Plast Reconstr Surg 2014;134:70e"
+            },
+            {
+              "key": "histology",
+              "value": "thick_hyalinised_collagen",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Plast Reconstr Surg 2014;134:70e"
+            },
+            {
+              "key": "response_to_intralesional_steroid",
+              "value": "partial",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "Plast Reconstr Surg 2014;134:70e"
+            }
+          ]
+        },
+        {
+          "name": "Hidradenitis Suppurativa",
+          "icd": "L73.2",
+          "logPrior": -29,
+          "systems": [
+            "skin_soft_tissue"
+          ],
+          "specialties": [
+            "general_surgery",
+            "dermatology"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "hurley_stage",
+              "value": "ii_iii",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;366:158"
+            },
+            {
+              "key": "location",
+              "value": "axilla_groin_perineum",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;366:158"
+            },
+            {
+              "key": "recurrent_abscesses_sinus_tracts",
+              "value": "yes",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;366:158"
+            },
+            {
+              "key": "onset_post_pubertal",
+              "value": "yes",
+              "logLR": 10,
+              "evidenceLabel": "Mild+",
+              "citation": "NEJM 2012;366:158"
+            },
+            {
+              "key": "smoking_obesity",
+              "value": "both",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2012;366:158"
+            },
+            {
+              "key": "response_to_biologics",
+              "value": "adalimumab",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2016;374:23"
+            },
+            {
+              "key": "scarring_dermal_contracture",
+              "value": "yes",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2012;366:158"
+            },
+            {
+              "key": "follicular_occlusion_triad",
+              "value": "acne_conglobata",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2012;366:158"
+            }
+          ]
+        },
+        {
+          "name": "Marjolin's Ulcer (SCC in Chronic Wound)",
+          "icd": "C44.90",
+          "logPrior": -39,
+          "systems": [
+            "skin_soft_tissue",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "plastic_surgery"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "chronic_wound_duration",
+              "value": "greater_5_years",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "World J Surg Oncol 2013;11:96"
+            },
+            {
+              "key": "changing_ulcer_character",
+              "value": "raised_everted_edge",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "World J Surg Oncol 2013;11:96"
+            },
+            {
+              "key": "biopsy",
+              "value": "squamous_cell_carcinoma",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "World J Surg Oncol 2013;11:96"
+            },
+            {
+              "key": "burn_scar_osteomyelitis_basis",
+              "value": "yes",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "World J Surg Oncol 2013;11:96"
+            },
+            {
+              "key": "lymph_node_spread",
+              "value": "regional",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "World J Surg Oncol 2013;11:96"
+            },
+            {
+              "key": "proliferative_tissue",
+              "value": "granulation_excess_friable",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "World J Surg Oncol 2013;11:96"
+            },
+            {
+              "key": "patient_age",
+              "value": "greater_50",
+              "logLR": 10,
+              "evidenceLabel": "Mild+",
+              "citation": "World J Surg Oncol 2013;11:96"
+            },
+            {
+              "key": "tropical_climate",
+              "value": "caribbean_african_risk",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "World J Surg Oncol 2013;11:96"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {

@@ -1400,6 +1400,32 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("men") || ccL.contains("multiple endocrine") { mergePool("thyroidNoduleAssessment") }
             if ccL.contains("cancer") || ccL.contains("malignant") { mergePool("oncologyComplications") }
 
+        // Transplant surgery complications
+        case ccL.contains("transplant rejection") || ccL.contains("graft rejection") ||
+             ccL.contains("hepatic artery thrombosis") || ccL.contains("ptld") ||
+             ccL.contains("post-transplant") || ccL.contains("tacrolimus toxicity") ||
+             ccL.contains("cyclosporine nephrotoxicity") || ccL.contains("biliary stricture") ||
+             ccL.contains("primary non-function") || ccL.contains("cmv post-transplant") ||
+             ccL.contains("pcp pneumonia") && ccL.contains("transplant") ||
+             (ccL.contains("liver") && ccL.contains("transplant")) ||
+             (ccL.contains("renal") && ccL.contains("transplant") && ccL.contains("dysfunction")):
+            candidates = externalPool("transplantSurgery") ?? []
+            if ccL.contains("lymphoma") || ccL.contains("ebv") { mergePool("primaryGILymphoma") }
+            if ccL.contains("infection") || ccL.contains("sepsis") { mergePool("sepsisConditions") }
+
+        // Chronic wound care
+        case ccL.contains("diabetic foot") || ccL.contains("venous ulcer") ||
+             ccL.contains("pressure ulcer") || ccL.contains("decubitus") ||
+             ccL.contains("calciphylaxis") || ccL.contains("pyoderma gangrenosum") ||
+             ccL.contains("hidradenitis suppurativa") || ccL.contains("marjolin") ||
+             ccL.contains("keloid") || ccL.contains("hypertrophic scar") ||
+             ccL.contains("chronic wound") || ccL.contains("wound healing") ||
+             (ccL.contains("ulcer") && ccL.contains("non-healing")) ||
+             (ccL.contains("wound") && ccL.contains("chronic")):
+            candidates = externalPool("chronicWoundCare") ?? []
+            if ccL.contains("osteomyelitis") { mergePool("spinalNeurosurgical") }
+            if ccL.contains("vascular") || ccL.contains("abpi") { mergePool("peripheralVascular") }
+
         // Haematological surgical conditions
         case ccL.contains("splenic abscess") || ccL.contains("splenomegaly") ||
              ccL.contains("splenic rupture") || ccL.contains("haemophilia") ||
@@ -1802,6 +1828,13 @@ enum BayesianDiagnosisEngine {
            ccL.contains("haemophilia") || ccL.contains("itp") ||
            ccL.contains("spherocytosis") || ccL.contains("myelofibrosis") ||
            ccL.contains("splenic vein") { mergePool("haematologicalSurgical") }
+        if ccL.contains("transplant rejection") || ccL.contains("post-transplant") ||
+           ccL.contains("hepatic artery thrombosis") || ccL.contains("ptld") ||
+           ccL.contains("tacrolimus") || ccL.contains("cyclosporine") { mergePool("transplantSurgery") }
+        if ccL.contains("diabetic foot") || ccL.contains("venous ulcer") ||
+           ccL.contains("pressure ulcer") || ccL.contains("calciphylaxis") ||
+           ccL.contains("pyoderma gangrenosum") || ccL.contains("hidradenitis") ||
+           ccL.contains("keloid") { mergePool("chronicWoundCare") }
         if ccL.contains("cauda equina") || ccL.contains("disc herniation") ||
            ccL.contains("cervical myelopathy") || ccL.contains("spinal stenosis") ||
            ccL.contains("epidural abscess") || ccL.contains("vertebral osteomyelitis") ||
