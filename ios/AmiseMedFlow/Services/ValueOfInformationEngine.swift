@@ -159,7 +159,22 @@ enum ValueOfInformationEngine {
 
     // Convenience overload using PatientStateVector
     static func rank(from psv: PatientStateVector) -> [InformationItem] {
-        let collected = Set(psv.socratesSelections.keys)
+        var collected = Set(psv.socratesSelections.keys)
+        // Mark catalogue entries already ordered/resulted as collected so VoI
+        // doesn't recommend investigations the patient already has in flight.
+        let activeInvNames = psv.investigationEntries
+            .filter { $0.status != .cancelled && $0.status != .suggested }
+            .map { $0.name.lowercased() }
+        for candidate in candidateEvidenceTable {
+            let keyPhrase = candidate.key.replacingOccurrences(of: "_", with: " ")
+            let nameFirst = candidate.name.lowercased().components(separatedBy: " ").first ?? ""
+            let matches = activeInvNames.contains {
+                $0.contains(candidate.key) ||
+                $0.contains(keyPhrase) ||
+                (nameFirst.count >= 4 && $0.contains(nameFirst))
+            }
+            if matches { collected.insert(candidate.key) }
+        }
         return rank(hypotheses: psv.hypotheses, alreadyCollected: collected)
     }
 

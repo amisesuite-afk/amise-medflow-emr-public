@@ -174,11 +174,10 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
         decisions = dec
 
         // ── Stage 6: Value of Information ─────────────────────────────────
-        let collected = Set(patient.investigations.map { $0.name.lowercased() })
-        let voiItems = ValueOfInformationEngine.rank(
-            hypotheses: seeded,
-            alreadyCollected: collected
-        )
+        // Use rank(from: psv) so already-ordered investigations are properly
+        // matched against catalogue keys (not raw name strings).
+        psv.hypotheses = seeded
+        let voiItems = ValueOfInformationEngine.rank(from: psv)
         informationItems = voiItems
 
         // ── Stage 7: AutoFunction ──────────────────────────────────────────
