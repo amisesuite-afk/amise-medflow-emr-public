@@ -3785,25 +3785,81 @@ struct ConsultationView: View {
                     .lineLimit(2...)
                     .padding(.leading, 28)
             }
-            // Inline critical value badge when this investigation contributes a critical result
+            // Inline critical value badge and trend arrow
             if inv.status == .resulted && !inv.result.isEmpty {
                 let singleLabs = LabPanel.parse(from: [inv])
-                if singleLabs.hasCriticalValues {
-                    HStack(spacing: 4) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .font(.system(size: 9, weight: .bold))
-                        Text("CRITICAL VALUE")
-                            .font(.system(size: 9, weight: .black))
-                            .tracking(0.3)
+                HStack(spacing: 6) {
+                    if singleLabs.hasCriticalValues {
+                        HStack(spacing: 4) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .font(.system(size: 9, weight: .bold))
+                            Text("CRITICAL VALUE")
+                                .font(.system(size: 9, weight: .black))
+                                .tracking(0.3)
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 7).padding(.vertical, 3)
+                        .background(Color.red, in: Capsule())
                     }
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 7).padding(.vertical, 3)
-                    .background(Color.red, in: Capsule())
-                    .padding(.leading, 28)
+                    if let trend = labTrend(for: inv) {
+                        HStack(spacing: 3) {
+                            Text(trend.arrow)
+                                .font(.system(size: 10, weight: .bold))
+                            Text(trend.deltaText)
+                                .font(.system(size: 10))
+                        }
+                        .foregroundStyle(trend.color)
+                        .padding(.horizontal, 7).padding(.vertical, 3)
+                        .background(trend.color.opacity(0.12), in: Capsule())
+                    }
                 }
+                .padding(.leading, 28)
             }
         }
         .padding(.vertical, 2)
+    }
+
+    private struct LabTrend {
+        let arrow: String
+        let deltaText: String
+        let color: Color
+    }
+
+    private func parseFirstNumber(_ text: String) -> Double? {
+        var numStr = ""
+        var foundDigit = false
+        for scalar in text.unicodeScalars {
+            let c = Character(scalar)
+            if c.isNumber { numStr.append(c); foundDigit = true }
+            else if c == "." && foundDigit { numStr.append(c) }
+            else if foundDigit { break }
+        }
+        return foundDigit ? Double(numStr) : nil
+    }
+
+    private func labTrend(for inv: InvestigationEntry) -> LabTrend? {
+        guard inv.status == .resulted else { return nil }
+        guard let cur = parseFirstNumber(inv.result) else { return nil }
+        let prior = patient.investigations
+            .filter {
+                $0.status == .resulted &&
+                $0.id != inv.id &&
+                $0.name.lowercased() == inv.name.lowercased()
+            }
+            .sorted { ($0.resultedAt ?? $0.orderedAt) < ($1.resultedAt ?? $1.orderedAt) }
+            .compactMap { parseFirstNumber($0.result) }
+            .last
+        guard let prev = prior else { return nil }
+        let delta = cur - prev
+        let pct = prev != 0 ? abs(delta / prev * 100) : 0
+        let deltaText = String(format: "%.0f%%", pct)
+        if abs(delta) < prev * 0.03 {
+            return LabTrend(arrow: "→", deltaText: "stable", color: .secondary)
+        } else if delta > 0 {
+            return LabTrend(arrow: "↑", deltaText: "+\(deltaText)", color: .orange)
+        } else {
+            return LabTrend(arrow: "↓", deltaText: "-\(deltaText)", color: .blue)
+        }
     }
 
     private func invStatusColor(_ status: InvestigationEntry.InvStatus) -> Color {
