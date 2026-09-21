@@ -284,7 +284,14 @@ enum AutoFunctionEngine {
             ("pulmonary embol","Wells PE",   "Wells PE Score"),
             ("tia",            "ABCD2",      "ABCD2 Score"),
             ("liver",          "Child-Pugh", "Child-Pugh Score"),
+            ("liver",          "MELD",       "MELD-Na Score"),
             ("cardiac risk",   "RCRI",       "Revised Cardiac Risk Index"),
+            ("coronary",       "HEART",      "HEART Score (Chest Pain)"),
+            ("acs",            "HEART",      "HEART Score (Chest Pain)"),
+            ("chest pain",     "HEART",      "HEART Score (Chest Pain)"),
+            ("pneumonia",      "CURB-65",    "CURB-65 Severity Score"),
+            ("pulmonary embol","PERC",       "PERC Rule (PE Exclusion)"),
+            ("sepsis",         "SOFA",       "SOFA Score (Sepsis)"),
             ("thromboprophyl", "Caprini",    "Caprini VTE Risk Score")
         ]
 
