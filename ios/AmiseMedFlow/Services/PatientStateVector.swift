@@ -327,8 +327,8 @@ extension LabPanel {
             let date = entry.resultedAt ?? entry.orderedAt
             guard let val = fv(entry.result, at: date) else { continue }
 
-            if n.contains("wbc") || n.contains("white cell") || n.contains("white blood")                     { if lab.wbc == nil { lab.wbc = val } }
-            else if n.contains("haemoglobin") || n.contains("hemoglobin") || n == "hb"                        { if lab.haemoglobin == nil { lab.haemoglobin = val } }
+            if n.contains("wbc") || n.contains("white cell") || n.contains("white blood") || n.contains("leucocyte") || n.contains("leukocyte") { if lab.wbc == nil { lab.wbc = val } }
+            else if n.contains("haemoglobin") || n.contains("hemoglobin") || n == "hb" || n == "hgb" || n.hasPrefix("hb ") { if lab.haemoglobin == nil { lab.haemoglobin = val } }
             else if n.contains("platelet")                                                                     { if lab.platelets == nil { lab.platelets = val } }
             else if n.contains("crp") || n.contains("c-reactive")                                             { if lab.crp == nil { lab.crp = val } }
             else if n.contains("esr")                                                                          { if lab.esr == nil { lab.esr = val } }
