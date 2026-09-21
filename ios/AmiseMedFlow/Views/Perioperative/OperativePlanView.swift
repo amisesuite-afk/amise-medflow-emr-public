@@ -229,6 +229,29 @@ private struct PlanForm: View {
             ))
         }
 
+        // Lab-based perioperative flags from investigation results
+        var riskInputs = SurgicalRiskInputs(
+            pmh: patient.pmhChips,
+            medicationNames: patient.prescriptions.map { $0.drug },
+            ageYears: patient.ageYears,
+            bmiKgM2: patient.latestBMI(),
+            socialChips: []
+        )
+        riskInputs.labs = LabPanel.parse(from: patient.investigations)
+        let labAlerts = SurgicalRiskEngine.assess(riskInputs).filter {
+            $0.domain == .periop || $0.domain == .nutrition || $0.domain == .anticoag || $0.domain == .healing
+        }
+        for alert in labAlerts {
+            let band: PeriopFlag.Band = switch alert.band {
+            case .critical: .critical
+            case .high:     .high
+            default:        .moderate
+            }
+            if !flags.contains(where: { $0.title == alert.title }) {
+                flags.append(PeriopFlag(band: band, title: alert.title, detail: alert.detail, action: alert.action))
+            }
+        }
+
         return flags
     }
 

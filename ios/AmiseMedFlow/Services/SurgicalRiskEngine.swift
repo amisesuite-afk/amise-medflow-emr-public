@@ -254,7 +254,7 @@ enum SurgicalRiskEngine {
         // Coagulopathy
         if let inr = labs.inr?.value, inr > 1.5 {
             out.append(SurgicalRiskAlert(
-                domain: .perioperative, band: inr > 2.5 ? .critical : .high,
+                domain: .periop, band: inr > 2.5 ? .critical : .high,
                 title: "Coagulopathy — INR \(String(format: "%.1f", inr))",
                 detail: "INR \(inr > 2.5 ? ">" : "1.5–2.5") — increased surgical haemorrhage risk.",
                 action: inr > 2.5 ?
