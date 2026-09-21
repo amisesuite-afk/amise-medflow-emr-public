@@ -3594,6 +3594,16 @@
               "logLR": 5,
               "evidenceLabel": "LR 3 favouring benign anorectal cause",
               "citation": "Mant J. BMJ 1989."
+            },
+            {
+              "key": "inv",
+              "value": "proctoscopy internal haemorrhoids grade I-IV",
+              "logLR": 16
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy haemorrhoids no proximal lesion",
+              "logLR": 9
             }
           ],
           "systems": [
@@ -3666,6 +3676,16 @@
               "logLR": 7,
               "evidenceLabel": "CEA >5 ng/mL LR+ 3.9",
               "citation": "Locker GY et al. J Clin Oncol 2006."
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy biopsy adenocarcinoma colon rectum",
+              "logLR": 39
+            },
+            {
+              "key": "inv",
+              "value": "FIT positive quantitative >10 mcg/g",
+              "logLR": 17
             }
           ],
           "systems": [
@@ -3739,6 +3759,16 @@
               "logLR": 8,
               "evidenceLabel": "LR 5 for primary anal fissure",
               "citation": "Stewart DB. Dis Colon Rectum 2017."
+            },
+            {
+              "key": "inv",
+              "value": "proctoscopy anal fissure posterior midline",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "examination anal fissure skin tag sentinel pile",
+              "logLR": 24
             }
           ],
           "systems": [
@@ -3810,6 +3840,16 @@
               "logLR": 6,
               "evidenceLabel": "LR 3.5 for significant lower GI haemorrhage",
               "citation": "Oakland K. Gut 2019."
+            },
+            {
+              "key": "inv",
+              "value": "CT angiogram diverticular active bleed extravasation",
+              "logLR": 21
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy diverticular stigmata recent haemorrhage",
+              "logLR": 16
             }
           ],
           "systems": [
@@ -3882,6 +3922,16 @@
               "logLR": 7,
               "evidenceLabel": "LR 4 for IBD vs IBS",
               "citation": "Hwang C. Inflamm Bowel Dis 2014."
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy biopsy IBD inflammatory bowel disease",
+              "logLR": 24
+            },
+            {
+              "key": "inv",
+              "value": "faecal calprotectin elevated >250 mcg/g",
+              "logLR": 13
             }
           ],
           "systems": [
@@ -3955,6 +4005,16 @@
               "logLR": 7,
               "evidenceLabel": "Acquired vWF deficiency in Heyde's syndrome (AS + GI bleed + angiodysplasia)",
               "citation": "Vincentelli A et al. NEJM 2003."
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy angiodysplasia submucosal vascular ectasia",
+              "logLR": 18
+            },
+            {
+              "key": "inv",
+              "value": "CT angiogram angiodysplasia blush contrast",
+              "logLR": 16
             }
           ],
           "systems": [
@@ -4027,6 +4087,16 @@
               "logLR": 6,
               "evidenceLabel": "Rectal sparing typical (superior rectal artery from IMA separate supply)",
               "citation": "Brandt LJ et al. Am J Gastroenterol 2015."
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy biopsy ischaemic colitis watershed",
+              "logLR": 23
+            },
+            {
+              "key": "inv",
+              "value": "CT colon ischaemic colitis thumbprinting",
+              "logLR": 19
             }
           ],
           "systems": [
@@ -4615,6 +4685,16 @@
               "logLR": 9,
               "evidenceLabel": "Organ dysfunction (SOFA ≥2) defines sepsis",
               "citation": "Singer M et al. JAMA 2016."
+            },
+            {
+              "key": "inv",
+              "value": "blood cultures gram-negative bacteraemia positive",
+              "logLR": 17
+            },
+            {
+              "key": "inv",
+              "value": "serum lactate >2 mmol/L procalcitonin elevated",
+              "logLR": 10
             }
           ],
           "systems": [
@@ -4688,6 +4768,16 @@
               "logLR": 7,
               "evidenceLabel": "LR 4 for organ dysfunction / sepsis severity",
               "citation": "Casserly B. Crit Care Med 2015."
+            },
+            {
+              "key": "inv",
+              "value": "CT abdomen intra-abdominal abscess collection",
+              "logLR": 27
+            },
+            {
+              "key": "inv",
+              "value": "serum WBC elevated CRP >200 abdominal sepsis",
+              "logLR": 10
             }
           ],
           "systems": [
@@ -4761,6 +4851,16 @@
               "logLR": 8,
               "evidenceLabel": "LR 5 for sepsis severity",
               "citation": "Singer M. JAMA 2016."
+            },
+            {
+              "key": "inv",
+              "value": "urine MC&S positive growth >100000 CFU urosepsis",
+              "logLR": 19
+            },
+            {
+              "key": "inv",
+              "value": "urine dipstick nitrites leucocytes positive",
+              "logLR": 12
             }
           ],
           "systems": [
@@ -4835,6 +4935,16 @@
               "logLR": 6,
               "evidenceLabel": "LR 3.3 for bacterial pneumonia",
               "citation": "Schuetz P. Lancet Infect Dis 2012."
+            },
+            {
+              "key": "inv",
+              "value": "CXR consolidation lobar pneumonia",
+              "logLR": 16
+            },
+            {
+              "key": "inv",
+              "value": "sputum culture pneumococcal organism positive",
+              "logLR": 9
             }
           ],
           "systems": [
@@ -4908,6 +5018,16 @@
               "logLR": 5,
               "evidenceLabel": "Neutrophilia common in bacterial septicaemia",
               "citation": "Brouwer MC et al. Lancet 2012."
+            },
+            {
+              "key": "inv",
+              "value": "blood cultures meningococcus positive",
+              "logLR": 21
+            },
+            {
+              "key": "inv",
+              "value": "LP CSF turbid meningococcal septicaemia",
+              "logLR": 17
             }
           ],
           "systems": [
@@ -4981,6 +5101,16 @@
               "logLR": 5,
               "evidenceLabel": "Blood culture negative (toxin-mediated) or S. aureus",
               "citation": "Hajjeh RA et al. Clin Infect Dis 1999."
+            },
+            {
+              "key": "inv",
+              "value": "wound swab Staph aureus toxin producing",
+              "logLR": 18
+            },
+            {
+              "key": "inv",
+              "value": "blood cultures Streptococcus pyrogenic TSS",
+              "logLR": 15
             }
           ],
           "systems": [
@@ -5054,6 +5184,16 @@
               "logLR": 9,
               "evidenceLabel": "qSOFA ≥2 reflects systemic involvement",
               "citation": "Seymour CW et al. JAMA 2016."
+            },
+            {
+              "key": "inv",
+              "value": "blood cultures Candida species candidaemia",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "serum beta-D-glucan markedly elevated",
+              "logLR": 16
             }
           ],
           "systems": [
@@ -5130,6 +5270,16 @@
               "logLR": 5,
               "evidenceLabel": "NIHSS ≥4 functional deficit",
               "citation": "Brott T et al. Stroke 1989."
+            },
+            {
+              "key": "inv",
+              "value": "MRI DWI acute ischaemic infarct restricted diffusion",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "CT head acute ischaemia hypodensity",
+              "logLR": 18
             }
           ],
           "systems": [
@@ -5205,6 +5355,16 @@
               "logLR": 6,
               "evidenceLabel": "LR 3.5 for intracerebral bleed",
               "citation": "Kothari RU. Ann Emerg Med 1997."
+            },
+            {
+              "key": "inv",
+              "value": "CT head intracerebral haemorrhage hyperdense",
+              "logLR": 46
+            },
+            {
+              "key": "inv",
+              "value": "MRI head haemorrhage blood products gradient echo",
+              "logLR": 34
             }
           ],
           "systems": [
@@ -5278,6 +5438,16 @@
               "logLR": 5,
               "evidenceLabel": "LR 3 for cerebrovascular TIA",
               "citation": "Rothwell PM. Lancet 2005."
+            },
+            {
+              "key": "inv",
+              "value": "MRI DWI TIA small restricted diffusion acute",
+              "logLR": 13
+            },
+            {
+              "key": "inv",
+              "value": "carotid duplex significant ipsilateral stenosis TIA",
+              "logLR": 18
             }
           ],
           "systems": [
@@ -5352,6 +5522,16 @@
               "logLR": 8,
               "evidenceLabel": "LR 5 for PRES",
               "citation": "Fugate JE. AJNR 2015."
+            },
+            {
+              "key": "inv",
+              "value": "MRI PRES posterior reversible encephalopathy",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "MRI T2 FLAIR bilateral occipital parietal PRES",
+              "logLR": 34
             }
           ],
           "systems": [
@@ -5425,6 +5605,16 @@
               "logLR": 8,
               "evidenceLabel": "LR 5 for vestibular migraine",
               "citation": "Lempert T. Cephalalgia 2012."
+            },
+            {
+              "key": "inv",
+              "value": "MRI brain normal vestibular migraine",
+              "logLR": 8
+            },
+            {
+              "key": "inv",
+              "value": "EEG normal migraine no epilepsy",
+              "logLR": 5
             }
           ],
           "systems": [
@@ -5496,6 +5686,16 @@
               "logLR": 7,
               "evidenceLabel": "Altered consciousness in ~22% — severe CVST",
               "citation": "Stam J. N Engl J Med 2005."
+            },
+            {
+              "key": "inv",
+              "value": "MRI venogram CVST dural sinus thrombosis",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "CT venogram empty delta sign CVST",
+              "logLR": 25
             }
           ],
           "systems": [
@@ -5569,6 +5769,16 @@
               "logLR": 4,
               "evidenceLabel": "Normal inflammatory markers (seizure is functional, not infective)",
               "citation": "Hufnagel A et al. Stroke 1995."
+            },
+            {
+              "key": "inv",
+              "value": "MRI brain normal post-ictal Todds paresis",
+              "logLR": 9
+            },
+            {
+              "key": "inv",
+              "value": "EEG post-ictal slowing focal Todds paresis",
+              "logLR": 12
             }
           ],
           "systems": [
@@ -10768,6 +10978,16 @@
               "logLR": 8,
               "evidenceLabel": "Severe pain (strangulation risk)",
               "citation": "Fitzgibbons RJ. Ann Surg 2006;243:261."
+            },
+            {
+              "key": "inv",
+              "value": "USS inguinal hernia sac contents reducible",
+              "logLR": 20
+            },
+            {
+              "key": "inv",
+              "value": "CT abdomen inguinal hernia fascial defect",
+              "logLR": 19
             }
           ],
           "systems": [
@@ -10830,6 +11050,16 @@
               "value": "cough impulse",
               "logLR": -4,
               "evidenceLabel": ""
+            },
+            {
+              "key": "inv",
+              "value": "USS femoral hernia below inguinal ligament",
+              "logLR": 25
+            },
+            {
+              "key": "inv",
+              "value": "CT femoral canal hernia bowel omentum",
+              "logLR": 25
             }
           ],
           "systems": [
@@ -10893,6 +11123,16 @@
               "logLR": 8,
               "evidenceLabel": "Obesity risk factor",
               "citation": "Poelman MM. Hernia 2013;17:611."
+            },
+            {
+              "key": "inv",
+              "value": "USS incisional hernia fascial defect",
+              "logLR": 20
+            },
+            {
+              "key": "inv",
+              "value": "CT incisional hernia mesh defect contents",
+              "logLR": 24
             }
           ],
           "systems": [
@@ -10963,6 +11203,16 @@
               "logLR": 7,
               "evidenceLabel": "Skin thinning marks chronic large hernia",
               "citation": "Millikan KW. Surg Clin North Am 2003."
+            },
+            {
+              "key": "inv",
+              "value": "USS umbilical hernia defect omentum bowel",
+              "logLR": 22
+            },
+            {
+              "key": "inv",
+              "value": "CT umbilical hernia incarcerated contents",
+              "logLR": 21
             }
           ],
           "systems": [
@@ -11033,6 +11283,16 @@
               "logLR": 5,
               "evidenceLabel": "No prior surgery distinguishes from incisional",
               "citation": "Muschaweck U. Hernia 2006."
+            },
+            {
+              "key": "inv",
+              "value": "USS epigastric hernia linea alba defect fat",
+              "logLR": 19
+            },
+            {
+              "key": "inv",
+              "value": "CT epigastric hernia preperitoneal fat",
+              "logLR": 19
             }
           ],
           "systems": [
@@ -11103,6 +11363,16 @@
               "logLR": 5,
               "evidenceLabel": "Colicky pain + vomiting from bowel obstruction",
               "citation": "Skandalakis PN et al. Am Surg 2006."
+            },
+            {
+              "key": "inv",
+              "value": "CT obturator hernia Howship-Romberg femoral nerve",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "CT Spigelian hernia lateral rectus defect",
+              "logLR": 31
             }
           ],
           "systems": [
@@ -11174,6 +11444,16 @@
               "logLR": 4,
               "evidenceLabel": "Strangulation relatively uncommon (large neck); elective repair advised",
               "citation": "Moreno-Egea A et al. Hernia 2007."
+            },
+            {
+              "key": "inv",
+              "value": "CT lumbar hernia Petit's triangle defect",
+              "logLR": 31
+            },
+            {
+              "key": "inv",
+              "value": "USS lumbar hernia posterior wall defect",
+              "logLR": 21
             }
           ],
           "systems": [
@@ -17865,6 +18145,16 @@
               "logLR": 10,
               "evidenceLabel": "Valvular heart disease",
               "citation": "Norgren L. J Vasc Surg 2007;45:S5."
+            },
+            {
+              "key": "inv",
+              "value": "CT angiogram acute arterial embolism occlusion",
+              "logLR": 25
+            },
+            {
+              "key": "inv",
+              "value": "ECG AF cardiac source embolism",
+              "logLR": 11
             }
           ],
           "systems": [
@@ -17938,6 +18228,16 @@
               "logLR": 14,
               "evidenceLabel": "Low ABPI bilaterally",
               "citation": "Norgren L. J Vasc Surg 2007;45:S5."
+            },
+            {
+              "key": "inv",
+              "value": "CT angiogram in-situ thrombosis atherosclerosis",
+              "logLR": 21
+            },
+            {
+              "key": "inv",
+              "value": "ABPI markedly reduced acute thrombosis",
+              "logLR": 19
             }
           ],
           "systems": [
@@ -18011,6 +18311,16 @@
               "logLR": 8,
               "evidenceLabel": "LR 5 for acute limb ischaemia",
               "citation": "Norgren L. TASC II 2007."
+            },
+            {
+              "key": "inv",
+              "value": "USS popliteal aneurysm thrombosis absent flow",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "CT angiogram popliteal aneurysm thrombosis",
+              "logLR": 29
             }
           ],
           "systems": [
@@ -18082,6 +18392,16 @@
               "logLR": 20,
               "evidenceLabel": "Pathognomonic — CTA confirmation",
               "citation": "Norgren L. TASC II 2007."
+            },
+            {
+              "key": "inv",
+              "value": "CT angiogram aortoiliac occlusion Leriche",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "duplex USS aortoiliac absent femoral pulse",
+              "logLR": 24
             }
           ],
           "systems": [
@@ -18154,6 +18474,16 @@
               "logLR": 6,
               "evidenceLabel": "D-dimer markedly elevated (massive thrombosis)",
               "citation": "Chinsakchai K et al. Vasc Endovascular Surg 2011."
+            },
+            {
+              "key": "inv",
+              "value": "duplex USS massive iliofemoral DVT phlegmasia",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "CT venography thrombosis iliofemoral venous",
+              "logLR": 25
             }
           ],
           "systems": [
@@ -18227,6 +18557,16 @@
               "logLR": 5,
               "evidenceLabel": "Raynaud's phenomenon in ~45% of Buerger's patients",
               "citation": "Puéchal X et al. Joint Bone Spine 2007."
+            },
+            {
+              "key": "inv",
+              "value": "CT angiogram segmental small vessel occlusion Buerger",
+              "logLR": 20
+            },
+            {
+              "key": "inv",
+              "value": "biopsy vessel wall thromboangiitis obliterans",
+              "logLR": 27
             }
           ],
           "systems": [
@@ -18298,6 +18638,16 @@
               "logLR": 7,
               "evidenceLabel": "Cola-coloured urine from myoglobinuria — indicates significant muscle necrosis",
               "citation": "McQueen MM et al. J Bone Joint Surg Br 1996."
+            },
+            {
+              "key": "inv",
+              "value": "compartment pressure >30mmHg direct measurement",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "serum CK markedly elevated rhabdomyolysis",
+              "logLR": 14
             }
           ],
           "systems": [
@@ -25501,6 +25851,16 @@
               "key": "interstitial",
               "value": "cornual_heterotopic_higher_risk",
               "logLR": 9
+            },
+            {
+              "key": "inv",
+              "value": "serum beta-hCG rising USS no intrauterine ectopic",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "USS transvaginal ectopic adnexal ring",
+              "logLR": 25
             }
           ],
           "systems": [
@@ -25585,6 +25945,16 @@
               "key": "physiological",
               "value": "follicular_corpus_luteum_resolves",
               "logLR": 7
+            },
+            {
+              "key": "inv",
+              "value": "USS pelvis ovarian cyst simple complex Doppler",
+              "logLR": 25
+            },
+            {
+              "key": "inv",
+              "value": "MRI pelvis ovarian cyst characterisation",
+              "logLR": 24
             }
           ],
           "systems": [
@@ -25666,6 +26036,16 @@
               "key": "doxycycline",
               "value": "metronidazole_combination",
               "logLR": 7
+            },
+            {
+              "key": "inv",
+              "value": "cervical swab gonorrhoea chlamydia positive PID",
+              "logLR": 18
+            },
+            {
+              "key": "inv",
+              "value": "USS pelvis tubo-ovarian abscess PID",
+              "logLR": 23
             }
           ],
           "systems": [
@@ -25748,6 +26128,16 @@
               "key": "recto_vaginal",
               "value": "deep_infiltrating_module",
               "logLR": 11
+            },
+            {
+              "key": "inv",
+              "value": "MRI pelvis endometrioma chocolate cyst",
+              "logLR": 25
+            },
+            {
+              "key": "inv",
+              "value": "laparoscopy endometriosis blue-black deposits confirmed",
+              "logLR": 34
             }
           ],
           "systems": [
@@ -25828,6 +26218,16 @@
               "key": "tranexamic_acid",
               "value": "medical_first_line",
               "logLR": 7
+            },
+            {
+              "key": "inv",
+              "value": "USS pelvis fibroid uterine intramural subserosal",
+              "logLR": 24
+            },
+            {
+              "key": "inv",
+              "value": "MRI uterus fibroid hypo-intense T2 bulk",
+              "logLR": 25
             }
           ],
           "systems": [
@@ -25901,6 +26301,16 @@
               "key": "laparoscopy",
               "value": "diagnostic_and_therapeutic",
               "logLR": 12
+            },
+            {
+              "key": "inv",
+              "value": "CT appendix inflamed periappendiceal fat pelvic",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "USS appendix non-compressible >6mm pelvic",
+              "logLR": 21
             }
           ],
           "systems": [
@@ -25974,6 +26384,16 @@
               "logLR": 8,
               "evidenceLabel": "CA-125 mildly elevated in ~50%; not diagnostic, used to follow response",
               "citation": "Reinhold C et al. RadioGraphics 1999."
+            },
+            {
+              "key": "inv",
+              "value": "MRI uterus adenomyosis junctional zone >12mm",
+              "logLR": 25
+            },
+            {
+              "key": "inv",
+              "value": "USS adenomyosis uterine heterogeneity myometrial",
+              "logLR": 16
             }
           ],
           "systems": [
@@ -29807,6 +30227,16 @@
               "key": "carvedilol_bisoprolol",
               "value": "mortality_benefit",
               "logLR": 7
+            },
+            {
+              "key": "inv",
+              "value": "Echo EF <40% left ventricular dysfunction HFrEF",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "BNP NT-proBNP markedly elevated HFrEF",
+              "logLR": 21
             }
           ],
           "systems": [
@@ -29882,6 +30312,16 @@
               "key": "sglt2i",
               "value": "empagliflozin_beneficial",
               "logLR": 7
+            },
+            {
+              "key": "inv",
+              "value": "Echo EF preserved >50% diastolic dysfunction HFpEF",
+              "logLR": 19
+            },
+            {
+              "key": "inv",
+              "value": "BNP elevated exertional dyspnoea HFpEF",
+              "logLR": 13
             }
           ],
           "systems": [
@@ -29957,6 +30397,16 @@
               "key": "ivcd",
               "value": "lbbb_wide_qrs_indication_crt",
               "logLR": 8
+            },
+            {
+              "key": "inv",
+              "value": "Echo DCM dilated LV global hypokinesia EF <40%",
+              "logLR": 25
+            },
+            {
+              "key": "inv",
+              "value": "cardiac MRI DCM late gadolinium enhancement",
+              "logLR": 23
             }
           ],
           "systems": [
@@ -30037,6 +30487,16 @@
               "key": "pulsus_parvus",
               "value": "slow_rising_small_volume",
               "logLR": 9
+            },
+            {
+              "key": "inv",
+              "value": "Echo severe AS Vmax >4 m/s gradient >40mmHg",
+              "logLR": 38
+            },
+            {
+              "key": "inv",
+              "value": "Echo AVA <1 cm2 severe aortic stenosis",
+              "logLR": 34
             }
           ],
           "systems": [
@@ -30112,6 +30572,16 @@
               "key": "right_heart_collapse",
               "value": "echo_ra_rv_early_diastole",
               "logLR": 13
+            },
+            {
+              "key": "inv",
+              "value": "Echo pericardial effusion tamponade RA RV collapse",
+              "logLR": 31
+            },
+            {
+              "key": "inv",
+              "value": "CXR cardiomegaly water bottle heart tamponade",
+              "logLR": 11
             }
           ],
           "systems": [
@@ -30184,6 +30654,16 @@
               "logLR": 11,
               "evidenceLabel": "Apical-sparing strain pattern on CMR/echo highly specific for amyloid",
               "citation": "Phelan D et al. J Am Coll Cardiol Img 2012."
+            },
+            {
+              "key": "inv",
+              "value": "Echo restrictive cardiomyopathy granular sparkling",
+              "logLR": 23
+            },
+            {
+              "key": "inv",
+              "value": "cardiac MRI amyloidosis diffuse late gadolinium",
+              "logLR": 28
             }
           ],
           "systems": [
@@ -30255,6 +30735,16 @@
               "logLR": 12,
               "evidenceLabel": "Sarcomere gene mutation (MYH7, MYBPC3) in 50–60% of HCM",
               "citation": "Maron BJ et al. NEJM 2018."
+            },
+            {
+              "key": "inv",
+              "value": "Echo HCM interventricular septum >15mm asymmetric",
+              "logLR": 31
+            },
+            {
+              "key": "inv",
+              "value": "cardiac MRI HCM hypertrophy LGE fibrosis",
+              "logLR": 28
             }
           ],
           "systems": [
@@ -30339,6 +30829,16 @@
               "key": "holter",
               "value": "paroxysmal_af_captured",
               "logLR": 10
+            },
+            {
+              "key": "inv",
+              "value": "ECG AF irregular absent P waves",
+              "logLR": 46
+            },
+            {
+              "key": "inv",
+              "value": "Holter 24h paroxysmal AF documented",
+              "logLR": 29
             }
           ],
           "systems": [
@@ -30421,6 +30921,16 @@
               "key": "blood_pressure",
               "value": "maintained_if_haemodynamically_stable",
               "logLR": 6
+            },
+            {
+              "key": "inv",
+              "value": "ECG SVT narrow complex tachycardia",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "EP study AVNRT AVRT accessory pathway",
+              "logLR": 38
             }
           ],
           "systems": [
@@ -30501,6 +31011,16 @@
               "key": "icd_appropriate",
               "value": "sudden_death_prevention",
               "logLR": 9
+            },
+            {
+              "key": "inv",
+              "value": "ECG VT wide complex tachycardia AV dissociation",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "EP study VT substrate re-entry",
+              "logLR": 31
             }
           ],
           "systems": [
@@ -30574,6 +31094,16 @@
               "key": "cannula_atropine",
               "value": "transcutaneous_pacing_bridge",
               "logLR": 7
+            },
+            {
+              "key": "inv",
+              "value": "ECG complete heart block AV dissociation escape rhythm",
+              "logLR": 46
+            },
+            {
+              "key": "inv",
+              "value": "Holter intermittent CHB pauses syncope",
+              "logLR": 31
             }
           ],
           "systems": [
@@ -30642,6 +31172,16 @@
               "key": "age",
               "value": "young_athlete_presentation",
               "logLR": 6
+            },
+            {
+              "key": "inv",
+              "value": "ECG WPW delta wave short PR pre-excitation",
+              "logLR": 38
+            },
+            {
+              "key": "inv",
+              "value": "EP study accessory pathway WPW ablation",
+              "logLR": 46
             }
           ],
           "systems": [
@@ -30714,6 +31254,16 @@
               "logLR": 9,
               "evidenceLabel": "Electrolyte depletion exacerbates QT prolongation risk",
               "citation": "El-Sherif N. J Am Coll Cardiol 2017."
+            },
+            {
+              "key": "inv",
+              "value": "ECG QTc prolonged >450ms male >470ms female",
+              "logLR": 25
+            },
+            {
+              "key": "inv",
+              "value": "genetic testing LQTS pathogenic variant SCN5A KCNQ1",
+              "logLR": 33
             }
           ],
           "systems": [
@@ -30785,6 +31335,16 @@
               "logLR": 8,
               "evidenceLabel": "Fatigue, exercise intolerance, palpitations from chronotropic failure",
               "citation": "Semelka M et al. Am Fam Physician 2013."
+            },
+            {
+              "key": "inv",
+              "value": "Holter sick sinus bradycardia pauses >3s",
+              "logLR": 25
+            },
+            {
+              "key": "inv",
+              "value": "EP study sinus node recovery time prolonged",
+              "logLR": 25
             }
           ],
           "systems": [
@@ -31409,6 +31969,16 @@
               "key": "cause",
               "value": "alcohol_hbv_hcv_nash_autoimmune",
               "logLR": 7
+            },
+            {
+              "key": "inv",
+              "value": "fibroscan liver stiffness >25 kPa cirrhosis",
+              "logLR": 21
+            },
+            {
+              "key": "inv",
+              "value": "serum albumin <28 INR elevated cirrhosis",
+              "logLR": 14
             }
           ],
           "systems": [
@@ -31487,6 +32057,16 @@
               "key": "vaccination_status",
               "value": "household_contact_risk",
               "logLR": 6
+            },
+            {
+              "key": "inv",
+              "value": "serology HBsAg positive HBeAg HBV DNA elevated",
+              "logLR": 46
+            },
+            {
+              "key": "inv",
+              "value": "liver biopsy hepatitis B chronic active inflammation",
+              "logLR": 31
             }
           ],
           "systems": [
@@ -31563,6 +32143,16 @@
               "key": "drug_use",
               "value": "reinfection_risk_ongoing",
               "logLR": 6
+            },
+            {
+              "key": "inv",
+              "value": "serology anti-HCV positive HCV RNA PCR detectable",
+              "logLR": 46
+            },
+            {
+              "key": "inv",
+              "value": "fibroscan liver stiffness F2-F4 HCV fibrosis",
+              "logLR": 16
             }
           ],
           "systems": [
@@ -31645,6 +32235,16 @@
               "key": "semaglutide",
               "value": "emerging_treatment_option",
               "logLR": 6
+            },
+            {
+              "key": "inv",
+              "value": "USS liver fatty bright echogenic NAFLD",
+              "logLR": 13
+            },
+            {
+              "key": "inv",
+              "value": "fibroscan controlled attenuation parameter >288 dB/m",
+              "logLR": 19
             }
           ],
           "systems": [
@@ -31729,6 +32329,16 @@
               "key": "transplant",
               "value": "early_listing_selected_cases",
               "logLR": 8
+            },
+            {
+              "key": "inv",
+              "value": "LFTs AST:ALT >2 GGT elevated alcoholic",
+              "logLR": 12
+            },
+            {
+              "key": "inv",
+              "value": "liver biopsy alcoholic hepatitis Mallory hyaline",
+              "logLR": 23
             }
           ],
           "systems": [
@@ -31803,6 +32413,16 @@
               "logLR": 13,
               "evidenceLabel": "Periductal concentric 'onion-skin' fibrosis on liver biopsy",
               "citation": "Lazaridis KN, LaRusso NF. NEJM 2016."
+            },
+            {
+              "key": "inv",
+              "value": "MRCP PSC biliary strictures beaded appearance",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "liver biopsy PSC onion-skin fibrosis periductal",
+              "logLR": 30
             }
           ],
           "systems": [
@@ -31876,6 +32496,16 @@
               "logLR": 12,
               "evidenceLabel": "AFP-L3 >15% increases specificity for HCC over benign hepatic lesion",
               "citation": "Trevisani F et al. J Hepatol 2001."
+            },
+            {
+              "key": "inv",
+              "value": "AFP elevated >400 ng/mL cirrhosis HCC",
+              "logLR": 33
+            },
+            {
+              "key": "inv",
+              "value": "CT liver HCC arterial enhancement washout LI-RADS 5",
+              "logLR": 31
             }
           ],
           "systems": [
@@ -31974,6 +32604,16 @@
               "logLR": 14,
               "evidenceLabel": "Very Strong+",
               "citation": "Gut 2007;56:1056"
+            },
+            {
+              "key": "inv",
+              "value": "USS gallbladder gallstones no wall thickening",
+              "logLR": 22
+            },
+            {
+              "key": "inv",
+              "value": "serum LFTs normal bilirubin normal biliary colic",
+              "logLR": 5
             }
           ]
         },
@@ -32051,6 +32691,16 @@
               "logLR": 9,
               "evidenceLabel": "Moderate+",
               "citation": "NEJM 2016;374:375"
+            },
+            {
+              "key": "inv",
+              "value": "USS gallbladder thickened wall pericholecystic fluid Murphy",
+              "logLR": 24
+            },
+            {
+              "key": "inv",
+              "value": "serum WBC elevated CRP elevated cholecystitis",
+              "logLR": 12
             }
           ]
         },
@@ -32115,6 +32765,16 @@
               "logLR": 16,
               "evidenceLabel": "Very Strong+",
               "citation": "Radiology 2006;238:920"
+            },
+            {
+              "key": "inv",
+              "value": "MRCP CBD stone filling defect",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "USS CBD dilated >8mm stone choledocholithiasis",
+              "logLR": 18
             }
           ]
         },
@@ -32187,6 +32847,16 @@
               "logLR": 10,
               "evidenceLabel": "Strong+",
               "citation": "Gut 2010;59:843"
+            },
+            {
+              "key": "inv",
+              "value": "USS CBD dilated stone obstructed cholangitis",
+              "logLR": 16
+            },
+            {
+              "key": "inv",
+              "value": "blood cultures gram-negative bacteraemia cholangitis",
+              "logLR": 13
             }
           ]
         },
@@ -32251,6 +32921,16 @@
               "logLR": 9,
               "evidenceLabel": "Strong+",
               "citation": "Lancet 2010;375:654"
+            },
+            {
+              "key": "inv",
+              "value": "USS gallbladder thickened wall no stones acalculous",
+              "logLR": 12
+            },
+            {
+              "key": "inv",
+              "value": "HIDA scan cholecystitis ejection fraction reduced",
+              "logLR": 13
             }
           ]
         },
@@ -32314,6 +32994,16 @@
               "logLR": 7,
               "evidenceLabel": "Moderate+",
               "citation": "HPB 2011;13:1"
+            },
+            {
+              "key": "inv",
+              "value": "MRCP extrinsic CBD compression Mirizzi syndrome",
+              "logLR": 28
+            },
+            {
+              "key": "inv",
+              "value": "ERCP Mirizzi CBD narrowing impacted stone",
+              "logLR": 31
             }
           ]
         },
@@ -32379,6 +33069,16 @@
               "logLR": 14,
               "evidenceLabel": "Very Strong+",
               "citation": "Radiology 2010;254:601"
+            },
+            {
+              "key": "inv",
+              "value": "USS gallbladder mass polypoid irregular",
+              "logLR": 18
+            },
+            {
+              "key": "inv",
+              "value": "CT gallbladder carcinoma wall invasion",
+              "logLR": 23
             }
           ]
         },
@@ -32443,6 +33143,16 @@
               "logLR": 6,
               "evidenceLabel": "Moderate+",
               "citation": "Gut 2008;57:1114"
+            },
+            {
+              "key": "inv",
+              "value": "MRCP post-cholecystectomy retained stone cyst",
+              "logLR": 15
+            },
+            {
+              "key": "inv",
+              "value": "USS post-op CBD dilated retained stone",
+              "logLR": 12
             }
           ]
         }
@@ -32519,6 +33229,16 @@
               "logLR": 8,
               "evidenceLabel": "Moderate+",
               "citation": "NEJM 2006;354:2142"
+            },
+            {
+              "key": "inv",
+              "value": "serum amylase elevated >3x upper limit",
+              "logLR": 24
+            },
+            {
+              "key": "inv",
+              "value": "USS gallstones CBD dilated pancreatitis",
+              "logLR": 14
             }
           ]
         },
@@ -32583,6 +33303,16 @@
               "logLR": 12,
               "evidenceLabel": "Very Strong+",
               "citation": "Radiology 2004;230:50"
+            },
+            {
+              "key": "inv",
+              "value": "serum amylase elevated GGT markedly elevated",
+              "logLR": 12
+            },
+            {
+              "key": "inv",
+              "value": "CT pancreas oedematous peripancreatic stranding",
+              "logLR": 19
             }
           ]
         },
@@ -32647,6 +33377,16 @@
               "logLR": 9,
               "evidenceLabel": "Strong+",
               "citation": "Ann Surg 2009;249:658"
+            },
+            {
+              "key": "inv",
+              "value": "CT pancreas necrotising >30% non-enhancing",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "serum CRP >150 peak 48h pancreatitis",
+              "logLR": 17
             }
           ]
         },
@@ -32711,6 +33451,16 @@
               "logLR": 8,
               "evidenceLabel": "Moderate+",
               "citation": "Gut 2007;56:1424"
+            },
+            {
+              "key": "inv",
+              "value": "CT pancreas calcification ductal dilatation chronic",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "MRCP pancreatic duct irregular beaded",
+              "logLR": 23
             }
           ]
         },
@@ -32775,6 +33525,16 @@
               "logLR": 5,
               "evidenceLabel": "Moderate+",
               "citation": "Gut 2007;56:1424"
+            },
+            {
+              "key": "inv",
+              "value": "USS pancreas pseudocyst fluid collection",
+              "logLR": 23
+            },
+            {
+              "key": "inv",
+              "value": "CT pancreas pseudocyst walled-off necrosis",
+              "logLR": 29
             }
           ]
         },
@@ -32841,6 +33601,16 @@
               "logLR": 7,
               "evidenceLabel": "Moderate+",
               "citation": "Lancet 2011;377:2197"
+            },
+            {
+              "key": "inv",
+              "value": "CT pancreas head hypodense mass double duct sign",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "CA 19-9 markedly elevated pancreatic mass",
+              "logLR": 18
             }
           ]
         },
@@ -32904,6 +33674,16 @@
               "logLR": 6,
               "evidenceLabel": "Moderate+",
               "citation": "Gut 2011;60:1538"
+            },
+            {
+              "key": "inv",
+              "value": "serum IgG4 elevated type 1 AIP",
+              "logLR": 28
+            },
+            {
+              "key": "inv",
+              "value": "CT pancreas sausage shape capsule-like rim",
+              "logLR": 23
             }
           ]
         },
@@ -32969,6 +33749,16 @@
               "logLR": 12,
               "evidenceLabel": "Very Strong+",
               "citation": "Radiology 2009;252:1"
+            },
+            {
+              "key": "inv",
+              "value": "CT pancreas hypervascular neuroendocrine tumour",
+              "logLR": 23
+            },
+            {
+              "key": "inv",
+              "value": "serum chromogranin A gastrin insulin elevated",
+              "logLR": 18
             }
           ]
         }
@@ -33050,6 +33840,16 @@
               "logLR": 6,
               "evidenceLabel": "Moderate+",
               "citation": "JAMA 1996;276:1589"
+            },
+            {
+              "key": "inv",
+              "value": "CT appendix inflamed periappendiceal fat stranding",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "USS appendix non-compressible >6mm appendicitis",
+              "logLR": 24
             }
           ]
         },
@@ -33114,6 +33914,16 @@
               "logLR": 9,
               "evidenceLabel": "Strong+",
               "citation": "Gut 2011;60:1438"
+            },
+            {
+              "key": "inv",
+              "value": "CT enterography terminal ileum Crohns thickening",
+              "logLR": 24
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy ileoscopy terminal ileum Crohns granuloma",
+              "logLR": 27
             }
           ]
         },
@@ -33179,6 +33989,16 @@
               "logLR": 6,
               "evidenceLabel": "Moderate+",
               "citation": "NEJM 2001;345:739"
+            },
+            {
+              "key": "inv",
+              "value": "USS pelvis right ovarian cyst torsion Doppler absent",
+              "logLR": 21
+            },
+            {
+              "key": "inv",
+              "value": "serum beta-hCG negative no ectopic",
+              "logLR": 4
             }
           ]
         },
@@ -33244,6 +34064,16 @@
               "logLR": 7,
               "evidenceLabel": "Moderate+",
               "citation": "Lancet 2014;383:1490"
+            },
+            {
+              "key": "inv",
+              "value": "CT colon caecal mass cancer RIF",
+              "logLR": 27
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy biopsy caecal adenocarcinoma",
+              "logLR": 39
             }
           ]
         },
@@ -33308,6 +34138,16 @@
               "logLR": 6,
               "evidenceLabel": "Moderate+",
               "citation": "NEJM 2016;374:1291"
+            },
+            {
+              "key": "inv",
+              "value": "CT KUB non-contrast right ureteric calculus",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "USS right hydronephrosis ureteric stone",
+              "logLR": 14
             }
           ]
         },
@@ -33371,6 +34211,16 @@
               "logLR": 7,
               "evidenceLabel": "Moderate+",
               "citation": "Br J Surg 2009;96:600"
+            },
+            {
+              "key": "inv",
+              "value": "CT abdomen mesenteric adenitis nodes no appendix",
+              "logLR": 14
+            },
+            {
+              "key": "inv",
+              "value": "USS RIF mesenteric nodes appendix not seen",
+              "logLR": 13
             }
           ]
         },
@@ -33434,6 +34284,16 @@
               "logLR": 6,
               "evidenceLabel": "Moderate+",
               "citation": "Ann Surg 1994;220:564"
+            },
+            {
+              "key": "inv",
+              "value": "CT abdomen Meckels diverticulitis ileal",
+              "logLR": 18
+            },
+            {
+              "key": "inv",
+              "value": "Tc-99m pertechnetate Meckels scan positive",
+              "logLR": 24
             }
           ]
         },
@@ -33498,6 +34358,16 @@
               "logLR": 8,
               "evidenceLabel": "Moderate+",
               "citation": "Int J Infect Dis 2006;10:93"
+            },
+            {
+              "key": "inv",
+              "value": "CT abdomen psoas abscess right",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "MRI psoas abscess extension spinal",
+              "logLR": 31
             }
           ]
         }
@@ -33574,6 +34444,16 @@
               "logLR": 10,
               "evidenceLabel": "Strong+",
               "citation": "Gut 2009;58:443"
+            },
+            {
+              "key": "inv",
+              "value": "OGD oesophageal varices grade I-IV portal hypertension",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "USS liver portal hypertension splenomegaly",
+              "logLR": 16
             }
           ]
         },
@@ -33637,6 +34517,16 @@
               "logLR": -5,
               "evidenceLabel": "Weak-",
               "citation": "Gut 2014;63:7"
+            },
+            {
+              "key": "inv",
+              "value": "OGD biopsy Barretts intestinal metaplasia Prague",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "oesophageal pH monitoring acid exposure elevated",
+              "logLR": 16
             }
           ]
         },
@@ -33700,6 +34590,16 @@
               "logLR": 6,
               "evidenceLabel": "Moderate+",
               "citation": "Gut 2008;57:820"
+            },
+            {
+              "key": "inv",
+              "value": "OGD gastric antral vascular ectasia watermelon stomach",
+              "logLR": 38
+            },
+            {
+              "key": "inv",
+              "value": "faecal occult blood GAVE chronic blood loss",
+              "logLR": 8
             }
           ]
         },
@@ -33764,6 +34664,16 @@
               "logLR": 7,
               "evidenceLabel": "Moderate+",
               "citation": "Gut 2009;58:1061"
+            },
+            {
+              "key": "inv",
+              "value": "OGD gastric duodenal ulcer CLO test H pylori positive",
+              "logLR": 24
+            },
+            {
+              "key": "inv",
+              "value": "H pylori stool antigen urea breath test positive",
+              "logLR": 24
             }
           ]
         },
@@ -33829,6 +34739,16 @@
               "logLR": 5,
               "evidenceLabel": "Weak+",
               "citation": "Lancet 2014;383:1490"
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy biopsy colorectal adenoma pedunculated sessile",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "FIT positive polyp colonic",
+              "logLR": 8
             }
           ]
         },
@@ -33895,6 +34815,16 @@
               "logLR": 7,
               "evidenceLabel": "Moderate+",
               "citation": "NEJM 2011;365:1132"
+            },
+            {
+              "key": "inv",
+              "value": "OGD EUS GIST hypoechoic submucosal lesion",
+              "logLR": 25
+            },
+            {
+              "key": "inv",
+              "value": "biopsy GIST CD117 positive spindle cell",
+              "logLR": 34
             }
           ]
         },
@@ -33961,6 +34891,16 @@
               "logLR": 10,
               "evidenceLabel": "Strong+",
               "citation": "Radiology 2004;230:50"
+            },
+            {
+              "key": "inv",
+              "value": "ERCP biliary stricture brushings carcinoma",
+              "logLR": 22
+            },
+            {
+              "key": "inv",
+              "value": "MRCP biliary stricture hilar cholangiocarcinoma",
+              "logLR": 23
             }
           ]
         },
@@ -34024,6 +34964,16 @@
               "logLR": 6,
               "evidenceLabel": "Moderate+",
               "citation": "Gut 2007;56:1424"
+            },
+            {
+              "key": "inv",
+              "value": "ERCP pancreatic duct stones stricture chronic pancreatitis",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "MRCP pancreatic duct dilated stones chronic pancreatitis",
+              "logLR": 25
             }
           ]
         }
@@ -34100,6 +35050,16 @@
               "logLR": 7,
               "evidenceLabel": "Moderate+",
               "citation": "NEJM 2002;347:878"
+            },
+            {
+              "key": "inv",
+              "value": "tilt table test positive vasovagal cardioinhibitory",
+              "logLR": 17
+            },
+            {
+              "key": "inv",
+              "value": "ECG normal Holter no arrhythmia vasovagal",
+              "logLR": 3
             }
           ]
         },
@@ -34163,6 +35123,16 @@
               "logLR": 9,
               "evidenceLabel": "Strong+",
               "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "inv",
+              "value": "Holter loop recorder arrhythmia documented syncope",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "ECG Holter VT CHB pause arrhythmic syncope",
+              "logLR": 25
             }
           ]
         },
@@ -34227,6 +35197,16 @@
               "logLR": 5,
               "evidenceLabel": "Weak+",
               "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "inv",
+              "value": "lying standing BP drop >20mmHg systolic orthostatic",
+              "logLR": 24
+            },
+            {
+              "key": "inv",
+              "value": "tilt table orthostatic hypotension syncope",
+              "logLR": 19
             }
           ]
         },
@@ -34290,6 +35270,16 @@
               "logLR": 10,
               "evidenceLabel": "Strong+",
               "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "inv",
+              "value": "Echo severe AS HCM obstructive syncope",
+              "logLR": 28
+            },
+            {
+              "key": "inv",
+              "value": "cardiac MRI structural disease syncope",
+              "logLR": 25
             }
           ]
         },
@@ -34354,6 +35344,16 @@
               "logLR": 6,
               "evidenceLabel": "Moderate+",
               "citation": "Heart 2009;95:2096"
+            },
+            {
+              "key": "inv",
+              "value": "carotid sinus massage pause >3s asystole",
+              "logLR": 31
+            },
+            {
+              "key": "inv",
+              "value": "tilt table carotid sinus hypersensitivity syncope",
+              "logLR": 21
             }
           ]
         },
@@ -34417,6 +35417,16 @@
               "logLR": 8,
               "evidenceLabel": "Moderate+",
               "citation": "NEJM 2002;347:878"
+            },
+            {
+              "key": "inv",
+              "value": "EEG epileptiform discharge ictal rhythm",
+              "logLR": 23
+            },
+            {
+              "key": "inv",
+              "value": "MRI brain lesion epileptogenic syncope mimic",
+              "logLR": 16
             }
           ]
         },
@@ -34481,6 +35491,16 @@
               "logLR": 5,
               "evidenceLabel": "Weak+",
               "citation": "Lancet 2010;375:2215"
+            },
+            {
+              "key": "inv",
+              "value": "capillary blood glucose <3 mmol/L hypoglycaemia collapse",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "serum insulin C-peptide hypoglycaemia insulinoma",
+              "logLR": 20
             }
           ]
         },
@@ -34546,6 +35566,16 @@
               "logLR": 8,
               "evidenceLabel": "Moderate+",
               "citation": "Lancet 2018;391:689"
+            },
+            {
+              "key": "inv",
+              "value": "CT pulmonary angiogram PE massive syncope",
+              "logLR": 28
+            },
+            {
+              "key": "inv",
+              "value": "Echo RV strain troponin elevated PE syncope",
+              "logLR": 18
             }
           ]
         }
@@ -36094,6 +37124,16 @@
               "logLR": 8,
               "evidenceLabel": "Moderate+",
               "citation": "NEJM 2001;344:1145"
+            },
+            {
+              "key": "inv",
+              "value": "EEG generalised epileptiform discharge spike-wave",
+              "logLR": 16
+            },
+            {
+              "key": "inv",
+              "value": "MRI brain normal or structural generalised epilepsy",
+              "logLR": 5
             }
           ]
         },
@@ -36158,6 +37198,16 @@
               "logLR": 9,
               "evidenceLabel": "Strong+",
               "citation": "Lancet 2006;367:1087"
+            },
+            {
+              "key": "inv",
+              "value": "EEG focal epileptiform discharge temporal frontal",
+              "logLR": 20
+            },
+            {
+              "key": "inv",
+              "value": "MRI brain focal cortical dysplasia lesion",
+              "logLR": 16
             }
           ]
         },
@@ -36223,6 +37273,16 @@
               "logLR": 6,
               "evidenceLabel": "Moderate+",
               "citation": "NEJM 1993;329:79"
+            },
+            {
+              "key": "inv",
+              "value": "MRI brain normal febrile convulsion child",
+              "logLR": 5
+            },
+            {
+              "key": "inv",
+              "value": "EEG normal post-febrile convulsion",
+              "logLR": 3
             }
           ]
         },
@@ -36286,6 +37346,16 @@
               "logLR": 11,
               "evidenceLabel": "Strong+",
               "citation": "NEJM 2012;366:542"
+            },
+            {
+              "key": "inv",
+              "value": "EEG status epilepticus continuous discharge",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "serum lactate acidosis post-status epilepticus",
+              "logLR": 10
             }
           ]
         },
@@ -36351,6 +37421,16 @@
               "logLR": 10,
               "evidenceLabel": "Strong+",
               "citation": "NEJM 2001;344:1145"
+            },
+            {
+              "key": "inv",
+              "value": "serum sodium <120 glucose <3 calcium metabolic seizure",
+              "logLR": 19
+            },
+            {
+              "key": "inv",
+              "value": "serum electrolytes hyponatraemia hypoglycaemia seizure",
+              "logLR": 16
             }
           ]
         },
@@ -36417,6 +37497,16 @@
               "logLR": 10,
               "evidenceLabel": "Strong+",
               "citation": "Lancet 2015;385:439"
+            },
+            {
+              "key": "inv",
+              "value": "MRI brain tumour mass lesion seizure",
+              "logLR": 24
+            },
+            {
+              "key": "inv",
+              "value": "CT head mass lesion oedema seizure",
+              "logLR": 16
             }
           ]
         },
@@ -36482,6 +37572,16 @@
               "logLR": 8,
               "evidenceLabel": "Moderate+",
               "citation": "NEJM 2006;354:44"
+            },
+            {
+              "key": "inv",
+              "value": "LP CSF meningitis encephalitis pleocytosis",
+              "logLR": 23
+            },
+            {
+              "key": "inv",
+              "value": "MRI brain encephalitis T2 signal abnormality",
+              "logLR": 19
             }
           ]
         },
@@ -36546,6 +37646,16 @@
               "logLR": 7,
               "evidenceLabel": "Moderate+",
               "citation": "Lancet 2011;378:2067"
+            },
+            {
+              "key": "inv",
+              "value": "Video EEG NEAD no ictal correlate",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "EEG normal during clinical seizure NEAD",
+              "logLR": 20
             }
           ]
         }
@@ -53305,6 +54415,16 @@
               "logLR": 19,
               "evidenceLabel": "Sentinel lymph node biopsy for axillary staging",
               "citation": "NICE NG101"
+            },
+            {
+              "key": "inv",
+              "value": "mammogram BIRADS 4-5 spiculated mass",
+              "logLR": 21
+            },
+            {
+              "key": "inv",
+              "value": "core biopsy breast invasive carcinoma ductal lobular",
+              "logLR": 46
             }
           ]
         },
@@ -53377,6 +54497,16 @@
               "logLR": 16,
               "evidenceLabel": "Sentinel node biopsy if mastectomy planned (occult invasion risk)",
               "citation": "NICE NG101"
+            },
+            {
+              "key": "inv",
+              "value": "mammogram DCIS microcalcification cluster",
+              "logLR": 21
+            },
+            {
+              "key": "inv",
+              "value": "core biopsy DCIS ductal carcinoma in situ",
+              "logLR": 38
             }
           ]
         },
@@ -53449,6 +54579,16 @@
               "logLR": 14,
               "evidenceLabel": "5-year survival ~40% (worst subtype — early systemic spread)",
               "citation": "NCCN"
+            },
+            {
+              "key": "inv",
+              "value": "skin punch biopsy dermal lymphatic invasion",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "MRI breast inflammatory diffuse enhancement",
+              "logLR": 25
             }
           ]
         },
@@ -53520,6 +54660,16 @@
               "logLR": 18,
               "evidenceLabel": "Surgical incision / drainage if aspiration fails or large cavity",
               "citation": "NICE CKS"
+            },
+            {
+              "key": "inv",
+              "value": "USS breast abscess hypoechoic collection",
+              "logLR": 25
+            },
+            {
+              "key": "inv",
+              "value": "breast swab pus culture Staph aureus",
+              "logLR": 13
             }
           ]
         },
@@ -53590,6 +54740,16 @@
               "logLR": 14,
               "evidenceLabel": "May enlarge during pregnancy / combined OCP — reassurance appropriate",
               "citation": "ABS"
+            },
+            {
+              "key": "inv",
+              "value": "USS breast fibroadenoma well-defined oval hypoechoic",
+              "logLR": 17
+            },
+            {
+              "key": "inv",
+              "value": "core biopsy fibroadenoma benign BIRADS 2",
+              "logLR": 29
             }
           ]
         },
@@ -53660,6 +54820,16 @@
               "logLR": 16,
               "evidenceLabel": "Bilateral nipple inversion (duct foreshortening)",
               "citation": "ABS"
+            },
+            {
+              "key": "inv",
+              "value": "USS breast duct ectasia dilated subareolar ducts",
+              "logLR": 19
+            },
+            {
+              "key": "inv",
+              "value": "mammogram duct ectasia rod-like calcification",
+              "logLR": 16
             }
           ]
         },
@@ -53731,6 +54901,16 @@
               "logLR": 18,
               "evidenceLabel": "Mastectomy if tumour >10 cm or inadequate margins achievable",
               "citation": "ABS"
+            },
+            {
+              "key": "inv",
+              "value": "core biopsy phyllodes tumour stromal",
+              "logLR": 28
+            },
+            {
+              "key": "inv",
+              "value": "USS breast large rapidly growing mass phyllodes",
+              "logLR": 16
             }
           ]
         },
@@ -53802,6 +54982,16 @@
               "logLR": 16,
               "evidenceLabel": "Nipple destruction / retraction (late sign — delayed presentation)",
               "citation": "NICE NG101"
+            },
+            {
+              "key": "inv",
+              "value": "nipple biopsy Pagets disease Toker cells",
+              "logLR": 38
+            },
+            {
+              "key": "inv",
+              "value": "mammogram Pagets retroareolar DCIS",
+              "logLR": 23
             }
           ]
         }
@@ -55604,6 +56794,16 @@
               "logLR": 14,
               "evidenceLabel": "moderate positive",
               "citation": "BMJ 2019"
+            },
+            {
+              "key": "inv",
+              "value": "ABPI <0.9 ankle brachial pressure index PAD",
+              "logLR": 24
+            },
+            {
+              "key": "inv",
+              "value": "duplex USS peripheral arterial stenosis occlusion",
+              "logLR": 19
             }
           ]
         },
@@ -55674,6 +56874,16 @@
               "logLR": 16,
               "evidenceLabel": "moderate positive",
               "citation": "NEJM 2019"
+            },
+            {
+              "key": "inv",
+              "value": "CT angiogram acute limb occlusion embolus thrombus",
+              "logLR": 25
+            },
+            {
+              "key": "inv",
+              "value": "ABPI markedly reduced acute limb ischaemia",
+              "logLR": 21
             }
           ]
         },
@@ -55744,6 +56954,16 @@
               "logLR": 14,
               "evidenceLabel": "moderate positive",
               "citation": "NICE NG156 2020"
+            },
+            {
+              "key": "inv",
+              "value": "USS aorta AAA diameter >5.5cm",
+              "logLR": 46
+            },
+            {
+              "key": "inv",
+              "value": "CT aorta aneurysm morphology endoleak",
+              "logLR": 46
             }
           ]
         },
@@ -55816,6 +57036,16 @@
               "logLR": 16,
               "evidenceLabel": "moderate positive",
               "citation": "Eur J Vasc Surg 2018"
+            },
+            {
+              "key": "inv",
+              "value": "duplex USS carotid stenosis >70% ipsilateral",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "CT angiogram carotid stenosis calcified plaque",
+              "logLR": 25
             }
           ]
         },
@@ -55888,6 +57118,16 @@
               "logLR": 14,
               "evidenceLabel": "moderate positive",
               "citation": "Lancet 2021"
+            },
+            {
+              "key": "inv",
+              "value": "CT angiogram mesenteric ischaemia SMA occlusion",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "serum lactate elevated bowel ischaemia",
+              "logLR": 12
             }
           ]
         },
@@ -55960,6 +57200,16 @@
               "logLR": 14,
               "evidenceLabel": "moderate positive",
               "citation": "NEJM 2017"
+            },
+            {
+              "key": "inv",
+              "value": "duplex USS DVT deep vein thrombosis non-compressible",
+              "logLR": 31
+            },
+            {
+              "key": "inv",
+              "value": "D-dimer elevated DVT confirmed duplex",
+              "logLR": 1
             }
           ]
         },
@@ -56031,6 +57281,16 @@
               "logLR": 18,
               "evidenceLabel": "strong positive",
               "citation": "NICE NG158 2020"
+            },
+            {
+              "key": "inv",
+              "value": "duplex USS CVI venous reflux saphenous",
+              "logLR": 19
+            },
+            {
+              "key": "inv",
+              "value": "USS great saphenous incompetence sapheno-femoral",
+              "logLR": 21
             }
           ]
         },
@@ -56103,6 +57363,16 @@
               "logLR": 23,
               "evidenceLabel": "near-diagnostic",
               "citation": "Ann Vasc Surg 2012"
+            },
+            {
+              "key": "inv",
+              "value": "CT angiogram thoracic outlet compression subclavian",
+              "logLR": 21
+            },
+            {
+              "key": "inv",
+              "value": "nerve conduction studies thoracic outlet neurogenic",
+              "logLR": 16
             }
           ]
         }
@@ -56180,6 +57450,16 @@
               "logLR": 25,
               "evidenceLabel": "near-diagnostic",
               "citation": "Spine 2015"
+            },
+            {
+              "key": "inv",
+              "value": "MRI lumbar spine cauda equina compression L4/5 L5/S1",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "MRI disc prolapse cauda equina significant",
+              "logLR": 29
             }
           ]
         },
@@ -56252,6 +57532,16 @@
               "logLR": 18,
               "evidenceLabel": "strong positive",
               "citation": "Ann Intern Med 2010"
+            },
+            {
+              "key": "inv",
+              "value": "MRI lumbar disc herniation L4/5 L5/S1",
+              "logLR": 21
+            },
+            {
+              "key": "inv",
+              "value": "nerve conduction studies radiculopathy lumbar",
+              "logLR": 14
             }
           ]
         },
@@ -56326,6 +57616,16 @@
               "logLR": 18,
               "evidenceLabel": "strong positive",
               "citation": "NEJM 2017"
+            },
+            {
+              "key": "inv",
+              "value": "MRI spine metastatic cord compression",
+              "logLR": 31
+            },
+            {
+              "key": "inv",
+              "value": "CT spine vertebral metastasis collapse",
+              "logLR": 21
             }
           ]
         },
@@ -56399,6 +57699,16 @@
               "logLR": 18,
               "evidenceLabel": "strong positive",
               "citation": "BMJ 2020"
+            },
+            {
+              "key": "inv",
+              "value": "MRI spine epidural abscess collection",
+              "logLR": 38
+            },
+            {
+              "key": "inv",
+              "value": "blood cultures Staphylococcus spinal abscess",
+              "logLR": 15
             }
           ]
         },
@@ -56471,6 +57781,16 @@
               "logLR": 16,
               "evidenceLabel": "moderate positive",
               "citation": "NICE NG187 2021"
+            },
+            {
+              "key": "inv",
+              "value": "MRI spine osteoporotic fracture oedema vertebral",
+              "logLR": 24
+            },
+            {
+              "key": "inv",
+              "value": "DEXA scan osteoporosis T-score <-2.5",
+              "logLR": 14
             }
           ]
         },
@@ -56543,6 +57863,16 @@
               "logLR": 14,
               "evidenceLabel": "moderate positive",
               "citation": "Lancet 2019"
+            },
+            {
+              "key": "inv",
+              "value": "MRI lumbar spinal stenosis canal compromise",
+              "logLR": 25
+            },
+            {
+              "key": "inv",
+              "value": "CT lumbar stenosis facet hypertrophy ligamentum flavum",
+              "logLR": 21
             }
           ]
         },
@@ -56614,6 +57944,16 @@
               "logLR": 16,
               "evidenceLabel": "moderate positive",
               "citation": "JBJS 2016"
+            },
+            {
+              "key": "inv",
+              "value": "MRI spondylolisthesis forward slip vertebral",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "X-ray lumbar spondylolisthesis slip grade",
+              "logLR": 24
             }
           ]
         },
@@ -56686,6 +58026,16 @@
               "logLR": 18,
               "evidenceLabel": "strong positive",
               "citation": "ASAS 2009"
+            },
+            {
+              "key": "inv",
+              "value": "MRI sacroiliac joints sacroiliitis inflammation",
+              "logLR": 24
+            },
+            {
+              "key": "inv",
+              "value": "X-ray spine bamboo spine ankylosis",
+              "logLR": 23
             }
           ]
         }
@@ -61055,6 +62405,16 @@
               "logLR": 16,
               "evidenceLabel": "moderate positive",
               "citation": "BTS 2010"
+            },
+            {
+              "key": "inv",
+              "value": "CXR pneumothorax pleural line visible",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "CT chest pneumothorax apical bullae",
+              "logLR": 29
             }
           ]
         },
@@ -61129,6 +62489,16 @@
               "logLR": 23,
               "evidenceLabel": "near-diagnostic",
               "citation": "ATLS 2018"
+            },
+            {
+              "key": "inv",
+              "value": "CXR tension pneumothorax tracheal shift mediastinal",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "USS chest absent lung sliding tension pneumothorax",
+              "logLR": 28
             }
           ]
         },
@@ -61203,6 +62573,16 @@
               "logLR": 18,
               "evidenceLabel": "strong positive",
               "citation": "BMJ 2018"
+            },
+            {
+              "key": "inv",
+              "value": "CT chest empyema pleural thickening loculated",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "pleural tap empyema pH <7.2 LDH elevated pus",
+              "logLR": 34
             }
           ]
         },
@@ -61277,6 +62657,16 @@
               "logLR": 18,
               "evidenceLabel": "strong positive",
               "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "inv",
+              "value": "CT chest lung mass spiculated PET FDG-avid",
+              "logLR": 21
+            },
+            {
+              "key": "inv",
+              "value": "bronchoscopy biopsy NSCLC adenocarcinoma squamous",
+              "logLR": 38
             }
           ]
         },
@@ -61351,6 +62741,16 @@
               "logLR": 16,
               "evidenceLabel": "moderate positive",
               "citation": "BTS 2018"
+            },
+            {
+              "key": "inv",
+              "value": "CT chest pleural thickening rind mesothelioma",
+              "logLR": 25
+            },
+            {
+              "key": "inv",
+              "value": "pleural biopsy mesothelioma epithelioid sarcomatoid",
+              "logLR": 38
             }
           ]
         },
@@ -61424,6 +62824,16 @@
               "logLR": 19,
               "evidenceLabel": "strong positive",
               "citation": "Lancet Oncol 2020"
+            },
+            {
+              "key": "inv",
+              "value": "CT chest anterior mediastinum mass thymoma",
+              "logLR": 19
+            },
+            {
+              "key": "inv",
+              "value": "biopsy mediastinal mass thymoma lymphoma",
+              "logLR": 31
             }
           ]
         },
@@ -61498,6 +62908,16 @@
               "logLR": 16,
               "evidenceLabel": "moderate positive",
               "citation": "BTS 2018"
+            },
+            {
+              "key": "inv",
+              "value": "pleural tap cytology malignant cells",
+              "logLR": 31
+            },
+            {
+              "key": "inv",
+              "value": "CT chest pleural effusion malignant primary",
+              "logLR": 16
             }
           ]
         },
@@ -61570,6 +62990,16 @@
               "logLR": 14,
               "evidenceLabel": "moderate positive",
               "citation": "Lancet 2018"
+            },
+            {
+              "key": "inv",
+              "value": "CT chest diaphragmatic hernia bowel intrathoracic",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "CXR diaphragmatic hernia bowel gas chest",
+              "logLR": 23
             }
           ]
         }
@@ -63521,6 +64951,16 @@
               "logLR": 14,
               "evidenceLabel": "moderate positive",
               "citation": "BMJ 2020"
+            },
+            {
+              "key": "inv",
+              "value": "CT abdomen anastomotic leak extraluminal air collection",
+              "logLR": 28
+            },
+            {
+              "key": "inv",
+              "value": "Gastrografin swallow leak extravasation anastomosis",
+              "logLR": 25
             }
           ]
         },
@@ -63592,6 +65032,16 @@
               "logLR": 18,
               "evidenceLabel": "strong positive",
               "citation": "Lancet 2019"
+            },
+            {
+              "key": "inv",
+              "value": "AXR generalised bowel dilatation post-op ileus",
+              "logLR": 12
+            },
+            {
+              "key": "inv",
+              "value": "CT abdomen ileus no mechanical obstruction",
+              "logLR": 14
             }
           ]
         },
@@ -63664,6 +65114,16 @@
               "logLR": 16,
               "evidenceLabel": "moderate positive",
               "citation": "BMJ 2019"
+            },
+            {
+              "key": "inv",
+              "value": "CT abdomen intra-abdominal collection abscess post-op",
+              "logLR": 27
+            },
+            {
+              "key": "inv",
+              "value": "USS abdomen collection haematoma post-operative",
+              "logLR": 16
             }
           ]
         },
@@ -63735,6 +65195,16 @@
               "logLR": 21,
               "evidenceLabel": "strong positive",
               "citation": "BMJ 2020"
+            },
+            {
+              "key": "inv",
+              "value": "CT angiogram post-op haemorrhage active bleed",
+              "logLR": 25
+            },
+            {
+              "key": "inv",
+              "value": "Hb drop post-operative transfusion required",
+              "logLR": 13
             }
           ]
         },
@@ -63808,6 +65278,16 @@
               "logLR": 14,
               "evidenceLabel": "moderate positive",
               "citation": "BMJ 2021"
+            },
+            {
+              "key": "inv",
+              "value": "drain amylase >3x serum day 3 POPF",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "CT abdomen post-pancreatectomy fistula collection",
+              "logLR": 21
             }
           ]
         },
@@ -63881,6 +65361,16 @@
               "logLR": 16,
               "evidenceLabel": "moderate positive",
               "citation": "BMJ 2018"
+            },
+            {
+              "key": "inv",
+              "value": "CT abdomen bile leak post-cholecystectomy collection",
+              "logLR": 21
+            },
+            {
+              "key": "inv",
+              "value": "HIDA scan bile leak extrahepatic post-op",
+              "logLR": 29
             }
           ]
         },
@@ -63954,6 +65444,16 @@
               "logLR": 14,
               "evidenceLabel": "moderate positive",
               "citation": "HPB 2020"
+            },
+            {
+              "key": "inv",
+              "value": "serum bilirubin INR rising post-hepatectomy day 5",
+              "logLR": 21
+            },
+            {
+              "key": "inv",
+              "value": "CT remnant liver small volume post-hepatectomy failure",
+              "logLR": 19
             }
           ]
         },
@@ -64025,6 +65525,16 @@
               "logLR": 19,
               "evidenceLabel": "strong positive",
               "citation": "BMJ 2019"
+            },
+            {
+              "key": "inv",
+              "value": "wound seroma serous discharge fascial dehiscence",
+              "logLR": 16
+            },
+            {
+              "key": "inv",
+              "value": "CT abdomen burst abdomen fascial gap",
+              "logLR": 25
             }
           ]
         }
@@ -65823,6 +67333,16 @@
               "logLR": 14,
               "evidenceLabel": "strong",
               "citation": "Adhesive aetiology"
+            },
+            {
+              "key": "inv",
+              "value": "CT abdomen small bowel obstruction transition point adhesion",
+              "logLR": 24
+            },
+            {
+              "key": "inv",
+              "value": "AXR dilated small bowel air-fluid levels",
+              "logLR": 12
             }
           ]
         },
@@ -65894,6 +67414,16 @@
               "logLR": 14,
               "evidenceLabel": "strong",
               "citation": "Closed-loop risk"
+            },
+            {
+              "key": "inv",
+              "value": "CT colon obstructing mass proximal dilatation",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy obstructing carcinoma biopsy",
+              "logLR": 39
             }
           ]
         },
@@ -65965,6 +67495,16 @@
               "logLR": 16,
               "evidenceLabel": "strong",
               "citation": "Strangulation"
+            },
+            {
+              "key": "inv",
+              "value": "AXR sigmoid volvulus coffee bean sign",
+              "logLR": 23
+            },
+            {
+              "key": "inv",
+              "value": "CT sigmoid volvulus whirl sign mesentery",
+              "logLR": 31
             }
           ]
         },
@@ -66036,6 +67576,16 @@
               "logLR": 10,
               "evidenceLabel": "moderate",
               "citation": "Obstruction consequence"
+            },
+            {
+              "key": "inv",
+              "value": "CT caecal volvulus right-sided dilated loop whirl",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "AXR caecal volvulus coffee bean right-sided",
+              "logLR": 16
             }
           ]
         },
@@ -66107,6 +67657,16 @@
               "logLR": 12,
               "evidenceLabel": "strong",
               "citation": "Incarceration sign"
+            },
+            {
+              "key": "inv",
+              "value": "CT abdomen incarcerated hernia bowel ischaemia",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "USS groin hernia non-reducible bowel",
+              "logLR": 19
             }
           ]
         },
@@ -66177,6 +67737,16 @@
               "logLR": 22,
               "evidenceLabel": "definitive",
               "citation": "CT diagnosis"
+            },
+            {
+              "key": "inv",
+              "value": "CT Rigler triad gallstone pneumobilia SBO",
+              "logLR": 38
+            },
+            {
+              "key": "inv",
+              "value": "AXR pneumobilia ectopic gallstone",
+              "logLR": 23
             }
           ]
         },
@@ -66248,6 +67818,16 @@
               "logLR": 10,
               "evidenceLabel": "moderate",
               "citation": "Mucosal ischaemia"
+            },
+            {
+              "key": "inv",
+              "value": "CT intussusception bowel-within-bowel target sign",
+              "logLR": 31
+            },
+            {
+              "key": "inv",
+              "value": "USS intussusception pseudokidney target sign",
+              "logLR": 25
             }
           ]
         },
@@ -66319,6 +67899,16 @@
               "logLR": 10,
               "evidenceLabel": "moderate",
               "citation": "Pseudo-obstruction pattern"
+            },
+            {
+              "key": "inv",
+              "value": "CT colon Ogilvie massive dilatation no mechanical cause",
+              "logLR": 27
+            },
+            {
+              "key": "inv",
+              "value": "AXR caecum dilated >12cm no obstruction Ogilvie",
+              "logLR": 19
             }
           ]
         }
@@ -68699,6 +70289,16 @@
               "logLR": 10,
               "evidenceLabel": "moderate",
               "citation": "SORT trial HRS prevention"
+            },
+            {
+              "key": "inv",
+              "value": "ascitic tap PMN >250 cells/mm3 SBP",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "ascitic fluid culture positive organism SBP",
+              "logLR": 21
             }
           ]
         },
@@ -68771,6 +70371,16 @@
               "logLR": 8,
               "evidenceLabel": "moderate",
               "citation": "Dietary precipitant"
+            },
+            {
+              "key": "inv",
+              "value": "serum ammonia elevated hepatic encephalopathy",
+              "logLR": 11
+            },
+            {
+              "key": "inv",
+              "value": "EEG triphasic waves hepatic encephalopathy",
+              "logLR": 18
             }
           ]
         },
@@ -68843,6 +70453,16 @@
               "logLR": 8,
               "evidenceLabel": "moderate",
               "citation": "Liver failure severity"
+            },
+            {
+              "key": "inv",
+              "value": "serum creatinine doubling <2 weeks HRS",
+              "logLR": 21
+            },
+            {
+              "key": "inv",
+              "value": "urine sodium <10 mEq/L oliguria hepatorenal",
+              "logLR": 18
             }
           ]
         },
@@ -68915,6 +70535,16 @@
               "logLR": 16,
               "evidenceLabel": "strong",
               "citation": "Salvage therapy"
+            },
+            {
+              "key": "inv",
+              "value": "OGD oesophageal varices active bleeding band ligation",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "Hb drop massive haematemesis variceal",
+              "logLR": 13
             }
           ]
         },
@@ -68987,6 +70617,16 @@
               "logLR": 12,
               "evidenceLabel": "strong",
               "citation": "Spontaneous empyema"
+            },
+            {
+              "key": "inv",
+              "value": "CXR right pleural effusion hepatic hydrothorax",
+              "logLR": 16
+            },
+            {
+              "key": "inv",
+              "value": "pleural tap transudative SAAG ascites hepatic",
+              "logLR": 21
             }
           ]
         },
@@ -69059,6 +70699,16 @@
               "logLR": 8,
               "evidenceLabel": "moderate",
               "citation": "Modern understanding"
+            },
+            {
+              "key": "inv",
+              "value": "serum INR >2 platelets <50 cirrhotic coagulopathy",
+              "logLR": 16
+            },
+            {
+              "key": "inv",
+              "value": "thromboelastography TEG cirrhotic coagulopathy",
+              "logLR": 14
             }
           ]
         },
@@ -69130,6 +70780,16 @@
               "logLR": 14,
               "evidenceLabel": "strong",
               "citation": "Organ failure criteria"
+            },
+            {
+              "key": "inv",
+              "value": "serum bilirubin >5 INR >1.5 ACLF criteria",
+              "logLR": 19
+            },
+            {
+              "key": "inv",
+              "value": "serum lactate elevated ACLF organ failure",
+              "logLR": 14
             }
           ]
         },
@@ -69202,6 +70862,16 @@
               "logLR": 12,
               "evidenceLabel": "strong",
               "citation": "Late HAT outcome"
+            },
+            {
+              "key": "inv",
+              "value": "USS Doppler hepatic artery absent flow thrombosis",
+              "logLR": 38
+            },
+            {
+              "key": "inv",
+              "value": "CT angiogram hepatic artery thrombosis post-transplant",
+              "logLR": 34
             }
           ]
         }
@@ -69278,6 +70948,16 @@
               "logLR": 8,
               "evidenceLabel": "moderate",
               "citation": "BSG surveillance interval"
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy biopsy advanced adenoma high-grade dysplasia",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "FIT positive advanced adenoma colonic",
+              "logLR": 13
             }
           ]
         },
@@ -69349,6 +71029,16 @@
               "logLR": 6,
               "evidenceLabel": "weak",
               "citation": "BSG guidance"
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy biopsy sessile serrated lesion",
+              "logLR": 29
+            },
+            {
+              "key": "inv",
+              "value": "biopsy colon serrated adenoma mixed pathology",
+              "logLR": 25
             }
           ]
         },
@@ -69420,6 +71110,16 @@
               "logLR": 10,
               "evidenceLabel": "moderate",
               "citation": "NSAID chemopreventive effect"
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy >100 adenomatous polyps FAP",
+              "logLR": 45
+            },
+            {
+              "key": "inv",
+              "value": "genetic testing APC mutation FAP",
+              "logLR": 45
             }
           ]
         },
@@ -69491,6 +71191,16 @@
               "logLR": 8,
               "evidenceLabel": "moderate",
               "citation": "Lynch cancer distribution"
+            },
+            {
+              "key": "inv",
+              "value": "biopsy MSI-H mismatch repair deficient Lynch",
+              "logLR": 28
+            },
+            {
+              "key": "inv",
+              "value": "genetic testing MLH1 MSH2 germline mutation",
+              "logLR": 45
             }
           ]
         },
@@ -69562,6 +71272,16 @@
               "logLR": 6,
               "evidenceLabel": "weak",
               "citation": "Treatment context"
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy surveillance post-resection anastomosis normal",
+              "logLR": 5
+            },
+            {
+              "key": "inv",
+              "value": "CEA rising post-resection recurrence",
+              "logLR": 12
             }
           ]
         },
@@ -69633,6 +71353,16 @@
               "logLR": 10,
               "evidenceLabel": "moderate",
               "citation": "Diverticular haemorrhage"
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy diverticulosis sigmoid colon",
+              "logLR": 22
+            },
+            {
+              "key": "inv",
+              "value": "CT colon diverticulosis without complication",
+              "logLR": 20
             }
           ]
         },
@@ -69704,6 +71434,16 @@
               "logLR": 6,
               "evidenceLabel": "weak",
               "citation": "Non-neoplastic polyp"
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy polyp tubular adenoma low-grade",
+              "logLR": 24
+            },
+            {
+              "key": "inv",
+              "value": "CT colonography polyp pedunculated colonic",
+              "logLR": 16
             }
           ]
         },
@@ -69775,6 +71515,16 @@
               "logLR": 14,
               "evidenceLabel": "strong",
               "citation": "Hereditary surveillance"
+            },
+            {
+              "key": "inv",
+              "value": "FIT positive >10 mcg/g screening",
+              "logLR": 13
+            },
+            {
+              "key": "inv",
+              "value": "CT colonography polyp colonic screening",
+              "logLR": 14
             }
           ]
         }
@@ -74503,6 +76253,16 @@
               "logLR": 14,
               "evidenceLabel": "Costovertebral angle tenderness",
               "citation": "Clinical"
+            },
+            {
+              "key": "inv",
+              "value": "CT KUB non-contrast ureteric calculus",
+              "logLR": 39
+            },
+            {
+              "key": "inv",
+              "value": "USS hydronephrosis ureteric stone obstruction",
+              "logLR": 14
             }
           ]
         },
@@ -74574,6 +76334,16 @@
               "logLR": 20,
               "evidenceLabel": "Urosepsis (infected obstructed system)",
               "citation": "EAU 2022"
+            },
+            {
+              "key": "inv",
+              "value": "CT urogram hydronephrosis ureteric obstruction",
+              "logLR": 31
+            },
+            {
+              "key": "inv",
+              "value": "USS bilateral hydronephrosis chronic obstruction",
+              "logLR": 21
             }
           ]
         },
@@ -74645,6 +76415,16 @@
               "logLR": 18,
               "evidenceLabel": "Distant metastasis (bone, lung)",
               "citation": "EAU 2022"
+            },
+            {
+              "key": "inv",
+              "value": "CT renal mass RCC enhancement solid",
+              "logLR": 24
+            },
+            {
+              "key": "inv",
+              "value": "biopsy renal mass RCC clear cell pathology",
+              "logLR": 34
             }
           ]
         },
@@ -74716,6 +76496,16 @@
               "logLR": 18,
               "evidenceLabel": "Prior TCC/bladder cancer",
               "citation": "EAU 2022"
+            },
+            {
+              "key": "inv",
+              "value": "cystoscopy bladder tumour TCC biopsy",
+              "logLR": 38
+            },
+            {
+              "key": "inv",
+              "value": "CT urogram bladder filling defect tumour",
+              "logLR": 25
             }
           ]
         },
@@ -74786,6 +76576,16 @@
               "logLR": 12,
               "evidenceLabel": "African/Caribbean ethnicity (higher risk)",
               "citation": "EAU 2022"
+            },
+            {
+              "key": "inv",
+              "value": "PSA elevated >10 ng/mL prostate cancer",
+              "logLR": 20
+            },
+            {
+              "key": "inv",
+              "value": "MRI prostate PIRADS 4-5 biopsy adenocarcinoma",
+              "logLR": 31
             }
           ]
         },
@@ -74856,6 +76656,16 @@
               "logLR": 16,
               "evidenceLabel": "Episode of acute urinary retention",
               "citation": "EAU 2022"
+            },
+            {
+              "key": "inv",
+              "value": "USS prostate enlarged >40g BPH",
+              "logLR": 19
+            },
+            {
+              "key": "inv",
+              "value": "urodynamics BPH bladder outlet obstruction",
+              "logLR": 19
             }
           ]
         },
@@ -74927,6 +76737,16 @@
               "logLR": 14,
               "evidenceLabel": "Ipsilateral hydronephrosis",
               "citation": "EAU 2022"
+            },
+            {
+              "key": "inv",
+              "value": "CT urogram upper tract urothelial filling defect",
+              "logLR": 25
+            },
+            {
+              "key": "inv",
+              "value": "ureteroscopy biopsy urothelial carcinoma",
+              "logLR": 34
             }
           ]
         },
@@ -74997,6 +76817,16 @@
               "logLR": 14,
               "evidenceLabel": "Previous torsion episode",
               "citation": "Clinical"
+            },
+            {
+              "key": "inv",
+              "value": "USS Doppler testis absent flow torsion",
+              "logLR": 31
+            },
+            {
+              "key": "inv",
+              "value": "USS testis echogenicity heterogeneous torsion",
+              "logLR": 21
             }
           ]
         }
@@ -75643,6 +77473,16 @@
               "logLR": 18,
               "evidenceLabel": "Elevated faecal calprotectin",
               "citation": "ECCO 2020"
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy biopsy Crohns transmural granuloma skip",
+              "logLR": 28
+            },
+            {
+              "key": "inv",
+              "value": "MRI small bowel Crohns skip lesions thickening",
+              "logLR": 24
             }
           ]
         },
@@ -75713,6 +77553,16 @@
               "logLR": 12,
               "evidenceLabel": "CRC surveillance mandatory (longstanding)",
               "citation": "ECCO 2020"
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy biopsy UC continuous mucosal inflammation",
+              "logLR": 27
+            },
+            {
+              "key": "inv",
+              "value": "faecal calprotectin elevated >500 mcg/g UC",
+              "logLR": 15
             }
           ]
         },
@@ -75783,6 +77633,16 @@
               "logLR": 22,
               "evidenceLabel": "Risk of imminent perforation",
               "citation": "Truelove 1955"
+            },
+            {
+              "key": "inv",
+              "value": "AXR toxic megacolon transverse colon >6cm",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "CT colon toxic megacolon colonic distension",
+              "logLR": 29
             }
           ]
         },
@@ -75853,6 +77713,16 @@
               "logLR": 14,
               "evidenceLabel": "Colectomy discussed at admission",
               "citation": "ECCO 2020"
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy ASUC deep ulceration severe colitis",
+              "logLR": 24
+            },
+            {
+              "key": "inv",
+              "value": "serum CRP >45 albumin <30 Truelove-Witts ASUC",
+              "logLR": 16
             }
           ]
         },
@@ -75923,6 +77793,16 @@
               "logLR": 14,
               "evidenceLabel": "Failed anti-TNF medical therapy",
               "citation": "ECCO 2020"
+            },
+            {
+              "key": "inv",
+              "value": "MRI pelvis IBD perianal fistula tract",
+              "logLR": 31
+            },
+            {
+              "key": "inv",
+              "value": "CT enterography enterocutaneous fistula IBD",
+              "logLR": 25
             }
           ]
         },
@@ -75993,6 +77873,16 @@
               "logLR": 16,
               "evidenceLabel": "Renal oxalate stones (ileal loss)",
               "citation": "Nightingale 2006"
+            },
+            {
+              "key": "inv",
+              "value": "serum B12 folate zinc low short bowel",
+              "logLR": 14
+            },
+            {
+              "key": "inv",
+              "value": "CT remaining bowel short bowel SBS",
+              "logLR": 13
             }
           ]
         },
@@ -76063,6 +77953,16 @@
               "logLR": 12,
               "evidenceLabel": "Prior resection (anastomotic stricture)",
               "citation": "ECCO 2020"
+            },
+            {
+              "key": "inv",
+              "value": "CT enterography IBD stricture prestenotic dilatation",
+              "logLR": 25
+            },
+            {
+              "key": "inv",
+              "value": "MRI small bowel stricture IBD fibrosis",
+              "logLR": 21
             }
           ]
         },
@@ -76133,6 +78033,16 @@
               "logLR": 12,
               "evidenceLabel": "Normal or mildly elevated CRP",
               "citation": "Pardi 2017"
+            },
+            {
+              "key": "inv",
+              "value": "colonoscopy biopsy microscopic colitis collagenous lymphocytic",
+              "logLR": 34
+            },
+            {
+              "key": "inv",
+              "value": "biopsy colon subepithelial collagen band >10 micron",
+              "logLR": 34
             }
           ]
         }
