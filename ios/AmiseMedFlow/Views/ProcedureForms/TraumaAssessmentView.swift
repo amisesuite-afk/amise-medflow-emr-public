@@ -163,6 +163,45 @@ struct TraumaAssessmentView: View {
                 .listRowBackground(Color.red.opacity(0.08))
             }
 
+            // Resulted trauma labs panel
+            let traumaLabs = LabPanel.parse(from: patient.investigations)
+            let hasTraumaLabs = traumaLabs.haemoglobin != nil || traumaLabs.inr != nil ||
+                                traumaLabs.platelets != nil || traumaLabs.lactate != nil ||
+                                traumaLabs.creatinine != nil
+            if hasTraumaLabs {
+                VStack(alignment: .leading, spacing: 6) {
+                    Label("Lab Results", systemImage: "flask.fill")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(traumaLabs.hasCriticalValues ? .red : .teal)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            if let hb = traumaLabs.haemoglobin {
+                                TraumaLabChip(label: "Hb", value: String(format: "%.1f g/dL", hb.value),
+                                             critical: hb.value < 8)
+                            }
+                            if let inr = traumaLabs.inr {
+                                TraumaLabChip(label: "INR", value: String(format: "%.1f", inr.value),
+                                             critical: inr.value > 2.5)
+                            }
+                            if let plt = traumaLabs.platelets {
+                                TraumaLabChip(label: "Plt", value: "\(Int(plt.value)) ×10⁹/L",
+                                             critical: plt.value < 50)
+                            }
+                            if let lac = traumaLabs.lactate {
+                                TraumaLabChip(label: "Lactate", value: String(format: "%.1f mmol/L", lac.value),
+                                             critical: lac.value >= 4.0)
+                            }
+                            if let cr = traumaLabs.creatinine {
+                                TraumaLabChip(label: "Cr", value: "\(Int(cr.value)) µmol/L",
+                                             critical: cr.value > 300)
+                            }
+                        }
+                    }
+                }
+                .padding(.vertical, 4)
+                .listRowBackground(traumaLabs.hasCriticalValues ? Color.red.opacity(0.05) : Color.teal.opacity(0.05))
+            }
+
             // ISS/NISS quick badge
             if data.iss > 0 {
                 HStack(spacing: 16) {
@@ -609,5 +648,27 @@ struct TraumaAssessmentView: View {
         case 9...12: return .orange
         default: return .red
         }
+    }
+}
+
+// MARK: - Trauma lab value chip
+
+private struct TraumaLabChip: View {
+    let label: String
+    let value: String
+    var critical: Bool = false
+
+    var body: some View {
+        VStack(spacing: 1) {
+            Text(label)
+                .font(.system(size: 9, weight: .semibold))
+                .foregroundStyle(critical ? .red : .secondary)
+            Text(value)
+                .font(.system(size: 11, weight: .bold))
+                .foregroundStyle(critical ? .red : .primary)
+        }
+        .padding(.horizontal, 8).padding(.vertical, 4)
+        .background((critical ? Color.red : Color.secondary).opacity(0.08),
+                    in: RoundedRectangle(cornerRadius: 6))
     }
 }
