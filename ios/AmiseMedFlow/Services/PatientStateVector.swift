@@ -80,6 +80,17 @@ struct LabPanel {
     var amylaseElevated: Bool { (amylase?.value ?? 0) > 100 }
     var bilirubinElevated: Bool { (bilirubin?.value ?? 0) > 20 }
     var dDimerElevated: Bool  { (dDimer?.value ?? 0) > 500 }
+
+    // True when any result meets a pre-operative critical threshold
+    var hasCriticalValues: Bool {
+        (haemoglobin.map { $0.value < 8.0 } ?? false) ||
+        (platelets.map   { $0.value < 50   } ?? false) ||
+        (creatinine.map  { $0.value > 300  } ?? false) ||
+        (inr.map         { $0.value > 2.5  } ?? false) ||
+        (sodium.map      { $0.value < 120 || $0.value > 155 } ?? false) ||
+        (potassium.map   { $0.value < 2.5 || $0.value > 6.0 } ?? false) ||
+        (lactate.map     { $0.value >= 4.0 } ?? false)
+    }
 }
 
 // MARK: - Vitals snapshot (most recent)

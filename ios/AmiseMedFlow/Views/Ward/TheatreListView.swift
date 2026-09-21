@@ -323,6 +323,26 @@ struct TheatreRow: View {
                             .background((allDone ? Color.green : Color.orange).opacity(0.1), in: Capsule())
                         }
 
+                        // Critical lab flag for pre-op safety
+                        let critLabs = LabPanel.parse(from: patient.investigations)
+                        if critLabs.hasCriticalValues {
+                            HStack(spacing: 3) {
+                                Image(systemName: "flask.fill").font(.system(size: 9))
+                                Text("Critical labs").font(.system(size: 9, weight: .semibold))
+                            }
+                            .foregroundStyle(.red)
+                            .padding(.horizontal, 5).padding(.vertical, 2)
+                            .background(Color.red.opacity(0.1), in: Capsule())
+                        } else if patient.investigations.contains(where: { $0.status == .ordered || $0.status == .pending }) {
+                            HStack(spacing: 3) {
+                                Image(systemName: "clock.badge.exclamationmark").font(.system(size: 9))
+                                Text("Labs pending").font(.system(size: 9, weight: .semibold))
+                            }
+                            .foregroundStyle(.orange)
+                            .padding(.horizontal, 5).padding(.vertical, 2)
+                            .background(Color.orange.opacity(0.1), in: Capsule())
+                        }
+
                         // Safety badges
                         if patient.hasCriticalAllergy {
                             Image(systemName: "exclamationmark.shield.fill")
