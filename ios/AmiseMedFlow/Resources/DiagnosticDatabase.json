@@ -77470,6 +77470,1151 @@
           ]
         }
       ]
+    },
+    "parathyroidAdrenal": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Primary Hyperparathyroidism",
+          "icd": "E21.0",
+          "logPrior": -24,
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrine_surgery"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "serum_calcium",
+              "value": "elevated_gt2pt6",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2018;378:540"
+            },
+            {
+              "key": "pth_elevated",
+              "value": "inappropriately_high",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2018;378:540"
+            },
+            {
+              "key": "phosphate_low",
+              "value": "yes",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2018;378:540"
+            },
+            {
+              "key": "24hr_urine_calcium",
+              "value": "elevated",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2018;378:540"
+            },
+            {
+              "key": "sestamibi_scan",
+              "value": "focal_uptake",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Surgery 2016;159:182"
+            },
+            {
+              "key": "osteoporosis_renal_stones",
+              "value": "yes",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2018;378:540"
+            },
+            {
+              "key": "symptoms",
+              "value": "bones_stones_moans_groans",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2018;378:540"
+            },
+            {
+              "key": "vitamin_d",
+              "value": "deficient_concurrent",
+              "logLR": 5,
+              "evidenceLabel": "Mild+",
+              "citation": "NEJM 2018;378:540"
+            }
+          ]
+        },
+        {
+          "name": "Adrenocortical Carcinoma",
+          "icd": "C74.0",
+          "logPrior": -39,
+          "systems": [
+            "endocrine",
+            "oncology"
+          ],
+          "specialties": [
+            "endocrine_surgery",
+            "oncology"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "adrenal_mass",
+              "value": "gt4cm_irregular",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2021;384:252"
+            },
+            {
+              "key": "cortisol_excess",
+              "value": "cushingoid_features",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2021;384:252"
+            },
+            {
+              "key": "ct_characteristics",
+              "value": "high_hu_heterogeneous_washout",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Radiology 2018;286:99"
+            },
+            {
+              "key": "androgen_excess",
+              "value": "virilisation_females",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2021;384:252"
+            },
+            {
+              "key": "weiss_score",
+              "value": "greater_3",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "Mod Pathol 2009;22:814"
+            },
+            {
+              "key": "metastases",
+              "value": "liver_lung_peritoneal",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2021;384:252"
+            },
+            {
+              "key": "aldosterone_excess",
+              "value": "hypertension_hypokalaemia",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2021;384:252"
+            },
+            {
+              "key": "rapid_growth",
+              "value": "interval_imaging",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2021;384:252"
+            }
+          ]
+        },
+        {
+          "name": "Phaeochromocytoma",
+          "icd": "D35.0",
+          "logPrior": -35,
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrine_surgery"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "paroxysmal_hypertension",
+              "value": "episodic_severe",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "ESE Phaeochromocytoma Guidelines 2022"
+            },
+            {
+              "key": "24hr_urine_metanephrines",
+              "value": "3x_upper_normal",
+              "logLR": 32,
+              "evidenceLabel": "Definitive+",
+              "citation": "ESE Phaeochromocytoma Guidelines 2022"
+            },
+            {
+              "key": "catecholamine_triad",
+              "value": "headache_sweating_palpitation",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2019;381:552"
+            },
+            {
+              "key": "adrenal_mass_ct",
+              "value": "heterogeneous_enhancing",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "ESE Phaeochromocytoma Guidelines 2022"
+            },
+            {
+              "key": "mibg_scan",
+              "value": "positive",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "ESE Phaeochromocytoma Guidelines 2022"
+            },
+            {
+              "key": "men2_vhl_sdh",
+              "value": "germline_mutation",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "ESE Phaeochromocytoma Guidelines 2022"
+            },
+            {
+              "key": "intraoperative_hypertension",
+              "value": "induction_anaesthesia",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2019;381:552"
+            },
+            {
+              "key": "orthostatic_hypotension",
+              "value": "yes",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "ESE Phaeochromocytoma Guidelines 2022"
+            }
+          ]
+        },
+        {
+          "name": "Conn's Syndrome (Primary Aldosteronism)",
+          "icd": "E26.0",
+          "logPrior": -28,
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrine_surgery"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "hypertension_resistant",
+              "value": "3_drugs_including_diuretic",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "ESC Hypertension Guidelines 2023"
+            },
+            {
+              "key": "hypokalaemia_spontaneous",
+              "value": "lt3pt5",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet Diabetes Endocrinol 2016;4:895"
+            },
+            {
+              "key": "aldo_renin_ratio",
+              "value": "elevated_gt30",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet Diabetes Endocrinol 2016;4:895"
+            },
+            {
+              "key": "ct_adrenal_adenoma",
+              "value": "unilateral",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet Diabetes Endocrinol 2016;4:895"
+            },
+            {
+              "key": "avs",
+              "value": "unilateral_hypersecretion",
+              "logLR": 32,
+              "evidenceLabel": "Definitive+",
+              "citation": "Lancet Diabetes Endocrinol 2016;4:895"
+            },
+            {
+              "key": "fludrocortisone_suppression",
+              "value": "non_suppressible_aldosterone",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Lancet Diabetes Endocrinol 2016;4:895"
+            },
+            {
+              "key": "muscle_weakness_polyuria",
+              "value": "hypokalaemic_symptoms",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet Diabetes Endocrinol 2016;4:895"
+            },
+            {
+              "key": "metabolic_alkalosis",
+              "value": "yes",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "Lancet Diabetes Endocrinol 2016;4:895"
+            }
+          ]
+        },
+        {
+          "name": "Adrenal Incidentaloma (Benign)",
+          "icd": "D35.0",
+          "logPrior": -20,
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrine_surgery"
+          ],
+          "urgency": 0,
+          "features": [
+            {
+              "key": "ct_attenuation",
+              "value": "lt10_hu",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "ESE/ENSAT Guidelines 2023"
+            },
+            {
+              "key": "size",
+              "value": "lt4cm",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "ESE/ENSAT Guidelines 2023"
+            },
+            {
+              "key": "washout",
+              "value": "absolute_gt60_percent",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "ESE/ENSAT Guidelines 2023"
+            },
+            {
+              "key": "hormonal_screen",
+              "value": "non_functioning",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "ESE/ENSAT Guidelines 2023"
+            },
+            {
+              "key": "incidental_finding",
+              "value": "unrelated_imaging",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "ESE/ENSAT Guidelines 2023"
+            },
+            {
+              "key": "stability_on_imaging",
+              "value": "no_interval_growth",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "ESE/ENSAT Guidelines 2023"
+            },
+            {
+              "key": "age",
+              "value": "greater_50",
+              "logLR": 5,
+              "evidenceLabel": "Mild+",
+              "citation": "ESE/ENSAT Guidelines 2023"
+            },
+            {
+              "key": "night_cortisol_suppression",
+              "value": "normal_1mg_dst",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "ESE/ENSAT Guidelines 2023"
+            }
+          ]
+        },
+        {
+          "name": "Hypercalcaemic Crisis",
+          "icd": "E83.52",
+          "logPrior": -39,
+          "systems": [
+            "endocrine",
+            "metabolic"
+          ],
+          "specialties": [
+            "endocrine_surgery",
+            "general_medicine"
+          ],
+          "urgency": 3,
+          "features": [
+            {
+              "key": "serum_calcium",
+              "value": "gt3pt5_mmol",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2018;378:540"
+            },
+            {
+              "key": "altered_consciousness",
+              "value": "confusion_coma",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2018;378:540"
+            },
+            {
+              "key": "severe_dehydration",
+              "value": "polyuria_polydipsia_preceding",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2018;378:540"
+            },
+            {
+              "key": "ecg_short_qt",
+              "value": "yes",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2018;378:540"
+            },
+            {
+              "key": "nausea_vomiting",
+              "value": "severe",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2018;378:540"
+            },
+            {
+              "key": "pth_or_pthrp",
+              "value": "markedly_elevated",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2018;378:540"
+            },
+            {
+              "key": "creatinine_elevated",
+              "value": "acute_kidney_injury",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2018;378:540"
+            },
+            {
+              "key": "underlying_cause",
+              "value": "malignancy_hyperparathyroidism",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2018;378:540"
+            }
+          ]
+        },
+        {
+          "name": "Multiple Endocrine Neoplasia Type 1",
+          "icd": "D44.8",
+          "logPrior": -39,
+          "systems": [
+            "endocrine",
+            "oncology"
+          ],
+          "specialties": [
+            "endocrine_surgery"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "men1_gene_mutation",
+              "value": "menin",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "NEJM 2016;374:2168"
+            },
+            {
+              "key": "primary_hyperparathyroidism",
+              "value": "multiglandular",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2016;374:2168"
+            },
+            {
+              "key": "pancreatic_net",
+              "value": "gastrinoma_insulinoma",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2016;374:2168"
+            },
+            {
+              "key": "pituitary_adenoma",
+              "value": "yes",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2016;374:2168"
+            },
+            {
+              "key": "family_history_men1",
+              "value": "first_degree",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2016;374:2168"
+            },
+            {
+              "key": "zollinger_ellison",
+              "value": "recurrent_peptic_ulcers_high_gastrin",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2016;374:2168"
+            },
+            {
+              "key": "hypoglycaemia_episodes",
+              "value": "fasting_insulinoma",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2016;374:2168"
+            },
+            {
+              "key": "carcinoid",
+              "value": "thymic_bronchial",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2016;374:2168"
+            }
+          ]
+        },
+        {
+          "name": "Cushing's Syndrome (Endogenous)",
+          "icd": "E24.0",
+          "logPrior": -35,
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrine_surgery"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "central_obesity_buffalo_hump",
+              "value": "yes",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2017;376:1451"
+            },
+            {
+              "key": "late_night_salivary_cortisol",
+              "value": "twice_elevated",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2017;376:1451"
+            },
+            {
+              "key": "1mg_overnight_dst",
+              "value": "cortisol_gt50nmol",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2017;376:1451"
+            },
+            {
+              "key": "24hr_ufc",
+              "value": "3x_upper_normal",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2017;376:1451"
+            },
+            {
+              "key": "facial_plethora_striae",
+              "value": "broad_purple_gt1cm",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2017;376:1451"
+            },
+            {
+              "key": "proximal_myopathy",
+              "value": "yes",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2017;376:1451"
+            },
+            {
+              "key": "hypertension_diabetes",
+              "value": "both",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2017;376:1451"
+            },
+            {
+              "key": "inferior_petrosal_sinus",
+              "value": "ipss_gradient",
+              "logLR": 32,
+              "evidenceLabel": "Definitive+",
+              "citation": "NEJM 2017;376:1451"
+            }
+          ]
+        }
+      ]
+    },
+    "haematologicalSurgical": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Splenic Abscess",
+          "icd": "D73.3",
+          "logPrior": -39,
+          "systems": [
+            "haematological",
+            "infectious"
+          ],
+          "specialties": [
+            "general_surgery",
+            "haematology"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "ct_splenic_collection",
+              "value": "low_density_rim_enhancing",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "World J Surg 2013;37:1381"
+            },
+            {
+              "key": "left_upper_quadrant_pain",
+              "value": "fever",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "World J Surg 2013;37:1381"
+            },
+            {
+              "key": "blood_cultures",
+              "value": "positive_endocarditis_bacteraemia",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "World J Surg 2013;37:1381"
+            },
+            {
+              "key": "immunocompromised",
+              "value": "hiv_haematological_malignancy",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "World J Surg 2013;37:1381"
+            },
+            {
+              "key": "sickle_cell_disease",
+              "value": "yes",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "World J Surg 2013;37:1381"
+            },
+            {
+              "key": "left_pleural_effusion",
+              "value": "sympathetic",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "World J Surg 2013;37:1381"
+            },
+            {
+              "key": "splenomegaly",
+              "value": "tender",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "World J Surg 2013;37:1381"
+            },
+            {
+              "key": "wbc_crp",
+              "value": "markedly_elevated",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "World J Surg 2013;37:1381"
+            }
+          ]
+        },
+        {
+          "name": "Massive Splenomegaly",
+          "icd": "D73.1",
+          "logPrior": -35,
+          "systems": [
+            "haematological"
+          ],
+          "specialties": [
+            "haematology",
+            "general_surgery"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "spleen_size",
+              "value": "gt20cm_mass_below_umbilicus",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2016;375:1158"
+            },
+            {
+              "key": "lymphoma_leukaemia",
+              "value": "known",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2016;375:1158"
+            },
+            {
+              "key": "myelofibrosis",
+              "value": "bone_marrow_biopsy",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2016;375:1158"
+            },
+            {
+              "key": "cytopenias",
+              "value": "pancytopaenia_hypersplenism",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2016;375:1158"
+            },
+            {
+              "key": "jak2_mutation",
+              "value": "positive",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2016;375:1158"
+            },
+            {
+              "key": "portal_hypertension",
+              "value": "congestive_splenomegaly",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2016;375:1158"
+            },
+            {
+              "key": "early_satiety",
+              "value": "abdominal_fullness",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2016;375:1158"
+            },
+            {
+              "key": "left_shoulder_pain",
+              "value": "diaphragmatic_irritation",
+              "logLR": 10,
+              "evidenceLabel": "Mild+",
+              "citation": "NEJM 2016;375:1158"
+            }
+          ]
+        },
+        {
+          "name": "Splenic Rupture (Traumatic/Spontaneous)",
+          "icd": "S36.0",
+          "logPrior": -35,
+          "systems": [
+            "haematological",
+            "trauma"
+          ],
+          "specialties": [
+            "general_surgery",
+            "trauma_surgery"
+          ],
+          "urgency": 3,
+          "features": [
+            {
+              "key": "trauma_or_splenomegaly",
+              "value": "left_upper_quadrant",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "J Trauma 2012;73:1411"
+            },
+            {
+              "key": "haemoperitoneum_ct",
+              "value": "periplenic_free_fluid",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "J Trauma 2012;73:1411"
+            },
+            {
+              "key": "haemodynamic_instability",
+              "value": "shock",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "J Trauma 2012;73:1411"
+            },
+            {
+              "key": "aast_grade",
+              "value": "iii_v",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "J Trauma 2012;73:1411"
+            },
+            {
+              "key": "kehr_sign",
+              "value": "left_shoulder_tip_pain",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "J Trauma 2012;73:1411"
+            },
+            {
+              "key": "ebv_im_mononucleosis",
+              "value": "spontaneous_rupture",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "J Trauma 2012;73:1411"
+            },
+            {
+              "key": "haematocrit_fall",
+              "value": "rapid",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "J Trauma 2012;73:1411"
+            },
+            {
+              "key": "contrast_blush",
+              "value": "active_extravasation_ct",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "J Trauma 2012;73:1411"
+            }
+          ]
+        },
+        {
+          "name": "Haemophilia Surgical Complications",
+          "icd": "D66",
+          "logPrior": -39,
+          "systems": [
+            "haematological"
+          ],
+          "specialties": [
+            "haematology",
+            "general_surgery"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "known_haemophilia",
+              "value": "a_or_b",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "WFH Guidelines 2020"
+            },
+            {
+              "key": "factor_viii_ix_level",
+              "value": "severely_reduced",
+              "logLR": 32,
+              "evidenceLabel": "Strong+",
+              "citation": "WFH Guidelines 2020"
+            },
+            {
+              "key": "post_op_bleeding",
+              "value": "excessive_prolonged",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "WFH Guidelines 2020"
+            },
+            {
+              "key": "inhibitor_titre",
+              "value": "positive_bethesda",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "WFH Guidelines 2020"
+            },
+            {
+              "key": "haemarthrosis_target_joint",
+              "value": "yes",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "WFH Guidelines 2020"
+            },
+            {
+              "key": "family_history",
+              "value": "x_linked",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "WFH Guidelines 2020"
+            },
+            {
+              "key": "prolonged_aptt",
+              "value": "normal_pt",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "WFH Guidelines 2020"
+            },
+            {
+              "key": "haematoma_psoas",
+              "value": "retroperitoneal",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "WFH Guidelines 2020"
+            }
+          ]
+        },
+        {
+          "name": "ITP (Immune Thrombocytopaenia) \u2014 Surgical",
+          "icd": "D69.3",
+          "logPrior": -32,
+          "systems": [
+            "haematological"
+          ],
+          "specialties": [
+            "haematology",
+            "general_surgery"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "platelet_count",
+              "value": "lt30_x10_9",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "ASH ITP Guidelines 2019"
+            },
+            {
+              "key": "bone_marrow",
+              "value": "increased_megakaryocytes",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "ASH ITP Guidelines 2019"
+            },
+            {
+              "key": "anti_platelet_antibodies",
+              "value": "positive_gpiib_iiia",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "ASH ITP Guidelines 2019"
+            },
+            {
+              "key": "response_to_ivig_steroids",
+              "value": "transient",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "ASH ITP Guidelines 2019"
+            },
+            {
+              "key": "splenomegaly",
+              "value": "mild",
+              "logLR": 10,
+              "evidenceLabel": "Mild+",
+              "citation": "ASH ITP Guidelines 2019"
+            },
+            {
+              "key": "bleeding_mucocutaneous",
+              "value": "petechiae_purpura",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "ASH ITP Guidelines 2019"
+            },
+            {
+              "key": "h_pylori_positive",
+              "value": "eradication_trial",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "ASH ITP Guidelines 2019"
+            },
+            {
+              "key": "splenectomy_indication",
+              "value": "refractory_chronic",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "ASH ITP Guidelines 2019"
+            }
+          ]
+        },
+        {
+          "name": "Hereditary Haemolytic Anaemia (Spherocytosis)",
+          "icd": "D58.0",
+          "logPrior": -35,
+          "systems": [
+            "haematological"
+          ],
+          "specialties": [
+            "haematology",
+            "general_surgery"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "osmotic_fragility",
+              "value": "increased",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2004;351:1262"
+            },
+            {
+              "key": "spherocytes_peripheral_film",
+              "value": "yes",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2004;351:1262"
+            },
+            {
+              "key": "family_history_anaemia_jaundice",
+              "value": "yes",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2004;351:1262"
+            },
+            {
+              "key": "coombs_test",
+              "value": "negative",
+              "logLR": 10,
+              "evidenceLabel": "Mild+",
+              "citation": "NEJM 2004;351:1262"
+            },
+            {
+              "key": "pigment_gallstones",
+              "value": "young_patient",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2004;351:1262"
+            },
+            {
+              "key": "reticulocytosis",
+              "value": "elevated",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2004;351:1262"
+            },
+            {
+              "key": "splenomegaly",
+              "value": "moderate",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2004;351:1262"
+            },
+            {
+              "key": "spectrin_ankyrin_mutation",
+              "value": "yes",
+              "logLR": 30,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2004;351:1262"
+            }
+          ]
+        },
+        {
+          "name": "Myeloproliferative Neoplasm \u2014 Splenic",
+          "icd": "D75.1",
+          "logPrior": -35,
+          "systems": [
+            "haematological"
+          ],
+          "specialties": [
+            "haematology"
+          ],
+          "urgency": 1,
+          "features": [
+            {
+              "key": "jak2_calr_mpl_mutation",
+              "value": "positive",
+              "logLR": 32,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2013;368:1416"
+            },
+            {
+              "key": "splenomegaly_massive",
+              "value": "palpable_below_umbilicus",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2013;368:1416"
+            },
+            {
+              "key": "bone_marrow_fibrosis",
+              "value": "grade_2_3",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2013;368:1416"
+            },
+            {
+              "key": "leukoerythroblastic_film",
+              "value": "tear_drop_cells",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2013;368:1416"
+            },
+            {
+              "key": "constitutional_symptoms",
+              "value": "night_sweats_weight_loss_fatigue",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2013;368:1416"
+            },
+            {
+              "key": "thrombocytosis_or_thrombocytopaenia",
+              "value": "either",
+              "logLR": 12,
+              "evidenceLabel": "Moderate+",
+              "citation": "NEJM 2013;368:1416"
+            },
+            {
+              "key": "portal_mesenteric_thrombosis",
+              "value": "yes",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2013;368:1416"
+            },
+            {
+              "key": "ruxolitinib_response",
+              "value": "reduction_spleen",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "NEJM 2013;368:1416"
+            }
+          ]
+        },
+        {
+          "name": "Splenic Vein Thrombosis",
+          "icd": "I82.8",
+          "logPrior": -35,
+          "systems": [
+            "haematological",
+            "vascular"
+          ],
+          "specialties": [
+            "general_surgery",
+            "haematology"
+          ],
+          "urgency": 2,
+          "features": [
+            {
+              "key": "isolated_splenic_vein_occlusion",
+              "value": "ct_doppler",
+              "logLR": 35,
+              "evidenceLabel": "Definitive+",
+              "citation": "Pancreas 2012;41:1"
+            },
+            {
+              "key": "chronic_pancreatitis",
+              "value": "sinistral_hypertension",
+              "logLR": 28,
+              "evidenceLabel": "Strong+",
+              "citation": "Pancreas 2012;41:1"
+            },
+            {
+              "key": "gastric_varices",
+              "value": "without_oesophageal",
+              "logLR": 25,
+              "evidenceLabel": "Strong+",
+              "citation": "Pancreas 2012;41:1"
+            },
+            {
+              "key": "splenomegaly",
+              "value": "moderate_isolated",
+              "logLR": 18,
+              "evidenceLabel": "Strong+",
+              "citation": "Pancreas 2012;41:1"
+            },
+            {
+              "key": "upper_gi_bleeding",
+              "value": "gastric_variceal",
+              "logLR": 22,
+              "evidenceLabel": "Strong+",
+              "citation": "Pancreas 2012;41:1"
+            },
+            {
+              "key": "pancreatic_tail_pathology",
+              "value": "adjacent_malignancy_pseudocyst",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Pancreas 2012;41:1"
+            },
+            {
+              "key": "hypercoagulable_state",
+              "value": "thrombophilia",
+              "logLR": 15,
+              "evidenceLabel": "Moderate+",
+              "citation": "Pancreas 2012;41:1"
+            },
+            {
+              "key": "normal_portal_vein",
+              "value": "isolated_splenic",
+              "logLR": 20,
+              "evidenceLabel": "Strong+",
+              "citation": "Pancreas 2012;41:1"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {

@@ -1385,6 +1385,34 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("dissection") || ccL.contains("aortic") { mergePool("aorticConditions") }
             if ccL.contains("sepsis") || ccL.contains("endocarditis") { mergePool("sepsisConditions") }
 
+        // Parathyroid and adrenal conditions
+        case ccL.contains("hyperparathyroidism") || ccL.contains("hypercalcaemia") ||
+             ccL.contains("phaeochromocytoma") || ccL.contains("pheochromocytoma") ||
+             ccL.contains("conn's syndrome") || ccL.contains("primary aldosteronism") ||
+             ccL.contains("adrenal incidentaloma") || ccL.contains("cushing") ||
+             ccL.contains("adrenocortical carcinoma") || ccL.contains("men1") ||
+             ccL.contains("multiple endocrine neoplasia") || ccL.contains("sestamibi") ||
+             ccL.contains("adrenalectomy") ||
+             (ccL.contains("adrenal") && ccL.contains("mass")) ||
+             (ccL.contains("parathyroid") && ccL.contains("surgery")) ||
+             (ccL.contains("elevated") && ccL.contains("pth")):
+            candidates = externalPool("parathyroidAdrenal") ?? []
+            if ccL.contains("men") || ccL.contains("multiple endocrine") { mergePool("thyroidNoduleAssessment") }
+            if ccL.contains("cancer") || ccL.contains("malignant") { mergePool("oncologyComplications") }
+
+        // Haematological surgical conditions
+        case ccL.contains("splenic abscess") || ccL.contains("splenomegaly") ||
+             ccL.contains("splenic rupture") || ccL.contains("haemophilia") ||
+             ccL.contains("itp") || ccL.contains("immune thrombocytopaenia") ||
+             ccL.contains("hereditary spherocytosis") || ccL.contains("myelofibrosis") ||
+             ccL.contains("splenic vein thrombosis") || ccL.contains("splenectomy") ||
+             ccL.contains("hypersplenism") || ccL.contains("jak2") ||
+             (ccL.contains("spleen") && ccL.contains("pain")) ||
+             (ccL.contains("left upper quadrant") && ccL.contains("mass")):
+            candidates = externalPool("haematologicalSurgical") ?? []
+            if ccL.contains("trauma") { mergePool("traumaAbdominal") }
+            if ccL.contains("portal hypertension") || ccL.contains("varices") { mergePool("liverCirrhosisComplications") }
+
         // Spinal and neurosurgical conditions
         case ccL.contains("disc herniation") || ccL.contains("cauda equina") ||
              ccL.contains("spinal cord compression") || ccL.contains("cervical myelopathy") ||
@@ -1766,6 +1794,14 @@ enum BayesianDiagnosisEngine {
            ccL.contains("aortic dissection") || ccL.contains("cardiac tamponade") ||
            ccL.contains("endocarditis") || ccL.contains("heart failure") ||
            ccL.contains("hocm") || ccL.contains("mediastinitis") { mergePool("cardiacSurgical") }
+        if ccL.contains("hyperparathyroidism") || ccL.contains("hypercalcaemia") ||
+           ccL.contains("phaeochromocytoma") || ccL.contains("conn's") ||
+           ccL.contains("cushing") || ccL.contains("adrenal mass") ||
+           ccL.contains("men1") { mergePool("parathyroidAdrenal") }
+        if ccL.contains("splenomegaly") || ccL.contains("splenic rupture") ||
+           ccL.contains("haemophilia") || ccL.contains("itp") ||
+           ccL.contains("spherocytosis") || ccL.contains("myelofibrosis") ||
+           ccL.contains("splenic vein") { mergePool("haematologicalSurgical") }
         if ccL.contains("cauda equina") || ccL.contains("disc herniation") ||
            ccL.contains("cervical myelopathy") || ccL.contains("spinal stenosis") ||
            ccL.contains("epidural abscess") || ccL.contains("vertebral osteomyelitis") ||
