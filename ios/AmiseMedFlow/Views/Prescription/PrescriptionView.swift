@@ -34,7 +34,10 @@ struct PrescriptionView: View {
 
                 if let dx = patient.workingDiagnosis {
                     let dosing = DiagnosisDosingGuide.lookup(diagnosis: dx)
-                    if !dosing.isEmpty { dosingGuideSection(entries: dosing, dx: dx) }
+                    if !dosing.isEmpty {
+                        let labs = LabPanel.parse(from: patient.investigations)
+                        dosingGuideSection(entries: dosing, dx: dx, labs: labs)
+                    }
                 }
 
                 prescriptionsSection
@@ -200,7 +203,7 @@ struct PrescriptionView: View {
     // MARK: - Diagnosis dosing guide
 
     @ViewBuilder
-    private func dosingGuideSection(entries: [DosingEntry], dx: String) -> some View {
+    private func dosingGuideSection(entries: [DosingEntry], dx: String, labs: LabPanel) -> some View {
         let allergyNames = patient.allergies.map { $0.name.lowercased() }
         let weightKg = patient.vitalsEntries
             .sorted { $0.recordedAt > $1.recordedAt }
@@ -224,6 +227,21 @@ struct PrescriptionView: View {
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
+                        // Inline renal/hepatic lab value chips
+                        if let cr = labs.creatinine, entries.contains(where: { $0.renalCaution }) {
+                            Text("Cr \(Int(cr.value)) µmol/L")
+                                .font(.system(size: 9, weight: .semibold))
+                                .foregroundStyle(cr.value > 150 ? .orange : .secondary)
+                                .padding(.horizontal, 5).padding(.vertical, 2)
+                                .background((cr.value > 150 ? Color.orange : Color(.systemGray5)).opacity(cr.value > 150 ? 0.15 : 1), in: Capsule())
+                        }
+                        if let bil = labs.bilirubin, entries.contains(where: { $0.hepaticCaution }) {
+                            Text("Bil \(Int(bil.value)) µmol/L")
+                                .font(.system(size: 9, weight: .semibold))
+                                .foregroundStyle(bil.value > 35 ? .purple : .secondary)
+                                .padding(.horizontal, 5).padding(.vertical, 2)
+                                .background((bil.value > 35 ? Color.purple : Color(.systemGray5)).opacity(bil.value > 35 ? 0.15 : 1), in: Capsule())
+                        }
                         if let wt = weightKg {
                             Text(String(format: "%.0f kg", wt))
                                 .font(.caption2.weight(.semibold))
@@ -247,7 +265,7 @@ struct PrescriptionView: View {
                             let isContraindicated = allergyNames.contains(where: { name in
                                 entry.allergyKeywords.contains(where: { name.contains($0) })
                             })
-                            dosingRow(entry: entry, weightKg: weightKg, contraindicated: isContraindicated)
+                            dosingRow(entry: entry, weightKg: weightKg, contraindicated: isContraindicated, labs: labs)
                             if entry.id != entries.last?.id {
                                 Divider().padding(.leading, 8)
                             }
@@ -268,7 +286,7 @@ struct PrescriptionView: View {
     }
 
     @ViewBuilder
-    private func dosingRow(entry: DosingEntry, weightKg: Double?, contraindicated: Bool) -> some View {
+    private func dosingRow(entry: DosingEntry, weightKg: Double?, contraindicated: Bool, labs: LabPanel = LabPanel()) -> some View {
         VStack(alignment: .leading, spacing: 5) {
             HStack(alignment: .top, spacing: 6) {
                 VStack(alignment: .leading, spacing: 2) {
@@ -311,8 +329,8 @@ struct PrescriptionView: View {
                 }
             }
 
-            // Caution badges
-            let badges = cautionBadges(entry: entry)
+            // Caution badges with actual lab values where available
+            let badges = cautionBadges(entry: entry, labs: labs)
             if !badges.isEmpty {
                 HStack(spacing: 5) {
                     ForEach(badges, id: \.0) { (label, color) in
@@ -337,11 +355,24 @@ struct PrescriptionView: View {
         .opacity(contraindicated ? 0.8 : 1.0)
     }
 
-    private func cautionBadges(entry: DosingEntry) -> [(String, Color)] {
+    private func cautionBadges(entry: DosingEntry, labs: LabPanel = LabPanel()) -> [(String, Color)] {
         var badges: [(String, Color)] = []
-        if entry.renalCaution   { badges.append(("RENAL CAUTION", .orange)) }
-        if entry.hepaticCaution { badges.append(("HEPATIC CAUTION", .purple)) }
-        if entry.weightBased    { badges.append(("WEIGHT-BASED", .blue)) }
+        if entry.renalCaution {
+            if let cr = labs.creatinine {
+                let label = "RENAL · Cr \(Int(cr.value)) µmol/L"
+                badges.append((label, cr.value > 300 ? .red : .orange))
+            } else {
+                badges.append(("RENAL CAUTION", .orange))
+            }
+        }
+        if entry.hepaticCaution {
+            var parts: [String] = []
+            if let bil = labs.bilirubin { parts.append("Bil \(Int(bil.value))") }
+            if let alt = labs.alt { parts.append("ALT \(Int(alt.value))") }
+            let label = parts.isEmpty ? "HEPATIC CAUTION" : "HEPATIC · \(parts.joined(separator: " / "))"
+            badges.append((label, .purple))
+        }
+        if entry.weightBased { badges.append(("WEIGHT-BASED", .blue)) }
         return badges
     }
 
