@@ -48067,6 +48067,2308 @@
           ]
         }
       ]
+    },
+    "hivAidsSTI": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "HIV / AIDS",
+          "icd": "B20",
+          "logPrior": -28,
+          "urgency": 1,
+          "systems": [
+            "immunology",
+            "infectious"
+          ],
+          "specialties": [
+            "infectious_disease"
+          ],
+          "features": [
+            {
+              "key": "hiv_ab_ag_reactive",
+              "value": "present",
+              "logLR": 34,
+              "evidenceLabel": "4th-generation HIV Ag/Ab test reactive",
+              "citation": "BHIVA HIV Testing Guidelines 2020"
+            },
+            {
+              "key": "hiv_rna_detectable",
+              "value": "present",
+              "logLR": 32,
+              "evidenceLabel": "HIV RNA (viral load) detectable on PCR",
+              "citation": "BHIVA 2020"
+            },
+            {
+              "key": "cd4_below_200",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "CD4 count <200 cells/\u03bcL (AIDS-defining immunosuppression)",
+              "citation": "BHIVA 2020"
+            },
+            {
+              "key": "aids_defining_illness",
+              "value": "present",
+              "logLR": 27,
+              "evidenceLabel": "AIDS-defining illness (PCP, CMV, MAC, Kaposi's, CNS toxoplasmosis)",
+              "citation": "BHIVA 2020"
+            },
+            {
+              "key": "risk_factors_hiv",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "High-risk exposure (MSM, sex worker, IVDU, unprotected sex in endemic region)",
+              "citation": "BHIVA 2020"
+            },
+            {
+              "key": "oral_candida_hairy_leukoplakia",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Oral candidiasis / hairy leukoplakia",
+              "citation": "BHIVA 2020"
+            },
+            {
+              "key": "weight_loss_night_sweats_hiv",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Constitutional: weight loss >10%, drenching night sweats",
+              "citation": "BHIVA 2020"
+            },
+            {
+              "key": "lymphopenia_on_fbc",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Lymphopenia on FBC",
+              "citation": "BHIVA 2020"
+            }
+          ]
+        },
+        {
+          "name": "Primary Syphilis",
+          "icd": "A51.0",
+          "logPrior": -35,
+          "urgency": 1,
+          "systems": [
+            "infectious",
+            "dermatology"
+          ],
+          "specialties": [
+            "infectious_disease",
+            "dermatology"
+          ],
+          "features": [
+            {
+              "key": "painless_chancre",
+              "value": "present",
+              "logLR": 27,
+              "evidenceLabel": "Painless indurated genital/anal/oral ulcer (chancre)",
+              "citation": "BASHH Syphilis Guidelines 2024"
+            },
+            {
+              "key": "tpha_positive",
+              "value": "present",
+              "logLR": 29,
+              "evidenceLabel": "TPHA/TPPA reactive (specific treponemal test)",
+              "citation": "BASHH 2024"
+            },
+            {
+              "key": "rpr_vdrl_positive",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "RPR/VDRL reactive (non-treponemal titre \u22651:8)",
+              "citation": "BASHH 2024"
+            },
+            {
+              "key": "darkfield_treponema",
+              "value": "present",
+              "logLR": 32,
+              "evidenceLabel": "Darkfield microscopy: T. pallidum visualised",
+              "citation": "BASHH 2024"
+            },
+            {
+              "key": "inguinal_lymphadenopathy",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Rubbery non-tender inguinal lymphadenopathy",
+              "citation": "BASHH 2024"
+            },
+            {
+              "key": "sexual_exposure_history",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Sexual exposure in endemic Caribbean/MSM context",
+              "citation": "BASHH 2024"
+            },
+            {
+              "key": "penicillin_response",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Rapid healing after benzathine penicillin",
+              "citation": "BASHH 2024"
+            },
+            {
+              "key": "hiv_coinfection_screen",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "HIV co-infection (ulcer facilitates HIV acquisition)",
+              "citation": "BASHH 2024"
+            }
+          ]
+        },
+        {
+          "name": "Gonorrhoea",
+          "icd": "A54.9",
+          "logPrior": -32,
+          "urgency": 1,
+          "systems": [
+            "infectious"
+          ],
+          "specialties": [
+            "infectious_disease",
+            "urology",
+            "gynaecology"
+          ],
+          "features": [
+            {
+              "key": "urethral_discharge_gonorrhoea",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Purulent urethral / cervical discharge",
+              "citation": "BASHH Gonorrhoea Guidelines 2019"
+            },
+            {
+              "key": "naat_neisseria",
+              "value": "present",
+              "logLR": 30,
+              "evidenceLabel": "NAAT positive for N. gonorrhoeae",
+              "citation": "BASHH 2019"
+            },
+            {
+              "key": "gram_negative_diplococci",
+              "value": "present",
+              "logLR": 27,
+              "evidenceLabel": "Gram-negative diplococci on urethral smear",
+              "citation": "BASHH 2019"
+            },
+            {
+              "key": "dysuria_frequency_gonorrhoea",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Dysuria / increased urinary frequency",
+              "citation": "BASHH 2019"
+            },
+            {
+              "key": "pharyngeal_rectal_gonorrhoea",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Pharyngeal / rectal site NAAT positive",
+              "citation": "BASHH 2019"
+            },
+            {
+              "key": "contact_tracing",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Partner notification index case",
+              "citation": "BASHH 2019"
+            },
+            {
+              "key": "dual_therapy_response",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Response to ceftriaxone + azithromycin dual therapy",
+              "citation": "BASHH 2019"
+            },
+            {
+              "key": "disseminated_gonococcal",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Disseminated gonococcal infection (dermatitis-arthritis triad)",
+              "citation": "BASHH 2019"
+            }
+          ]
+        },
+        {
+          "name": "Chlamydia trachomatis",
+          "icd": "A56.0",
+          "logPrior": -24,
+          "urgency": 0,
+          "systems": [
+            "infectious"
+          ],
+          "specialties": [
+            "infectious_disease",
+            "gynaecology"
+          ],
+          "features": [
+            {
+              "key": "naat_chlamydia_positive",
+              "value": "present",
+              "logLR": 30,
+              "evidenceLabel": "NAAT positive for C. trachomatis",
+              "citation": "BASHH Chlamydia Guidelines 2018"
+            },
+            {
+              "key": "asymptomatic_young_female",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Asymptomatic young female <25 (commonest scenario)",
+              "citation": "BASHH 2018"
+            },
+            {
+              "key": "intermenstrual_postcoital_bleeding",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Intermenstrual or post-coital bleeding",
+              "citation": "BASHH 2018"
+            },
+            {
+              "key": "mucopurulent_cervicitis",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Mucopurulent cervicitis on examination",
+              "citation": "BASHH 2018"
+            },
+            {
+              "key": "pelvic_inflammatory_disease",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Pelvic inflammatory disease (cervical motion tenderness)",
+              "citation": "BASHH 2018"
+            },
+            {
+              "key": "epididymo_orchitis",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Epididymo-orchitis in male <35 years",
+              "citation": "BASHH 2018"
+            },
+            {
+              "key": "azithromycin_response",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Resolution with azithromycin / doxycycline",
+              "citation": "BASHH 2018"
+            },
+            {
+              "key": "reactive_arthritis",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Reactive arthritis (Reiter's triad) post-genitourinary infection",
+              "citation": "BASHH 2018"
+            }
+          ]
+        },
+        {
+          "name": "Pelvic Inflammatory Disease (PID)",
+          "icd": "N73.9",
+          "logPrior": -29,
+          "urgency": 1,
+          "systems": [
+            "gynaecology",
+            "infectious"
+          ],
+          "specialties": [
+            "gynaecology",
+            "infectious_disease"
+          ],
+          "features": [
+            {
+              "key": "cervical_motion_tenderness",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Cervical motion tenderness on bimanual examination",
+              "citation": "BASHH PID Guidelines 2019"
+            },
+            {
+              "key": "adnexal_tenderness",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Adnexal tenderness bilaterally",
+              "citation": "BASHH 2019"
+            },
+            {
+              "key": "raised_crp_esr_pid",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Elevated CRP/ESR / pyrexia >38\u00b0C",
+              "citation": "BASHH 2019"
+            },
+            {
+              "key": "tubo_ovarian_abscess",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Tubo-ovarian abscess on USS",
+              "citation": "BASHH 2019"
+            },
+            {
+              "key": "naat_sti_positive",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "NAAT positive for gonorrhoea or chlamydia",
+              "citation": "BASHH 2019"
+            },
+            {
+              "key": "laparoscopy_confirmed",
+              "value": "present",
+              "logLR": 29,
+              "evidenceLabel": "Laparoscopic confirmation of salpingitis / peritonitis",
+              "citation": "BASHH 2019"
+            },
+            {
+              "key": "antibiotic_response_pid",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Response to broad-spectrum antibiotics (ceftriaxone + doxycycline + metronidazole)",
+              "citation": "BASHH 2019"
+            },
+            {
+              "key": "fitz_hugh_curtis",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Fitz-Hugh-Curtis syndrome (perihepatitis, RUQ pain)",
+              "citation": "BASHH 2019"
+            }
+          ]
+        },
+        {
+          "name": "Genital Herpes (HSV)",
+          "icd": "A60.0",
+          "logPrior": -29,
+          "urgency": 0,
+          "systems": [
+            "infectious",
+            "dermatology"
+          ],
+          "specialties": [
+            "infectious_disease"
+          ],
+          "features": [
+            {
+              "key": "painful_vesicular_ulcers",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Painful vesicular / ulcerative genital lesions",
+              "citation": "BASHH Herpes Guidelines 2014"
+            },
+            {
+              "key": "hsv_pcr_positive",
+              "value": "present",
+              "logLR": 30,
+              "evidenceLabel": "HSV PCR positive from swab",
+              "citation": "BASHH 2014"
+            },
+            {
+              "key": "recurrent_episodes",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Recurrent episodes with prodrome (tingling, itching)",
+              "citation": "BASHH 2014"
+            },
+            {
+              "key": "primary_episode_systemic",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Primary episode with systemic features (fever, myalgia)",
+              "citation": "BASHH 2014"
+            },
+            {
+              "key": "aciclovir_response",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Rapid healing with aciclovir / valaciclovir",
+              "citation": "BASHH 2014"
+            },
+            {
+              "key": "hsv_serology_igg",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "HSV-2 IgG positive (type-specific serology)",
+              "citation": "BASHH 2014"
+            },
+            {
+              "key": "sacral_distribution",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Sacral dermatomal distribution (S2-S4)",
+              "citation": "BASHH 2014"
+            },
+            {
+              "key": "urinary_retention_herpes",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Urinary retention in primary HSV (sacral radiculopathy)",
+              "citation": "BASHH 2014"
+            }
+          ]
+        },
+        {
+          "name": "Hepatitis B",
+          "icd": "B18.1",
+          "logPrior": -32,
+          "urgency": 1,
+          "systems": [
+            "hepatobiliary",
+            "infectious"
+          ],
+          "specialties": [
+            "gastroenterology",
+            "infectious_disease"
+          ],
+          "features": [
+            {
+              "key": "hbsag_positive",
+              "value": "present",
+              "logLR": 29,
+              "evidenceLabel": "HBsAg reactive (surface antigen, carriage / active infection)",
+              "citation": "EASL HBV Guidelines 2017"
+            },
+            {
+              "key": "hbv_dna_elevated",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "HBV DNA >2000 IU/mL (replicative phase)",
+              "citation": "EASL 2017"
+            },
+            {
+              "key": "hbeag_positive",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "HBeAg positive (high replication, higher infectivity)",
+              "citation": "EASL 2017"
+            },
+            {
+              "key": "alt_raised_hbv",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "ALT elevated (hepatitis activity)",
+              "citation": "EASL 2017"
+            },
+            {
+              "key": "liver_biopsy_inflammation",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Liver biopsy: necroinflammation / fibrosis",
+              "citation": "EASL 2017"
+            },
+            {
+              "key": "vertical_sexual_transmission",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Perinatal or sexual transmission risk factor",
+              "citation": "EASL 2017"
+            },
+            {
+              "key": "antiviral_response",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Viral suppression on tenofovir / entecavir",
+              "citation": "EASL 2017"
+            },
+            {
+              "key": "fibroscan_fibrosis",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "FibroScan: significant fibrosis \u2265F2",
+              "citation": "EASL 2017"
+            }
+          ]
+        },
+        {
+          "name": "HPV / Anogenital Warts",
+          "icd": "A63.0",
+          "logPrior": -28,
+          "urgency": 0,
+          "systems": [
+            "infectious",
+            "dermatology"
+          ],
+          "specialties": [
+            "infectious_disease",
+            "surgery"
+          ],
+          "features": [
+            {
+              "key": "condylomata_acuminata",
+              "value": "present",
+              "logLR": 29,
+              "evidenceLabel": "Flesh-coloured papillomatous condylomata on examination",
+              "citation": "BASHH HPV Guidelines 2015"
+            },
+            {
+              "key": "hpv_6_11_pcr",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "HPV 6/11 on PCR (low-risk types)",
+              "citation": "BASHH 2015"
+            },
+            {
+              "key": "acetowhite_reaction",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Acetowhite change on 5% acetic acid application",
+              "citation": "BASHH 2015"
+            },
+            {
+              "key": "perianal_penile_vulval",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Perianal / penile / vulval / vaginal location",
+              "citation": "BASHH 2015"
+            },
+            {
+              "key": "treatment_response",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Clearance with cryotherapy / podophyllotoxin / imiquimod",
+              "citation": "BASHH 2015"
+            },
+            {
+              "key": "hpv_vaccination_incomplete",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "HPV vaccination not received or incomplete",
+              "citation": "BASHH 2015"
+            },
+            {
+              "key": "recurrence_immunocompromise",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Recurrence in immunocompromised host",
+              "citation": "BASHH 2015"
+            },
+            {
+              "key": "cervical_smear_abnormality",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Concurrent abnormal cervical smear / colposcopy referral",
+              "citation": "BASHH 2015"
+            }
+          ]
+        }
+      ]
+    },
+    "diabeticFoot": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Diabetic Foot Ulcer",
+          "icd": "E11.621",
+          "logPrior": -28,
+          "urgency": 1,
+          "systems": [
+            "vascular",
+            "endocrine"
+          ],
+          "specialties": [
+            "vascular",
+            "surgery"
+          ],
+          "features": [
+            {
+              "key": "foot_ulcer_diabetes",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Foot ulcer in patient with diabetes mellitus",
+              "citation": "NICE NG19 Diabetic Foot Problems"
+            },
+            {
+              "key": "wagner_grade",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Wagner grade \u22652 (deep ulcer / tendon / bone visible)",
+              "citation": "NICE NG19"
+            },
+            {
+              "key": "neuropathy_loss_protective",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Loss of protective sensation (10 g monofilament)",
+              "citation": "NICE NG19"
+            },
+            {
+              "key": "peripheral_arterial_disease_foot",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Peripheral arterial disease (ABI <0.9 / absent pulses)",
+              "citation": "NICE NG19"
+            },
+            {
+              "key": "callus_pressure_point",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Plantar callus / pressure-point location",
+              "citation": "NICE NG19"
+            },
+            {
+              "key": "poor_glycaemic_control",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "HbA1c persistently elevated (>75 mmol/mol)",
+              "citation": "NICE NG19"
+            },
+            {
+              "key": "probe_to_bone",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Probe-to-bone test positive (high PPV for osteomyelitis)",
+              "citation": "NICE NG19"
+            },
+            {
+              "key": "mdft_referral",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Referred to multi-disciplinary foot team",
+              "citation": "NICE NG19"
+            }
+          ]
+        },
+        {
+          "name": "Diabetic Foot Osteomyelitis",
+          "icd": "M86.172",
+          "logPrior": -35,
+          "urgency": 2,
+          "systems": [
+            "musculoskeletal",
+            "infectious"
+          ],
+          "specialties": [
+            "surgery",
+            "infectious_disease"
+          ],
+          "features": [
+            {
+              "key": "probe_to_bone_positive",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "Probe-to-bone positive (sensitivity 87%, PPV 89%)",
+              "citation": "IDSA Diabetic Foot Osteomyelitis Guidelines"
+            },
+            {
+              "key": "mri_bone_marrow_oedema_foot",
+              "value": "present",
+              "logLR": 28,
+              "evidenceLabel": "MRI: bone marrow oedema / cortical destruction (gold standard)",
+              "citation": "IDSA"
+            },
+            {
+              "key": "xray_periosteal_lytic",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "X-ray: periosteal reaction / lytic lesion (late sign)",
+              "citation": "IDSA"
+            },
+            {
+              "key": "elevated_esr_crp_omyelitis",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "ESR >70 mm/h / CRP markedly elevated",
+              "citation": "IDSA"
+            },
+            {
+              "key": "bone_biopsy_organisms",
+              "value": "present",
+              "logLR": 30,
+              "evidenceLabel": "Bone biopsy: organisms and/or histology confirms osteomyelitis",
+              "citation": "IDSA"
+            },
+            {
+              "key": "prolonged_antibiotics",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Extended antibiotic course (6 weeks IV/PO)",
+              "citation": "IDSA"
+            },
+            {
+              "key": "ulcer_depth_bone",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Deep ulcer exposing bone or joint",
+              "citation": "IDSA"
+            },
+            {
+              "key": "leukocytosis_wbc_elevated",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Leukocytosis >12 \u00d7 10\u2079/L",
+              "citation": "IDSA"
+            }
+          ]
+        },
+        {
+          "name": "Charcot Neuropathic Arthropathy",
+          "icd": "M14.67",
+          "logPrior": -39,
+          "urgency": 1,
+          "systems": [
+            "musculoskeletal",
+            "endocrine"
+          ],
+          "specialties": [
+            "orthopaedics",
+            "endocrinology"
+          ],
+          "features": [
+            {
+              "key": "hot_swollen_neuropathic_foot",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Acute hot, swollen, erythematous foot in diabetic neuropathy",
+              "citation": "NICE NG19 Charcot Foot"
+            },
+            {
+              "key": "skin_temp_difference",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Skin temperature difference >2\u00b0C vs contralateral foot",
+              "citation": "NICE NG19"
+            },
+            {
+              "key": "mri_bone_oedema_charcot",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "MRI: bone marrow oedema without cortical destruction (acute Charcot)",
+              "citation": "NICE NG19"
+            },
+            {
+              "key": "xray_fragmentation_collapse",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "X-ray: mid-foot fragmentation / 'rocker-bottom' deformity",
+              "citation": "NICE NG19"
+            },
+            {
+              "key": "severe_peripheral_neuropathy",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Severe peripheral neuropathy with absent reflexes",
+              "citation": "NICE NG19"
+            },
+            {
+              "key": "painless_despite_swelling",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Relatively painless despite dramatic clinical appearance",
+              "citation": "NICE NG19"
+            },
+            {
+              "key": "total_contact_casting",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Management: total contact casting / offloading",
+              "citation": "NICE NG19"
+            },
+            {
+              "key": "offloading_response",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Temperature normalisation with prolonged offloading",
+              "citation": "NICE NG19"
+            }
+          ]
+        },
+        {
+          "name": "Peripheral Arterial Disease (Diabetic)",
+          "icd": "I70.22",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "vascular"
+          ],
+          "specialties": [
+            "vascular"
+          ],
+          "features": [
+            {
+              "key": "abi_below_0_9",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "ABI <0.9 (ankle-brachial index \u2014 peripheral arterial disease)",
+              "citation": "TASC II PAD Guidelines"
+            },
+            {
+              "key": "absent_foot_pulses",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Absent posterior tibial / dorsalis pedis pulses",
+              "citation": "TASC II"
+            },
+            {
+              "key": "intermittent_claudication",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Intermittent claudication (calf/thigh pain on walking)",
+              "citation": "TASC II"
+            },
+            {
+              "key": "rest_pain_nocturnal",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Rest pain / nocturnal foot pain relieved by hanging foot (Fontaine III)",
+              "citation": "TASC II"
+            },
+            {
+              "key": "atrophic_skin_hair_loss",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Atrophic skin / hair loss / dystrophic nails",
+              "citation": "TASC II"
+            },
+            {
+              "key": "duplex_ct_angiography",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Duplex / CTA: arterial occlusion confirmed",
+              "citation": "TASC II"
+            },
+            {
+              "key": "critical_limb_ischaemia",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Critical limb ischaemia (ankle pressure <50 mmHg / toe pressure <30 mmHg)",
+              "citation": "TASC II"
+            },
+            {
+              "key": "revascularisation_considered",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Angioplasty / bypass considered",
+              "citation": "TASC II"
+            }
+          ]
+        },
+        {
+          "name": "Diabetic Foot Cellulitis / Soft Tissue Infection",
+          "icd": "E11.622",
+          "logPrior": -26,
+          "urgency": 1,
+          "systems": [
+            "infectious",
+            "dermatology"
+          ],
+          "specialties": [
+            "surgery",
+            "infectious_disease"
+          ],
+          "features": [
+            {
+              "key": "erythema_warmth_foot",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Spreading erythema, warmth, and tenderness around foot ulcer",
+              "citation": "IDSA Diabetic Foot Infection Guidelines 2012"
+            },
+            {
+              "key": "pedis_score",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "IDSA Moderate (PEDIS 2\u20133): redness >2 cm from ulcer edge",
+              "citation": "IDSA 2012"
+            },
+            {
+              "key": "purulent_discharge",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Purulent discharge from wound",
+              "citation": "IDSA 2012"
+            },
+            {
+              "key": "systemic_sepsis_signs",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Systemic signs: pyrexia, tachycardia, leukocytosis",
+              "citation": "IDSA 2012"
+            },
+            {
+              "key": "swab_staphylococcus",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Wound culture: S. aureus / MRSA / Streptococcus / Gram-negatives",
+              "citation": "IDSA 2012"
+            },
+            {
+              "key": "antibiotic_improvement",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Improvement with appropriate antibiotics (co-amoxiclav / flucloxacillin)",
+              "citation": "IDSA 2012"
+            },
+            {
+              "key": "lymphangitis_lymphadenopathy",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Lymphangitic streaking / regional lymphadenopathy",
+              "citation": "IDSA 2012"
+            },
+            {
+              "key": "crp_wbc_elevated_foot",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "CRP elevated / leukocytosis",
+              "citation": "IDSA 2012"
+            }
+          ]
+        },
+        {
+          "name": "Necrotising Fasciitis of Foot / Lower Limb",
+          "icd": "M72.6",
+          "logPrior": -46,
+          "urgency": 3,
+          "systems": [
+            "infectious",
+            "surgery"
+          ],
+          "specialties": [
+            "surgery"
+          ],
+          "features": [
+            {
+              "key": "pain_disproportionate",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Severe pain disproportionate to skin findings",
+              "citation": "LRINEC Score / NICE NF"
+            },
+            {
+              "key": "rapid_progression",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Rapid spread of infection (hours to days)",
+              "citation": "LRINEC"
+            },
+            {
+              "key": "lrinec_score_high",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "LRINEC score \u22656 (CRP, WBC, Hb, Na, creatinine, glucose)",
+              "citation": "LRINEC"
+            },
+            {
+              "key": "skin_necrosis_crepitus",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "Skin necrosis / crepitus / gas on X-ray",
+              "citation": "LRINEC"
+            },
+            {
+              "key": "surgical_finding_confirmed",
+              "value": "present",
+              "logLR": 32,
+              "evidenceLabel": "Surgical exploration: fascial necrosis confirmed (grey necrotic fascia)",
+              "citation": "LRINEC"
+            },
+            {
+              "key": "ct_gas_soft_tissue",
+              "value": "present",
+              "logLR": 27,
+              "evidenceLabel": "CT: gas in soft tissues along fascial planes",
+              "citation": "LRINEC"
+            },
+            {
+              "key": "diabetes_or_immunosuppression",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Diabetes / immunosuppression as risk factor",
+              "citation": "LRINEC"
+            },
+            {
+              "key": "polymicrobial_cultures",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Polymicrobial culture (Strep + anaerobes) or Type I pattern",
+              "citation": "LRINEC"
+            }
+          ]
+        },
+        {
+          "name": "Amputation Risk Assessment (Diabetic Limb)",
+          "icd": "Z89.511",
+          "logPrior": -39,
+          "urgency": 1,
+          "systems": [
+            "vascular",
+            "surgery"
+          ],
+          "specialties": [
+            "vascular",
+            "surgery"
+          ],
+          "features": [
+            {
+              "key": "wifi_classification",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "WIfI classification Stage 3\u20134 (wound/ischaemia/foot infection)",
+              "citation": "SVS WIfI Guidelines 2014"
+            },
+            {
+              "key": "failed_revascularisation",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Failed or not possible arterial revascularisation",
+              "citation": "SVS 2014"
+            },
+            {
+              "key": "extensive_forefoot_necrosis",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Extensive forefoot / midfoot necrosis",
+              "citation": "SVS 2014"
+            },
+            {
+              "key": "uncontrolled_sepsis",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Life-threatening sepsis requiring urgent source control",
+              "citation": "SVS 2014"
+            },
+            {
+              "key": "inadequate_tissue_perfusion",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Transcutaneous oxygen <30 mmHg / flat TBI",
+              "citation": "SVS 2014"
+            },
+            {
+              "key": "debridement_failure",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Failed repeated surgical debridement",
+              "citation": "SVS 2014"
+            },
+            {
+              "key": "charcot_unstable_mid_foot",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Unstable Charcot mid-foot reconstruction not feasible",
+              "citation": "SVS 2014"
+            },
+            {
+              "key": "patient_goals_agreed",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Amputation decision agreed after MDT and patient discussion",
+              "citation": "SVS 2014"
+            }
+          ]
+        },
+        {
+          "name": "Tinea Pedis / Fungal Foot Infection",
+          "icd": "B35.3",
+          "logPrior": -20,
+          "urgency": 0,
+          "systems": [
+            "dermatology",
+            "infectious"
+          ],
+          "specialties": [
+            "dermatology"
+          ],
+          "features": [
+            {
+              "key": "interdigital_maceration",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Interdigital maceration, scaling, fissuring (web spaces 3\u20134)",
+              "citation": "NICE Fungal Skin Infection CKS"
+            },
+            {
+              "key": "fungal_culture_positive",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "Skin scrapings: fungal culture positive (T. rubrum)",
+              "citation": "NICE"
+            },
+            {
+              "key": "koh_preparation_positive",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "KOH preparation: hyphae/pseudohyphae visible",
+              "citation": "NICE"
+            },
+            {
+              "key": "moccasin_distribution",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Moccasin pattern: dry scaling of sole and lateral foot",
+              "citation": "NICE"
+            },
+            {
+              "key": "topical_antifungal_response",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Improvement with topical terbinafine / clotrimazole",
+              "citation": "NICE"
+            },
+            {
+              "key": "onychomycosis_coexisting",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Coexisting onychomycosis (nail reservoir)",
+              "citation": "NICE"
+            },
+            {
+              "key": "diabetic_foot_at_risk",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Diabetic foot at risk (fissures as portal of entry)",
+              "citation": "NICE"
+            },
+            {
+              "key": "hyperhidrosis_occlusive_footwear",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "Hyperhidrosis / occlusive footwear",
+              "citation": "NICE"
+            }
+          ]
+        }
+      ]
+    },
+    "toxicologyOverdose": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Paracetamol Overdose",
+          "icd": "T39.1",
+          "logPrior": -35,
+          "urgency": 2,
+          "systems": [
+            "hepatobiliary",
+            "toxicology"
+          ],
+          "specialties": [
+            "emergency"
+          ],
+          "features": [
+            {
+              "key": "paracetamol_serum_level",
+              "value": "present",
+              "logLR": 29,
+              "evidenceLabel": "Serum paracetamol above treatment nomogram line at 4h",
+              "citation": "NICE CG149 Paracetamol Overdose"
+            },
+            {
+              "key": "ingestion_confirmed",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Paracetamol ingestion confirmed (history / empty packet)",
+              "citation": "NICE CG149"
+            },
+            {
+              "key": "alt_ast_rising",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "ALT/AST rising (hepatocellular injury, 24\u201372h post-ingestion)",
+              "citation": "NICE CG149"
+            },
+            {
+              "key": "nac_treatment",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "N-acetylcysteine commenced",
+              "citation": "NICE CG149"
+            },
+            {
+              "key": "inr_elevated_paracetamol",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "INR >1.3 (early hepatic synthetic dysfunction)",
+              "citation": "NICE CG149"
+            },
+            {
+              "key": "kings_criteria_ali",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "King's College criteria met (ALF requiring transplant assessment)",
+              "citation": "NICE CG149"
+            },
+            {
+              "key": "coingestion_alcohol",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Co-ingestion of alcohol (accelerates hepatotoxicity)",
+              "citation": "NICE CG149"
+            },
+            {
+              "key": "staggered_delayed_presentation",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Staggered ingestion or delayed presentation >8h",
+              "citation": "NICE CG149"
+            }
+          ]
+        },
+        {
+          "name": "Opioid Overdose / Toxidrome",
+          "icd": "T40.2",
+          "logPrior": -39,
+          "urgency": 3,
+          "systems": [
+            "toxicology"
+          ],
+          "specialties": [
+            "emergency"
+          ],
+          "features": [
+            {
+              "key": "miosis_pinpoint_pupils",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Miosis (pinpoint pupils)",
+              "citation": "Toxicology Handbook Opioid Toxidrome"
+            },
+            {
+              "key": "respiratory_depression",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "Respiratory depression (RR <12/min or SpO\u2082 <90%)",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "reduced_consciousness",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Reduced level of consciousness (GCS <15)",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "naloxone_response",
+              "value": "present",
+              "logLR": 30,
+              "evidenceLabel": "Rapid reversal with IV/IM naloxone",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "opioid_prescribed_misused",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Known opioid prescription or drug misuse history",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "needle_track_marks",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Needle track marks (IV drug use)",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "hypotension_bradycardia",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Hypotension / bradycardia",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "urine_drug_screen_opioid",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Urine drug screen: opioid positive",
+              "citation": "Toxicology Handbook"
+            }
+          ]
+        },
+        {
+          "name": "Tricyclic Antidepressant Overdose",
+          "icd": "T43.011",
+          "logPrior": -46,
+          "urgency": 3,
+          "systems": [
+            "toxicology",
+            "cardiology"
+          ],
+          "specialties": [
+            "emergency"
+          ],
+          "features": [
+            {
+              "key": "ecg_qrs_prolongation",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "ECG: QRS >100 ms (sodium channel blockade)",
+              "citation": "Toxicology Handbook TCA Overdose"
+            },
+            {
+              "key": "ecg_qt_prolongation_tca",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "ECG: prolonged QTc / right axis deviation (R in aVR)",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "anticholinergic_toxidrome",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Anticholinergic triad: tachycardia, dry skin, urinary retention, confusion",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "seizures_tca",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Seizures (sodium channel blockade / proconvulsant effect)",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "bicarbonate_response",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "QRS narrowing after IV sodium bicarbonate",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "hypotension_tca",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Severe hypotension (alpha-blockade + myocardial depression)",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "tca_ingestion_confirmed",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "TCA ingestion confirmed (amitriptyline, dosulepin, imipramine)",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "serum_tca_level",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Serum TCA level above therapeutic range",
+              "citation": "Toxicology Handbook"
+            }
+          ]
+        },
+        {
+          "name": "Carbon Monoxide Poisoning",
+          "icd": "T58.9",
+          "logPrior": -39,
+          "urgency": 3,
+          "systems": [
+            "toxicology",
+            "neurology"
+          ],
+          "specialties": [
+            "emergency"
+          ],
+          "features": [
+            {
+              "key": "carboxyhaemoglobin_elevated",
+              "value": "present",
+              "logLR": 30,
+              "evidenceLabel": "COHb >25% on co-oximetry (severe poisoning)",
+              "citation": "NICE CG31 Carbon Monoxide"
+            },
+            {
+              "key": "headache_nausea_co",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Headache + nausea in household cluster (sentinel symptom)",
+              "citation": "NICE CG31"
+            },
+            {
+              "key": "household_cluster",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Multiple household members or pets affected simultaneously",
+              "citation": "NICE CG31"
+            },
+            {
+              "key": "co_source_identified",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "CO source identified (faulty boiler, generator, fire)",
+              "citation": "NICE CG31"
+            },
+            {
+              "key": "high_flow_oxygen_response",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Rapid improvement with 100% high-flow O\u2082",
+              "citation": "NICE CG31"
+            },
+            {
+              "key": "confusion_syncope_co",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Confusion / syncope / seizure (neurological CO effects)",
+              "citation": "NICE CG31"
+            },
+            {
+              "key": "cherry_red_skin",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Cherry-red skin (classical, often absent)",
+              "citation": "NICE CG31"
+            },
+            {
+              "key": "hbo_criteria",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "HBO criteria met (COHb >25% / LOC / neuro deficit)",
+              "citation": "NICE CG31"
+            }
+          ]
+        },
+        {
+          "name": "Benzodiazepine / Sedative Overdose",
+          "icd": "T42.4",
+          "logPrior": -39,
+          "urgency": 2,
+          "systems": [
+            "toxicology"
+          ],
+          "specialties": [
+            "emergency"
+          ],
+          "features": [
+            {
+              "key": "gcs_depressed_sedative",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "GCS reduced (sedation, ataxia, slurred speech)",
+              "citation": "Toxicology Handbook Sedative Overdose"
+            },
+            {
+              "key": "benzodiazepine_detected",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Benzodiazepine detected on urine/plasma drug screen",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "prescription_or_street_drug",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Prescribed (diazepam, lorazepam) or illicit (flunitrazepam)",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "flumazenil_response",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Reversal of sedation with flumazenil (caution: seizure risk in TCA coingest)",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "respiratory_depression_benzo",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Respiratory depression (less severe than opioid alone)",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "coingest_opioid_alcohol",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Co-ingestion of opioids or alcohol (synergistic CNS depression)",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "no_anticholinergic",
+              "value": "absent",
+              "logLR": 11,
+              "evidenceLabel": "No anticholinergic features (differentiates from TCA)",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "supportive_care_monitoring",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Managed with supportive care and monitoring (no antidote usually)",
+              "citation": "Toxicology Handbook"
+            }
+          ]
+        },
+        {
+          "name": "Organophosphate / Pesticide Poisoning",
+          "icd": "T60.0",
+          "logPrior": -39,
+          "urgency": 3,
+          "systems": [
+            "toxicology",
+            "neurology"
+          ],
+          "specialties": [
+            "emergency"
+          ],
+          "features": [
+            {
+              "key": "cholinergic_toxidrome",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "DUMBELS: diarrhoea, urination, miosis, bradycardia, emesis, lacrimation, salivation",
+              "citation": "Toxicology Handbook Organophosphate"
+            },
+            {
+              "key": "rbc_ache_inhibited",
+              "value": "present",
+              "logLR": 28,
+              "evidenceLabel": "RBC acetylcholinesterase activity <50% of baseline",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "atropine_response",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Muscarinic symptoms reversed by high-dose atropine",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "pralidoxime_treatment",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Oxime therapy (pralidoxime) reactivates AChE if given early",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "agricultural_exposure",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Agricultural / pesticide exposure (farm, spray, ingestion)",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "fasciculations_seizures",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Nicotinic effects: fasciculations, weakness, seizures",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "bronchospasm_secretions",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Excessive secretions / bronchospasm / pulmonary oedema",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "odour_garlic_solvent",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Characteristic garlic/solvent odour on breath/clothes",
+              "citation": "Toxicology Handbook"
+            }
+          ]
+        },
+        {
+          "name": "Alcohol Poisoning / Acute Intoxication",
+          "icd": "F10.129",
+          "logPrior": -32,
+          "urgency": 2,
+          "systems": [
+            "toxicology"
+          ],
+          "specialties": [
+            "emergency"
+          ],
+          "features": [
+            {
+              "key": "serum_ethanol_elevated",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "Serum ethanol >220 mg/dL (severe intoxication)",
+              "citation": "Toxicology Handbook Alcohol"
+            },
+            {
+              "key": "osmolar_gap_elevated",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Osmolar gap >10 (suggests alcohol or toxic alcohol)",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "breath_alcohol_positive",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Breath alcohol test positive",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "ataxia_dysarthria_alcohol",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Ataxia, dysarthria, nystagmus",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "hypoglycaemia_alcohol",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Hypoglycaemia (impaired gluconeogenesis)",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "aspiration_risk",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Risk of aspiration (vomiting + reduced airway reflexes)",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "coingestion_drugs_alcohol",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Co-ingestion of benzodiazepines or opioids",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "wernicke_risk_chronic",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Chronic alcohol use: Wernicke's risk \u2014 give thiamine before glucose",
+              "citation": "Toxicology Handbook"
+            }
+          ]
+        },
+        {
+          "name": "Digoxin Toxicity",
+          "icd": "T46.0",
+          "logPrior": -39,
+          "urgency": 2,
+          "systems": [
+            "toxicology",
+            "cardiology"
+          ],
+          "specialties": [
+            "cardiology",
+            "emergency"
+          ],
+          "features": [
+            {
+              "key": "serum_digoxin_elevated",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Serum digoxin >2.6 nmol/L (toxic range)",
+              "citation": "Toxicology Handbook Digoxin"
+            },
+            {
+              "key": "hyperkalaemia_digoxin",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Hyperkalaemia >5.5 mmol/L (Na/K-ATPase inhibition)",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "ecg_bidirectional_vt",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "ECG: bidirectional VT / AF with bradycardia / scooped ST",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "nausea_xanthopsia",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Nausea, vomiting, xanthopsia (yellow-green vision)",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "digibind_response",
+              "value": "present",
+              "logLR": 28,
+              "evidenceLabel": "Reversal with digoxin-specific antibody fragments (Digibind)",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "renal_impairment_accumulation",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Renal impairment causing drug accumulation",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "hypokalaemia_potentiates",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Hypokalaemia / hypomagnesaemia potentiating toxicity",
+              "citation": "Toxicology Handbook"
+            },
+            {
+              "key": "digoxin_prescribed",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Patient prescribed digoxin (AF / heart failure)",
+              "citation": "Toxicology Handbook"
+            }
+          ]
+        }
+      ]
+    },
+    "palliativeCare": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Cancer Pain \u2014 Uncontrolled",
+          "icd": "G89.3",
+          "logPrior": -28,
+          "urgency": 1,
+          "systems": [
+            "oncology",
+            "palliative"
+          ],
+          "specialties": [
+            "palliative",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "nrs_pain_above_4",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "NRS pain score \u22654/10 despite current analgesia",
+              "citation": "WHO Analgesic Ladder / NICE NG31"
+            },
+            {
+              "key": "opioid_undertreated",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Inadequate opioid dose (no titration to response)",
+              "citation": "WHO Pain Ladder"
+            },
+            {
+              "key": "breakthrough_doses_frequent",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "\u22653 breakthrough doses in 24 hours (dose review trigger)",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "neuropathic_component",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Neuropathic component: burning, shooting, allodynia",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "pain_movement_incident",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Incident (movement-related) pain pattern",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "bone_pain_metastases",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Bone pain from metastases (bisphosphonate / RT adjunct)",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "equianalgesic_conversion",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Opioid rotation / equianalgesic conversion required",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "total_pain_psychosocial",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Total pain concept: psychological / social / spiritual components",
+              "citation": "NICE NG31"
+            }
+          ]
+        },
+        {
+          "name": "Malignant Bowel Obstruction",
+          "icd": "K56.699",
+          "logPrior": -35,
+          "urgency": 1,
+          "systems": [
+            "gastroenterology",
+            "oncology"
+          ],
+          "specialties": [
+            "surgery",
+            "palliative"
+          ],
+          "features": [
+            {
+              "key": "nausea_vomiting_absolute_constipation",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Nausea, vomiting, and absolute constipation in cancer patient",
+              "citation": "Cochrane Malignant Bowel Obstruction Review"
+            },
+            {
+              "key": "ct_obstruction_confirmed",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "CT: bowel obstruction confirmed (transition point / peritoneal deposits)",
+              "citation": "Cochrane"
+            },
+            {
+              "key": "previous_abdominal_cancer",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Known intraperitoneal / pelvic malignancy (ovarian, colorectal)",
+              "citation": "Cochrane"
+            },
+            {
+              "key": "peritoneal_carcinomatosis",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Peritoneal carcinomatosis on CT (omental cake, ascites)",
+              "citation": "Cochrane"
+            },
+            {
+              "key": "medical_management",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Medical management: octreotide, dexamethasone, haloperidol, hyoscine",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "surgery_not_appropriate",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Surgical intervention not appropriate (performance status / burden)",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "ng_tube_colic_severe",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "NG tube suctioning relieves colic temporally",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "multifocal_obstruction",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Multifocal obstruction on CT (multi-level disease)",
+              "citation": "Cochrane"
+            }
+          ]
+        },
+        {
+          "name": "Dyspnoea in Advanced Illness",
+          "icd": "R06.09",
+          "logPrior": -28,
+          "urgency": 1,
+          "systems": [
+            "respiratory",
+            "palliative"
+          ],
+          "specialties": [
+            "palliative",
+            "respiratory"
+          ],
+          "features": [
+            {
+              "key": "breathlessness_rest_exertion",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Dyspnoea at rest or minimal exertion in advanced illness",
+              "citation": "NICE NG31 Breathlessness"
+            },
+            {
+              "key": "low_dose_opioid_benefit",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Low-dose oral morphine reduces breathlessness (evidence base)",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "pleural_effusion_malignant",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Malignant pleural effusion on CXR/USS (drainage considered)",
+              "citation": "BTS Pleural Guidelines 2023"
+            },
+            {
+              "key": "progressive_cancer_decline",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Progressive cancer with declining performance status",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "no_reversible_cause",
+              "value": "absent",
+              "logLR": 16,
+              "evidenceLabel": "No readily reversible cause (PE, infection, anaemia excluded)",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "fan_therapy_benefit",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Benefit from fan / airflow to face (non-pharmacological)",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "lymphangitis_carcinomatosa",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Lymphangitis carcinomatosa on CT (Kerley B lines, bilateral infiltrates)",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "respiratory_secretions_noisy",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Noisy respiratory secretions (terminal / death rattle \u2014 hyoscine)",
+              "citation": "NICE NG31"
+            }
+          ]
+        },
+        {
+          "name": "Terminal Delirium / Agitation",
+          "icd": "R41.3",
+          "logPrior": -32,
+          "urgency": 2,
+          "systems": [
+            "neurology",
+            "palliative"
+          ],
+          "specialties": [
+            "palliative"
+          ],
+          "features": [
+            {
+              "key": "irreversible_agitated_confusion",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Agitated confusion in last days of life (terminal delirium)",
+              "citation": "NICE NG31 Last Days of Life"
+            },
+            {
+              "key": "last_days_illness",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Recognised last days of life: dying trajectory confirmed by MDT",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "midazolam_benefit",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Sedation with midazolam / levomepromazine reduces distress",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "reversible_causes_excluded",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Reversible causes excluded (urinary retention, pain, infection)",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "haloperidol_antipsychotic",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Haloperidol / levomepromazine for psychomotor agitation",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "csci_commenced",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "CSCI (syringe driver) commenced for anticipatory medications",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "family_aware_prognosis",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Family informed of prognosis and care goals",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "preferred_place_care",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "Preferred place of care / death documented",
+              "citation": "NICE NG31"
+            }
+          ]
+        },
+        {
+          "name": "Opioid Rotation / Dose Conversion",
+          "icd": "Z51.5",
+          "logPrior": -35,
+          "urgency": 1,
+          "systems": [
+            "palliative"
+          ],
+          "specialties": [
+            "palliative"
+          ],
+          "features": [
+            {
+              "key": "inadequate_analgesia_toxicity",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Inadequate analgesia or unacceptable toxicity on current opioid",
+              "citation": "PCF7 Palliative Care Formulary"
+            },
+            {
+              "key": "opioid_toxicity_features",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Opioid toxicity: myoclonus, hallucinations, hyperalgesia, somnolence",
+              "citation": "PCF7"
+            },
+            {
+              "key": "renal_impairment_conversion",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Renal impairment requiring switch to renally-safe opioid (buprenorphine, fentanyl)",
+              "citation": "PCF7"
+            },
+            {
+              "key": "conversion_table_used",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Equianalgesic conversion table applied with 20\u201330% dose reduction",
+              "citation": "PCF7"
+            },
+            {
+              "key": "oral_to_csci_conversion",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Oral-to-CSCI conversion calculated (morphine oral\u00f72=SC dose)",
+              "citation": "PCF7"
+            },
+            {
+              "key": "pain_team_involvement",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Specialist palliative care / pain team involvement",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "breakthrough_prescribed",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Breakthrough dose prescribed (1/6 of 24h total)",
+              "citation": "PCF7"
+            },
+            {
+              "key": "transdermal_considered",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Transdermal opioid (fentanyl patch) for dysphagia / poor oral intake",
+              "citation": "PCF7"
+            }
+          ]
+        },
+        {
+          "name": "Prognosis Discussion / Goals of Care",
+          "icd": "Z51.89",
+          "logPrior": -29,
+          "urgency": 0,
+          "systems": [
+            "palliative"
+          ],
+          "specialties": [
+            "palliative"
+          ],
+          "features": [
+            {
+              "key": "surprise_question_negative",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Surprise question negative: 'I would not be surprised if this patient died in 12 months'",
+              "citation": "GSF / NICE NG31"
+            },
+            {
+              "key": "ecog_ps_3_or_4",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "ECOG performance status 3\u20134 (limited self-care)",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "weight_loss_decline",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Progressive weight loss >10% over 6 months",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "palliative_ceiling_agreed",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Palliative ceiling of care agreed (DNACPR, no escalation to ITU)",
+              "citation": "BMA DNACPR Guidelines"
+            },
+            {
+              "key": "advance_care_plan",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Advance care plan (ACP) documented",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "hospice_referral",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Hospice / palliative care service referral",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "spiritual_psychosocial_needs",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "Spiritual / psychological / social needs identified and addressed",
+              "citation": "NICE NG31"
+            },
+            {
+              "key": "family_conference_held",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Family conference with clear communication of prognosis",
+              "citation": "NICE NG31"
+            }
+          ]
+        },
+        {
+          "name": "Lymphoedema",
+          "icd": "I89.0",
+          "logPrior": -32,
+          "urgency": 0,
+          "systems": [
+            "lymphatic",
+            "oncology"
+          ],
+          "specialties": [
+            "palliative",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "non_pitting_oedema_limb",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Non-pitting oedema of limb (late) / initially pitting (early)",
+              "citation": "ISL Lymphoedema Guidelines"
+            },
+            {
+              "key": "post_cancer_treatment",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Post-mastectomy / pelvic cancer / lymph node dissection",
+              "citation": "ISL Guidelines"
+            },
+            {
+              "key": "stemmer_sign_positive",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Stemmer sign positive (unable to pinch skin at base of 2nd toe)",
+              "citation": "ISL Guidelines"
+            },
+            {
+              "key": "mld_bandaging_benefit",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Response to manual lymphatic drainage + compression bandaging (CDT)",
+              "citation": "ISL Guidelines"
+            },
+            {
+              "key": "recurrent_cellulitis",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Recurrent cellulitis in lymphoedematous limb",
+              "citation": "ISL Guidelines"
+            },
+            {
+              "key": "lymphoscintigraphy",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Lymphoscintigraphy: dermal backflow / reduced lymphatic transport",
+              "citation": "ISL Guidelines"
+            },
+            {
+              "key": "bilateral_asymmetry",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Asymmetric limb swelling (unilateral in secondary lymphoedema)",
+              "citation": "ISL Guidelines"
+            },
+            {
+              "key": "skin_changes_fibrosis",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Skin changes: fibrosis, papillomatosis, hyperkeratosis",
+              "citation": "ISL Guidelines"
+            }
+          ]
+        },
+        {
+          "name": "Pressure Injury / Ulcer (Palliative)",
+          "icd": "L89.90",
+          "logPrior": -32,
+          "urgency": 1,
+          "systems": [
+            "dermatology",
+            "palliative"
+          ],
+          "specialties": [
+            "palliative",
+            "surgery"
+          ],
+          "features": [
+            {
+              "key": "stage_3_4_pressure_injury",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "NPUAP Stage 3\u20134 pressure injury (full-thickness tissue loss)",
+              "citation": "NICE CG179 Pressure Ulcers"
+            },
+            {
+              "key": "bony_prominence_location",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Bony prominence location: sacrum, heels, trochanters",
+              "citation": "NICE CG179"
+            },
+            {
+              "key": "immobility_bed_bound",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Bed-bound / immobile patient (advanced malignancy or frailty)",
+              "citation": "NICE CG179"
+            },
+            {
+              "key": "malnutrition_hypoalbuminaemia",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Malnutrition / hypoalbuminaemia",
+              "citation": "NICE CG179"
+            },
+            {
+              "key": "waterlow_score_high",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Waterlow score \u226520 (very high risk)",
+              "citation": "NICE CG179"
+            },
+            {
+              "key": "wound_slough_necrosis",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Wound base: slough or necrotic tissue",
+              "citation": "NICE CG179"
+            },
+            {
+              "key": "pressure_relieving_mattress",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Pressure-relieving mattress / repositioning plan in place",
+              "citation": "NICE CG179"
+            },
+            {
+              "key": "kennedy_terminal_ulcer",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Kennedy terminal ulcer (butterfly-shaped, rapid deterioration = dying)",
+              "citation": "NICE CG179"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {

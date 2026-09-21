@@ -737,6 +737,74 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("shoulder") { mergePool("orthopaedicTrauma") }
             if ccL.contains("knee") || ccL.contains("fracture") { mergePool("orthopaedicTrauma") }
 
+        // HIV / STIs / sexual health
+        case ccL.contains("hiv") || ccL.contains("aids") ||
+             ccL.contains("sexually transmitted") || ccL.contains("sti ") || ccL == "sti" ||
+             ccL.contains("sexual health") || ccL.contains("syphilis") ||
+             ccL.contains("gonorrhoea") || ccL.contains("gonorrhea") ||
+             ccL.contains("chlamydia") || ccL.contains("pelvic inflammatory") ||
+             ccL.contains("pid ") || ccL == "pid" ||
+             ccL.contains("genital herpes") || ccL.contains("hsv genital") ||
+             ccL.contains("hepatitis b") || ccL.contains("hbv") ||
+             ccL.contains("genital warts") || ccL.contains("condyloma") || ccL.contains("hpv") ||
+             ccL.contains("anogenital") || ccL.contains("post-exposure prophylaxis") ||
+             ccL.contains("prep") || ccL.contains("pep ") ||
+             (ccL.contains("discharge") && (ccL.contains("genital") || ccL.contains("urethral") ||
+              ccL.contains("penile") || ccL.contains("vaginal"))) ||
+             (ccL.contains("ulcer") && (ccL.contains("genital") || ccL.contains("penile") ||
+              ccL.contains("vulval"))):
+            candidates = externalPool("hivAidsSTI") ?? []
+            if ccL.contains("pelvic") || ccL.contains("abdominal") { mergePool("pelvicPain") }
+
+        // Diabetic foot / neuropathic foot / foot ulcer
+        case ccL.contains("diabetic foot") || ccL.contains("foot ulcer") ||
+             ccL.contains("neuropathic ulcer") || ccL.contains("charcot foot") ||
+             ccL.contains("charcot joint") || ccL.contains("diabetic osteomyelitis") ||
+             ccL.contains("foot osteomyelitis") || ccL.contains("foot cellulitis") ||
+             ccL.contains("rocker bottom") || ccL.contains("tinea pedis") ||
+             ccL.contains("fungal foot") || ccL.contains("foot amputation") ||
+             ccL.contains("limb salvage") || ccL.contains("wagner grade") ||
+             (ccL.contains("foot") && ccL.contains("diabetes")) ||
+             (ccL.contains("foot") && (ccL.contains("swollen") || ccL.contains("infected") ||
+              ccL.contains("ulcer") || ccL.contains("wound"))):
+            candidates = externalPool("diabeticFoot") ?? []
+            if ccL.contains("ischaemia") || ccL.contains("arterial") { mergePool("vascularSurgical") }
+            if ccL.contains("osteomyelitis") { mergePool("necrotizingInfection") }
+
+        // Toxicology / overdose / poisoning
+        case ccL.contains("overdose") || ccL.contains("poisoning") ||
+             ccL.contains("paracetamol overdose") || ccL.contains("acetaminophen overdose") ||
+             ccL.contains("opioid overdose") || ccL.contains("naloxone") ||
+             ccL.contains("carbon monoxide") || ccL.contains("co poisoning") ||
+             ccL.contains("organophosphate") || ccL.contains("pesticide poison") ||
+             ccL.contains("digoxin toxic") || ccL.contains("digibind") ||
+             ccL.contains("tricyclic overdose") || ccL.contains("tca overdose") ||
+             ccL.contains("benzodiazepine overdose") || ccL.contains("sedative overdose") ||
+             ccL.contains("alcohol poisoning") || ccL.contains("toxidrome") ||
+             ccL.contains("drug overdose") || ccL.contains("intentional ingestion") ||
+             (ccL.contains("ingestion") && (ccL.contains("toxic") || ccL.contains("accidental"))):
+            candidates = externalPool("toxicologyOverdose") ?? []
+            if ccL.contains("paracetamol") || ccL.contains("liver") { mergePool("liverDisease") }
+            if ccL.contains("cardiac") || ccL.contains("arrhythmia") { mergePool("arrhythmia") }
+
+        // Palliative care / end of life / symptom management in advanced illness
+        case ccL.contains("palliative") || ccL.contains("end of life") || ccL.contains("eol ") ||
+             ccL.contains("terminal") || ccL.contains("dying") || ccL.contains("hospice") ||
+             ccL.contains("goals of care") || ccL.contains("dnacpr") || ccL.contains("dnr") ||
+             ccL.contains("advance care plan") || ccL.contains("acp ") ||
+             ccL.contains("syringe driver") || ccL.contains("csci") ||
+             ccL.contains("opioid rotation") || ccL.contains("opioid conversion") ||
+             ccL.contains("malignant bowel obstruction") ||
+             ccL.contains("lymphoedema") || ccL.contains("lymphedema") ||
+             ccL.contains("pressure ulcer") || ccL.contains("pressure sore") ||
+             ccL.contains("kennedy ulcer") ||
+             (ccL.contains("cancer pain") && ccL.contains("uncontrolled")) ||
+             (ccL.contains("breathless") && ccL.contains("terminal")) ||
+             (ccL.contains("agitation") && ccL.contains("dying")):
+            candidates = externalPool("palliativeCare") ?? []
+            if ccL.contains("pain") { mergePool("weightLoss") }
+            if ccL.contains("bowel") { mergePool("smallBowelObstruction") }
+
         default:
             // Wide-net general medicine catch-all — no longer surgical-biased
             candidates = externalPool("generalMedicine") ?? []
@@ -858,6 +926,18 @@ enum BayesianDiagnosisEngine {
         // Secondary pool: sports medicine overlay on athletic/exertional presentations
         if ccL.contains("sport") || ccL.contains("athletic") || ccL.contains("exertional") ||
            ccL.contains("rhabdomyo") { mergePool("sportsMedicine") }
+        // Secondary pool: HIV/STI overlay on sexual health / unexplained immunosuppression
+        if ccL.contains("sexual") || ccL.contains("sti") || ccL.contains("hiv") ||
+           ccL.contains("genital") { mergePool("hivAidsSTI") }
+        // Secondary pool: diabetic foot overlay on foot/wound presentations in diabetes
+        if (ccL.contains("foot") && ccL.contains("diabet")) ||
+           ccL.contains("charcot") || ccL.contains("foot ulcer") { mergePool("diabeticFoot") }
+        // Secondary pool: toxicology overlay on altered consciousness or drug ingestion history
+        if ccL.contains("overdose") || ccL.contains("poisoning") ||
+           ccL.contains("toxidrome") { mergePool("toxicologyOverdose") }
+        // Secondary pool: palliative overlay on advanced cancer / end-of-life symptom review
+        if ccL.contains("palliative") || ccL.contains("end of life") ||
+           ccL.contains("terminal") { mergePool("palliativeCare") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but
