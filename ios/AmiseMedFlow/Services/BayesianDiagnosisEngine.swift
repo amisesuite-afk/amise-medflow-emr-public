@@ -870,6 +870,60 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("cardiac") || ccL.contains("heart") { mergePool("heartFailure") }
             if ccL.contains("anaemia") || ccL.contains("anemia") { mergePool("anaemia") }
 
+        // Paediatric surgical emergencies
+        case ccL.contains("intussusception") || ccL.contains("pyloric stenosis") ||
+             ccL.contains("meckel") || ccL.contains("hirschsprung") ||
+             ccL.contains("necrotising enterocolitis") || ccL.contains("nec ") ||
+             ccL.contains("malrotation") || ccL.contains("midgut volvulus") ||
+             ccL.contains("bilious vomiting neonate") ||
+             ccL.contains("paediatric hernia") || ccL.contains("pediatric hernia") ||
+             (ccL.contains("child") && ccL.contains("obstruction")) ||
+             (ccL.contains("neonate") && ccL.contains("vomiting")) ||
+             (ccL.contains("infant") && ccL.contains("bowel")):
+            candidates = externalPool("paediatricSurgical") ?? []
+            if ccL.contains("obstruction") { mergePool("smallBowelObstruction") }
+            if ccL.contains("hernia") { mergePool("groinSwelling") }
+
+        // Breast pathology
+        case ccL.contains("breast lump") || ccL.contains("breast mass") ||
+             ccL.contains("breast pain") || ccL.contains("breast cancer") ||
+             ccL.contains("mastitis") || ccL.contains("breast abscess") ||
+             ccL.contains("nipple discharge") || ccL.contains("nipple change") ||
+             ccL.contains("dcis") || ccL.contains("fibroadenoma") ||
+             ccL.contains("phyllodes") || ccL.contains("paget nipple") ||
+             ccL.contains("peau dorange") || ccL.contains("mammogram") ||
+             (ccL.contains("breast") && (ccL.contains("swelling") || ccL.contains("change") || ccL.contains("discharge"))):
+            candidates = externalPool("breastDisease") ?? []
+            if ccL.contains("cancer") || ccL.contains("malignant") { mergePool("oncologyComplications") }
+            if ccL.contains("abscess") || ccL.contains("infection") { mergePool("skinRash") }
+
+        // Acute obstetric / gynaecological emergencies
+        case ccL.contains("ectopic pregnancy") || ccL.contains("ovarian torsion") ||
+             ccL.contains("hellp") || ccL.contains("pre-eclampsia") ||
+             ccL.contains("preeclampsia") || ccL.contains("eclampsia") ||
+             ccL.contains("placental abruption") || ccL.contains("abruption") ||
+             ccL.contains("ovarian cancer") || ccL.contains("endometriosis") ||
+             ccL.contains("gestational trophoblastic") || ccL.contains("molar pregnancy") ||
+             ccL.contains("gynaecological") || ccL.contains("gynecological") ||
+             (ccL.contains("pregnancy") && (ccL.contains("pain") || ccL.contains("bleeding") || ccL.contains("haemorrhage"))):
+            candidates = externalPool("acuteObstetricGynae") ?? []
+            if ccL.contains("pelvic") { mergePool("pelvicPain") }
+            if ccL.contains("bleeding") || ccL.contains("haemorrhage") { mergePool("coagulationDisorder") }
+
+        // Head and neck surgical conditions
+        case ccL.contains("thyroid nodule") || ccL.contains("thyroid cancer") ||
+             ccL.contains("parathyroid") || ccL.contains("parotid") ||
+             ccL.contains("salivary gland") || ccL.contains("sialolithiasis") ||
+             ccL.contains("thyroglossal") || ccL.contains("deep neck infection") ||
+             ccL.contains("neck abscess") || ccL.contains("neck cancer") ||
+             ccL.contains("head neck scc") || ccL.contains("lemierre") ||
+             ccL.contains("hypercalcaemia") || ccL.contains("hypercalcemia") ||
+             (ccL.contains("neck") && (ccL.contains("mass") || ccL.contains("swelling") || ccL.contains("lump"))) ||
+             (ccL.contains("neck") && ccL.contains("abscess")):
+            candidates = externalPool("headNeckSurgical") ?? []
+            if ccL.contains("lymph") || ccL.contains("lymphoma") { mergePool("haematologicalMalignancy") }
+            if ccL.contains("airway") || ccL.contains("swallow") { mergePool("dysphagia") }
+
         default:
             // Wide-net general medicine catch-all — no longer surgical-biased
             candidates = externalPool("generalMedicine") ?? []
@@ -1019,6 +1073,15 @@ enum BayesianDiagnosisEngine {
         if ccL.contains("perioperative") || ccL.contains("pre-op") || ccL.contains("preoperative") ||
            ccL.contains("surgical clearance") ||
            (ccL.contains("surgery") && ccL.contains("risk")) { mergePool("preoperativeAssessment") }
+        if ccL.contains("intussusception") || ccL.contains("pyloric") ||
+           ccL.contains("meckel") || ccL.contains("hirschsprung") ||
+           (ccL.contains("child") && ccL.contains("bowel")) { mergePool("paediatricSurgical") }
+        if ccL.contains("breast") || ccL.contains("nipple") ||
+           ccL.contains("mastitis") || ccL.contains("fibroadenoma") { mergePool("breastDisease") }
+        if ccL.contains("ectopic") || ccL.contains("ovarian torsion") ||
+           ccL.contains("hellp") || ccL.contains("endometriosis") { mergePool("acuteObstetricGynae") }
+        if ccL.contains("thyroid") || ccL.contains("parathyroid") || ccL.contains("parotid") ||
+           (ccL.contains("neck") && ccL.contains("mass")) { mergePool("headNeckSurgical") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but

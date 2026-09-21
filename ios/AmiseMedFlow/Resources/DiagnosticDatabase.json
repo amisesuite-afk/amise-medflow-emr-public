@@ -52657,6 +52657,2303 @@
           ]
         }
       ]
+    },
+    "paediatricSurgical": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Intussusception",
+          "icd": "K56.1",
+          "logPrior": -35,
+          "urgency": 2,
+          "systems": [
+            "gi",
+            "paediatric"
+          ],
+          "specialties": [
+            "paediatric_surgery"
+          ],
+          "features": [
+            {
+              "key": "age_6_18_months",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Peak incidence age 6\u201318 months",
+              "citation": "APSA / BAPS Paediatric Surgery Guidelines"
+            },
+            {
+              "key": "target_sign_ultrasound",
+              "value": "present",
+              "logLR": 29,
+              "evidenceLabel": "US: target/doughnut sign (pathognomonic of intussusception)",
+              "citation": "APSA"
+            },
+            {
+              "key": "colicky_intermittent_pain",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Episodic colicky pain with drawing-up of knees",
+              "citation": "APSA"
+            },
+            {
+              "key": "redcurrant_jelly_stool",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Blood and mucus ('redcurrant jelly') stool \u2014 mucosal ischaemia",
+              "citation": "APSA"
+            },
+            {
+              "key": "sausage_mass_ruq",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Palpable sausage-shaped mass in RUQ (Dance's sign: empty RIF)",
+              "citation": "APSA"
+            },
+            {
+              "key": "air_enema_reduction",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Successful pneumatic / hydrostatic enema reduction (first-line)",
+              "citation": "APSA"
+            },
+            {
+              "key": "lethargy_pallor_shock",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Lethargy / pallor (late \u2014 strangulation and peritonitis)",
+              "citation": "APSA"
+            },
+            {
+              "key": "lead_point_over_2y",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Pathological lead point (Meckel's, polyp) if age >2 years",
+              "citation": "APSA"
+            }
+          ]
+        },
+        {
+          "name": "Hypertrophic Pyloric Stenosis",
+          "icd": "Q40.0",
+          "logPrior": -46,
+          "urgency": 1,
+          "systems": [
+            "gi",
+            "paediatric"
+          ],
+          "specialties": [
+            "paediatric_surgery"
+          ],
+          "features": [
+            {
+              "key": "age_2_8_weeks",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Onset 2\u20138 weeks of age (rarely at birth or >12 weeks)",
+              "citation": "NICE / BAPS"
+            },
+            {
+              "key": "projectile_nonbilious_vomiting",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Projectile, non-bilious vomiting after feeds \u2014 hungry immediately after",
+              "citation": "NICE"
+            },
+            {
+              "key": "olive_mass_epigastrium",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Palpable 'olive' mass in epigastrium (if felt: diagnostic)",
+              "citation": "NICE"
+            },
+            {
+              "key": "hypochloraemic_alkalosis",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Hypochloraemic, hypokalaemic metabolic alkalosis (vomiting HCl)",
+              "citation": "NICE"
+            },
+            {
+              "key": "ultrasound_pyloric_muscle",
+              "value": "present",
+              "logLR": 29,
+              "evidenceLabel": "US: pyloric muscle thickness >4 mm, canal length >17 mm (diagnostic)",
+              "citation": "NICE"
+            },
+            {
+              "key": "male_firstborn",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Male firstborn (4:1 M:F ratio)",
+              "citation": "NICE"
+            },
+            {
+              "key": "rehydrate_correct_alkalosis",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "IV rehydration to correct alkalosis before surgery (anaesthetic safety)",
+              "citation": "NICE"
+            },
+            {
+              "key": "ramstedt_pyloromyotomy",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Ramstedt pyloromyotomy (laparoscopic or open) \u2014 curative",
+              "citation": "NICE"
+            }
+          ]
+        },
+        {
+          "name": "Meckel's Diverticulum",
+          "icd": "Q43.0",
+          "logPrior": -39,
+          "urgency": 2,
+          "systems": [
+            "gi"
+          ],
+          "specialties": [
+            "paediatric_surgery",
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "rule_of_twos",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Rule of 2s: 2% population, 2 feet from ileocaecal valve, 2 inches long, 2:1 M:F",
+              "citation": "APSA"
+            },
+            {
+              "key": "painless_rectal_bleeding_child",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Painless rectal bleeding in child (ectopic gastric mucosa \u2014 ulceration)",
+              "citation": "APSA"
+            },
+            {
+              "key": "technetium_scan_positive",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "\u2079\u2079mTc-pertechnetate scan positive (ectopic gastric mucosa uptake)",
+              "citation": "APSA"
+            },
+            {
+              "key": "intussusception_lead_point",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Acts as lead point for intussusception",
+              "citation": "APSA"
+            },
+            {
+              "key": "periumbilical_pain_rif",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Periumbilical / RIF pain mimicking appendicitis",
+              "citation": "APSA"
+            },
+            {
+              "key": "volvulus_fibrous_band",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Small bowel volvulus / obstruction around fibrous band to umbilicus",
+              "citation": "APSA"
+            },
+            {
+              "key": "diverticulitis_meckel",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Meckels diverticulitis: RIF tenderness mimicking appendicitis (right-sided)",
+              "citation": "APSA"
+            },
+            {
+              "key": "laparoscopic_diverticulectomy",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Laparoscopic diverticulectomy / segmental resection",
+              "citation": "APSA"
+            }
+          ]
+        },
+        {
+          "name": "Hirschsprung's Disease",
+          "icd": "Q43.1",
+          "logPrior": -46,
+          "urgency": 1,
+          "systems": [
+            "gi",
+            "paediatric"
+          ],
+          "specialties": [
+            "paediatric_surgery"
+          ],
+          "features": [
+            {
+              "key": "neonatal_failure_meconium",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Failure to pass meconium within 48h of birth (95% of Hirschsprung's)",
+              "citation": "BAPS / APSA"
+            },
+            {
+              "key": "rectal_biopsy_absent_ganglion",
+              "value": "present",
+              "logLR": 30,
+              "evidenceLabel": "Rectal suction biopsy: absent ganglion cells in myenteric/submucosal plexus (gold standard)",
+              "citation": "BAPS"
+            },
+            {
+              "key": "contrast_enema_transition_zone",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "Contrast enema: transition zone (narrow aganglionic \u2192 dilated ganglionated segment)",
+              "citation": "BAPS"
+            },
+            {
+              "key": "abdominal_distension_neonate",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Abdominal distension in neonate / infant",
+              "citation": "BAPS"
+            },
+            {
+              "key": "haec_enterocolitis",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Hirschsprung-associated enterocolitis (HAEC): fever, diarrhoea, explosive stool, sepsis",
+              "citation": "BAPS"
+            },
+            {
+              "key": "pull_through_surgery",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Pull-through procedure (Swenson / Soave / Duhamel) \u2014 curative",
+              "citation": "BAPS"
+            },
+            {
+              "key": "delayed_older_child",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Delayed diagnosis: chronic constipation + failure to thrive in older child",
+              "citation": "BAPS"
+            },
+            {
+              "key": "down_syndrome_associated",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Down syndrome (trisomy 21) association in 10%",
+              "citation": "BAPS"
+            }
+          ]
+        },
+        {
+          "name": "Paediatric Appendicitis",
+          "icd": "K37",
+          "logPrior": -29,
+          "urgency": 2,
+          "systems": [
+            "gi",
+            "paediatric"
+          ],
+          "specialties": [
+            "paediatric_surgery",
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "pas_score_7_plus",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Paediatric Appendicitis Score \u22657 (sensitivity 95%, specificity 92%)",
+              "citation": "Samuel PAS Score 2002"
+            },
+            {
+              "key": "pain_migration_rif",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Pain migration from periumbilical to RIF (McBurney's point)",
+              "citation": "APSA"
+            },
+            {
+              "key": "anorexia_nausea_vomiting",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Anorexia, nausea, vomiting after pain onset",
+              "citation": "APSA"
+            },
+            {
+              "key": "rebound_guarding_rif",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Localised rebound tenderness / guarding at RIF",
+              "citation": "APSA"
+            },
+            {
+              "key": "elevated_crp_wbc",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "WBC >12 \u00d7 10\u2079/L and CRP >10 mg/L",
+              "citation": "APSA"
+            },
+            {
+              "key": "ultrasound_noncompressible",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "US: non-compressible appendix >6 mm with periappendiceal fat stranding",
+              "citation": "APSA"
+            },
+            {
+              "key": "perforation_rate_under5",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Perforation rate >50% in children <5 years (atypical presentation)",
+              "citation": "APSA"
+            },
+            {
+              "key": "laparoscopic_appendicectomy",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Laparoscopic appendicectomy (standard \u22653 years; open for perforation / complex)",
+              "citation": "APSA"
+            }
+          ]
+        },
+        {
+          "name": "Necrotising Enterocolitis (NEC)",
+          "icd": "P77",
+          "logPrior": -46,
+          "urgency": 3,
+          "systems": [
+            "gi",
+            "paediatric"
+          ],
+          "specialties": [
+            "neonatology",
+            "paediatric_surgery"
+          ],
+          "features": [
+            {
+              "key": "premature_neonate_low_bw",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Premature neonate (<32 weeks) or birth weight <1500 g",
+              "citation": "NICE NEC Guidelines / ESPGHAN"
+            },
+            {
+              "key": "pneumatosis_intestinalis",
+              "value": "present",
+              "logLR": 28,
+              "evidenceLabel": "Pneumatosis intestinalis on AXR (Bell stage IIa) \u00b1 portal venous gas (IIIa)",
+              "citation": "Bell NEC Staging 1978"
+            },
+            {
+              "key": "bell_stage_2b_plus",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Bell staging \u2265IIb: clinical deterioration + radiographic confirmation",
+              "citation": "Bell 1978"
+            },
+            {
+              "key": "bloody_stool_nec",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Frank blood PR (mucosal necrosis)",
+              "citation": "ESPGHAN"
+            },
+            {
+              "key": "feeding_intolerance_distension",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Feeding intolerance, bilious aspirates, abdominal distension",
+              "citation": "ESPGHAN"
+            },
+            {
+              "key": "lactate_elevated",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Elevated lactate (bowel ischaemia / necrosis)",
+              "citation": "ESPGHAN"
+            },
+            {
+              "key": "nbm_antibiotics_tpn",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "NBM + IV antibiotics + TPN (medical management stage I/II)",
+              "citation": "NICE"
+            },
+            {
+              "key": "surgical_perforation",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Surgical resection / stoma for perforation or deterioration",
+              "citation": "BAPS"
+            }
+          ]
+        },
+        {
+          "name": "Malrotation with Midgut Volvulus",
+          "icd": "Q43.3",
+          "logPrior": -46,
+          "urgency": 3,
+          "systems": [
+            "gi",
+            "paediatric"
+          ],
+          "specialties": [
+            "paediatric_surgery"
+          ],
+          "features": [
+            {
+              "key": "bilious_vomiting_neonate",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Bilious vomiting in neonate \u2014 surgical emergency until excluded",
+              "citation": "APSA / BAPS"
+            },
+            {
+              "key": "upper_gi_corkscrew",
+              "value": "present",
+              "logLR": 28,
+              "evidenceLabel": "Upper GI contrast: duodenojejunal junction right of midline / corkscrew (volvulus)",
+              "citation": "APSA"
+            },
+            {
+              "key": "sudden_abdominal_pain_shock",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Sudden deterioration / cardiovascular collapse (midgut ischaemia)",
+              "citation": "APSA"
+            },
+            {
+              "key": "abdominal_distension_bloody",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Abdominal distension + bloody stool (intestinal ischaemia)",
+              "citation": "APSA"
+            },
+            {
+              "key": "ladd_procedure_emergency",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Ladd's procedure: de-volvulus + Ladd's bands division + appendicectomy",
+              "citation": "APSA"
+            },
+            {
+              "key": "short_gut_risk",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Short gut syndrome risk if extensive ischaemic resection required",
+              "citation": "APSA"
+            },
+            {
+              "key": "sma_whirlpool_doppler",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "US Doppler: 'whirlpool sign' (SMA wrapping SMV) \u2014 confirms volvulus",
+              "citation": "APSA"
+            },
+            {
+              "key": "peritonitis_periumbilical",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Peritonitis: board-like abdomen (late \u2014 transmural infarction)",
+              "citation": "APSA"
+            }
+          ]
+        },
+        {
+          "name": "Paediatric Inguinal Hernia",
+          "icd": "K40.90",
+          "logPrior": -32,
+          "urgency": 1,
+          "systems": [
+            "gi",
+            "paediatric"
+          ],
+          "specialties": [
+            "paediatric_surgery"
+          ],
+          "features": [
+            {
+              "key": "indirect_patent_processus",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Indirect inguinal hernia (patent processus vaginalis \u2014 congenital)",
+              "citation": "BAPS / APSA"
+            },
+            {
+              "key": "male_premature_increased",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Male sex and prematurity increase risk (premature: up to 30%)",
+              "citation": "BAPS"
+            },
+            {
+              "key": "groin_swelling_crying",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Intermittent groin swelling enlarges with crying / coughing / Valsalva",
+              "citation": "BAPS"
+            },
+            {
+              "key": "incarceration_irreducible",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Irreducible incarceration \u2014 emergency in infant (strangulation risk high)",
+              "citation": "BAPS"
+            },
+            {
+              "key": "ovary_female_hernia",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Female: ovary / fallopian tube herniation (high ovarian torsion risk)",
+              "citation": "BAPS"
+            },
+            {
+              "key": "herniotomy_no_mesh",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Herniotomy (ligation of sac) \u2014 no mesh in children",
+              "citation": "BAPS"
+            },
+            {
+              "key": "contralateral_inspection",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Laparoscopic contralateral inspection (bilateral PPV 20\u201330%)",
+              "citation": "BAPS"
+            },
+            {
+              "key": "early_repair_infants",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Repair at diagnosis in infants (not deferred \u2014 strangulation risk)",
+              "citation": "BAPS"
+            }
+          ]
+        }
+      ]
+    },
+    "breastDisease": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Invasive Breast Carcinoma",
+          "icd": "C50.919",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "oncology",
+            "breast"
+          ],
+          "specialties": [
+            "breast_surgery",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "hard_irregular_mass",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Hard, irregular, non-tender breast mass",
+              "citation": "NICE NG101 Breast Cancer Guidelines"
+            },
+            {
+              "key": "triple_assessment_positive",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "Triple assessment: clinical + imaging + histology all suspicious/malignant",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "core_biopsy_invasive_ca",
+              "value": "present",
+              "logLR": 30,
+              "evidenceLabel": "Core biopsy: invasive ductal/lobular carcinoma (B5b)",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "mammogram_spiculate_birads5",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Mammogram: spiculate mass / malignant microcalcifications (BIRADS 5)",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "skin_nipple_changes",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Skin dimpling / nipple retraction / peau d'orange",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "axillary_lymphadenopathy",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Palpable axillary lymph nodes \u2014 staging US + FNAC",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "er_pr_her2_receptor",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "ER/PR/HER2 receptor status determines systemic therapy pathway",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "sentinel_node_biopsy",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Sentinel lymph node biopsy for axillary staging",
+              "citation": "NICE NG101"
+            }
+          ]
+        },
+        {
+          "name": "Ductal Carcinoma In Situ (DCIS)",
+          "icd": "D05.10",
+          "logPrior": -32,
+          "urgency": 0,
+          "systems": [
+            "oncology",
+            "breast"
+          ],
+          "specialties": [
+            "breast_surgery",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "mammographic_microcalcifications",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Pleomorphic/casting microcalcifications on mammogram (most common presentation)",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "stereotactic_vab_confirmed",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "Stereotactic vacuum-assisted biopsy: DCIS confirmed",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "no_invasion_basement",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "No invasion through basement membrane (in situ \u2014 no metastatic potential)",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "high_grade_necrosis",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "High-grade DCIS with necrosis: higher recurrence / progression risk",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "wide_local_excision_margins",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Wide local excision with clear margins (>2 mm)",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "radiotherapy_post_wle",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Adjuvant radiotherapy reduces local recurrence by 50% (post-WLE)",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "tamoxifen_er_positive",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Tamoxifen reduces recurrence in ER-positive DCIS",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "sentinel_node_if_mastectomy",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Sentinel node biopsy if mastectomy planned (occult invasion risk)",
+              "citation": "NICE NG101"
+            }
+          ]
+        },
+        {
+          "name": "Inflammatory Breast Cancer",
+          "icd": "C50.91",
+          "logPrior": -46,
+          "urgency": 1,
+          "systems": [
+            "oncology",
+            "breast"
+          ],
+          "specialties": [
+            "breast_surgery",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "peau_dorange_erythema",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "Peau d'orange + erythema involving \u22651/3 of breast (clinical diagnosis)",
+              "citation": "NCCN IBC Guidelines"
+            },
+            {
+              "key": "rapid_onset_weeks",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Rapid onset over days to weeks (not gradual months)",
+              "citation": "NCCN"
+            },
+            {
+              "key": "dermal_lymphatic_emboli",
+              "value": "present",
+              "logLR": 28,
+              "evidenceLabel": "Skin punch biopsy: dermal lymphatic tumour emboli (pathognomonic)",
+              "citation": "NCCN"
+            },
+            {
+              "key": "no_dominant_mass",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Often no dominant mass (skin thickening predominates)",
+              "citation": "NCCN"
+            },
+            {
+              "key": "neoadjuvant_chemo_mandatory",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Neoadjuvant chemotherapy mandatory before surgery",
+              "citation": "NCCN"
+            },
+            {
+              "key": "mastectomy_not_bcs",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Mastectomy required \u2014 breast-conserving surgery contraindicated",
+              "citation": "NCCN"
+            },
+            {
+              "key": "her2_positive_40_percent",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "HER2-positive in ~40% (trastuzumab adds benefit)",
+              "citation": "NCCN"
+            },
+            {
+              "key": "poor_prognosis_40_percent",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "5-year survival ~40% (worst subtype \u2014 early systemic spread)",
+              "citation": "NCCN"
+            }
+          ]
+        },
+        {
+          "name": "Breast Abscess",
+          "icd": "N61.1",
+          "logPrior": -35,
+          "urgency": 1,
+          "systems": [
+            "breast",
+            "infectious"
+          ],
+          "specialties": [
+            "breast_surgery"
+          ],
+          "features": [
+            {
+              "key": "fluctuant_tender_erythema",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Fluctuant, tender, erythematous breast mass",
+              "citation": "NICE Mastitis / Breast Abscess CKS"
+            },
+            {
+              "key": "lactational_puerperal",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Lactational abscess (most common \u2014 S. aureus, nipple fissure entry)",
+              "citation": "NICE CKS"
+            },
+            {
+              "key": "ultrasound_guided_aspiration",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "US-guided aspiration \u00b1 repeat aspirations (first-line over surgical drainage)",
+              "citation": "NICE CKS"
+            },
+            {
+              "key": "staph_aureus_mrsa",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "S. aureus cultured (MRSA screen if hospital-onset or recurrent)",
+              "citation": "NICE CKS"
+            },
+            {
+              "key": "can_continue_breastfeeding",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Continue breastfeeding / pumping encouraged during treatment",
+              "citation": "NICE CKS"
+            },
+            {
+              "key": "flucloxacillin_antibiotics",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Flucloxacillin (co-amoxiclav if non-lactational / mixed anaerobes)",
+              "citation": "NICE CKS"
+            },
+            {
+              "key": "periareolar_non_lactational",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Periareolar abscess (non-lactational): anaerobes, smoking, duct ectasia",
+              "citation": "NICE CKS"
+            },
+            {
+              "key": "surgical_drainage_refractory",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Surgical incision / drainage if aspiration fails or large cavity",
+              "citation": "NICE CKS"
+            }
+          ]
+        },
+        {
+          "name": "Fibroadenoma",
+          "icd": "D24",
+          "logPrior": -28,
+          "urgency": 0,
+          "systems": [
+            "breast"
+          ],
+          "specialties": [
+            "breast_surgery"
+          ],
+          "features": [
+            {
+              "key": "smooth_mobile_firm_mass",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Smooth, firm, mobile 'breast mouse' \u2014 non-tender",
+              "citation": "NICE NG101 / ABS Guidelines"
+            },
+            {
+              "key": "young_woman_under_35",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Commonest benign breast lump in women <35 years",
+              "citation": "ABS"
+            },
+            {
+              "key": "birads_2_3_ultrasound",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Ultrasound: oval, circumscribed, homogeneous (BIRADS 2/3 \u2014 benign)",
+              "citation": "ABS"
+            },
+            {
+              "key": "core_biopsy_fibroepithelial",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Core biopsy: fibroepithelial lesion \u2014 fibroadenoma (B2)",
+              "citation": "ABS"
+            },
+            {
+              "key": "conservative_if_under_3cm",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Conservative management if <3 cm and triple assessment benign",
+              "citation": "ABS"
+            },
+            {
+              "key": "no_malignant_transformation",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "No significant malignant transformation risk (simple fibroadenoma)",
+              "citation": "ABS"
+            },
+            {
+              "key": "vacuum_assisted_excision",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Vacuum-assisted excision (minimally invasive \u2014 cosmetically preferable)",
+              "citation": "ABS"
+            },
+            {
+              "key": "enlarges_pregnancy_ocp",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "May enlarge during pregnancy / combined OCP \u2014 reassurance appropriate",
+              "citation": "ABS"
+            }
+          ]
+        },
+        {
+          "name": "Duct Ectasia / Periductal Mastitis",
+          "icd": "N60.49",
+          "logPrior": -35,
+          "urgency": 0,
+          "systems": [
+            "breast"
+          ],
+          "specialties": [
+            "breast_surgery"
+          ],
+          "features": [
+            {
+              "key": "nipple_discharge_multiduct",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Green / brown / blood-stained discharge from multiple ducts",
+              "citation": "NICE / ABS Nipple Discharge Guidelines"
+            },
+            {
+              "key": "periareolar_mass_inflammation",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Periareolar inflammation / tender mass (periductal mastitis)",
+              "citation": "ABS"
+            },
+            {
+              "key": "smoking_association",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Strong association with smoking (periductal mastitis)",
+              "citation": "ABS"
+            },
+            {
+              "key": "mammary_duct_fistula",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Mammary duct fistula to areola margin (complication)",
+              "citation": "ABS"
+            },
+            {
+              "key": "microdochectomy_single_duct",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Hadfield microdochectomy for single-duct discharge",
+              "citation": "ABS"
+            },
+            {
+              "key": "total_duct_excision",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Total duct excision for multiduct disease / fistula",
+              "citation": "ABS"
+            },
+            {
+              "key": "coamoxiclav_anaerobes",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Co-amoxiclav (mixed aerobic / anaerobic organisms)",
+              "citation": "ABS"
+            },
+            {
+              "key": "bilateral_inverted_nipples",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Bilateral nipple inversion (duct foreshortening)",
+              "citation": "ABS"
+            }
+          ]
+        },
+        {
+          "name": "Phyllodes Tumour",
+          "icd": "D48.60",
+          "logPrior": -46,
+          "urgency": 0,
+          "systems": [
+            "breast",
+            "oncology"
+          ],
+          "specialties": [
+            "breast_surgery"
+          ],
+          "features": [
+            {
+              "key": "large_rapid_growing_mass",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Large (>3 cm), rapidly growing breast mass",
+              "citation": "ABS / NCCN Phyllodes Guidelines"
+            },
+            {
+              "key": "age_40_50",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Peak incidence age 40\u201350 years (older than fibroadenoma)",
+              "citation": "ABS"
+            },
+            {
+              "key": "core_biopsy_leaf_like",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Core biopsy: cellular stroma + leaf-like projections (phyllodes)",
+              "citation": "ABS"
+            },
+            {
+              "key": "wide_excision_1cm_margin",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Wide excision with \u22651 cm clear margins (recurrence if inadequate)",
+              "citation": "ABS"
+            },
+            {
+              "key": "malignant_haematogenous",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Malignant phyllodes: haematogenous metastasis (lung > bone > liver)",
+              "citation": "ABS"
+            },
+            {
+              "key": "local_recurrence_10_20",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "10\u201320% local recurrence after excision (especially borderline / malignant)",
+              "citation": "ABS"
+            },
+            {
+              "key": "no_sentinel_node",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "No lymph node staging (haematogenous spread \u2014 not lymphatic)",
+              "citation": "ABS"
+            },
+            {
+              "key": "mastectomy_if_large",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Mastectomy if tumour >10 cm or inadequate margins achievable",
+              "citation": "ABS"
+            }
+          ]
+        },
+        {
+          "name": "Paget's Disease of the Nipple",
+          "icd": "C50.01",
+          "logPrior": -46,
+          "urgency": 1,
+          "systems": [
+            "oncology",
+            "breast"
+          ],
+          "specialties": [
+            "breast_surgery"
+          ],
+          "features": [
+            {
+              "key": "eczematous_nipple_areola",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Eczematous, weeping, crusted changes of nipple / areola",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "paget_cells_biopsy",
+              "value": "present",
+              "logLR": 29,
+              "evidenceLabel": "Nipple biopsy: large pale Paget cells (intraepidermal carcinoma cells)",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "underlying_dcis_idc",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Underlying DCIS or IDC in 95% of cases",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "no_steroid_response",
+              "value": "absent",
+              "logLR": 21,
+              "evidenceLabel": "Does NOT respond to topical steroids (unlike eczema \u2014 key differentiator)",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "unilateral_involvement",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Unilateral (bilateral = contact dermatitis or eczema)",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "mri_assess_extent",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Breast MRI to assess extent of underlying disease",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "nipple_areola_excision",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Central quadrantectomy (nipple-areola excision) \u00b1 mastectomy",
+              "citation": "NICE NG101"
+            },
+            {
+              "key": "nipple_destruction_late",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Nipple destruction / retraction (late sign \u2014 delayed presentation)",
+              "citation": "NICE NG101"
+            }
+          ]
+        }
+      ]
+    },
+    "acuteObstetricGynae": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Ectopic Pregnancy",
+          "icd": "O00.10",
+          "logPrior": -35,
+          "urgency": 3,
+          "systems": [
+            "gynaecology"
+          ],
+          "specialties": [
+            "gynaecology"
+          ],
+          "features": [
+            {
+              "key": "positive_serum_bhcg",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Positive serum \u03b2-hCG (quantitative)",
+              "citation": "RCOG GTG No. 21 Ectopic Pregnancy 2016"
+            },
+            {
+              "key": "empty_uterus_tvs",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "TVS: no intrauterine pregnancy (discriminatory zone \u03b2-hCG >1500 IU/L)",
+              "citation": "RCOG GTG 21"
+            },
+            {
+              "key": "adnexal_mass_ectopic",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "Adnexal mass with \u03b2-hCG (99% sensitivity for ectopic)",
+              "citation": "RCOG GTG 21"
+            },
+            {
+              "key": "haemoperitoneum_pouch",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Free fluid in pouch of Douglas / haemoperitoneum on US",
+              "citation": "RCOG GTG 21"
+            },
+            {
+              "key": "laparoscopic_salpingotomy",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Laparoscopic salpingotomy (tube-conserving) or salpingectomy",
+              "citation": "RCOG GTG 21"
+            },
+            {
+              "key": "methotrexate_unruptured",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Methotrexate if unruptured, \u03b2-hCG <5000, no cardiac activity",
+              "citation": "RCOG GTG 21"
+            },
+            {
+              "key": "haemodynamic_collapse_ruptured",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Haemodynamic collapse (ruptured ectopic) \u2192 emergency laparotomy",
+              "citation": "RCOG GTG 21"
+            },
+            {
+              "key": "risk_factors_pid_ivf",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Risk factors: previous PID / ectopic / tubal surgery / IVF",
+              "citation": "RCOG GTG 21"
+            }
+          ]
+        },
+        {
+          "name": "Ovarian Torsion",
+          "icd": "N83.51",
+          "logPrior": -39,
+          "urgency": 3,
+          "systems": [
+            "gynaecology"
+          ],
+          "specialties": [
+            "gynaecology"
+          ],
+          "features": [
+            {
+              "key": "sudden_severe_pelvic_pain",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Sudden-onset severe unilateral pelvic pain (right > left)",
+              "citation": "RCOG / ASRM Ovarian Torsion Guidelines"
+            },
+            {
+              "key": "nausea_vomiting_pain",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Nausea / vomiting accompanying pain (autonomic response)",
+              "citation": "ASRM"
+            },
+            {
+              "key": "adnexal_mass_predisposing",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Predisposing adnexal mass (dermoid cyst commonest)",
+              "citation": "ASRM"
+            },
+            {
+              "key": "absent_doppler_flow",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Absent / reduced ovarian Doppler flow on US (not 100% sensitive)",
+              "citation": "ASRM"
+            },
+            {
+              "key": "laparoscopic_detorsion",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Laparoscopic detorsion even if dusky \u2014 viable ovary in majority",
+              "citation": "ASRM"
+            },
+            {
+              "key": "adnexectomy_necrosis_only",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Adnexectomy only if frankly necrotic (avoid oophorectomy in reproductive-age women)",
+              "citation": "ASRM"
+            },
+            {
+              "key": "right_sided_predominance",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Right-sided predominance (sigmoid colon protects left)",
+              "citation": "ASRM"
+            },
+            {
+              "key": "pregnancy_ohss_risk",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Ovarian hyperstimulation / pregnancy increases risk",
+              "citation": "ASRM"
+            }
+          ]
+        },
+        {
+          "name": "HELLP Syndrome",
+          "icd": "O14.20",
+          "logPrior": -46,
+          "urgency": 3,
+          "systems": [
+            "obstetric",
+            "haematology"
+          ],
+          "specialties": [
+            "obstetric"
+          ],
+          "features": [
+            {
+              "key": "haemolysis_schistocytes",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "MAHA: schistocytes, elevated LDH >600 IU/L, bilirubin >20 \u03bcmol/L",
+              "citation": "ACOG HELLP Guidelines"
+            },
+            {
+              "key": "elevated_ast_alt",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "AST >70 IU/L or ALT elevated (hepatic involvement)",
+              "citation": "ACOG"
+            },
+            {
+              "key": "platelets_below_100",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Platelets <100 \u00d7 10\u2079/L (severe class I: <50)",
+              "citation": "ACOG"
+            },
+            {
+              "key": "epigastric_ruq_pain",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Epigastric / RUQ pain (hepatic capsule distension)",
+              "citation": "ACOG"
+            },
+            {
+              "key": "hypertension_proteinuria",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Pre-eclampsia / de novo hypertension (15% HELLP without hypertension)",
+              "citation": "ACOG"
+            },
+            {
+              "key": "delivery_definitive",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Delivery is the only definitive treatment (expedite if \u226534 weeks)",
+              "citation": "ACOG"
+            },
+            {
+              "key": "hepatic_haematoma_rupture",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Subcapsular hepatic haematoma / rupture on US (rare \u2014 critical emergency)",
+              "citation": "ACOG"
+            },
+            {
+              "key": "magnesium_sulphate",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "MgSO\u2084 for seizure prophylaxis / treatment",
+              "citation": "ACOG"
+            }
+          ]
+        },
+        {
+          "name": "Placental Abruption",
+          "icd": "O45.90",
+          "logPrior": -39,
+          "urgency": 3,
+          "systems": [
+            "obstetric"
+          ],
+          "specialties": [
+            "obstetric"
+          ],
+          "features": [
+            {
+              "key": "painful_antepartum_haemorrhage",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Painful antepartum haemorrhage (contrast with placenta praevia \u2014 painless)",
+              "citation": "RCOG GTG No. 63"
+            },
+            {
+              "key": "uterine_tenderness_rigidity",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Uterine tenderness / board-like rigidity (concealed abruption)",
+              "citation": "RCOG GTG 63"
+            },
+            {
+              "key": "fetal_distress_ctg",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Fetal distress / decelerations / bradycardia on CTG",
+              "citation": "RCOG GTG 63"
+            },
+            {
+              "key": "retroplacental_clot_us",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Retroplacental clot on ultrasound (insensitive \u2014 clinical diagnosis)",
+              "citation": "RCOG GTG 63"
+            },
+            {
+              "key": "dic_coagulopathy",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "DIC: low fibrinogen, elevated D-dimer, prolonged PT/aPTT (major abruption)",
+              "citation": "RCOG GTG 63"
+            },
+            {
+              "key": "emergency_caesarean",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Emergency caesarean section for fetal / maternal compromise",
+              "citation": "RCOG GTG 63"
+            },
+            {
+              "key": "concealed_haemorrhage_shock",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Concealed abruption: maternal shock without visible external bleeding",
+              "citation": "RCOG GTG 63"
+            },
+            {
+              "key": "hypertension_cocaine_trauma",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Risk factors: hypertension, cocaine use, trauma, smoking, previous abruption",
+              "citation": "RCOG GTG 63"
+            }
+          ]
+        },
+        {
+          "name": "Ovarian Cancer",
+          "icd": "C56.9",
+          "logPrior": -39,
+          "urgency": 1,
+          "systems": [
+            "gynaecology",
+            "oncology"
+          ],
+          "specialties": [
+            "gynaecology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "ca125_elevated_postmenop",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "CA-125 >35 U/mL in postmenopausal woman (RMI \u2265250 \u2192 refer MDT)",
+              "citation": "NICE NG122 Ovarian Cancer"
+            },
+            {
+              "key": "complex_adnexal_mass",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "US: complex adnexal mass with solid components \u00b1 ascites (IOTA simple rules)",
+              "citation": "NICE NG122"
+            },
+            {
+              "key": "brca1_brca2_hereditary",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "BRCA1/2 mutation: lifetime risk 40\u201360% (BRCA1 > BRCA2)",
+              "citation": "NICE NG122"
+            },
+            {
+              "key": "late_stage_presentation",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "75% present at stage III/IV (peritoneal seeding, ascites)",
+              "citation": "NICE NG122"
+            },
+            {
+              "key": "omental_peritoneal_spread",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "CT: omental caking / peritoneal deposits (stage III)",
+              "citation": "NICE NG122"
+            },
+            {
+              "key": "debulking_carboplatin_taxol",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Primary debulking surgery + carboplatin/paclitaxel chemotherapy",
+              "citation": "NICE NG122"
+            },
+            {
+              "key": "ca125_monitor_response",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "CA-125 response monitors chemotherapy efficacy",
+              "citation": "NICE NG122"
+            },
+            {
+              "key": "parp_inhibitor_maintenance",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "PARP inhibitor maintenance (olaparib) in BRCA-mutated disease",
+              "citation": "NICE NG122"
+            }
+          ]
+        },
+        {
+          "name": "Pre-eclampsia / Eclampsia",
+          "icd": "O14.90",
+          "logPrior": -32,
+          "urgency": 3,
+          "systems": [
+            "obstetric"
+          ],
+          "specialties": [
+            "obstetric"
+          ],
+          "features": [
+            {
+              "key": "hypertension_after_20_weeks",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "New hypertension \u2265140/90 mmHg after 20 weeks gestation",
+              "citation": "RCOG GTG No. 10A Pre-eclampsia"
+            },
+            {
+              "key": "proteinuria_end_organ",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Proteinuria \u2265300 mg/24h OR end-organ dysfunction (new criteria)",
+              "citation": "ISSHP 2018"
+            },
+            {
+              "key": "magnesium_sulphate_seizure",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "MgSO\u2084 4 g IV loading dose (eclampsia treatment and prophylaxis)",
+              "citation": "Magpie Trial"
+            },
+            {
+              "key": "labetalol_severe_htn",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "IV labetalol / hydralazine / oral nifedipine for severe hypertension",
+              "citation": "RCOG GTG 10A"
+            },
+            {
+              "key": "fetal_growth_restriction",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "FGR / oligohydramnios (placental insufficiency marker)",
+              "citation": "RCOG GTG 10A"
+            },
+            {
+              "key": "delivery_after_34_weeks",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Delivery after 34 weeks or earlier if maternal/fetal instability",
+              "citation": "RCOG GTG 10A"
+            },
+            {
+              "key": "low_dose_aspirin_prevention",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Aspirin 150 mg from 12\u201336 weeks (prevention in high-risk patients)",
+              "citation": "ASPRE Trial"
+            },
+            {
+              "key": "headache_visual_epigastric",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Severe headache / visual disturbance / epigastric pain (impending eclampsia)",
+              "citation": "RCOG GTG 10A"
+            }
+          ]
+        },
+        {
+          "name": "Endometriosis",
+          "icd": "N80.0",
+          "logPrior": -29,
+          "urgency": 0,
+          "systems": [
+            "gynaecology"
+          ],
+          "specialties": [
+            "gynaecology"
+          ],
+          "features": [
+            {
+              "key": "cyclical_dysmenorrhoea",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Severe cyclical dysmenorrhoea (worst 1\u20132 days before period)",
+              "citation": "ESHRE Endometriosis Guidelines 2022"
+            },
+            {
+              "key": "deep_dyspareunia",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Deep dyspareunia (posterior fornix / pouch of Douglas involvement)",
+              "citation": "ESHRE 2022"
+            },
+            {
+              "key": "laparoscopy_powder_burn",
+              "value": "present",
+              "logLR": 28,
+              "evidenceLabel": "Diagnostic laparoscopy: blue/black powder-burn lesions (gold standard)",
+              "citation": "ESHRE 2022"
+            },
+            {
+              "key": "ovarian_endometrioma",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Ovarian endometrioma (chocolate cyst): ground-glass US appearance",
+              "citation": "ESHRE 2022"
+            },
+            {
+              "key": "gnrh_analogue_hormonal",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "GnRH analogues / progestogens / combined OCP (medical management)",
+              "citation": "ESHRE 2022"
+            },
+            {
+              "key": "laparoscopic_excision",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Laparoscopic excision (superior to ablation for deep infiltrating disease)",
+              "citation": "ESHRE 2022"
+            },
+            {
+              "key": "infertility_30_50_percent",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "30\u201350% of infertile women have endometriosis",
+              "citation": "ESHRE 2022"
+            },
+            {
+              "key": "ca125_mildly_elevated",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "CA-125 mildly elevated (not diagnostic \u2014 supports clinical picture)",
+              "citation": "ESHRE 2022"
+            }
+          ]
+        },
+        {
+          "name": "Gestational Trophoblastic Disease",
+          "icd": "O01.9",
+          "logPrior": -46,
+          "urgency": 1,
+          "systems": [
+            "gynaecology",
+            "oncology"
+          ],
+          "specialties": [
+            "gynaecology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "bhcg_disproportionate",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "\u03b2-hCG markedly elevated (disproportionate to gestational age)",
+              "citation": "RCOG GTG No. 38 GTD 2020"
+            },
+            {
+              "key": "snowstorm_ultrasound",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "US: 'snowstorm' vesicular appearance (complete hydatidiform mole)",
+              "citation": "RCOG GTG 38"
+            },
+            {
+              "key": "hyperemesis_early_pet",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Hyperemesis gravidarum and early-onset pre-eclampsia (<20 weeks)",
+              "citation": "RCOG GTG 38"
+            },
+            {
+              "key": "suction_evacuation",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Suction evacuation (complete/partial mole) with histology",
+              "citation": "RCOG GTG 38"
+            },
+            {
+              "key": "serial_bhcg_monitoring",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Serial \u03b2-hCG monitoring: plateau / rise \u2192 gestational trophoblastic neoplasia",
+              "citation": "RCOG GTG 38"
+            },
+            {
+              "key": "methotrexate_emaco_chemo",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Methotrexate / EMA-CO (malignant GTN \u2014 near 100% cure rate)",
+              "citation": "RCOG GTG 38"
+            },
+            {
+              "key": "large_for_dates_uterus",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Uterus large for dates (molar pregnancy)",
+              "citation": "RCOG GTG 38"
+            },
+            {
+              "key": "contraception_6_12_months",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Contraception 6\u201312 months post-mole (prevent \u03b2-hCG confusion with new pregnancy)",
+              "citation": "RCOG GTG 38"
+            }
+          ]
+        }
+      ]
+    },
+    "headNeckSurgical": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Thyroid Cancer",
+          "icd": "C73",
+          "logPrior": -39,
+          "urgency": 1,
+          "systems": [
+            "endocrine",
+            "oncology"
+          ],
+          "specialties": [
+            "endocrine_surgery",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "hard_fixed_thyroid_nodule",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Hard, irregular, fixed thyroid nodule (suspicious features)",
+              "citation": "NICE NG12 / BTA Thyroid Cancer Guidelines 2014"
+            },
+            {
+              "key": "fnac_bethesda_5_6",
+              "value": "present",
+              "logLR": 29,
+              "evidenceLabel": "US-guided FNAC: Bethesda V (suspicious) or VI (malignant)",
+              "citation": "BTA 2014"
+            },
+            {
+              "key": "tirads_5_ultrasound",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "US: microcalcification, irregular margins, taller-than-wide, hypoechoic (TIRADS 5)",
+              "citation": "BTA 2014"
+            },
+            {
+              "key": "cervical_lymphadenopathy",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Ipsilateral cervical lymph node metastases",
+              "citation": "BTA 2014"
+            },
+            {
+              "key": "papillary_80_percent",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Papillary carcinoma (80%): psammoma bodies, orphan Annie nuclei, BRAF mutation",
+              "citation": "BTA 2014"
+            },
+            {
+              "key": "total_thyroidectomy",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Total thyroidectomy \u00b1 central neck dissection (nodal disease)",
+              "citation": "BTA 2014"
+            },
+            {
+              "key": "radioiodine_i131",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Postoperative radioiodine (I-131) remnant ablation (papillary/follicular)",
+              "citation": "BTA 2014"
+            },
+            {
+              "key": "thyroglobulin_monitoring",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Thyroglobulin + anti-Tg monitoring for recurrence",
+              "citation": "BTA 2014"
+            }
+          ]
+        },
+        {
+          "name": "Primary Hyperparathyroidism",
+          "icd": "E21.0",
+          "logPrior": -35,
+          "urgency": 0,
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "endocrine_surgery"
+          ],
+          "features": [
+            {
+              "key": "incidental_hypercalcaemia",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Incidental hypercalcaemia on biochemistry (most common presentation)",
+              "citation": "NICE PHPT Guidelines / Fourth International Workshop 2014"
+            },
+            {
+              "key": "pth_elevated_with_calcium",
+              "value": "present",
+              "logLR": 29,
+              "evidenceLabel": "Elevated PTH with simultaneous hypercalcaemia (pathognomonic)",
+              "citation": "Fourth International Workshop 2014"
+            },
+            {
+              "key": "sestamibi_adenoma",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Sestamibi scan / 4D-CT: localises adenoma (80\u201385% single gland)",
+              "citation": "NICE"
+            },
+            {
+              "key": "bones_stones_groans_moans",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Bones (osteitis fibrosa), stones (nephrolithiasis), groans (GI), moans (psych)",
+              "citation": "Classic mnemonic"
+            },
+            {
+              "key": "minimally_invasive_parathyroid",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Minimally invasive parathyroidectomy (focused approach)",
+              "citation": "NICE"
+            },
+            {
+              "key": "intraoperative_pth_assay",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Intraoperative PTH: >50% fall confirms cure (Miami criterion)",
+              "citation": "Miami Criterion"
+            },
+            {
+              "key": "men1_men2a_association",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "MEN1 / MEN2A association (multigland disease \u2014 4-gland exploration)",
+              "citation": "NICE"
+            },
+            {
+              "key": "vitamin_d_deficiency_masking",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Vitamin D deficiency may mask hypercalcaemia \u2014 replete and re-check",
+              "citation": "NICE"
+            }
+          ]
+        },
+        {
+          "name": "Parotid Pleomorphic Adenoma",
+          "icd": "D11.0",
+          "logPrior": -35,
+          "urgency": 0,
+          "systems": [
+            "ent"
+          ],
+          "specialties": [
+            "ent",
+            "head_neck_surgery"
+          ],
+          "features": [
+            {
+              "key": "slow_painless_parotid_mass",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Slow-growing, painless, firm mass in superficial parotid lobe",
+              "citation": "BSSO / ENT UK Salivary Gland Guidelines"
+            },
+            {
+              "key": "mri_heterogeneous_margins",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "MRI: heterogeneous signal, well-defined margins (most informative imaging)",
+              "citation": "ENT UK"
+            },
+            {
+              "key": "fnac_mixed_tumour",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "FNAC: mixed tumour (epithelial + myxoid stroma)",
+              "citation": "ENT UK"
+            },
+            {
+              "key": "facial_nerve_intact",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Facial nerve intact (palsy suggests malignancy \u2014 adenocarcinoma / MEC)",
+              "citation": "ENT UK"
+            },
+            {
+              "key": "superficial_parotidectomy",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Superficial parotidectomy preserving facial nerve (curative)",
+              "citation": "ENT UK"
+            },
+            {
+              "key": "recurrence_seeding_risk",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Recurrence risk if capsule breached (pseudopodal growth pattern)",
+              "citation": "ENT UK"
+            },
+            {
+              "key": "malignant_transformation_10",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "5\u201310% malignant transformation over 10+ years (carcinoma ex PA)",
+              "citation": "ENT UK"
+            },
+            {
+              "key": "warthin_bilateral_smoker",
+              "value": "absent",
+              "logLR": 16,
+              "evidenceLabel": "Warthin's tumour absent (bilateral, smoker, older male \u2014 different entity)",
+              "citation": "ENT UK"
+            }
+          ]
+        },
+        {
+          "name": "Deep Neck Space Infection",
+          "icd": "J39.0",
+          "logPrior": -46,
+          "urgency": 3,
+          "systems": [
+            "ent",
+            "infectious"
+          ],
+          "specialties": [
+            "ent",
+            "head_neck_surgery"
+          ],
+          "features": [
+            {
+              "key": "neck_swelling_trismus_fever",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Neck swelling + trismus + high fever + odynophagia",
+              "citation": "ENT UK / AAO Deep Neck Space Infection Guidelines"
+            },
+            {
+              "key": "ct_neck_collection",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "CT neck with contrast: gas/fluid collection in deep fascial planes",
+              "citation": "ENT UK"
+            },
+            {
+              "key": "airway_compromise",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Airway compromise \u2014 anaesthetic emergency (ENT + senior anaesthesia)",
+              "citation": "ENT UK"
+            },
+            {
+              "key": "surgical_drainage",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Surgical incision and drainage (endoscopic or external approach)",
+              "citation": "ENT UK"
+            },
+            {
+              "key": "polymicrobial_strep_anaerobes",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Polymicrobial: streptococcus + anaerobes (IV co-amoxiclav + metronidazole)",
+              "citation": "ENT UK"
+            },
+            {
+              "key": "lemierre_syndrome",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Lemierre's syndrome: IJV thrombophlebitis + septic emboli (Fusobacterium)",
+              "citation": "ENT UK"
+            },
+            {
+              "key": "descending_mediastinitis",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Descending necrotising mediastinitis (mortality 30\u201350%) \u2014 CT thorax urgently",
+              "citation": "ENT UK"
+            },
+            {
+              "key": "dental_tonsillar_source",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Source: peritonsillar abscess / dental infection / parapharyngeal spread",
+              "citation": "ENT UK"
+            }
+          ]
+        },
+        {
+          "name": "Sialolithiasis (Salivary Duct Calculus)",
+          "icd": "K11.5",
+          "logPrior": -35,
+          "urgency": 1,
+          "systems": [
+            "ent"
+          ],
+          "specialties": [
+            "ent"
+          ],
+          "features": [
+            {
+              "key": "mealtime_syndrome",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "'Mealtime syndrome': submandibular swelling and pain at meals (saliva stimulation)",
+              "citation": "ENT UK / BSSO"
+            },
+            {
+              "key": "submandibular_commonest",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Submandibular gland (80%) > parotid (20%): Wharton's duct angle and mucous saliva",
+              "citation": "BSSO"
+            },
+            {
+              "key": "bimanual_palpation_stone",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Stone palpable bimanually in floor of mouth / duct",
+              "citation": "BSSO"
+            },
+            {
+              "key": "ultrasound_calculus",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "US or CT: echogenic calculus in duct \u00b1 gland swelling",
+              "citation": "BSSO"
+            },
+            {
+              "key": "sialendoscopy_retrieval",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Sialendoscopy + basket retrieval (minimally invasive \u2014 preserves gland)",
+              "citation": "BSSO"
+            },
+            {
+              "key": "ascending_sialadenitis",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Secondary ascending sialadenitis: tender swollen gland, pus from duct",
+              "citation": "BSSO"
+            },
+            {
+              "key": "gland_excision_intraglandular",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Submandibular gland excision if stone intraglandular or recurrent sialadenitis",
+              "citation": "BSSO"
+            },
+            {
+              "key": "recurrent_infection_risk",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Recurrent infection without stone removal (prophylactic antibiotics insufficient)",
+              "citation": "BSSO"
+            }
+          ]
+        },
+        {
+          "name": "Head and Neck Squamous Cell Carcinoma",
+          "icd": "C14.8",
+          "logPrior": -39,
+          "urgency": 1,
+          "systems": [
+            "oncology",
+            "ent"
+          ],
+          "specialties": [
+            "ent",
+            "head_neck_surgery",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "persistent_neck_mass_adult",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Persistent neck mass >3 weeks in adult \u226540 years \u2014 malignant until excluded",
+              "citation": "NICE NG36 Head and Neck Cancer"
+            },
+            {
+              "key": "smoking_alcohol_risk",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Smoking \u00d7 alcohol synergistic risk (>90% of H&N SCC)",
+              "citation": "NICE NG36"
+            },
+            {
+              "key": "panendoscopy_primary_site",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Panendoscopy + biopsy to identify primary site (EUA of nasopharynx, pharynx, larynx)",
+              "citation": "NICE NG36"
+            },
+            {
+              "key": "hpv_oropharyngeal",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "HPV-positive oropharyngeal SCC (better prognosis, younger, non-smoker)",
+              "citation": "NICE NG36"
+            },
+            {
+              "key": "ct_pet_staging",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "CT neck/chest/abdomen + PET-CT for staging",
+              "citation": "NICE NG36"
+            },
+            {
+              "key": "cisplatin_radiotherapy",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Concurrent cisplatin + radiotherapy (locally advanced disease)",
+              "citation": "NICE NG36"
+            },
+            {
+              "key": "neck_dissection",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Selective or modified radical neck dissection (nodal disease)",
+              "citation": "NICE NG36"
+            },
+            {
+              "key": "virchow_supraclavicular",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Supraclavicular node (Virchow's): abdominal malignancy origin (left > right)",
+              "citation": "Classic sign"
+            }
+          ]
+        },
+        {
+          "name": "Thyroglossal Duct Cyst",
+          "icd": "Q89.2",
+          "logPrior": -39,
+          "urgency": 0,
+          "systems": [
+            "ent",
+            "paediatric"
+          ],
+          "specialties": [
+            "ent",
+            "paediatric_surgery"
+          ],
+          "features": [
+            {
+              "key": "midline_neck_swelling",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Midline or paramedian neck swelling (between thyroid and foramen caecum)",
+              "citation": "ENT UK / BTA"
+            },
+            {
+              "key": "moves_tongue_protrusion",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "Moves on swallowing AND tongue protrusion (attached to hyoid bone)",
+              "citation": "ENT UK"
+            },
+            {
+              "key": "ultrasound_cystic_midline",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "US: cystic, thin-walled, midline structure",
+              "citation": "ENT UK"
+            },
+            {
+              "key": "sistrunk_procedure",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Sistrunk's operation: excise cyst + tract + central hyoid body (recurrence prevention)",
+              "citation": "ENT UK"
+            },
+            {
+              "key": "infection_abscess",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "May present as recurrent infection / abscess",
+              "citation": "ENT UK"
+            },
+            {
+              "key": "check_thyroid_function",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Check TFTs + US to confirm normal thyroid before excision (may be only thyroid)",
+              "citation": "ENT UK"
+            },
+            {
+              "key": "ectopic_papillary_ca_rare",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Ectopic thyroid tissue may harbour papillary cancer (<1% of cases)",
+              "citation": "ENT UK"
+            },
+            {
+              "key": "recurrence_if_hyoid_left",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "High recurrence if hyoid body not removed (Sistrunk principle)",
+              "citation": "ENT UK"
+            }
+          ]
+        },
+        {
+          "name": "Neck Lymphadenopathy",
+          "icd": "R59.9",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "oncology",
+            "infectious",
+            "ent"
+          ],
+          "specialties": [
+            "ent",
+            "head_neck_surgery"
+          ],
+          "features": [
+            {
+              "key": "persistent_4_weeks_adult",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Persistent >4 weeks in adult \u2014 malignancy until excluded",
+              "citation": "NICE NG12 / NICE NG36"
+            },
+            {
+              "key": "hard_fixed_non_tender",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Hard, fixed, non-tender (malignant) vs soft, tender, mobile (reactive/infective)",
+              "citation": "NICE NG36"
+            },
+            {
+              "key": "fnac_core_biopsy",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "FNAC or core biopsy (lymphoma requires excisional biopsy for architecture)",
+              "citation": "NICE NG36"
+            },
+            {
+              "key": "ct_pet_staging_malignant",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "CT neck/chest/abdomen + PET-CT for malignant lymphadenopathy staging",
+              "citation": "NICE NG36"
+            },
+            {
+              "key": "supraclavicular_virchow",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Supraclavicular (Virchow's node): abdominal / thoracic malignancy (left > right)",
+              "citation": "Classic sign"
+            },
+            {
+              "key": "ebv_tb_infectious",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Infectious: EBV (glandular fever), TB, cat-scratch disease, toxoplasmosis",
+              "citation": "NICE CKS"
+            },
+            {
+              "key": "level_ii_iii_oropharyngeal",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Level II/III (upper cervical): oropharynx / nasopharynx primary origin",
+              "citation": "NICE NG36"
+            },
+            {
+              "key": "excision_biopsy_lymphoma",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Excisional node biopsy for suspected lymphoma (preserve architecture for subtyping)",
+              "citation": "NICE NG36"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {
