@@ -157,11 +157,16 @@ struct PatientSummaryEditorView: View {
         try? ctx.save()
     }
 
-    // MARK: - AI
+    // MARK: - AI / local draft
 
     private func runAIAssist() async {
         do {
             noteText = try await ai.generateClinicalSummary(patient: patient)
+            save()
+        } catch is AIError {
+            // AI is disabled pending HIPAA BAA — fall back to SOAPDraftEngine local draft
+            let draft = SOAPDraftEngine.draft(patient: patient)
+            noteText = draft.fullNote
             save()
         } catch {
             ai.error = error.localizedDescription
