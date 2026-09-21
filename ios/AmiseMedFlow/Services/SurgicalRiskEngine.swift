@@ -261,6 +261,106 @@ enum SurgicalRiskEngine {
                     "Vitamin K IV + FFP if urgent. Delay elective surgery until INR <1.5. Haematology review. Identify cause." :
                     "Review anticoagulation. Vitamin K if not therapeutically anticoagulated. Haematology input if unexplained."))
         }
+
+        // Bilirubin — hepatic synthetic failure, jaundice-related surgical risk
+        if let bil = labs.bilirubin?.value {
+            if bil > 200 {
+                out.append(SurgicalRiskAlert(
+                    domain: .periop, band: .critical,
+                    title: "Severe jaundice — bilirubin \(Int(bil)) µmol/L",
+                    detail: "Bilirubin >200 µmol/L indicates severe hepatic dysfunction or biliary obstruction. Major operative mortality is substantially increased.",
+                    action: "Hepatobiliary/HPB surgeon review. Child-Pugh/MELD-Na score. Correct coagulopathy. Biliary drainage (ERCP/PTC) before elective surgery if obstructive. Nephrology input — hepatorenal syndrome risk."))
+            } else if bil > 50 {
+                out.append(SurgicalRiskAlert(
+                    domain: .periop, band: .moderate,
+                    title: "Jaundice — bilirubin \(Int(bil)) µmol/L",
+                    detail: "Bilirubin 50–200 µmol/L raises operative risk: impaired drug metabolism, coagulopathy risk, and wound healing compromise.",
+                    action: "Identify cause (obstructive vs hepatocellular). LFTs, coag, albumin. Consider biliary decompression if obstructive. Anaesthetic review for major cases."))
+            }
+        }
+
+        // Troponin — perioperative cardiac risk
+        if let trop = labs.troponin?.value, trop > 14 {
+            out.append(SurgicalRiskAlert(
+                domain: .periop, band: trop > 52 ? .critical : .high,
+                title: "Troponin \(String(format: "%.0f", trop)) ng/L — Cardiac Risk",
+                detail: trop > 52 ?
+                    "Troponin >52 ng/L (MI threshold) — active myocardial injury. Elective surgery must be deferred. Emergency surgery requires intensive cardiac monitoring." :
+                    "Troponin 14–52 ng/L (elevated but below MI threshold) — may indicate myocardial stress or NSTEMI. Risk-stratify before surgery.",
+                action: trop > 52 ?
+                    "Defer elective surgery. Cardiology review urgently. Serial ECG + troponin. Aspirin 300 mg if ACS confirmed. HDU post-op if surgery unavoidable." :
+                    "Cardiology review. Serial ECG. Repeat troponin at 3 h. Risk-stratify with HEART or GRACE score before proceeding."))
+        }
+
+        // HbA1c — glycaemic control and surgical infection risk
+        if let hba = labs.hba1c?.value, hba > 7.5 {
+            out.append(SurgicalRiskAlert(
+                domain: .infection, band: hba > 10.0 ? .high : .moderate,
+                title: "HbA1c \(String(format: "%.1f", hba))% — Poor Glycaemic Control",
+                detail: hba > 10.0 ?
+                    "HbA1c >10%: very poor long-term control significantly increases SSI, anastomotic leak, and impaired wound healing risk." :
+                    "HbA1c 7.5–10%: suboptimal control raises infection and healing risk perioperatively.",
+                action: hba > 10.0 ?
+                    "Delay elective surgery. Optimise glucose with endocrine review (VRIII, GLP-1 agonist, or insulin adjustment). Recheck HbA1c in 6–8 weeks. Target <8.5% before major elective surgery." :
+                    "Extended antibiotic prophylaxis. Periop glucose monitoring. VRIII if NBM >1 meal. Endocrine review if T1DM or poorly controlled T2DM."))
+        }
+
+        // Sodium — electrolyte risk for anaesthesia
+        if let na = labs.sodium?.value {
+            if na < 125 || na > 155 {
+                out.append(SurgicalRiskAlert(
+                    domain: .anaesthetic, band: .critical,
+                    title: "Sodium \(Int(na)) mmol/L — Critical Electrolyte Imbalance",
+                    detail: na < 125 ?
+                        "Severe hyponatraemia (<125 mmol/L) — cerebral oedema risk, seizures, and haemodynamic instability under general anaesthesia." :
+                        "Severe hypernatraemia (>155 mmol/L) — CNS risk, increased mortality under GA.",
+                    action: "Correct sodium at ≤8–10 mmol/L per 24 h (hyponatraemia) to avoid central pontine myelinolysis. Defer elective surgery. Anaesthetic review mandatory."))
+            } else if na < 130 || na > 150 {
+                out.append(SurgicalRiskAlert(
+                    domain: .anaesthetic, band: .moderate,
+                    title: "Sodium \(Int(na)) mmol/L — Electrolyte Abnormality",
+                    detail: "Sodium outside 130–150 mmol/L range requires correction before elective surgery to reduce anaesthetic risk.",
+                    action: "Identify and treat cause. Correct cautiously. Anaesthetic review if urgent surgery required."))
+            }
+        }
+
+        // Potassium — arrhythmia risk under anaesthesia
+        if let k = labs.potassium?.value {
+            if k < 2.8 || k > 6.0 {
+                out.append(SurgicalRiskAlert(
+                    domain: .anaesthetic, band: .critical,
+                    title: "Potassium \(String(format: "%.1f", k)) mmol/L — Critical",
+                    detail: k < 2.8 ?
+                        "Severe hypokalaemia (<2.8 mmol/L) — life-threatening arrhythmias under GA; prolonged QT, ventricular fibrillation risk." :
+                        "Severe hyperkalaemia (>6.0 mmol/L) — cardiac arrest risk under anaesthesia.",
+                    action: k < 2.8 ?
+                        "IV potassium replacement (max 10 mmol/h peripheral, 20 mmol/h central). Continuous ECG. Defer elective surgery until K+ >3.0 mmol/L." :
+                        "Calcium gluconate IV (cardiac membrane stabilisation). Insulin/dextrose. Salbutamol. Urgent nephrology/medical review. Defer elective surgery."))
+            } else if k < 3.2 || k > 5.5 {
+                out.append(SurgicalRiskAlert(
+                    domain: .anaesthetic, band: .moderate,
+                    title: "Potassium \(String(format: "%.1f", k)) mmol/L — Electrolyte Abnormality",
+                    detail: "Potassium outside 3.2–5.5 mmol/L range raises arrhythmia risk perioperatively.",
+                    action: "Correct before elective surgery. Anaesthetic review. ECG monitoring."))
+            }
+        }
+
+        // Glucose — perioperative glycaemic risk (objective value, not just DM history)
+        if let glu = labs.glucose?.value {
+            if glu > 14.0 {
+                out.append(SurgicalRiskAlert(
+                    domain: .infection, band: .high,
+                    title: "Glucose \(String(format: "%.1f", glu)) mmol/L — Perioperative Hyperglycaemia",
+                    detail: "Random glucose >14 mmol/L at assessment — significantly impairs neutrophil function and increases SSI, anastomotic leak, and healing complications.",
+                    action: "VRIII insulin infusion if NBM or glucose persistently >12 mmol/L. Target 6–10 mmol/L. Endocrine/diabetes team input. Delay non-urgent surgery."))
+            } else if glu > 10.0 {
+                out.append(SurgicalRiskAlert(
+                    domain: .infection, band: .moderate,
+                    title: "Glucose \(String(format: "%.1f", glu)) mmol/L — Elevated",
+                    detail: "Glucose 10–14 mmol/L — moderate hyperglycaemia increases infection risk perioperatively.",
+                    action: "Optimise glucose perioperatively. Sliding scale if NBM. Target 6–10 mmol/L."))
+            }
+        }
     }
 
     // MARK: Infection
