@@ -164,6 +164,18 @@ enum AutoFunctionEngine {
         }
         if (labs.wbc?.value ?? 5) > 20 { actions.append(AutoAction(function: .alert, title: "WBC >20 — Severe Leukocytosis", detail: "Severe infection or haematological cause — blood cultures, LRINEC if soft tissue involvement.", urgency: .urgent, targetSection: .investigations, payload: nil)) }
         if (labs.creatinine?.value ?? 80) > 300 { actions.append(AutoAction(function: .alert, title: "Creatinine >300 — AKI", detail: "Stop nephrotoxic drugs; IV fluid challenge; nephrology review; hourly UO.", urgency: .urgent, targetSection: .investigations, payload: nil)) }
+        if let trop = labs.troponin?.value, trop > 52 { actions.append(AutoAction(function: .alert, title: "Troponin >52 ng/L — ACS", detail: "High-sensitivity troponin elevated above MI threshold. Immediate cardiology/medical review; aspirin 300 mg; serial ECG; repeat troponin at 1–3 h.", urgency: .critical, targetSection: .alerts, payload: nil)) }
+        if labs.calciumCritical {
+            if let ca = labs.calcium?.value, ca < 1.75 {
+                actions.append(AutoAction(function: .alert, title: "Ca \(String(format: "%.2f", ca)) mmol/L — Critical Hypocalcaemia", detail: "IV calcium gluconate 10 mL 10% over 10 min; continuous cardiac monitoring; recheck in 1 h.", urgency: .critical, targetSection: .alerts, payload: nil))
+            } else if let ca = labs.calcium?.value, ca > 3.0 {
+                actions.append(AutoAction(function: .alert, title: "Ca \(String(format: "%.2f", ca)) mmol/L — Hypercalcaemia Crisis", detail: "IV fluid 1–2 L NS; IV bisphosphonate if malignancy-related; urgent endocrine/oncology referral.", urgency: .critical, targetSection: .alerts, payload: nil))
+            }
+        }
+        if let glu = labs.glucose?.value, glu < 3.0 { actions.append(AutoAction(function: .alert, title: "Glucose \(String(format: "%.1f", glu)) mmol/L — Hypoglycaemia", detail: "Immediate IV dextrose 50 mL 50% or oral glucose; recheck in 15 min; identify cause.", urgency: .critical, targetSection: .alerts, payload: nil)) }
+        if let inr = labs.inr?.value, inr > 2.5 { actions.append(AutoAction(function: .alert, title: "INR \(String(format: "%.1f", inr)) — Coagulopathy", detail: "Assess bleeding risk; consider vitamin K IV; discuss FFP if active bleeding or surgery planned; review anticoagulant medications.", urgency: .urgent, targetSection: .alerts, payload: nil)) }
+        if let hb = labs.haemoglobin?.value, hb < 8.0 { actions.append(AutoAction(function: .alert, title: "Hb \(String(format: "%.1f", hb)) g/dL — Critical Anaemia", detail: "Consider transfusion; crossmatch 2–4 units; identify bleeding source; haematology input if non-haemorrhagic.", urgency: .critical, targetSection: .alerts, payload: nil)) }
+        if let plt = labs.platelets?.value, plt < 50 { actions.append(AutoAction(function: .alert, title: "Plt \(Int(plt)) ×10⁹/L — Critical Thrombocytopaenia", detail: "Review antiplatelet agents; haematology review; platelet transfusion if active bleeding or <20 ×10⁹/L; avoid IM injections.", urgency: .urgent, targetSection: .alerts, payload: nil)) }
 
         // Life-threatening decisions
         for decision in psv.decisions where decision.priority == .emergency {
