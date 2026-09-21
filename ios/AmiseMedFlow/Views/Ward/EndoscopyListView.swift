@@ -163,6 +163,13 @@ struct EndoscopyListView: View {
                 lines.append("Medications: " + patient.prescriptions.map { $0.displayLine }.joined(separator: "; "))
             }
 
+            // Include resulted investigation findings (Hb, INR, prior scope reports)
+            let scopeResults = patient.investigations.filter { $0.status == .resulted && !$0.result.isEmpty }
+            if !scopeResults.isEmpty {
+                let summary = scopeResults.prefix(4).map { "\($0.name): \($0.result)" }.joined(separator: "; ")
+                lines.append("Results: \(summary)")
+            }
+
             lines.append(String(repeating: "─", count: 48))
             lines.append("")
         }
@@ -309,6 +316,16 @@ struct EndoscopyRow: View {
                             .background((patient.preOpInstructionsSent ? Color.green : Color.orange).opacity(0.1), in: Capsule())
                         }
                         .buttonStyle(.plain)
+
+                        // Critical lab indicator for scope list
+                        let critLabs = LabPanel.parse(from: patient.investigations)
+                        if critLabs.hasCriticalValues {
+                            Image(systemName: "flask.fill")
+                                .font(.system(size: 9, weight: .bold)).foregroundStyle(.red)
+                        } else if patient.investigations.contains(where: { $0.status == .ordered || $0.status == .pending }) {
+                            Image(systemName: "clock.badge.exclamationmark")
+                                .font(.system(size: 9)).foregroundStyle(.orange)
+                        }
 
                         if patient.hasCriticalAllergy {
                             Image(systemName: "exclamationmark.shield.fill")
