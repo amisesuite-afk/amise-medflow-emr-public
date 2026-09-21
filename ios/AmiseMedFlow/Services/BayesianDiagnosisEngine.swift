@@ -1096,6 +1096,60 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("cancer") || ccL.contains("malignant") { mergePool("oncologyComplications") }
             if ccL.contains("infection") || ccL.contains("empyema") { mergePool("sepsisConditions") }
 
+        // Colorectal malignancy and CRC surveillance
+        case ccL.contains("colon cancer") || ccL.contains("colorectal cancer") ||
+             ccL.contains("rectal cancer") || ccL.contains("pseudomyxoma") ||
+             ccL.contains("lynch syndrome") || ccL.contains("hnpcc") ||
+             ccL.contains("colonic polyp") || ccL.contains("anal scc") ||
+             ccL.contains("fit positive") ||
+             (ccL.contains("colonoscopy") && ccL.contains("mass")) ||
+             (ccL.contains("rectal bleeding") && ccL.contains("weight loss")):
+            candidates = externalPool("colorectalMalignancy") ?? []
+            if ccL.contains("peritoneal") { mergePool("oncologyComplications") }
+            if ccL.contains("lynch") || ccL.contains("hnpcc") { mergePool("geneticsSyndromic") }
+
+        // Endocrine surgical — thyroid and parathyroid
+        case ccL.contains("thyroid cancer") || ccL.contains("papillary thyroid") ||
+             ccL.contains("follicular thyroid") || ccL.contains("medullary thyroid") ||
+             ccL.contains("anaplastic thyroid") || ccL.contains("hyperparathyroidism") ||
+             ccL.contains("parathyroid") || ccL.contains("graves disease") ||
+             ccL.contains("graves' disease") || ccL.contains("thyroid storm") ||
+             ccL.contains("calcitonin") || ccL.contains("ret mutation") ||
+             ccL.contains("men2") ||
+             (ccL.contains("hypercalcaemia") && ccL.contains("elevated pth")) ||
+             (ccL.contains("neck mass") && ccL.contains("thyroid")):
+            candidates = externalPool("endocrineSurgical") ?? []
+            if ccL.contains("men") { mergePool("adrenalEndocrine") }
+            if ccL.contains("cancer") { mergePool("oncologyComplications") }
+
+        // Abdominal trauma and solid-organ injury
+        case (ccL.contains("splenic") && (ccL.contains("laceration") || ccL.contains("injury") || ccL.contains("rupture"))) ||
+             ccL.contains("hepatic laceration") || ccL.contains("liver laceration") ||
+             ccL.contains("hollow viscus") || ccL.contains("seat belt sign") ||
+             ccL.contains("pancreatic trauma") || ccL.contains("renal trauma") ||
+             ccL.contains("bladder rupture") || ccL.contains("diaphragmatic rupture") ||
+             ccL.contains("haemoperitoneum") || ccL.contains("damage control") ||
+             ccL.contains("reboa") || ccL.contains("peritoneal lavage") ||
+             (ccL.contains("blunt") && ccL.contains("abdominal") && ccL.contains("trauma")) ||
+             (ccL.contains("trauma") && (ccL.contains("spleen") || ccL.contains("liver") || ccL.contains("kidney"))):
+            candidates = externalPool("abdominalTrauma") ?? []
+            if ccL.contains("vascular") || ccL.contains("haemorrhage") { mergePool("peripheralVascular") }
+            if ccL.contains("septic") { mergePool("sepsisConditions") }
+
+        // Post-operative surgical complications
+        case ccL.contains("anastomotic leak") || ccL.contains("anastomotic dehiscence") ||
+             ccL.contains("post-operative ileus") || ccL.contains("postoperative ileus") ||
+             ccL.contains("intra-abdominal collection") || ccL.contains("post-op haemorrhage") ||
+             ccL.contains("pancreatic fistula") || ccL.contains("popf") ||
+             ccL.contains("bile leak") || ccL.contains("post-hepatectomy") ||
+             ccL.contains("burst abdomen") || ccL.contains("wound dehiscence") ||
+             ccL.contains("anastomotic") || ccL.contains("post-hepatectomy liver failure") ||
+             (ccL.contains("post") && ccL.contains("operative") && ccL.contains("fever")) ||
+             (ccL.contains("drain") && (ccL.contains("bile") || ccL.contains("faeculent") || ccL.contains("haemorrhagic"))):
+            candidates = externalPool("postOpComplications") ?? []
+            if ccL.contains("septic") || ccL.contains("peritonitis") { mergePool("sepsisConditions") }
+            if ccL.contains("haemorrhage") || ccL.contains("bleeding") { mergePool("upperGIBleed") }
+
         default:
             // Wide-net general medicine catch-all — no longer surgical-biased
             candidates = externalPool("generalMedicine") ?? []
@@ -1291,6 +1345,26 @@ enum BayesianDiagnosisEngine {
            ccL.contains("lung cancer") || ccL.contains("mesothelioma") ||
            ccL.contains("pleural effusion") || ccL.contains("mediastinal mass") ||
            (ccL.contains("absent breath sounds") && ccL.contains("chest")) { mergePool("thoracicSurgical") }
+        if ccL.contains("colon cancer") || ccL.contains("colorectal cancer") ||
+           ccL.contains("rectal cancer") || ccL.contains("pseudomyxoma") ||
+           ccL.contains("lynch syndrome") || ccL.contains("hnpcc") ||
+           ccL.contains("fit positive") ||
+           (ccL.contains("rectal bleeding") && ccL.contains("weight loss")) { mergePool("colorectalMalignancy") }
+        if ccL.contains("thyroid cancer") || ccL.contains("papillary thyroid") ||
+           ccL.contains("follicular thyroid") || ccL.contains("hyperparathyroidism") ||
+           ccL.contains("parathyroid") || ccL.contains("graves disease") ||
+           ccL.contains("medullary thyroid") || ccL.contains("calcitonin") ||
+           (ccL.contains("neck mass") && ccL.contains("thyroid")) { mergePool("endocrineSurgical") }
+        if (ccL.contains("splenic") && ccL.contains("injury")) ||
+           ccL.contains("haemoperitoneum") || ccL.contains("hepatic laceration") ||
+           ccL.contains("hollow viscus") || ccL.contains("seat belt sign") ||
+           ccL.contains("damage control") ||
+           (ccL.contains("blunt") && ccL.contains("abdominal")) { mergePool("abdominalTrauma") }
+        if ccL.contains("anastomotic leak") || ccL.contains("anastomotic") ||
+           ccL.contains("bile leak") || ccL.contains("pancreatic fistula") ||
+           ccL.contains("burst abdomen") || ccL.contains("wound dehiscence") ||
+           (ccL.contains("post") && ccL.contains("operative") && ccL.contains("fever")) ||
+           (ccL.contains("drain") && ccL.contains("bile")) { mergePool("postOpComplications") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but

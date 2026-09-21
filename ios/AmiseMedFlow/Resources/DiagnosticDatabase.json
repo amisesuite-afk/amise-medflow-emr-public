@@ -61364,6 +61364,2370 @@
           ]
         }
       ]
+    },
+    "colorectalMalignancy": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Right-Sided Colon Cancer (Caecal / Ascending)",
+          "icd": "C18.0",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "colorectal",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "colorectal_surgery",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "iron_deficiency_anaemia",
+              "value": "iron deficiency anaemia in patient > 50 years with no obvious source — right colon cancer bleeds occultly",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG12 2019"
+            },
+            {
+              "key": "right_iliac_mass",
+              "value": "palpable right iliac fossa or right flank mass on examination",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG12 2019"
+            },
+            {
+              "key": "positive_fit_test",
+              "value": "positive faecal immunochemical test (FIT) — national screening trigger for colonoscopy",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "change_bowel_habit",
+              "value": "change in bowel habit (looser stool or increased frequency) persisting > 6 weeks in patient > 50",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG12 2019"
+            },
+            {
+              "key": "colonoscopy_mass_biopsy",
+              "value": "colonoscopic visualisation of caecal or ascending colonic mass with positive biopsy",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG12 2019"
+            },
+            {
+              "key": "ct_colonic_wall_thickening",
+              "value": "focal colonic wall thickening with pericolonic fat stranding and lymphadenopathy on CT",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "weight_loss_fatigue_crc",
+              "value": "weight loss and fatigue in patient with undiagnosed anaemia — CRC the most important exclusion",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NICE NG12 2019"
+            },
+            {
+              "key": "lynch_family_history",
+              "value": "Lynch syndrome family history or personal history of colorectal adenomas (surveillance context)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2018"
+            }
+          ]
+        },
+        {
+          "name": "Left-Sided / Sigmoid Colon Cancer",
+          "icd": "C18.7",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "colorectal",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "colorectal_surgery",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "rectal_bleeding_change",
+              "value": "rectal bleeding with change in bowel habit persisting > 6 weeks — colonoscopy mandatory",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG12 2019"
+            },
+            {
+              "key": "alternating_constipation_diarrhoea",
+              "value": "alternating constipation and diarrhoea — partial luminal obstruction from left-sided tumour",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "pencil_thin_stool",
+              "value": "pencil-thin stools from progressive luminal narrowing",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NICE NG12 2019"
+            },
+            {
+              "key": "obstructive_presentation",
+              "value": "large bowel obstruction from sigmoid/left colon cancer — acute presentation requiring emergency surgery",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "sigmoid_mass_ct",
+              "value": "sigmoid or descending colon mass on CT colonography or CT abdomen",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "cea_elevated",
+              "value": "elevated preoperative CEA — staging marker; CEA > 5 ng/mL at presentation correlates with advanced disease",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NCCN 2022"
+            },
+            {
+              "key": "diverticular_mimicry",
+              "value": "sigmoid tumour may mimic diverticular disease on imaging — tissue biopsy essential",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "peritoneal_seedlings",
+              "value": "peritoneal seedlings on CT (mucinous variant) — peritoneal metastasis pattern",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            }
+          ]
+        },
+        {
+          "name": "Rectal Cancer",
+          "icd": "C20",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "colorectal",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "colorectal_surgery",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "fresh_blood_mixed_stool",
+              "value": "fresh rectal bleeding mixed with stool (not just on paper) — mixes with stool above anal canal",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG12 2019"
+            },
+            {
+              "key": "tenesmus",
+              "value": "tenesmus (sensation of incomplete evacuation) — tumour within rectum causes persistent desire to defecate",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG12 2019"
+            },
+            {
+              "key": "digital_rectal_mass",
+              "value": "palpable rectal mass on digital rectal examination — present in 70% of rectal cancers",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG12 2019"
+            },
+            {
+              "key": "mri_rectal_staging",
+              "value": "MRI pelvis for local staging — CRM distance, T and N staging, EMVI assessment",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG151 2020"
+            },
+            {
+              "key": "circumferential_resection_margin",
+              "value": "tumour < 1 mm from mesorectal fascia (threatened CRM) — neoadjuvant chemoradiotherapy indicated",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG151 2020"
+            },
+            {
+              "key": "low_rectal_anterior",
+              "value": "low anterior rectal tumour — sphincter preservation vs. abdominoperineal excision (APE) decision",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "eus_t_staging",
+              "value": "EUS for T staging of early rectal cancers — superior to MRI for T1/T2 lesions",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG151 2020"
+            },
+            {
+              "key": "bowel_preparation_pre_op",
+              "value": "neoadjuvant long-course chemoradiotherapy downstaging before TME surgery",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet Oncol 2021"
+            }
+          ]
+        },
+        {
+          "name": "Appendiceal Mucinous Neoplasm / Pseudomyxoma Peritonei",
+          "icd": "C18.1",
+          "logPrior": -29,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "colorectal",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "colorectal_surgery",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "mucinous_appendicectomy",
+              "value": "mucinous neoplasm found incidentally at appendicectomy — histology mandatory",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Dis Colon Rectum 2020"
+            },
+            {
+              "key": "jelly_belly_ascites",
+              "value": "gelatinous mucinous ascites ('jelly belly') at laparotomy or on imaging",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Dis Colon Rectum 2020"
+            },
+            {
+              "key": "scalloping_liver_spleen",
+              "value": "CT showing scalloping of liver and spleen surface from mucinous deposits",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Dis Colon Rectum 2020"
+            },
+            {
+              "key": "cea_ca125_elevation",
+              "value": "elevated CEA and CA-125 — tumour markers for mucinous appendiceal neoplasm surveillance",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Dis Colon Rectum 2020"
+            },
+            {
+              "key": "appendiceal_mucocoele",
+              "value": "distended appendix (mucocoele) ≥ 2 cm on CT — suspicious for LAMN",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "progressive_abdominal_girth",
+              "value": "slowly progressive abdominal distension with mucinous ascites — indolent course",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Dis Colon Rectum 2020"
+            },
+            {
+              "key": "hipec_consideration",
+              "value": "cytoreductive surgery with HIPEC — only potentially curative treatment for PMP",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "ovarian_mucinous_borderline",
+              "value": "bilateral ovarian mucinous tumours in female — always exclude appendiceal primary origin",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2019"
+            }
+          ]
+        },
+        {
+          "name": "Lynch Syndrome / HNPCC Presentation",
+          "icd": "Z84.81",
+          "logPrior": -28,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "colorectal",
+            "genetics",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "colorectal_surgery",
+            "gastroenterology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "amsterdam_ii_criteria",
+              "value": "Amsterdam II criteria: 3 relatives with HNPCC-associated cancer, 2 successive generations, 1 under 50",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE DG27 2017"
+            },
+            {
+              "key": "msi_high_tumour",
+              "value": "microsatellite instability-high (MSI-H) or mismatch repair deficient (dMMR) tumour on testing",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE DG27 2017"
+            },
+            {
+              "key": "mlh1_msh2_germline",
+              "value": "germline pathogenic variant in MLH1, MSH2, MSH6, or PMS2 — confirmed Lynch syndrome",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE DG27 2017"
+            },
+            {
+              "key": "early_onset_crc",
+              "value": "colorectal cancer diagnosed before age 50 — raises suspicion for hereditary syndrome",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE DG27 2017"
+            },
+            {
+              "key": "endometrial_cancer_associated",
+              "value": "synchronous or metachronous endometrial cancer in female patient with CRC",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "proximal_colon_predominance",
+              "value": "predominance of proximal/right-sided colon cancers over successive generations",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NICE DG27 2017"
+            },
+            {
+              "key": "sebaceous_muir_torre",
+              "value": "sebaceous adenomas/carcinomas or keratoacanthomas (Muir-Torre variant of Lynch)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "annual_colonoscopy",
+              "value": "annual colonoscopy from age 25 recommended for confirmed Lynch syndrome gene carriers",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "NICE DG27 2017"
+            }
+          ]
+        },
+        {
+          "name": "Colonic Polyps (Adenoma Surveillance)",
+          "icd": "D12.6",
+          "logPrior": -17,
+          "urgency": 0,
+          "systems": [
+            "gastrointestinal",
+            "colorectal"
+          ],
+          "specialties": [
+            "general_surgery",
+            "colorectal_surgery",
+            "gastroenterology"
+          ],
+          "features": [
+            {
+              "key": "colonoscopy_adenoma_found",
+              "value": "adenoma identified on colonoscopy — adenoma-carcinoma sequence is the primary pathway for CRC",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG151 2020"
+            },
+            {
+              "key": "high_risk_adenoma",
+              "value": "high-risk adenoma: 5+ adenomas, ≥ 1 cm, high-grade dysplasia, or villous morphology",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG151 2020"
+            },
+            {
+              "key": "sessile_serrated_lesion",
+              "value": "sessile serrated lesion (SSL) — serrated pathway to CRC, especially right-sided MSI-H cancers",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "pit_pattern_narrow_band",
+              "value": "advanced mucosal features (NBI/chromoendoscopy) suggesting dysplasia or early cancer",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG151 2020"
+            },
+            {
+              "key": "flat_depressed_lesion",
+              "value": "flat or depressed (Paris 0-IIb/0-IIc) polyp — higher risk of submucosal invasion than polypoid",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "positive_fit_no_symptoms",
+              "value": "positive FIT on screening with no symptoms — colonoscopy reveals polyp in 40–50%",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG151 2020"
+            },
+            {
+              "key": "fap_attenuated",
+              "value": "familial adenomatous polyposis or attenuated FAP — carpet adenomas or polyposis phenotype",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "surveillance_interval",
+              "value": "surveillance interval determined by polyp number, size, morphology, histology — per BSG/NICE guidelines",
+              "logLR": 11,
+              "evidenceLabel": "weak positive",
+              "citation": "BMJ 2019"
+            }
+          ]
+        },
+        {
+          "name": "CRC with Peritoneal Metastases",
+          "icd": "C78.6",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "colorectal",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "colorectal_surgery",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "ascites_known_crc",
+              "value": "ascites in patient with known colorectal cancer — peritoneal metastases until proven otherwise",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "omental_thickening_ct",
+              "value": "omental thickening, omental cake, or peritoneal nodules on CT — peritoneal carcinomatosis pattern",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "small_bowel_obstruction_crc",
+              "value": "SBO in patient with known CRC — peritoneal disease causing adhesion/direct compression",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NCCN 2022"
+            },
+            {
+              "key": "elevated_pci",
+              "value": "peritoneal cancer index (PCI) ≥ 20 — typically beyond curative resection threshold",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "hipec_candidate",
+              "value": "PCI < 20 with complete cytoreduction achievable — HIPEC may offer survival benefit",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NCCN 2022"
+            },
+            {
+              "key": "synchronous_liver",
+              "value": "synchronous peritoneal and hepatic metastases — combined resection feasible in selected patients",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "mucinous_histology",
+              "value": "mucinous or signet ring histology — higher propensity for peritoneal spread",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NCCN 2022"
+            },
+            {
+              "key": "diagnostic_laparoscopy",
+              "value": "diagnostic laparoscopy for peritoneal staging before planned curative resection",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet Oncol 2021"
+            }
+          ]
+        },
+        {
+          "name": "Anal Canal Squamous Cell Carcinoma",
+          "icd": "C21.0",
+          "logPrior": -29,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "colorectal",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "colorectal_surgery",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "anal_mass_bleeding",
+              "value": "palpable anal canal mass with bleeding — presents similarly to haemorrhoids, often delayed diagnosis",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG151 2020"
+            },
+            {
+              "key": "hpv_risk_factor",
+              "value": "HPV infection (especially HPV-16 and HPV-18) — primary aetiological factor for anal SCC",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "hiv_immunocompromised",
+              "value": "HIV-positive or immunocompromised patient — 30–40× increased anal cancer risk",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "receptive_anal_intercourse",
+              "value": "history of receptive anal intercourse — independent HPV transmission risk factor",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "anal_pain_discharge",
+              "value": "persistent anal pain and mucus discharge not resolving with haemorrhoid treatment",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG151 2020"
+            },
+            {
+              "key": "inguinal_lymphadenopathy",
+              "value": "inguinal lymphadenopathy in patient with anal mass — regional lymph node metastases",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "chemoradiotherapy_primary",
+              "value": "chemoradiotherapy (mitomycin C + 5-FU + radiotherapy) is first-line treatment — surgery reserved for salvage",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NICE NG151 2020"
+            },
+            {
+              "key": "high_resolution_anoscopy",
+              "value": "high-resolution anoscopy with biopsy — gold standard for diagnosis and AIN surveillance",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            }
+          ]
+        }
+      ]
+    },
+    "endocrineSurgical": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Papillary Thyroid Carcinoma",
+          "icd": "C73",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "endocrine",
+            "headneck",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "endocrinology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "thyroid_nodule_palpable",
+              "value": "solitary or dominant thyroid nodule on palpation in patient < 50 years (female predominance 3:1)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NICE NG44 2016"
+            },
+            {
+              "key": "tirads_4_5_ultrasound",
+              "value": "TIRADS 4 or 5 lesion on thyroid ultrasound: hypoechoic, irregular margins, microcalcifications, taller-than-wide",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG44 2016"
+            },
+            {
+              "key": "fnac_malignant",
+              "value": "FNAC (fine needle aspiration cytology) Bethesda V–VI — suspicious or malignant for papillary carcinoma",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE NG44 2016"
+            },
+            {
+              "key": "psammoma_bodies",
+              "value": "psammoma bodies on cytology — near-pathognomonic for papillary thyroid carcinoma",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "orphan_annie_nuclei",
+              "value": "nuclear features on histology: optically clear 'Orphan Annie' nuclei, nuclear grooves, pseudoinclusions",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "cervical_lymphadenopathy",
+              "value": "ipsilateral cervical lymphadenopathy in young patient with thyroid nodule — nodal spread in 50% at diagnosis",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG44 2016"
+            },
+            {
+              "key": "braf_v600e",
+              "value": "BRAF V600E mutation detected on molecular testing — present in 60% of PTC, associated with aggressiveness",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "excellent_prognosis",
+              "value": "excellent 10-year survival (> 95%) for low-risk PTC — differentiated from follicular or anaplastic types",
+              "logLR": 11,
+              "evidenceLabel": "weak positive",
+              "citation": "NICE NG44 2016"
+            }
+          ]
+        },
+        {
+          "name": "Follicular Thyroid Carcinoma",
+          "icd": "C73",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "endocrine",
+            "headneck",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "endocrinology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "haematogenous_spread",
+              "value": "follicular thyroid carcinoma spreads haematogenously — bone and lung metastases (not lymph node like PTC)",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "fnac_follicular_neoplasm",
+              "value": "FNAC Bethesda IV — follicular neoplasm (FN), cannot distinguish benign from malignant on cytology alone",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG44 2016"
+            },
+            {
+              "key": "capsular_vascular_invasion",
+              "value": "histological diagnosis requires capsular and/or vascular invasion — not diagnosable on FNAC alone",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG44 2016"
+            },
+            {
+              "key": "iodine_deficiency_risk",
+              "value": "iodine deficiency — environmental risk factor; higher incidence in iodine-deficient populations",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "hot_nodule_scan",
+              "value": "hot or hyperfunctioning nodule on thyroid scan — rarely malignant (< 1%), cold nodule higher risk",
+              "logLR": -14,
+              "evidenceLabel": "negative",
+              "citation": "NICE NG44 2016"
+            },
+            {
+              "key": "tg_elevated",
+              "value": "thyroglobulin elevated post-thyroidectomy — key surveillance marker for recurrence",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE NG44 2016"
+            },
+            {
+              "key": "rai_avid",
+              "value": "radioiodine (RAI) avidity — allows ablation and surveillance; distinguishes from PTC in metastatic setting",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "lobectomy_vs_total",
+              "value": "minimally invasive follicular carcinoma (< 4 cm, no vascular invasion) — lobectomy may suffice",
+              "logLR": 11,
+              "evidenceLabel": "weak positive",
+              "citation": "NICE NG44 2016"
+            }
+          ]
+        },
+        {
+          "name": "Medullary Thyroid Carcinoma",
+          "icd": "C73",
+          "logPrior": -28,
+          "urgency": 1,
+          "systems": [
+            "endocrine",
+            "headneck",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "endocrinology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "raised_calcitonin",
+              "value": "raised serum calcitonin — most sensitive and specific marker for MTC; stimulated calcitonin if borderline",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "ret_proto_oncogene",
+              "value": "RET proto-oncogene mutation — germline (hereditary, MEN2A/2B) or somatic (sporadic)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "men2a_phaeochromocytoma",
+              "value": "MEN2A: MTC + phaeochromocytoma + primary hyperparathyroidism — screen all MTC for RET",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "men2b_marfanoid",
+              "value": "MEN2B: MTC + phaeochromocytoma + marfanoid habitus + mucosal neuromas — most aggressive RET mutation",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "cervical_nodes_bilateral",
+              "value": "bilateral cervical lymph node metastases at presentation — more aggressive nodal spread than PTC",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "amyloid_stroma",
+              "value": "amyloid stroma on histology (Congo red positive) — characteristic of MTC",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "cea_calcitonin_doubling",
+              "value": "calcitonin and CEA doubling time < 2 years — poor prognostic marker for MTC",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "ENETS 2022"
+            },
+            {
+              "key": "watery_diarrhoea",
+              "value": "watery diarrhoea from calcitonin-mediated secretory effect — paraneoplastic marker of tumour bulk",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet Oncol 2021"
+            }
+          ]
+        },
+        {
+          "name": "Anaplastic Thyroid Carcinoma",
+          "icd": "C73",
+          "logPrior": -35,
+          "urgency": 2,
+          "systems": [
+            "endocrine",
+            "headneck",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "rapid_neck_mass_growth",
+              "value": "rapidly growing anterior neck mass over days to weeks — near-diagnostic of anaplastic thyroid carcinoma",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "stridor_dysphagia",
+              "value": "stridor and dysphagia from local invasion and airway compression — may require emergency tracheostomy",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "rock_hard_fixed",
+              "value": "rock-hard, fixed, rapidly enlarging thyroid mass fixed to surrounding structures",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "vocal_cord_palsy",
+              "value": "unilateral vocal cord palsy (hoarseness) from recurrent laryngeal nerve invasion",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "all_stage_IV",
+              "value": "all anaplastic thyroid carcinomas are stage IV at diagnosis — most lethal endocrine malignancy",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "braf_v600e_atc",
+              "value": "BRAF V600E mutation in 45% — dabrafenib + trametinib combination immunotherapy shows activity",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "prior_differentiated_thyroid",
+              "value": "history of prior differentiated thyroid cancer that has transformed — dedifferentiation pathway",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2021"
+            },
+            {
+              "key": "median_survival",
+              "value": "median survival 3–5 months without treatment — multidisciplinary urgency essential",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet Oncol 2021"
+            }
+          ]
+        },
+        {
+          "name": "Primary Hyperparathyroidism",
+          "icd": "E21.0",
+          "logPrior": -20,
+          "urgency": 0,
+          "systems": [
+            "endocrine",
+            "metabolic"
+          ],
+          "specialties": [
+            "general_surgery",
+            "endocrinology"
+          ],
+          "features": [
+            {
+              "key": "hypercalcaemia_incidental",
+              "value": "asymptomatic hypercalcaemia on routine bloods — primary HPT is the commonest cause of hypercalcaemia in outpatients",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE CG28 2019"
+            },
+            {
+              "key": "pth_elevated_hypercalcaemia",
+              "value": "elevated or inappropriately normal PTH with hypercalcaemia — biochemically diagnostic of primary HPT",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE CG28 2019"
+            },
+            {
+              "key": "renal_calculi",
+              "value": "recurrent renal calculi — calcium oxalate or calcium phosphate stones driven by hypercalciuria",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE CG28 2019"
+            },
+            {
+              "key": "bones_groans_moans",
+              "value": "classic mnemonic: bones (osteoporosis, osteitis fibrosa), stones, groans (GI), moans (neuropsychiatric)",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "sestamibi_localisation",
+              "value": "Tc-99m sestamibi scan localising a single parathyroid adenoma (85% of cases) — guides minimal access surgery",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE CG28 2019"
+            },
+            {
+              "key": "parathyroid_adenoma_solitary",
+              "value": "single parathyroid adenoma responsible for 85% of primary HPT — curable with focused minimally invasive parathyroidectomy",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2018"
+            },
+            {
+              "key": "four_gland_hyperplasia",
+              "value": "four-gland parathyroid hyperplasia in context of MEN1/MEN2A or familial HPT",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "NICE CG28 2019"
+            },
+            {
+              "key": "intraop_pth_drop",
+              "value": "intraoperative PTH drop > 50% from baseline confirms successful adenoma removal — guides cure",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet 2018"
+            }
+          ]
+        },
+        {
+          "name": "Secondary / Tertiary Hyperparathyroidism",
+          "icd": "E21.1",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "endocrine",
+            "renal",
+            "metabolic"
+          ],
+          "specialties": [
+            "general_surgery",
+            "endocrinology",
+            "nephrology"
+          ],
+          "features": [
+            {
+              "key": "ckd_background",
+              "value": "chronic kidney disease (GFR < 30) — secondary HPT from phosphate retention and low 1,25-VitD",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "KDIGO 2017"
+            },
+            {
+              "key": "elevated_pth_low_calcium",
+              "value": "markedly elevated PTH with low or normal calcium — secondary HPT (distinguish from primary by calcium)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "KDIGO 2017"
+            },
+            {
+              "key": "tertiary_autonomous",
+              "value": "tertiary HPT: hypercalcaemia develops after renal transplant from autonomous PTH secretion",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "KDIGO 2017"
+            },
+            {
+              "key": "dialysis_patient",
+              "value": "long-term haemodialysis patient with uncontrolled PTH > 600 pg/mL despite medical management",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "KDIGO 2017"
+            },
+            {
+              "key": "calciphylaxis",
+              "value": "calciphylaxis (calcific uraemic arteriolopathy) — skin necrosis and ulceration in dialysis patient",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "KDIGO 2017"
+            },
+            {
+              "key": "renal_osteodystrophy",
+              "value": "renal osteodystrophy (osteitis fibrosa cystica, adynamic bone disease) on bone biopsy",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "KDIGO 2017"
+            },
+            {
+              "key": "subtotal_parathyroidectomy",
+              "value": "surgical indication: failed medical therapy (cinacalcet, active VitD), PTH > 800, calciphylaxis",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "KDIGO 2017"
+            },
+            {
+              "key": "hungry_bone_post_op",
+              "value": "post-operative hypocalcaemia (hungry bone syndrome) — anticipate, requires intensive calcium supplementation",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2018"
+            }
+          ]
+        },
+        {
+          "name": "Graves' Disease / Hyperthyroidism (Surgical)",
+          "icd": "E05.0",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "endocrine",
+            "autoimmune"
+          ],
+          "specialties": [
+            "general_surgery",
+            "endocrinology"
+          ],
+          "features": [
+            {
+              "key": "tsh_suppressed_ft4_elevated",
+              "value": "suppressed TSH with elevated free T4 and T3 — biochemically confirms hyperthyroidism",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BTA 2019"
+            },
+            {
+              "key": "tsh_receptor_antibody",
+              "value": "elevated TSH receptor antibodies (TRAb) — specific for Graves' disease aetiology",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BTA 2019"
+            },
+            {
+              "key": "exophthalmos",
+              "value": "exophthalmos (proptosis) and lid lag — Graves' ophthalmopathy (not present in toxic nodular goitre)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BTA 2019"
+            },
+            {
+              "key": "diffuse_goitre",
+              "value": "diffuse smooth goitre on examination — Graves' pattern (vs. nodular in toxic MNG)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BTA 2019"
+            },
+            {
+              "key": "pretibial_myxoedema",
+              "value": "pretibial myxoedema — dermatological manifestation specific to Graves' disease",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BTA 2019"
+            },
+            {
+              "key": "failure_antithyroid_drugs",
+              "value": "relapse after antithyroid drugs, large goitre, or patient preference — surgical indications",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BTA 2019"
+            },
+            {
+              "key": "thyroid_storm",
+              "value": "thyroid storm: fever > 38.5°C, tachycardia > 140, altered consciousness — medical emergency",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BTA 2019"
+            },
+            {
+              "key": "total_thyroidectomy_preferred",
+              "value": "total thyroidectomy preferred over subtotal to avoid recurrence — must be euthyroid pre-operatively",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "BTA 2019"
+            }
+          ]
+        },
+        {
+          "name": "Parathyroid Carcinoma",
+          "icd": "C75.0",
+          "logPrior": -39,
+          "urgency": 1,
+          "systems": [
+            "endocrine",
+            "oncology"
+          ],
+          "specialties": [
+            "general_surgery",
+            "endocrinology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "severe_hypercalcaemia",
+              "value": "severe symptomatic hypercalcaemia (Ca > 3.5 mmol/L) — typical of parathyroid carcinoma unlike benign adenoma",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2019"
+            },
+            {
+              "key": "very_high_pth",
+              "value": "PTH extremely elevated (> 10× upper limit) — more typical of carcinoma than benign adenoma",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2019"
+            },
+            {
+              "key": "hard_neck_mass",
+              "value": "palpable, firm, adherent neck mass — parathyroid carcinoma invades adjacent structures",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2019"
+            },
+            {
+              "key": "recurrence_post_surgery",
+              "value": "recurrent hypercalcaemia after apparently curative parathyroidectomy",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2019"
+            },
+            {
+              "key": "cdc73_hrpt2_mutation",
+              "value": "CDC73/HRPT2 germline or somatic mutation — molecular marker of parathyroid carcinoma",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet Oncol 2019"
+            },
+            {
+              "key": "bone_renal_dual",
+              "value": "combined severe bone disease and nephrolithiasis at presentation — atypical severity suggests carcinoma",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2019"
+            },
+            {
+              "key": "vascular_capsular_invasion",
+              "value": "histological confirmation: vascular invasion, capsular invasion, fibrous bands — WHO criteria",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "Lancet Oncol 2019"
+            },
+            {
+              "key": "hyperparathyroidism_jaw_tumour",
+              "value": "hyperparathyroidism-jaw tumour syndrome — familial context for parathyroid carcinoma risk",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet Oncol 2019"
+            }
+          ]
+        }
+      ]
+    },
+    "abdominalTrauma": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Splenic Laceration / Injury",
+          "icd": "S36.0",
+          "logPrior": -22,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal",
+            "trauma",
+            "vascular"
+          ],
+          "specialties": [
+            "general_surgery",
+            "emergency_medicine",
+            "trauma_surgery"
+          ],
+          "features": [
+            {
+              "key": "left_flank_trauma",
+              "value": "blunt abdominal trauma with left flank pain and left lower rib fractures",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "haemodynamic_compromise_trauma",
+              "value": "haemodynamic compromise after blunt abdominal trauma — immediate CT or operative management",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "ct_splenic_laceration",
+              "value": "CT grading of splenic laceration (AAST grade I–V): parenchymal, hilar, devascularisation",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "shoulder_tip_kehr",
+              "value": "left shoulder tip pain (Kehr's sign) from diaphragmatic irritation by sub-phrenic haematoma",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ Trauma 2019"
+            },
+            {
+              "key": "dpl_free_blood",
+              "value": "diagnostic peritoneal lavage: > 10 mL gross blood on aspiration — haemoperitoneum",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "non_operative_management",
+              "value": "NOM successful in 80–90% of haemodynamically stable splenic injuries (grade I–III) — bedrest + serial CT",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "angio_embolisation",
+              "value": "splenic artery embolisation for grade III–IV injuries or active contrast blush on CT",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "delayed_rupture",
+              "value": "delayed splenic rupture 2–3 weeks post-injury — sudden deterioration in recovering patient",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ Trauma 2019"
+            }
+          ]
+        },
+        {
+          "name": "Hepatic Laceration",
+          "icd": "S36.1",
+          "logPrior": -22,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal",
+            "hepatobiliary",
+            "trauma",
+            "vascular"
+          ],
+          "specialties": [
+            "general_surgery",
+            "trauma_surgery",
+            "hepatobiliary_surgery"
+          ],
+          "features": [
+            {
+              "key": "right_upper_quadrant_trauma",
+              "value": "blunt trauma with right upper quadrant pain and right lower rib fractures",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "ct_hepatic_laceration",
+              "value": "CT AAST grade I–VI hepatic laceration: parenchymal, vascular, juxtahepatic vein involvement",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "active_haemorrhage_ct",
+              "value": "active contrast extravasation on CT — angioembolisation or operative control required",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "bile_leak_trauma",
+              "value": "biloma or bile leak post-hepatic trauma — delayed presentation with fever and RUQ pain",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "perihepatic_haematoma",
+              "value": "large perihepatic haematoma with hepatic parenchymal disruption on CT",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "retrohepatic_ivc",
+              "value": "grade V–VI injury involving retrohepatic IVC or hepatic veins — operative mortality > 50%",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ Trauma 2019"
+            },
+            {
+              "key": "nom_grade_i_iii",
+              "value": "NOM appropriate for grades I–III in haemodynamically stable patients with CT surveillance",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "penetrating_hepatic",
+              "value": "penetrating hepatic injury (stab or gunshot) — high rate of associated injury to adjacent organs",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            }
+          ]
+        },
+        {
+          "name": "Hollow Viscus Injury (Bowel / Mesentery)",
+          "icd": "S36.4",
+          "logPrior": -24,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal",
+            "trauma"
+          ],
+          "specialties": [
+            "general_surgery",
+            "trauma_surgery",
+            "emergency_medicine"
+          ],
+          "features": [
+            {
+              "key": "seat_belt_sign",
+              "value": "seat belt sign (seatbelt ecchymosis across abdomen) — mesenteric and bowel injury sentinel",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "free_air_ct_trauma",
+              "value": "free intraperitoneal air on CT after blunt trauma (without prior surgery) — hollow viscus perforation",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "free_fluid_no_solid",
+              "value": "significant free intraperitoneal fluid without solid organ injury on CT — highly suspicious for hollow viscus",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "mesenteric_haematoma",
+              "value": "mesenteric haematoma with surrounding fat stranding — mesenteric tear with vascular injury",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "delayed_peritonitis",
+              "value": "delayed peritonitis 12–24 hours after blunt trauma — bowel perforation with initial false reassurance",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ Trauma 2019"
+            },
+            {
+              "key": "lumbar_spine_fracture",
+              "value": "Chance fracture (lumbar flexion-distraction) — associated bowel and mesenteric injury in 30–50%",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "serial_examination",
+              "value": "mandatory serial abdominal examinations every 4–6 hours when diagnosis uncertain",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "diagnostic_laparoscopy_trauma",
+              "value": "diagnostic laparoscopy for equivocal CT findings — sensitivity 90%+ for bowel injury",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            }
+          ]
+        },
+        {
+          "name": "Pancreatic Trauma",
+          "icd": "S36.2",
+          "logPrior": -28,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal",
+            "pancreatic",
+            "trauma"
+          ],
+          "specialties": [
+            "general_surgery",
+            "trauma_surgery"
+          ],
+          "features": [
+            {
+              "key": "epigastric_blow_trauma",
+              "value": "direct blow to epigastrium (bicycle handlebar, steering wheel) with persistent upper abdominal pain",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "delayed_amylase_rise",
+              "value": "rising serum amylase 6–12 hours after blunt abdominal trauma (initial amylase may be normal)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "ct_pancreatic_transection",
+              "value": "CT laceration through pancreatic body/neck with peripancreatic haematoma and fluid",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "main_duct_disruption",
+              "value": "main pancreatic duct disruption on MRCP or ERCP — determines operative vs. non-operative approach",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "false_negative_ct",
+              "value": "pancreatic injury is frequently missed on initial CT — repeat CT or MRCP at 12–24 hours if suspicion persists",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "pseudocyst_delayed",
+              "value": "post-traumatic pseudocyst forming 2–4 weeks after injury — persistence from ductal disruption",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ Trauma 2019"
+            },
+            {
+              "key": "distal_pancreatectomy_grade_iii",
+              "value": "AAST grade III–IV (main duct injury) — distal pancreatectomy for injuries to left of SMV",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "damage_control_approach",
+              "value": "severe pancreatic trauma — damage control approach (pack and drain) in haemodynamically unstable",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "EAST 2020"
+            }
+          ]
+        },
+        {
+          "name": "Renal Trauma",
+          "icd": "S37.0",
+          "logPrior": -22,
+          "urgency": 2,
+          "systems": [
+            "urological",
+            "trauma",
+            "vascular"
+          ],
+          "specialties": [
+            "general_surgery",
+            "urology",
+            "trauma_surgery"
+          ],
+          "features": [
+            {
+              "key": "haematuria_post_trauma",
+              "value": "haematuria (gross or microscopic) after blunt or penetrating abdominal/flank trauma",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "AUA 2020"
+            },
+            {
+              "key": "flank_bruising_rib",
+              "value": "flank bruising and lower rib fractures after blunt trauma — renal injury constellation",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "AUA 2020"
+            },
+            {
+              "key": "ct_renal_laceration",
+              "value": "CT AAST grade I–V renal laceration: cortical haematoma, laceration depth, vascular pedicle injury",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "AUA 2020"
+            },
+            {
+              "key": "renal_pedicle_injury",
+              "value": "grade V renal pedicle injury (avulsion or thrombosis) — renovascular emergency requiring immediate intervention",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "AUA 2020"
+            },
+            {
+              "key": "urinoma",
+              "value": "urinoma (urine extravasation) from grade IV collecting system laceration — percutaneous drainage",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "AUA 2020"
+            },
+            {
+              "key": "nom_grade_i_iv",
+              "value": "NOM successful in > 90% of AAST grade I–IV renal injuries with haemodynamic stability",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "AUA 2020"
+            },
+            {
+              "key": "hypertension_post_trauma",
+              "value": "new hypertension months after renal trauma (Page kidney) from perirenal haematoma compressing parenchyma",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ Trauma 2019"
+            },
+            {
+              "key": "penetrating_renal",
+              "value": "penetrating renal injury — higher operative rate than blunt; mandatory exploration if haemodynamically unstable",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "AUA 2020"
+            }
+          ]
+        },
+        {
+          "name": "Bladder Rupture",
+          "icd": "S37.2",
+          "logPrior": -28,
+          "urgency": 2,
+          "systems": [
+            "urological",
+            "trauma"
+          ],
+          "specialties": [
+            "general_surgery",
+            "urology",
+            "trauma_surgery"
+          ],
+          "features": [
+            {
+              "key": "pelvic_fracture_haematuria",
+              "value": "gross haematuria with pelvic ring fracture — bladder rupture in 10–15% of pelvic fractures with haematuria",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "AUA 2020"
+            },
+            {
+              "key": "inability_void_post_trauma",
+              "value": "inability to void with catheter drainage of blood-stained urine after pelvic trauma",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "AUA 2020"
+            },
+            {
+              "key": "ct_cystogram",
+              "value": "CT cystogram (retrograde filling) — gold standard distinguishing intraperitoneal from extraperitoneal rupture",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "AUA 2020"
+            },
+            {
+              "key": "intraperitoneal_rupture",
+              "value": "intraperitoneal bladder rupture — operatively repaired; extraperitoneal may be managed with catheter alone",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "AUA 2020"
+            },
+            {
+              "key": "urea_creatinine_ascites",
+              "value": "elevated urea and creatinine in peritoneal fluid (urine ascites) — urinoperitoneum from intraperitoneal rupture",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ Trauma 2019"
+            },
+            {
+              "key": "suprapubic_tenderness",
+              "value": "suprapubic tenderness and bruising without clear fracture — consider direct blow bladder contusion",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "AUA 2020"
+            },
+            {
+              "key": "urethral_injury_blood",
+              "value": "blood at urethral meatus — urethral injury (different entity, do NOT catheterise — urethrogram first)",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "AUA 2020"
+            },
+            {
+              "key": "iatrogenic_laparoscopic",
+              "value": "iatrogenic bladder injury at laparoscopic surgery (adhesions, trocar) — intraoperative diagnosis essential",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "AUA 2020"
+            }
+          ]
+        },
+        {
+          "name": "Diaphragmatic Injury (Traumatic)",
+          "icd": "S27.8",
+          "logPrior": -28,
+          "urgency": 2,
+          "systems": [
+            "thoracic",
+            "gastrointestinal",
+            "trauma"
+          ],
+          "specialties": [
+            "general_surgery",
+            "thoracic_surgery",
+            "trauma_surgery"
+          ],
+          "features": [
+            {
+              "key": "high_energy_blunt_trauma",
+              "value": "high-energy blunt thoracoabdominal trauma (MVA, crush) with left lower chest and upper abdominal symptoms",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "bowel_sounds_chest_trauma",
+              "value": "bowel sounds in chest after trauma — herniated abdominal contents through diaphragmatic rent",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "cxr_bowel_thorax_trauma",
+              "value": "bowel loops or nasogastric tube above diaphragm on CXR after trauma",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "contralateral_mediastinal_shift",
+              "value": "contralateral mediastinal shift from herniated viscera — haemodynamic compromise possible",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "ct_diaphragmatic_defect",
+              "value": "CT demonstrating diaphragmatic defect with herniated abdominal contents — diagnostic",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "right_sided_missed",
+              "value": "right-sided diaphragmatic rupture often missed initially (liver buffers herniation) — delayed presentation",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ Trauma 2019"
+            },
+            {
+              "key": "penetrating_diaphragm",
+              "value": "penetrating thoracoabdominal injury (stab/gunshot traversing diaphragm) — mandatory repair",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "left_sided_90_percent",
+              "value": "90% are left-sided (liver protects right hemidiaphragm) — stomach and colon commonest herniated organs",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "EAST 2020"
+            }
+          ]
+        },
+        {
+          "name": "Abdominal Aortic Injury / Major Vascular Trauma",
+          "icd": "S35.0",
+          "logPrior": -32,
+          "urgency": 3,
+          "systems": [
+            "vascular",
+            "trauma"
+          ],
+          "specialties": [
+            "general_surgery",
+            "vascular_surgery",
+            "trauma_surgery"
+          ],
+          "features": [
+            {
+              "key": "haemodynamic_collapse_trauma",
+              "value": "haemodynamic collapse after penetrating abdominal or thoracoabdominal trauma — major vascular injury",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "pulsatile_retroperitoneal",
+              "value": "pulsatile retroperitoneal haematoma at laparotomy in penetrating trauma — vascular injury until proven otherwise",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "expanding_haematoma",
+              "value": "expanding central retroperitoneal haematoma — aortic or IVC injury requiring operative control",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "absent_femoral_pulse",
+              "value": "absent or asymmetric femoral pulses after trauma — iliac vessel injury",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "blunt_aortic_injury",
+              "value": "blunt aortic injury (deceleration): aortic pseudoaneurysm at aortic isthmus on CT — TEVAR indicated",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "damage_control_resuscitation",
+              "value": "damage control resuscitation: permissive hypotension, 1:1:1 PRBC:FFP:platelets, TXA within 3 hours",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "zone_i_ii_iii_retroperitoneal",
+              "value": "retroperitoneal haematoma zones (I/II/III) guide operative exploration — Zone I always explored",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "EAST 2020"
+            },
+            {
+              "key": "resuscitative_balloon",
+              "value": "resuscitative endovascular balloon occlusion of aorta (REBOA) — temporary haemorrhage control bridge",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "EAST 2020"
+            }
+          ]
+        }
+      ]
+    },
+    "postOpComplications": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Anastomotic Leak",
+          "icd": "T81.3",
+          "logPrior": -22,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal",
+            "postoperative"
+          ],
+          "specialties": [
+            "general_surgery",
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "fever_day3_7",
+              "value": "fever on postoperative day 3–7 after bowel resection — anastomotic leak until proven otherwise",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "tachycardia_rising_crp",
+              "value": "unexplained tachycardia and rising CRP/WBC in postoperative period",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "drain_faeculent_output",
+              "value": "faeculent or enteric drain output — near-pathognomonic of anastomotic leak",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "ct_peri_anastomotic_gas",
+              "value": "CT showing peri-anastomotic fluid, free gas, or contrast extravasation at anastomosis",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "abdominal_peritonism",
+              "value": "generalised peritonism 3–7 days post-bowel resection — anastomotic leak with peritonitis",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "rectal_anastomosis_risk",
+              "value": "low rectal anastomosis (< 5 cm from anal verge) — highest leak risk, defunctioning ileostomy reduces consequences",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "water_soluble_enema",
+              "value": "water-soluble contrast enema or flexible sigmoidoscopy confirming colonic anastomotic leak",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "hartmann_washout",
+              "value": "Hartmann's procedure or loop ileostomy + washout for anastomotic leak with faecal peritonitis",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2020"
+            }
+          ]
+        },
+        {
+          "name": "Post-Operative Ileus",
+          "icd": "K56.0",
+          "logPrior": -17,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal",
+            "postoperative"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "absent_bowel_sounds",
+              "value": "absent bowel sounds with abdominal distension in postoperative period",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "failure_to_pass_flatus",
+              "value": "failure to pass flatus > 3–4 days after abdominal surgery — prolonged ileus",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "nausea_vomiting_post_op",
+              "value": "persistent nausea and vomiting after abdominal surgery with no obstructive cause on imaging",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "gaseous_distension_axr",
+              "value": "gaseous distension of small and large bowel uniformly on AXR (vs. mechanical obstruction)",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "opioid_analgesic_use",
+              "value": "heavy postoperative opioid use — primary contributor to prolonged ileus via mu receptor inhibition",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "electrolyte_imbalance",
+              "value": "hypokalaemia, hypomagnesaemia exacerbating ileus — correct electrolytes as part of management",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "Lancet 2019"
+            },
+            {
+              "key": "early_ambulation_eras",
+              "value": "ERAS protocol (early ambulation, oral fluids) significantly reduces duration of postoperative ileus",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "ct_no_mechanical",
+              "value": "CT confirming no mechanical obstruction, anastomotic complication, or intra-abdominal collection",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "Lancet 2019"
+            }
+          ]
+        },
+        {
+          "name": "Intra-Abdominal Collection / Abscess",
+          "icd": "T81.4",
+          "logPrior": -20,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal",
+            "infectious",
+            "postoperative"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "persistent_fever_day5",
+              "value": "persistent or new fever > 5 days after abdominal surgery — intra-abdominal collection until excluded",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "localised_peritonism",
+              "value": "localised peritonism or guarding in a specific quadrant on postoperative examination",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "ct_fluid_collection",
+              "value": "CT confirming peri-anastomotic or subphrenic fluid collection with rim enhancement (abscess)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "rising_wbc_crp",
+              "value": "rising WBC and CRP plateau not falling as expected from post-operative trajectory",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "percutaneous_drainage",
+              "value": "ultrasound or CT-guided percutaneous drainage — first-line intervention for accessible collections",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "subphrenic_abscess",
+              "value": "subphrenic abscess after upper GI surgery — associated ipsilateral pleural effusion and shoulder tip pain",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "secondary_bacteraemia",
+              "value": "blood cultures positive for gut organisms (E. coli, Bacteroides) — source likely intra-abdominal collection",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "drain_reinsertion",
+              "value": "if no drain in situ, CT-guided drain insertion is preferred over re-laparotomy for accessible collections",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2019"
+            }
+          ]
+        },
+        {
+          "name": "Post-Operative Haemorrhage",
+          "icd": "T81.0",
+          "logPrior": -20,
+          "urgency": 2,
+          "systems": [
+            "vascular",
+            "postoperative"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "haemodynamic_instability_post_op",
+              "value": "tachycardia, hypotension, and falling haemoglobin in immediate post-operative period",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "drain_haemorrhagic",
+              "value": "high output haemorrhagic drain (> 200 mL/hour) or drain blood not decreasing",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "abdominal_distension_tense",
+              "value": "progressive abdominal distension with haemodynamic compromise — haemoperitoneum",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "ct_angiography_blush",
+              "value": "CT angiography showing active contrast extravasation — embolisation as first-line if accessible",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "falling_hb_transfusion",
+              "value": "requirement for > 4 units PRBC within 24 hours post-operatively — significant haemorrhage",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "return_theatre",
+              "value": "haemodynamic instability not responding to resuscitation — return to theatre for surgical haemostasis",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "coagulopathy_correction",
+              "value": "reversal of anticoagulation and correction of coagulopathy — essential adjunct to surgical control",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2020"
+            },
+            {
+              "key": "arterial_stump_blowout",
+              "value": "arterial stump blowout (rare, catastrophic) in infected operative field — requires emergency re-exploration",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2020"
+            }
+          ]
+        },
+        {
+          "name": "Post-Pancreatectomy Fistula (POPF)",
+          "icd": "T81.8",
+          "logPrior": -22,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal",
+            "pancreatic",
+            "postoperative"
+          ],
+          "specialties": [
+            "general_surgery",
+            "hepatobiliary_surgery"
+          ],
+          "features": [
+            {
+              "key": "elevated_drain_amylase",
+              "value": "drain amylase > 3× upper serum limit on post-operative day 3 (ISGPF definition of POPF)",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "ISGPF 2016"
+            },
+            {
+              "key": "peripancreatic_collection",
+              "value": "peripancreatic fluid collection with elevated amylase on CT — clinically relevant fistula (grade B/C)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "ISGPF 2016"
+            },
+            {
+              "key": "soft_gland_small_duct",
+              "value": "soft pancreatic texture and small duct (< 3 mm) at pancreaticoduodenectomy — highest fistula risk",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2021"
+            },
+            {
+              "key": "sentinel_bleed",
+              "value": "sentinel haemorrhage from drain — may precede catastrophic post-pancreatectomy haemorrhage",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "ISGPF 2016"
+            },
+            {
+              "key": "persistent_drain_required",
+              "value": "grade B POPF: drain required beyond post-operative day 3 or percutaneous drainage needed",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "ISGPF 2016"
+            },
+            {
+              "key": "octreotide_prophylaxis",
+              "value": "somatostatin analogues reduce POPF in high-risk glands (soft texture, small duct) — perioperative use",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2021"
+            },
+            {
+              "key": "infection_sepsis_popf",
+              "value": "infected POPF with systemic sepsis — grade C POPF requiring ICU and possible re-intervention",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "ISGPF 2016"
+            },
+            {
+              "key": "distal_pancreatectomy_rate",
+              "value": "POPF rate higher after distal pancreatectomy (20–30%) than after Whipple (10–15%) — stump closure technique matters",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2021"
+            }
+          ]
+        },
+        {
+          "name": "Bile Leak (Post-Cholecystectomy / Hepatectomy)",
+          "icd": "T81.3",
+          "logPrior": -22,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal",
+            "hepatobiliary",
+            "postoperative"
+          ],
+          "specialties": [
+            "general_surgery",
+            "hepatobiliary_surgery"
+          ],
+          "features": [
+            {
+              "key": "bile_drain_output",
+              "value": "bile-stained drain output after cholecystectomy or hepatectomy — direct evidence of bile leak",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "cystic_duct_stump_leak",
+              "value": "post-laparoscopic cholecystectomy bile leak from cystic duct stump or bile duct injury",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "mrcp_leak_site",
+              "value": "MRCP identifying bile leak site and biliary anatomy — prerequisite before ERCP sphincterotomy/stenting",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "ercp_stent_treatment",
+              "value": "ERCP with sphincterotomy and biliary stenting — definitive treatment for most post-operative bile leaks",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "biloma_ct_confirmed",
+              "value": "CT-confirmed biloma (bile collection) in operative bed requiring percutaneous drainage",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "bile_duct_injury",
+              "value": "bile duct injury at cholecystectomy (Strasberg classification) — early recognition improves outcome",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2018"
+            },
+            {
+              "key": "rising_bilirubin_jaundice",
+              "value": "rising serum bilirubin and jaundice after hepatectomy — bile duct injury or ischaemic stricture",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "bile_duct_stricture",
+              "value": "delayed bile duct stricture months to years after injury — presents as cholangitis or obstructive jaundice",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2018"
+            }
+          ]
+        },
+        {
+          "name": "Post-Hepatectomy Liver Failure (PHLF)",
+          "icd": "K72.1",
+          "logPrior": -28,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal",
+            "hepatobiliary",
+            "postoperative"
+          ],
+          "specialties": [
+            "general_surgery",
+            "hepatobiliary_surgery"
+          ],
+          "features": [
+            {
+              "key": "prolonged_hyperbilirubinaemia",
+              "value": "bilirubin > 50 µmol/L on or beyond post-operative day 5 (ISGLS grade B/C PHLF definition)",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "ISGLS 2011"
+            },
+            {
+              "key": "coagulopathy_inr",
+              "value": "INR > 1.5 beyond post-operative day 5 with rising bilirubin — PHLF diagnostic criteria",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "ISGLS 2011"
+            },
+            {
+              "key": "inadequate_flr",
+              "value": "inadequate future liver remnant (FLR < 25% in normal liver, < 40% in cirrhotic) — risk factor for PHLF",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "ISGLS 2011"
+            },
+            {
+              "key": "portal_vein_embolisation",
+              "value": "portal vein embolisation pre-operatively to hypertrophy contralateral lobe — prevents PHLF in borderline FLR",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "ISGLS 2011"
+            },
+            {
+              "key": "peak_bilirubin_day5",
+              "value": "'peak bilirubin on day 5' (> 140 µmol/L) — strong predictor of PHLF and 90-day mortality",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "HPB 2020"
+            },
+            {
+              "key": "cirrhosis_baseline_risk",
+              "value": "underlying cirrhosis or hepatic steatosis — dramatically increases PHLF risk after major resection",
+              "logLR": 18,
+              "evidenceLabel": "strong positive",
+              "citation": "ISGLS 2011"
+            },
+            {
+              "key": "encephalopathy_ascites",
+              "value": "hepatic encephalopathy and new ascites post-hepatectomy — clinical signs of liver decompensation",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "HPB 2020"
+            },
+            {
+              "key": "alpps_rescue",
+              "value": "ALPPS (associating liver partition and portal vein ligation for staged hepatectomy) — extreme cases with inadequate FLR growth",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "HPB 2020"
+            }
+          ]
+        },
+        {
+          "name": "Wound Dehiscence / Burst Abdomen",
+          "icd": "T81.3",
+          "logPrior": -24,
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal",
+            "postoperative"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "pink_serous_discharge",
+              "value": "profuse pink serous fluid discharge from wound on day 5–10 — 'salmon pink' sign of impending dehiscence",
+              "logLR": 23,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "palpable_gap",
+              "value": "palpable fascial gap beneath wound on examination — wound separation at fascial level",
+              "logLR": 21,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "evisceration",
+              "value": "evisceration (frank bowel prolapse through wound) — complete dehiscence requiring emergency repair",
+              "logLR": 26,
+              "evidenceLabel": "near-diagnostic",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "risk_factors_dehiscence",
+              "value": "risk factors: obesity, malnutrition, jaundice, steroids, infection, emergency surgery, vertical midline incision",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "postop_cough_straining",
+              "value": "vigorous coughing or straining episode precipitating fascial disruption in at-risk wound",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "raised_iap",
+              "value": "raised intra-abdominal pressure (post-operative ileus, ascites) tension on fascial closure",
+              "logLR": 14,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "emergency_refashion",
+              "value": "emergency re-laparotomy with mass closure (looped nylon or PDS) — bowel covered with moist swabs until theatre",
+              "logLR": 16,
+              "evidenceLabel": "moderate positive",
+              "citation": "BMJ 2019"
+            },
+            {
+              "key": "mortality_20_percent",
+              "value": "mortality of burst abdomen is 15–25% — primarily from sepsis, respiratory failure, and multiple organ failure",
+              "logLR": 19,
+              "evidenceLabel": "strong positive",
+              "citation": "BMJ 2019"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {
