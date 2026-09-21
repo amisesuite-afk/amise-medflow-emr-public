@@ -130,12 +130,78 @@ struct SOAPDraftEngine {
             parts.append("Examination: " + examParts.joined(separator: ". ") + ".")
         }
 
-        // Investigations
+        // Investigations — structured labs first, then imaging/other, then pending
         let resulted = p.investigations.filter { $0.status == .resulted }
-        let pending = p.investigations.filter { $0.status == .ordered || $0.status == .pending }
+        let pending  = p.investigations.filter { $0.status == .ordered || $0.status == .pending }
+
         if !resulted.isEmpty {
-            let text = resulted.map { "\($0.name)\($0.result.isEmpty ? "" : ": \($0.result)")" }.joined(separator: "; ")
-            parts.append("Results: \(text).")
+            // Structured key lab values via LabPanel (produces precise numeric output)
+            let labs = LabPanel.parse(from: resulted)
+            var labTokens: [String] = []
+            if let hb  = labs.haemoglobin {
+                let flag = hb.value < 8 ? " [CRITICAL]" : ""
+                labTokens.append(String(format: "Hb %.1f g/dL", hb.value) + flag)
+            }
+            if let wbc = labs.wbc {
+                labTokens.append(String(format: "WBC %.1f ×10⁹/L", wbc.value))
+            }
+            if let plt = labs.platelets {
+                let flag = plt.value < 50 ? " [CRITICAL]" : ""
+                labTokens.append("Plt \(Int(plt.value)) ×10⁹/L" + flag)
+            }
+            if let na  = labs.sodium {
+                let flag = (na.value < 120 || na.value > 155) ? " [CRITICAL]" : (na.value < 130 || na.value > 150) ? " [ABNL]" : ""
+                labTokens.append("Na \(Int(na.value)) mmol/L" + flag)
+            }
+            if let k   = labs.potassium {
+                let flag = k.value > 6.5 ? " [CRITICAL]" : k.value > 5.5 ? " [ABNL]" : ""
+                labTokens.append(String(format: "K %.1f mmol/L", k.value) + flag)
+            }
+            if let cr  = labs.creatinine {
+                let flag = cr.value > 300 ? " [CRITICAL]" : cr.value > 130 ? " [ABNL]" : ""
+                labTokens.append("Cr \(Int(cr.value)) µmol/L" + flag)
+            }
+            if let ur  = labs.urea {
+                labTokens.append(String(format: "Urea %.1f mmol/L", ur.value))
+            }
+            if let inr = labs.inr {
+                let flag = inr.value > 2.5 ? " [CRITICAL]" : inr.value > 1.5 ? " [ABNL]" : ""
+                labTokens.append(String(format: "INR %.1f", inr.value) + flag)
+            }
+            if let bil = labs.bilirubin {
+                let flag = bil.value > 100 ? " [ABNL]" : ""
+                labTokens.append("Bili \(Int(bil.value)) µmol/L" + flag)
+            }
+            if let alt = labs.alt {
+                let flag = alt.value > 120 ? " [ABNL]" : ""
+                labTokens.append("ALT \(Int(alt.value)) U/L" + flag)
+            }
+            if let alp = labs.alp {
+                labTokens.append("ALP \(Int(alp.value)) U/L")
+            }
+            if let lac = labs.lactate {
+                let flag = lac.value >= 4.0 ? " [CRITICAL]" : lac.value >= 2.0 ? " [ABNL]" : ""
+                labTokens.append(String(format: "Lactate %.1f mmol/L", lac.value) + flag)
+            }
+
+            if !labTokens.isEmpty {
+                let critPrefix = labs.hasCriticalValues ? "⚠ " : ""
+                parts.append("\(critPrefix)Labs: " + labTokens.joined(separator: ", ") + ".")
+            }
+
+            // Imaging, endoscopy, pathology and other non-lab results
+            let nonLabResulted = resulted.filter { $0.category != .blood }
+            if !nonLabResulted.isEmpty {
+                let text = nonLabResulted.map { "\($0.name)\($0.result.isEmpty ? "" : ": \($0.result)")" }.joined(separator: "; ")
+                parts.append("Imaging/other: \(text).")
+            }
+
+            // Blood results without a structured LabPanel match (free-text only — no numeric parse)
+            let unstructuredLabs = resulted.filter { $0.category == .blood && !$0.result.isEmpty }
+            if !unstructuredLabs.isEmpty && labTokens.isEmpty {
+                let text = unstructuredLabs.map { "\($0.name): \($0.result)" }.joined(separator: "; ")
+                parts.append("Results: \(text).")
+            }
         }
         if !pending.isEmpty {
             let text = pending.map { $0.name }.joined(separator: ", ")

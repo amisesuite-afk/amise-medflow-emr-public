@@ -520,6 +520,23 @@ private struct CalEventBlock: View {
                         .font(.system(size: 8))
                         .foregroundStyle(entry.color.opacity(0.7))
                     Spacer(minLength: 0)
+                    // Investigation status badges for scheduled patients
+                    if let p = entry.patient {
+                        let critLabs = LabPanel.parse(from: p.investigations)
+                        if critLabs.hasCriticalValues {
+                            Image(systemName: "flask.fill")
+                                .font(.system(size: 7, weight: .bold))
+                                .foregroundStyle(.red)
+                        } else if p.investigations.contains(where: { $0.status == .ordered || $0.status == .pending }) {
+                            Image(systemName: "clock.badge.exclamationmark")
+                                .font(.system(size: 7))
+                                .foregroundStyle(.orange)
+                        } else if p.investigations.contains(where: { $0.status == .resulted && !$0.result.isEmpty }) {
+                            Image(systemName: "flask")
+                                .font(.system(size: 7))
+                                .foregroundStyle(.teal)
+                        }
+                    }
                 }
                 Text(entry.title)
                     .font(.system(size: 11, weight: .semibold))
