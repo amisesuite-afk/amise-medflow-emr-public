@@ -4218,6 +4218,24 @@
               "key": "inv",
               "value": "FIT positive quantitative >10 mcg/g",
               "logLR": 17
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 8,
+              "evidenceLabel": "Anaemia (iron deficiency)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 4,
+              "evidenceLabel": "Elevated ESR"
             }
           ],
           "systems": [
@@ -4382,6 +4400,18 @@
               "key": "inv",
               "value": "colonoscopy diverticular stigmata recent haemorrhage",
               "logLR": 16
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 6,
+              "evidenceLabel": "Anaemia (acute blood loss)"
+            },
+            {
+              "key": "associations",
+              "value": "raised inr",
+              "logLR": 4,
+              "evidenceLabel": "Raised INR"
             }
           ],
           "systems": [
@@ -4464,6 +4494,24 @@
               "key": "inv",
               "value": "faecal calprotectin elevated >250 mcg/g",
               "logLR": 13
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia"
             }
           ],
           "systems": [
@@ -4629,6 +4677,24 @@
               "key": "inv",
               "value": "CT colon ischaemic colitis thumbprinting",
               "logLR": 19
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 6,
+              "evidenceLabel": "Elevated lactate (mesenteric ischaemia)"
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 6,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
             }
           ],
           "systems": [
@@ -12236,6 +12302,18 @@
               "logLR": 5,
               "evidenceLabel": "LR 3 for reactive vs malignant adenopathy",
               "citation": "Bazemore AW. Am Fam Physician 2002."
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
             }
           ],
           "systems": [
@@ -13436,6 +13514,18 @@
               "logLR": 13,
               "evidenceLabel": "LR 12 for intersphincteric vs supralevator abscess",
               "citation": "Buchanan GN. Br J Surg 2004."
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 6,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
             }
           ],
           "systems": [
@@ -13590,6 +13680,18 @@
               "key": "inv",
               "value": "MRI pelvis anal canal T staging inguinal nodal metastases SCC confirmed",
               "logLR": 21
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
             }
           ],
           "systems": [
@@ -13756,6 +13858,18 @@
               "key": "inv",
               "value": "stool culture NAAT Chlamydia Gonorrhoea infective proctitis STI confirmed",
               "logLR": 13
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC"
             }
           ],
           "systems": [
@@ -19752,6 +19866,18 @@
               "key": "inv",
               "value": "WBC >12 CRP >50 pilonidal abscess acute fluctuant swelling",
               "logLR": 12
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
             }
           ],
           "systems": [
@@ -19990,6 +20116,24 @@
               "key": "inv",
               "value": "skin biopsy follicular plugging apocrine gland involvement HS",
               "logLR": 13
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP (chronic)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 4,
+              "evidenceLabel": "Elevated ESR"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia of chronic disease"
             }
           ],
           "systems": [
@@ -20073,6 +20217,24 @@
               "key": "inv",
               "value": "colonoscopy biopsy granulomatous inflammation Crohn confirmed",
               "logLR": 18
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 4,
+              "evidenceLabel": "Elevated ESR"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia"
             }
           ],
           "systems": [
@@ -20237,6 +20399,24 @@
               "key": "inv",
               "value": "bone biopsy culture sacral osteomyelitis pathogen confirmed",
               "logLR": 18
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 6,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 8,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 8,
+              "evidenceLabel": "Elevated ESR"
             }
           ],
           "systems": [
@@ -27294,6 +27474,30 @@
               "value": "mri",
               "logLR": 20,
               "evidenceLabel": "Urgent MRI — spinal metastasis / cord compression"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia (malignancy)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 4,
+              "evidenceLabel": "Elevated ESR"
+            },
+            {
+              "key": "associations",
+              "value": "hypercalcaemia",
+              "logLR": 4,
+              "evidenceLabel": "Hypercalcaemia (malignancy)"
             }
           ],
           "systems": [
@@ -27364,6 +27568,18 @@
               "value": "uveitis",
               "logLR": 14,
               "evidenceLabel": "Anterior uveitis / iritis"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 6,
+              "evidenceLabel": "Elevated ESR"
             }
           ],
           "urgency": 0
@@ -28382,6 +28598,24 @@
               "value": "sputum afb",
               "logLR": 20,
               "evidenceLabel": "Sputum AFB / culture / GeneXpert — confirmatory"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 6,
+              "evidenceLabel": "Elevated ESR"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia"
             }
           ],
           "systems": [
@@ -28454,6 +28688,30 @@
               "value": "clubbing",
               "logLR": 12,
               "evidenceLabel": "Finger clubbing"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 4,
+              "evidenceLabel": "Elevated ESR"
+            },
+            {
+              "key": "associations",
+              "value": "hypercalcaemia",
+              "logLR": 4,
+              "evidenceLabel": "Hypercalcaemia (paraneoplastic)"
             }
           ],
           "urgency": 0
@@ -28543,6 +28801,24 @@
               "key": "pheochromocytoma",
               "value": "catecholamine_secondary_cause",
               "logLR": 8
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "renal impairment",
+              "logLR": 6,
+              "evidenceLabel": "Renal impairment (hypertensive nephropathy)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated troponin",
+              "logLR": 4,
+              "evidenceLabel": "Troponin (end-organ damage)"
             }
           ],
           "systems": [
@@ -28636,6 +28912,18 @@
               "key": "magnesium",
               "value": "hypomagnesaemia_refractory_k",
               "logLR": 8
+            },
+            {
+              "key": "associations",
+              "value": "renal impairment",
+              "logLR": 6,
+              "evidenceLabel": "Elevated creatinine"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 4,
+              "evidenceLabel": "Elevated lactate (dehydration)"
             }
           ],
           "systems": [
@@ -28730,6 +29018,18 @@
               "key": "recovery",
               "value": "baseline_return_most_cases",
               "logLR": 6
+            },
+            {
+              "key": "associations",
+              "value": "renal impairment",
+              "logLR": 10,
+              "evidenceLabel": "Elevated creatinine"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 4,
+              "evidenceLabel": "Elevated lactate"
             }
           ],
           "systems": [
@@ -33367,6 +33667,18 @@
               "key": "inv",
               "value": "skin swab culture wound Group A Streptococcus entry point",
               "logLR": 8
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 6,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
             }
           ],
           "systems": [
@@ -35486,6 +35798,24 @@
               "key": "inv",
               "value": "renal USS bilateral small echogenic kidneys CKD morphology",
               "logLR": 17
+            },
+            {
+              "key": "associations",
+              "value": "renal impairment",
+              "logLR": 10,
+              "evidenceLabel": "Elevated creatinine (chronic)"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 6,
+              "evidenceLabel": "Anaemia of CKD"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
             }
           ],
           "systems": [
@@ -35573,6 +35903,18 @@
               "key": "inv",
               "value": "urine microscopy granular casts epithelial casts AKI pattern",
               "logLR": 15
+            },
+            {
+              "key": "associations",
+              "value": "renal impairment",
+              "logLR": 10,
+              "evidenceLabel": "Acute rise in creatinine on CKD baseline"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 4,
+              "evidenceLabel": "Elevated lactate"
             }
           ],
           "systems": [
@@ -35663,6 +36005,24 @@
               "key": "inv",
               "value": "renal biopsy minimal change FSGS membranous nephropathy",
               "logLR": 29
+            },
+            {
+              "key": "associations",
+              "value": "renal impairment",
+              "logLR": 6,
+              "evidenceLabel": "Elevated creatinine"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
             }
           ],
           "systems": [
@@ -35749,6 +36109,30 @@
               "key": "inv",
               "value": "urine ACR >30 microscopic haematuria synpharyngitic haematuria",
               "logLR": 12
+            },
+            {
+              "key": "associations",
+              "value": "renal impairment",
+              "logLR": 8,
+              "evidenceLabel": "Elevated creatinine"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 4,
+              "evidenceLabel": "Elevated ESR"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia of renal disease"
             }
           ],
           "systems": [
@@ -35831,6 +36215,24 @@
               "key": "inv",
               "value": "renal biopsy diabetic glomerulosclerosis Kimmelstiel-Wilson nodules",
               "logLR": 24
+            },
+            {
+              "key": "associations",
+              "value": "renal impairment",
+              "logLR": 10,
+              "evidenceLabel": "Elevated creatinine"
+            },
+            {
+              "key": "associations",
+              "value": "elevated glucose",
+              "logLR": 6,
+              "evidenceLabel": "Hyperglycaemia (poor DM control)"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia"
             }
           ],
           "systems": [
@@ -35913,6 +36315,30 @@
               "key": "inv",
               "value": "ANCA MPO/PR3 positive pauci-immune crescentic GN",
               "logLR": 25
+            },
+            {
+              "key": "associations",
+              "value": "renal impairment",
+              "logLR": 10,
+              "evidenceLabel": "Elevated creatinine"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 6,
+              "evidenceLabel": "Elevated ESR"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 6,
+              "evidenceLabel": "Anaemia"
             }
           ],
           "systems": [
@@ -39997,6 +40423,12 @@
               "key": "inv",
               "value": "serum insulin C-peptide hypoglycaemia insulinoma",
               "logLR": 20
+            },
+            {
+              "key": "associations",
+              "value": "elevated glucose",
+              "logLR": -8,
+              "evidenceLabel": "Hypoglycaemia (below normal)"
             }
           ]
         },
@@ -40072,6 +40504,24 @@
               "key": "inv",
               "value": "Echo RV strain troponin elevated PE syncope",
               "logLR": 18
+            },
+            {
+              "key": "associations",
+              "value": "elevated d-dimer",
+              "logLR": 8,
+              "evidenceLabel": "Elevated D-dimer"
+            },
+            {
+              "key": "associations",
+              "value": "elevated troponin",
+              "logLR": 6,
+              "evidenceLabel": "Troponin elevation"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 6,
+              "evidenceLabel": "Elevated lactate"
             }
           ]
         }
@@ -42082,6 +42532,18 @@
               "key": "inv",
               "value": "serum lactate acidosis post-status epilepticus",
               "logLR": 10
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 8,
+              "evidenceLabel": "Elevated lactate (postictal)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP (aspiration risk)"
             }
           ]
         },
@@ -42157,6 +42619,18 @@
               "key": "inv",
               "value": "serum electrolytes hyponatraemia hypoglycaemia seizure",
               "logLR": 16
+            },
+            {
+              "key": "associations",
+              "value": "elevated glucose",
+              "logLR": 4,
+              "evidenceLabel": "Hyperglycaemia / hypoglycaemia"
+            },
+            {
+              "key": "associations",
+              "value": "renal impairment",
+              "logLR": 4,
+              "evidenceLabel": "Renal failure (uraemic seizure)"
             }
           ]
         },
@@ -42308,6 +42782,24 @@
               "key": "inv",
               "value": "MRI brain encephalitis T2 signal abnormality",
               "logLR": 19
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 8,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 8,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 4,
+              "evidenceLabel": "Elevated lactate"
             }
           ]
         },
@@ -45890,6 +46382,30 @@
               "key": "inv",
               "value": "plain Xray erosions periarticular osteopenia juxta-articular RA",
               "logLR": 15
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 8,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 6,
+              "evidenceLabel": "Elevated ESR"
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia of chronic disease"
             }
           ]
         },
@@ -45974,6 +46490,30 @@
               "key": "inv",
               "value": "anti-Sm anti-dsDNA antibodies SLE ACR criteria fulfilled",
               "logLR": 18
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 6,
+              "evidenceLabel": "Elevated ESR"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 6,
+              "evidenceLabel": "Anaemia (haemolytic / chronic)"
+            },
+            {
+              "key": "associations",
+              "value": "renal impairment",
+              "logLR": 6,
+              "evidenceLabel": "Renal impairment (lupus nephritis)"
             }
           ]
         },
@@ -46056,6 +46596,18 @@
               "key": "inv",
               "value": "HLA-B27 positive sacroiliac joint Xray grade 2 bilateral spondylitis",
               "logLR": 15
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 6,
+              "evidenceLabel": "Elevated ESR"
             }
           ]
         },
@@ -46232,6 +46784,18 @@
               "key": "inv",
               "value": "DECT dual energy CT urate deposition tophus gout confirmed",
               "logLR": 21
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP (acute attack)"
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC"
             }
           ]
         },
@@ -46312,6 +46876,18 @@
               "key": "inv",
               "value": "plain Xray chondrocalcinosis menisci wrist triangular fibrocartilage",
               "logLR": 15
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC"
             }
           ]
         },
@@ -46490,6 +47066,24 @@
               "key": "inv",
               "value": "joint aspirate inflammatory non-infectious no crystals reactive arthritis",
               "logLR": 10
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 4,
+              "evidenceLabel": "Elevated ESR"
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC"
             }
           ]
         }
@@ -71415,6 +72009,24 @@
               "key": "inv",
               "value": "pleural tap empyema pH <7.2 LDH elevated pus",
               "logLR": 34
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 8,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 8,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 4,
+              "evidenceLabel": "Elevated lactate"
             }
           ]
         },
@@ -71499,6 +72111,24 @@
               "key": "inv",
               "value": "bronchoscopy biopsy NSCLC adenocarcinoma squamous",
               "logLR": 38
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 4,
+              "evidenceLabel": "Elevated ESR"
             }
           ]
         },
@@ -71583,6 +72213,24 @@
               "key": "inv",
               "value": "pleural biopsy mesothelioma epithelioid sarcomatoid",
               "logLR": 38
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 4,
+              "evidenceLabel": "Elevated ESR"
             }
           ]
         },
@@ -71750,6 +72398,18 @@
               "key": "inv",
               "value": "CT chest pleural effusion malignant primary",
               "logLR": 16
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia"
             }
           ]
         },
@@ -75778,6 +76438,24 @@
               "key": "inv",
               "value": "CT abdomen stoma ischaemia bowel wall pneumatosis necrosis post-op",
               "logLR": 18
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 6,
+              "evidenceLabel": "Elevated lactate (ischaemia)"
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
             }
           ]
         },
@@ -76022,6 +76700,18 @@
               "key": "inv",
               "value": "U&E sodium <130 potassium <3.0 urea elevated high output ileostomy",
               "logLR": 18
+            },
+            {
+              "key": "associations",
+              "value": "renal impairment",
+              "logLR": 4,
+              "evidenceLabel": "Renal impairment (dehydration)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 4,
+              "evidenceLabel": "Elevated lactate"
             }
           ]
         },
@@ -76270,6 +76960,24 @@
               "key": "inv",
               "value": "upper GI Gastrografin study leak sleeve staple line",
               "logLR": 21
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 8,
+              "evidenceLabel": "Elevated CRP (post-op)"
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 6,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 6,
+              "evidenceLabel": "Elevated lactate"
             }
           ]
         },
@@ -76432,6 +77140,12 @@
               "key": "inv",
               "value": "vitamin D <25 nmol/L PTH elevated secondary hyperparathyroidism post bariatric",
               "logLR": 15
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 6,
+              "evidenceLabel": "Anaemia (iron / B12 / folate)"
             }
           ]
         },
@@ -86816,6 +87530,18 @@
               "key": "inv",
               "value": "CT groin inguinal nodes >1.5 cm necrosis concerning malignancy",
               "logLR": 17
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
             }
           ]
         },
@@ -86977,6 +87703,24 @@
               "key": "inv",
               "value": "MRI pelvis iliopsoas bursa enlarged fluid signal bursitis",
               "logLR": 19
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 6,
+              "evidenceLabel": "Raised WBC (abscess)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 4,
+              "evidenceLabel": "Elevated ESR"
             }
           ]
         },
@@ -89867,6 +90611,12 @@
               "value": "elevated troponin",
               "logLR": 14,
               "evidenceLabel": "Elevated troponin"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
             }
           ]
         },
@@ -90122,6 +90872,30 @@
               "key": "inv",
               "value": "troponin rise new ECG changes wound dehiscence sternal instability",
               "logLR": 15
+            },
+            {
+              "key": "associations",
+              "value": "elevated troponin",
+              "logLR": 6,
+              "evidenceLabel": "Troponin elevation (myocardial injury)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 8,
+              "evidenceLabel": "Elevated CRP (post-op inflammation)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 6,
+              "evidenceLabel": "Elevated lactate"
+            },
+            {
+              "key": "associations",
+              "value": "renal impairment",
+              "logLR": 6,
+              "evidenceLabel": "Renal impairment (AKI)"
             }
           ]
         },
@@ -90204,6 +90978,36 @@
               "key": "inv",
               "value": "blood cultures positive Streptococcus viridans or Staphylococcus aureus",
               "logLR": 24
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 8,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 8,
+              "evidenceLabel": "Elevated ESR"
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 6,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 6,
+              "evidenceLabel": "Anaemia of chronic infection"
+            },
+            {
+              "key": "associations",
+              "value": "elevated troponin",
+              "logLR": 4,
+              "evidenceLabel": "Troponin (perivalvular abscess)"
             }
           ]
         },
@@ -90286,6 +91090,24 @@
               "key": "inv",
               "value": "right heart catheter mPAP >25 mmHg at rest confirmatory",
               "logLR": 29
+            },
+            {
+              "key": "associations",
+              "value": "elevated troponin",
+              "logLR": 4,
+              "evidenceLabel": "Troponin elevation"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia"
             }
           ]
         },
@@ -90367,6 +91189,18 @@
               "key": "inv",
               "value": "BNP >400 pg/mL or NT-proBNP >1800 pg/mL heart failure",
               "logLR": 20
+            },
+            {
+              "key": "associations",
+              "value": "elevated troponin",
+              "logLR": 4,
+              "evidenceLabel": "Troponin elevation"
+            },
+            {
+              "key": "associations",
+              "value": "renal impairment",
+              "logLR": 4,
+              "evidenceLabel": "Renal impairment (cardiorenal)"
             }
           ]
         },
@@ -92633,6 +93467,24 @@
               "key": "inv",
               "value": "AST ALT bilirubin rising tacrolimus subtherapeutic liver rejection",
               "logLR": 18
+            },
+            {
+              "key": "associations",
+              "value": "elevated liver enzymes",
+              "logLR": 8,
+              "evidenceLabel": "Elevated transaminases"
+            },
+            {
+              "key": "associations",
+              "value": "raised bilirubin",
+              "logLR": 6,
+              "evidenceLabel": "Elevated bilirubin"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
             }
           ]
         },
@@ -92714,6 +93566,24 @@
               "key": "inv",
               "value": "CT angiography hepatic artery occlusion liver ischaemia transplant HAT",
               "logLR": 29
+            },
+            {
+              "key": "associations",
+              "value": "elevated liver enzymes",
+              "logLR": 8,
+              "evidenceLabel": "Elevated transaminases"
+            },
+            {
+              "key": "associations",
+              "value": "raised bilirubin",
+              "logLR": 6,
+              "evidenceLabel": "Elevated bilirubin"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 6,
+              "evidenceLabel": "Elevated lactate"
             }
           ]
         },
@@ -92795,6 +93665,18 @@
               "key": "inv",
               "value": "creatinine rising >25% baseline DSA donor-specific antibodies rejection",
               "logLR": 18
+            },
+            {
+              "key": "associations",
+              "value": "renal impairment",
+              "logLR": 10,
+              "evidenceLabel": "Elevated creatinine (rejection)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
             }
           ]
         },
@@ -92958,6 +93840,24 @@
               "key": "inv",
               "value": "lymph node biopsy PTLD EBV EBER positive B-cell monomorphic confirmed",
               "logLR": 21
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 4,
+              "evidenceLabel": "Elevated ESR"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia"
             }
           ]
         },
@@ -93202,6 +94102,24 @@
               "key": "inv",
               "value": "BAL culture Pneumocystis jirovecii PCP transplant immunosuppression",
               "logLR": 18
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 4,
+              "evidenceLabel": "Elevated lactate"
             }
           ]
         }
@@ -93942,6 +94860,24 @@
               "key": "inv",
               "value": "upper GI contrast study leak at anastomosis or sleeve line",
               "logLR": 19
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 8,
+              "evidenceLabel": "CRP surge (post-op day 3-5)"
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 6,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 6,
+              "evidenceLabel": "Elevated lactate (peritonitis)"
             }
           ]
         },
@@ -94182,6 +95118,12 @@
               "key": "inv",
               "value": "zinc thiamine folate low post-malabsorptive bariatric surgery",
               "logLR": 15
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 6,
+              "evidenceLabel": "Anaemia (iron / B12 deficiency)"
             }
           ]
         },
@@ -96227,6 +97169,24 @@
               "key": "exam",
               "value": "rectal exam melaena",
               "logLR": 13
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 8,
+              "evidenceLabel": "Anaemia (acute blood loss)"
+            },
+            {
+              "key": "associations",
+              "value": "raised inr",
+              "logLR": 4,
+              "evidenceLabel": "Raised INR (coagulopathy risk)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 4,
+              "evidenceLabel": "Elevated lactate (significant haemorrhage)"
             }
           ]
         },
@@ -96277,6 +97237,18 @@
               "key": "associated",
               "value": "odynophagia regurgitation",
               "logLR": 6
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 6,
+              "evidenceLabel": "Anaemia (chronic blood loss)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
             }
           ]
         },
@@ -96327,6 +97299,18 @@
               "key": "exam",
               "value": "epigastric mass supraclavicular node Virchow",
               "logLR": 17
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 6,
+              "evidenceLabel": "Iron-deficiency anaemia"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
             }
           ]
         },
@@ -98398,6 +99382,24 @@
               "key": "exam",
               "value": "stony dull pleural rub",
               "logLR": 10
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 8,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 8,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 4,
+              "evidenceLabel": "Elevated lactate"
             }
           ]
         },
@@ -98447,6 +99449,18 @@
               "key": "pmh",
               "value": "asbestos exposure mesothelioma risk",
               "logLR": 5
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 4,
+              "evidenceLabel": "Anaemia"
             }
           ]
         },
@@ -98546,6 +99560,18 @@
               "key": "associated",
               "value": "rib fractures pneumothorax",
               "logLR": 8
+            },
+            {
+              "key": "associations",
+              "value": "Anaemia symptoms",
+              "logLR": 6,
+              "evidenceLabel": "Anaemia (blood in chest)"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 4,
+              "evidenceLabel": "Elevated lactate"
             }
           ]
         },
@@ -100652,6 +101678,18 @@
               "key": "exam",
               "value": "multiple bilateral lymph nodes",
               "logLR": 5
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 4,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 4,
+              "evidenceLabel": "Elevated CRP"
             }
           ]
         },
@@ -100799,6 +101837,30 @@
               "key": "inv",
               "value": "TB cultures positive",
               "logLR": 8
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 8,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 8,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated esr",
+              "logLR": 6,
+              "evidenceLabel": "Elevated ESR"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 4,
+              "evidenceLabel": "Elevated lactate"
             }
           ]
         },
@@ -101989,6 +103051,18 @@
               "key": "age_over",
               "value": 40,
               "logLR": 2
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 6,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
             }
           ]
         },
@@ -102088,6 +103162,24 @@
               "key": "inv",
               "value": "SCORTEN score severity",
               "logLR": 15
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 6,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 6,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 4,
+              "evidenceLabel": "Elevated lactate (severe cases)"
             }
           ]
         },
@@ -102286,6 +103378,24 @@
               "key": "associated",
               "value": "headache photophobia",
               "logLR": 8
+            },
+            {
+              "key": "associations",
+              "value": "raised wbc",
+              "logLR": 8,
+              "evidenceLabel": "Raised WBC"
+            },
+            {
+              "key": "associations",
+              "value": "elevated crp",
+              "logLR": 8,
+              "evidenceLabel": "Elevated CRP"
+            },
+            {
+              "key": "associations",
+              "value": "elevated lactate",
+              "logLR": 8,
+              "evidenceLabel": "Elevated lactate (shock)"
             }
           ]
         }
