@@ -1357,6 +1357,33 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("h. pylori") || ccL.contains("helicobacter") { mergePool("upperGIDisease") }
             if ccL.contains("b-symptoms") || ccL.contains("lymphadenopathy") { mergePool("oncologyComplications") }
 
+        // Inflammatory bowel disease
+        case ccL.contains("crohn") || ccL.contains("crohn's disease") ||
+             ccL.contains("ulcerative colitis") || ccL.contains("inflammatory bowel") ||
+             ccL.contains("ibd") || ccL.contains("toxic megacolon") ||
+             ccL.contains("microscopic colitis") || ccL.contains("short bowel syndrome") ||
+             ccL.contains("entero-enteric fistula") || ccL.contains("enterovesical") ||
+             ccL.contains("intestinal stricture") || ccL.contains("ibd flare") ||
+             (ccL.contains("colitis") && (ccL.contains("bloody") || ccL.contains("chronic"))) ||
+             (ccL.contains("diarrhoea") && ccL.contains("bloody") && ccL.contains("chronic")):
+            candidates = externalPool("inflammatoryBowelDisease") ?? []
+            if ccL.contains("abscess") || ccL.contains("fistula") { mergePool("anorectalFunctional") }
+            if ccL.contains("stricture") || ccL.contains("obstruction") { mergePool("intestinalObstruction") }
+
+        // Gynaecological surgical conditions
+        case ccL.contains("ovarian torsion") || ccL.contains("ectopic pregnancy") ||
+             ccL.contains("pelvic inflammatory disease") || ccL.contains("pid") ||
+             ccL.contains("endometriosis") || ccL.contains("ovarian cancer") ||
+             ccL.contains("uterine fibroid") || ccL.contains("fibroids") ||
+             ccL.contains("bartholin") || ccL.contains("cervical cancer") ||
+             ccL.contains("endometrial cancer") || ccL.contains("postmenopausal bleeding") ||
+             (ccL.contains("adnexal") && ccL.contains("mass")) ||
+             (ccL.contains("pelvic pain") && ccL.contains("female")) ||
+             (ccL.contains("lower abdominal pain") && ccL.contains("female")):
+            candidates = externalPool("gynaecologicalSurgical") ?? []
+            if ccL.contains("ectopic") || ccL.contains("haemoperitoneum") { mergePool("acuteAbdominalPain") }
+            if ccL.contains("cancer") || ccL.contains("malignant") { mergePool("oncologyComplications") }
+
         // Skin and soft tissue tumours
         case ccL.contains("melanoma") || ccL.contains("basal cell") ||
              ccL.contains("squamous cell carcinoma") || ccL.contains("skin cancer") ||
@@ -1697,6 +1724,14 @@ enum BayesianDiagnosisEngine {
         if ccL.contains("carcinoid") || ccL.contains("neuroendocrine") ||
            ccL.contains("gist") || ccL.contains("gi lymphoma") ||
            ccL.contains("malt lymphoma") || ccL.contains("desmoid") { mergePool("primaryGILymphoma") }
+        if ccL.contains("crohn") || ccL.contains("ulcerative colitis") ||
+           ccL.contains("toxic megacolon") || ccL.contains("short bowel") ||
+           ccL.contains("microscopic colitis") ||
+           (ccL.contains("colitis") && ccL.contains("bloody")) { mergePool("inflammatoryBowelDisease") }
+        if ccL.contains("ovarian torsion") || ccL.contains("ectopic pregnancy") ||
+           ccL.contains("pelvic inflammatory") || ccL.contains("endometriosis") ||
+           ccL.contains("ovarian cancer") || ccL.contains("bartholin") ||
+           (ccL.contains("adnexal") && ccL.contains("mass")) { mergePool("gynaecologicalSurgical") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but

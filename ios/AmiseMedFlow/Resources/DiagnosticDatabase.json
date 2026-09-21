@@ -75180,6 +75180,1139 @@
           ]
         }
       ]
+    },
+    "inflammatoryBowelDisease": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Crohn's Disease",
+          "icd": "K50.90",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "skip_lesions_colonoscopy",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Skip lesions on colonoscopy",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "transmural_granulomas_histology",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "Non-caseating granulomas on histology",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "perianal_disease_fistula",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Perianal fistula/abscess",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "full_thickness_involvement_mri",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Full-thickness involvement on MRE",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "recurrent_right_iliac_fossa_pain",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Recurrent RIF pain (terminal ileum)",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "weight_loss_anaemia",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Weight loss/anaemia",
+              "citation": "Clinical"
+            },
+            {
+              "key": "mouth_eye_skin_extraintestinal",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Extraintestinal manifestations",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "elevated_faecal_calprotectin",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Elevated faecal calprotectin",
+              "citation": "ECCO 2020"
+            }
+          ]
+        },
+        {
+          "name": "Ulcerative Colitis",
+          "icd": "K51.90",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "colorectal"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "continuous_mucosal_inflammation",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Continuous mucosal inflammation from rectum",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "crypt_abscesses_histology",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Crypt abscesses on histology",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "bloody_diarrhoea",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Bloody diarrhoea",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "mayo_score_elevated",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Mayo score \u22656 (moderate-severe)",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "no_perianal_disease",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "No perianal disease (unlike Crohn)",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "backwash_ileitis",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Backwash ileitis (pancolitis)",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "psc_association",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "PSC association",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "crc_surveillance_mandatory",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "CRC surveillance mandatory (longstanding)",
+              "citation": "ECCO 2020"
+            }
+          ]
+        },
+        {
+          "name": "Toxic Megacolon",
+          "icd": "K59.31",
+          "logPrior": -32,
+          "urgency": 3,
+          "systems": [
+            "colorectal"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "colon_dilatation_6cm_xray",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Colonic dilatation >6cm on AXR",
+              "citation": "Truelove 1955"
+            },
+            {
+              "key": "systemic_toxicity_signs",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Systemic toxicity (fever/tachycardia/hypotension)",
+              "citation": "Truelove 1955"
+            },
+            {
+              "key": "known_ibd_or_cdiff",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Known IBD or C. diff precipitant",
+              "citation": "Clinical"
+            },
+            {
+              "key": "haemorrhagic_diarrhoea_acute",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Acute haemorrhagic diarrhoea",
+              "citation": "Clinical"
+            },
+            {
+              "key": "peritonitis_developing",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Peritonitis signs developing",
+              "citation": "Truelove 1955"
+            },
+            {
+              "key": "high_wbc_elevated_crp",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "WBC >10.5 and elevated CRP",
+              "citation": "Truelove 1955"
+            },
+            {
+              "key": "recent_immunosuppression_use",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Recent immunosuppression use",
+              "citation": "Clinical"
+            },
+            {
+              "key": "perforation_imminent_risk",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Risk of imminent perforation",
+              "citation": "Truelove 1955"
+            }
+          ]
+        },
+        {
+          "name": "Acute Severe Ulcerative Colitis",
+          "icd": "K51.01",
+          "logPrior": -25,
+          "urgency": 2,
+          "systems": [
+            "colorectal"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "truelove_witts_criteria",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Truelove-Witts criteria: >6 bloody stools/day",
+              "citation": "Truelove 1955"
+            },
+            {
+              "key": "hr_over_90_or_temperature",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "HR >90 or T >37.8\u00b0C",
+              "citation": "Truelove 1955"
+            },
+            {
+              "key": "anaemia_or_esr_elevated",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Anaemia (Hb <10.5) or ESR >30",
+              "citation": "Truelove 1955"
+            },
+            {
+              "key": "crp_over_45_day3",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "CRP >45mg/L at day 3 (Oxford criteria)",
+              "citation": "Travis 1996"
+            },
+            {
+              "key": "stool_frequency_over_8_day3",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": ">8 stools/day at day 3",
+              "citation": "Travis 1996"
+            },
+            {
+              "key": "failed_iv_steroids",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Failed IV steroids at 72 hours",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "rescue_therapy_needed",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Rescue therapy (ciclosporin/infliximab) needed",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "colectomy_discussion_initiated",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Colectomy discussed at admission",
+              "citation": "ECCO 2020"
+            }
+          ]
+        },
+        {
+          "name": "IBD-Related Intestinal Fistula",
+          "icd": "K63.2",
+          "logPrior": -28,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "entero_enteric_fistula_ct",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Entero-enteric fistula on CT/MRI",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "known_crohn_disease",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Known Crohn disease",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "enterovesical_pneumaturia",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "Pneumaturia (enterovesical fistula)",
+              "citation": "Clinical"
+            },
+            {
+              "key": "enterocutaneous_tract_skin",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Cutaneous opening (enterocutaneous)",
+              "citation": "Clinical"
+            },
+            {
+              "key": "stool_in_urine_or_vagina",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Stool/gas per urine or vagina",
+              "citation": "Clinical"
+            },
+            {
+              "key": "recurrent_uti_with_mixed_organisms",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Recurrent UTI with mixed organisms",
+              "citation": "Clinical"
+            },
+            {
+              "key": "mri_fistula_tract_confirmed",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "MRI confirms fistula tract",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "failed_medical_therapy",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Failed anti-TNF medical therapy",
+              "citation": "ECCO 2020"
+            }
+          ]
+        },
+        {
+          "name": "Short Bowel Syndrome",
+          "icd": "K91.2",
+          "logPrior": -32,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "extensive_small_bowel_resection",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Extensive small bowel resection (<200cm)",
+              "citation": "Nightingale 2006"
+            },
+            {
+              "key": "high_output_stoma",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "High-output stoma (>2L/day)",
+              "citation": "Nightingale 2006"
+            },
+            {
+              "key": "parenteral_nutrition_dependent",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Parenteral nutrition dependent",
+              "citation": "Nightingale 2006"
+            },
+            {
+              "key": "chronic_dehydration_electrolytes",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Chronic dehydration/electrolyte abnormalities",
+              "citation": "Clinical"
+            },
+            {
+              "key": "d_lactic_acidosis",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "D-lactic acidosis",
+              "citation": "Nightingale 2006"
+            },
+            {
+              "key": "crohn_mesenteric_vascular_cause",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Crohn/mesenteric vascular cause",
+              "citation": "Nightingale 2006"
+            },
+            {
+              "key": "steatorrhoea_malabsorption",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Steatorrhoea/fat malabsorption",
+              "citation": "Clinical"
+            },
+            {
+              "key": "renal_oxalate_stones",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Renal oxalate stones (ileal loss)",
+              "citation": "Nightingale 2006"
+            }
+          ]
+        },
+        {
+          "name": "Intestinal Stricture (IBD-Related)",
+          "icd": "K57.30",
+          "logPrior": -25,
+          "urgency": 1,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "obstructive_symptoms_crohn",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Obstructive symptoms in Crohn patient",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "ct_stricture_prestenotic_dilatation",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "CT stricture with pre-stenotic dilatation",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "colicky_post_prandial_pain",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Colicky post-prandial pain",
+              "citation": "Clinical"
+            },
+            {
+              "key": "fibrotic_not_inflammatory_mri",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Fibrotic (not inflammatory) on MRE",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "balloon_dilatation_amenable",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Amenable to endoscopic balloon dilatation",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "recurrent_admissions_obstruction",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Recurrent admissions for obstruction",
+              "citation": "Clinical"
+            },
+            {
+              "key": "failure_to_thrive_nutrition",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Nutritional failure/weight loss",
+              "citation": "Clinical"
+            },
+            {
+              "key": "prior_resection_anastomosis",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Prior resection (anastomotic stricture)",
+              "citation": "ECCO 2020"
+            }
+          ]
+        },
+        {
+          "name": "Microscopic Colitis",
+          "icd": "K52.83",
+          "logPrior": -22,
+          "urgency": 0,
+          "systems": [
+            "colorectal"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "watery_non_bloody_diarrhoea",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Chronic watery non-bloody diarrhoea",
+              "citation": "Pardi 2017"
+            },
+            {
+              "key": "normal_colonoscopy_macroscopic",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Normal macroscopic colonoscopy",
+              "citation": "Pardi 2017"
+            },
+            {
+              "key": "collagen_lymphocyte_histology",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Collagenous/lymphocytic colitis on biopsy",
+              "citation": "Pardi 2017"
+            },
+            {
+              "key": "nsaid_ssri_ppi_drug_trigger",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "NSAID/SSRI/PPI drug trigger",
+              "citation": "Pardi 2017"
+            },
+            {
+              "key": "older_female_predominance",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Older female predominance",
+              "citation": "Pardi 2017"
+            },
+            {
+              "key": "autoimmune_thyroid_coeliac",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Associated autoimmune conditions",
+              "citation": "Pardi 2017"
+            },
+            {
+              "key": "responds_to_budesonide",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Responds to budesonide",
+              "citation": "Pardi 2017"
+            },
+            {
+              "key": "normal_inflammatory_markers",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Normal or mildly elevated CRP",
+              "citation": "Pardi 2017"
+            }
+          ]
+        }
+      ]
+    },
+    "gynaecologicalSurgical": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Ovarian Torsion",
+          "icd": "N83.51",
+          "logPrior": -25,
+          "urgency": 3,
+          "systems": [
+            "gynaecology"
+          ],
+          "specialties": [
+            "gynaecology"
+          ],
+          "features": [
+            {
+              "key": "sudden_unilateral_lower_abdominal",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Sudden unilateral lower abdominal pain",
+              "citation": "ACOG 2019"
+            },
+            {
+              "key": "adnexal_mass_enlarged_ovary",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Enlarged ovary/adnexal mass on US",
+              "citation": "ACOG 2019"
+            },
+            {
+              "key": "absent_ovarian_flow_doppler",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Absent/reduced ovarian flow on Doppler",
+              "citation": "ACOG 2019"
+            },
+            {
+              "key": "nausea_vomiting_peritonism",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Nausea, vomiting, peritonism",
+              "citation": "ACOG 2019"
+            },
+            {
+              "key": "ovarian_cyst_predisposing",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Predisposing ovarian cyst",
+              "citation": "ACOG 2019"
+            },
+            {
+              "key": "reproductive_age_female",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Reproductive-age female",
+              "citation": "ACOG 2019"
+            },
+            {
+              "key": "intermittent_torsion_episodes",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Intermittent torsion episodes",
+              "citation": "Clinical"
+            },
+            {
+              "key": "laparoscopy_confirms_torsion",
+              "value": "true",
+              "logLR": 32,
+              "evidenceLabel": "Laparoscopy confirms torsion",
+              "citation": "ACOG 2019"
+            }
+          ]
+        },
+        {
+          "name": "Ruptured Ectopic Pregnancy",
+          "icd": "O00.10",
+          "logPrior": -25,
+          "urgency": 3,
+          "systems": [
+            "gynaecology"
+          ],
+          "specialties": [
+            "gynaecology"
+          ],
+          "features": [
+            {
+              "key": "positive_pregnancy_test",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Positive pregnancy test (\u03b2hCG)",
+              "citation": "RCOG 2016"
+            },
+            {
+              "key": "empty_uterus_us_adnexal_mass",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "Empty uterus + adnexal mass on US",
+              "citation": "RCOG 2016"
+            },
+            {
+              "key": "haemoperitoneum_free_fluid",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Free fluid/haemoperitoneum",
+              "citation": "RCOG 2016"
+            },
+            {
+              "key": "shoulder_tip_pain_diaphragm",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Shoulder tip pain (diaphragm irritation)",
+              "citation": "RCOG 2016"
+            },
+            {
+              "key": "haemodynamic_instability_ruptured",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Haemodynamic instability",
+              "citation": "RCOG 2016"
+            },
+            {
+              "key": "prior_pid_tubal_surgery",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Prior PID/tubal surgery risk",
+              "citation": "RCOG 2016"
+            },
+            {
+              "key": "amenorrhoea_6_to_8_weeks",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Amenorrhoea 6\u20138 weeks",
+              "citation": "RCOG 2016"
+            },
+            {
+              "key": "bhcg_not_doubling_48h",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "\u03b2hCG not doubling appropriately",
+              "citation": "RCOG 2016"
+            }
+          ]
+        },
+        {
+          "name": "Pelvic Inflammatory Disease",
+          "icd": "N73.9",
+          "logPrior": -20,
+          "urgency": 1,
+          "systems": [
+            "gynaecology",
+            "infectious"
+          ],
+          "specialties": [
+            "gynaecology"
+          ],
+          "features": [
+            {
+              "key": "lower_abdominal_pelvic_pain",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Lower abdominal/pelvic pain",
+              "citation": "CDC 2021"
+            },
+            {
+              "key": "cervical_motion_tenderness",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Cervical motion/adnexal tenderness",
+              "citation": "CDC 2021"
+            },
+            {
+              "key": "vaginal_discharge_purulent",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Purulent vaginal/cervical discharge",
+              "citation": "CDC 2021"
+            },
+            {
+              "key": "fever_over_38",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Fever >38\u00b0C",
+              "citation": "CDC 2021"
+            },
+            {
+              "key": "sti_gonorrhoea_chlamydia",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "STI (Gonorrhoea/Chlamydia) confirmed",
+              "citation": "CDC 2021"
+            },
+            {
+              "key": "tubo_ovarian_abscess_us",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Tubo-ovarian abscess on US/CT",
+              "citation": "CDC 2021"
+            },
+            {
+              "key": "sexually_active_young_female",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Sexually active young female",
+              "citation": "CDC 2021"
+            },
+            {
+              "key": "responds_iv_antibiotics",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Responds to IV antibiotics",
+              "citation": "CDC 2021"
+            }
+          ]
+        },
+        {
+          "name": "Endometriosis",
+          "icd": "N80.9",
+          "logPrior": -20,
+          "urgency": 0,
+          "systems": [
+            "gynaecology"
+          ],
+          "specialties": [
+            "gynaecology"
+          ],
+          "features": [
+            {
+              "key": "cyclical_pelvic_pain_dysmenorrhoea",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Cyclical pelvic pain/dysmenorrhoea",
+              "citation": "ESHRE 2022"
+            },
+            {
+              "key": "dyspareunia_deep",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Deep dyspareunia",
+              "citation": "ESHRE 2022"
+            },
+            {
+              "key": "subfertility",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Subfertility",
+              "citation": "ESHRE 2022"
+            },
+            {
+              "key": "chocolate_cyst_endometrioma_us",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Endometrioma on US ('chocolate cyst')",
+              "citation": "ESHRE 2022"
+            },
+            {
+              "key": "fixed_retroverted_uterus",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Fixed retroverted uterus",
+              "citation": "Clinical"
+            },
+            {
+              "key": "laparoscopy_confirms_implants",
+              "value": "true",
+              "logLR": 30,
+              "evidenceLabel": "Laparoscopy confirms endometriotic implants",
+              "citation": "ESHRE 2022"
+            },
+            {
+              "key": "bowel_bladder_symptoms_cyclical",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Cyclical bowel/bladder symptoms",
+              "citation": "ESHRE 2022"
+            },
+            {
+              "key": "elevated_ca125_mild",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Mildly elevated CA-125",
+              "citation": "ESHRE 2022"
+            }
+          ]
+        },
+        {
+          "name": "Ovarian Cancer",
+          "icd": "C56.9",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "gynaecology",
+            "oncology"
+          ],
+          "specialties": [
+            "gynaecology"
+          ],
+          "features": [
+            {
+              "key": "complex_pelvic_mass_ct",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Complex pelvic mass on CT/US",
+              "citation": "RCOG 2011"
+            },
+            {
+              "key": "elevated_ca125",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Elevated CA-125",
+              "citation": "RCOG 2011"
+            },
+            {
+              "key": "ascites_peritoneal_disease",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Ascites/peritoneal disease",
+              "citation": "RCOG 2011"
+            },
+            {
+              "key": "roma_score_elevated",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Elevated ROMA score",
+              "citation": "Moore 2009"
+            },
+            {
+              "key": "brca1_brca2_mutation",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "BRCA1/BRCA2 mutation",
+              "citation": "RCOG 2011"
+            },
+            {
+              "key": "solid_papillary_projections_us",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Solid/papillary projections on US (IOTA)",
+              "citation": "IOTA 2010"
+            },
+            {
+              "key": "post_menopausal_pelvic_mass",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Post-menopausal pelvic mass",
+              "citation": "RCOG 2011"
+            },
+            {
+              "key": "bowel_habit_change_bloating",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Change in bowel habit/bloating",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Uterine Fibroids (Leiomyomata)",
+          "icd": "D25.9",
+          "logPrior": -14,
+          "urgency": 0,
+          "systems": [
+            "gynaecology"
+          ],
+          "specialties": [
+            "gynaecology"
+          ],
+          "features": [
+            {
+              "key": "heavy_menstrual_bleeding",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Heavy menstrual bleeding",
+              "citation": "NICE 2018"
+            },
+            {
+              "key": "enlarged_irregular_uterus_us",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Enlarged irregular uterus on US",
+              "citation": "NICE 2018"
+            },
+            {
+              "key": "pelvic_pressure_urinary",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Pelvic pressure/urinary symptoms",
+              "citation": "NICE 2018"
+            },
+            {
+              "key": "reproductive_age_afro_caribbean",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Reproductive-age Afro-Caribbean female",
+              "citation": "NICE 2018"
+            },
+            {
+              "key": "multiple_intramural_fibroids",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Multiple intramural fibroids on MRI",
+              "citation": "NICE 2018"
+            },
+            {
+              "key": "secondary_dysmenorrhoea",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Secondary dysmenorrhoea",
+              "citation": "NICE 2018"
+            },
+            {
+              "key": "subfertility_recurrent_miscarriage",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Subfertility/recurrent miscarriage",
+              "citation": "NICE 2018"
+            },
+            {
+              "key": "normal_ca125",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Normal CA-125",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Uterine/Cervical Cancer",
+          "icd": "C55",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "gynaecology",
+            "oncology"
+          ],
+          "specialties": [
+            "gynaecology"
+          ],
+          "features": [
+            {
+              "key": "post_menopausal_bleeding",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Post-menopausal bleeding",
+              "citation": "RCOG 2016"
+            },
+            {
+              "key": "abnormal_uterine_bleeding",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Abnormal/irregular uterine bleeding",
+              "citation": "RCOG 2016"
+            },
+            {
+              "key": "endometrial_thickness_us",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Endometrial thickness >4mm post-menopause",
+              "citation": "RCOG 2016"
+            },
+            {
+              "key": "mri_myometrial_invasion",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "MRI confirms myometrial invasion",
+              "citation": "FIGO 2020"
+            },
+            {
+              "key": "endometrial_biopsy_adenocarcinoma",
+              "value": "true",
+              "logLR": 32,
+              "evidenceLabel": "Endometrial biopsy confirms adenocarcinoma",
+              "citation": "FIGO 2020"
+            },
+            {
+              "key": "hpv_abnormal_smear",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "HPV/abnormal cervical smear (cervix)",
+              "citation": "NHSCSP 2020"
+            },
+            {
+              "key": "obesity_t2dm_nulliparity",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Obesity/T2DM/nulliparity (endometrial)",
+              "citation": "RCOG 2016"
+            },
+            {
+              "key": "pelvic_para_aortic_nodes",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Pelvic/para-aortic lymphadenopathy",
+              "citation": "FIGO 2020"
+            }
+          ]
+        },
+        {
+          "name": "Bartholin's Gland Abscess",
+          "icd": "N75.1",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "gynaecology"
+          ],
+          "specialties": [
+            "gynaecology"
+          ],
+          "features": [
+            {
+              "key": "unilateral_labial_swelling",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Unilateral labial swelling/fluctuance",
+              "citation": "RCOG 2018"
+            },
+            {
+              "key": "bartholin_gland_location",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "Posterior labia majora/introital location",
+              "citation": "RCOG 2018"
+            },
+            {
+              "key": "severe_vulval_pain",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Severe vulval pain",
+              "citation": "Clinical"
+            },
+            {
+              "key": "fever_cellulitis",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Fever/surrounding cellulitis",
+              "citation": "Clinical"
+            },
+            {
+              "key": "young_reproductive_age",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Young reproductive-age female",
+              "citation": "RCOG 2018"
+            },
+            {
+              "key": "gc_or_chlamydia_culture",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "GC/Chlamydia on culture",
+              "citation": "RCOG 2018"
+            },
+            {
+              "key": "word_catheter_marsupialisation",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Requires Word catheter/marsupialisation",
+              "citation": "RCOG 2018"
+            },
+            {
+              "key": "recurrent_episodes",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Recurrent Bartholin abscess",
+              "citation": "Clinical"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {
