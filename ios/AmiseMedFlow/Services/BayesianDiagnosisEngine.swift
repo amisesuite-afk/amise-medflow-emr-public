@@ -1292,6 +1292,43 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("sepsis") || ccL.contains("empyema") { mergePool("sepsisConditions") }
             if ccL.contains("leak") || ccL.contains("anastomotic") { mergePool("postOpComplications") }
 
+        // Anorectal and pelvic floor conditions
+        case ccL.contains("haemorrhoids") || ccL.contains("hemorrhoids") ||
+             ccL.contains("anal fissure") || ccL.contains("perianal abscess") ||
+             ccL.contains("anal fistula") || ccL.contains("rectal prolapse") ||
+             ccL.contains("faecal incontinence") || ccL.contains("fecal incontinence") ||
+             ccL.contains("pilonidal") || ccL.contains("rectovaginal fistula") ||
+             ccL.contains("pruritus ani") || ccL.contains("soiling") ||
+             (ccL.contains("perianal") && ccL.contains("discharge")) ||
+             (ccL.contains("rectal bleeding") && ccL.contains("perianal")):
+            candidates = externalPool("anorectalFunctional") ?? []
+            if ccL.contains("crohn") { mergePool("colonoscopyPathology") }
+            if ccL.contains("cancer") || ccL.contains("malignant") { mergePool("colorectalMalignancy") }
+
+        // Abdominal wall defects and hernias
+        case ccL.contains("incisional hernia") || ccL.contains("parastomal hernia") ||
+             ccL.contains("epigastric hernia") || ccL.contains("spigelian") ||
+             ccL.contains("diastasis recti") || ccL.contains("lumbar hernia") ||
+             ccL.contains("obturator hernia") || ccL.contains("richter hernia") ||
+             (ccL.contains("hernia") && ccL.contains("abdominal wall")) ||
+             (ccL.contains("bulge") && ccL.contains("incision")) ||
+             (ccL.contains("hernia") && ccL.contains("repair") && ccL.contains("complication")):
+            candidates = externalPool("abdominalWallDefects") ?? []
+            if ccL.contains("strangulated") || ccL.contains("obstructed") { mergePool("intestinalObstruction") }
+            if ccL.contains("mesh") && ccL.contains("infection") { mergePool("surgicalSiteInfection") }
+
+        // Groin, inguinal and sports hernias
+        case ccL.contains("inguinal hernia") || ccL.contains("femoral hernia") ||
+             ccL.contains("sports hernia") || ccL.contains("athletic pubalgia") ||
+             ccL.contains("groin pain") || ccL.contains("groin swelling") ||
+             ccL.contains("hydrocele") || ccL.contains("varicocele") ||
+             ccL.contains("psoas abscess") || ccL.contains("inguinal lymph") ||
+             (ccL.contains("groin") && ccL.contains("lump")) ||
+             (ccL.contains("scrotum") && (ccL.contains("swelling") || ccL.contains("pain"))):
+            candidates = externalPool("groinSportsHernia") ?? []
+            if ccL.contains("strangulated") { mergePool("intestinalObstruction") }
+            if ccL.contains("testicular") || ccL.contains("torsion") { mergePool("urologicalEmergency") }
+
         // Skin and soft tissue tumours
         case ccL.contains("melanoma") || ccL.contains("basal cell") ||
              ccL.contains("squamous cell carcinoma") || ccL.contains("skin cancer") ||
@@ -1618,6 +1655,14 @@ enum BayesianDiagnosisEngine {
         if ccL.contains("bronchopleural") || ccL.contains("chylothorax") ||
            ccL.contains("post-thoracotomy") || ccL.contains("empyema") ||
            (ccL.contains("air leak") && ccL.contains("chest")) { mergePool("postThoracotomyComplications") }
+        if ccL.contains("haemorrhoids") || ccL.contains("anal fissure") ||
+           ccL.contains("perianal abscess") || ccL.contains("pilonidal") ||
+           ccL.contains("rectal prolapse") || ccL.contains("faecal incontinence") { mergePool("anorectalFunctional") }
+        if ccL.contains("incisional hernia") || ccL.contains("parastomal hernia") ||
+           ccL.contains("diastasis recti") || ccL.contains("obturator hernia") { mergePool("abdominalWallDefects") }
+        if ccL.contains("inguinal hernia") || ccL.contains("femoral hernia") ||
+           ccL.contains("groin pain") || ccL.contains("hydrocele") ||
+           ccL.contains("varicocele") || ccL.contains("sports hernia") { mergePool("groinSportsHernia") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but

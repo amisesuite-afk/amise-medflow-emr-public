@@ -72341,6 +72341,1704 @@
           ]
         }
       ]
+    },
+    "anorectalFunctional": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Haemorrhoids (Symptomatic)",
+          "icd": "K64.9",
+          "logPrior": -14,
+          "urgency": 0,
+          "systems": [
+            "colorectal"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "painless_rectal_bleeding_bright",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Painless bright red rectal bleeding",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "prolapse_on_defaecation",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Prolapse on defaecation",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "pruritus_ani",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Pruritus ani",
+              "citation": "Clinical"
+            },
+            {
+              "key": "visible_internal_haemorrhoids",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Internal haemorrhoids on proctoscopy",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "blood_on_tissue_not_in_stool",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Blood on tissue paper/coating stool",
+              "citation": "Clinical"
+            },
+            {
+              "key": "straining_low_fibre_diet",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Straining/low-fibre diet",
+              "citation": "Clinical"
+            },
+            {
+              "key": "no_change_bowel_habit",
+              "value": "true",
+              "logLR": 8,
+              "evidenceLabel": "No change in bowel habit",
+              "citation": "Clinical"
+            },
+            {
+              "key": "age_under_50_no_alarm",
+              "value": "true",
+              "logLR": 8,
+              "evidenceLabel": "Age <50, no alarm features",
+              "citation": "NICE 2019"
+            }
+          ]
+        },
+        {
+          "name": "Anal Fissure",
+          "icd": "K60.2",
+          "logPrior": -17,
+          "urgency": 0,
+          "systems": [
+            "colorectal"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "tearing_pain_defaecation",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Tearing pain during/after defaecation",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "bright_blood_on_paper",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Bright blood on toilet paper",
+              "citation": "Clinical"
+            },
+            {
+              "key": "posterior_midline_fissure",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Posterior midline fissure on examination",
+              "citation": "Clinical"
+            },
+            {
+              "key": "skin_tag_sentinel_pile",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Sentinel skin tag",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "high_sphincter_tone",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "High sphincter tone on examination",
+              "citation": "Clinical"
+            },
+            {
+              "key": "constipation_hard_stools",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Constipation/hard stools precipitant",
+              "citation": "Clinical"
+            },
+            {
+              "key": "crohn_lateral_fissure",
+              "value": "false",
+              "logLR": 8,
+              "evidenceLabel": "NOT lateral/multiple fissures (Crohn)",
+              "citation": "Clinical"
+            },
+            {
+              "key": "chronic_fissure_features",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Chronic fissure (indurated edges)",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Perianal Abscess",
+          "icd": "K61.0",
+          "logPrior": -17,
+          "urgency": 1,
+          "systems": [
+            "colorectal"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "perianal_swelling_tender",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Tender perianal swelling/fluctuance",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "severe_perianal_pain",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Severe throbbing perianal pain",
+              "citation": "Clinical"
+            },
+            {
+              "key": "fever_systemic",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Fever/systemic sepsis signs",
+              "citation": "Clinical"
+            },
+            {
+              "key": "fluctuant_mass_palpable",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Fluctuant mass on palpation",
+              "citation": "Clinical"
+            },
+            {
+              "key": "intersphincteric_origin",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Intersphincteric origin (crypt of Morgagni)",
+              "citation": "Parks 1976"
+            },
+            {
+              "key": "immunosuppressed_diabetic",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Immunosuppression/diabetes risk",
+              "citation": "Clinical"
+            },
+            {
+              "key": "mri_confirmed_collection",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "MRI confirms collection/fistula tract",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "crohn_disease_context",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Known Crohn disease context",
+              "citation": "NICE 2019"
+            }
+          ]
+        },
+        {
+          "name": "Anal Fistula",
+          "icd": "K60.3",
+          "logPrior": -20,
+          "urgency": 0,
+          "systems": [
+            "colorectal"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "perianal_discharge_chronic",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Chronic perianal discharge",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "external_opening_visible",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "External opening visible on inspection",
+              "citation": "Parks 1976"
+            },
+            {
+              "key": "goodsall_rule_applicable",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Goodsall rule predicts tract direction",
+              "citation": "Parks 1976"
+            },
+            {
+              "key": "prior_abscess_history",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Prior perianal abscess",
+              "citation": "Clinical"
+            },
+            {
+              "key": "mri_tract_classification",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "MRI classifies Parks type/complexity",
+              "citation": "Parks 1976"
+            },
+            {
+              "key": "internal_opening_proctoscopy",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Internal opening on proctoscopy",
+              "citation": "Clinical"
+            },
+            {
+              "key": "crohn_complex_fistula",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Crohn-related complex fistula",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "recurrent_after_surgery",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Recurrence after prior surgery",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Rectal Prolapse",
+          "icd": "K62.3",
+          "logPrior": -22,
+          "urgency": 0,
+          "systems": [
+            "colorectal"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "full_thickness_prolapse_visible",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Full-thickness rectal prolapse on straining",
+              "citation": "Clinical"
+            },
+            {
+              "key": "concentric_mucosal_folds",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Concentric mucosal folds (vs haemorrhoids)",
+              "citation": "Clinical"
+            },
+            {
+              "key": "elderly_female_patient",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Elderly female patient",
+              "citation": "Clinical"
+            },
+            {
+              "key": "pelvic_floor_weakness",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Pelvic floor weakness/multiparity",
+              "citation": "Clinical"
+            },
+            {
+              "key": "soiling_mucous_discharge",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Soiling/mucous discharge",
+              "citation": "Clinical"
+            },
+            {
+              "key": "incontinence_coexisting",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Coexisting faecal incontinence",
+              "citation": "Clinical"
+            },
+            {
+              "key": "reducible_manually",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Manually reducible prolapse",
+              "citation": "Clinical"
+            },
+            {
+              "key": "history_of_straining_chronic",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Chronic straining history",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Faecal Incontinence",
+          "icd": "R15.9",
+          "logPrior": -20,
+          "urgency": 0,
+          "systems": [
+            "colorectal"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "wexner_score_elevated",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Wexner score \u22659",
+              "citation": "Jorge 1993"
+            },
+            {
+              "key": "sphincter_defect_eaus",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Sphincter defect on endo-anal US",
+              "citation": "Jorge 1993"
+            },
+            {
+              "key": "obstetric_sphincter_injury",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Obstetric anal sphincter injury",
+              "citation": "Royal College OG 2015"
+            },
+            {
+              "key": "post_fistula_surgery",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Post-fistula/anal surgery",
+              "citation": "Clinical"
+            },
+            {
+              "key": "neuropathy_pudenal",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Pudendal neuropathy on nerve testing",
+              "citation": "Clinical"
+            },
+            {
+              "key": "loose_stools_overflow",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Loose stools/overflow incontinence",
+              "citation": "Clinical"
+            },
+            {
+              "key": "low_resting_squeeze_anorectal",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Low resting/squeeze pressures on manometry",
+              "citation": "Jorge 1993"
+            },
+            {
+              "key": "neurological_cause_myelopathy",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Neurological cause (myelopathy/MS)",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Pilonidal Sinus Disease",
+          "icd": "L05.91",
+          "logPrior": -17,
+          "urgency": 0,
+          "systems": [
+            "colorectal"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "natal_cleft_pit_sinus",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Pit/sinus in natal cleft",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "young_hairy_male",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Young hairy male patient",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "sedentary_occupation",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Sedentary occupation",
+              "citation": "Clinical"
+            },
+            {
+              "key": "recurrent_abscess_natal",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Recurrent abscess in natal cleft",
+              "citation": "NICE 2019"
+            },
+            {
+              "key": "hair_tuft_visible",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Hair tufts visible in sinus",
+              "citation": "Clinical"
+            },
+            {
+              "key": "chronic_discharge_natal",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Chronic discharge from natal cleft",
+              "citation": "Clinical"
+            },
+            {
+              "key": "not_posterior_to_dentate",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Location posterior to anal canal",
+              "citation": "Clinical"
+            },
+            {
+              "key": "obesity_bmi_elevated",
+              "value": "true",
+              "logLR": 8,
+              "evidenceLabel": "Obesity/elevated BMI",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Rectovaginal Fistula",
+          "icd": "N82.3",
+          "logPrior": -29,
+          "urgency": 1,
+          "systems": [
+            "colorectal",
+            "gynaecology"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "passage_stool_gas_vagina",
+              "value": "true",
+              "logLR": 32,
+              "evidenceLabel": "Passage of stool/gas per vagina",
+              "citation": "Clinical"
+            },
+            {
+              "key": "recurrent_vaginal_infections",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Recurrent vaginal/urinary infections",
+              "citation": "Clinical"
+            },
+            {
+              "key": "obstetric_trauma_cause",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Obstetric trauma/difficult delivery",
+              "citation": "Clinical"
+            },
+            {
+              "key": "crohn_fistula_context",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Crohn disease context",
+              "citation": "ECCO 2020"
+            },
+            {
+              "key": "post_radiation_pelvis",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Post-pelvic radiation",
+              "citation": "Clinical"
+            },
+            {
+              "key": "mri_confirms_fistula_tract",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "MRI confirms fistula tract",
+              "citation": "Clinical"
+            },
+            {
+              "key": "vaginoscopy_opening_visible",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Opening visible on vaginoscopy",
+              "citation": "Clinical"
+            },
+            {
+              "key": "methylene_blue_vaginoscopy",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Positive methylene blue test",
+              "citation": "Clinical"
+            }
+          ]
+        }
+      ]
+    },
+    "abdominalWallDefects": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Incisional Hernia",
+          "icd": "K43.9",
+          "logPrior": -14,
+          "urgency": 0,
+          "systems": [
+            "abdominal_wall"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "bulge_at_prior_incision",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Bulge at site of prior incision",
+              "citation": "EHS 2014"
+            },
+            {
+              "key": "impulse_on_cough",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Cough impulse on palpation",
+              "citation": "Clinical"
+            },
+            {
+              "key": "prior_abdominal_surgery",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Prior abdominal surgery",
+              "citation": "EHS 2014"
+            },
+            {
+              "key": "ct_confirms_defect",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "CT confirms fascial defect",
+              "citation": "EHS 2014"
+            },
+            {
+              "key": "obesity_wound_infection_risk",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Obesity/prior wound infection",
+              "citation": "EHS 2014"
+            },
+            {
+              "key": "reducible_content",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Reducible hernia content",
+              "citation": "Clinical"
+            },
+            {
+              "key": "large_defect_width",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Defect width >4cm",
+              "citation": "EHS 2014"
+            },
+            {
+              "key": "midline_location",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Midline location (commonest)",
+              "citation": "EHS 2014"
+            }
+          ]
+        },
+        {
+          "name": "Parastomal Hernia",
+          "icd": "K43.5",
+          "logPrior": -20,
+          "urgency": 0,
+          "systems": [
+            "abdominal_wall"
+          ],
+          "specialties": [
+            "colorectal_surgery"
+          ],
+          "features": [
+            {
+              "key": "bulge_around_stoma",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Bulge adjacent to stoma",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "stoma_appliance_difficulty",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Difficulty with stoma appliance",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "colostomy_end_stoma",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "End colostomy (highest risk)",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "ct_confirms_parastomal",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "CT confirms parastomal defect",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "obesity_contributing",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Obesity contributing",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "pain_around_stoma",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Pain around stoma site",
+              "citation": "Clinical"
+            },
+            {
+              "key": "obstructed_hernia_risk",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Risk of obstruction/strangulation",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "late_onset_post_stoma",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Late onset years after stoma formation",
+              "citation": "EHS 2018"
+            }
+          ]
+        },
+        {
+          "name": "Epigastric Hernia",
+          "icd": "K43.6",
+          "logPrior": -20,
+          "urgency": 0,
+          "systems": [
+            "abdominal_wall"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "midline_epigastric_defect",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Midline epigastric fascial defect",
+              "citation": "EHS 2014"
+            },
+            {
+              "key": "preperitoneal_fat_incarcerated",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Preperitoneal fat incarcerated",
+              "citation": "EHS 2014"
+            },
+            {
+              "key": "small_tender_lump_epigastric",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Small tender epigastric lump",
+              "citation": "Clinical"
+            },
+            {
+              "key": "ct_confirms_epigastric",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "CT/US confirms small fascial defect",
+              "citation": "EHS 2014"
+            },
+            {
+              "key": "pain_after_heavy_meal",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Pain worse after heavy meals",
+              "citation": "Clinical"
+            },
+            {
+              "key": "linea_alba_defect",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Linea alba defect on examination",
+              "citation": "EHS 2014"
+            },
+            {
+              "key": "multiple_defects_possible",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Multiple defects present",
+              "citation": "EHS 2014"
+            },
+            {
+              "key": "no_bowel_content",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Rarely contains bowel",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Spigelian Hernia",
+          "icd": "K43.9",
+          "logPrior": -35,
+          "urgency": 1,
+          "systems": [
+            "abdominal_wall"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "spigelian_line_location",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Spigelian belt/line location",
+              "citation": "Carter 2005"
+            },
+            {
+              "key": "high_incarceration_rate",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "High incarceration rate (20%)",
+              "citation": "Carter 2005"
+            },
+            {
+              "key": "ct_confirms_interparietal",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "CT confirms interparietal location",
+              "citation": "Carter 2005"
+            },
+            {
+              "key": "intermittent_pain_lateral",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Intermittent lateral abdominal pain",
+              "citation": "Clinical"
+            },
+            {
+              "key": "obese_patient_occult",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Often occult in obese patients",
+              "citation": "Carter 2005"
+            },
+            {
+              "key": "below_arcuate_line",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Below arcuate line (most common)",
+              "citation": "Carter 2005"
+            },
+            {
+              "key": "no_obvious_bulge",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "No obvious external bulge",
+              "citation": "Carter 2005"
+            },
+            {
+              "key": "middle_aged_multiparous",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Middle-aged/multiparous",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Diastasis Recti",
+          "icd": "M62.08",
+          "logPrior": -17,
+          "urgency": 0,
+          "systems": [
+            "abdominal_wall"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "linea_alba_widening_midline",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Midline bulge on sit-up manoeuvre",
+              "citation": "Lee 2008"
+            },
+            {
+              "key": "no_true_fascial_defect",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "No true fascial defect (intact linea)",
+              "citation": "Lee 2008"
+            },
+            {
+              "key": "post_partum_female",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Post-partum female",
+              "citation": "Lee 2008"
+            },
+            {
+              "key": "ridge_on_sit_up",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Ridge visible on sit-up",
+              "citation": "Lee 2008"
+            },
+            {
+              "key": "ultrasound_gap_greater_2cm",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "US inter-recti gap >2cm",
+              "citation": "Lee 2008"
+            },
+            {
+              "key": "core_weakness_backache",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Core weakness/chronic backache",
+              "citation": "Clinical"
+            },
+            {
+              "key": "no_incarceration_risk",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "No incarceration risk",
+              "citation": "Clinical"
+            },
+            {
+              "key": "obesity_multiple_pregnancy",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Obesity/multiple pregnancies",
+              "citation": "Lee 2008"
+            }
+          ]
+        },
+        {
+          "name": "Lumbar Hernia",
+          "icd": "K43.9",
+          "logPrior": -35,
+          "urgency": 0,
+          "systems": [
+            "abdominal_wall"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "posterior_lateral_bulge",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Posterior/lateral flank bulge",
+              "citation": "Moreno-Egea 2007"
+            },
+            {
+              "key": "petit_grynfeltt_triangle",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Petit/Grynfeltt triangle location",
+              "citation": "Moreno-Egea 2007"
+            },
+            {
+              "key": "post_renal_surgery_trauma",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Post-renal surgery/trauma (acquired)",
+              "citation": "Moreno-Egea 2007"
+            },
+            {
+              "key": "ct_lumbar_defect",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "CT confirms lumbar wall defect",
+              "citation": "Moreno-Egea 2007"
+            },
+            {
+              "key": "retroperitoneal_fat_content",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Retroperitoneal fat/viscera content",
+              "citation": "Clinical"
+            },
+            {
+              "key": "back_pain_lateral_flank",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Lateral flank/back discomfort",
+              "citation": "Clinical"
+            },
+            {
+              "key": "spontaneous_rare_congenital",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Rare \u2014 congenital or spontaneous",
+              "citation": "Moreno-Egea 2007"
+            },
+            {
+              "key": "reducible_on_supine",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Reducible when supine",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Obturator Hernia",
+          "icd": "K41.30",
+          "logPrior": -35,
+          "urgency": 2,
+          "systems": [
+            "abdominal_wall"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "howship_romberg_sign",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Howship-Romberg sign (medial thigh pain)",
+              "citation": "Ziegler 1974"
+            },
+            {
+              "key": "elderly_thin_female",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Elderly thin female",
+              "citation": "Clinical"
+            },
+            {
+              "key": "small_bowel_obstruction_no_cause",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "SBO without obvious external hernia",
+              "citation": "Clinical"
+            },
+            {
+              "key": "ct_confirms_obturator",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "CT confirms obturator canal hernia",
+              "citation": "Clinical"
+            },
+            {
+              "key": "recurrent_sbo_episodes",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Recurrent SBO episodes",
+              "citation": "Clinical"
+            },
+            {
+              "key": "weight_loss_cachexia",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Significant weight loss/cachexia",
+              "citation": "Clinical"
+            },
+            {
+              "key": "delayed_diagnosis_common",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Often diagnosed late",
+              "citation": "Ziegler 1974"
+            },
+            {
+              "key": "bilateral_in_10_percent",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Bilateral in ~10%",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Richter Hernia",
+          "icd": "K46.0",
+          "logPrior": -35,
+          "urgency": 3,
+          "systems": [
+            "abdominal_wall"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "partial_bowel_wall_strangulation",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "Partial bowel wall strangulated",
+              "citation": "Skandalakis 1994"
+            },
+            {
+              "key": "no_complete_obstruction",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "No complete bowel obstruction (partial)",
+              "citation": "Skandalakis 1994"
+            },
+            {
+              "key": "small_tight_hernia_orifice",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Small tight hernia orifice",
+              "citation": "Skandalakis 1994"
+            },
+            {
+              "key": "femoral_obturator_site",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Femoral/obturator site (commonest)",
+              "citation": "Skandalakis 1994"
+            },
+            {
+              "key": "local_pain_tenderness_hernia",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Local pain/tenderness at hernia site",
+              "citation": "Clinical"
+            },
+            {
+              "key": "gangrene_necrosis_risk",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Rapid progression to gangrene",
+              "citation": "Clinical"
+            },
+            {
+              "key": "ct_antimesenteric_protrusion",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "CT shows antimesenteric wall protrusion",
+              "citation": "Clinical"
+            },
+            {
+              "key": "delay_in_diagnosis",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Often diagnosed late (occult)",
+              "citation": "Skandalakis 1994"
+            }
+          ]
+        }
+      ]
+    },
+    "groinSportsHernia": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Indirect Inguinal Hernia",
+          "icd": "K40.90",
+          "logPrior": -14,
+          "urgency": 0,
+          "systems": [
+            "abdominal_wall"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "groin_bulge_indirect_path",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Groin bulge following indirect path",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "bulge_enters_scrotum",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Bulge descends into scrotum",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "young_male_patient",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Young male patient",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "increases_with_valsalva",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Increases with Valsalva manoeuvre",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "finger_tip_at_deep_ring",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Reduction via deep ring on examination",
+              "citation": "Clinical"
+            },
+            {
+              "key": "patent_processus_vaginalis",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Patent processus vaginalis (congenital)",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "us_confirms_inguinal",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "US confirms indirect inguinal hernia",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "reducible_when_supine",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Reducible when supine",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Direct Inguinal Hernia",
+          "icd": "K40.90",
+          "logPrior": -17,
+          "urgency": 0,
+          "systems": [
+            "abdominal_wall"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "hesselbach_triangle_bulge",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Bulge in Hesselbach triangle",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "older_male_patient",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Older male patient",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "wide_neck_easily_reduced",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Wide neck, easily reduced",
+              "citation": "Clinical"
+            },
+            {
+              "key": "does_not_enter_scrotum",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Does not enter scrotum",
+              "citation": "Clinical"
+            },
+            {
+              "key": "posterior_wall_weakness",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Posterior inguinal wall weakness",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "bilateral_in_50_percent",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Bilateral in 50%",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "low_strangulation_risk",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Low strangulation risk (wide neck)",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "chronic_cough_physical_work",
+              "value": "true",
+              "logLR": 10,
+              "evidenceLabel": "Chronic cough/heavy physical work",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Femoral Hernia",
+          "icd": "K41.90",
+          "logPrior": -22,
+          "urgency": 1,
+          "systems": [
+            "abdominal_wall"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "below_inguinal_ligament",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Bulge BELOW inguinal ligament",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "middle_aged_thin_female",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Middle-aged/thin female",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "medial_to_femoral_vessels",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Medial to femoral vessels",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "high_strangulation_risk",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "High strangulation risk (narrow canal)",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "us_confirms_femoral",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "US confirms femoral location",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "presents_as_emergency",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Presents as emergency in 40%",
+              "citation": "EHS 2018"
+            },
+            {
+              "key": "small_tender_groin_lump",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Small tender groin lump",
+              "citation": "Clinical"
+            },
+            {
+              "key": "misdiagnosed_as_lymph_node",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Often misdiagnosed as lymph node",
+              "citation": "EHS 2018"
+            }
+          ]
+        },
+        {
+          "name": "Athletic Pubalgia (Sports Hernia)",
+          "icd": "M86.16",
+          "logPrior": -22,
+          "urgency": 0,
+          "systems": [
+            "abdominal_wall",
+            "sports_medicine"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "groin_pain_athlete",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Groin pain in athlete",
+              "citation": "Sheen 2014"
+            },
+            {
+              "key": "no_palpable_hernia",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "No palpable hernia (occult)",
+              "citation": "Sheen 2014"
+            },
+            {
+              "key": "pain_with_resisted_sit_up",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Pain with resisted sit-up/hip adduction",
+              "citation": "Sheen 2014"
+            },
+            {
+              "key": "mri_posterior_wall_disruption",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "MRI posterior wall disruption",
+              "citation": "Sheen 2014"
+            },
+            {
+              "key": "pubic_tenderness_direct",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Direct pubic tubercle tenderness",
+              "citation": "Clinical"
+            },
+            {
+              "key": "bilateral_in_many",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Often bilateral at presentation",
+              "citation": "Sheen 2014"
+            },
+            {
+              "key": "young_male_footballer",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Young male footballer/rugby player",
+              "citation": "Sheen 2014"
+            },
+            {
+              "key": "fails_conservative_management",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Fails conservative management >3 months",
+              "citation": "Sheen 2014"
+            }
+          ]
+        },
+        {
+          "name": "Inguinal Lymphadenopathy",
+          "icd": "R59.0",
+          "logPrior": -17,
+          "urgency": 0,
+          "systems": [
+            "lymphatic"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "groin_node_palpable",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Palpable inguinal lymph node",
+              "citation": "Clinical"
+            },
+            {
+              "key": "no_cough_impulse",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "No cough impulse",
+              "citation": "Clinical"
+            },
+            {
+              "key": "soft_mobile_node",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Soft, mobile node",
+              "citation": "Clinical"
+            },
+            {
+              "key": "lower_limb_infection_source",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Lower limb/genital infection source",
+              "citation": "Clinical"
+            },
+            {
+              "key": "us_confirms_lymph_node",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "US confirms lymph node (fatty hilum)",
+              "citation": "Clinical"
+            },
+            {
+              "key": "bilateral_nodes_reactive",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Bilateral reactive nodes",
+              "citation": "Clinical"
+            },
+            {
+              "key": "resolves_with_treatment",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Resolves with treatment of cause",
+              "citation": "Clinical"
+            },
+            {
+              "key": "hard_fixed_node_malignancy",
+              "value": "false",
+              "logLR": 14,
+              "evidenceLabel": "NOT hard/fixed (rules out malignancy)",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Hip Joint Disease (Referred Groin Pain)",
+          "icd": "M16.9",
+          "logPrior": -17,
+          "urgency": 0,
+          "systems": [
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "deep_groin_ache",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Deep groin ache (hip joint pattern)",
+              "citation": "Clinical"
+            },
+            {
+              "key": "restricted_hip_rotation",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Restricted hip internal rotation",
+              "citation": "Clinical"
+            },
+            {
+              "key": "no_hernia_on_imaging",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "No hernia on US/MRI",
+              "citation": "Clinical"
+            },
+            {
+              "key": "xray_hip_changes",
+              "value": "true",
+              "logLR": 22,
+              "evidenceLabel": "Hip OA/FAI on X-ray or MRI",
+              "citation": "Clinical"
+            },
+            {
+              "key": "pain_worse_with_walking",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Pain worse with walking/stairs",
+              "citation": "Clinical"
+            },
+            {
+              "key": "older_patient_osteoarthritis",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Older patient with osteoarthritis",
+              "citation": "Clinical"
+            },
+            {
+              "key": "fabere_test_positive",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Positive FABERE test",
+              "citation": "Clinical"
+            },
+            {
+              "key": "groin_pain_nocturnal",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Nocturnal pain at rest",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Psoas Abscess / Iliopsoas Bursitis",
+          "icd": "M60.151",
+          "logPrior": -32,
+          "urgency": 1,
+          "systems": [
+            "musculoskeletal",
+            "infectious"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "hip_flexion_deformity",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Hip flexion deformity",
+              "citation": "Clinical"
+            },
+            {
+              "key": "fever_back_hip_pain",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Fever with back/hip/groin pain",
+              "citation": "Clinical"
+            },
+            {
+              "key": "tender_iliac_fossa_mass",
+              "value": "true",
+              "logLR": 20,
+              "evidenceLabel": "Tender iliac fossa mass",
+              "citation": "Clinical"
+            },
+            {
+              "key": "ct_confirms_psoas_collection",
+              "value": "true",
+              "logLR": 28,
+              "evidenceLabel": "CT confirms psoas collection",
+              "citation": "Clinical"
+            },
+            {
+              "key": "spinal_tb_or_discitis",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Associated spinal TB/discitis",
+              "citation": "Clinical"
+            },
+            {
+              "key": "immunosuppressed_diabetic_iv_drug",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Immunosuppression/diabetes/IVDU",
+              "citation": "Clinical"
+            },
+            {
+              "key": "elevated_inflammatory_markers",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Markedly elevated CRP/ESR",
+              "citation": "Clinical"
+            },
+            {
+              "key": "pain_worsened_hip_extension",
+              "value": "true",
+              "logLR": 16,
+              "evidenceLabel": "Pain worsened by hip extension",
+              "citation": "Clinical"
+            }
+          ]
+        },
+        {
+          "name": "Hydrocele / Varicocele",
+          "icd": "N43.3",
+          "logPrior": -17,
+          "urgency": 0,
+          "systems": [
+            "scrotal"
+          ],
+          "specialties": [
+            "general_surgery"
+          ],
+          "features": [
+            {
+              "key": "scrotal_swelling_transilluminates",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "Scrotal swelling that transilluminates",
+              "citation": "Clinical"
+            },
+            {
+              "key": "can_get_above_swelling",
+              "value": "true",
+              "logLR": 18,
+              "evidenceLabel": "Can get above swelling (scrotal)",
+              "citation": "Clinical"
+            },
+            {
+              "key": "us_confirms_hydrocele",
+              "value": "true",
+              "logLR": 26,
+              "evidenceLabel": "US confirms hydrocele/varicocele",
+              "citation": "Clinical"
+            },
+            {
+              "key": "bag_of_worms_varicocele",
+              "value": "true",
+              "logLR": 24,
+              "evidenceLabel": "'Bag of worms' varicocele on palpation",
+              "citation": "Clinical"
+            },
+            {
+              "key": "left_sided_varicocele",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Left-sided varicocele (90%)",
+              "citation": "Clinical"
+            },
+            {
+              "key": "dragging_scrotal_discomfort",
+              "value": "true",
+              "logLR": 14,
+              "evidenceLabel": "Dragging scrotal discomfort",
+              "citation": "Clinical"
+            },
+            {
+              "key": "fertility_subfertility_concern",
+              "value": "true",
+              "logLR": 12,
+              "evidenceLabel": "Fertility/subfertility concern (varicocele)",
+              "citation": "Clinical"
+            },
+            {
+              "key": "no_septal_involvement",
+              "value": "true",
+              "logLR": 8,
+              "evidenceLabel": "No septal/testicular involvement",
+              "citation": "Clinical"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {
