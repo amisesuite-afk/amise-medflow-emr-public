@@ -1931,6 +1931,7 @@ struct ConsultationView: View {
     @State private var aiMedSuggestions: [String] = []
     @State private var newInvName = ""
     @State private var newInvCategory: InvestigationEntry.InvCategory = .blood
+    @State private var criticalLabAlert: String? = nil   // non-nil triggers alert
     @State private var bayesianDx: [BayesianDiagnosisEngine.DiagnosisResult] = []
     @State private var dismissedRadiation = false
     @State private var clinicalAlarms: [ClinicalTextParser.ClinicalAlarm] = []
@@ -2103,6 +2104,14 @@ struct ConsultationView: View {
         .sheet(isPresented: $showAddAllergy) { addAllergySheet }
         .sheet(isPresented: $showAddMedication) {
             AddMedicationSheet(patient: patient, context: context)
+        }
+        .alert("Critical Lab Value", isPresented: Binding(
+            get: { criticalLabAlert != nil },
+            set: { if !$0 { criticalLabAlert = nil } }
+        )) {
+            Button("Acknowledged", role: .cancel) { criticalLabAlert = nil }
+        } message: {
+            Text((criticalLabAlert ?? "") + "\n\nNotify the doctor immediately.")
         }
         .alert("AI Error", isPresented: $showAIError) {
             Button("OK", role: .cancel) {}
@@ -3776,6 +3785,23 @@ struct ConsultationView: View {
                     .lineLimit(2...)
                     .padding(.leading, 28)
             }
+            // Inline critical value badge when this investigation contributes a critical result
+            if inv.status == .resulted && !inv.result.isEmpty {
+                let singleLabs = LabPanel.parse(from: [inv])
+                if singleLabs.hasCriticalValues {
+                    HStack(spacing: 4) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.system(size: 9, weight: .bold))
+                        Text("CRITICAL VALUE")
+                            .font(.system(size: 9, weight: .black))
+                            .tracking(0.3)
+                    }
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 7).padding(.vertical, 3)
+                    .background(Color.red, in: Capsule())
+                    .padding(.leading, 28)
+                }
+            }
         }
         .padding(.vertical, 2)
     }
@@ -3807,6 +3833,21 @@ struct ConsultationView: View {
             if next == .resulted { list[idx].resultedAt = Date() }
         }
         patient.investigations = list; touch()
+        // Fire critical value alert when status just reached .resulted
+        if next == .resulted {
+            let labs = LabPanel.parse(from: list)
+            if labs.hasCriticalValues {
+                var parts: [String] = []
+                if let hb = labs.haemoglobin, hb.value < 8   { parts.append("Hb \(String(format: "%.1f", hb.value)) g/dL") }
+                if let pl = labs.platelets,  pl.value < 50   { parts.append("Plt \(Int(pl.value)) ×10⁹/L") }
+                if let cr = labs.creatinine, cr.value > 300  { parts.append("Creatinine \(Int(cr.value)) µmol/L") }
+                if let ir = labs.inr,        ir.value > 2.5  { parts.append("INR \(String(format: "%.1f", ir.value))") }
+                if let na = labs.sodium, na.value < 120 || na.value > 155 { parts.append("Na \(Int(na.value)) mmol/L") }
+                if let k  = labs.potassium,  k.value > 6.5  { parts.append("K \(String(format: "%.1f", k.value)) mmol/L") }
+                if let la = labs.lactate,    la.value >= 4.0 { parts.append("Lactate \(String(format: "%.1f", la.value)) mmol/L") }
+                criticalLabAlert = parts.isEmpty ? "Critical value detected — review results." : parts.joined(separator: "\n")
+            }
+        }
     }
 
     private func setInvResult(id: UUID, result: String) {
