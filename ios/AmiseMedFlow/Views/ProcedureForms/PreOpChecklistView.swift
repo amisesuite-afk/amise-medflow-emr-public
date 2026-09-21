@@ -180,7 +180,23 @@ struct PreOpChecklistView: View {
                             Text("Critical lab values present")
                                 .font(.system(size: 13, weight: .semibold))
                                 .foregroundStyle(.red)
-                            Text("Review FBC, coagulation, and renal function before induction of anaesthesia.")
+                            let critParts: [String] = {
+                                var p: [String] = []
+                                if let hb = labs.haemoglobin, hb.value < 8   { p.append("Hb \(String(format: "%.1f", hb.value)) g/dL") }
+                                if let pl = labs.platelets,  pl.value < 50   { p.append("Plt \(Int(pl.value)) ×10⁹/L") }
+                                if let cr = labs.creatinine, cr.value > 300  { p.append("Cr \(Int(cr.value)) µmol/L") }
+                                if let ir = labs.inr,        ir.value > 2.5  { p.append("INR \(String(format: "%.1f", ir.value))") }
+                                if let na = labs.sodium, na.value < 120 || na.value > 155 { p.append("Na \(Int(na.value)) mmol/L") }
+                                if let k  = labs.potassium, k.value < 2.5 || k.value > 6.0 { p.append("K \(String(format: "%.1f", k.value)) mmol/L") }
+                                if let la = labs.lactate,    la.value >= 4.0 { p.append("Lactate \(String(format: "%.1f", la.value)) mmol/L") }
+                                if let tr = labs.troponin,   tr.value > 52   { p.append("Troponin \(Int(tr.value)) ng/L") }
+                                if let ca = labs.calcium, ca.value < 1.75 || ca.value > 3.0 { p.append("Ca \(String(format: "%.2f", ca.value)) mmol/L") }
+                                if let gl = labs.glucose, gl.value < 3.0 || gl.value > 20.0 { p.append("Glucose \(String(format: "%.1f", gl.value)) mmol/L") }
+                                return p
+                            }()
+                            Text(critParts.isEmpty
+                                 ? "Review FBC, coagulation, and renal function before induction of anaesthesia."
+                                 : critParts.joined(separator: " · "))
                                 .font(.system(size: 11))
                                 .foregroundStyle(.secondary)
                         }

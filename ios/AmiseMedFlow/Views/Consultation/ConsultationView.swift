@@ -3899,8 +3899,11 @@ struct ConsultationView: View {
                 if let cr = labs.creatinine, cr.value > 300  { parts.append("Creatinine \(Int(cr.value)) µmol/L") }
                 if let ir = labs.inr,        ir.value > 2.5  { parts.append("INR \(String(format: "%.1f", ir.value))") }
                 if let na = labs.sodium, na.value < 120 || na.value > 155 { parts.append("Na \(Int(na.value)) mmol/L") }
-                if let k  = labs.potassium,  k.value > 6.5  { parts.append("K \(String(format: "%.1f", k.value)) mmol/L") }
+                if let k  = labs.potassium,  k.value < 2.5 || k.value > 6.0  { parts.append("K \(String(format: "%.1f", k.value)) mmol/L") }
                 if let la = labs.lactate,    la.value >= 4.0 { parts.append("Lactate \(String(format: "%.1f", la.value)) mmol/L") }
+                if let tr = labs.troponin,   tr.value > 52   { parts.append("Troponin \(Int(tr.value)) ng/L") }
+                if let ca = labs.calcium, ca.value < 1.75 || ca.value > 3.0 { parts.append("Ca \(String(format: "%.2f", ca.value)) mmol/L") }
+                if let gl = labs.glucose,  gl.value < 3.0 || gl.value > 20.0 { parts.append("Glucose \(String(format: "%.1f", gl.value)) mmol/L") }
                 criticalLabAlert = parts.isEmpty ? "Critical value detected — review results." : parts.joined(separator: "\n")
             }
         }
