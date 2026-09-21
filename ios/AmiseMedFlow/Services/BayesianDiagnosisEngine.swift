@@ -924,6 +924,69 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("lymph") || ccL.contains("lymphoma") { mergePool("haematologicalMalignancy") }
             if ccL.contains("airway") || ccL.contains("swallow") { mergePool("dysphagia") }
 
+        // Tropical and endemic infectious diseases
+        case ccL.contains("dengue") || ccL.contains("leptospirosis") ||
+             ccL.contains("malaria") || ccL.contains("chikungunya") ||
+             ccL.contains("zika") || ccL.contains("typhoid") ||
+             ccL.contains("yellow fever") || ccL.contains("leishmaniasis") ||
+             ccL.contains("weil disease") || ccL.contains("weil's disease") ||
+             ccL.contains("kala-azar") || ccL.contains("kala azar") ||
+             ccL.contains("breakbone") || ccL.contains("conjunctival suffusion") ||
+             ccL.contains("retro-orbital") || ccL.contains("retroorbital") ||
+             (ccL.contains("caribbean") && ccL.contains("fever")) ||
+             (ccL.contains("tropical") && ccL.contains("fever")) ||
+             (ccL.contains("travel") && ccL.contains("fever") && ccL.contains("rash")):
+            candidates = externalPool("tropicalInfectious") ?? []
+            if ccL.contains("bleeding") || ccL.contains("haemorrhagic") { mergePool("coagulationDisorder") }
+            if ccL.contains("jaundice") || ccL.contains("liver") { mergePool("liverDisease") }
+
+        // Peripheral vascular disease
+        case ccL.contains("claudication") || ccL.contains("peripheral arterial") ||
+             ccL.contains("pad ") || ccL.contains("limb ischaemia") ||
+             ccL.contains("limb ischemia") || ccL.contains("acute limb") ||
+             ccL.contains("aortic aneurysm") || ccL.contains("aaa ") ||
+             ccL.contains("carotid stenosis") || ccL.contains("mesenteric ischaemia") ||
+             ccL.contains("mesenteric ischemia") || ccL.contains("thoracic outlet") ||
+             ccL.contains("venous insufficiency") || ccL.contains("varicose vein") ||
+             ccL.contains("ankle brachial") || ccL.contains("abi ") ||
+             (ccL.contains("leg") && ccL.contains("ischaemia")) ||
+             (ccL.contains("absent") && ccL.contains("pulse")) ||
+             (ccL.contains("pulsatile") && ccL.contains("mass")):
+            candidates = externalPool("peripheralVascular") ?? []
+            if ccL.contains("dvt") || ccL.contains("thrombosis") { mergePool("pulmonaryEmbolism") }
+            if ccL.contains("stroke") || ccL.contains("tia") { mergePool("neurosurgicalHead") }
+
+        // Spinal and back conditions
+        case ccL.contains("cauda equina") || ccL.contains("spinal cord compression") ||
+             ccL.contains("epidural abscess") || ccL.contains("disc herniation") ||
+             ccL.contains("disc prolapse") || ccL.contains("sciatica") ||
+             ccL.contains("spondylolisthesis") || ccL.contains("ankylosing spondylitis") ||
+             ccL.contains("spinal stenosis") || ccL.contains("vertebral fracture") ||
+             ccL.contains("saddle anaesthesia") || ccL.contains("saddle anesthesia") ||
+             ccL.contains("neurogenic claudication") || ccL.contains("bamboo spine") ||
+             ccL.contains("sacroiliitis") || ccL.contains("pars defect") ||
+             (ccL.contains("back pain") && ccL.contains("leg weakness")) ||
+             (ccL.contains("back pain") && ccL.contains("urinary retention")) ||
+             (ccL.contains("back pain") && ccL.contains("fever") && ccL.contains("neurological")):
+            candidates = externalPool("spinalEmergency") ?? []
+            if ccL.contains("cancer") || ccL.contains("malignancy") { mergePool("oncologyComplications") }
+            if ccL.contains("infection") || ccL.contains("abscess") { mergePool("bacteraemia") }
+
+        // Necrotising soft tissue infections and complex wounds
+        case ccL.contains("necrotising fasciitis") || ccL.contains("necrotizing fasciitis") ||
+             ccL.contains("fournier") || ccL.contains("gas gangrene") ||
+             ccL.contains("clostridial myonecrosis") || ccL.contains("pyomyositis") ||
+             ccL.contains("ludwig") || ccL.contains("descending mediastinitis") ||
+             ccL.contains("necrotising mediastinitis") || ccL.contains("fascial necrosis") ||
+             ccL.contains("lrinec") || ccL.contains("wound dehiscence") ||
+             ccL.contains("burst abdomen") || ccL.contains("lymphoedema") ||
+             ccL.contains("lymphedema") || ccL.contains("subcutaneous gas") ||
+             (ccL.contains("wound") && ccL.contains("spreading")) ||
+             (ccL.contains("crepitus") && (ccL.contains("wound") || ccL.contains("soft tissue") || ccL.contains("perineum"))):
+            candidates = externalPool("necroSoftTissue") ?? []
+            if ccL.contains("septic") || ccL.contains("bacteraemia") { mergePool("bacteraemia") }
+            if ccL.contains("diabetes") { mergePool("diabeticFoot") }
+
         default:
             // Wide-net general medicine catch-all — no longer surgical-biased
             candidates = externalPool("generalMedicine") ?? []
@@ -1082,6 +1145,19 @@ enum BayesianDiagnosisEngine {
            ccL.contains("hellp") || ccL.contains("endometriosis") { mergePool("acuteObstetricGynae") }
         if ccL.contains("thyroid") || ccL.contains("parathyroid") || ccL.contains("parotid") ||
            (ccL.contains("neck") && ccL.contains("mass")) { mergePool("headNeckSurgical") }
+        if ccL.contains("dengue") || ccL.contains("chikungunya") || ccL.contains("leptospirosis") ||
+           ccL.contains("malaria") || ccL.contains("zika") ||
+           (ccL.contains("caribbean") && ccL.contains("fever")) { mergePool("tropicalInfectious") }
+        if ccL.contains("claudication") || ccL.contains("limb ischaemia") || ccL.contains("varicose") ||
+           ccL.contains("aortic aneurysm") || ccL.contains("carotid stenosis") ||
+           (ccL.contains("peripheral") && ccL.contains("arterial")) { mergePool("peripheralVascular") }
+        if ccL.contains("sciatica") || ccL.contains("cauda equina") || ccL.contains("disc herniation") ||
+           ccL.contains("spinal stenosis") || ccL.contains("vertebral fracture") ||
+           (ccL.contains("back pain") && ccL.contains("leg")) { mergePool("spinalEmergency") }
+        if ccL.contains("necrotising fasciitis") || ccL.contains("necrotizing fasciitis") ||
+           ccL.contains("fournier") || ccL.contains("gas gangrene") || ccL.contains("pyomyositis") ||
+           ccL.contains("ludwig") || ccL.contains("lymphoedema") ||
+           (ccL.contains("crepitus") && ccL.contains("wound")) { mergePool("necroSoftTissue") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but
