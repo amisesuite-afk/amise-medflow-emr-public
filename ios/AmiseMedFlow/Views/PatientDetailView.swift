@@ -423,6 +423,24 @@ struct PatientOverviewContent: View {
         return v.news2Score
     }
 
+    private var criticalLabPanel: LabPanel {
+        LabPanel.parse(from: patient.investigations)
+    }
+
+    private var criticalLabSummary: String {
+        let labs = criticalLabPanel
+        let tokens: [String?] = [
+            labs.haemoglobin.flatMap { $0.value < 8 ? String(format: "Hb %.1f g/dL", $0.value) : nil },
+            labs.platelets.flatMap { $0.value < 50 ? "Plt \(Int($0.value)) ×10⁹/L" : nil },
+            labs.creatinine.flatMap { $0.value > 300 ? "Cr \(Int($0.value)) µmol/L" : nil },
+            labs.inr.flatMap { $0.value > 2.5 ? String(format: "INR %.1f", $0.value) : nil },
+            labs.potassium.flatMap { ($0.value < 2.5 || $0.value > 6.0) ? String(format: "K %.1f mmol/L", $0.value) : nil },
+            labs.sodium.flatMap { ($0.value < 120 || $0.value > 155) ? "Na \(Int($0.value)) mmol/L" : nil },
+            labs.lactate.flatMap { $0.value >= 4.0 ? String(format: "Lactate %.1f mmol/L", $0.value) : nil }
+        ]
+        return tokens.compactMap { $0 }.joined(separator: " · ")
+    }
+
     // MARK: - Clinical checklist
 
     private struct CheckItem: Identifiable {
@@ -575,7 +593,7 @@ struct PatientOverviewContent: View {
             checklistRow
 
             // Safety banners
-            if news2AlertLevel >= 5 || !criticalAllergies.isEmpty {
+            if news2AlertLevel >= 5 || !criticalAllergies.isEmpty || criticalLabPanel.hasCriticalValues {
                 VStack(spacing: 8) {
                     if news2AlertLevel >= 5 {
                         HStack(spacing: 8) {
@@ -611,6 +629,28 @@ struct PatientOverviewContent: View {
                                     .font(.system(size: 11, weight: .heavy))
                                     .tracking(0.5)
                                 Text(criticalAllergies.map { "\($0.name) (\($0.severity))" }.joined(separator: " · "))
+                                    .font(.caption2)
+                                    .lineLimit(2)
+                            }
+                            Spacer()
+                        }
+                        .foregroundStyle(Color.red)
+                        .padding(10)
+                        .background(Color.red.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.red.opacity(0.35), lineWidth: 1)
+                        )
+                    }
+
+                    if criticalLabPanel.hasCriticalValues {
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: "flask.fill")
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("CRITICAL LAB VALUES")
+                                    .font(.system(size: 11, weight: .heavy))
+                                    .tracking(0.5)
+                                Text(criticalLabSummary)
                                     .font(.caption2)
                                     .lineLimit(2)
                             }

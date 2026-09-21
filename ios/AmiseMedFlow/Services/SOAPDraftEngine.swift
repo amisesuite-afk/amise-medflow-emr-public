@@ -154,7 +154,7 @@ struct SOAPDraftEngine {
                 labTokens.append("Na \(Int(na.value)) mmol/L" + flag)
             }
             if let k   = labs.potassium {
-                let flag = k.value > 6.5 ? " [CRITICAL]" : k.value > 5.5 ? " [ABNL]" : ""
+                let flag = (k.value < 2.5 || k.value > 6.0) ? " [CRITICAL]" : (k.value < 3.0 || k.value > 5.5) ? " [ABNL]" : ""
                 labTokens.append(String(format: "K %.1f mmol/L", k.value) + flag)
             }
             if let cr  = labs.creatinine {
