@@ -50369,6 +50369,2294 @@
           ]
         }
       ]
+    },
+    "haemoglobinopathy": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Sickle Cell Disease \u2014 Vaso-Occlusive Crisis",
+          "icd": "D57.00",
+          "logPrior": -28,
+          "urgency": 2,
+          "systems": [
+            "haematology"
+          ],
+          "specialties": [
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "known_scd_confirmed",
+              "value": "present",
+              "logLR": 27,
+              "evidenceLabel": "Known sickle cell disease (HbSS / HbSC / HbS-beta-thal) confirmed on HPLC",
+              "citation": "British Society for Haematology SCD Guidelines 2021"
+            },
+            {
+              "key": "acute_pain_crisis",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Acute bone / joint / abdominal pain (vaso-occlusion pattern)",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "pain_back_chest_extremities",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Pain in lumbar spine, chest wall, extremities simultaneously",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "no_infection_trigger",
+              "value": "absent",
+              "logLR": 11,
+              "evidenceLabel": "No identified infective trigger (dehydration / cold / stress)",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "opioid_analgesia_required",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Requires IV/IM opioid for pain control",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "hb_at_baseline",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Hb near baseline (60\u201390 g/L) \u2014 not aplastic crisis",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "previous_crises_pattern",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Recurrent VOC pattern consistent with past presentations",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "lactate_ldh_elevated",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Elevated LDH / unconjugated bilirubin (haemolysis)",
+              "citation": "BSH 2021"
+            }
+          ]
+        },
+        {
+          "name": "Sickle Cell Acute Chest Syndrome",
+          "icd": "D57.01",
+          "logPrior": -35,
+          "urgency": 3,
+          "systems": [
+            "haematology",
+            "respiratory"
+          ],
+          "specialties": [
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "chest_pain_fever_scd",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "New chest pain + fever in sickle cell patient",
+              "citation": "BSH SCD Guidelines 2021"
+            },
+            {
+              "key": "new_pulmonary_infiltrate",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "New pulmonary infiltrate on CXR (bilateral lower lobe)",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "falling_spo2_acs",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "SpO\u2082 falling / hypoxia (PaO\u2082 <60 mmHg)",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "hb_falling_acs",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Hb falling from baseline (indicates worsening)",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "exchange_transfusion",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Response to exchange transfusion / top-up transfusion",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "fat_embolism_rib_infarct",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Fat embolism from rib / long-bone infarction",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "icu_ventilation_needed",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Requires ICU / mechanical ventilation (severe ACS)",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "antibiotics_started",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Broad-spectrum antibiotics commenced (atypical coverage)",
+              "citation": "BSH 2021"
+            }
+          ]
+        },
+        {
+          "name": "Sickle Cell Stroke / Cerebrovascular Event",
+          "icd": "D57.03",
+          "logPrior": -39,
+          "urgency": 3,
+          "systems": [
+            "haematology",
+            "neurology"
+          ],
+          "specialties": [
+            "haematology",
+            "neurology"
+          ],
+          "features": [
+            {
+              "key": "focal_neurology_scd",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Acute focal neurological deficit in SCD patient",
+              "citation": "BSH SCD Guidelines 2021"
+            },
+            {
+              "key": "mri_dwilesion_scd",
+              "value": "present",
+              "logLR": 27,
+              "evidenceLabel": "MRI DWI: acute ischaemic lesion",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "tcd_high_velocity",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "TCD velocity >200 cm/s (high stroke risk \u2014 transfusion programme)",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "exchange_transfusion_stroke",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Emergency exchange transfusion to HbS <30%",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "silent_infarcts_prior",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Prior silent cerebral infarcts on MRI",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "young_patient_scd",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Young patient (<20 years) \u2014 peak SCD stroke incidence",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "hydroxyurea_on_treatment",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "Patient on hydroxyurea (long-term stroke prevention)",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "meningism_excluded",
+              "value": "absent",
+              "logLR": 11,
+              "evidenceLabel": "Meningism absent (excludes CNS infection)",
+              "citation": "BSH 2021"
+            }
+          ]
+        },
+        {
+          "name": "G6PD Deficiency \u2014 Haemolytic Crisis",
+          "icd": "D55.0",
+          "logPrior": -32,
+          "urgency": 2,
+          "systems": [
+            "haematology"
+          ],
+          "specialties": [
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "g6pd_enzyme_deficient",
+              "value": "present",
+              "logLR": 29,
+              "evidenceLabel": "G6PD enzyme assay: deficient activity (<4 IU/g Hb)",
+              "citation": "WHO G6PD Guidelines"
+            },
+            {
+              "key": "trigger_exposure",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Trigger: primaquine / dapsone / fava beans / infection / naphthalene",
+              "citation": "WHO"
+            },
+            {
+              "key": "haemolysis_acute_anaemia",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Acute haemolysis: falling Hb, jaundice, dark urine",
+              "citation": "WHO"
+            },
+            {
+              "key": "bite_cells_blister_cells",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Blood film: bite cells / blister cells / Heinz bodies",
+              "citation": "WHO"
+            },
+            {
+              "key": "x_linked_male",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "X-linked inheritance: predominantly male patient",
+              "citation": "WHO"
+            },
+            {
+              "key": "reticulocytosis",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Reticulocytosis (compensatory erythropoiesis)",
+              "citation": "WHO"
+            },
+            {
+              "key": "african_caribbean_ancestry",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "African / Caribbean ancestry (G6PD A- variant common)",
+              "citation": "WHO"
+            },
+            {
+              "key": "self_limiting_mild",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "Crisis self-limiting once trigger removed (mild variant)",
+              "citation": "WHO"
+            }
+          ]
+        },
+        {
+          "name": "Beta-Thalassaemia Major",
+          "icd": "D56.1",
+          "logPrior": -39,
+          "urgency": 1,
+          "systems": [
+            "haematology"
+          ],
+          "specialties": [
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "microcytic_severe_anaemia",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Severe microcytic anaemia (Hb <70 g/L, MCV <70 fL)",
+              "citation": "TIF Thalassaemia Guidelines 2014"
+            },
+            {
+              "key": "hpla_hba_absent",
+              "value": "present",
+              "logLR": 30,
+              "evidenceLabel": "HPLC: HbA absent, elevated HbF / HbA2 (confirms thalassaemia)",
+              "citation": "TIF 2014"
+            },
+            {
+              "key": "transfusion_dependent",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Regular transfusion dependence (2\u20134 weekly)",
+              "citation": "TIF 2014"
+            },
+            {
+              "key": "splenomegaly_massive",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Massive splenomegaly (extramedullary haematopoiesis)",
+              "citation": "TIF 2014"
+            },
+            {
+              "key": "iron_overload_ferritin",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Iron overload: ferritin >1000 \u03bcg/L (chelation required)",
+              "citation": "TIF 2014"
+            },
+            {
+              "key": "thalassaemia_facies",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Thalassaemia facies: bossing, maxillary prominence (medullary expansion)",
+              "citation": "TIF 2014"
+            },
+            {
+              "key": "parents_carriers",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Both parents carriers (raised MCV, elevated HbA2 >3.5%)",
+              "citation": "TIF 2014"
+            },
+            {
+              "key": "deferasirox_chelation",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "On iron chelation therapy (deferasirox / deferoxamine)",
+              "citation": "TIF 2014"
+            }
+          ]
+        },
+        {
+          "name": "Hereditary Spherocytosis",
+          "icd": "D58.0",
+          "logPrior": -39,
+          "urgency": 1,
+          "systems": [
+            "haematology"
+          ],
+          "specialties": [
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "spherocytes_blood_film",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Blood film: spherocytes (small, dense, no central pallor)",
+              "citation": "BSH Hereditary Spherocytosis Guidelines 2011"
+            },
+            {
+              "key": "osmotic_fragility_increased",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Increased osmotic fragility / EMA binding reduced",
+              "citation": "BSH 2011"
+            },
+            {
+              "key": "family_history_hs",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Family history of haemolytic anaemia / splenectomy",
+              "citation": "BSH 2011"
+            },
+            {
+              "key": "jaundice_splenomegaly_gallstones",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Jaundice + splenomegaly + pigment gallstones triad",
+              "citation": "BSH 2011"
+            },
+            {
+              "key": "aplastic_crisis_parvovirus",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Aplastic crisis triggered by parvovirus B19",
+              "citation": "BSH 2011"
+            },
+            {
+              "key": "mchc_elevated",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "MCHC elevated >360 g/L (dehydrated red cells)",
+              "citation": "BSH 2011"
+            },
+            {
+              "key": "splenectomy_curative",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Splenectomy resolves haemolysis (defer until \u22656 years)",
+              "citation": "BSH 2011"
+            },
+            {
+              "key": "coombs_negative",
+              "value": "absent",
+              "logLR": 18,
+              "evidenceLabel": "Direct Coombs test negative (excludes autoimmune haemolysis)",
+              "citation": "BSH 2011"
+            }
+          ]
+        },
+        {
+          "name": "Aplastic Crisis (Parvovirus B19)",
+          "icd": "D61.09",
+          "logPrior": -39,
+          "urgency": 2,
+          "systems": [
+            "haematology",
+            "infectious"
+          ],
+          "specialties": [
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "profound_anaemia_reticulopenia",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Profound anaemia + reticulocyte count near zero (<1%)",
+              "citation": "BSH SCD Guidelines 2021"
+            },
+            {
+              "key": "parvovirus_b19_pcr",
+              "value": "present",
+              "logLR": 27,
+              "evidenceLabel": "Parvovirus B19 IgM positive or PCR detected",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "underlying_haemolytic_anaemia",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Underlying haemolytic anaemia (SCD, HS, G6PD, thalassaemia)",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "prodrome_viral",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Prodromal viral illness 7\u201310 days before onset",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "bone_marrow_erythroid_arrest",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Bone marrow: erythroid aplasia (giant pronormoblasts)",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "transfusion_support_required",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Top-up transfusion required",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "self_limiting_immunocompetent",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Self-limiting in immunocompetent (2\u20134 weeks recovery)",
+              "citation": "BSH 2021"
+            },
+            {
+              "key": "ivig_immunocompromised",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "IVIG required if immunocompromised / chronic parvovirus",
+              "citation": "BSH 2021"
+            }
+          ]
+        },
+        {
+          "name": "HTLV-1 Associated Myelopathy / Adult T-Cell Leukaemia",
+          "icd": "C91.50",
+          "logPrior": -39,
+          "urgency": 1,
+          "systems": [
+            "haematology",
+            "neurology"
+          ],
+          "specialties": [
+            "haematology",
+            "infectious_disease"
+          ],
+          "features": [
+            {
+              "key": "htlv1_serology_positive",
+              "value": "present",
+              "logLR": 30,
+              "evidenceLabel": "HTLV-1 serology / PCR positive (endemic in Caribbean)",
+              "citation": "PAHO/WHO HTLV Guidelines"
+            },
+            {
+              "key": "caribbean_ancestry_exposure",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Caribbean / sub-Saharan African ancestry or sexual/breast-milk exposure",
+              "citation": "PAHO/WHO"
+            },
+            {
+              "key": "progressive_spastic_paraparesis",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Progressive spastic paraparesis / myelopathy (HAM/TSP)",
+              "citation": "PAHO/WHO"
+            },
+            {
+              "key": "atl_lymphocytes",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "ATL cells (flower cells) on blood film / CD4+CD25+ phenotype",
+              "citation": "PAHO/WHO"
+            },
+            {
+              "key": "hypercalcaemia_atl",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Hypercalcaemia with lymphoma (PTHrP-secreting ATL)",
+              "citation": "PAHO/WHO"
+            },
+            {
+              "key": "skin_lymphoma_lesions",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Skin infiltration / erythroderma (cutaneous ATL)",
+              "citation": "PAHO/WHO"
+            },
+            {
+              "key": "urinary_urgency_incontinence",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Bladder dysfunction / urinary incontinence (HAM/TSP)",
+              "citation": "PAHO/WHO"
+            },
+            {
+              "key": "strongyloides_coinfection",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Strongyloides stercoralis hyperinfection (HTLV-1 immunosuppression)",
+              "citation": "PAHO/WHO"
+            }
+          ]
+        }
+      ]
+    },
+    "coagulationDisorder": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Haemophilia A (Factor VIII Deficiency)",
+          "icd": "D66",
+          "logPrior": -46,
+          "urgency": 2,
+          "systems": [
+            "haematology"
+          ],
+          "specialties": [
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "factor_viii_level_low",
+              "value": "present",
+              "logLR": 30,
+              "evidenceLabel": "Factor VIII activity <1% (severe), 1\u20135% (moderate), 5\u201340% (mild)",
+              "citation": "WFH Haemophilia Guidelines 2020"
+            },
+            {
+              "key": "aptt_prolonged_pt_normal",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "aPTT prolonged, PT and TT normal",
+              "citation": "WFH 2020"
+            },
+            {
+              "key": "spontaneous_haemarthrosis",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Spontaneous haemarthrosis (knees, elbows, ankles) \u2014 severe disease",
+              "citation": "WFH 2020"
+            },
+            {
+              "key": "factor_concentrate_response",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Rapid response to FVIII concentrate / recombinant FVIII",
+              "citation": "WFH 2020"
+            },
+            {
+              "key": "x_linked_family_history",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "X-linked recessive pattern: male patient, maternal carrier",
+              "citation": "WFH 2020"
+            },
+            {
+              "key": "intracranial_bleed_risk",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Intracranial haemorrhage risk (severe haemophilia \u2014 urgent factor)",
+              "citation": "WFH 2020"
+            },
+            {
+              "key": "inhibitor_development",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Inhibitor to FVIII developed (Bethesda assay positive)",
+              "citation": "WFH 2020"
+            },
+            {
+              "key": "prophylaxis_regimen",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "On prophylaxis regimen (primary \u2014 start before age 3)",
+              "citation": "WFH 2020"
+            }
+          ]
+        },
+        {
+          "name": "von Willebrand Disease",
+          "icd": "D68.00",
+          "logPrior": -35,
+          "urgency": 1,
+          "systems": [
+            "haematology"
+          ],
+          "specialties": [
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "vwf_antigen_activity_low",
+              "value": "present",
+              "logLR": 29,
+              "evidenceLabel": "vWF antigen <30 IU/dL or ristocetin cofactor activity low",
+              "citation": "BSH vWD Guidelines 2014"
+            },
+            {
+              "key": "mucocutaneous_bleeding",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Mucocutaneous bleeding: epistaxis, menorrhagia, easy bruising",
+              "citation": "BSH 2014"
+            },
+            {
+              "key": "bleeding_score_high",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "ISTH BAT bleeding assessment score \u22653 (adult female)",
+              "citation": "BSH 2014"
+            },
+            {
+              "key": "aptt_prolonged_vwd",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "aPTT borderline prolonged (especially Type 3)",
+              "citation": "BSH 2014"
+            },
+            {
+              "key": "desmopressin_response",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Response to DDAVP: vWF/FVIII rise \u22653\u00d7 baseline (Type 1)",
+              "citation": "BSH 2014"
+            },
+            {
+              "key": "family_history_vwd",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Autosomal dominant family history",
+              "citation": "BSH 2014"
+            },
+            {
+              "key": "platelet_function_abnormal",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Platelet function analyser-100 prolonged (PFA)",
+              "citation": "BSH 2014"
+            },
+            {
+              "key": "vwf_multimer_analysis",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "vWF multimer analysis: absent high-molecular-weight multimers (Type 2A)",
+              "citation": "BSH 2014"
+            }
+          ]
+        },
+        {
+          "name": "Immune Thrombocytopenic Purpura (ITP)",
+          "icd": "D69.3",
+          "logPrior": -39,
+          "urgency": 2,
+          "systems": [
+            "haematology",
+            "immunology"
+          ],
+          "specialties": [
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "isolated_thrombocytopenia",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Isolated thrombocytopenia <100 \u00d7 10\u2079/L, other cell lines normal",
+              "citation": "ASH ITP Guidelines 2019"
+            },
+            {
+              "key": "antiplatelet_antibody",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Antiplatelet antibody (GPIIb/IIIa or GPIb/IX) positive",
+              "citation": "ASH 2019"
+            },
+            {
+              "key": "itp_exclusion_other_causes",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Drug-induced / TTP / DIC / hypersplenism excluded",
+              "citation": "ASH 2019"
+            },
+            {
+              "key": "ivig_steroid_response",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Platelet rise with IVIG or prednisolone",
+              "citation": "ASH 2019"
+            },
+            {
+              "key": "petechiae_purpura",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Petechiae, purpura, mucosal bleeding (platelets <30 \u00d7 10\u2079/L)",
+              "citation": "ASH 2019"
+            },
+            {
+              "key": "secondary_cause_found",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Secondary ITP: H. pylori, HIV, HCV, SLE association",
+              "citation": "ASH 2019"
+            },
+            {
+              "key": "splenectomy_refractory",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Refractory ITP: splenectomy / rituximab / eltrombopag",
+              "citation": "ASH 2019"
+            },
+            {
+              "key": "bone_marrow_megakaryocytes",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Bone marrow: increased megakaryocytes (peripheral destruction)",
+              "citation": "ASH 2019"
+            }
+          ]
+        },
+        {
+          "name": "Thrombotic Thrombocytopenic Purpura (TTP)",
+          "icd": "M31.1",
+          "logPrior": -46,
+          "urgency": 3,
+          "systems": [
+            "haematology",
+            "nephrology"
+          ],
+          "specialties": [
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "pentad_ttp",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "TTP pentad: MAHA + thrombocytopenia + AKI + fever + neuro deficits",
+              "citation": "BSH TTP Guidelines 2012"
+            },
+            {
+              "key": "schistocytes_blood_film",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "Blood film: schistocytes \u22654/HPF (microangiopathic haemolysis)",
+              "citation": "BSH 2012"
+            },
+            {
+              "key": "adamts13_deficiency",
+              "value": "present",
+              "logLR": 30,
+              "evidenceLabel": "ADAMTS13 activity <10% (diagnostic for TTP)",
+              "citation": "BSH 2012"
+            },
+            {
+              "key": "plasma_exchange_response",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Rapid platelet rise with plasma exchange (PEX)",
+              "citation": "BSH 2012"
+            },
+            {
+              "key": "ldh_markedly_elevated_ttp",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "LDH markedly elevated (>5\u00d7 ULN)",
+              "citation": "BSH 2012"
+            },
+            {
+              "key": "neurological_fluctuating",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Fluctuating neurological symptoms (confusion, seizures, stroke)",
+              "citation": "BSH 2012"
+            },
+            {
+              "key": "coagulation_normal_ttp",
+              "value": "absent",
+              "logLR": 18,
+              "evidenceLabel": "PT / aPTT / fibrinogen normal (differentiates from DIC)",
+              "citation": "BSH 2012"
+            },
+            {
+              "key": "caplacizumab_treatment",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Anti-vWF nanobody (caplacizumab) added to PEX",
+              "citation": "BSH 2012"
+            }
+          ]
+        },
+        {
+          "name": "Antiphospholipid Syndrome (APS)",
+          "icd": "D68.61",
+          "logPrior": -39,
+          "urgency": 1,
+          "systems": [
+            "haematology",
+            "immunology"
+          ],
+          "specialties": [
+            "haematology",
+            "rheumatology"
+          ],
+          "features": [
+            {
+              "key": "lupus_anticoagulant",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Lupus anticoagulant positive on \u22652 occasions \u226512 weeks apart",
+              "citation": "Sapporo/Sydney APS Criteria 2006"
+            },
+            {
+              "key": "anticardiolipin_igg_igm",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "aCL IgG/IgM >40 GPL/MPL units on \u22652 occasions",
+              "citation": "Sapporo/Sydney 2006"
+            },
+            {
+              "key": "anti_beta2gp1",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Anti-\u03b22-glycoprotein I IgG/IgM >99th centile",
+              "citation": "Sapporo/Sydney 2006"
+            },
+            {
+              "key": "arterial_venous_thrombosis",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Arterial or venous thrombosis (DVT, PE, stroke, MI)",
+              "citation": "Sapporo/Sydney 2006"
+            },
+            {
+              "key": "recurrent_miscarriage",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "\u22653 unexplained miscarriages <10 weeks or \u22651 late loss",
+              "citation": "Sapporo/Sydney 2006"
+            },
+            {
+              "key": "catastrophic_aps",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Catastrophic APS (Asherson's): multi-organ failure, high mortality",
+              "citation": "Sapporo/Sydney 2006"
+            },
+            {
+              "key": "warfarin_anticoagulation",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Long-term warfarin anticoagulation (target INR 2\u20133 arterial / 3)",
+              "citation": "Sapporo/Sydney 2006"
+            },
+            {
+              "key": "sle_association",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Secondary to SLE (30% of SLE have APS antibodies)",
+              "citation": "Sapporo/Sydney 2006"
+            }
+          ]
+        },
+        {
+          "name": "Disseminated Intravascular Coagulation (DIC)",
+          "icd": "D65",
+          "logPrior": -39,
+          "urgency": 3,
+          "systems": [
+            "haematology"
+          ],
+          "specialties": [
+            "haematology",
+            "surgery"
+          ],
+          "features": [
+            {
+              "key": "isth_dic_score_5",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "ISTH DIC score \u22655: platelets <100, elevated D-dimer, prolonged PT, low fibrinogen",
+              "citation": "ISTH DIC Guidelines 2013"
+            },
+            {
+              "key": "underlying_trigger",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Precipitant: sepsis, obstetric emergency, major trauma, malignancy",
+              "citation": "ISTH 2013"
+            },
+            {
+              "key": "d_dimer_very_elevated",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "D-dimer markedly elevated (>4\u00d7 ULN)",
+              "citation": "ISTH 2013"
+            },
+            {
+              "key": "fibrinogen_falling",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Fibrinogen falling (<1.5 g/L \u2014 consumption in coagulation)",
+              "citation": "ISTH 2013"
+            },
+            {
+              "key": "bleeding_and_clotting",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Paradoxical: simultaneous bleeding and microvascular thrombosis",
+              "citation": "ISTH 2013"
+            },
+            {
+              "key": "fbc_schistocytes_dic",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Schistocytes on film (microangiopathy)",
+              "citation": "ISTH 2013"
+            },
+            {
+              "key": "treat_underlying_cause",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Management: treat precipitant + FFP / cryoprecipitate / platelets",
+              "citation": "ISTH 2013"
+            },
+            {
+              "key": "pt_aptt_prolonged_dic",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Both PT and aPTT prolonged (distinguishes from TTP)",
+              "citation": "ISTH 2013"
+            }
+          ]
+        },
+        {
+          "name": "Heparin-Induced Thrombocytopenia (HIT)",
+          "icd": "D75.82",
+          "logPrior": -46,
+          "urgency": 2,
+          "systems": [
+            "haematology"
+          ],
+          "specialties": [
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "4t_score_high",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "4Ts score \u22656 (high pretest probability)",
+              "citation": "4Ts HIT Guidelines"
+            },
+            {
+              "key": "platelet_fall_50_percent",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Platelet fall \u226550% from baseline, days 5\u201310 post-heparin",
+              "citation": "4Ts"
+            },
+            {
+              "key": "hit_antibody_positive",
+              "value": "present",
+              "logLR": 27,
+              "evidenceLabel": "Anti-PF4/heparin antibody positive (ELISA); confirm with SRA",
+              "citation": "4Ts"
+            },
+            {
+              "key": "thrombosis_despite_heparin",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "New thrombosis (DVT/PE/MI/stroke) despite or during heparin",
+              "citation": "4Ts"
+            },
+            {
+              "key": "heparin_cessation_recovery",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Platelet recovery on heparin cessation",
+              "citation": "4Ts"
+            },
+            {
+              "key": "alternative_anticoagulation",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Switch to argatroban / danaparoid / fondaparinux (never warfarin alone acutely)",
+              "citation": "4Ts"
+            },
+            {
+              "key": "skin_necrosis_heparin",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Skin necrosis at injection sites",
+              "citation": "4Ts"
+            },
+            {
+              "key": "ufh_lmwh_exposure",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "UFH or LMWH exposure in preceding 5\u201310 days",
+              "citation": "4Ts"
+            }
+          ]
+        },
+        {
+          "name": "Haemolytic Uraemic Syndrome (HUS)",
+          "icd": "D59.3",
+          "logPrior": -46,
+          "urgency": 3,
+          "systems": [
+            "haematology",
+            "nephrology"
+          ],
+          "specialties": [
+            "haematology",
+            "nephrology"
+          ],
+          "features": [
+            {
+              "key": "triad_hus",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Classic triad: MAHA + thrombocytopenia + AKI",
+              "citation": "KDIGO HUS Guidelines"
+            },
+            {
+              "key": "stec_o157_h7",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "STEC O157:H7 positive stool culture / PCR (Shiga toxin)",
+              "citation": "KDIGO"
+            },
+            {
+              "key": "bloody_diarrhoea_prodrome",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Bloody diarrhoea 5\u201310 days before renal failure (STEC-HUS)",
+              "citation": "KDIGO"
+            },
+            {
+              "key": "schistocytes_hus",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Schistocytes on blood film (microangiopathic haemolysis)",
+              "citation": "KDIGO"
+            },
+            {
+              "key": "oliguria_anuria",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Oliguria / anuria requiring dialysis (especially in children)",
+              "citation": "KDIGO"
+            },
+            {
+              "key": "eculizumab_atypical",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Atypical HUS (complement dysregulation): eculizumab response",
+              "citation": "KDIGO"
+            },
+            {
+              "key": "adamts13_normal_hus",
+              "value": "absent",
+              "logLR": 21,
+              "evidenceLabel": "ADAMTS13 activity >10% (differentiates from TTP)",
+              "citation": "KDIGO"
+            },
+            {
+              "key": "children_peak_incidence",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Children <5 years: peak incidence of STEC-HUS",
+              "citation": "KDIGO"
+            }
+          ]
+        }
+      ]
+    },
+    "occupationalMedicine": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "Mesothelioma",
+          "icd": "C45.0",
+          "logPrior": -46,
+          "urgency": 1,
+          "systems": [
+            "respiratory",
+            "oncology"
+          ],
+          "specialties": [
+            "respiratory",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "asbestos_exposure_history",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Asbestos exposure (latency 30\u201350 years: shipbuilding, construction, insulation)",
+              "citation": "BTS Mesothelioma Guidelines 2018"
+            },
+            {
+              "key": "pleural_effusion_chest_pain",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Unilateral pleural effusion + progressive chest pain / dyspnoea",
+              "citation": "BTS 2018"
+            },
+            {
+              "key": "ct_circumferential_pleural",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "CT: circumferential pleural thickening / nodularity",
+              "citation": "BTS 2018"
+            },
+            {
+              "key": "biopsy_malignant_mesothelioma",
+              "value": "present",
+              "logLR": 30,
+              "evidenceLabel": "Pleural biopsy: malignant mesothelioma confirmed (epithelioid / sarcomatoid)",
+              "citation": "BTS 2018"
+            },
+            {
+              "key": "calretinin_wt1_positive",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "IHC: calretinin + WT1 + D2-40 positive (epithelioid mesothelioma)",
+              "citation": "BTS 2018"
+            },
+            {
+              "key": "pleural_fluid_mesothelial",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Pleural fluid cytology: mesothelial cells",
+              "citation": "BTS 2018"
+            },
+            {
+              "key": "nmp_marker_elevated",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Serum mesothelin / SMRP elevated (adjunct marker)",
+              "citation": "BTS 2018"
+            },
+            {
+              "key": "poor_prognosis_median",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "Median survival 9\u201312 months (poor prognosis \u2014 palliative focus)",
+              "citation": "BTS 2018"
+            }
+          ]
+        },
+        {
+          "name": "Asbestosis",
+          "icd": "J61",
+          "logPrior": -46,
+          "urgency": 0,
+          "systems": [
+            "respiratory"
+          ],
+          "specialties": [
+            "respiratory",
+            "occupational"
+          ],
+          "features": [
+            {
+              "key": "asbestos_exposure_confirmed",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Confirmed asbestos exposure (occupational history, latency >20 years)",
+              "citation": "BTS Asbestos-Related Lung Disease Guidelines"
+            },
+            {
+              "key": "bilateral_basal_crepitations",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Bilateral fine basal end-inspiratory crepitations",
+              "citation": "BTS"
+            },
+            {
+              "key": "hrct_ground_glass_fibrosis",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "HRCT: bilateral basal subpleural fibrosis / traction bronchiectasis",
+              "citation": "BTS"
+            },
+            {
+              "key": "pleural_plaques",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Calcified pleural plaques on CXR / CT (asbestos marker)",
+              "citation": "BTS"
+            },
+            {
+              "key": "restrictive_spirometry",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Restrictive spirometry: reduced FVC, preserved FEV1/FVC",
+              "citation": "BTS"
+            },
+            {
+              "key": "dlco_reduced",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "DLCO reduced (impaired gas transfer)",
+              "citation": "BTS"
+            },
+            {
+              "key": "no_drug_hypersensitivity",
+              "value": "absent",
+              "logLR": 11,
+              "evidenceLabel": "No drug hypersensitivity or connective tissue disease (differential)",
+              "citation": "BTS"
+            },
+            {
+              "key": "progressive_dyspnoea",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Progressive dyspnoea on exertion",
+              "citation": "BTS"
+            }
+          ]
+        },
+        {
+          "name": "Occupational Asthma",
+          "icd": "J45.990",
+          "logPrior": -35,
+          "urgency": 1,
+          "systems": [
+            "respiratory"
+          ],
+          "specialties": [
+            "respiratory",
+            "occupational"
+          ],
+          "features": [
+            {
+              "key": "symptoms_improve_holiday",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Asthma symptoms improve on days off / holidays (hallmark)",
+              "citation": "BOHRF Occupational Asthma Guidelines 2010"
+            },
+            {
+              "key": "serial_pef_work_home",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Serial PEF: \u226520% diurnal variation on work days vs rest days",
+              "citation": "BOHRF 2010"
+            },
+            {
+              "key": "specific_inhalation_challenge",
+              "value": "present",
+              "logLR": 29,
+              "evidenceLabel": "Specific inhalation challenge: fall in FEV1 \u226515% (gold standard)",
+              "citation": "BOHRF 2010"
+            },
+            {
+              "key": "sensitiser_exposure",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Exposure to sensitiser: isocyanates, flour, latex, animals, wood dust",
+              "citation": "BOHRF 2010"
+            },
+            {
+              "key": "specific_ige_occupational",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Specific IgE / SPT to occupational agent positive",
+              "citation": "BOHRF 2010"
+            },
+            {
+              "key": "late_asthmatic_response",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Late asthmatic response (3\u20138 hours post-exposure)",
+              "citation": "BOHRF 2010"
+            },
+            {
+              "key": "removal_from_exposure",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Improvement / remission after permanent removal from exposure",
+              "citation": "BOHRF 2010"
+            },
+            {
+              "key": "atopy_increases_risk",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Atopy increases risk of sensitiser-induced occupational asthma",
+              "citation": "BOHRF 2010"
+            }
+          ]
+        },
+        {
+          "name": "Noise-Induced Hearing Loss",
+          "icd": "H83.3",
+          "logPrior": -32,
+          "urgency": 0,
+          "systems": [
+            "ent"
+          ],
+          "specialties": [
+            "ent",
+            "occupational"
+          ],
+          "features": [
+            {
+              "key": "audiogram_4khz_notch",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "Audiogram: characteristic 4 kHz notch (noise-induced pattern)",
+              "citation": "NICE Noise-Induced Hearing Loss CKS"
+            },
+            {
+              "key": "prolonged_noise_exposure",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Prolonged exposure to noise >85 dB(A) 8-hour LEP,d",
+              "citation": "Control of Noise at Work Regulations 2005"
+            },
+            {
+              "key": "bilateral_symmetric_snhl",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Bilateral symmetrical sensorineural hearing loss",
+              "citation": "NICE"
+            },
+            {
+              "key": "tinnitus_coexisting",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Tinnitus coexisting (high-frequency noise damage)",
+              "citation": "NICE"
+            },
+            {
+              "key": "no_other_snhl_cause",
+              "value": "absent",
+              "logLR": 16,
+              "evidenceLabel": "No drug ototoxicity / M\u00e9ni\u00e8re's / acoustic neuroma (differential excluded)",
+              "citation": "NICE"
+            },
+            {
+              "key": "occupation_military_industry",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Military service / heavy industry / construction / music industry exposure",
+              "citation": "NICE"
+            },
+            {
+              "key": "temporary_threshold_shift",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "History of temporary threshold shift (muffled hearing post-exposure)",
+              "citation": "NICE"
+            },
+            {
+              "key": "ppe_non_compliance",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "History of not wearing hearing protection consistently",
+              "citation": "NICE"
+            }
+          ]
+        },
+        {
+          "name": "Work-Related Upper Limb Disorder (WRULD)",
+          "icd": "M77.80",
+          "logPrior": -29,
+          "urgency": 0,
+          "systems": [
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "occupational",
+            "orthopaedics"
+          ],
+          "features": [
+            {
+              "key": "repetitive_task_history",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Repetitive tasks >4 hours/day or awkward posture at work",
+              "citation": "NICE WRULD Guidelines"
+            },
+            {
+              "key": "symptoms_worse_at_work",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Symptoms worse during or after work (work-relatedness pattern)",
+              "citation": "NICE"
+            },
+            {
+              "key": "upper_limb_pain_weakness",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Upper limb pain, tenderness, stiffness, or weakness",
+              "citation": "NICE"
+            },
+            {
+              "key": "carpal_tunnel_syndrome",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Carpal tunnel syndrome confirmed (NCS: prolonged median nerve latency)",
+              "citation": "NICE"
+            },
+            {
+              "key": "de_quervain_tenosynovitis",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "De Quervain's tenosynovitis: Finkelstein test positive",
+              "citation": "NICE"
+            },
+            {
+              "key": "occupational_hygiene_assessment",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Workplace ergonomic assessment arranged",
+              "citation": "NICE"
+            },
+            {
+              "key": "physiotherapy_modified_duties",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Improvement with physiotherapy and workstation modification",
+              "citation": "NICE"
+            },
+            {
+              "key": "vibrating_tools_exposure",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Vibrating tool exposure (HAVS risk \u2014 1A/B-3)",
+              "citation": "NICE"
+            }
+          ]
+        },
+        {
+          "name": "Silicosis",
+          "icd": "J62.8",
+          "logPrior": -46,
+          "urgency": 1,
+          "systems": [
+            "respiratory"
+          ],
+          "specialties": [
+            "respiratory",
+            "occupational"
+          ],
+          "features": [
+            {
+              "key": "silica_dust_exposure",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "Exposure to crystalline silica: quarrying, mining, sandblasting, construction",
+              "citation": "ERS Silicosis Guidelines"
+            },
+            {
+              "key": "ct_upper_lobe_nodules",
+              "value": "present",
+              "logLR": 25,
+              "evidenceLabel": "CT: bilateral upper lobe nodules / progressive massive fibrosis (PMF)",
+              "citation": "ERS"
+            },
+            {
+              "key": "eggshell_calcification",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Eggshell calcification of hilar nodes (pathognomonic of silicosis)",
+              "citation": "ERS"
+            },
+            {
+              "key": "obstructive_restrictive_mixed",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Mixed obstructive-restrictive spirometry pattern",
+              "citation": "ERS"
+            },
+            {
+              "key": "tb_risk_silicosis",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Increased TB risk (silicosis \u00d7 3 increased risk \u2014 screen annually)",
+              "citation": "ERS"
+            },
+            {
+              "key": "accelerated_silicosis",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Accelerated silicosis: high-intensity exposure <10 years (engineered stone)",
+              "citation": "ERS"
+            },
+            {
+              "key": "autoimmune_complications",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Autoimmune associations: scleroderma / RA / lupus (Caplan syndrome)",
+              "citation": "ERS"
+            },
+            {
+              "key": "no_treatment_curative",
+              "value": "present",
+              "logLR": 11,
+              "evidenceLabel": "No curative treatment \u2014 preventive focus and removal from exposure",
+              "citation": "ERS"
+            }
+          ]
+        },
+        {
+          "name": "Hand-Arm Vibration Syndrome (HAVS)",
+          "icd": "T75.20",
+          "logPrior": -39,
+          "urgency": 0,
+          "systems": [
+            "vascular",
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "occupational"
+          ],
+          "features": [
+            {
+              "key": "vibrating_tool_years",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Years of vibrating tool use: >2000 m/s\u00b2 A(8) cumulative",
+              "citation": "NICE HAVS Guidelines"
+            },
+            {
+              "key": "blanching_digits_cold",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Episodic digital blanching / cyanosis on cold exposure (vascular HAVS)",
+              "citation": "NICE"
+            },
+            {
+              "key": "tingling_numbness_hands",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Tingling, numbness, and loss of dexterity in fingers (neural HAVS)",
+              "citation": "NICE"
+            },
+            {
+              "key": "stockholm_scale_2v",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Stockholm Workshop Scale \u22652V (vascular) or 2SN (sensorineural)",
+              "citation": "NICE"
+            },
+            {
+              "key": "cold_provocation_test",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Cold provocation test: digital rewarming time >20 minutes",
+              "citation": "NICE"
+            },
+            {
+              "key": "nerve_conduction_abnormal",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Nerve conduction studies: reduced vibration perception threshold",
+              "citation": "NICE"
+            },
+            {
+              "key": "removal_tool_improvement",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Symptoms improve after removal from vibration exposure",
+              "citation": "NICE"
+            },
+            {
+              "key": "industrial_injury_benefit",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Industrial Injuries Disablement Benefit (PD A11) eligible",
+              "citation": "NICE"
+            }
+          ]
+        },
+        {
+          "name": "Occupational Contact Dermatitis",
+          "icd": "L25.9",
+          "logPrior": -35,
+          "urgency": 0,
+          "systems": [
+            "dermatology"
+          ],
+          "specialties": [
+            "occupational",
+            "dermatology"
+          ],
+          "features": [
+            {
+              "key": "work_related_skin_distribution",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Distribution matches occupational exposure (hands, forearms)",
+              "citation": "NICE Occupational Dermatitis CKS"
+            },
+            {
+              "key": "improves_away_from_work",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Improves during holidays / time away from work",
+              "citation": "NICE"
+            },
+            {
+              "key": "patch_test_positive",
+              "value": "present",
+              "logLR": 26,
+              "evidenceLabel": "Patch test positive to occupational allergen (allergic contact dermatitis)",
+              "citation": "NICE"
+            },
+            {
+              "key": "wet_work_exposure",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Wet work >2 hours/day (irritant contact dermatitis risk)",
+              "citation": "NICE"
+            },
+            {
+              "key": "vesicular_eczema_hands",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Vesicular eczema / hyperkeratosis / fissuring of hands",
+              "citation": "NICE"
+            },
+            {
+              "key": "healthcare_rubber_latex",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Healthcare worker with rubber latex exposure",
+              "citation": "NICE"
+            },
+            {
+              "key": "hairdresser_nail_tech",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Hairdresser / nail technician (p-phenylenediamine / acrylates)",
+              "citation": "NICE"
+            },
+            {
+              "key": "skin_barrier_treatment",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Improvement with barrier cream and topical steroids + modified duties",
+              "citation": "NICE"
+            }
+          ]
+        }
+      ]
+    },
+    "preoperativeAssessment": {
+      "poolVersion": "1.0",
+      "candidates": [
+        {
+          "name": "High Cardiac Risk Pre-operatively (RCRI \u22653)",
+          "icd": "Z01.810",
+          "logPrior": -28,
+          "urgency": 1,
+          "systems": [
+            "cardiology"
+          ],
+          "specialties": [
+            "anaesthesia",
+            "cardiology"
+          ],
+          "features": [
+            {
+              "key": "rcri_3_or_more",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "RCRI \u22653: high-risk surgery + IHD + CCF + cerebrovascular disease + insulin + creatinine >177",
+              "citation": "Lee RCRI 1999 / ACC/AHA Preoperative Guidelines 2014"
+            },
+            {
+              "key": "poor_functional_capacity",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Poor functional capacity <4 METs (unable to climb one flight of stairs)",
+              "citation": "ACC/AHA 2014"
+            },
+            {
+              "key": "ecg_lbbb_ischaemia",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "ECG: LBBB / ischaemic changes / Q waves",
+              "citation": "ACC/AHA 2014"
+            },
+            {
+              "key": "elevated_troponin_preop",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Pre-operative troponin elevation (myocardial injury)",
+              "citation": "ACC/AHA 2014"
+            },
+            {
+              "key": "echo_ef_below_35",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Echo: LVEF <35% (severely impaired)",
+              "citation": "ACC/AHA 2014"
+            },
+            {
+              "key": "cardiologist_clearance",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Cardiology review and optimisation completed pre-operatively",
+              "citation": "ACC/AHA 2014"
+            },
+            {
+              "key": "beta_blocker_perioperative",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Perioperative beta-blocker therapy (if already on, continue)",
+              "citation": "ACC/AHA 2014"
+            },
+            {
+              "key": "high_risk_surgery_type",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "High-risk surgery: intraperitoneal / aortic / peripheral vascular >1h",
+              "citation": "ACC/AHA 2014"
+            }
+          ]
+        },
+        {
+          "name": "Pre-operative Anaemia (Iron Deficiency)",
+          "icd": "D50.9",
+          "logPrior": -20,
+          "urgency": 0,
+          "systems": [
+            "haematology"
+          ],
+          "specialties": [
+            "anaesthesia",
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "hb_below_130_preop",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Hb <130 g/L (M) or <120 g/L (F) at pre-operative assessment",
+              "citation": "NICE Blood Transfusion Guideline / CPOC Anaemia Guidelines"
+            },
+            {
+              "key": "low_ferritin_preop",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Ferritin <30 \u03bcg/L (iron deficiency \u2014 if >30 and CRP low, functional deficiency)",
+              "citation": "CPOC"
+            },
+            {
+              "key": "iv_iron_4_6_weeks",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "IV iron (ferric carboxymaltose) given \u22654 weeks before elective surgery",
+              "citation": "CPOC"
+            },
+            {
+              "key": "transfusion_trigger_preop",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Pre-operative transfusion trigger: Hb <80 g/L OR symptomatic",
+              "citation": "NICE NG24"
+            },
+            {
+              "key": "blood_conserving_strategies",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Cell salvage / TXA / restrictive transfusion planned",
+              "citation": "NICE NG24"
+            },
+            {
+              "key": "erythropoietin_considered",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "EPO considered in Jehovah's Witness / when surgery cannot wait 4 weeks",
+              "citation": "CPOC"
+            },
+            {
+              "key": "surgery_delayed_optimise",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Elective surgery delayed \u22654 weeks to optimise Hb",
+              "citation": "CPOC"
+            },
+            {
+              "key": "anaemia_source_identified",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Anaemia source identified and treated (GI source, menorrhagia, malignancy)",
+              "citation": "CPOC"
+            }
+          ]
+        },
+        {
+          "name": "Pre-operative Anticoagulation Management",
+          "icd": "Z79.01",
+          "logPrior": -24,
+          "urgency": 1,
+          "systems": [
+            "haematology"
+          ],
+          "specialties": [
+            "anaesthesia",
+            "haematology"
+          ],
+          "features": [
+            {
+              "key": "warfarin_bridging_decision",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Warfarin bridging risk stratification: HAS-BLED vs CHA\u2082DS\u2082-VASc",
+              "citation": "BRIDGE Trial / ACC 2017"
+            },
+            {
+              "key": "doac_interruption_timing",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "DOAC interruption timing: 24\u201348h pre-op (48\u201396h high bleeding risk)",
+              "citation": "ACC 2017"
+            },
+            {
+              "key": "inr_below_1_5_proceed",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "INR <1.5: safe to proceed (warfarin patient)",
+              "citation": "ACC 2017"
+            },
+            {
+              "key": "mechanical_valve_high_risk",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "Mechanical mitral valve / recent AF stroke: high-risk bridging required",
+              "citation": "ACC 2017"
+            },
+            {
+              "key": "neuroaxial_timing_lmwh",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "LMWH timing for neuraxial anaesthesia (12h prophylaxis / 24h treatment before)",
+              "citation": "RCOA/ESRA Guidelines"
+            },
+            {
+              "key": "antiplatelet_aspirin_continue",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Low-dose aspirin usually continued perioperatively (cardiac stent \u2014 essential)",
+              "citation": "ACC 2017"
+            },
+            {
+              "key": "drug_holiday_calendar",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Drug holiday calendar and patient counselling completed",
+              "citation": "ACC 2017"
+            },
+            {
+              "key": "vte_prophylaxis_plan",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "VTE prophylaxis plan for post-operative period documented",
+              "citation": "NICE NG89"
+            }
+          ]
+        },
+        {
+          "name": "Pulmonary Risk Assessment (Pre-operative)",
+          "icd": "J98.09",
+          "logPrior": -24,
+          "urgency": 0,
+          "systems": [
+            "respiratory"
+          ],
+          "specialties": [
+            "anaesthesia",
+            "respiratory"
+          ],
+          "features": [
+            {
+              "key": "copd_moderate_severe",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "COPD GOLD Stage \u2265II (FEV1/FVC <0.7, FEV1 <80% predicted)",
+              "citation": "ATS Pulmonary Risk Guidelines"
+            },
+            {
+              "key": "spirometry_preop_abnormal",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Pre-operative spirometry: FEV1 <1.0 L or <50% predicted",
+              "citation": "ATS"
+            },
+            {
+              "key": "osa_moderate_severe",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "OSA AHI \u226515 on sleep study (STOP-BANG \u22655)",
+              "citation": "SASM CPAP Guidelines"
+            },
+            {
+              "key": "cpap_compliance_preop",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "CPAP compliance confirmed pre-operatively",
+              "citation": "SASM"
+            },
+            {
+              "key": "smoking_cessation_8_weeks",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Smoking cessation \u22658 weeks before surgery reduces pulmonary complications",
+              "citation": "ATS"
+            },
+            {
+              "key": "upper_abdominal_surgery_risk",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Upper abdominal / thoracic surgery: highest pulmonary complication risk",
+              "citation": "ATS"
+            },
+            {
+              "key": "incentive_spirometry_plan",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Post-operative incentive spirometry / physiotherapy plan",
+              "citation": "ATS"
+            },
+            {
+              "key": "spo2_below_95_preop",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Pre-operative SpO\u2082 <95% on air (respiratory reserve reduced)",
+              "citation": "ATS"
+            }
+          ]
+        },
+        {
+          "name": "Frailty Assessment (Pre-operative)",
+          "icd": "R54",
+          "logPrior": -28,
+          "urgency": 0,
+          "systems": [
+            "geriatric"
+          ],
+          "specialties": [
+            "anaesthesia"
+          ],
+          "features": [
+            {
+              "key": "cfs_5_or_more",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "Clinical Frailty Scale \u22655 (mildly frail \u2014 pre-operative high risk)",
+              "citation": "NICE NG45 / CPOC Frailty Guidelines"
+            },
+            {
+              "key": "5m_walk_slow",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "5-metre walk test >6 seconds (physical frailty marker)",
+              "citation": "CPOC"
+            },
+            {
+              "key": "grip_strength_low",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Grip strength below gender/age threshold (dynamometry)",
+              "citation": "CPOC"
+            },
+            {
+              "key": "delirium_risk_high",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "High delirium risk: \u22653 NICE risk factors (age >65, dementia, hip fracture, dehydration, visual/hearing impairment)",
+              "citation": "NICE CG103"
+            },
+            {
+              "key": "polypharmacy_10_plus",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Polypharmacy \u226510 medications (medication review essential)",
+              "citation": "CPOC"
+            },
+            {
+              "key": "comprehensive_geriatric_assessment",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Comprehensive geriatric assessment completed pre-operatively",
+              "citation": "CPOC"
+            },
+            {
+              "key": "goals_of_care_documented",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Goals of care / resuscitation status documented pre-operatively",
+              "citation": "CPOC"
+            },
+            {
+              "key": "prehabilitation_commenced",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Prehabilitation commenced (exercise, nutrition, psychological support)",
+              "citation": "CPOC"
+            }
+          ]
+        },
+        {
+          "name": "Pre-operative Diabetes Management",
+          "icd": "E11.9",
+          "logPrior": -22,
+          "urgency": 0,
+          "systems": [
+            "endocrine"
+          ],
+          "specialties": [
+            "anaesthesia",
+            "endocrinology"
+          ],
+          "features": [
+            {
+              "key": "hba1c_above_69_delay",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "HbA1c >69 mmol/mol: consider delaying elective surgery for optimisation",
+              "citation": "JBDS Perioperative Diabetes Guidelines 2021"
+            },
+            {
+              "key": "vrii_commenced",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "VRIII (variable rate IV insulin) commenced peri-operatively",
+              "citation": "JBDS 2021"
+            },
+            {
+              "key": "sglt2_omitted_3_days",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "SGLT2 inhibitor omitted \u22653 days pre-operatively (DKA risk)",
+              "citation": "JBDS 2021"
+            },
+            {
+              "key": "hypoglycaemia_risk_fasting",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Hypoglycaemia risk during perioperative fasting (insulin / sulphonylurea dose adjustment)",
+              "citation": "JBDS 2021"
+            },
+            {
+              "key": "first_on_list_planned",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Patient placed first on operating list (minimise starvation time)",
+              "citation": "JBDS 2021"
+            },
+            {
+              "key": "point_of_care_glucose",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Hourly capillary blood glucose monitoring intra-/post-operatively",
+              "citation": "JBDS 2021"
+            },
+            {
+              "key": "renal_function_preop_dm",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Renal function checked (metformin hold if eGFR <30 or contrast used)",
+              "citation": "JBDS 2021"
+            },
+            {
+              "key": "diabetic_specialist_review",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Diabetes specialist nurse / endocrinologist review (complex patients)",
+              "citation": "JBDS 2021"
+            }
+          ]
+        },
+        {
+          "name": "Pre-operative Nutritional Optimisation",
+          "icd": "E46",
+          "logPrior": -24,
+          "urgency": 0,
+          "systems": [
+            "nutrition"
+          ],
+          "specialties": [
+            "surgery",
+            "anaesthesia"
+          ],
+          "features": [
+            {
+              "key": "must_score_2_plus",
+              "value": "present",
+              "logLR": 23,
+              "evidenceLabel": "MUST score \u22652 (high malnutrition risk: weight loss >10% + BMI <18.5)",
+              "citation": "NICE CG32 / ESPEN Surgical Nutrition Guidelines"
+            },
+            {
+              "key": "unintentional_weight_loss_10",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Unintentional weight loss >10% in 6 months pre-operatively",
+              "citation": "ESPEN"
+            },
+            {
+              "key": "albumin_below_30",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "Serum albumin <30 g/L (pre-operative poor outcome predictor)",
+              "citation": "ESPEN"
+            },
+            {
+              "key": "immunonutrition_5_days",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Oral immunonutrition 5\u20137 days pre-operatively (arginine / omega-3)",
+              "citation": "ESPEN"
+            },
+            {
+              "key": "enteral_support_commenced",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Pre-operative enteral / parenteral support commenced (delay surgery 1\u20132 weeks)",
+              "citation": "ESPEN"
+            },
+            {
+              "key": "enhanced_recovery_eras",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "ERAS protocol: carbohydrate loading 2h before induction",
+              "citation": "ERAS Society Guidelines"
+            },
+            {
+              "key": "dietitian_referral",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Dietitian referral and nutritional plan in place",
+              "citation": "NICE CG32"
+            },
+            {
+              "key": "zinc_vitamin_c_wound",
+              "value": "present",
+              "logLR": 14,
+              "evidenceLabel": "Zinc / Vitamin C supplementation for wound healing in deficient patients",
+              "citation": "ESPEN"
+            }
+          ]
+        },
+        {
+          "name": "Medication Review Pre-operative",
+          "icd": "Z79.899",
+          "logPrior": -17,
+          "urgency": 0,
+          "systems": [
+            "pharmacology"
+          ],
+          "specialties": [
+            "anaesthesia"
+          ],
+          "features": [
+            {
+              "key": "acei_arb_hold_surgery",
+              "value": "present",
+              "logLR": 21,
+              "evidenceLabel": "ACEi/ARB held on day of surgery (hypotension risk under anaesthesia)",
+              "citation": "BNF / MHRA Drug Advice Perioperative"
+            },
+            {
+              "key": "metformin_hold_contrast",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Metformin held \u226548h if eGFR <45 or contrast used (lactic acidosis)",
+              "citation": "NICE"
+            },
+            {
+              "key": "maoi_stopped_2_weeks",
+              "value": "present",
+              "logLR": 22,
+              "evidenceLabel": "MAOI stopped \u22652 weeks pre-operatively (serotonin syndrome risk with pethidine)",
+              "citation": "BNF"
+            },
+            {
+              "key": "lithium_held_24h",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Lithium held 24h before major surgery (fluid shifts alter levels)",
+              "citation": "BNF"
+            },
+            {
+              "key": "aspirin_held_cabg_not",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Aspirin held 7 days before major non-cardiac surgery (unless cardiac stent)",
+              "citation": "ACC 2017"
+            },
+            {
+              "key": "herbal_supplements_stopped",
+              "value": "present",
+              "logLR": 16,
+              "evidenceLabel": "Herbal supplements stopped \u22652 weeks (ginkgo, garlic, ginger, ginseng \u2014 bleed risk)",
+              "citation": "Anaesthesia Journal"
+            },
+            {
+              "key": "steroid_cover_if_required",
+              "value": "present",
+              "logLR": 19,
+              "evidenceLabel": "Steroid cover (hydrocortisone 25\u2013100 mg) if \u22655 mg prednisolone/day >1 month",
+              "citation": "AAGBI Steroid Cover Guidelines"
+            },
+            {
+              "key": "drug_allergy_documented",
+              "value": "present",
+              "logLR": 18,
+              "evidenceLabel": "Drug allergy / anaesthetic adverse reactions documented on anaesthetic chart",
+              "citation": "NAP6 Anaphylaxis Perioperative"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {

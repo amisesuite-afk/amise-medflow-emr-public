@@ -805,6 +805,71 @@ enum BayesianDiagnosisEngine {
             if ccL.contains("pain") { mergePool("weightLoss") }
             if ccL.contains("bowel") { mergePool("smallBowelObstruction") }
 
+        // Haemoglobinopathies — sickle cell disease, G6PD, thalassaemia, HTLV-1 (Caribbean-endemic)
+        case ccL.contains("sickle cell") || ccL.contains("sickle") || ccL.contains("hbss") ||
+             ccL.contains("hbsc") || ccL.contains("vaso-occlusive") || ccL.contains("vaso occlusive") ||
+             ccL.contains("g6pd") || ccL.contains("thalassaemia") || ccL.contains("thalassemia") ||
+             ccL.contains("spherocytosis") || ccL.contains("haemoglobinopathy") ||
+             ccL.contains("hemoglobinopathy") || ccL.contains("htlv") || ccL.contains("htlv-1") ||
+             ccL.contains("aplastic crisis") || ccL.contains("acute chest syndrome") ||
+             ccL.contains("parvovirus") || ccL.contains("haemolytic crisis") ||
+             ccL.contains("hemolytic crisis") || ccL.contains("exchange transfusion") ||
+             (ccL.contains("caribbean") && ccL.contains("anaemia")):
+            candidates = externalPool("haemoglobinopathy") ?? []
+            if ccL.contains("stroke") || ccL.contains("neurological") { mergePool("neurosurgicalHead") }
+            if ccL.contains("chest") || ccL.contains("respiratory") { mergePool("cough") }
+
+        // Coagulation disorders — haemophilia, vWD, ITP, TTP, APS, DIC, HIT, HUS
+        case ccL.contains("haemophilia") || ccL.contains("hemophilia") ||
+             ccL.contains("von willebrand") || ccL.contains("vwd") ||
+             ccL.contains("thrombocytopenia") || ccL.contains("itp") ||
+             ccL.contains("ttp") || ccL.contains("thrombotic thrombocytopenic") ||
+             ccL.contains("antiphospholipid") || ccL.contains("aps ") ||
+             ccL.contains("dic ") || ccL.contains("disseminated intravascular") ||
+             ccL.contains("hit ") || ccL.contains("heparin induced") ||
+             ccL.contains("hus ") || ccL.contains("haemolytic uraemic") ||
+             ccL.contains("hemolytic uremic") || ccL.contains("coagulopathy") ||
+             ccL.contains("bleeding disorder") || ccL.contains("clotting disorder") ||
+             ccL.contains("factor deficiency") || ccL.contains("lupus anticoagulant") ||
+             (ccL.contains("spontaneous") && ccL.contains("bleeding")) ||
+             (ccL.contains("platelet") && ccL.contains("fall")):
+            candidates = externalPool("coagulationDisorder") ?? []
+            if ccL.contains("kidney") || ccL.contains("renal") || ccL.contains("aki") { mergePool("acuteKidneyInjury") }
+            if ccL.contains("liver") { mergePool("liverDisease") }
+
+        // Occupational medicine — mesothelioma, asbestosis, occupational asthma, HAVS, silicosis
+        case ccL.contains("occupational") || ccL.contains("mesothelioma") ||
+             ccL.contains("asbestosis") || ccL.contains("asbestos") ||
+             ccL.contains("silicosis") || ccL.contains("silica dust") ||
+             ccL.contains("havs") || ccL.contains("hand arm vibration") ||
+             ccL.contains("vibration white finger") ||
+             ccL.contains("wruld") || ccL.contains("work related upper limb") ||
+             ccL.contains("noise induced") || ccL.contains("industrial deafness") ||
+             ccL.contains("occupational asthma") || ccL.contains("occupational dermatitis") ||
+             ccL.contains("eggshell calcification") || ccL.contains("progressive massive fibrosis") ||
+             (ccL.contains("asthma") && ccL.contains("work")) ||
+             (ccL.contains("hearing loss") && ccL.contains("noise")) ||
+             (ccL.contains("chest") && ccL.contains("asbestos")):
+            candidates = externalPool("occupationalMedicine") ?? []
+            if ccL.contains("lung") || ccL.contains("respiratory") || ccL.contains("pleural") { mergePool("cough") }
+            if ccL.contains("skin") || ccL.contains("dermatitis") { mergePool("skinRash") }
+
+        // Pre-operative assessment — cardiac risk, anaemia, anticoagulation, frailty, diabetes, nutrition
+        case ccL.contains("preoperative") || ccL.contains("pre-operative") ||
+             ccL.contains("pre operative") || ccL.contains("pre-op") || ccL.contains("preop ") ||
+             ccL.contains("rcri") || ccL.contains("cardiac risk surgery") ||
+             ccL.contains("fitness for surgery") || ccL.contains("fitness for anaesthesia") ||
+             ccL.contains("anaesthetic assessment") || ccL.contains("anesthetic assessment") ||
+             ccL.contains("perioperative") || ccL.contains("peri-operative") ||
+             ccL.contains("surgical clearance") || ccL.contains("surgical fitness") ||
+             ccL.contains("pre-op assessment") || ccL.contains("preoperative assessment") ||
+             ccL.contains("prehabilitation") || ccL.contains("eras ") ||
+             (ccL.contains("before surgery") && ccL.contains("risk")) ||
+             (ccL.contains("surgery") && ccL.contains("assessment")):
+            candidates = externalPool("preoperativeAssessment") ?? []
+            if ccL.contains("cardiac") || ccL.contains("heart") { mergePool("heartFailure") }
+            if ccL.contains("anaemia") || ccL.contains("anemia") { mergePool("anaemia") }
+
         default:
             // Wide-net general medicine catch-all — no longer surgical-biased
             candidates = externalPool("generalMedicine") ?? []
@@ -938,6 +1003,22 @@ enum BayesianDiagnosisEngine {
         // Secondary pool: palliative overlay on advanced cancer / end-of-life symptom review
         if ccL.contains("palliative") || ccL.contains("end of life") ||
            ccL.contains("terminal") { mergePool("palliativeCare") }
+        // Secondary pool: haemoglobinopathy overlay on haemolytic anaemia or Caribbean ancestry
+        if ccL.contains("sickle") || ccL.contains("g6pd") || ccL.contains("thalassaemia") ||
+           ccL.contains("haemolytic") || ccL.contains("htlv") ||
+           (ccL.contains("caribbean") && ccL.contains("anaemia")) { mergePool("haemoglobinopathy") }
+        // Secondary pool: coagulation overlay on bleeding, bruising, platelet, or clotting concerns
+        if ccL.contains("coagulopathy") || ccL.contains("bleeding disorder") ||
+           ccL.contains("platelet") || ccL.contains("thrombocytopenia") ||
+           (ccL.contains("spontaneous") && ccL.contains("bleed")) { mergePool("coagulationDisorder") }
+        // Secondary pool: occupational disease overlay on work-related or industrial exposure
+        if ccL.contains("occupational") || ccL.contains("asbestos") || ccL.contains("silicosis") ||
+           ccL.contains("mesothelioma") || ccL.contains("havs") ||
+           (ccL.contains("work") && ccL.contains("exposure")) { mergePool("occupationalMedicine") }
+        // Secondary pool: pre-op risk overlay on surgical fitness or perioperative review
+        if ccL.contains("perioperative") || ccL.contains("pre-op") || ccL.contains("preoperative") ||
+           ccL.contains("surgical clearance") ||
+           (ccL.contains("surgery") && ccL.contains("risk")) { mergePool("preoperativeAssessment") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but
