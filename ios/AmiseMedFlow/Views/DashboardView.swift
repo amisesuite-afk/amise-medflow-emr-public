@@ -62,6 +62,12 @@ struct DashboardView: View {
         allPatients.deduped().reduce(0) { $0 + $1.investigations.filter { $0.status == .ordered || $0.status == .pending }.count }
     }
 
+    private var patientsWithNewResults: [Patient] {
+        allPatients.deduped().filter { p in
+            p.investigations.contains { $0.status == .resulted && !$0.result.isEmpty }
+        }
+    }
+
     // MARK: Body
 
     var body: some View {
@@ -181,7 +187,7 @@ struct DashboardView: View {
 
     private var alertsSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            let totalAlerts = highNews2.count + emergencyAcuity.count + consentPending.count + instructionsPending.count + unsignedNotes + pendingInvestigations
+            let totalAlerts = highNews2.count + emergencyAcuity.count + consentPending.count + instructionsPending.count + unsignedNotes + pendingInvestigations + patientsWithNewResults.count
 
             Label(totalAlerts == 0 ? "No active alerts" : "\(totalAlerts) item\(totalAlerts == 1 ? "" : "s") need attention",
                   systemImage: totalAlerts == 0 ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
@@ -217,6 +223,12 @@ struct DashboardView: View {
                         alertRow(icon: "pencil.circle", color: .orange,
                                  title: "Unsigned draft notes",
                                  detail: "\(unsignedNotes) note\(unsignedNotes == 1 ? "" : "s") awaiting signature")
+                    }
+                    if !patientsWithNewResults.isEmpty {
+                        alertRow(icon: "flask.fill", color: .teal,
+                                 title: "Results available",
+                                 detail: patientsWithNewResults.prefix(3).map { $0.fullName }.joined(separator: ", ")
+                                    + (patientsWithNewResults.count > 3 ? " +\(patientsWithNewResults.count - 3) more" : ""))
                     }
                     if pendingInvestigations > 0 {
                         alertRow(icon: "clock.badge.exclamationmark", color: .secondary,

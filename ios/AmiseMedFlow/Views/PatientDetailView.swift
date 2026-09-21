@@ -649,6 +649,35 @@ struct PatientOverviewContent: View {
                 }
             }
 
+            // Resulted investigations with findings
+            let resultedInvs = patient.investigations.filter { $0.status == .resulted && !$0.result.isEmpty }
+            if !resultedInvs.isEmpty {
+                overviewCard(title: "Investigation Results (\(resultedInvs.count))") {
+                    VStack(alignment: .leading, spacing: 4) {
+                        ForEach(resultedInvs.prefix(6), id: \.id) { inv in
+                            VStack(alignment: .leading, spacing: 1) {
+                                HStack(spacing: 6) {
+                                    Image(systemName: inv.category.icon)
+                                        .font(.system(size: 10))
+                                        .foregroundStyle(.teal)
+                                        .frame(width: 14)
+                                    Text(inv.name)
+                                        .font(.system(size: 13, weight: .medium))
+                                }
+                                Text(inv.result)
+                                    .font(.system(size: 12))
+                                    .foregroundStyle(.secondary)
+                                    .padding(.leading, 20)
+                            }
+                        }
+                        if resultedInvs.count > 6 {
+                            Text("+\(resultedInvs.count - 6) more")
+                                .font(.caption2).foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            }
+
             // Pending investigations
             let pendingInvs = patient.investigations.filter { $0.status == .ordered || $0.status == .pending }
             if !pendingInvs.isEmpty {

@@ -65,6 +65,30 @@ struct ClinicalReasoningView: View {
             flags.append(.init(text: "Anaphylaxis risk: \(a.name) — \(a.reaction)", severity: .critical))
         }
 
+        // Scan resulted investigation results for critical imaging / lab findings
+        let invResultText = patient.investigations
+            .filter { $0.status == .resulted && !$0.result.isEmpty }
+            .map { "\($0.name): \($0.result)".lowercased() }
+            .joined(separator: ". ")
+        if !invResultText.isEmpty {
+            let invFlags: [(String, String, Severity)] = [
+                ("aortic dissection",  "Imaging: aortic dissection — emergency cardiothoracic surgery", .critical),
+                ("intimal flap",       "Imaging: intimal flap — exclude aortic dissection",             .critical),
+                ("pneumoperitoneum",   "Imaging: pneumoperitoneum — emergency laparotomy",              .critical),
+                ("free gas",           "Imaging: free intraperitoneal gas — likely perforation",        .critical),
+                ("adenocarcinoma",     "Pathology: adenocarcinoma — urgent MDT referral",               .urgent),
+                ("malignancy suspected","Pathology: malignancy suspected — 2-week-wait pathway",        .urgent),
+                ("metastatic",         "Pathology/imaging: metastatic disease — oncology referral",     .urgent),
+                ("pulmonary embolism", "Imaging: pulmonary embolism confirmed",                         .critical),
+                ("deep vein thrombosis","Imaging: DVT confirmed — anticoagulation required",            .urgent),
+            ]
+            for (keyword, label, severity) in invFlags {
+                if invResultText.contains(keyword) && !flags.contains(where: { $0.text.hasPrefix(label.prefix(20)) }) {
+                    flags.append(.init(text: label, severity: severity))
+                }
+            }
+        }
+
         return flags.sorted { $0.severity.rawValue < $1.severity.rawValue }
     }
 

@@ -81,6 +81,17 @@ struct ReferralLetterView: View {
         .onAppear {
             data = patient.referralLetterData
 
+            // Pre-fill investigations/results from resulted entries when not yet entered
+            if data.investigationsOrdered.isEmpty {
+                let resulted = patient.investigations.filter { $0.status == .resulted }
+                if !resulted.isEmpty {
+                    data.investigationsOrdered = resulted
+                        .map { $0.result.isEmpty ? $0.name : "\($0.name): \($0.result)" }
+                        .joined(separator: "\n")
+                    save()
+                }
+            }
+
             // Cross-populate management history from surgery note when not yet entered
             if data.managementToDate.isEmpty {
                 let proc = patient.surgeryData.procedureName
