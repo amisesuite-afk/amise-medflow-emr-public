@@ -102,18 +102,34 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
             if lab.lactateElevated    { extraAssoc.insert("elevated lactate") }
             if lab.amylaseElevated    { extraAssoc.insert("elevated amylase") }
             if lab.lipaseElevated     { extraAssoc.insert("elevated lipase") }
-            if lab.bilirubinElevated  { extraAssoc.insert("raised bilirubin") }
+            if lab.bilirubinElevated  {
+                extraAssoc.insert("raised bilirubin")
+                extraAssoc.insert("Jaundice")         // matches DB feature value exactly
+            }
             if lab.dDimerElevated     { extraAssoc.insert("elevated d-dimer") }
             if lab.troponinElevated   { extraAssoc.insert("elevated troponin") }
-            if lab.anaemia            { extraAssoc.insert("anaemia") }
-            if lab.akiMarker          { extraAssoc.insert("renal impairment") }
+            if lab.anaemia            {
+                extraAssoc.insert("Anaemia symptoms") // matches DB feature value exactly
+                extraAssoc.insert("Pallor")            // matches DB feature value exactly
+            }
+            if lab.akiMarker          {
+                extraAssoc.insert("renal impairment")
+                extraAssoc.insert("Oliguria")          // matches DB feature value (AKI pool)
+            }
             if lab.inrElevated        { extraAssoc.insert("raised inr") }
             if lab.altElevated || lab.astElevated { extraAssoc.insert("elevated liver enzymes") }
             if lab.glucoseLow         { extraAssoc.insert("hypoglycaemia") }
-            if lab.glucoseHigh        { extraAssoc.insert("hyperglycaemia") }
+            if lab.glucoseHigh        {
+                extraAssoc.insert("hyperglycaemia")
+                extraAssoc.insert("Polyuria")           // matches DB feature (diabetes pools)
+                extraAssoc.insert("Polydipsia")         // matches DB feature (diabetes fatigue pool)
+            }
             if lab.hypercalcaemia     { extraAssoc.insert("hypercalcaemia") }
             if lab.hypocalcaemia      { extraAssoc.insert("hypocalcaemia") }
             if lab.esrHigh            { extraAssoc.insert("elevated esr") }
+            // Electrolyte disturbances → direct DB feature value matches
+            if (lab.potassium?.value ?? 3.5) < 3.5 { extraAssoc.insert("Hypokalaemia") }
+            if (lab.sodium?.value ?? 135) < 130     { extraAssoc.insert("Hyponatraemia") }
             if !extraAssoc.isEmpty { augmentedSocrates["associations"] = extraAssoc }
         }
 
