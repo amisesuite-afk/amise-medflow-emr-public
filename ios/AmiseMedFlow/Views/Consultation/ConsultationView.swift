@@ -4399,12 +4399,19 @@ struct ConsultationView: View {
     // only structured chip selections.
 
     private func refreshBayesian() {
+        // Concatenate resulted investigation findings so the clinical text parser
+        // can detect critical patterns in imaging/lab reports (e.g. "pneumoperitoneum",
+        // "ruptured", "free gas") and raise appropriate clinical alarms.
+        let invResultsText = patient.investigations
+            .filter { $0.status == .resulted && !$0.result.isEmpty }
+            .map { "\($0.name): \($0.result)" }
+            .joined(separator: ". ")
         let parsed = ClinicalTextParser.parse(
             hpi: patient.hpi,
             examGeneral: patient.examGeneral,
             examAbdo: patient.examAbdo,
             examOther: nil,
-            notes: nil
+            notes: invResultsText.isEmpty ? nil : invResultsText
         )
 
         // Merge parser-extracted features into the chip-selection dict
