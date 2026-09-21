@@ -69,6 +69,7 @@ struct SurgicalRiskInputs {
     let ageYears: Int
     let bmiKgM2: Double?
     let socialChips: Set<String>
+    var labs: LabPanel? = nil       // objective lab values from resulted investigations
 
     // MARK: PMH helpers
     var hasDM:              Bool { pmh.contains("T2DM") || pmh.contains("T1DM") }
@@ -172,8 +173,94 @@ enum SurgicalRiskEngine {
         periopRules(inputs, &alerts)
         anticoagRules(inputs, &alerts)
         anaestheticRules(inputs, &alerts)
+        labRules(inputs, &alerts)
         // Highest band first, then alphabetical domain
         return alerts.sorted { $0.band == $1.band ? $0.domain.rawValue < $1.domain.rawValue : $0.band > $1.band }
+    }
+
+    // MARK: Lab-derived risk rules
+
+    private static func labRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
+        guard let labs = i.labs else { return }
+
+        // Anaemia — increases cardiac demand, impairs wound healing
+        if let hb = labs.haemoglobin?.value {
+            if hb < 8.0 {
+                out.append(SurgicalRiskAlert(
+                    domain: .healing, band: .critical,
+                    title: "Severe anaemia — Hb \(String(format: "%.1f", hb)) g/dL",
+                    detail: "Hb <8 g/dL significantly increases cardiac stress, impairs tissue oxygenation, and raises transfusion requirement perioperatively.",
+                    action: "Transfuse to Hb ≥8 g/dL pre-op (or ≥10 g/dL for cardiac cases). Investigate cause. Consider IV iron if elective case. Delay non-urgent surgery."))
+            } else if hb < 10.0 {
+                out.append(SurgicalRiskAlert(
+                    domain: .healing, band: .high,
+                    title: "Anaemia — Hb \(String(format: "%.1f", hb)) g/dL",
+                    detail: "Hb <10 g/dL elevates transfusion risk and slows wound healing.",
+                    action: "IV iron if ferritin <30 µg/L and elective case ≥4 weeks away. Group & save. Anaesthetic review."))
+            }
+        }
+
+        // Thrombocytopenia — bleeding risk
+        if let plt = labs.platelets?.value {
+            if plt < 50 {
+                out.append(SurgicalRiskAlert(
+                    domain: .periop, band: .critical,
+                    title: "Severe thrombocytopenia — platelets \(Int(plt))×10⁹/L",
+                    detail: "Platelet count <50 ×10⁹/L is associated with major surgical haemorrhage risk.",
+                    action: "Haematology review before surgery. Platelet transfusion target ≥50 (≥100 for neurosurgery/eye). Investigate cause."))
+            } else if plt < 100 {
+                out.append(SurgicalRiskAlert(
+                    domain: .periop, band: .high,
+                    title: "Thrombocytopenia — platelets \(Int(plt))×10⁹/L",
+                    detail: "Platelet count <100 ×10⁹/L increases intraoperative bleeding risk.",
+                    action: "Haematology opinion. Aim platelets ≥80 before major surgery. Avoid NSAIDs."))
+            }
+        }
+
+        // AKI / renal impairment
+        if let cr = labs.creatinine?.value {
+            if cr > 300 {
+                out.append(SurgicalRiskAlert(
+                    domain: .periop, band: .critical,
+                    title: "Severe renal impairment — creatinine \(Int(cr)) µmol/L",
+                    detail: "Creatinine >300 µmol/L — volume management, nephrotoxin avoidance, and HDU/nephrology input are essential.",
+                    action: "Nephrology review. Avoid nephrotoxins (NSAIDs, aminoglycosides, contrast). Adjust drug dosing. Post-op hourly UO monitoring. HDU level care."))
+            } else if cr > 150 {
+                out.append(SurgicalRiskAlert(
+                    domain: .periop, band: .moderate,
+                    title: "Renal impairment — creatinine \(Int(cr)) µmol/L",
+                    detail: "Elevated creatinine requires careful fluid management and avoidance of nephrotoxins perioperatively.",
+                    action: "Avoid NSAIDs and nephrotoxic antibiotics. IV fluids with hourly UO monitoring. Consider nephrology input."))
+            }
+        }
+
+        // Hypoalbuminaemia — nutritional risk and wound healing
+        if let alb = labs.albumin?.value {
+            if alb < 25 {
+                out.append(SurgicalRiskAlert(
+                    domain: .nutrition, band: .high,
+                    title: "Hypoalbuminaemia — albumin \(String(format: "%.0f", alb)) g/L",
+                    detail: "Albumin <25 g/L is a strong independent predictor of surgical complications, anastomotic leak, and poor wound healing.",
+                    action: "Dietitian referral urgently. Nutritional support ≥7–14 days pre-op for elective cases. Consider NG/NJ feeding if oral intake insufficient. Repeat albumin after optimisation."))
+            } else if alb < 35 {
+                out.append(SurgicalRiskAlert(
+                    domain: .nutrition, band: .moderate,
+                    title: "Low albumin — \(String(format: "%.0f", alb)) g/L",
+                    detail: "Albumin 25–35 g/L suggests nutritional compromise and raises risk of poor healing.",
+                    action: "Dietitian referral. High-protein supplementation. Nutritional prehabilitation if elective case."))
+            }
+        }
+
+        // Coagulopathy
+        if let inr = labs.inr?.value, inr > 1.5 {
+            out.append(SurgicalRiskAlert(
+                domain: .perioperative, band: inr > 2.5 ? .critical : .high,
+                title: "Coagulopathy — INR \(String(format: "%.1f", inr))",
+                detail: "INR \(inr > 2.5 ? ">" : "1.5–2.5") — increased surgical haemorrhage risk.",
+                action: inr > 2.5 ?
+                    "Vitamin K IV + FFP if urgent. Delay elective surgery until INR <1.5. Haematology review. Identify cause." :
+                    "Review anticoagulation. Vitamin K if not therapeutically anticoagulated. Haematology input if unexplained."))
+        }
     }
 
     // MARK: Infection

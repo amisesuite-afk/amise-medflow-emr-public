@@ -1950,13 +1950,14 @@ struct ConsultationView: View {
     // Recompute surgical risk alerts from current state. Call whenever PMH,
     // medications, social chips, or vitals change.
     private func recomputeRisk() {
-        let inputs = SurgicalRiskInputs(
+        var inputs = SurgicalRiskInputs(
             pmh: pmhChipSelections,
             medicationNames: patient.prescriptions.map { $0.drug },
             ageYears: patient.ageYears,
             bmiKgM2: patient.latestBMI(),
             socialChips: selectedSocialChips
         )
+        inputs.labs = LabPanel.parse(from: patient.investigations)
         surgicalRiskAlerts = SurgicalRiskEngine.assess(inputs)
     }
 
