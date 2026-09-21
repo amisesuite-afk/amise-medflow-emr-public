@@ -58,6 +58,12 @@ struct TodayDashboardView: View {
         }
     }
 
+    private var patientsWithNewResults: [Patient] {
+        allPatients.deduped().filter { p in
+            p.investigations.contains { $0.status == .resulted && !$0.result.isEmpty }
+        }
+    }
+
     private var readyForDoctorPatients: [Patient] {
         allPatients
             .filter { $0.encounterStatus == .waiting && isToday($0.checkInTime) }
@@ -153,8 +159,9 @@ struct TodayDashboardView: View {
                             }
                             // ── Normal sections ─────────────────────────
                             if !readyForDoctorPatients.isEmpty { waitingSection }
-                            if !highAcuityWard.isEmpty { alertSection }
-                            if !wardPatients.isEmpty   { wardSection }
+                            if !highAcuityWard.isEmpty         { alertSection }
+                            if !patientsWithNewResults.isEmpty { resultsSection }
+                            if !wardPatients.isEmpty           { wardSection }
                             if !theatreToday.isEmpty   { theatreSection }
                             if !endoscopyToday.isEmpty { endoscopySection }
                             if !clinicToday.isEmpty    { clinicSection }
@@ -288,6 +295,9 @@ struct TodayDashboardView: View {
                 }
                 if !highAcuityWard.isEmpty {
                     summaryTile(count: highAcuityWard.count, label: "Alerts", icon: "exclamationmark.triangle.fill", color: .red)
+                }
+                if !patientsWithNewResults.isEmpty {
+                    summaryTile(count: patientsWithNewResults.count, label: "Results", icon: "flask.fill", color: .teal)
                 }
                 if !wardPatients.isEmpty {
                     summaryTile(count: wardPatients.count, label: "Ward", icon: "bed.double.fill", color: .teal)
@@ -444,6 +454,46 @@ struct TodayDashboardView: View {
         } header: {
             Label("Alerts — High acuity", systemImage: "exclamationmark.triangle.fill")
                 .foregroundStyle(.red)
+                .font(.system(size: 11, weight: .heavy))
+                .textCase(nil)
+        }
+    }
+
+    // MARK: - Results Available Section
+
+    @ViewBuilder
+    private var resultsSection: some View {
+        Section {
+            ForEach(patientsWithNewResults) { patient in
+                Button { selectedPatient = patient } label: {
+                    HStack(spacing: 10) {
+                        Image(systemName: "flask.fill")
+                            .foregroundStyle(.teal)
+                            .font(.system(size: 13))
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(patient.fullName)
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(.primary)
+                            let resultedInvs = patient.investigations
+                                .filter { $0.status == .resulted && !$0.result.isEmpty }
+                            Text(resultedInvs.prefix(2).map { $0.name }.joined(separator: ", ")
+                                 + (resultedInvs.count > 2 ? " +\(resultedInvs.count - 2) more" : ""))
+                                .font(.caption)
+                                .foregroundStyle(.teal)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.tertiary)
+                    }
+                    .padding(.vertical, 2)
+                }
+                .buttonStyle(.plain)
+                .listRowBackground(Color.teal.opacity(0.05))
+            }
+        } header: {
+            Label("Results Available", systemImage: "flask.fill")
+                .foregroundStyle(.teal)
                 .font(.system(size: 11, weight: .heavy))
                 .textCase(nil)
         }

@@ -136,11 +136,29 @@ struct DischargeSummaryView: View {
                 data.drainInSitu = true
                 if data.drainType.isEmpty { data.drainType = sx.drainType }
             }
-            if data.procedurePerformed != patient.dischargeSummaryData.procedurePerformed ||
-               data.anaesthetistName   != patient.dischargeSummaryData.anaesthetistName   ||
-               data.admittingDoctor    != patient.dischargeSummaryData.admittingDoctor    ||
+
+            // Auto-populate results fields from resulted investigations
+            let pathInvs = patient.investigations
+                .filter { $0.status == .resulted && !$0.result.isEmpty &&
+                          ($0.category == .pathology || $0.category == .endoscopy) }
+                .sorted { ($0.resultedAt ?? $0.orderedAt) > ($1.resultedAt ?? $1.orderedAt) }
+            let imagingInvs = patient.investigations
+                .filter { $0.status == .resulted && !$0.result.isEmpty && $0.category == .imaging }
+                .sorted { ($0.resultedAt ?? $0.orderedAt) > ($1.resultedAt ?? $1.orderedAt) }
+            if data.pathologyResults.isEmpty && !pathInvs.isEmpty {
+                data.pathologyResults = pathInvs.map { "\($0.name): \($0.result)" }.joined(separator: "\n")
+            }
+            if data.imagingResults.isEmpty && !imagingInvs.isEmpty {
+                data.imagingResults = imagingInvs.map { "\($0.name): \($0.result)" }.joined(separator: "\n")
+            }
+
+            if data.procedurePerformed  != patient.dischargeSummaryData.procedurePerformed  ||
+               data.anaesthetistName    != patient.dischargeSummaryData.anaesthetistName    ||
+               data.admittingDoctor     != patient.dischargeSummaryData.admittingDoctor     ||
                data.followUpAppointment != patient.dischargeSummaryData.followUpAppointment ||
-               data.drainInSitu != patient.dischargeSummaryData.drainInSitu {
+               data.drainInSitu         != patient.dischargeSummaryData.drainInSitu         ||
+               data.pathologyResults    != patient.dischargeSummaryData.pathologyResults    ||
+               data.imagingResults      != patient.dischargeSummaryData.imagingResults {
                 save()
             }
         }
