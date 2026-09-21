@@ -518,6 +518,47 @@ enum BayesianDiagnosisEngine {
              ccL.contains("meralgia") || ccL.contains("radiculopathy"):
             candidates = externalPool("peripheralNeuropathy") ?? []
 
+        // Tropical & infectious disease
+        case ccL.contains("dengue") || ccL.contains("chikungunya") || ccL.contains("leptospirosis") ||
+             ccL.contains("zika") || ccL.contains("malaria") || ccL.contains("typhoid") ||
+             ccL.contains("tropical fever") || ccL.contains("travel fever") ||
+             ccL.contains("returning traveller") || ccL.contains("tropical illness") ||
+             (ccL.contains("fever") && (ccL.contains("travel") || ccL.contains("caribbean") ||
+              ccL.contains("rash") && ccL.contains("joint"))):
+            candidates = externalPool("tropicalInfections") ?? []
+
+        // Rheumatology / inflammatory joint / connective tissue
+        case ccL.contains("rheumatoid") || ccL.contains("lupus") || ccL.contains("sle") ||
+             ccL.contains("ankylosing") || ccL.contains("polymyalgia") || ccL.contains("pmr") ||
+             ccL.contains("giant cell arteritis") || ccL.contains("gca") ||
+             ccL.contains("reactive arthritis") || ccL.contains("psoriatic arthritis") ||
+             ccL.contains("vasculitis") || ccL.contains("sjogren") || ccL.contains("scleroderma") ||
+             (ccL.contains("gout") && !ccL.contains("gouty")) ||
+             ccL.contains("pseudogout") || ccL.contains("inflammatory arthritis") ||
+             (ccL.contains("morning stiffness") && ccL.contains("joint")):
+            candidates = externalPool("rheumatology") ?? []
+
+        // Chest wall / musculoskeletal chest pain (distinct from cardiac chest pain)
+        case ccL.contains("costochondritis") || ccL.contains("tietze") ||
+             ccL.contains("chest wall pain") || ccL.contains("rib pain") ||
+             ccL.contains("pleuritis") || ccL.contains("pleurisy") ||
+             (ccL.contains("chest pain") && (ccL.contains("reproduced") || ccL.contains("palpation") ||
+              ccL.contains("musculoskeletal") || ccL.contains("positional"))) ||
+             (ccL.contains("shingles") && ccL.contains("chest")) ||
+             (ccL.contains("pneumothorax") && !ccL.contains("tension")):
+            candidates = externalPool("chestWallPain") ?? []
+            if ccL.contains("chest pain") { mergePool("chestPain") }
+
+        // Urological oncology / PSA / prostate / bladder / renal mass
+        case ccL.contains("elevated psa") || ccL.contains("raised psa") || ccL.contains("high psa") ||
+             ccL.contains("prostate cancer") || ccL.contains("prostate mass") ||
+             ccL.contains("bladder cancer") || ccL.contains("bladder tumour") || ccL.contains("bladder tumor") ||
+             ccL.contains("renal mass") || ccL.contains("renal cancer") || ccL.contains("renal cell") ||
+             ccL.contains("urothelial") || ccL.contains("urothelial cancer") ||
+             ccL.contains("haematuria") || ccL.contains("hematuria") ||
+             ccL.contains("psa screening") || ccL.contains("prostate screening"):
+            candidates = externalPool("prostateCancer") ?? []
+
         default:
             // Wide-net general medicine catch-all — no longer surgical-biased
             candidates = externalPool("generalMedicine") ?? []
@@ -590,6 +631,18 @@ enum BayesianDiagnosisEngine {
         // Secondary pool: oral overlay on neck lump / sore throat when mouth symptoms present
         if ccL.contains("mouth") || ccL.contains("tongue") ||
            ccL.contains("dental") || ccL.contains("jaw") { mergePool("oralComplaint") }
+        // Secondary pool: tropical infections overlay on fever with travel / rash / arthralgia
+        if ccL.contains("dengue") || ccL.contains("travel") ||
+           (ccL.contains("fever") && ccL.contains("rash")) { mergePool("tropicalInfections") }
+        // Secondary pool: rheumatology overlay on joint pain / inflammatory markers
+        if ccL.contains("rheumatoid") || ccL.contains("inflammatory") ||
+           (ccL.contains("joint") && ccL.contains("morning")) { mergePool("rheumatology") }
+        // Secondary pool: chest wall overlay on musculoskeletal chest pain presentations
+        if (ccL.contains("chest") && ccL.contains("wall")) ||
+           ccL.contains("costochondritis") || ccL.contains("pleurisy") { mergePool("chestWallPain") }
+        // Secondary pool: urological oncology overlay on haematuria / voiding / psa context
+        if ccL.contains("haematuria") || ccL.contains("hematuria") ||
+           ccL.contains("psa") || (ccL.contains("bladder") && ccL.contains("blood")) { mergePool("prostateCancer") }
 
         // Matrix cross-query: ICD-11 polyhierarchy overlay.
         // Surfaces diseases that belong to the systems implied by this CC but

@@ -38874,6 +38874,2326 @@
           ]
         }
       ]
+    },
+    "tropicalInfections": {
+      "description": "Dengue, leptospirosis, chikungunya, Zika, malaria, HIV, typhoid — Caribbean endemic infectious diseases",
+      "candidates": [
+        {
+          "name": "Dengue Fever",
+          "icd": "A90",
+          "logPrior": -0.8,
+          "urgency": 1,
+          "systems": [
+            "infectious",
+            "haematological"
+          ],
+          "specialties": [
+            "infectious_disease",
+            "general"
+          ],
+          "features": [
+            {
+              "key": "fever",
+              "value": "high fever ≥ 38.5°C with sudden onset",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "WHO 2009"
+            },
+            {
+              "key": "retro_orbital",
+              "value": "severe retro-orbital pain",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2009"
+            },
+            {
+              "key": "myalgia",
+              "value": "severe myalgia and arthralgia (break-bone fever)",
+              "logLR": 2.8,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2009"
+            },
+            {
+              "key": "rash",
+              "value": "maculopapular or petechial rash after fever defervescence",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2009"
+            },
+            {
+              "key": "platelet",
+              "value": "thrombocytopenia (platelets < 100 × 10⁹/L)",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2009"
+            },
+            {
+              "key": "leukopenia",
+              "value": "leucopenia (WBC < 4 × 10⁹/L)",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2009"
+            },
+            {
+              "key": "ns1",
+              "value": "positive NS1 antigen or IgM serology",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2009"
+            },
+            {
+              "key": "endemic",
+              "value": "residence or travel in dengue-endemic Caribbean region",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "PAHO 2023"
+            }
+          ]
+        },
+        {
+          "name": "Chikungunya Fever",
+          "icd": "A92.0",
+          "logPrior": -1.5,
+          "urgency": 1,
+          "systems": [
+            "infectious",
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "infectious_disease",
+            "general"
+          ],
+          "features": [
+            {
+              "key": "arthralgia",
+              "value": "severe bilateral polyarthralgia, especially small joints",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "Burt 2012"
+            },
+            {
+              "key": "fever",
+              "value": "acute onset high fever",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Burt 2012"
+            },
+            {
+              "key": "rash",
+              "value": "maculopapular rash on face, trunk, limbs",
+              "logLR": 2.2,
+              "evidenceLabel": "Moderate",
+              "citation": "Burt 2012"
+            },
+            {
+              "key": "chronic_joint",
+              "value": "persistent joint pain weeks to months after acute illness",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "Burt 2012"
+            },
+            {
+              "key": "outbreak",
+              "value": "during community outbreak in Caribbean region",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "PAHO 2023"
+            },
+            {
+              "key": "no_hemorrhage",
+              "value": "absent haemorrhagic features (distinguishes from dengue)",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Burt 2012"
+            },
+            {
+              "key": "serology",
+              "value": "positive chikungunya IgM or PCR",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "Burt 2012"
+            },
+            {
+              "key": "lymphopenia",
+              "value": "lymphopenia on FBC",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Burt 2012"
+            }
+          ]
+        },
+        {
+          "name": "Leptospirosis",
+          "icd": "A27.9",
+          "logPrior": -2.0,
+          "urgency": 2,
+          "systems": [
+            "infectious",
+            "renal",
+            "hepatobiliary"
+          ],
+          "specialties": [
+            "infectious_disease",
+            "general"
+          ],
+          "features": [
+            {
+              "key": "exposure",
+              "value": "water/soil or animal exposure (agriculture, flooding, swimming)",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2011"
+            },
+            {
+              "key": "conjunctival",
+              "value": "conjunctival suffusion (without discharge)",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2011"
+            },
+            {
+              "key": "jaundice",
+              "value": "jaundice with acute kidney injury (Weil's disease)",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2011"
+            },
+            {
+              "key": "myalgia",
+              "value": "severe calf tenderness and myalgia",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2011"
+            },
+            {
+              "key": "aki",
+              "value": "rising creatinine / acute kidney injury",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2011"
+            },
+            {
+              "key": "hemorrhage",
+              "value": "pulmonary haemorrhage or haemoptysis",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2011"
+            },
+            {
+              "key": "serology",
+              "value": "MAT titre ≥ 1:400 or positive IgM ELISA",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2011"
+            },
+            {
+              "key": "biphasic",
+              "value": "biphasic illness (immune phase follows initial bacteraemia)",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "WHO 2011"
+            }
+          ]
+        },
+        {
+          "name": "HIV / AIDS",
+          "icd": "B20",
+          "logPrior": -2.5,
+          "urgency": 1,
+          "systems": [
+            "infectious",
+            "immunological",
+            "haematological"
+          ],
+          "specialties": [
+            "infectious_disease",
+            "general"
+          ],
+          "features": [
+            {
+              "key": "risk_factor",
+              "value": "unprotected intercourse, IV drug use, or MSM risk",
+              "logLR": 2.5,
+              "evidenceLabel": "Moderate",
+              "citation": "BHIVA 2019"
+            },
+            {
+              "key": "test",
+              "value": "reactive HIV Ag/Ab combination test",
+              "logLR": 5.0,
+              "evidenceLabel": "Strong",
+              "citation": "BHIVA 2019"
+            },
+            {
+              "key": "opportunistic",
+              "value": "opportunistic infection (PCP, CMV, MAC, toxoplasmosis)",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "BHIVA 2019"
+            },
+            {
+              "key": "cd4",
+              "value": "CD4 count < 200 cells/mm³",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "BHIVA 2019"
+            },
+            {
+              "key": "weight_loss",
+              "value": "constitutional: weight loss > 10% + chronic diarrhoea",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "BHIVA 2019"
+            },
+            {
+              "key": "lymphadenopathy",
+              "value": "persistent generalised lymphadenopathy",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "BHIVA 2019"
+            },
+            {
+              "key": "oral_candida",
+              "value": "oral candidiasis in non-immunosuppressed patient",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "BHIVA 2019"
+            },
+            {
+              "key": "seroconversion",
+              "value": "acute seroconversion illness (fever, rash, lymphadenopathy)",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "BHIVA 2019"
+            }
+          ]
+        },
+        {
+          "name": "Typhoid / Enteric Fever (Salmonella Typhi)",
+          "icd": "A01.00",
+          "logPrior": -2.8,
+          "urgency": 2,
+          "systems": [
+            "infectious",
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "infectious_disease",
+            "general"
+          ],
+          "features": [
+            {
+              "key": "fever",
+              "value": "stepwise rising fever over 7–14 days",
+              "logLR": 2.5,
+              "evidenceLabel": "Moderate",
+              "citation": "WHO 2018"
+            },
+            {
+              "key": "rose_spots",
+              "value": "rose spots on trunk (faint salmon-pink macules)",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2018"
+            },
+            {
+              "key": "bradycardia",
+              "value": "relative bradycardia for degree of fever (Faget's sign)",
+              "logLR": 2.8,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2018"
+            },
+            {
+              "key": "constipation",
+              "value": "constipation in early disease, diarrhoea later",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "WHO 2018"
+            },
+            {
+              "key": "culture",
+              "value": "positive blood culture for Salmonella typhi",
+              "logLR": 5.0,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2018"
+            },
+            {
+              "key": "hepatosplenomegaly",
+              "value": "hepatosplenomegaly on examination",
+              "logLR": 2.2,
+              "evidenceLabel": "Moderate",
+              "citation": "WHO 2018"
+            },
+            {
+              "key": "travel",
+              "value": "travel to or residence in endemic area (South Asia, Caribbean)",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "WHO 2018"
+            },
+            {
+              "key": "leukopenia",
+              "value": "leucopenia or relative lymphocytosis",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "WHO 2018"
+            }
+          ]
+        },
+        {
+          "name": "Zika Virus Infection",
+          "icd": "A92.5",
+          "logPrior": -2.5,
+          "urgency": 1,
+          "systems": [
+            "infectious",
+            "neurological"
+          ],
+          "specialties": [
+            "infectious_disease",
+            "general"
+          ],
+          "features": [
+            {
+              "key": "rash",
+              "value": "pruritic maculopapular rash",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "PAHO 2016"
+            },
+            {
+              "key": "mild_fever",
+              "value": "low-grade fever ≤ 38.5°C",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "PAHO 2016"
+            },
+            {
+              "key": "conjunctivitis",
+              "value": "non-purulent conjunctivitis",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "PAHO 2016"
+            },
+            {
+              "key": "arthralgia",
+              "value": "arthralgia predominantly in hands and feet",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "PAHO 2016"
+            },
+            {
+              "key": "pregnancy",
+              "value": "pregnant patient (teratogenic risk — microcephaly)",
+              "logLR": 1.0,
+              "evidenceLabel": "Moderate",
+              "citation": "PAHO 2016"
+            },
+            {
+              "key": "pcr",
+              "value": "positive Zika PCR in serum or urine within 7 days of onset",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "PAHO 2016"
+            },
+            {
+              "key": "endemic",
+              "value": "active transmission in Caribbean",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "PAHO 2023"
+            },
+            {
+              "key": "gbs_link",
+              "value": "associated Guillain-Barré syndrome cluster in community",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "PAHO 2016"
+            }
+          ]
+        },
+        {
+          "name": "Malaria (Plasmodium spp.)",
+          "icd": "B54",
+          "logPrior": -3.5,
+          "urgency": 2,
+          "systems": [
+            "infectious",
+            "haematological"
+          ],
+          "specialties": [
+            "infectious_disease",
+            "general"
+          ],
+          "features": [
+            {
+              "key": "travel",
+              "value": "travel to or from malaria-endemic region (South America, Africa)",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "cyclical",
+              "value": "cyclical fever, chills, rigors with periodicity",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "smear",
+              "value": "positive thick/thin blood film or rapid antigen test",
+              "logLR": 5.0,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "splenomegaly",
+              "value": "splenomegaly on examination",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "anaemia",
+              "value": "haemolytic anaemia on FBC",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "thrombocytopenia",
+              "value": "thrombocytopenia without haemorrhagic features",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "jaundice",
+              "value": "jaundice from haemolysis",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "WHO 2022"
+            },
+            {
+              "key": "cerebral",
+              "value": "altered consciousness suggesting cerebral malaria",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "WHO 2022"
+            }
+          ]
+        },
+        {
+          "name": "Tuberculosis (Pulmonary / Extrapulmonary)",
+          "icd": "A16.2",
+          "logPrior": -2.8,
+          "urgency": 1,
+          "systems": [
+            "infectious",
+            "respiratory",
+            "oncological"
+          ],
+          "specialties": [
+            "infectious_disease",
+            "respiratory"
+          ],
+          "features": [
+            {
+              "key": "cough",
+              "value": "cough > 3 weeks with or without haemoptysis",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "NICE NG33"
+            },
+            {
+              "key": "night_sweats",
+              "value": "drenching night sweats",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "NICE NG33"
+            },
+            {
+              "key": "weight_loss",
+              "value": "unintentional weight loss > 5%",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "NICE NG33"
+            },
+            {
+              "key": "cxr",
+              "value": "upper lobe cavitation or infiltrate on CXR",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "NICE NG33"
+            },
+            {
+              "key": "afb",
+              "value": "positive AFB smear or TB culture",
+              "logLR": 5.0,
+              "evidenceLabel": "Strong",
+              "citation": "NICE NG33"
+            },
+            {
+              "key": "igra",
+              "value": "positive IGRA (QuantiFERON or T-SPOT)",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "NICE NG33"
+            },
+            {
+              "key": "contact",
+              "value": "known TB contact or immunosuppression",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "NICE NG33"
+            },
+            {
+              "key": "lymph_node",
+              "value": "matted cervical lymphadenopathy (scrofula)",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "NICE NG33"
+            }
+          ]
+        }
+      ]
+    },
+    "rheumatology": {
+      "description": "Autoimmune and inflammatory joint/systemic diseases — rheumatoid arthritis, lupus, ankylosing spondylitis, vasculitis",
+      "candidates": [
+        {
+          "name": "Rheumatoid Arthritis",
+          "icd": "M06.9",
+          "logPrior": -1.5,
+          "urgency": 0,
+          "systems": [
+            "musculoskeletal",
+            "immunological"
+          ],
+          "specialties": [
+            "rheumatology"
+          ],
+          "features": [
+            {
+              "key": "symmetrical",
+              "value": "symmetrical small joint polyarthritis (MCP, PIP)",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 2010"
+            },
+            {
+              "key": "morning_stiffness",
+              "value": "morning stiffness > 60 minutes",
+              "logLR": 2.8,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 2010"
+            },
+            {
+              "key": "rf",
+              "value": "positive rheumatoid factor",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 2010"
+            },
+            {
+              "key": "anti_ccp",
+              "value": "positive anti-CCP antibody (high specificity)",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 2010"
+            },
+            {
+              "key": "erosions",
+              "value": "juxta-articular erosions on X-ray",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 2010"
+            },
+            {
+              "key": "cxr",
+              "value": "elevated CRP or ESR",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "ACR 2010"
+            },
+            {
+              "key": "nodules",
+              "value": "rheumatoid nodules on extensor surfaces",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 2010"
+            },
+            {
+              "key": "duration",
+              "value": "symptoms > 6 weeks",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "ACR 2010"
+            }
+          ]
+        },
+        {
+          "name": "Systemic Lupus Erythematosus (SLE)",
+          "icd": "M32.9",
+          "logPrior": -2.8,
+          "urgency": 1,
+          "systems": [
+            "immunological",
+            "musculoskeletal",
+            "renal",
+            "neurological"
+          ],
+          "specialties": [
+            "rheumatology",
+            "nephrology"
+          ],
+          "features": [
+            {
+              "key": "malar_rash",
+              "value": "butterfly malar rash (sparing nasolabial folds)",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "EULAR 2019"
+            },
+            {
+              "key": "ana",
+              "value": "positive ANA ≥ 1:80",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "EULAR 2019"
+            },
+            {
+              "key": "anti_ds_dna",
+              "value": "positive anti-dsDNA antibody",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "EULAR 2019"
+            },
+            {
+              "key": "nephritis",
+              "value": "proteinuria > 500 mg/24h or active urinary sediment",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "EULAR 2019"
+            },
+            {
+              "key": "complement",
+              "value": "low C3 or C4 complement levels",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "EULAR 2019"
+            },
+            {
+              "key": "haematological",
+              "value": "haemolytic anaemia, leukopenia, or thrombocytopenia",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "EULAR 2019"
+            },
+            {
+              "key": "pleuritis",
+              "value": "pleuritis or pericarditis",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "EULAR 2019"
+            },
+            {
+              "key": "photosensitivity",
+              "value": "photosensitivity rash",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "EULAR 2019"
+            }
+          ]
+        },
+        {
+          "name": "Ankylosing Spondylitis / Axial SpA",
+          "icd": "M45.9",
+          "logPrior": -2.5,
+          "urgency": 0,
+          "systems": [
+            "musculoskeletal",
+            "immunological"
+          ],
+          "specialties": [
+            "rheumatology",
+            "orthopaedics"
+          ],
+          "features": [
+            {
+              "key": "inflammatory_back",
+              "value": "inflammatory back pain: onset < 45 years, morning stiffness > 30 min, improves with exercise",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "ASAS 2009"
+            },
+            {
+              "key": "hla_b27",
+              "value": "positive HLA-B27",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "ASAS 2009"
+            },
+            {
+              "key": "sacroiliitis",
+              "value": "sacroiliitis on MRI or X-ray",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "ASAS 2009"
+            },
+            {
+              "key": "alternating_buttock",
+              "value": "alternating buttock pain",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "ASAS 2009"
+            },
+            {
+              "key": "enthesitis",
+              "value": "enthesitis (heel pain, plantar fasciitis)",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "ASAS 2009"
+            },
+            {
+              "key": "uveitis",
+              "value": "anterior uveitis (acute anterior uveitis)",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "ASAS 2009"
+            },
+            {
+              "key": "family_history",
+              "value": "family history of spondyloarthropathy",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "ASAS 2009"
+            },
+            {
+              "key": "nsaid",
+              "value": "good response to NSAIDs within 48 hours",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "ASAS 2009"
+            }
+          ]
+        },
+        {
+          "name": "Polymyalgia Rheumatica",
+          "icd": "M35.3",
+          "logPrior": -2.5,
+          "urgency": 1,
+          "systems": [
+            "musculoskeletal",
+            "immunological"
+          ],
+          "specialties": [
+            "rheumatology",
+            "general"
+          ],
+          "features": [
+            {
+              "key": "age",
+              "value": "age > 50 years (rare under 50)",
+              "logLR": 2.0,
+              "evidenceLabel": "Strong",
+              "citation": "ACR/EULAR 2012"
+            },
+            {
+              "key": "bilateral_shoulder",
+              "value": "bilateral shoulder and pelvic girdle pain and stiffness",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "ACR/EULAR 2012"
+            },
+            {
+              "key": "morning_stiffness",
+              "value": "morning stiffness > 45 minutes",
+              "logLR": 2.8,
+              "evidenceLabel": "Strong",
+              "citation": "ACR/EULAR 2012"
+            },
+            {
+              "key": "esr",
+              "value": "ESR > 40 mm/h or elevated CRP",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "ACR/EULAR 2012"
+            },
+            {
+              "key": "temporal_artery",
+              "value": "temporal artery tenderness or thickening (GCA overlap)",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "ACR/EULAR 2012"
+            },
+            {
+              "key": "steroid",
+              "value": "dramatic response to prednisolone 15 mg within 2 weeks",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "ACR/EULAR 2012"
+            },
+            {
+              "key": "shoulder_us",
+              "value": "shoulder subdeltoid bursitis on ultrasound",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "ACR/EULAR 2012"
+            },
+            {
+              "key": "constitutional",
+              "value": "weight loss, fever, malaise",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "ACR/EULAR 2012"
+            }
+          ]
+        },
+        {
+          "name": "Gout",
+          "icd": "M10.9",
+          "logPrior": -1.0,
+          "urgency": 0,
+          "systems": [
+            "musculoskeletal",
+            "metabolic"
+          ],
+          "specialties": [
+            "rheumatology",
+            "general"
+          ],
+          "features": [
+            {
+              "key": "first_mtp",
+              "value": "monoarthritis of first metatarsophalangeal joint (podagra)",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 2020"
+            },
+            {
+              "key": "uric_acid",
+              "value": "serum uric acid > 360 µmol/L",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 2020"
+            },
+            {
+              "key": "crystals",
+              "value": "negatively birefringent urate crystals on aspiration",
+              "logLR": 5.0,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 2020"
+            },
+            {
+              "key": "nocturnal",
+              "value": "severe pain maximising within 12 hours of onset",
+              "logLR": 2.8,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 2020"
+            },
+            {
+              "key": "tophus",
+              "value": "tophi (helix, olecranon, first MTP)",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 2020"
+            },
+            {
+              "key": "hyperuricaemia_risk",
+              "value": "diuretic use, high purine diet, renal impairment",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "ACR 2020"
+            },
+            {
+              "key": "recurrence",
+              "value": "> 2 prior attacks resolved spontaneously",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 2020"
+            },
+            {
+              "key": "colchicine",
+              "value": "rapid response to colchicine",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 2020"
+            }
+          ]
+        },
+        {
+          "name": "Pseudogout (CPPD Crystal Arthropathy)",
+          "icd": "M11.269",
+          "logPrior": -2.2,
+          "urgency": 0,
+          "systems": [
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "rheumatology"
+          ],
+          "features": [
+            {
+              "key": "knee",
+              "value": "acute monoarthritis predominantly in large joints (knee, wrist)",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Zhang 2011"
+            },
+            {
+              "key": "crystals",
+              "value": "positively birefringent CPPD crystals on aspiration",
+              "logLR": 5.0,
+              "evidenceLabel": "Strong",
+              "citation": "Zhang 2011"
+            },
+            {
+              "key": "chondrocalcinosis",
+              "value": "chondrocalcinosis on X-ray",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "Zhang 2011"
+            },
+            {
+              "key": "age",
+              "value": "age > 60 years",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Zhang 2011"
+            },
+            {
+              "key": "trigger",
+              "value": "precipitated by illness, surgery, or trauma",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Zhang 2011"
+            },
+            {
+              "key": "hyperparathyroid",
+              "value": "associated hyperparathyroidism or hypomagnesaemia",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Zhang 2011"
+            },
+            {
+              "key": "resolution",
+              "value": "self-limiting resolution over 1–3 weeks",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "Zhang 2011"
+            },
+            {
+              "key": "colchicine",
+              "value": "partial response to colchicine",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Zhang 2011"
+            }
+          ]
+        },
+        {
+          "name": "Giant Cell Arteritis (Temporal Arteritis)",
+          "icd": "M31.6",
+          "logPrior": -3.0,
+          "urgency": 2,
+          "systems": [
+            "musculoskeletal",
+            "immunological",
+            "neurological"
+          ],
+          "specialties": [
+            "rheumatology",
+            "ophthalmology"
+          ],
+          "features": [
+            {
+              "key": "age",
+              "value": "age > 50 years",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "ACR 1990"
+            },
+            {
+              "key": "temporal",
+              "value": "new temporal headache or scalp tenderness",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 1990"
+            },
+            {
+              "key": "jaw_claudication",
+              "value": "jaw claudication on chewing",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 1990"
+            },
+            {
+              "key": "visual_loss",
+              "value": "sudden visual loss (anterior ischaemic optic neuropathy — ophthalmological emergency)",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 1990"
+            },
+            {
+              "key": "esr",
+              "value": "ESR > 50 mm/h",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 1990"
+            },
+            {
+              "key": "artery",
+              "value": "beaded, tender, or pulseless temporal artery",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 1990"
+            },
+            {
+              "key": "biopsy",
+              "value": "giant cell arteritis on temporal artery biopsy",
+              "logLR": 5.0,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 1990"
+            },
+            {
+              "key": "pmr",
+              "value": "concurrent polymyalgia rheumatica",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "ACR 1990"
+            }
+          ]
+        },
+        {
+          "name": "Reactive Arthritis (Reiter's Syndrome)",
+          "icd": "M02.30",
+          "logPrior": -3.0,
+          "urgency": 0,
+          "systems": [
+            "musculoskeletal",
+            "immunological",
+            "infectious"
+          ],
+          "specialties": [
+            "rheumatology",
+            "infectious_disease"
+          ],
+          "features": [
+            {
+              "key": "preceding",
+              "value": "preceding gastrointestinal or urogenital infection 1–4 weeks prior",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "Carter 2016"
+            },
+            {
+              "key": "asymmetric",
+              "value": "asymmetric oligoarthritis of lower limbs",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "Carter 2016"
+            },
+            {
+              "key": "urethritis",
+              "value": "urethritis or cervicitis",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "Carter 2016"
+            },
+            {
+              "key": "conjunctivitis",
+              "value": "conjunctivitis or iritis",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Carter 2016"
+            },
+            {
+              "key": "hla_b27",
+              "value": "positive HLA-B27",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Carter 2016"
+            },
+            {
+              "key": "enthesitis",
+              "value": "enthesitis or keratoderma blenorrhagica",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Carter 2016"
+            },
+            {
+              "key": "stool_culture",
+              "value": "positive stool culture or chlamydia PCR",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Carter 2016"
+            },
+            {
+              "key": "self_limiting",
+              "value": "majority resolve within 3–5 months",
+              "logLR": 1.0,
+              "evidenceLabel": "Weak",
+              "citation": "Carter 2016"
+            }
+          ]
+        }
+      ]
+    },
+    "chestWallPain": {
+      "description": "Musculoskeletal chest pain, costochondritis, rib fracture, Tietze, pneumothorax, herpes zoster",
+      "candidates": [
+        {
+          "name": "Costochondritis",
+          "icd": "M94.0",
+          "logPrior": -1.0,
+          "urgency": 0,
+          "systems": [
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "general",
+            "surgery"
+          ],
+          "features": [
+            {
+              "key": "palpation",
+              "value": "reproducible pain on palpation of costochondral junctions",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "Proulx 2009"
+            },
+            {
+              "key": "movement",
+              "value": "pain worsened by movement or deep breathing",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Proulx 2009"
+            },
+            {
+              "key": "location",
+              "value": "usually 2nd–5th costal cartilages",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Proulx 2009"
+            },
+            {
+              "key": "no_swelling",
+              "value": "no local swelling (distinguishes from Tietze syndrome)",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Proulx 2009"
+            },
+            {
+              "key": "normal_ecg",
+              "value": "normal ECG and troponin",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Proulx 2009"
+            },
+            {
+              "key": "young",
+              "value": "younger patient, often post-respiratory illness",
+              "logLR": 1.0,
+              "evidenceLabel": "Weak",
+              "citation": "Proulx 2009"
+            },
+            {
+              "key": "bilateral",
+              "value": "bilateral involvement possible",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Proulx 2009"
+            },
+            {
+              "key": "nsaid",
+              "value": "response to NSAIDs or local anaesthetic injection",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Proulx 2009"
+            }
+          ]
+        },
+        {
+          "name": "Tietze Syndrome",
+          "icd": "M94.0",
+          "logPrior": -3.0,
+          "urgency": 0,
+          "systems": [
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "general",
+            "surgery"
+          ],
+          "features": [
+            {
+              "key": "swelling",
+              "value": "visible and palpable swelling at 2nd or 3rd costochondral junction",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "Gijsbers 2011"
+            },
+            {
+              "key": "tenderness",
+              "value": "localised tenderness at swelling",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "Gijsbers 2011"
+            },
+            {
+              "key": "single_joint",
+              "value": "single joint involvement (usually 2nd rib)",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Gijsbers 2011"
+            },
+            {
+              "key": "young_adult",
+              "value": "young adult, often athletic",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Gijsbers 2011"
+            },
+            {
+              "key": "us_confirm",
+              "value": "fusiform swelling on ultrasound without calcification",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "Gijsbers 2011"
+            },
+            {
+              "key": "self_limiting",
+              "value": "benign self-limiting course over months",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Gijsbers 2011"
+            },
+            {
+              "key": "normal_bloods",
+              "value": "normal inflammatory markers",
+              "logLR": 1.0,
+              "evidenceLabel": "Weak",
+              "citation": "Gijsbers 2011"
+            },
+            {
+              "key": "deep_breathing",
+              "value": "pain on deep inspiration or coughing",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "Gijsbers 2011"
+            }
+          ]
+        },
+        {
+          "name": "Spontaneous Pneumothorax",
+          "icd": "J93.11",
+          "logPrior": -2.5,
+          "urgency": 2,
+          "systems": [
+            "respiratory"
+          ],
+          "specialties": [
+            "surgery",
+            "respiratory"
+          ],
+          "features": [
+            {
+              "key": "sudden",
+              "value": "sudden onset pleuritic chest pain and breathlessness",
+              "logLR": 2.8,
+              "evidenceLabel": "Strong",
+              "citation": "MacDuff 2010"
+            },
+            {
+              "key": "young_tall",
+              "value": "tall thin young male patient",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "MacDuff 2010"
+            },
+            {
+              "key": "absent_breath",
+              "value": "absent breath sounds on affected side",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "MacDuff 2010"
+            },
+            {
+              "key": "hyperresonance",
+              "value": "hyperresonance on percussion",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "MacDuff 2010"
+            },
+            {
+              "key": "cxr",
+              "value": "visible pleural line on CXR with absent lung markings",
+              "logLR": 4.5,
+              "evidenceLabel": "Strong",
+              "citation": "MacDuff 2010"
+            },
+            {
+              "key": "marfan",
+              "value": "Marfan syndrome or COPD (secondary)",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "MacDuff 2010"
+            },
+            {
+              "key": "tracheal_deviation",
+              "value": "tracheal deviation away (tension pneumothorax)",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "MacDuff 2010"
+            },
+            {
+              "key": "sat_drop",
+              "value": "oxygen saturation < 92% in large pneumothorax",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "MacDuff 2010"
+            }
+          ]
+        },
+        {
+          "name": "Rib Fracture",
+          "icd": "S22.39XA",
+          "logPrior": -2.0,
+          "urgency": 1,
+          "systems": [
+            "musculoskeletal",
+            "respiratory"
+          ],
+          "specialties": [
+            "surgery",
+            "orthopaedics"
+          ],
+          "features": [
+            {
+              "key": "trauma",
+              "value": "blunt chest trauma or fall",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "NICE"
+            },
+            {
+              "key": "point_tender",
+              "value": "point tenderness directly over rib",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "NICE"
+            },
+            {
+              "key": "compression",
+              "value": "pain with lateral chest compression (spring test)",
+              "logLR": 2.8,
+              "evidenceLabel": "Strong",
+              "citation": "NICE"
+            },
+            {
+              "key": "breathing",
+              "value": "pain significantly worse with inspiration",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "NICE"
+            },
+            {
+              "key": "cxr",
+              "value": "fracture line on CXR or CT chest",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "NICE"
+            },
+            {
+              "key": "osteoporosis",
+              "value": "pathological fracture from osteoporosis",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "NICE"
+            },
+            {
+              "key": "haemo_pneumothorax",
+              "value": "haemo- or pneumothorax complicating fracture",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "NICE"
+            },
+            {
+              "key": "flail",
+              "value": "paradoxical breathing indicating flail segment",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "NICE"
+            }
+          ]
+        },
+        {
+          "name": "Herpes Zoster (Shingles) — Thoracic",
+          "icd": "B02.29",
+          "logPrior": -2.0,
+          "urgency": 1,
+          "systems": [
+            "infectious",
+            "neurological"
+          ],
+          "specialties": [
+            "general",
+            "dermatology"
+          ],
+          "features": [
+            {
+              "key": "dermatomal_pain",
+              "value": "unilateral dermatomal burning pain before rash",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "Johnson 2009"
+            },
+            {
+              "key": "rash",
+              "value": "unilateral vesicular rash in dermatomal distribution not crossing midline",
+              "logLR": 4.5,
+              "evidenceLabel": "Strong",
+              "citation": "Johnson 2009"
+            },
+            {
+              "key": "hyperaesthesia",
+              "value": "hyperaesthesia or allodynia in affected dermatome",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Johnson 2009"
+            },
+            {
+              "key": "immunosuppression",
+              "value": "immunosuppression or age > 50 years",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Johnson 2009"
+            },
+            {
+              "key": "prodrome",
+              "value": "prodromal pain 3–5 days before rash",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Johnson 2009"
+            },
+            {
+              "key": "postherpetic",
+              "value": "post-herpetic neuralgia after rash resolves",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Johnson 2009"
+            },
+            {
+              "key": "pcr",
+              "value": "VZV PCR positive from vesicle swab",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "Johnson 2009"
+            },
+            {
+              "key": "preceding_varicella",
+              "value": "prior varicella infection or vaccination history",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Johnson 2009"
+            }
+          ]
+        },
+        {
+          "name": "Musculoskeletal Chest Wall Pain (Non-specific)",
+          "icd": "M79.3",
+          "logPrior": -0.8,
+          "urgency": 0,
+          "systems": [
+            "musculoskeletal"
+          ],
+          "specialties": [
+            "general"
+          ],
+          "features": [
+            {
+              "key": "reproducible",
+              "value": "pain reproducible by palpation of chest wall",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "Verdon 2007"
+            },
+            {
+              "key": "positional",
+              "value": "pain worsened by specific positions or movement",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "Verdon 2007"
+            },
+            {
+              "key": "duration",
+              "value": "prolonged duration or recurrent episodes over weeks to months",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Verdon 2007"
+            },
+            {
+              "key": "no_cardiac",
+              "value": "normal ECG, troponin, and CXR",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Verdon 2007"
+            },
+            {
+              "key": "young",
+              "value": "young patient with atypical features for ACS",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Verdon 2007"
+            },
+            {
+              "key": "respiratory",
+              "value": "pain with deep breathing or coughing",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Verdon 2007"
+            },
+            {
+              "key": "nsaid",
+              "value": "relief with NSAIDs or physiotherapy",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "Verdon 2007"
+            },
+            {
+              "key": "strain",
+              "value": "history of physical strain, new exercise, or coughing illness",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "Verdon 2007"
+            }
+          ]
+        },
+        {
+          "name": "Pleuritis / Pleurisy",
+          "icd": "R09.1",
+          "logPrior": -2.5,
+          "urgency": 1,
+          "systems": [
+            "respiratory",
+            "immunological"
+          ],
+          "specialties": [
+            "respiratory",
+            "general"
+          ],
+          "features": [
+            {
+              "key": "pleuritic",
+              "value": "sharp pleuritic chest pain worsened by inspiration",
+              "logLR": 2.8,
+              "evidenceLabel": "Strong",
+              "citation": "NICE"
+            },
+            {
+              "key": "rub",
+              "value": "pleural friction rub on auscultation",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "NICE"
+            },
+            {
+              "key": "splinting",
+              "value": "patient splinting respiration on affected side",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "NICE"
+            },
+            {
+              "key": "aetiology",
+              "value": "underlying pneumonia, PE, SLE, or uraemia",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "NICE"
+            },
+            {
+              "key": "cxr",
+              "value": "pleural effusion or consolidation on CXR",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "NICE"
+            },
+            {
+              "key": "us",
+              "value": "pleural thickening or effusion on ultrasound",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "NICE"
+            },
+            {
+              "key": "elevated_crp",
+              "value": "elevated CRP and ESR",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "NICE"
+            },
+            {
+              "key": "fever",
+              "value": "low-grade fever",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "NICE"
+            }
+          ]
+        },
+        {
+          "name": "Breast Implant / Chest Wall Mass",
+          "icd": "T85.49XA",
+          "logPrior": -3.5,
+          "urgency": 1,
+          "systems": [
+            "musculoskeletal",
+            "oncological"
+          ],
+          "specialties": [
+            "surgery",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "implant",
+              "value": "previous breast implant or chest wall surgery",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "FDA 2019"
+            },
+            {
+              "key": "lump",
+              "value": "palpable chest wall mass",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "FDA 2019"
+            },
+            {
+              "key": "asymmetry",
+              "value": "chest wall asymmetry",
+              "logLR": 2.5,
+              "evidenceLabel": "Moderate",
+              "citation": "FDA 2019"
+            },
+            {
+              "key": "imaging",
+              "value": "mass on CT or MRI of chest wall",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "FDA 2019"
+            },
+            {
+              "key": "rib_primary",
+              "value": "primary rib tumour (chondrosarcoma, Ewing's) in young patient",
+              "logLR": 2.5,
+              "evidenceLabel": "Moderate",
+              "citation": "NCCN"
+            },
+            {
+              "key": "metastasis",
+              "value": "metastatic deposit in rib from known primary",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "NCCN"
+            },
+            {
+              "key": "pain",
+              "value": "progressive pain at rest",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "NCCN"
+            },
+            {
+              "key": "biopsy",
+              "value": "histological diagnosis on biopsy",
+              "logLR": 5.0,
+              "evidenceLabel": "Strong",
+              "citation": "NCCN"
+            }
+          ]
+        }
+      ]
+    },
+    "prostateCancer": {
+      "description": "Prostate cancer, elevated PSA, LUTS from malignancy, prostate pathology requiring surgical/oncological input",
+      "candidates": [
+        {
+          "name": "Prostate Adenocarcinoma",
+          "icd": "C61",
+          "logPrior": -1.5,
+          "urgency": 1,
+          "systems": [
+            "oncological",
+            "urological"
+          ],
+          "specialties": [
+            "urology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "psa",
+              "value": "elevated total PSA > 4 ng/mL (age-adjusted thresholds)",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "dre",
+              "value": "hard, irregular, or asymmetric prostate on DRE",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "mri",
+              "value": "PI-RADS ≥ 4 lesion on multiparametric MRI prostate",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "biopsy",
+              "value": "Gleason score ≥ 6 on TRUS-guided or MRI-fusion biopsy",
+              "logLR": 5.0,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "luts",
+              "value": "progressive LUTS in man > 50 years with elevated PSA",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "bone_pain",
+              "value": "bone pain or pathological fracture (metastatic)",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "psa_velocity",
+              "value": "PSA velocity > 0.75 ng/mL/year or PSA doubling < 3 years",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "family_history",
+              "value": "first-degree relative with prostate or BRCA-related cancer",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            }
+          ]
+        },
+        {
+          "name": "Benign Prostatic Hyperplasia (BPH)",
+          "icd": "N40.1",
+          "logPrior": -0.5,
+          "urgency": 0,
+          "systems": [
+            "urological"
+          ],
+          "specialties": [
+            "urology"
+          ],
+          "features": [
+            {
+              "key": "age",
+              "value": "age > 50 years",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "ipss",
+              "value": "IPSS score > 7 (moderate to severe symptoms)",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "hesitancy",
+              "value": "poor stream, hesitancy, post-void dribbling",
+              "logLR": 2.2,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "nocturia",
+              "value": "nocturia ≥ 2 per night",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "us",
+              "value": "enlarged prostate (> 30 mL) on TRUS or abdominal ultrasound",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "normal_dre",
+              "value": "smooth, symmetrically enlarged prostate on DRE",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "normal_psa",
+              "value": "PSA ≤ 4 ng/mL or PSA density < 0.15",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "alpha_blocker",
+              "value": "improvement with alpha-blocker (tamsulosin)",
+              "logLR": 2.0,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            }
+          ]
+        },
+        {
+          "name": "Prostatitis (Bacterial / Chronic Pelvic Pain)",
+          "icd": "N41.0",
+          "logPrior": -2.0,
+          "urgency": 1,
+          "systems": [
+            "urological",
+            "infectious"
+          ],
+          "specialties": [
+            "urology"
+          ],
+          "features": [
+            {
+              "key": "acute",
+              "value": "fever, chills, dysuria, perineal pain (acute bacterial)",
+              "logLR": 2.8,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "tender",
+              "value": "exquisitely tender, boggy prostate on DRE",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "urine_culture",
+              "value": "positive urine culture (Gram-negative organisms)",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "perineal",
+              "value": "chronic perineal or pelvic pain > 3 months (CPPS)",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "wbc",
+              "value": "elevated WBC in prostatic secretions or post-massage urine",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "nils",
+              "value": "UPOINT phenotyping positive in ≥ 3 domains (CPPS)",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "Shoskes 2010"
+            },
+            {
+              "key": "elevated_psa",
+              "value": "transiently elevated PSA returning to normal after antibiotics",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "luts",
+              "value": "storage and voiding LUTS",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            }
+          ]
+        },
+        {
+          "name": "Bladder Cancer (Transitional Cell Carcinoma)",
+          "icd": "C67.9",
+          "logPrior": -2.5,
+          "urgency": 1,
+          "systems": [
+            "oncological",
+            "urological"
+          ],
+          "specialties": [
+            "urology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "painless_haematuria",
+              "value": "painless visible haematuria (most common presenting feature)",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "NICE NG12"
+            },
+            {
+              "key": "age",
+              "value": "age > 60 years",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "NICE NG12"
+            },
+            {
+              "key": "smoking",
+              "value": "current or ex-smoker (2–4x risk)",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "NICE NG12"
+            },
+            {
+              "key": "occupational",
+              "value": "occupational aromatic amine exposure",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "NICE NG12"
+            },
+            {
+              "key": "cytology",
+              "value": "malignant cells on urine cytology",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "NICE NG12"
+            },
+            {
+              "key": "cystoscopy",
+              "value": "papillary or sessile lesion on flexible cystoscopy",
+              "logLR": 5.0,
+              "evidenceLabel": "Strong",
+              "citation": "NICE NG12"
+            },
+            {
+              "key": "ct_urogram",
+              "value": "filling defect on CT urogram",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "NICE NG12"
+            },
+            {
+              "key": "recurrent_uti",
+              "value": "recurrent UTI symptoms without infection",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "NICE NG12"
+            }
+          ]
+        },
+        {
+          "name": "Renal Cell Carcinoma",
+          "icd": "C64.9",
+          "logPrior": -3.0,
+          "urgency": 1,
+          "systems": [
+            "oncological",
+            "urological",
+            "renal"
+          ],
+          "specialties": [
+            "urology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "haematuria",
+              "value": "gross or microscopic haematuria",
+              "logLR": 2.5,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "mass",
+              "value": "palpable flank or abdominal mass",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "flank_pain",
+              "value": "persistent flank pain",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "ct_mass",
+              "value": "solid or cystic renal mass on CT with enhancement (Bosniak ≥ III)",
+              "logLR": 4.5,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "incidental",
+              "value": "incidental finding on imaging for other reason",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "constitutional",
+              "value": "weight loss, fever, night sweats (paraneoplastic)",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "anaemia",
+              "value": "anaemia or polycythaemia from paraneoplastic EPO",
+              "logLR": 1.5,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "varicocele",
+              "value": "new right-sided varicocele (IVC involvement)",
+              "logLR": 2.5,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            }
+          ]
+        },
+        {
+          "name": "Urethral Stricture",
+          "icd": "N35.9",
+          "logPrior": -2.5,
+          "urgency": 1,
+          "systems": [
+            "urological"
+          ],
+          "specialties": [
+            "urology"
+          ],
+          "features": [
+            {
+              "key": "stream",
+              "value": "poor urinary stream with straining",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "sti",
+              "value": "history of gonorrhoea or chlamydia",
+              "logLR": 2.8,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "trauma",
+              "value": "perineal trauma, pelvic fracture, or urethral instrumentation",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "uroflow",
+              "value": "plateau pattern on uroflowmetry with low Qmax",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "urethrography",
+              "value": "narrowed lumen on retrograde urethrography",
+              "logLR": 4.5,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "retention",
+              "value": "recurrent urinary retention",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "uti",
+              "value": "recurrent UTIs secondary to incomplete bladder emptying",
+              "logLR": 1.8,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "pelvic_xrt",
+              "value": "pelvic radiotherapy or lichen sclerosus history",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            }
+          ]
+        },
+        {
+          "name": "Upper Tract Urothelial Carcinoma",
+          "icd": "C65.9",
+          "logPrior": -3.5,
+          "urgency": 1,
+          "systems": [
+            "oncological",
+            "urological",
+            "renal"
+          ],
+          "specialties": [
+            "urology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "haematuria",
+              "value": "gross haematuria from upper urinary tract",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "ct_urogram",
+              "value": "filling defect in renal pelvis or ureter on CT urogram",
+              "logLR": 4.5,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "flank",
+              "value": "loin pain from obstruction",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "cytology",
+              "value": "malignant cells on selective upper tract urine cytology",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "lynch_syndrome",
+              "value": "Lynch syndrome / HNPCC history",
+              "logLR": 3.0,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "analgesic",
+              "value": "chronic analgesic (phenacetin) nephropathy",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "hydronephrosis",
+              "value": "ipsilateral hydronephrosis on imaging",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "prior_bladder",
+              "value": "prior bladder TCC (synchronous or metachronous)",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            }
+          ]
+        },
+        {
+          "name": "Testicular / Germ Cell Tumour",
+          "icd": "C62.90",
+          "logPrior": -3.0,
+          "urgency": 1,
+          "systems": [
+            "oncological",
+            "urological"
+          ],
+          "specialties": [
+            "urology",
+            "oncology"
+          ],
+          "features": [
+            {
+              "key": "painless_mass",
+              "value": "painless testicular mass (classic presentation)",
+              "logLR": 4.0,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "age",
+              "value": "age 15–35 years (peak incidence)",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "us",
+              "value": "hypoechoic intratesticular mass on scrotal ultrasound",
+              "logLR": 4.5,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "afp",
+              "value": "elevated AFP (non-seminoma) or β-hCG",
+              "logLR": 3.5,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "cryptorchidism",
+              "value": "history of undescended testis (5× risk)",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "back_pain",
+              "value": "back pain from retroperitoneal lymph node metastases",
+              "logLR": 2.5,
+              "evidenceLabel": "Strong",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "gynaecomastia",
+              "value": "gynaecomastia from hCG secretion",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            },
+            {
+              "key": "ldh",
+              "value": "elevated LDH as marker of tumour bulk",
+              "logLR": 2.0,
+              "evidenceLabel": "Moderate",
+              "citation": "EAU 2023"
+            }
+          ]
+        }
+      ]
     }
   },
   "matrix": {
@@ -39047,7 +41367,13 @@
         "Pityriasis Rosea",
         "Hepatitis B (Chronic Active)",
         "Hepatitis C (Chronic)",
-        "Alcoholic Hepatitis"
+        "Alcoholic Hepatitis",
+        "Chikungunya Fever",
+        "HIV / AIDS",
+        "Typhoid / Enteric Fever (Salmonella Typhi)",
+        "Zika Virus Infection",
+        "Malaria (Plasmodium spp.)",
+        "Tuberculosis (Pulmonary / Extrapulmonary)"
       ],
       "oncological": [
         "Carcinoma of Head of Pancreas",
@@ -39083,7 +41409,11 @@
         "Colorectal Polyp Adenoma",
         "Submucosal Lesion GIST",
         "Biliary Stricture Cholangiocarcinoma",
-        "Pancreatic Neuroendocrine Tumour"
+        "Pancreatic Neuroendocrine Tumour",
+        "Prostate Adenocarcinoma",
+        "Bladder Cancer (Transitional Cell Carcinoma)",
+        "Upper Tract Urothelial Carcinoma",
+        "Testicular / Germ Cell Tumour"
       ],
       "haematological": [
         "Haemolytic Jaundice",
@@ -39145,7 +41475,12 @@
         "Urethral Stricture",
         "Prostate Cancer with Obstruction",
         "Neurogenic Bladder",
-        "Febrile UTI (Pyelonephritis, Child)"
+        "Febrile UTI (Pyelonephritis, Child)",
+        "Prostate Adenocarcinoma",
+        "Benign Prostatic Hyperplasia (BPH)",
+        "Prostatitis (Bacterial / Chronic Pelvic Pain)",
+        "Bladder Cancer (Transitional Cell Carcinoma)",
+        "Testicular / Germ Cell Tumour"
       ],
       "vascular": [
         "Oesophageal Varices Bleed",
@@ -39251,7 +41586,10 @@
         "Urticaria (Acute / Chronic)",
         "Contact Dermatitis (Allergic / Irritant)",
         "Nephrotic Syndrome",
-        "IgA Nephropathy / Glomerulonephritis"
+        "IgA Nephropathy / Glomerulonephritis",
+        "Systemic Lupus Erythematosus (SLE)",
+        "Giant Cell Arteritis (Temporal Arteritis)",
+        "Polymyalgia Rheumatica"
       ],
       "neurological": [
         "Ischaemic Stroke",
@@ -39359,7 +41697,17 @@
         "Cauda Equina Syndrome",
         "Vertebral Fracture (Osteoporotic / Traumatic)",
         "Malignant Spinal Cord Compression",
-        "Psoriasis"
+        "Psoriasis",
+        "Rheumatoid Arthritis",
+        "Ankylosing Spondylitis / Axial SpA",
+        "Polymyalgia Rheumatica",
+        "Pseudogout (CPPD Crystal Arthropathy)",
+        "Giant Cell Arteritis (Temporal Arteritis)",
+        "Reactive Arthritis (Reiter's Syndrome)",
+        "Costochondritis",
+        "Tietze Syndrome",
+        "Rib Fracture",
+        "Musculoskeletal Chest Wall Pain (Non-specific)"
       ],
       "endocrine": [
         "Type 2 Diabetes Mellitus (Uncontrolled)",
@@ -39955,7 +42303,10 @@
         "Urethral Stricture",
         "Prostate Cancer with Obstruction",
         "Neurogenic Bladder",
-        "Febrile UTI (Pyelonephritis, Child)"
+        "Febrile UTI (Pyelonephritis, Child)",
+        "Prostate Adenocarcinoma",
+        "Bladder Cancer (Transitional Cell Carcinoma)",
+        "Testicular / Germ Cell Tumour"
       ],
       "nephrology": [
         "Pyelonephritis",
@@ -40088,7 +42439,12 @@
         "Non-Specific Mechanical Low Back Pain",
         "Psoriasis",
         "Contact Dermatitis (Allergic / Irritant)",
-        "IgA Nephropathy / Glomerulonephritis"
+        "IgA Nephropathy / Glomerulonephritis",
+        "Rheumatoid Arthritis",
+        "Systemic Lupus Erythematosus (SLE)",
+        "Ankylosing Spondylitis / Axial SpA",
+        "Polymyalgia Rheumatica",
+        "Giant Cell Arteritis (Temporal Arteritis)"
       ],
       "paediatrics": [
         "Community-Acquired Pneumonia",
@@ -40305,6 +42661,16 @@
         "Dental Abscess (Periapical / Periodontal)",
         "Aphthous Ulcer (Canker Sore)",
         "Temporomandibular Joint Disorder (TMD)"
+      ],
+      "infectious_disease": [
+        "Dengue Fever",
+        "Chikungunya Fever",
+        "Leptospirosis",
+        "HIV / AIDS",
+        "Typhoid / Enteric Fever (Salmonella Typhi)",
+        "Zika Virus Infection",
+        "Malaria (Plasmodium spp.)",
+        "Tuberculosis (Pulmonary / Extrapulmonary)"
       ]
     },
     "ccToSystems": {
@@ -40847,6 +43213,147 @@
       ],
       "nerve pain": [
         "neurological"
+      ],
+      "dengue": [
+        "infectious",
+        "haematological"
+      ],
+      "chikungunya": [
+        "infectious",
+        "musculoskeletal"
+      ],
+      "leptospirosis": [
+        "infectious",
+        "renal"
+      ],
+      "tropical fever": [
+        "infectious"
+      ],
+      "zika": [
+        "infectious",
+        "neurological"
+      ],
+      "typhoid": [
+        "infectious",
+        "gastrointestinal"
+      ],
+      "malaria": [
+        "infectious",
+        "haematological"
+      ],
+      "tuberculosis": [
+        "infectious",
+        "respiratory"
+      ],
+      "tb": [
+        "infectious",
+        "respiratory"
+      ],
+      "rheumatoid": [
+        "musculoskeletal",
+        "immunological"
+      ],
+      "lupus": [
+        "immunological",
+        "musculoskeletal"
+      ],
+      "sle": [
+        "immunological",
+        "musculoskeletal"
+      ],
+      "ankylosing spondylitis": [
+        "musculoskeletal",
+        "immunological"
+      ],
+      "axial spa": [
+        "musculoskeletal",
+        "immunological"
+      ],
+      "polymyalgia": [
+        "musculoskeletal",
+        "immunological"
+      ],
+      "gout": [
+        "musculoskeletal",
+        "metabolic"
+      ],
+      "pseudogout": [
+        "musculoskeletal"
+      ],
+      "giant cell arteritis": [
+        "immunological",
+        "neurological"
+      ],
+      "temporal arteritis": [
+        "immunological",
+        "neurological"
+      ],
+      "reactive arthritis": [
+        "musculoskeletal",
+        "infectious"
+      ],
+      "costochondritis": [
+        "musculoskeletal"
+      ],
+      "chest wall pain": [
+        "musculoskeletal"
+      ],
+      "rib pain": [
+        "musculoskeletal",
+        "respiratory"
+      ],
+      "pleurisy": [
+        "respiratory"
+      ],
+      "pleuritis": [
+        "respiratory"
+      ],
+      "pneumothorax": [
+        "respiratory"
+      ],
+      "shingles": [
+        "infectious",
+        "neurological"
+      ],
+      "herpes zoster": [
+        "infectious",
+        "neurological"
+      ],
+      "elevated psa": [
+        "urological",
+        "oncological"
+      ],
+      "psa raised": [
+        "urological",
+        "oncological"
+      ],
+      "prostate cancer": [
+        "oncological",
+        "urological"
+      ],
+      "bladder cancer": [
+        "oncological",
+        "urological"
+      ],
+      "renal mass": [
+        "oncological",
+        "urological",
+        "renal"
+      ],
+      "prostatitis": [
+        "urological",
+        "infectious"
+      ],
+      "urethral stricture": [
+        "urological"
+      ],
+      "haematuria": [
+        "urological",
+        "oncological"
+      ],
+      "blood in urine": [
+        "urological",
+        "oncological"
       ]
     },
     "urgencyIndex": {
@@ -40909,7 +43416,11 @@
         "Pulmonary Embolism with Syncope",
         "Malignant (Necrotising) Otitis Externa",
         "Sudden Sensorineural Hearing Loss",
-        "Guillain-Barré Syndrome"
+        "Guillain-Barré Syndrome",
+        "Leptospirosis",
+        "Malaria (Plasmodium spp.)",
+        "Giant Cell Arteritis (Temporal Arteritis)",
+        "Spontaneous Pneumothorax"
       ],
       "urgent": [
         "Acute Cholecystitis",
@@ -40964,7 +43475,18 @@
         "Cholesteatoma",
         "Dental Abscess (Periapical / Periodontal)",
         "Acoustic Neuroma (Vestibular Schwannoma)",
-        "Cervical Radiculopathy"
+        "Cervical Radiculopathy",
+        "HIV / AIDS",
+        "Typhoid / Enteric Fever (Salmonella Typhi)",
+        "Tuberculosis (Pulmonary / Extrapulmonary)",
+        "Prostate Adenocarcinoma",
+        "Bladder Cancer (Transitional Cell Carcinoma)",
+        "Renal Cell Carcinoma",
+        "Testicular / Germ Cell Tumour",
+        "Rib Fracture",
+        "Herpes Zoster (Shingles) — Thoracic",
+        "Pleuritis / Pleurisy",
+        "Polymyalgia Rheumatica"
       ],
       "routine": [
         "ACE Inhibitor Cough",
