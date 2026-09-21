@@ -244,6 +244,11 @@ struct WardRoundView: View {
                     if let spo = v.spo2 { vParts.append("SpO₂ \(spo)%") }
                     lines.append("  Vitals: \(vParts.joined(separator: " · "))")
                 }
+                let resulted = patient.investigations.filter { $0.status == .resulted && !$0.result.isEmpty }
+                if !resulted.isEmpty {
+                    let resultSummary = resulted.prefix(4).map { "\($0.name): \($0.result)" }.joined(separator: "; ")
+                    lines.append("  Results: \(resultSummary)")
+                }
                 let pending = patient.investigations.filter { $0.status == .ordered || $0.status == .pending }
                 if !pending.isEmpty {
                     lines.append("  Awaiting: \(pending.map { $0.name }.joined(separator: ", "))")
