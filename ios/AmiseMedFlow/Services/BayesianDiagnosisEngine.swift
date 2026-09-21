@@ -2401,8 +2401,22 @@ enum BayesianDiagnosisEngine {
                     triggered = pshxL.contains(f.value.lowercased())
                     sourceKey = "history"
                 case "inv":
-                    triggered = invNames.contains(where: { $0.contains(f.value.lowercased()) }) ||
-                                invResults.contains(where: { $0.contains(f.value.lowercased()) })
+                    // First try exact substring match (fast path for short feature values).
+                    // For multi-word values the exact phrase rarely survives abbreviation
+                    // differences (e.g. "axr" vs "abdominal x-ray"), so fall back to a
+                    // majority-token match: require ≥60% of significant tokens (≥4 chars,
+                    // not stop-words) to appear in any single invNames or invResults entry.
+                    let fv = f.value.lowercased()
+                    let stop: Set<String> = ["with","and","the","for","that","this","from","into","positive","negative","confirmed","elevated","raised","normal","abnormal","level","result"]
+                    let fTokens = fv.split(separator: " ").map(String.init)
+                        .filter { $0.count >= 4 && !stop.contains($0) }
+                    let threshold = max(1, Int((Double(fTokens.count) * 0.6).rounded(.up)))
+                    func tokenMatch(_ src: String) -> Bool {
+                        src.contains(fv) ||
+                        (fTokens.count >= 2 && fTokens.filter { src.contains($0) }.count >= threshold)
+                    }
+                    triggered = invNames.contains(where: { tokenMatch($0) }) ||
+                                invResults.contains(where: { tokenMatch($0) })
                     sourceKey = "investigation"
                 case "age_over":
                     if let threshold = Int(f.value) { triggered = age >= threshold }
