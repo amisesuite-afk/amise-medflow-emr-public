@@ -80,11 +80,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case kdigo            = "KDIGO AKI Staging"
     case baux             = "Baux Score"
     case iss              = "Injury Severity Score"
-    case apacheII         = "APACHE II"
-    case sofa             = "SOFA Score"
     case nutric           = "NUTRIC Score"
-    case caprini          = "Caprini VTE Risk"
-    case curb65           = "CURB-65"
 
     var category: ScoreCategory {
         switch self {
@@ -120,15 +116,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .acute
         case .iss:
             return .acute
-        case .apacheII:
-            return .sepsis
-        case .sofa:
-            return .sepsis
         case .nutric:
-            return .sepsis
-        case .caprini:
-            return .preop
-        case .curb65:
             return .sepsis
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
@@ -195,11 +183,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .kdigo:          return "drop.circle.fill"
         case .baux:           return "flame.circle.fill"
         case .iss:            return "bandage.fill"
-        case .apacheII:       return "waveform.path.ecg"
-        case .sofa:           return "lungs.fill"
         case .nutric:         return "fork.knife.circle.fill"
-        case .caprini:        return "vein"
-        case .curb65:         return "aqi.medium"
         }
     }
 }
@@ -336,16 +320,8 @@ struct ClinicalScoresView: View {
     @State private var bauxI = ClinicalScoringEngine.BauxInput()
     // ISS
     @State private var issI = ClinicalScoringEngine.ISSInput()
-    // APACHE II
-    @State private var apacheIII = ClinicalScoringEngine.APACHEIIInput()
-    // SOFA
-    @State private var sofaI = ClinicalScoringEngine.SOFAInput()
     // NUTRIC
     @State private var nutricI = ClinicalScoringEngine.NUTRICInput()
-    // Caprini
-    @State private var capriniI = ClinicalScoringEngine.CapriniInput()
-    // CURB-65
-    @State private var curb65I = ClinicalScoringEngine.CURB65Input()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -792,21 +768,9 @@ struct ClinicalScoresView: View {
         case .iss:
             let (input, fill) = PatientScoreAutoPopulator.iss(patient: patient)
             issI = input; autoFill = fill
-        case .apacheII:
-            let (input, fill) = PatientScoreAutoPopulator.apacheII(patient: patient)
-            apacheIII = input; autoFill = fill
-        case .sofa:
-            let (input, fill) = PatientScoreAutoPopulator.sofa(patient: patient)
-            sofaI = input; autoFill = fill
         case .nutric:
             let (input, fill) = PatientScoreAutoPopulator.nutric(patient: patient)
             nutricI = input; autoFill = fill
-        case .caprini:
-            let (input, fill) = PatientScoreAutoPopulator.caprini(patient: patient)
-            capriniI = input; autoFill = fill
-        case .curb65:
-            let (input, fill) = PatientScoreAutoPopulator.curb65(patient: patient)
-            curb65I = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -924,11 +888,7 @@ struct ClinicalScoresView: View {
         case .kdigo:         ClinicalScoringEngine.kdigo(kdigoI)
         case .baux:          ClinicalScoringEngine.baux(bauxI)
         case .iss:           ClinicalScoringEngine.iss(issI)
-        case .apacheII:      ClinicalScoringEngine.apacheII(apacheIII)
-        case .sofa:          ClinicalScoringEngine.sofa(sofaI)
         case .nutric:        ClinicalScoringEngine.nutric(nutricI)
-        case .caprini:       ClinicalScoringEngine.caprini(capriniI)
-        case .curb65:        ClinicalScoringEngine.curb65(curb65I)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -989,11 +949,8 @@ struct ClinicalScoresView: View {
         case .kdigo:         patient.kdigoStage = intScore
         case .baux:          patient.bauxScore = intScore
         case .iss:           patient.issScore = intScore
-        case .apacheII:      patient.apacheIIScore = intScore
-        case .sofa:          patient.sofaScore = intScore
         case .nutric:        patient.nutricScore = intScore
         case .caprini:       patient.capriniScore = intScore
-        case .curb65:        patient.curb65Score = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -1089,11 +1046,7 @@ struct ClinicalScoresView: View {
         case .kdigo:         kdigoForm
         case .baux:          bauxForm
         case .iss:           issForm
-        case .apacheII:      apacheIIForm
-        case .sofa:          sofaForm
         case .nutric:        nutricForm
-        case .caprini:       capriniForm
-        case .curb65:        curb65Form
         }
     }
 
@@ -3662,145 +3615,4 @@ struct ClinicalScoresView: View {
         .onChange(of: issI) { _, _ in recalculate() }
     }
 
-    // MARK: - APACHE II (#62)
-
-    private var apacheIIForm: some View {
-        Group {
-            mewsSlider("Age (years)", value: Binding(get: { Double(apacheIII.age) }, set: { apacheIII.age = Int($0) }),
-                       range: 0...100, step: 1, unit: "yrs")
-            mewsSlider("Temperature (°C)", value: $apacheIII.temperature,
-                       range: 28...44, step: 0.1, unit: "°C")
-            mewsSlider("Mean Arterial Pressure (mmHg)", value: Binding(get: { Double(apacheIII.map) }, set: { apacheIII.map = Int($0) }),
-                       range: 0...200, step: 1, unit: "mmHg")
-            mewsSlider("Heart Rate (bpm)", value: Binding(get: { Double(apacheIII.heartRate) }, set: { apacheIII.heartRate = Int($0) }),
-                       range: 0...200, step: 1, unit: "bpm")
-            mewsSlider("Respiratory Rate (/min)", value: Binding(get: { Double(apacheIII.respiratoryRate) }, set: { apacheIII.respiratoryRate = Int($0) }),
-                       range: 0...60, step: 1, unit: "/min")
-            mewsSlider("PaO2 (mmHg)", value: Binding(get: { Double(apacheIII.pao2) }, set: { apacheIII.pao2 = Int($0) }),
-                       range: 0...600, step: 1, unit: "mmHg")
-            mewsSlider("FiO2 (0.21–1.0)", value: $apacheIII.fio2,
-                       range: 0.21...1.0, step: 0.01, unit: "")
-            mewsSlider("Arterial pH", value: $apacheIII.ph,
-                       range: 6.8...7.8, step: 0.01, unit: "")
-            mewsSlider("Sodium (mmol/L)", value: Binding(get: { Double(apacheIII.sodium) }, set: { apacheIII.sodium = Int($0) }),
-                       range: 100...180, step: 1, unit: "mmol/L")
-            mewsSlider("Potassium (mmol/L)", value: $apacheIII.potassium,
-                       range: 1...9, step: 0.1, unit: "mmol/L")
-            mewsSlider("Creatinine (µmol/L)", value: $apacheIII.creatinine,
-                       range: 0...1000, step: 1, unit: "µmol/L")
-            mewsSlider("Haematocrit (%)", value: $apacheIII.haematocrit,
-                       range: 10...70, step: 0.5, unit: "%")
-            mewsSlider("WBC (×10⁹/L)", value: $apacheIII.wbc,
-                       range: 0...60, step: 0.1, unit: "×10⁹/L")
-            mewsSlider("GCS", value: Binding(get: { Double(apacheIII.gcs) }, set: { apacheIII.gcs = Int($0) }),
-                       range: 3...15, step: 1, unit: "")
-            scoreToggle("Acute renal failure (doubles creatinine score)", binding: $apacheIII.isAcuteRenalFailure, points: "×2 Cr")
-            apacheSegment("Chronic organ insufficiency / immunocompromise", selection: $apacheIII.chronicOrganInsufficiency,
-                options: [
-                    (0, "0 — None"),
-                    (2, "+2 — Elective post-op"),
-                    (5, "+5 — Emergency or non-operative")
-                ])
-        }
-        .onChange(of: apacheIII) { _, _ in recalculate() }
-    }
-
-    // MARK: - SOFA (#63)
-
-    private var sofaForm: some View {
-        Group {
-            mewsSlider("PaO2/FiO2 ratio (mmHg)", value: Binding(get: { Double(sofaI.pao2fio2) }, set: { sofaI.pao2fio2 = Int($0) }),
-                       range: 0...600, step: 1, unit: "mmHg")
-            mewsSlider("Platelets (×10⁹/L)", value: Binding(get: { Double(sofaI.plateletsX10_9) }, set: { sofaI.plateletsX10_9 = Int($0) }),
-                       range: 0...500, step: 1, unit: "×10⁹/L")
-            mewsSlider("Bilirubin (µmol/L)", value: Binding(get: { Double(sofaI.bilirubinUmolL) }, set: { sofaI.bilirubinUmolL = Int($0) }),
-                       range: 0...500, step: 1, unit: "µmol/L")
-            mewsSlider("GCS", value: Binding(get: { Double(sofaI.gcs) }, set: { sofaI.gcs = Int($0) }),
-                       range: 3...15, step: 1, unit: "")
-            mewsSlider("Mean Arterial Pressure (mmHg)", value: Binding(get: { Double(sofaI.map) }, set: { sofaI.map = Int($0) }),
-                       range: 0...200, step: 1, unit: "mmHg")
-            apacheSegment("Vasopressors", selection: $sofaI.vasopressors,
-                options: [
-                    (0, "0 — None (MAP ≥70 mmHg)"),
-                    (1, "1 — DA ≤5 or dobutamine any dose"),
-                    (2, "2 — DA >5 or NE/E ≤0.1 µg/kg/min"),
-                    (3, "3 — DA >15 or NE/E >0.1 µg/kg/min")
-                ])
-            mewsSlider("Creatinine (µmol/L)", value: Binding(get: { Double(sofaI.creatinineUmolL) }, set: { sofaI.creatinineUmolL = Int($0) }),
-                       range: 0...1000, step: 1, unit: "µmol/L")
-            apacheSegment("Urine Output", selection: $sofaI.urineOutput,
-                options: [
-                    (0, "0 — <200 mL/day (or anuria)"),
-                    (1, "1 — 200–500 mL/day"),
-                    (2, "2 — >500 mL/day (normal)")
-                ])
-        }
-        .onChange(of: sofaI) { _, _ in recalculate() }
-    }
-
-    // MARK: - NUTRIC (#64)
-
-    private var nutricForm: some View {
-        Group {
-            mewsSlider("Age (years)", value: Binding(get: { Double(nutricI.age) }, set: { nutricI.age = Int($0) }),
-                       range: 0...100, step: 1, unit: "yrs")
-            mewsSlider("APACHE II Score", value: Binding(get: { Double(nutricI.apacheII) }, set: { nutricI.apacheII = Int($0) }),
-                       range: 0...71, step: 1, unit: "pts")
-            mewsSlider("SOFA Score", value: Binding(get: { Double(nutricI.sofa) }, set: { nutricI.sofa = Int($0) }),
-                       range: 0...24, step: 1, unit: "pts")
-            apacheSegment("Number of Comorbidities", selection: $nutricI.comorbidities,
-                options: [(0,"0 — None"),(1,"1 — One"),(2,"2 — Two or more")])
-            apacheSegment("Days from Hospital Admission to ICU", selection: $nutricI.daysHospitalToICU,
-                options: [(0,"0 — Same day"),(1,"1 — One day"),(2,"2 — Two or more days")])
-        }
-        .onChange(of: nutricI) { _, _ in recalculate() }
-    }
-
-    // MARK: - Caprini (#65)
-
-    private var capriniForm: some View {
-        Group {
-            mewsSlider("Age (years)", value: Binding(get: { Double(capriniI.age) }, set: { capriniI.age = Int($0) }),
-                       range: 0...100, step: 1, unit: "yrs")
-            apacheSegment("Surgery type", selection: $capriniI.surgery,
-                options: [(0,"0 — No surgery"),(1,"1 — Minor (<45 min)"),(2,"2 — Major elective"),(3,"3 — Major + high-risk")])
-            scoreToggle("Varicose veins", binding: $capriniI.varicoseVeins, points: "+1")
-            scoreToggle("Leg oedema / swelling", binding: $capriniI.currentSwelling, points: "+1")
-            scoreToggle("BMI >25 kg/m²", binding: $capriniI.bmiBeyond25, points: "+1")
-            scoreToggle("Sepsis within 90 days", binding: $capriniI.sepsis90d, points: "+1")
-            scoreToggle("Serious lung disease (incl. pneumonia)", binding: $capriniI.seriousLungDisease, points: "+1")
-            scoreToggle("Oral contraceptive / HRT use", binding: $capriniI.oralContraceptivesOrHRT, points: "+1")
-            scoreToggle("Pregnant or postpartum (within 1 month)", binding: $capriniI.pregnantOrPostpartum, points: "+1")
-            scoreToggle("History of recurrent miscarriage", binding: $capriniI.historySpontaneousAbortion, points: "+1")
-            scoreToggle("Confined to bed >72 hours", binding: $capriniI.bedridden, points: "+2")
-            scoreToggle("Central venous line in situ", binding: $capriniI.centralLine, points: "+2")
-            scoreToggle("Immobilising plaster cast", binding: $capriniI.immobilisingCast, points: "+2")
-            scoreToggle("Prior DVT or PE", binding: $capriniI.priorDVTPE, points: "+3")
-            scoreToggle("Family history of VTE", binding: $capriniI.familyHistoryVTE, points: "+3")
-            scoreToggle("Factor V Leiden or prothrombin mutation", binding: $capriniI.factor5LeidenOrProthrombin, points: "+3")
-            scoreToggle("Lupus anticoagulant positive", binding: $capriniI.lupusAnticoagulant, points: "+3")
-            scoreToggle("Heparin-induced thrombocytopenia (HIT)", binding: $capriniI.heparin5HITS, points: "+3")
-            scoreToggle("Elevated homocysteine", binding: $capriniI.elevatedHomocysteine, points: "+3")
-            scoreToggle("Antiphospholipid antibodies positive", binding: $capriniI.antiphospholipidAbs, points: "+3")
-            scoreToggle("Stroke within last 30 days", binding: $capriniI.strokeLast30d, points: "+5")
-            scoreToggle("Elective lower extremity arthroplasty", binding: $capriniI.electiveLowerExtremityArthroplasty, points: "+5")
-            scoreToggle("Hip / pelvis / leg fracture", binding: $capriniI.hip_pelvis_leg_fracture, points: "+5")
-            scoreToggle("Spinal cord injury", binding: $capriniI.spinalCordInjury, points: "+5")
-            scoreToggle("Multiple trauma", binding: $capriniI.multipleTrauma, points: "+5")
-        }
-        .onChange(of: capriniI) { _, _ in recalculate() }
-    }
-
-    // MARK: - CURB-65 (#66)
-
-    private var curb65Form: some View {
-        Group {
-            scoreToggle("C — New confusion (AMT ≤8)", binding: $curb65I.confusion, points: "+1")
-            scoreToggle("U — Urea >7 mmol/L", binding: $curb65I.uraeaAbove7, points: "+1")
-            scoreToggle("R — Respiratory rate ≥30 /min", binding: $curb65I.respiratoryRateAbove30, points: "+1")
-            scoreToggle("B — BP <90 mmHg systolic or ≤60 diastolic", binding: $curb65I.lowBP, points: "+1")
-            scoreToggle("65 — Age ≥65 years", binding: $curb65I.age65orOver, points: "+1")
-        }
-        .onChange(of: curb65I) { _, _ in recalculate() }
-    }
 }

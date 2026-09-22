@@ -140,11 +140,7 @@ enum BayesianDiagnosisEngine {
         kdigoStage: Int? = nil,       // KDIGO AKI 0–3
         bauxScore: Int? = nil,        // Baux score (age + TBSA [+17 inhalation]); ≥40 = significant burns
         issScore: Int? = nil,         // ISS 0–75; ≥16 = major trauma
-        apacheIIScore: Int? = nil,    // APACHE II 0–71; ≥15 = high ICU mortality
-        sofaScore: Int? = nil,        // SOFA 0–24; ≥7 = critical organ dysfunction
         nutricScore: Int? = nil,      // NUTRIC 0–9; ≥6 = high nutritional risk in ICU
-        capriniScore: Int? = nil,     // Caprini VTE risk; ≥5 = high risk
-        curb65Score: Int? = nil,      // CURB-65 0–5; ≥3 = severe pneumonia
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3313,40 +3309,6 @@ enum BayesianDiagnosisEngine {
             }
         }
 
-        // APACHE II: boosts ICU-level / critical illness diagnoses
-        if let ap = apacheIIScore, ap >= 15 {
-            let apacheTargets = ["sepsis", "septic shock", "pneumonia", "respiratory failure",
-                                 "acute liver failure", "hepatic failure", "multiorgan failure",
-                                 "acute pancreatitis", "severe pancreatitis", "meningitis",
-                                 "encephalopathy", "peritonitis", "necrotising fasciitis"]
-            let adj = ap >= 30 ? 12 : ap >= 25 ? 9 : ap >= 20 ? 6 : 4
-            for i in scored.indices {
-                let nameLow = scored[i].candidate.name.lowercased()
-                guard apacheTargets.contains(where: { nameLow.contains($0) }) else { continue }
-                let label = "APACHE II \(ap) — ICU-level illness severity supports critical/systemic diagnosis"
-                scored[i].logPosterior += adj
-                scored[i].evidence.append(label)
-                scored[i].evidenceSources["score", default: []].append(label)
-            }
-        }
-
-        // SOFA: boosts organ failure / sepsis diagnoses
-        if let sf = sofaScore, sf >= 2 {
-            let sofaTargets = ["sepsis", "septic shock", "organ failure", "multiorgan failure",
-                               "acute respiratory distress", "ards", "acute liver failure",
-                               "acute kidney injury", "disseminated intravascular coagulation",
-                               "dic", "cardiogenic shock", "vasodilatory shock"]
-            let adj = sf >= 11 ? 12 : sf >= 7 ? 8 : sf >= 4 ? 5 : 3
-            for i in scored.indices {
-                let nameLow = scored[i].candidate.name.lowercased()
-                guard sofaTargets.contains(where: { nameLow.contains($0) }) else { continue }
-                let label = "SOFA \(sf) — organ dysfunction score supports systemic/organ failure diagnoses"
-                scored[i].logPosterior += adj
-                scored[i].evidence.append(label)
-                scored[i].evidenceSources["score", default: []].append(label)
-            }
-        }
-
         // NUTRIC: boosts malnutrition and ICU-associated weakness/frailty candidates
         if let nt = nutricScore, nt >= 5 {
             let nutricTargets = ["malnutrition", "sarcopenia", "cachexia", "frailty",
@@ -3357,40 +3319,6 @@ enum BayesianDiagnosisEngine {
                 let nameLow = scored[i].candidate.name.lowercased()
                 guard nutricTargets.contains(where: { nameLow.contains($0) }) else { continue }
                 let label = "NUTRIC \(nt) — high nutritional risk supports malnutrition/wasting diagnoses"
-                scored[i].logPosterior += adj
-                scored[i].evidence.append(label)
-                scored[i].evidenceSources["score", default: []].append(label)
-            }
-        }
-
-        // Caprini: boosts DVT/PE candidates in surgical patients
-        if let cp = capriniScore, cp >= 3 {
-            let capriniTargets = ["deep vein thrombosis", "dvt", "pulmonary embolism",
-                                  "venous thromboembolism", "vte", "thrombophlebitis",
-                                  "thrombosis"]
-            let adj = cp >= 5 ? 10 : cp >= 3 ? 6 : 3
-            for i in scored.indices {
-                let nameLow = scored[i].candidate.name.lowercased()
-                guard capriniTargets.contains(where: { nameLow.contains($0) }) else { continue }
-                let label = "Caprini \(cp) — VTE risk score supports thromboembolic diagnoses"
-                scored[i].logPosterior += adj
-                scored[i].evidence.append(label)
-                scored[i].evidenceSources["score", default: []].append(label)
-            }
-        }
-
-        // CURB-65: boosts pneumonia and respiratory infection candidates
-        if let cb = curb65Score, cb >= 2 {
-            let curbTargets = ["pneumonia", "community-acquired pneumonia", "cap",
-                               "hospital-acquired pneumonia", "respiratory infection",
-                               "lower respiratory tract infection", "lrti",
-                               "aspiration pneumonia", "pneumocystis", "legionella",
-                               "respiratory failure"]
-            let adj = cb >= 3 ? 10 : 6
-            for i in scored.indices {
-                let nameLow = scored[i].candidate.name.lowercased()
-                guard curbTargets.contains(where: { nameLow.contains($0) }) else { continue }
-                let label = "CURB-65 \(cb)/5 — pneumonia severity supports respiratory diagnoses"
                 scored[i].logPosterior += adj
                 scored[i].evidence.append(label)
                 scored[i].evidenceSources["score", default: []].append(label)

@@ -169,16 +169,8 @@ final class Patient {
     var bauxScore: Int?
     // ISS — Injury Severity Score 0–75
     var issScore: Int?
-    // APACHE II Score 0–71
-    var apacheIIScore: Int?
-    // SOFA Score 0–24
-    var sofaScore: Int?
     // NUTRIC Score 0–9 (without IL-6)
     var nutricScore: Int?
-    // Caprini VTE Risk Score
-    var capriniScore: Int?
-    // CURB-65 Score 0–5
-    var curb65Score: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?
