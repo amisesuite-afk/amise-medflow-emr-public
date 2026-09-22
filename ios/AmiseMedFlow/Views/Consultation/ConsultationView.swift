@@ -4733,10 +4733,6 @@ struct ConsultationView: View {
             if let radiation = radiationResult, !dismissedRadiation {
                 DiagnosisRadiationCard(
                     radiation: radiation,
-                    patientAge: computedAge(from: patient.dateOfBirth),
-                    alreadyOrderedNames: Set(patient.investigations
-                        .filter { $0.status != .cancelled }
-                        .map { $0.name }),
                     onAddInvestigation: { inv in
                         let entry = InvestigationEntry(
                             name: inv.name, category: inv.category,
@@ -4751,7 +4747,11 @@ struct ConsultationView: View {
                         }
                         dismissedRadiation = true
                     },
-                    onDismiss: { dismissedRadiation = true }
+                    onDismiss: { dismissedRadiation = true },
+                    patientAge: computedAge(from: patient.dateOfBirth),
+                    alreadyOrderedNames: Set(patient.investigations
+                        .filter { $0.status != .cancelled }
+                        .map { $0.name })
                 )
             }
 
