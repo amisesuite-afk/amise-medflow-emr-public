@@ -41,7 +41,7 @@ enum UserRole: String, Codable {
                 .overview, .demographics,
                 .cc, .hpi, .pmh, .pshx, .medications, .allergies, .social,
                 .exam, .investigations,
-                .notes, .vitals, .documents
+                .notes, .vitals, .scores, .documents
             ]
         case .doctor, .admin:
             return Set(PatientDetailSection.allCases)
