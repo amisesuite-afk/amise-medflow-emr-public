@@ -167,6 +167,10 @@ enum BayesianDiagnosisEngine {
         ipssScore: Int? = nil,          // IPSS 0–35; ≥20 = severe LUTS suggesting BPH/obstruction
         trueloveWittsScore: Int? = nil, // Truelove-Witts 1–3; 3 = severe UC/colitis
         harveyBradshawScore: Int? = nil,// Harvey-Bradshaw 0+; ≥8 = moderate–severe Crohn's activity
+        maddreyScore: Double? = nil,    // Maddrey DF continuous; ≥32 = severe alcoholic hepatitis
+        manningScore: Int? = nil,       // Manning 0–6; ≥3 = probable IBS
+        laceScore: Int? = nil,          // LACE 0–19; ≥10 = high 30-day readmission risk
+        findRiscScore: Int? = nil,      // FINDRISC 0–26; ≥12 = T2DM screening required
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3699,6 +3703,50 @@ enum BayesianDiagnosisEngine {
                 let nameLow = scored[i].candidate.name.lowercased()
                 guard hbTargets.contains(where: { nameLow.contains($0) }) else { continue }
                 let label = "Harvey-Bradshaw Index \(hb) — moderate/severe Crohn's activity"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // Maddrey boost: severe alcoholic hepatitis raises hepatitis/liver candidates
+        if let md = maddreyScore, md >= 32 {
+            let mdTargets = ["alcoholic hepatitis", "alcoholic liver", "liver failure",
+                             "hepatic failure", "cirrhosis", "hepatitis"]
+            let adj = md >= 54 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard mdTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "Maddrey DF \(String(format: "%.1f", md)) — severe alcoholic hepatitis"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // Manning boost: probable IBS raises functional bowel candidates
+        if let mn = manningScore, mn >= 3 {
+            let mnTargets = ["irritable bowel", "ibs", "functional bowel", "functional abdominal"]
+            let adj = mn >= 5 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard mnTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "Manning Criteria \(mn)/6 — probable IBS"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // FINDRISC boost: high T2DM risk raises diabetes and metabolic candidates
+        if let fr = findRiscScore, fr >= 15 {
+            let frTargets = ["type 2 diabetes", "diabetes mellitus", "prediabetes",
+                             "impaired glucose", "metabolic syndrome", "insulin resistance"]
+            let adj = fr >= 21 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard frTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "FINDRISC \(fr) — high T2DM risk"
                 scored[i].logPosterior += adj
                 scored[i].evidence.append(label)
                 scored[i].evidenceSources["score", default: []].append(label)

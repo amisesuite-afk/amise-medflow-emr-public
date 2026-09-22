@@ -106,6 +106,10 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case ipss             = "IPSS (Prostate Symptoms)"
     case trueloveWitts    = "Truelove-Witts (UC Severity)"
     case harveyBradshaw   = "Harvey-Bradshaw Index (Crohn's)"
+    case maddrey          = "Maddrey Discriminant Function (Alcoholic Hepatitis)"
+    case manning          = "Manning Criteria (IBS)"
+    case lace             = "LACE Index (Readmission Risk)"
+    case findRisc         = "FINDRISC (T2DM Risk)"
 
     var category: ScoreCategory {
         switch self {
@@ -189,6 +193,14 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .gi
         case .harveyBradshaw:
             return .gi
+        case .maddrey:
+            return .gi
+        case .manning:
+            return .gi
+        case .lace:
+            return .monitoring
+        case .findRisc:
+            return .monitoring
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
         case .mews, .news2, .waterlow, .surgicalApgar:
@@ -280,6 +292,10 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .ipss:           return "drop.degreesign"
         case .trueloveWitts:  return "flame.circle"
         case .harveyBradshaw: return "chart.bar.xaxis"
+        case .maddrey:        return "drop.triangle"
+        case .manning:        return "list.bullet.clipboard"
+        case .lace:           return "arrow.clockwise.heart"
+        case .findRisc:       return "chart.line.uptrend.xyaxis"
         }
     }
 }
@@ -453,6 +469,10 @@ struct ClinicalScoresView: View {
     @State private var ipssI         = ClinicalScoringEngine.IPSSInput()
     @State private var trueloveI     = ClinicalScoringEngine.TruelovewIttsInput()
     @State private var harveyI       = ClinicalScoringEngine.HarveyBradshawInput()
+    @State private var maddreyI      = ClinicalScoringEngine.MaddreyInput(ptSeconds: 14, controlPTSeconds: 12, bilirubinMgDL: 1.0)
+    @State private var manningI      = ClinicalScoringEngine.ManningInput(painRelievedByDefecation: false, looserStoolsWithOnsetOfPain: false, increasedFrequencyWithOnsetOfPain: false, abdomenVisiblyDistended: false, mucusPerRectum: false, feelingOfIncompleteEmptying: false)
+    @State private var laceI         = ClinicalScoringEngine.LACEInput(lengthOfStayDays: 1, acuteAdmission: false, charlsonIndex: 0, edVisitsLast6Months: 0)
+    @State private var findRiscI     = ClinicalScoringEngine.FINDRISCInput(ageGroup: 0, bmi: 22, waistCircumferenceCm: 80, sex: "male", physicalActivityMinPerWeek: 150, vegetablesFruitDaily: true, hypertensionMeds: false, highBloodGlucoseHistory: false, familyHistoryDiabetes: 0)
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -978,6 +998,18 @@ struct ClinicalScoresView: View {
         case .harveyBradshaw:
             let (input, fill) = PatientScoreAutoPopulator.harveyBradshaw(patient: patient)
             harveyI = input; autoFill = fill
+        case .maddrey:
+            let (input, fill) = PatientScoreAutoPopulator.maddrey(patient: patient)
+            maddreyI = input; autoFill = fill
+        case .manning:
+            let (input, fill) = PatientScoreAutoPopulator.manning(patient: patient)
+            manningI = input; autoFill = fill
+        case .lace:
+            let (input, fill) = PatientScoreAutoPopulator.lace(patient: patient)
+            laceI = input; autoFill = fill
+        case .findRisc:
+            let (input, fill) = PatientScoreAutoPopulator.findRisc(patient: patient)
+            findRiscI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -1122,6 +1154,10 @@ struct ClinicalScoresView: View {
         case .ipss:          ClinicalScoringEngine.ipss(ipssI)
         case .trueloveWitts: ClinicalScoringEngine.truelovewItts(trueloveI)
         case .harveyBradshaw:ClinicalScoringEngine.harveyBradshaw(harveyI)
+        case .maddrey:       ClinicalScoringEngine.maddrey(maddreyI)
+        case .manning:       ClinicalScoringEngine.manning(manningI)
+        case .lace:          ClinicalScoringEngine.lace(laceI)
+        case .findRisc:      ClinicalScoringEngine.findrisc(findRiscI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -1209,6 +1245,10 @@ struct ClinicalScoresView: View {
         case .ipss:          patient.ipssScore           = intScore
         case .trueloveWitts: patient.trueloveWittsScore  = intScore
         case .harveyBradshaw:patient.harveyBradshawScore = intScore
+        case .maddrey:       patient.maddreyScore  = r.score     // continuous Double
+        case .manning:       patient.manningScore  = intScore
+        case .lace:          patient.laceScore     = intScore
+        case .findRisc:      patient.findRiscScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -1330,6 +1370,10 @@ struct ClinicalScoresView: View {
         case .ipss:          ipssForm
         case .trueloveWitts: trueloveWittsForm
         case .harveyBradshaw:harveyBradshawForm
+        case .maddrey:       maddreyForm
+        case .manning:       manningForm
+        case .lace:          laceForm
+        case .findRisc:      findRiscForm
         }
     }
 
@@ -4747,6 +4791,186 @@ struct ClinicalScoresView: View {
             }
         }
         .onChange(of: harveyI) { _, _ in recalculate() }
+    }
+
+    // MARK: - Maddrey Discriminant Function
+
+    private var maddreyForm: some View {
+        Group {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Patient PT (seconds)").font(.subheadline)
+                HStack {
+                    Slider(value: $maddreyI.ptSeconds, in: 10...60, step: 0.5)
+                    Text(String(format: "%.1f s", maddreyI.ptSeconds))
+                        .frame(width: 60)
+                        .font(.caption.monospacedDigit())
+                }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Control PT (seconds)").font(.subheadline)
+                HStack {
+                    Slider(value: $maddreyI.controlPTSeconds, in: 10...20, step: 0.5)
+                    Text(String(format: "%.1f s", maddreyI.controlPTSeconds))
+                        .frame(width: 60)
+                        .font(.caption.monospacedDigit())
+                }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Bilirubin (mg/dL)").font(.subheadline)
+                HStack {
+                    Slider(value: $maddreyI.bilirubinMgDL, in: 0...50, step: 0.5)
+                    Text(String(format: "%.1f", maddreyI.bilirubinMgDL))
+                        .frame(width: 50)
+                        .font(.caption.monospacedDigit())
+                }
+            }
+        }
+        .onChange(of: maddreyI.ptSeconds)        { _, _ in recalculate() }
+        .onChange(of: maddreyI.controlPTSeconds) { _, _ in recalculate() }
+        .onChange(of: maddreyI.bilirubinMgDL)    { _, _ in recalculate() }
+    }
+
+    // MARK: - Manning Criteria for IBS
+
+    private var manningForm: some View {
+        Group {
+            scoreToggle("Pain relieved by defecation",
+                        binding: $manningI.painRelievedByDefecation, points: "+1")
+            scoreToggle("Looser stools with onset of pain",
+                        binding: $manningI.looserStoolsWithOnsetOfPain, points: "+1")
+            scoreToggle("Increased stool frequency with onset of pain",
+                        binding: $manningI.increasedFrequencyWithOnsetOfPain, points: "+1")
+            scoreToggle("Abdomen visibly distended",
+                        binding: $manningI.abdomenVisiblyDistended, points: "+1")
+            scoreToggle("Mucus per rectum",
+                        binding: $manningI.mucusPerRectum, points: "+1")
+            scoreToggle("Feeling of incomplete emptying",
+                        binding: $manningI.feelingOfIncompleteEmptying, points: "+1")
+        }
+        .onChange(of: manningI) { _, _ in recalculate() }
+    }
+
+    // MARK: - LACE Index
+
+    private var laceForm: some View {
+        Group {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Length of stay (days)").font(.subheadline)
+                Stepper("\(laceI.lengthOfStayDays) day(s)", value: $laceI.lengthOfStayDays, in: 0...30)
+            }
+            Toggle(isOn: $laceI.acuteAdmission) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Acute (unplanned) admission").font(.subheadline)
+                    Text("+3 if acute").font(.caption).foregroundStyle(.secondary)
+                }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Charlson Comorbidity Index (CCI)").font(.subheadline)
+                HStack {
+                    Stepper("\(laceI.charlsonIndex)", value: $laceI.charlsonIndex, in: 0...20)
+                    Text("(scored 0–4 in LACE)").font(.caption2).foregroundStyle(.secondary)
+                }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("ED visits in last 6 months").font(.subheadline)
+                Stepper("\(laceI.edVisitsLast6Months)", value: $laceI.edVisitsLast6Months, in: 0...10)
+            }
+        }
+        .onChange(of: laceI.lengthOfStayDays)   { _, _ in recalculate() }
+        .onChange(of: laceI.acuteAdmission)     { _, _ in recalculate() }
+        .onChange(of: laceI.charlsonIndex)      { _, _ in recalculate() }
+        .onChange(of: laceI.edVisitsLast6Months){ _, _ in recalculate() }
+    }
+
+    // MARK: - FINDRISC
+
+    private var findRiscForm: some View {
+        Group {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Age group").font(.subheadline)
+                Picker("Age", selection: $findRiscI.ageGroup) {
+                    Text("< 45 years (+0)").tag(0)
+                    Text("45–54 years (+2)").tag(2)
+                    Text("55–64 years (+3)").tag(3)
+                    Text("≥ 65 years (+4)").tag(4)
+                }
+                .pickerStyle(.segmented)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("BMI (kg/m²)").font(.subheadline)
+                HStack {
+                    Slider(value: $findRiscI.bmi, in: 15...50, step: 0.5)
+                    Text(String(format: "%.1f", findRiscI.bmi))
+                        .frame(width: 50)
+                        .font(.caption.monospacedDigit())
+                }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Waist circumference (cm)").font(.subheadline)
+                HStack {
+                    Slider(value: $findRiscI.waistCircumferenceCm, in: 60...150, step: 1)
+                    Text(String(format: "%.0f cm", findRiscI.waistCircumferenceCm))
+                        .frame(width: 60)
+                        .font(.caption.monospacedDigit())
+                }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Sex").font(.subheadline)
+                Picker("Sex", selection: $findRiscI.sex) {
+                    Text("Male").tag("male")
+                    Text("Female").tag("female")
+                }
+                .pickerStyle(.segmented)
+            }
+            Toggle(isOn: Binding(
+                get:  { findRiscI.physicalActivityMinPerWeek == 0 },
+                set:  { findRiscI.physicalActivityMinPerWeek = $0 ? 0 : 150 }
+            )) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("< 30 min moderate physical activity/day").font(.subheadline)
+                    Text("+2 if inactive").font(.caption).foregroundStyle(.secondary)
+                }
+            }
+            Toggle(isOn: Binding(
+                get:  { !findRiscI.vegetablesFruitDaily },
+                set:  { findRiscI.vegetablesFruitDaily = !$0 }
+            )) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Does NOT eat vegetables/fruit daily").font(.subheadline)
+                    Text("+1 if absent").font(.caption).foregroundStyle(.secondary)
+                }
+            }
+            Toggle(isOn: $findRiscI.hypertensionMeds) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("On antihypertensive medication").font(.subheadline)
+                    Text("+2").font(.caption).foregroundStyle(.secondary)
+                }
+            }
+            Toggle(isOn: $findRiscI.highBloodGlucoseHistory) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("History of high blood glucose").font(.subheadline)
+                    Text("+5").font(.caption).foregroundStyle(.secondary)
+                }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Family history of diabetes").font(.subheadline)
+                Picker("Family history", selection: $findRiscI.familyHistoryDiabetes) {
+                    Text("None (+0)").tag(0)
+                    Text("Second-degree relative (+3)").tag(3)
+                    Text("First-degree relative (+5)").tag(5)
+                }
+                .pickerStyle(.segmented)
+            }
+        }
+        .onChange(of: findRiscI.ageGroup)                 { _, _ in recalculate() }
+        .onChange(of: findRiscI.bmi)                      { _, _ in recalculate() }
+        .onChange(of: findRiscI.waistCircumferenceCm)     { _, _ in recalculate() }
+        .onChange(of: findRiscI.sex)                      { _, _ in recalculate() }
+        .onChange(of: findRiscI.physicalActivityMinPerWeek){ _, _ in recalculate() }
+        .onChange(of: findRiscI.vegetablesFruitDaily)     { _, _ in recalculate() }
+        .onChange(of: findRiscI.hypertensionMeds)         { _, _ in recalculate() }
+        .onChange(of: findRiscI.highBloodGlucoseHistory)  { _, _ in recalculate() }
+        .onChange(of: findRiscI.familyHistoryDiabetes)    { _, _ in recalculate() }
     }
 
 

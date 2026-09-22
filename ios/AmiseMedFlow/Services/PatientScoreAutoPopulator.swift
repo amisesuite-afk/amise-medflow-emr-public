@@ -3762,4 +3762,184 @@ enum PatientScoreAutoPopulator {
         }
         return (i, f)
     }
+
+    // MARK: - #93 Maddrey Discriminant Function
+
+    static func maddrey(patient: Patient) -> (ClinicalScoringEngine.MaddreyInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.MaddreyInput(ptSeconds: 14, controlPTSeconds: 12, bilirubinMgDL: 1.0)
+        var f = ScoreAutoFill()
+        // PT and bilirubin require laboratory results — always pending
+        f.addPending(key: "ptSeconds",        label: "Patient prothrombin time (seconds) — coagulation screen", source: "Labs")
+        f.addPending(key: "controlPTSeconds", label: "Control PT / lab reference range (seconds)", source: "Labs")
+        f.addPending(key: "bilirubinMgDL",    label: "Serum bilirubin (mg/dL) — LFT result", source: "Labs")
+        return (i, f)
+    }
+
+    // MARK: - #94 Manning Criteria for IBS
+
+    static func manning(patient: Patient) -> (ClinicalScoringEngine.ManningInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.ManningInput(
+            painRelievedByDefecation: false,
+            looserStoolsWithOnsetOfPain: false,
+            increasedFrequencyWithOnsetOfPain: false,
+            abdomenVisiblyDistended: false,
+            mucusPerRectum: false,
+            feelingOfIncompleteEmptying: false
+        )
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        if text.contains("relieved by defaec") || text.contains("relieved by bowel") || text.contains("better after stool") {
+            i.painRelievedByDefecation = true
+            f.addAutoFilled(key: "painRelievedByDefecation", label: "Pain relief with defecation documented", source: "History")
+        } else {
+            f.addPending(key: "painRelievedByDefecation", label: "Pain relieved by defecation — confirm", source: "History")
+        }
+        if text.contains("loose stool") || text.contains("liquid stool") || text.contains("diarrhoea with pain") {
+            i.looserStoolsWithOnsetOfPain = true
+            f.addAutoFilled(key: "looserStoolsWithOnsetOfPain", label: "Looser stools with pain onset documented", source: "History")
+        } else {
+            f.addPending(key: "looserStoolsWithOnsetOfPain", label: "Looser stools with onset of pain — confirm", source: "History")
+        }
+        if text.contains("frequent stool") || text.contains("increased frequency") {
+            i.increasedFrequencyWithOnsetOfPain = true
+            f.addAutoFilled(key: "increasedFrequencyWithOnsetOfPain", label: "Increased stool frequency documented", source: "History")
+        } else {
+            f.addPending(key: "increasedFrequencyWithOnsetOfPain", label: "Increased frequency with pain — confirm", source: "History")
+        }
+        if text.contains("distended") || text.contains("bloating") || text.contains("bloated") {
+            i.abdomenVisiblyDistended = true
+            f.addAutoFilled(key: "abdomenVisiblyDistended", label: "Abdominal distension documented", source: "History")
+        } else {
+            f.addPending(key: "abdomenVisiblyDistended", label: "Visible abdominal distension — examine", source: "Examination")
+        }
+        if text.contains("mucus") || text.contains("slime per rectum") {
+            i.mucusPerRectum = true
+            f.addAutoFilled(key: "mucusPerRectum", label: "Mucus per rectum documented", source: "History")
+        } else {
+            f.addPending(key: "mucusPerRectum", label: "Mucus per rectum — confirm", source: "History")
+        }
+        if text.contains("incomplete emptying") || text.contains("tenesmus") {
+            i.feelingOfIncompleteEmptying = true
+            f.addAutoFilled(key: "feelingOfIncompleteEmptying", label: "Incomplete emptying / tenesmus documented", source: "History")
+        } else {
+            f.addPending(key: "feelingOfIncompleteEmptying", label: "Feeling of incomplete emptying — confirm", source: "History")
+        }
+        return (i, f)
+    }
+
+    // MARK: - #95 LACE Index
+
+    static func lace(patient: Patient) -> (ClinicalScoringEngine.LACEInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.LACEInput(
+            lengthOfStayDays: 1, acuteAdmission: false, charlsonIndex: 0, edVisitsLast6Months: 0
+        )
+        var f = ScoreAutoFill()
+
+        // Length of stay from admittedAt
+        if let admitted = patient.admittedAt {
+            let days = Calendar.current.dateComponents([.day], from: admitted, to: Date()).day ?? 0
+            i.lengthOfStayDays = max(1, days)
+            f.addAutoFilled(key: "lengthOfStayDays", label: "LOS \(max(1, days)) days from admission date", source: "Admission")
+        } else {
+            f.addPending(key: "lengthOfStayDays", label: "Length of current admission (days)", source: "Admission")
+        }
+
+        // Acute vs elective from setting
+        if patient.setting == .emergency {
+            i.acuteAdmission = true
+            f.addAutoFilled(key: "acuteAdmission", label: "Emergency/acute admission detected", source: "Setting")
+        } else {
+            f.addPending(key: "acuteAdmission", label: "Confirm if acute (unplanned) admission", source: "Setting")
+        }
+
+        // CCI — use stored value if available
+        if let cci = patient.cciScore {
+            i.charlsonIndex = cci
+            f.addAutoFilled(key: "charlsonIndex", label: "CCI \(cci) — from calculated CCI score", source: "Score")
+        } else {
+            f.addPending(key: "charlsonIndex", label: "Charlson Comorbidity Index — calculate first", source: "Score")
+        }
+
+        // ED visits — pending (no structured field)
+        f.addPending(key: "edVisitsLast6Months", label: "ED visits in last 6 months — review records", source: "Records")
+        return (i, f)
+    }
+
+    // MARK: - #96 FINDRISC
+
+    static func findRisc(patient: Patient) -> (ClinicalScoringEngine.FINDRISCInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.FINDRISCInput(
+            ageGroup: 0, bmi: 22, waistCircumferenceCm: 80, sex: "male",
+            physicalActivityMinPerWeek: 150, vegetablesFruitDaily: true,
+            hypertensionMeds: false, highBloodGlucoseHistory: false, familyHistoryDiabetes: 0
+        )
+        var f = ScoreAutoFill()
+
+        // Age from DOB
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 0
+            if age >= 65      { i.ageGroup = 4 }
+            else if age >= 55 { i.ageGroup = 3 }
+            else if age >= 45 { i.ageGroup = 2 }
+            else              { i.ageGroup = 0 }
+            f.addAutoFilled(key: "ageGroup", label: "Age \(age)y → age group \(i.ageGroup)", source: "Demographics")
+        } else {
+            f.addPending(key: "ageGroup", label: "Patient age — date of birth not recorded", source: "Demographics")
+        }
+
+        // Sex
+        switch patient.sex {
+        case .male:
+            i.sex = "male"
+            f.addAutoFilled(key: "sex", label: "Male — from demographics", source: "Demographics")
+        case .female:
+            i.sex = "female"
+            f.addAutoFilled(key: "sex", label: "Female — from demographics", source: "Demographics")
+        default:
+            f.addPending(key: "sex", label: "Patient sex — set in demographics", source: "Demographics")
+        }
+
+        // BMI from latest vitals
+        let latestVitals = patient.vitalsEntries?.sorted { $0.recordedAt > $1.recordedAt }.first
+        if let wt = latestVitals?.weightKg, let ht = patient.heightCm, ht > 0 {
+            let bmi = wt / pow(ht / 100, 2)
+            i.bmi = bmi
+            f.addAutoFilled(key: "bmi", label: String(format: "BMI %.1f from vitals", bmi), source: "Vitals")
+        } else {
+            f.addPending(key: "bmi", label: "BMI — record height and weight in vitals", source: "Vitals")
+        }
+
+        // Hypertension meds — from prescriptions
+        let rxLow = (patient.prescriptions ?? []).compactMap { $0.drug }.map { $0.lowercased() }
+        let htMedKw = ["amlodipine", "lisinopril", "losartan", "atenolol", "metoprolol",
+                       "ramipril", "perindopril", "valsartan", "nifedipine", "hydrochlorothiazide",
+                       "indapamide", "bisoprolol", "carvedilol", "telmisartan"]
+        if rxLow.contains(where: { drug in htMedKw.contains(where: { drug.contains($0) }) }) {
+            i.hypertensionMeds = true
+            f.addAutoFilled(key: "hypertensionMeds", label: "Antihypertensive detected in prescriptions", source: "Medications")
+        } else {
+            f.addPending(key: "hypertensionMeds", label: "On antihypertensive medication? — confirm", source: "Medications")
+        }
+
+        // History of high blood glucose — from text
+        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+        if text.contains("high blood sugar") || text.contains("hyperglycaemia") || text.contains("hyperglycemia")
+            || text.contains("impaired fasting") || text.contains("prediabet") || text.contains("glucose intol") {
+            i.highBloodGlucoseHistory = true
+            f.addAutoFilled(key: "highBloodGlucoseHistory", label: "History of high blood glucose detected", source: "History")
+        } else {
+            f.addPending(key: "highBloodGlucoseHistory", label: "History of high blood glucose — confirm", source: "History")
+        }
+
+        // Family history — pending
+        f.addPending(key: "familyHistoryDiabetes", label: "Family history of diabetes (none/2nd-degree/1st-degree)", source: "History")
+        // Physical activity and diet — patient self-report, always pending
+        f.addPending(key: "physicalActivity", label: "Physical activity ≥30 min/day most days?", source: "History")
+        f.addPending(key: "diet", label: "Vegetables/fruit eaten daily?", source: "History")
+        f.addPending(key: "waist", label: "Waist circumference (cm) — measure at examination", source: "Examination")
+        return (i, f)
+    }
 }

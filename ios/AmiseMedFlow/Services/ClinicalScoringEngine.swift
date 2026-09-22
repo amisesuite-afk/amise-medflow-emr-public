@@ -6705,5 +6705,328 @@ enum ClinicalScoringEngine {
         )
     }
 
+    // MARK: - #93 Maddrey Discriminant Function (Alcoholic Hepatitis)
+
+    struct MaddreyInput {
+        var ptSeconds: Double          // patient PT in seconds
+        var controlPTSeconds: Double   // control PT in seconds
+        var bilirubinMgDL: Double      // serum bilirubin in mg/dL
+    }
+
+    func maddrey(_ i: MaddreyInput) -> ClinicalScore {
+        let mdf = 4.6 * (i.ptSeconds - i.controlPTSeconds) + i.bilirubinMgDL
+        let risk: ScoreRisk
+        let interp: String
+        var recs: [String]
+        var flags: [String] = []
+
+        if mdf >= 32 {
+            risk  = .critical
+            interp = "Severe alcoholic hepatitis (mDF \(String(format: "%.1f", mdf))). 28-day mortality 35–45% without treatment."
+            recs  = [
+                "Consider prednisolone 40 mg/day × 28 days if no contraindications",
+                "Reassess with Lille model at day 7 — Lille ≥0.45 indicates steroid non-response",
+                "Hepatology / gastroenterology urgent review",
+                "Pentoxifylline no longer preferred per recent evidence (STOPAH trial)",
+                "N-acetylcysteine as adjunct if renal impairment present",
+                "Abstinence counselling and addiction medicine referral",
+                "Monitor for hepatorenal syndrome, SBP, hepatic encephalopathy"
+            ]
+            flags = ["mDF ≥ 32 — high 28-day mortality without corticosteroid therapy"]
+        } else if mdf >= 20 {
+            risk  = .high
+            interp = "Moderately severe alcoholic hepatitis (mDF \(String(format: "%.1f", mdf))). Elevated mortality risk; close monitoring required."
+            recs  = [
+                "Hepatology review within 24–48 hours",
+                "Intensive nutritional support — target 35–40 kcal/kg/day",
+                "Strict alcohol cessation",
+                "Monitor renal function and coagulation daily"
+            ]
+        } else {
+            risk  = .moderate
+            interp = "Mild–moderate alcoholic hepatitis (mDF \(String(format: "%.1f", mdf))). Lower short-term mortality; supportive management."
+            recs  = [
+                "Alcohol abstinence — cornerstone of management",
+                "Nutritional optimisation",
+                "Monitor LFTs, coagulation weekly",
+                "Hepatology outpatient follow-up within 2 weeks"
+            ]
+        }
+
+        return ClinicalScore(
+            name:          "Maddrey Discriminant Function",
+            score:         mdf,
+            maxScore:      nil,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            redFlags:      flags,
+            evidenceNote:  "Maddrey WC et al. Gastroenterology 1978;75:193. Formula: 4.6 × (PT_patient − PT_control) + bilirubin(mg/dL). mDF ≥32 defines severe disease with ≥35% 28-day mortality; the steroid-treatment threshold. STOPAH (NEJM 2015) confirmed prednisolone reduces 28-day mortality for mDF ≥32 but not long-term survival. Lille score at day 7 guides continuation vs. cessation."
+        )
+    }
+
+    // MARK: - #94 Manning Criteria for IBS
+
+    struct ManningInput {
+        var painRelievedByDefecation: Bool
+        var looserStoolsWithOnsetOfPain: Bool
+        var increasedFrequencyWithOnsetOfPain: Bool
+        var abdomenVisiblyDistended: Bool
+        var mucusPerRectum: Bool
+        var feelingOfIncompleteEmptying: Bool
+    }
+
+    func manning(_ i: ManningInput) -> ClinicalScore {
+        var score = 0
+        if i.painRelievedByDefecation        { score += 1 }
+        if i.looserStoolsWithOnsetOfPain     { score += 1 }
+        if i.increasedFrequencyWithOnsetOfPain { score += 1 }
+        if i.abdomenVisiblyDistended         { score += 1 }
+        if i.mucusPerRectum                  { score += 1 }
+        if i.feelingOfIncompleteEmptying     { score += 1 }
+
+        let risk: ScoreRisk
+        let interp: String
+        var recs: [String]
+
+        switch score {
+        case 0, 1:
+            risk  = .low
+            interp = "Manning \(score)/6 — IBS unlikely. Consider organic pathology."
+            recs  = [
+                "Evaluate for organic causes: IBD, colorectal neoplasia, coeliac disease",
+                "Colonoscopy if alarm features (rectal bleeding, weight loss, age >45, family history CRC)",
+                "Coeliac serology (anti-tTG IgA)"
+            ]
+        case 2, 3:
+            risk  = .moderate
+            interp = "Manning \(score)/6 — Possible IBS. Consider targeted workup to exclude organic disease."
+            recs  = [
+                "Full blood count, CRP, faecal calprotectin to exclude IBD",
+                "Coeliac serology",
+                "Dietary assessment — low-FODMAP trial if organic disease excluded",
+                "Rome IV criteria reassessment at follow-up"
+            ]
+        default:
+            risk  = .high
+            interp = "Manning \(score)/6 — Probable IBS (≥3 criteria met). Sensitivity 58–78%, specificity 67–74%."
+            recs  = [
+                "Confirm Rome IV criteria for IBS subtype classification (IBS-C, IBS-D, IBS-M)",
+                "Faecal calprotectin to exclude IBD before committing to IBS diagnosis",
+                "Colonoscopy only if alarm features present",
+                "Dietary modification — low-FODMAP diet with dietitian support",
+                "Antispasmodics (mebeverine, hyoscine) for pain management",
+                "Cognitive behavioural therapy or gut-directed hypnotherapy for refractory symptoms"
+            ]
+        }
+
+        return ClinicalScore(
+            name:          "Manning Criteria for IBS",
+            score:         Double(score),
+            maxScore:      6,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            evidenceNote:  "Manning AP et al. BMJ 1978;2:653. Six symptom criteria for IBS diagnosis (score ≥3 supports diagnosis). Sensitivity 58–78%, specificity 67–74%. Superseded by Rome IV for formal classification but widely used clinically. Should not replace investigation when alarm features present."
+        )
+    }
+
+    // MARK: - #95 LACE Index (30-Day Readmission Risk)
+
+    struct LACEInput {
+        var lengthOfStayDays: Int    // L: 0–14+ days
+        var acuteAdmission: Bool     // A: unplanned/acute vs elective
+        var charlsonIndex: Int       // C: CCI score (clamped to 0–4)
+        var edVisitsLast6Months: Int // E: number of ED visits (clamped to 0–4)
+    }
+
+    func lace(_ i: LACEInput) -> ClinicalScore {
+        // L — length of stay (0–7 scale)
+        let los = i.lengthOfStayDays
+        let lScore: Int
+        switch los {
+        case 0:      lScore = 0
+        case 1:      lScore = 1
+        case 2:      lScore = 2
+        case 3:      lScore = 3
+        case 4...6:  lScore = 4
+        case 7...13: lScore = 5
+        default:     lScore = 7
+        }
+
+        // A — admission type (0 or 3)
+        let aScore = i.acuteAdmission ? 3 : 0
+
+        // C — Charlson Comorbidity Index (capped at 4)
+        let cScore = min(i.charlsonIndex, 4)
+
+        // E — ED visits in last 6 months (capped at 4)
+        let eScore = min(i.edVisitsLast6Months, 4)
+
+        let total = lScore + aScore + cScore + eScore
+
+        let risk: ScoreRisk
+        let interp: String
+        var recs: [String]
+
+        if total >= 10 {
+            risk  = .critical
+            interp = "LACE \(total) — High 30-day readmission risk (≥10). Intensive post-discharge support required."
+            recs  = [
+                "Arrange 48–72 hour post-discharge telephone review",
+                "Early GP/primary care follow-up within 7 days",
+                "Medication reconciliation and patient education prior to discharge",
+                "Community nurse or case manager referral",
+                "Review and address all modifiable risk factors (polypharmacy, social support)",
+                "Consider transitional care programme enrolment"
+            ]
+        } else if total >= 7 {
+            risk  = .high
+            interp = "LACE \(total) — Elevated 30-day readmission risk (7–9). Enhanced discharge planning recommended."
+            recs  = [
+                "Structured discharge planning: written care plan, medication list, clear follow-up",
+                "Primary care follow-up within 14 days",
+                "Patient/carer education on warning signs requiring re-presentation",
+                "Ensure all investigations and outstanding results reviewed before discharge"
+            ]
+        } else if total >= 4 {
+            risk  = .moderate
+            interp = "LACE \(total) — Moderate 30-day readmission risk (4–6). Standard discharge planning with follow-up."
+            recs  = [
+                "Routine discharge planning with outpatient follow-up arranged",
+                "Medication reconciliation",
+                "Clear written discharge instructions"
+            ]
+        } else {
+            risk  = .low
+            interp = "LACE \(total) — Low 30-day readmission risk (<4). Standard discharge."
+            recs  = ["Standard discharge with routine outpatient review"]
+        }
+
+        return ClinicalScore(
+            name:          "LACE Index",
+            score:         Double(total),
+            maxScore:      19,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            evidenceNote:  "van Walraven C et al. CMAJ 2010;182:551. Validated 30-day readmission risk score: L (length of stay, 0–7), A (acute admission, 0/3), C (Charlson min 0–4), E (ED visits 0–4). Total 0–19; score ≥10 = high risk (readmission rate ≈21%). Widely used for discharge planning and transitional care resource allocation."
+        )
+    }
+
+    // MARK: - #96 FINDRISC (Finnish Type 2 Diabetes Risk Score)
+
+    struct FINDRISCInput {
+        var ageGroup: Int          // 0=<45, 2=45–54, 3=55–64, 4=≥65
+        var bmi: Double            // kg/m²
+        var waistCircumferenceCm: Double
+        var sex: String            // "male" or "female"
+        var physicalActivityMinPerWeek: Int  // 0=<30 min, 2=≥30 min
+        var vegetablesFruitDaily: Bool      // eats veg/fruit daily
+        var hypertensionMeds: Bool          // on antihypertensive medication
+        var highBloodGlucoseHistory: Bool   // ever found high blood glucose
+        var familyHistoryDiabetes: Int      // 0=none, 3=second-degree, 5=first-degree
+    }
+
+    func findrisc(_ i: FINDRISCInput) -> ClinicalScore {
+        var score = 0
+
+        // Age
+        score += i.ageGroup
+
+        // BMI
+        if i.bmi >= 30 { score += 3 } else if i.bmi >= 25 { score += 1 }
+
+        // Waist circumference (sex-specific thresholds)
+        if i.sex.lowercased() == "male" {
+            if i.waistCircumferenceCm >= 102 { score += 4 } else if i.waistCircumferenceCm >= 94 { score += 3 }
+        } else {
+            if i.waistCircumferenceCm >= 88 { score += 4 } else if i.waistCircumferenceCm >= 80 { score += 3 }
+        }
+
+        // Physical activity
+        if i.physicalActivityMinPerWeek == 0 { score += 2 }
+
+        // Diet
+        if !i.vegetablesFruitDaily { score += 1 }
+
+        // Hypertension medication
+        if i.hypertensionMeds { score += 2 }
+
+        // History of high blood glucose
+        if i.highBloodGlucoseHistory { score += 5 }
+
+        // Family history
+        score += i.familyHistoryDiabetes
+
+        let risk: ScoreRisk
+        let interp: String
+        var recs: [String]
+        var flags: [String] = []
+
+        switch score {
+        case 0...6:
+            risk  = .low
+            interp = "FINDRISC \(score) — Low risk. Estimated 1-in-100 chance of developing T2DM over 10 years."
+            recs  = [
+                "Maintain healthy weight (BMI 18.5–24.9)",
+                "Minimum 150 min/week moderate physical activity",
+                "Healthy diet: high fibre, low glycaemic index, limited processed food",
+                "Reassess annually if risk factors change"
+            ]
+        case 7...11:
+            risk  = .moderate
+            interp = "FINDRISC \(score) — Slightly elevated risk. ~1-in-25 chance of T2DM over 10 years."
+            recs  = [
+                "Weight reduction if BMI >25 — even 5–7% weight loss significantly reduces progression",
+                "Structured physical activity programme",
+                "Dietary review with focus on carbohydrate quality",
+                "Fasting plasma glucose or HbA1c to establish baseline"
+            ]
+        case 12...14:
+            risk  = .high
+            interp = "FINDRISC \(score) — Moderate risk. ~1-in-6 chance of T2DM over 10 years."
+            recs  = [
+                "Fasting plasma glucose AND HbA1c — exclude undiagnosed T2DM or prediabetes",
+                "Intensive lifestyle intervention: structured dietary programme and 150–210 min/week activity",
+                "Consider referral to structured diabetes prevention programme",
+                "Reassess in 6–12 months"
+            ]
+            flags = ["FINDRISC ≥12 — screen for undiagnosed T2DM with FPG and HbA1c"]
+        case 15...20:
+            risk  = .high
+            interp = "FINDRISC \(score) — High risk. ~1-in-3 chance of T2DM over 10 years."
+            recs  = [
+                "Urgent fasting plasma glucose and HbA1c — high probability of undiagnosed T2DM",
+                "Refer to structured diabetes prevention or management programme",
+                "Cardiovascular risk assessment (lipids, BP, smoking status)",
+                "Intensive lifestyle intervention with dietitian and exercise physiologist"
+            ]
+            flags = ["FINDRISC ≥15 — 1-in-3 risk; immediate diabetes screening and prevention referral"]
+        default:
+            risk  = .critical
+            interp = "FINDRISC \(score) — Very high risk. ~1-in-2 chance of T2DM over 10 years."
+            recs  = [
+                "Immediate fasting plasma glucose and HbA1c to confirm or exclude T2DM",
+                "Cardiology risk stratification",
+                "Referral to endocrinology or diabetes clinic if prediabetes confirmed",
+                "Metformin consideration for high-risk prediabetes (ADA guidance)",
+                "Intensive multidisciplinary lifestyle intervention"
+            ]
+            flags = ["FINDRISC ≥21 — very high risk; T2DM likely or already present; immediate workup"]
+        }
+
+        return ClinicalScore(
+            name:          "FINDRISC",
+            score:         Double(score),
+            maxScore:      26,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            redFlags:      flags,
+            evidenceNote:  "Lindström J, Tuomilehto J. Diabetes Care 2003;26:725. 8-item self-administered T2DM risk questionnaire. Score 0–26; validated against OGTT in Finnish population cohorts. AUC 0.85 for predicting T2DM over 10 years. Recommended by IDF and many national guidelines as first-line screening tool. Score ≥12 triggers biochemical screening; ≥15 requires immediate clinical assessment."
+        )
+    }
+
 
 }

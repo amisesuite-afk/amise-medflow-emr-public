@@ -205,6 +205,10 @@ final class Patient {
     var ipssScore: Int?           // IPSS Lower Urinary Tract Symptoms (0–35; ≥20 = severe)
     var trueloveWittsScore: Int?  // Truelove-Witts UC Severity (1=mild, 2=moderate, 3=severe)
     var harveyBradshawScore: Int? // Harvey-Bradshaw Index Crohn's Activity (0+; ≥8 = moderate)
+    var maddreyScore: Double?     // Maddrey Discriminant Function (≥32 = severe alcoholic hepatitis)
+    var manningScore: Int?        // Manning Criteria for IBS (0–6; ≥3 = probable IBS)
+    var laceScore: Int?           // LACE 30-day Readmission Risk (0–19; ≥10 = high risk)
+    var findRiscScore: Int?       // FINDRISC Type 2 Diabetes Risk (0–26; ≥12 = screen required)
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?
