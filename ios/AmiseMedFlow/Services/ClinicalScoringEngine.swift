@@ -4494,7 +4494,6 @@ enum ClinicalScoringEngine {
             risk: risk,
             interpretation: desc,
             recommendations: g >= 3 ? [
-            items: [ScoredItem(label: "Performance grade \(g)", points: g, present: true)],
                 "Multidisciplinary team discussion before any elective surgery",
                 "Palliative intent should be considered as primary management approach",
                 "Nutritional support and rehabilitation assessment recommended"
@@ -4506,6 +4505,7 @@ enum ClinicalScoringEngine {
                 "Standard pre-operative assessment",
                 "Document baseline functional status in surgical consent documentation"
             ],
+            items: [ScoredItem(label: "Performance grade \(g)", points: g, present: true)],
             redFlags: flags,
             evidenceNote: "Oken MM et al. Am J Clin Oncol 1982;5:649–655. WHO/Eastern Cooperative Oncology Group. Standard metric for functional reserve in oncology and surgical fitness."
         )
@@ -4734,7 +4734,6 @@ enum ClinicalScoringEngine {
             risk: risk,
             interpretation: interp,
             recommendations: score >= 25 ? [
-            items: zip(regionNames, regions).map { ScoredItem(label: "\($0.0) AIS \($0.1)", points: Double($0.1 * $0.1), present: $0.1 > 0) },
                 "Major trauma centre transfer if not already there",
                 "Full primary and secondary ATLS survey",
                 "CT trauma series (head, C-spine, thorax, abdomen, pelvis)",
@@ -4753,6 +4752,7 @@ enum ClinicalScoringEngine {
                 "Consider trauma team notification",
                 "Discharge with clear head-injury/fracture advice if criteria met"
             ],
+            items: zip(regionNames, regions).map { ScoredItem(label: "\($0.0) AIS \($0.1)", points: Double($0.1 * $0.1), present: $0.1 > 0) },
             redFlags: flags,
             evidenceNote: "Baker SP et al. J Trauma 1974;14:187–196. ISS = sum of squares of top 3 AIS body regions. ISS ≥16 = major trauma. AIS 6 auto-scores 75."
         )
@@ -4885,7 +4885,6 @@ enum ClinicalScoringEngine {
             risk: risk,
             interpretation: interp,
             recommendations: pts == 0 ? [
-            items: items,
                 "Consider outpatient management with LMWH or DOAC (e.g. rivaroxaban 15 mg BD for 21 days then 20 mg OD)",
                 "Oral anticoagulation for minimum 3 months; assess duration based on provoked vs unprovoked",
                 "Arrange close follow-up within 7–14 days",
@@ -4899,6 +4898,7 @@ enum ClinicalScoringEngine {
                 "Supplemental oxygen to maintain SpO2 ≥95%",
                 "Avoid bed rest in haemodynamically stable patients — early mobilisation"
             ],
+            items: items,
             redFlags: flags,
             evidenceNote: "Jiménez D et al. Lancet 2010;376:1043–1048. sPESI validated across multiple cohorts. sPESI 0 identifies patients safe for outpatient PE treatment. ESC 2019 guidelines recommend sPESI for initial PE risk stratification."
         )
@@ -4949,7 +4949,6 @@ enum ClinicalScoringEngine {
             risk: risk,
             interpretation: interp,
             recommendations: pts >= 3 ? [
-            items: items,
                 "Early ICU/HDU referral — high mortality group",
                 "Non-invasive ventilation (NIV) if pH <7.35 with hypercapnia",
                 "Controlled oxygen therapy: target SpO2 88–92% (24% Venturi mask)",
@@ -4972,6 +4971,7 @@ enum ClinicalScoringEngine {
                 "Short-acting bronchodilators (salbutamol + ipratropium nebulisers 4-hourly)",
                 "Consider early supported discharge at 24–48 h if clinical improvement"
             ],
+            items: items,
             redFlags: flags,
             evidenceNote: "Steer J et al. Thorax 2012;67:970–976. DECAF validated in UK COPD cohorts (n=920). DECAF 0–1 identifies low-risk patients suitable for early discharge pathways. Superior to APACHE II for acute COPD exacerbations."
         )
