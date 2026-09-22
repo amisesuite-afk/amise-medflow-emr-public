@@ -232,6 +232,7 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
             qsofaScore:                  patient.qsofaScore,
             psiScore:                    patient.psiScore,
             capriniScore:                patient.capriniScore,
+            bisapScore:                  patient.bisapScore,
             latestHR:    latestV?.heartRate,
             latestSBP:   latestV?.bpSystolic,
             latestTemp:  latestV?.temperatureCelsius,

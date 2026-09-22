@@ -45,10 +45,11 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case stopBang         = "STOP-BANG (OSA)"
     case news2            = "NEWS2 (National Early Warning)"
     case psiPort          = "PSI/PORT (Pneumonia Severity)"
+    case bisap            = "BISAP (Pancreatitis Severity)"
 
     var category: ScoreCategory {
         switch self {
-        case .alvarado, .tokyoChole, .tokyoCholang, .ranson, .glasgow:
+        case .alvarado, .tokyoChole, .tokyoCholang, .ranson, .glasgow, .bisap:
             return .acute
         case .rockall, .blatchford:
             return .gi
@@ -90,6 +91,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .hasBled:        return "bandage.fill"
         case .stopBang:       return "moon.zzz"
         case .psiPort:        return "lungs"
+        case .bisap:          return "flame.fill"
         }
     }
 }
@@ -156,6 +158,8 @@ struct ClinicalScoresView: View {
     @State private var news2I = NEWS2Input()
     // PSI/PORT
     @State private var psiI = PSIPortInput()
+    // BISAP
+    @State private var bisapI = ClinicalScoringEngine.BISAPInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -467,6 +471,9 @@ struct ClinicalScoresView: View {
         case .psiPort:
             let (input, fill) = PatientScoreAutoPopulator.psiPort(patient: patient)
             psiI = input; autoFill = fill
+        case .bisap:
+            let (input, fill) = PatientScoreAutoPopulator.bisap(patient: patient)
+            bisapI = input; autoFill = fill
         case .cha2ds2vasc:
             let (input, fill) = PatientScoreAutoPopulator.cha2ds2vasc(patient: patient)
             cha2I = input; autoFill = fill
@@ -582,6 +589,7 @@ struct ClinicalScoresView: View {
         case .stopBang:     ClinicalScoringEngine.stopBang(sbangI)
         case .news2:        ClinicalScoringEngine.news2(news2I)
         case .psiPort:      ClinicalScoringEngine.psiPort(psiI)
+        case .bisap:        ClinicalScoringEngine.bisap(bisapI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -604,6 +612,7 @@ struct ClinicalScoresView: View {
         case .psiPort:
             // Store the PSI class (1–5) extracted from the abbreviation string
             patient.psiScore = Int(r.abbreviation.components(separatedBy: "Class ").last ?? "") ?? 0
+        case .bisap:        patient.bisapScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -664,6 +673,7 @@ struct ClinicalScoresView: View {
         case .stopBang:     stopBangForm
         case .news2:        news2Form
         case .psiPort:      psiPortForm
+        case .bisap:        bisapForm
         }
     }
 
@@ -1618,6 +1628,14 @@ struct ClinicalScoresView: View {
             case "pao2Below60": glas.pao2Below60 = true
             default: break
             }
+        case .bisap:
+            switch field.id {
+            case "bunOver9mmolL":       bisapI.bunOver9mmolL       = true
+            case "impairedMentalStatus": bisapI.impairedMentalStatus = true
+            case "sirs":                bisapI.sirs                 = true
+            case "pleuralEffusion":     bisapI.pleuralEffusion      = true
+            default: break
+            }
         case .psiPort:
             switch field.id {
             case "alteredMentalStatus":      psiI.alteredMentalStatus      = true
@@ -1743,6 +1761,19 @@ struct ClinicalScoresView: View {
             scoreToggle("Pleural effusion on imaging",             binding: $psiI.pleuralEffusion,          points: "+10", autoKey: "pleuralEffusion")
         }
         .onChange(of: psiI) { _, _ in recalculate() }
+    }
+
+    // MARK: - BISAP
+
+    private var bisapForm: some View {
+        Group {
+            scoreToggle("B — BUN >9 mmol/L (>25 mg/dL)",            binding: $bisapI.bunOver9mmolL,          points: "+1", autoKey: "bunOver9mmolL")
+            scoreToggle("I — Impaired mental status",                 binding: $bisapI.impairedMentalStatus,   points: "+1", autoKey: "impairedMentalStatus")
+            scoreToggle("S — SIRS (≥2 of: temp >38 or <36°C, HR >90, RR >20, WBC abnormal)", binding: $bisapI.sirs, points: "+1", autoKey: "sirs")
+            scoreToggle("A — Age >60 years",                          binding: $bisapI.ageOver60,              points: "+1", autoKey: "ageOver60")
+            scoreToggle("P — Pleural effusion on imaging",            binding: $bisapI.pleuralEffusion,        points: "+1", autoKey: "pleuralEffusion")
+        }
+        .onChange(of: bisapI) { _, _ in recalculate() }
     }
 
     private func scoreHistoryColor(_ riskRaw: String) -> Color {

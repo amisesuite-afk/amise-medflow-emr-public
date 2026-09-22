@@ -1836,6 +1836,82 @@ enum ClinicalScoringEngine {
         }
     }
 
+    // MARK: BISAP (Bedside Index for Severity in Acute Pancreatitis)
+
+    struct BISAPInput: Equatable {
+        var bunOver9mmolL: Bool = false          // BUN >9 mmol/L (>25 mg/dL)
+        var impairedMentalStatus: Bool = false   // disorientation, stupor, or coma
+        var sirs: Bool = false                   // SIRS (≥2 of 4 SIRS criteria met)
+        var ageOver60: Bool = false              // age >60 years
+        var pleuralEffusion: Bool = false        // pleural effusion on imaging
+    }
+
+    static func bisap(_ i: BISAPInput) -> ClinicalScore {
+        let flags = [i.bunOver9mmolL, i.impairedMentalStatus, i.sirs, i.ageOver60, i.pleuralEffusion]
+        let score = Double(flags.filter { $0 }.count)
+        let items: [ScoredItem] = [
+            .init(label: "B — BUN >9 mmol/L (>25 mg/dL)",          points: 1, present: i.bunOver9mmolL),
+            .init(label: "I — Impaired mental status (disorientation / stupor / coma)", points: 1, present: i.impairedMentalStatus),
+            .init(label: "S — SIRS (≥2 of: temp >38 or <36°C, HR >90, RR >20, WBC >12k or <4k)", points: 1, present: i.sirs),
+            .init(label: "A — Age >60 years",                       points: 1, present: i.ageOver60),
+            .init(label: "P — Pleural effusion on imaging",         points: 1, present: i.pleuralEffusion),
+        ]
+        let (risk, interp, recs, redFlags): (ScoreRisk, String, [String], [String]) = switch Int(score) {
+        case 0:
+            (.low,      "BISAP 0 — Predicted mortality 0.1% — mild pancreatitis very likely",
+             ["Aggressive IV fluid resuscitation (Hartmann's / Ringer's lactate preferred)",
+              "Monitor urine output, U&E, lipase at 24–48 h",
+              "Consider early enteral feeding if tolerated",
+              "Abdominal imaging not routine unless diagnosis uncertain"],
+             [])
+        case 1:
+            (.low,      "BISAP 1 — Predicted mortality 0.4% — mild pancreatitis expected",
+             ["IV fluid resuscitation; reassess at 6 h and 24 h",
+              "Monitor amylase/lipase, FBC, CRP, renal function",
+              "Enteral nutrition if not tolerating oral by 48 h"],
+             [])
+        case 2:
+            (.moderate, "BISAP 2 — Predicted mortality 1.6% — moderate severity likely",
+             ["Active IV resuscitation; Hartmann's preferred over normal saline",
+              "CECT abdomen at 48–72 h if not improving",
+              "Nutritional support: nasojejunal tube if oral intake fails by 48 h",
+              "Consider HDU monitoring; re-score at 24 h"],
+             ["CRP >150 at 48 h suggests necrotising pancreatitis"])
+        case 3:
+            (.high,     "BISAP 3 — Predicted mortality 5.3% — severe pancreatitis likely",
+             ["Urgent HDU/ICU referral",
+              "CECT abdomen (pancreatic protocol) as soon as haemodynamically stable",
+              "Invasive monitoring; strict fluid balance",
+              "Enteral nutrition via nasojejunal tube within 24–48 h",
+              "Multidisciplinary review: pancreatic surgery, radiology, intensivist"],
+             ["BISAP ≥3: high probability severe or necrotising pancreatitis"])
+        case 4:
+            (.high,     "BISAP 4 — Predicted mortality 12.7% — severe pancreatitis",
+             ["ICU-level care mandatory",
+              "CECT for necrosis mapping; interventional radiology on standby",
+              "Early nutritional support; consider TPN if enteral route not feasible",
+              "Broad-spectrum antibiotics ONLY if infected necrosis confirmed or strongly suspected",
+              "Surgical/endoscopic intervention planning for necrosectomy if needed"],
+             ["BISAP ≥3: severe pancreatitis confirmed — ICU level care required"])
+        default:
+            (.critical, "BISAP 5 — Predicted mortality 22.0% — critical pancreatitis",
+             ["ICU admission mandatory; intensivist-led care",
+              "Urgent CECT for extent of pancreatic necrosis",
+              "Multidisciplinary team: HPB surgery, interventional radiology, critical care",
+              "Plan step-up approach for infected necrosis: drainage → necrosectomy",
+              "Discuss prognosis with family; goals-of-care conversation"],
+             ["BISAP 5: critical severity — mortality ~22%; escalate immediately"])
+        }
+        return ClinicalScore(
+            systemName: "BISAP Score",
+            abbreviation: "BISAP \(Int(score))/5",
+            score: score, maxScore: 5,
+            risk: risk, interpretation: interp,
+            recommendations: recs, items: items, redFlags: redFlags,
+            evidenceNote: "Wu et al, Am J Gastroenterol 2008. Validated in 17,992 patients. Predicts in-hospital mortality and severe pancreatitis. BISAP ≥3: sensitivity 64%, specificity 91% for severe pancreatitis."
+        )
+    }
+
     // MARK: STOP-BANG (OSA)
 
     static func stopBang(_ i: STOPBANGInput) -> ClinicalScore {

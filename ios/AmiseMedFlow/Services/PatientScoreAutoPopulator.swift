@@ -996,6 +996,35 @@ enum PatientScoreAutoPopulator {
         return (i, f)
     }
 
+    // MARK: BISAP (from patient demographics and vitals)
+
+    static func bisap(patient: Patient) -> (ClinicalScoringEngine.BISAPInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.BISAPInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        // Age
+        let ageYears = Calendar.current.dateComponents([.year], from: patient.dateOfBirth, to: .now).year ?? 0
+        if ageYears > 60 { i.ageOver60 = true; f.autoFieldKeys.insert("ageOver60") }
+
+        // SIRS components from latest vitals
+        if let v = patient.latestVitals {
+            let temp = v.temperatureCelsius ?? 37.0
+            let hr   = v.heartRate ?? 0
+            let rr   = v.respiratoryRate ?? 0
+            var sirsCount = 0
+            if temp > 38 || temp < 36  { sirsCount += 1 }
+            if hr  > 90                { sirsCount += 1 }
+            if rr  > 20                { sirsCount += 1 }
+            if sirsCount >= 2 { i.sirs = true; f.autoFieldKeys.insert("sirs") }
+        }
+
+        f.addPending(key: "bunOver9mmolL",       label: "BUN >9 mmol/L (>25 mg/dL)",                  source: "U&E results")
+        f.addPending(key: "impairedMentalStatus", label: "Impaired mental status (disorientation / stupor)", source: "Clinical assessment")
+        f.addPending(key: "pleuralEffusion",      label: "Pleural effusion on imaging",                 source: "CXR / CT thorax")
+
+        return (i, f)
+    }
+
     // MARK: PSI/PORT (from patient demographics, vitals, and PMH)
 
     static func psiPort(patient: Patient) -> (PSIPortInput, ScoreAutoFill) {

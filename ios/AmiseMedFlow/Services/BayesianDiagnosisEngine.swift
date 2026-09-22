@@ -102,6 +102,7 @@ enum BayesianDiagnosisEngine {
         qsofaScore: Int? = nil,
         psiScore: Int? = nil,         // PSI/PORT class (1–5) for pneumonia severity
         capriniScore: Int? = nil,     // Caprini VTE risk total score
+        bisapScore: Int? = nil,       // BISAP (0–5) for acute pancreatitis severity; ≥3 = severe
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2488,6 +2489,30 @@ enum BayesianDiagnosisEngine {
             for i in scored.indices where vteTargets.contains(where: {
                 scored[i].candidate.name.lowercased().contains($0)
             }) {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+
+        // BISAP Score → pancreatitis severity candidates
+        // ≥3 signals severe/necrotising pancreatitis; scores of 0–2 suggest milder disease.
+        if let bis = bisapScore {
+            let pancreatitisTargets = ["pancreatitis", "pancreatic pseudocyst", "necrotis"]
+            let necrotisTargets     = ["necrotis", "pseudocyst"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard pancreatitisTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let isNecrotising = necrotisTargets.contains(where: { nameLow.contains($0) })
+                let (adj, label): (Int, String) = switch bis {
+                case 5:    (isNecrotising ? 20 : 10,  "BISAP 5 — critical pancreatitis, ~22% mortality")
+                case 4:    (isNecrotising ? 16 : 8,   "BISAP 4 — severe pancreatitis, ~12.7% mortality")
+                case 3:    (isNecrotising ? 12 : 6,   "BISAP 3 — severe pancreatitis, ~5.3% mortality")
+                case 2:    (isNecrotising ? -4 : 2,   "BISAP 2 — moderate severity, 1.6% mortality")
+                default:   (isNecrotising ? -8 : -2,  "BISAP \(bis) — mild pancreatitis predicted")
+                }
                 scored[i].logPosterior += adj
                 if adj > 0 {
                     scored[i].evidence.insert(label, at: 0)

@@ -93,6 +93,8 @@ final class Patient {
     var psiScore: Int?
     // Caprini VTE Risk Score (0–n); ≥5 = very high risk
     var capriniScore: Int?
+    // BISAP Score (0–5) for acute pancreatitis severity; ≥3 = severe
+    var bisapScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?
