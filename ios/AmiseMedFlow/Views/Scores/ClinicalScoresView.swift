@@ -44,6 +44,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case hasBled          = "HAS-BLED (Bleeding)"
     case stopBang         = "STOP-BANG (OSA)"
     case news2            = "NEWS2 (National Early Warning)"
+    case psiPort          = "PSI/PORT (Pneumonia Severity)"
 
     var category: ScoreCategory {
         switch self {
@@ -53,7 +54,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .gi
         case .wellsDVT, .wellsPE, .caprini:
             return .vascular
-        case .sirs, .qsofa:
+        case .sirs, .qsofa, .psiPort:
             return .sepsis
         case .rcri, .asa, .childPugh, .meld, .stopBang:
             return .preop
@@ -88,6 +89,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .cha2ds2vasc:    return "heart.circle"
         case .hasBled:        return "bandage.fill"
         case .stopBang:       return "moon.zzz"
+        case .psiPort:        return "lungs"
         }
     }
 }
@@ -152,6 +154,8 @@ struct ClinicalScoresView: View {
     @State private var sbangI = STOPBANGInput()
     // NEWS2
     @State private var news2I = NEWS2Input()
+    // PSI/PORT
+    @State private var psiI = PSIPortInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -460,6 +464,9 @@ struct ClinicalScoresView: View {
         case .stopBang:
             let (input, fill) = PatientScoreAutoPopulator.stopBang(patient: patient)
             sbangI = input; autoFill = fill
+        case .psiPort:
+            let (input, fill) = PatientScoreAutoPopulator.psiPort(patient: patient)
+            psiI = input; autoFill = fill
         case .cha2ds2vasc:
             let (input, fill) = PatientScoreAutoPopulator.cha2ds2vasc(patient: patient)
             cha2I = input; autoFill = fill
@@ -574,6 +581,7 @@ struct ClinicalScoresView: View {
         case .hasBled:      ClinicalScoringEngine.hasBled(hblI)
         case .stopBang:     ClinicalScoringEngine.stopBang(sbangI)
         case .news2:        ClinicalScoringEngine.news2(news2I)
+        case .psiPort:      ClinicalScoringEngine.psiPort(psiI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -593,6 +601,9 @@ struct ClinicalScoresView: View {
         case .abcd2:        patient.abcd2Score               = intScore
         case .lrinec:       patient.lrinecScore              = intScore
         case .qsofa:        patient.qsofaScore               = intScore
+        case .psiPort:
+            // Store the PSI class (1–5) extracted from the abbreviation string
+            patient.psiScore = Int(r.abbreviation.components(separatedBy: "Class ").last ?? "") ?? 0
         default: break
         }
         patient.updatedAt = .now
@@ -652,6 +663,7 @@ struct ClinicalScoresView: View {
         case .hasBled:      hasBledForm
         case .stopBang:     stopBangForm
         case .news2:        news2Form
+        case .psiPort:      psiPortForm
         }
     }
 
@@ -1606,6 +1618,19 @@ struct ClinicalScoresView: View {
             case "pao2Below60": glas.pao2Below60 = true
             default: break
             }
+        case .psiPort:
+            switch field.id {
+            case "alteredMentalStatus":      psiI.alteredMentalStatus      = true
+            case "arterialPHUnder735":       psiI.arterialPHUnder735       = true
+            case "bunOver11mmoL":            psiI.bunOver11mmoL            = true
+            case "sodiumUnder130":           psiI.sodiumUnder130           = true
+            case "glucoseOver14":            psiI.glucoseOver14            = true
+            case "haematocritUnder30":       psiI.haematocritUnder30       = true
+            case "pao2Under60orSpO2Under90": psiI.pao2Under60orSpO2Under90 = true
+            case "pleuralEffusion":          psiI.pleuralEffusion          = true
+            case "nursingHomeResident":      psiI.nursingHomeResident      = true
+            default: break
+            }
         default: break
         }
 
@@ -1652,6 +1677,72 @@ struct ClinicalScoresView: View {
             .foregroundStyle(.secondary)
             .textCase(.uppercase)
             .padding(.top, 8)
+    }
+
+    // MARK: - PSI/PORT
+
+    private var psiPortForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            psiPortDemographicsSection
+            psiPortComorbiditySection
+            psiPortExamSection
+            psiPortLabSection
+        }
+    }
+
+    @ViewBuilder private var psiPortDemographicsSection: some View {
+        Group {
+            sectionHeader("Demographics")
+            if patient.sex == .male {
+                mewsSlider(label: "Age (years, male: +1/yr)", autoKey: "ageMale",
+                           value: Binding(get: { Double(psiI.ageMale) }, set: { psiI.ageMale = Int($0) }),
+                           in: 0...120, step: 1, display: "\(psiI.ageMale)")
+            } else {
+                mewsSlider(label: "Age − 10 (female adj, +1/yr)", autoKey: "ageFemale",
+                           value: Binding(get: { Double(psiI.ageFemale) }, set: { psiI.ageFemale = Int($0) }),
+                           in: 0...110, step: 1, display: "\(psiI.ageFemale)")
+            }
+            scoreToggle("Nursing home resident", binding: $psiI.nursingHomeResident, points: "+10", autoKey: "nursingHomeResident")
+        }
+        .onChange(of: psiI) { _, _ in recalculate() }
+    }
+
+    @ViewBuilder private var psiPortComorbiditySection: some View {
+        Group {
+            sectionHeader("Comorbidities")
+            scoreToggle("Neoplastic disease",           binding: $psiI.neoplasticDisease,      points: "+30", autoKey: "neoplasticDisease")
+            scoreToggle("Liver disease",                binding: $psiI.liverDisease,            points: "+20", autoKey: "liverDisease")
+            scoreToggle("Congestive heart failure",     binding: $psiI.congestiveHeartFailure,  points: "+10", autoKey: "congestiveHeartFailure")
+            scoreToggle("Cerebrovascular disease",      binding: $psiI.cerebrovascularDisease,  points: "+10", autoKey: "cerebrovascularDisease")
+            scoreToggle("Renal disease",                binding: $psiI.renalDisease,            points: "+10", autoKey: "renalDisease")
+        }
+        .onChange(of: psiI) { _, _ in recalculate() }
+    }
+
+    @ViewBuilder private var psiPortExamSection: some View {
+        Group {
+            sectionHeader("Examination Findings")
+            scoreToggle("Altered mental status",                   binding: $psiI.alteredMentalStatus,      points: "+20", autoKey: "alteredMentalStatus")
+            scoreToggle("Respiratory rate >30 breaths/min",        binding: $psiI.respiratoryRateOver30,    points: "+20", autoKey: "respiratoryRateOver30")
+            scoreToggle("Systolic BP <90 mmHg",                    binding: $psiI.systolicBPUnder90,        points: "+20", autoKey: "systolicBPUnder90")
+            scoreToggle("Temperature <35°C or >40°C",              binding: $psiI.tempUnder35orOver40,      points: "+15", autoKey: "tempUnder35orOver40")
+            scoreToggle("Heart rate >125 bpm",                     binding: $psiI.heartRateOver125,         points: "+10", autoKey: "heartRateOver125")
+        }
+        .onChange(of: psiI) { _, _ in recalculate() }
+    }
+
+    @ViewBuilder private var psiPortLabSection: some View {
+        Group {
+            sectionHeader("Laboratory & Radiology")
+            scoreToggle("Arterial pH <7.35",                       binding: $psiI.arterialPHUnder735,       points: "+30", autoKey: "arterialPHUnder735")
+            scoreToggle("BUN >11 mmol/L (>30 mg/dL)",             binding: $psiI.bunOver11mmoL,            points: "+20", autoKey: "bunOver11mmoL")
+            scoreToggle("Sodium <130 mmol/L",                      binding: $psiI.sodiumUnder130,           points: "+20", autoKey: "sodiumUnder130")
+            scoreToggle("Glucose >14 mmol/L (>250 mg/dL)",        binding: $psiI.glucoseOver14,            points: "+10", autoKey: "glucoseOver14")
+            scoreToggle("Haematocrit <30%",                        binding: $psiI.haematocritUnder30,       points: "+10", autoKey: "haematocritUnder30")
+            scoreToggle("PaO₂ <60 mmHg or SpO₂ <90%",            binding: $psiI.pao2Under60orSpO2Under90, points: "+10", autoKey: "pao2Under60orSpO2Under90")
+            scoreToggle("Pleural effusion on imaging",             binding: $psiI.pleuralEffusion,          points: "+10", autoKey: "pleuralEffusion")
+        }
+        .onChange(of: psiI) { _, _ in recalculate() }
     }
 
     private func scoreHistoryColor(_ riskRaw: String) -> Color {

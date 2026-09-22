@@ -397,6 +397,34 @@ struct STOPBANGInput: Equatable {
     var male: Bool = false              // G — gender male
 }
 
+struct PSIPortInput: Equatable {
+    // PSI/PORT — Community-Acquired Pneumonia severity (Fine et al, NEJM 1997)
+    // Demographic
+    var ageMale: Int = 0              // age in years (for males)
+    var ageFemale: Int = 0            // age - 10 (for females; pass actual age - 10)
+    var nursingHomeResident: Bool = false      // +10
+    // Comorbidities
+    var neoplasticDisease: Bool = false        // +30
+    var liverDisease: Bool = false             // +20
+    var congestiveHeartFailure: Bool = false   // +10
+    var cerebrovascularDisease: Bool = false   // +10
+    var renalDisease: Bool = false             // +10
+    // Physical exam
+    var alteredMentalStatus: Bool = false      // +20
+    var respiratoryRateOver30: Bool = false    // +20
+    var systolicBPUnder90: Bool = false        // +20
+    var tempUnder35orOver40: Bool = false      // +15 (< 35°C or ≥ 40°C)
+    var heartRateOver125: Bool = false         // +10
+    // Lab / imaging
+    var arterialPHUnder735: Bool = false       // +30
+    var bunOver11mmoL: Bool = false            // +20 (BUN ≥11 mmol/L)
+    var sodiumUnder130: Bool = false           // +20
+    var glucoseOver14: Bool = false            // +10
+    var haematocritUnder30: Bool = false       // +10
+    var pao2Under60orSpO2Under90: Bool = false // +10
+    var pleuralEffusion: Bool = false          // +10
+}
+
 // MARK: - ClinicalScoringEngine
 
 enum ClinicalScoringEngine {
@@ -1842,5 +1870,78 @@ enum ClinicalScoringEngine {
         case 3...4: return (.moderate, "STOP-BANG \(Int(s))/8: Intermediate OSA risk", ["Pre-op sleep study or SpO₂ overnight if time allows", "Discuss with anaesthesia team pre-op", "Avoid benzodiazepines if possible", "PACU monitoring; consider extended post-op SpO₂"])
         default:    return (.high, "STOP-BANG \(Int(s))/8: High OSA risk", ["Formal sleep study / polysomnography", "If CPAP user: bring CPAP to hospital", "Inform anaesthetist pre-op", "Avoid opioids where possible; use multimodal analgesia", "Extended PACU stay / HDU post-op consideration", "Nurse semi-upright post-operatively"])
         }
+    }
+
+    // MARK: PSI/PORT — Community-Acquired Pneumonia Severity Index
+
+    static func psiPort(_ i: PSIPortInput) -> ClinicalScore {
+        let items: [ScoredItem] = [
+            .init(label: "Age (male, per year)", points: Double(i.ageMale), present: i.ageMale > 0),
+            .init(label: "Age −10 (female, per year)", points: Double(i.ageFemale), present: i.ageFemale > 0),
+            .init(label: "Nursing home resident", points: 10, present: i.nursingHomeResident),
+            .init(label: "Neoplastic disease", points: 30, present: i.neoplasticDisease),
+            .init(label: "Liver disease", points: 20, present: i.liverDisease),
+            .init(label: "Congestive heart failure", points: 10, present: i.congestiveHeartFailure),
+            .init(label: "Cerebrovascular disease", points: 10, present: i.cerebrovascularDisease),
+            .init(label: "Renal disease", points: 10, present: i.renalDisease),
+            .init(label: "Altered mental status", points: 20, present: i.alteredMentalStatus),
+            .init(label: "Respiratory rate ≥30/min", points: 20, present: i.respiratoryRateOver30),
+            .init(label: "Systolic BP <90 mmHg", points: 20, present: i.systolicBPUnder90),
+            .init(label: "Temp <35°C or ≥40°C", points: 15, present: i.tempUnder35orOver40),
+            .init(label: "Heart rate ≥125 bpm", points: 10, present: i.heartRateOver125),
+            .init(label: "Arterial pH <7.35", points: 30, present: i.arterialPHUnder735),
+            .init(label: "BUN ≥11 mmol/L", points: 20, present: i.bunOver11mmoL),
+            .init(label: "Sodium <130 mEq/L", points: 20, present: i.sodiumUnder130),
+            .init(label: "Glucose ≥14 mmol/L", points: 10, present: i.glucoseOver14),
+            .init(label: "Haematocrit <30%", points: 10, present: i.haematocritUnder30),
+            .init(label: "PaO₂ <60 mmHg or SpO₂ <90%", points: 10, present: i.pao2Under60orSpO2Under90),
+            .init(label: "Pleural effusion on imaging", points: 10, present: i.pleuralEffusion),
+        ]
+        let score = items.filter(\.present).reduce(0.0) { $0 + $1.points }
+
+        let (psiClass, risk, interpretation, recs, redFlags): (Int, ScoreRisk, String, [String], [String])
+        switch score {
+        case ..<71:
+            let cls = score <= 0 || (!i.neoplasticDisease && !i.liverDisease && !i.congestiveHeartFailure
+                                     && !i.cerebrovascularDisease && !i.renalDisease
+                                     && !i.alteredMentalStatus && !i.respiratoryRateOver30
+                                     && !i.systolicBPUnder90 && !i.heartRateOver125
+                                     && !i.pao2Under60orSpO2Under90
+                                     && (i.ageMale > 0 ? i.ageMale < 50 : i.ageFemale < 40)) ? 1 : 2
+            psiClass = cls; risk = .low
+            interpretation = "PSI Class \(cls) — 30-day mortality \(cls == 1 ? "<0.1%" : "0.6%")"
+            recs = ["Outpatient treatment appropriate", "Amoxicillin 500 mg TDS or doxycycline",
+                    "Review in 48 h if not improving", "Return if oxygen saturation falls"]
+            redFlags = []
+        case 71...90:
+            psiClass = 3; risk = .moderate
+            interpretation = "PSI Class III — 30-day mortality ~2.8%"
+            recs = ["Brief inpatient observation or outpatient with close follow-up",
+                    "Amoxicillin-clavulanate ± macrolide", "SpO₂ monitoring", "Review in 24 h"]
+            redFlags = []
+        case 91...130:
+            psiClass = 4; risk = .high
+            interpretation = "PSI Class IV — 30-day mortality ~8.2%"
+            recs = ["Hospital admission required", "Amoxicillin-clavulanate + clarithromycin IV/oral",
+                    "Continuous SpO₂ monitoring", "FBC, U&E, CRP, blood cultures × 2 before antibiotics",
+                    "Chest X-ray follow-up at 6 weeks"]
+            redFlags = ["Class IV: admission and IV antibiotics mandatory"]
+        default:
+            psiClass = 5; risk = .critical
+            interpretation = "PSI Class V — 30-day mortality ~29%"
+            recs = ["ICU-level care required", "Piperacillin-tazobactam + azithromycin IV",
+                    "Consider non-invasive ventilation or intubation", "Urgent intensivist review",
+                    "Strict fluid balance, vasopressors if shocked", "Blood cultures × 2 stat"]
+            redFlags = ["Class V: ICU referral and broad-spectrum IV antibiotics urgently"]
+        }
+
+        return ClinicalScore(
+            systemName: "Pneumonia Severity Index",
+            abbreviation: "PSI/PORT Class \(psiClass)",
+            score: score, maxScore: 395,
+            risk: risk, interpretation: interpretation,
+            recommendations: recs, items: items, redFlags: redFlags,
+            evidenceNote: "Fine et al, NEJM 1997. Validated in 52,000+ patients. Class I–II: outpatient. Class III: short stay. IV–V: admit/ICU. 30-day mortality 0.1%→29%."
+        )
     }
 }

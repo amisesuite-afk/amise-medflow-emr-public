@@ -995,4 +995,69 @@ enum PatientScoreAutoPopulator {
 
         return (i, f)
     }
+
+    // MARK: PSI/PORT (from patient demographics, vitals, and PMH)
+
+    static func psiPort(patient: Patient) -> (PSIPortInput, ScoreAutoFill) {
+        var i = PSIPortInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        // Age and sex contribution
+        let calendar = Calendar.current
+        let ageYears = calendar.dateComponents([.year], from: patient.dateOfBirth, to: .now).year ?? 0
+        if patient.sex == .male {
+            i.ageMale = max(0, ageYears)
+            f.autoFieldKeys.insert("ageMale")
+        } else {
+            i.ageFemale = max(0, ageYears - 10)
+            f.autoFieldKeys.insert("ageFemale")
+        }
+
+        // Vitals thresholds
+        if let v = patient.latestVitals {
+            if let rr = v.respiratoryRate, rr > 30 {
+                i.respiratoryRateOver30 = true; f.autoFieldKeys.insert("respiratoryRateOver30")
+            }
+            if let sbp = v.bpSystolic, sbp < 90 {
+                i.systolicBPUnder90 = true; f.autoFieldKeys.insert("systolicBPUnder90")
+            }
+            if let temp = v.temperatureCelsius, (temp < 35 || temp > 40) {
+                i.tempUnder35orOver40 = true; f.autoFieldKeys.insert("tempUnder35orOver40")
+            }
+            if let hr = v.heartRate, hr > 125 {
+                i.heartRateOver125 = true; f.autoFieldKeys.insert("heartRateOver125")
+            }
+        }
+
+        // Comorbidities from PMH free text
+        let pmh = (patient.pmhNotes ?? "").lowercased()
+        if ["cancer", "carcinoma", "malignancy", "neoplasm", "tumour", "tumor"].contains(where: { pmh.contains($0) }) {
+            i.neoplasticDisease = true; f.autoFieldKeys.insert("neoplasticDisease")
+        }
+        if ["cirrhosis", "liver disease", "hepatic failure", "hepatitis"].contains(where: { pmh.contains($0) }) {
+            i.liverDisease = true; f.autoFieldKeys.insert("liverDisease")
+        }
+        if ["heart failure", "cardiac failure", "ccf", "chf"].contains(where: { pmh.contains($0) }) {
+            i.congestiveHeartFailure = true; f.autoFieldKeys.insert("congestiveHeartFailure")
+        }
+        if ["stroke", " tia ", "cva", "cerebrovascular"].contains(where: { pmh.contains($0) }) {
+            i.cerebrovascularDisease = true; f.autoFieldKeys.insert("cerebrovascularDisease")
+        }
+        if ["renal failure", "kidney failure", "ckd", "crf", "end-stage renal"].contains(where: { pmh.contains($0) }) {
+            i.renalDisease = true; f.autoFieldKeys.insert("renalDisease")
+        }
+
+        // Lab and radiology values require manual entry
+        f.addPending(key: "alteredMentalStatus",      label: "Altered mental status (disorientation, stupor, coma)", source: "Clinical assessment")
+        f.addPending(key: "arterialPHUnder735",        label: "Arterial pH <7.35",                                    source: "ABG")
+        f.addPending(key: "bunOver11mmoL",             label: "BUN >11 mmol/L (>30 mg/dL)",                           source: "U&E results")
+        f.addPending(key: "sodiumUnder130",            label: "Sodium <130 mmol/L",                                   source: "U&E results")
+        f.addPending(key: "glucoseOver14",             label: "Glucose >14 mmol/L (>250 mg/dL)",                      source: "BMP / finger-stick")
+        f.addPending(key: "haematocritUnder30",        label: "Haematocrit <30%",                                     source: "FBC results")
+        f.addPending(key: "pao2Under60orSpO2Under90",  label: "PaO₂ <60 mmHg or SpO₂ <90%",                          source: "ABG or pulse oximetry")
+        f.addPending(key: "pleuralEffusion",           label: "Pleural effusion on imaging",                          source: "CXR / CT thorax")
+        f.addPending(key: "nursingHomeResident",       label: "Nursing home resident",                                source: "Social history")
+
+        return (i, f)
+    }
 }
