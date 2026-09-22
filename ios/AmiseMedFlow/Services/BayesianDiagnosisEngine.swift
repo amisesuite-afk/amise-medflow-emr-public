@@ -2909,6 +2909,109 @@ enum BayesianDiagnosisEngine {
                     triggered = recSrc.contains("recurr") || recSrc.contains(f.value.lowercased().replacingOccurrences(of: "_", with: " "))
                     sourceKey = "history"
 
+                // ── Short clinical abbreviation keys (≤3 chars, missed by default pass 2) ──
+                case "crp":
+                    let crpSrc = invResults.filter { $0.contains("crp") || $0.contains("c-reactive protein") || $0.contains("c reactive protein") }
+                    let fvCRP = f.value.lowercased().replacingOccurrences(of: "_", with: " ")
+                    triggered = crpSrc.contains(where: { $0.contains(fvCRP) }) ||
+                                (fvCRP.contains("elevated") || fvCRP.contains("raised") || fvCRP.contains("rising"))
+                                && crpSrc.contains(where: { $0.contains("elevat") || $0.contains("high") || $0.contains("raised") || $0.contains("rising") })
+                    sourceKey = "investigation"
+
+                case "esr_crp", "crp_esr", "wbc_crp":
+                    let inflSrc = invResults.filter { $0.contains("crp") || $0.contains("esr") || $0.contains("wbc") ||
+                                                       $0.contains("erythrocyte sedimentation") || $0.contains("inflammatory marker") }
+                    let fvInfl = f.value.lowercased().replacingOccurrences(of: "_", with: " ")
+                    triggered = inflSrc.contains(where: { $0.contains("elevat") || $0.contains("raised") || $0.contains("high") || $0.contains(fvInfl) })
+                    sourceKey = "investigation"
+
+                case "ogd":
+                    triggered = invModalityMatch(keywords: ["ogd", "oesophagogastroduodenoscopy", "upper endoscopy", "upper gi endoscopy", "gastroscopy"], finding: f.value)
+                    sourceKey = "investigation"
+
+                case "ct":
+                    triggered = invModalityMatch(keywords: ["ct ", "ct-", "computed tomography"], finding: f.value)
+                    sourceKey = "investigation"
+
+                case "us":
+                    triggered = invModalityMatch(keywords: ["ultrasound", "uss", "u/s", "sonograph"], finding: f.value)
+                    sourceKey = "investigation"
+
+                case "fbc":
+                    let fvFBC = f.value.lowercased().replacingOccurrences(of: "_", with: " ")
+                    let fbcSrc = invResults.filter { $0.contains("fbc") || $0.contains("full blood count") || $0.contains("complete blood count") }
+                    triggered = fbcSrc.contains(where: { $0.contains(fvFBC) }) ||
+                                (fbcSrc.contains(where: { $0.contains("anaemia") || $0.contains("pancytopenia") || $0.contains("neutropenia") }))
+                    sourceKey = "investigation"
+
+                case "fna":
+                    triggered = invModalityMatch(keywords: ["fna", "fine needle", "fnac", "fine-needle"], finding: f.value)
+                    sourceKey = "investigation"
+
+                case "ck":
+                    let ckSrc = invResults.filter { $0.contains(" ck ") || $0.contains("creatine kinase") || $0.contains("ck:") || $0.hasPrefix("ck ") }
+                    let fvCK = f.value.lowercased().replacingOccurrences(of: "_", with: " ")
+                    triggered = ckSrc.contains(where: { $0.contains("elevat") || $0.contains("raised") || $0.contains("high") || $0.contains(fvCK) })
+                    sourceKey = "investigation"
+
+                case "mri_dwi":
+                    triggered = invModalityMatch(keywords: ["mri", "dwi", "diffusion weighted", "diffusion-weighted"], finding: f.value)
+                    sourceKey = "investigation"
+
+                case "hla_b27":
+                    triggered = invResults.contains(where: { $0.contains("hla") && $0.contains("b27") }) ||
+                                invResults.contains(where: { $0.contains("hla-b27") || $0.contains("hla b27") })
+                    sourceKey = "investigation"
+
+                case "hpv":
+                    triggered = invResults.contains(where: { $0.contains("hpv") || $0.contains("human papillomavirus") })
+                    sourceKey = "investigation"
+
+                case "alt_ast":
+                    let liverSrc = invResults.filter { $0.contains("alt") || $0.contains("ast") || $0.contains("alanine") || $0.contains("aspartate") }
+                    let fvLiver = f.value.lowercased().replacingOccurrences(of: "_", with: " ")
+                    triggered = liverSrc.contains(where: { $0.contains("elevat") || $0.contains("raised") || $0.contains("above") || $0.contains(fvLiver) })
+                    sourceKey = "investigation"
+
+                case "pcr":
+                    let fvPCR = f.value.lowercased()
+                    triggered = invResults.contains(where: { $0.contains("pcr") && ($0.contains("positive") || fvPCR.contains("positive") || $0.contains("detected")) })
+                    sourceKey = "investigation"
+
+                case "bp":
+                    let bpSrc = [examCVS, examGeneral].joined(separator: " ").lowercased()
+                    let fvBP = f.value.lowercased().replacingOccurrences(of: "_", with: " ")
+                    triggered = bpSrc.contains("hypertension") || bpSrc.contains("severely elevated") ||
+                                bpSrc.contains("markedly elevated") || bpSrc.contains("bp elevated") ||
+                                bpSrc.contains(fvBP) ||
+                                (socrates["associations"] ?? []).contains(where: { $0.lowercased().contains("hyperten") })
+                    sourceKey = "exam"
+
+                case "bmi":
+                    let fvBMI = f.value.lowercased()
+                    if let b = bmi {
+                        switch true {
+                        case fvBMI.contains("above_30") || fvBMI.contains("overweight") || fvBMI.contains("obese"): triggered = b >= 30
+                        case fvBMI.contains("lean") || fvBMI.contains("normal"):                                      triggered = b < 25
+                        default:
+                            if let n = fvBMI.components(separatedBy: CharacterSet(charactersIn:"0123456789").inverted).compactMap(Int.init).first {
+                                triggered = fvBMI.contains("above") || fvBMI.contains("over") ? b >= Double(n) : b < Double(n)
+                            }
+                        }
+                    } else {
+                        triggered = pmhL.contains("obese") || pmhL.contains("overweight") || pmhL.contains("obesity")
+                    }
+                    sourceKey = "demographics"
+
+                case "sex":
+                    let fvSex = f.value.lowercased()
+                    triggered = (fvSex == "male" && sex == .male) || (fvSex == "female" && sex == .female)
+                    sourceKey = "demographics"
+
+                case "age_over_50":
+                    triggered = age >= 50
+                    sourceKey = "demographics"
+
                 default:
                     // Pass 1: SOCRATES dict lookup — specialist early-form chips may store
                     // any custom DB key (e.g. lucid_interval, ecg, triad_nph) into
