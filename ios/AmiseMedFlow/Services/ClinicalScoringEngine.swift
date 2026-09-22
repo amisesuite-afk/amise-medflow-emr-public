@@ -1240,7 +1240,7 @@ enum ClinicalScoringEngine {
             .init(label: "Pitting oedema", points: 1, present: i.pittingOedema),
             .init(label: "Collateral superficial veins (non-varicose)", points: 1, present: i.collateralSuperficialVeins),
             .init(label: "Previously documented DVT", points: 1, present: i.previousDVT),
-            .init(label: "Alternative diagnosis equally or more likely", points: -2, present: i.alternativeDiagnosisAsLikely),
+            .init(label: "Alternative diagnosis equally or more likely", points: -2.0, present: i.alternativeDiagnosisAsLikely),
         ]
         let score = items.filter(\.present).reduce(0.0) { $0 + $1.points }
 
@@ -5307,9 +5307,9 @@ enum ClinicalScoringEngine {
             interpretation: interp,
             recommendations: recs,
             items: [
-                ScoredItem(label: "Heart rate (bpm)", points: i.heartRate, present: true),
-                ScoredItem(label: "Systolic BP (mmHg)", points: i.systolicBP, present: true),
-                ScoredItem(label: "Shock Index (HR ÷ SBP)", points: Int(siRounded * 100), present: true)
+                ScoredItem(label: "Heart rate (bpm)", points: Double(i.heartRate), present: true),
+                ScoredItem(label: "Systolic BP (mmHg)", points: Double(i.systolicBP), present: true),
+                ScoredItem(label: "Shock Index (HR ÷ SBP)", points: siRounded * 100, present: true)
             ],
             redFlags: flags,
             evidenceNote: "Allgöwer M, Burri C. Dtsch Med Wochenschr 1967;92:1947–1950. Shock Index validated in trauma (Mutschler 2013) and obstetric haemorrhage (Bhatt 2018). SI ≥ 1.0 predicts need for massive transfusion (sensitivity 87%). Limitations: less reliable in patients on beta-blockers or with pre-existing hypertension/bradycardia."
@@ -5374,11 +5374,11 @@ enum ClinicalScoringEngine {
                 "Transfer to regional burns unit if: TBSA >15% adult, full-thickness, face/hands/perineum/circumferential"
             ],
             items: [
-                ScoredItem(label: "Weight (\(Int(i.weightKg)) kg)", points: Int(i.weightKg), present: true),
-                ScoredItem(label: "TBSA burned (\(Int(i.tbsaPercent))%)", points: Int(i.tbsaPercent), present: true),
-                ScoredItem(label: "Total 24 h volume: \(Int(totalVol)) mL Hartmann's", points: Int(totalVol), present: true),
-                ScoredItem(label: "First 8 h: \(Int(firstHalf)) mL at \(Int(rateFirst8h)) mL/h", points: Int(firstHalf), present: true),
-                ScoredItem(label: "Next 16 h: \(Int(secondHalf)) mL at \(Int(rateNext16h)) mL/h", points: Int(secondHalf), present: true),
+                ScoredItem(label: "Weight (\(Int(i.weightKg)) kg)", points: i.weightKg, present: true),
+                ScoredItem(label: "TBSA burned (\(Int(i.tbsaPercent))%)", points: i.tbsaPercent, present: true),
+                ScoredItem(label: "Total 24 h volume: \(Int(totalVol)) mL Hartmann's", points: totalVol, present: true),
+                ScoredItem(label: "First 8 h: \(Int(firstHalf)) mL at \(Int(rateFirst8h)) mL/h", points: firstHalf, present: true),
+                ScoredItem(label: "Next 16 h: \(Int(secondHalf)) mL at \(Int(rateNext16h)) mL/h", points: secondHalf, present: true),
                 ScoredItem(label: "Inhalation injury (+additional airway management)", points: 0, present: i.hasInhalationInjury)
             ],
             redFlags: flags,
