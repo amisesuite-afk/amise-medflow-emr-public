@@ -166,6 +166,36 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
             if n.contains("colonoscopy") && !r.isEmpty {
                 ccHints.append("colonoscopy finding lower gi endoscopic finding")
             }
+            // Imaging findings → diagnostic routing
+            let isImaging = n.contains("ct") || n.contains("ultrasound") || n.contains("mri") ||
+                            n.contains("x-ray") || n.contains("xray") || n.contains("chest x") ||
+                            n.contains("abdominal x") || n.contains("pet")
+            if isImaging && !r.isEmpty {
+                // Hepatobiliary
+                if r.contains("gallstone") || r.contains("cholelithiasis") { ccHints.append("gallstone right upper quadrant biliary colic cholecystitis") }
+                if r.contains("common bile duct") || r.contains("cbd dilation") || r.contains("biliary dilation") { ccHints.append("jaundice obstructive biliary cholangitis cholangiocarcinoma") }
+                if r.contains("pancreatic") && (r.contains("mass") || r.contains("lesion")) { ccHints.append("epigastric weight loss pancreatic mass malignancy") }
+                if r.contains("pancreatitis") || r.contains("pancreatic inflammation") { ccHints.append("epigastric back pain pancreatitis") }
+                // Bowel / abdominal
+                if r.contains("appendix") && (r.contains("inflam") || r.contains("thick") || r.contains("dilat")) { ccHints.append("right iliac fossa pain appendicitis") }
+                if r.contains("diverticulit") { ccHints.append("left iliac fossa pain diverticulitis") }
+                if r.contains("bowel obstruction") || r.contains("dilated bowel") || (r.contains("obstruction") && (n.contains("ct") || n.contains("x-ray"))) { ccHints.append("distension vomiting bowel obstruction") }
+                if r.contains("free air") || r.contains("pneumoperitoneum") { ccHints.append("peritonitis perforation free air emergency") }
+                if r.contains("hernia") { ccHints.append("groin swelling hernia inguinal femoral") }
+                if r.contains("mass") || r.contains("lesion") || r.contains("tumour") || r.contains("tumor") { ccHints.append("weight loss mass malignancy neoplasm") }
+                // Vascular
+                if r.contains("aortic aneurysm") || r.contains("aaa") { ccHints.append("back pain pulsatile aortic aneurysm vascular") }
+                if r.contains("dvt") || r.contains("deep vein thrombosis") || r.contains("thrombus") { ccHints.append("leg swelling dvt deep vein thrombosis") }
+                if r.contains("pulmonary embol") || r.contains("pe ") { ccHints.append("breathless chest pain pulmonary embolism") }
+                // Chest
+                if r.contains("pneumonia") || r.contains("consolidation") || r.contains("infiltrate") { ccHints.append("fever cough breathless pneumonia consolidation") }
+                if r.contains("pleural effusion") { ccHints.append("breathless pleuritic pleural effusion") }
+                if r.contains("pneumothorax") { ccHints.append("breathless chest pain pneumothorax") }
+                // Hepatic
+                if r.contains("liver lesion") || r.contains("hepatic lesion") || r.contains("liver mass") { ccHints.append("right upper quadrant liver lesion hepatocellular hepatic metastasis") }
+                if r.contains("cirrhosis") || r.contains("hepatic fibrosis") { ccHints.append("jaundice liver disease cirrhosis portal hypertension") }
+                if r.contains("splenomegaly") { ccHints.append("anaemia splenomegaly portal hypertension haematological") }
+            }
         }
         let augmentedCC: String? = {
             let base = patient.chiefComplaint ?? ""
