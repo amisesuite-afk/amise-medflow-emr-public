@@ -248,6 +248,7 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
             mallampatiClass:             patient.mallampatiScore.map { min($0, 4) },
             cfsScore:                    patient.cfsScore,
             timiScore:                   patient.timiScore,
+            waterlowScore:               patient.waterlowScore,
             latestHR:    latestV?.heartRate,
             latestSBP:   latestV?.bpSystolic,
             latestTemp:  latestV?.temperatureCelsius,

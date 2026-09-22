@@ -476,6 +476,23 @@ struct ForrestInput: Equatable {
     var grade: Int = 1
 }
 
+struct WaterlowInput: Equatable {
+    // Waterlow Pressure Ulcer Risk Assessment (Waterlow J, Nursing Times 1985; revised 2005)
+    // Composite risk score from build/weight, skin type, sex/age, mobility, continence,
+    // appetite, and special risk factors
+    var buildWeight: Int = 0       // 0=average, 1=above average, 2=obese, 3=below average
+    var skinType: Int = 0          // 0=healthy, 1=tissue paper, 2=dry, 3=oedematous, 4=clammy/pyrexia, 5=discoloured, 6=broken/spot
+    var sexAge: Int = 0            // 0=male 14-49, 1=female 14-49/male 50-64, 2=female 50-64/male 65-74, 3=female 65-74/male 75-80, 4=female 75-80, 5=81+
+    var mobility: Int = 0          // 0=fully mobile, 1=restless/fidgety, 2=apathetic, 3=restricted, 4=inert/traction, 5=chairbound
+    var continence: Int = 0        // 0=complete/catheterised, 1=occasionally incontinent, 2=catheterised/incontinent faeces, 3=doubly incontinent
+    var appetite: Int = 0          // 0=average, 1=poor, 2=NG tube/fluids only, 3=NBM/anorexic
+    // Special risk factors (additive)
+    var tissuemalnutrition: Bool = false   // cachexia, terminal/cardiac failure, peripheral vascular, anaemia, smoking
+    var neurologicalDeficit: Bool = false  // diabetic/motor/sensory/paraplegia (score +4–6)
+    var majorSurgery: Bool = false         // orthopaedic below waist / spinal >2 h table, score +5
+    var onCytotoxics: Bool = false         // high-dose steroids / cytotoxic agents
+}
+
 struct TIMIInput: Equatable {
     // TIMI Risk Score for UA/NSTEMI (Antman et al, JAMA 2000)
     // 7 binary risk factors; score 0–7; predicts 14-day composite endpoint
@@ -2846,6 +2863,76 @@ enum ClinicalScoringEngine {
             recommendations: data.recs,
             redFlags: data.flags,
             evidenceNote: "Forrest JAH et al. Lancet 1974; 2:394–397. Laine L & Peterson WL. N Engl J Med 1994; 331:717–727."
+        )
+    }
+
+    // MARK: - Waterlow Pressure Ulcer Risk
+
+    static func waterlow(_ i: WaterlowInput) -> ClinicalScore {
+        var total = i.buildWeight + i.skinType + i.sexAge + i.mobility + i.continence + i.appetite
+        if i.tissuemalnutrition { total += 8 }
+        if i.neurologicalDeficit { total += 5 }
+        if i.majorSurgery { total += 5 }
+        if i.onCytotoxics { total += 4 }
+
+        let (risk, interp, recs, flags): (ScoreRisk, String, [String], [String]) = switch total {
+        case 0...9:
+            (.low, "Low risk — no pressure ulcer prevention beyond standard care",
+             ["Routine skin inspection and repositioning per ward protocol",
+              "Ensure adequate hydration and nutrition",
+              "Document baseline skin assessment on admission"],
+             [])
+        case 10...14:
+            (.moderate, "At risk — implement preventive measures",
+             ["2-hourly repositioning or use of pressure-redistributing mattress",
+              "Daily skin inspection; document any redness or skin changes",
+              "Nutritional assessment; consider dietitian referral",
+              "Heel protection device if bedbound",
+              "Educate patient and carers about pressure ulcer prevention"],
+             [])
+        case 15...19:
+            (.high, "High risk — active prevention protocol required",
+             ["High-specification foam or dynamic (alternating pressure) mattress",
+              "1–2 hourly repositioning or continuous pressure relief",
+              "Heel offloading device; consider barrier cream",
+              "Formal nutritional assessment; nutritional supplements if depleted",
+              "Daily wound care nurse or tissue viability nurse review",
+              "Document wound care plan in nursing records"],
+             ["High pressure ulcer risk — tissue viability nurse review recommended"])
+        default:
+            (.critical, "Very high risk — tissue viability nurse involvement essential",
+             ["Dynamic high-specification mattress or air-fluidised bed",
+              "Maximum pressure redistribution; skin inspection with every repositioning",
+              "Tissue viability nurse referral immediately",
+              "Optimise nutrition (consider NG or parenteral if oral inadequate)",
+              "Daily formal wound assessment; photograph any skin changes",
+              "Consider specialist wound care products (foam, hydrocolloid, silicone)"],
+             ["Very high pressure ulcer risk — TVN referral; specialist mattress required"])
+        }
+
+        let items: [ScoreItem] = [
+            ScoreItem(label: "Build/Weight", points: Double(i.buildWeight), present: i.buildWeight > 0),
+            ScoreItem(label: "Skin type", points: Double(i.skinType), present: i.skinType > 0),
+            ScoreItem(label: "Sex/Age", points: Double(i.sexAge), present: i.sexAge > 0),
+            ScoreItem(label: "Mobility", points: Double(i.mobility), present: i.mobility > 0),
+            ScoreItem(label: "Continence", points: Double(i.continence), present: i.continence > 0),
+            ScoreItem(label: "Appetite", points: Double(i.appetite), present: i.appetite > 0),
+            ScoreItem(label: "Tissue malnutrition / cachexia", points: 8, present: i.tissuemalnutrition),
+            ScoreItem(label: "Neurological deficit", points: 5, present: i.neurologicalDeficit),
+            ScoreItem(label: "Major surgery / trauma", points: 5, present: i.majorSurgery),
+            ScoreItem(label: "Cytotoxics / high-dose steroids", points: 4, present: i.onCytotoxics)
+        ]
+
+        return ClinicalScore(
+            systemName: "Waterlow Pressure Ulcer Risk",
+            abbreviation: "Waterlow",
+            score: Double(total), maxScore: 64,
+            risk: risk,
+            interpretation: "Waterlow \(total) — \(interp)",
+            items: items,
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Waterlow J. Nursing Times 1985;81:49–55. Waterlow J. Nursing Times 2005;101:62–66 (revised card)."
         )
     }
 

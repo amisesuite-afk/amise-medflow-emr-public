@@ -1881,4 +1881,73 @@ enum PatientScoreAutoPopulator {
             source: "Endoscopy report")
         return (i, f)
     }
+
+    // MARK: - Waterlow Pressure Ulcer Risk
+
+    static func waterlow(patient: Patient) -> (WaterlowInput, ScoreAutoFill) {
+        var i = WaterlowInput()
+        var f = ScoreAutoFill()
+        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                       patient.examGeneral, patient.examSkin, patient.pmhNotes,
+                       patient.notes, patient.workingDiagnosis]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Sex and age combined score
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 0
+            let isMale = patient.sex == .male
+            let sexAge: Int = switch age {
+            case 81...:     5
+            case 75...80:   isMale ? 3 : 4
+            case 65...74:   isMale ? 2 : 3
+            case 50...64:   isMale ? 1 : 2
+            default:        isMale ? 0 : 1
+            }
+            i.sexAge = sexAge
+            f.addAutoFilled(key: "sexAge", label: "Sex/age band \(sexAge) (from DOB + sex)", source: "Demographics")
+        } else {
+            f.addPending(key: "sexAge", label: "Sex/age combination — requires DOB", source: "Demographics")
+        }
+
+        // Obesity from clinical text
+        if allText.contains("obese") || allText.contains("obesity") ||
+           allText.contains("morbid") || allText.contains("bmi >30") ||
+           allText.contains("bmi>30") || allText.contains("bmi ≥30") {
+            i.buildWeight = 2
+            f.addAutoFilled(key: "buildWeight", label: "Obesity detected in clinical text — verify weight category", source: "Clinical text")
+        }
+
+        // Tissue malnutrition risk factors
+        if allText.contains("cachex") || allText.contains("terminal") ||
+           allText.contains("cardiac failure") || allText.contains("heart failure") ||
+           allText.contains("peripheral vascular") || allText.contains("anaemia") ||
+           allText.contains("anemia") || allText.contains("smok") {
+            i.tissuemalnutrition = true
+            f.addAutoFilled(key: "tissuemalnutrition", label: "Tissue malnutrition risk factor detected — verify", source: "Clinical text / PMH")
+        }
+
+        // Neurological deficit
+        if allText.contains("diabet") || allText.contains("paraplegia") ||
+           allText.contains("paraplegi") || allText.contains("motor deficit") ||
+           allText.contains("sensory deficit") || allText.contains("neuropath") {
+            i.neurologicalDeficit = true
+            f.addAutoFilled(key: "neurologicalDeficit", label: "Neurological deficit risk factor detected — verify", source: "Clinical text / PMH")
+        }
+
+        // Major surgery — orthopaedic / spinal / prolonged table
+        if allText.contains("orthopaedic") || allText.contains("orthopedic") ||
+           allText.contains("hip replacement") || allText.contains("knee replacement") ||
+           allText.contains("spinal surgery") || allText.contains("spinal operation") ||
+           allText.contains("laminect") || allText.contains("discectomy") {
+            i.majorSurgery = true
+            f.addAutoFilled(key: "majorSurgery", label: "Major orthopaedic/spinal surgery risk factor detected — verify", source: "Clinical text / surgical history")
+        }
+
+        // Skin type, continence, mobility, appetite require bedside assessment
+        f.addPending(key: "skinType", label: "Skin type / visual risk area — requires bedside inspection", source: "Nursing assessment")
+        f.addPending(key: "continence", label: "Continence status — requires nursing assessment", source: "Nursing assessment")
+        f.addPending(key: "mobility", label: "Mobility level — requires clinical or nursing assessment", source: "Nursing assessment")
+        f.addPending(key: "appetite", label: "Appetite / nutritional intake — requires dietary or nursing assessment", source: "Nursing assessment")
+        return (i, f)
+    }
 }

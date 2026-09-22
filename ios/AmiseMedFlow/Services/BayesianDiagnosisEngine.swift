@@ -118,6 +118,7 @@ enum BayesianDiagnosisEngine {
         mallampatiClass: Int? = nil,  // Mallampati class (1–4); ≥3 = potentially difficult airway
         cfsScore: Int? = nil,         // CFS (1–9); ≥5 = mild frailty — boosts frailty-related candidates
         timiScore: Int? = nil,        // TIMI (0–7); ≥3 = intermediate, ≥5 = high ACS risk
+        waterlowScore: Int? = nil,    // Waterlow (0–64); ≥15 = high, ≥20 = very high pressure ulcer risk
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2824,6 +2825,26 @@ enum BayesianDiagnosisEngine {
                 let (adj, label): (Int, String) = switch hs {
                 case 7...: (14, "HEART ≥7 — high MACE risk (~50–65%); early invasive strategy recommended")
                 case 4..<7: (7, "HEART 4–6 — moderate MACE risk (~12–25%); observation and serial troponins")
+                default:   (0, "")
+                }
+                guard adj > 0 else { continue }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // Waterlow: boosts pressure ulcer, wound dehiscence, skin breakdown candidates
+        if let wl = waterlowScore, wl >= 15 {
+            let wlTargets = ["pressure ulcer", "pressure injury", "pressure sore", "decubitus",
+                              "wound dehiscence", "skin breakdown", "skin integrity",
+                              "venous ulcer", "diabetic foot ulcer", "leg ulcer"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard wlTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch wl {
+                case 20...: (12, "Waterlow ≥20 — very high pressure ulcer risk; dynamic mattress + immediate TVN referral")
+                case 15..<20: (7, "Waterlow 15–19 — high pressure ulcer risk; active prevention protocol + TVN review")
                 default:   (0, "")
                 }
                 guard adj > 0 else { continue }

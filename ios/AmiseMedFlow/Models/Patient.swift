@@ -125,6 +125,8 @@ final class Patient {
     var cfsScore: Int?
     // TIMI Risk Score for UA/NSTEMI (0–7); ≥3=intermediate, ≥5=high 14-day MACE risk
     var timiScore: Int?
+    // Waterlow Pressure Ulcer Risk (0–64); 10–14=at risk, 15–19=high, ≥20=very high
+    var waterlowScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

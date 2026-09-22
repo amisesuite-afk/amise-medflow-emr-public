@@ -61,6 +61,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case mallampati       = "Mallampati Airway Class"
     case cfs              = "Clinical Frailty Scale"
     case timi             = "TIMI (UA/NSTEMI Risk)"
+    case waterlow         = "Waterlow Pressure Ulcer Risk"
 
     var category: ScoreCategory {
         switch self {
@@ -78,7 +79,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .neuro
         case .cha2ds2vasc, .hasBled, .heart, .timi:
             return .cardiac
-        case .mews, .news2:
+        case .mews, .news2, .waterlow:
             return .monitoring
         }
     }
@@ -122,6 +123,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .mallampati:     return "mouth"
         case .cfs:            return "figure.walk.circle"
         case .timi:           return "waveform.path.ecg.rectangle"
+        case .waterlow:       return "bed.double"
         }
     }
 }
@@ -220,6 +222,8 @@ struct ClinicalScoresView: View {
     @State private var cfsI = ClinicalFrailtyInput()
     // TIMI
     @State private var timiI = TIMIInput()
+    // Waterlow
+    @State private var waterlowI = WaterlowInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -612,6 +616,9 @@ struct ClinicalScoresView: View {
         case .timi:
             let (input, fill) = PatientScoreAutoPopulator.timi(patient: patient)
             timiI = input; autoFill = fill
+        case .waterlow:
+            let (input, fill) = PatientScoreAutoPopulator.waterlow(patient: patient)
+            waterlowI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -710,6 +717,7 @@ struct ClinicalScoresView: View {
         case .mallampati:   ClinicalScoringEngine.mallampati(mallampatiI)
         case .cfs:          ClinicalScoringEngine.clinicalFrailty(cfsI)
         case .timi:         ClinicalScoringEngine.timi(timiI)
+        case .waterlow:     ClinicalScoringEngine.waterlow(waterlowI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -748,6 +756,7 @@ struct ClinicalScoresView: View {
         case .mallampati:   patient.mallampatiScore = intScore
         case .cfs:          patient.cfsScore = intScore
         case .timi:         patient.timiScore = intScore
+        case .waterlow:     patient.waterlowScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -824,6 +833,7 @@ struct ClinicalScoresView: View {
         case .mallampati:   mallampatiForm
         case .cfs:          cfsForm
         case .timi:         timiForm
+        case .waterlow:     waterlowForm
         }
     }
 
@@ -1899,6 +1909,14 @@ struct ClinicalScoresView: View {
             case "beardOrDentures": mallampatiI.beardOrDentures = true
             default: break
             }
+        case .waterlow:
+            switch field.id {
+            case "tissuemalnutrition": waterlowI.tissuemalnutrition = true
+            case "neurologicalDeficit": waterlowI.neurologicalDeficit = true
+            case "majorSurgery":       waterlowI.majorSurgery = true
+            case "onCytotoxics":       waterlowI.onCytotoxics = true
+            default: break
+            }
         default: break
         }
 
@@ -2391,6 +2409,78 @@ struct ClinicalScoresView: View {
                 scoreToggle("Elevated serum cardiac markers (troponin or CK-MB)", binding: $timiI.elevatedCardiacMarkers, points: "+1", autoKey: "elevatedCardiacMarkers")
             }
             .onChange(of: timiI) { _, _ in recalculate() }
+        }
+    }
+
+    // MARK: - Waterlow Pressure Ulcer Risk
+
+    private var waterlowForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Waterlow Pressure Ulcer Risk Assessment (Waterlow J, Nursing Times 1985; revised 2005). Scores six patient factors plus four special risk categories. Low risk 0–9; at risk 10–14; high risk 15–19; very high risk ≥20.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
+            Group {
+                sectionHeader("Build / Weight for Height")
+                apacheSegment("Build", selection: $waterlowI.buildWeight,
+                    options: [
+                        (0, "0 — Average"),
+                        (1, "1 — Above average"),
+                        (2, "2 — Obese"),
+                        (3, "3 — Below average")
+                    ])
+                sectionHeader("Skin Type / Visual Risk Areas")
+                apacheSegment("Skin Type", selection: $waterlowI.skinType,
+                    options: [
+                        (0, "0 — Healthy"),
+                        (1, "1 — Tissue paper / fragile"),
+                        (2, "2 — Dry"),
+                        (3, "3 — Oedematous"),
+                        (4, "4 — Clammy / pyrexia"),
+                        (5, "5 — Discoloured (but not broken)"),
+                        (6, "6 — Broken or spot")
+                    ])
+                sectionHeader("Sex and Age")
+                apacheSegment("Sex / Age", selection: $waterlowI.sexAge,
+                    options: [
+                        (0, "0 — Male 14–49"),
+                        (1, "1 — Female 14–49 / Male 50–64"),
+                        (2, "2 — Female 50–64 / Male 65–74"),
+                        (3, "3 — Female 65–74 / Male 75–80"),
+                        (4, "4 — Female 75–80"),
+                        (5, "5 — 81+")
+                    ])
+                sectionHeader("Mobility")
+                apacheSegment("Mobility", selection: $waterlowI.mobility,
+                    options: [
+                        (0, "0 — Fully mobile"),
+                        (1, "1 — Restless / fidgety"),
+                        (2, "2 — Apathetic"),
+                        (3, "3 — Restricted / chair-fast"),
+                        (4, "4 — Inert / in traction"),
+                        (5, "5 — Chairbound / bedridden")
+                    ])
+                sectionHeader("Continence")
+                apacheSegment("Continence", selection: $waterlowI.continence,
+                    options: [
+                        (0, "0 — Complete / catheterised"),
+                        (1, "1 — Occasionally incontinent"),
+                        (2, "2 — Catheterised but incontinent of faeces"),
+                        (3, "3 — Doubly incontinent")
+                    ])
+                sectionHeader("Appetite / Nutritional Status")
+                apacheSegment("Appetite", selection: $waterlowI.appetite,
+                    options: [
+                        (0, "0 — Average"),
+                        (1, "1 — Poor"),
+                        (2, "2 — NG tube / fluids only"),
+                        (3, "3 — NBM / anorexic")
+                    ])
+                sectionHeader("Special Risk Factors")
+                scoreToggle("Tissue malnutrition: cachexia / terminal / cardiac failure / peripheral vascular / anaemia / smoking", binding: $waterlowI.tissuemalnutrition, points: "+8", autoKey: "tissuemalnutrition")
+                scoreToggle("Neurological deficit: diabetes / motor-sensory / paraplegia", binding: $waterlowI.neurologicalDeficit, points: "+5", autoKey: "neurologicalDeficit")
+                scoreToggle("Major surgery or trauma: orthopaedic below waist / spinal / >2 h on operating table", binding: $waterlowI.majorSurgery, points: "+5", autoKey: "majorSurgery")
+                scoreToggle("Medication: cytotoxic agents / high-dose steroids", binding: $waterlowI.onCytotoxics, points: "+4", autoKey: "onCytotoxics")
+            }
+            .onChange(of: waterlowI) { _, _ in recalculate() }
         }
     }
 
