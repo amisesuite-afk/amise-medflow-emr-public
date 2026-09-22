@@ -139,6 +139,8 @@ final class Patient {
     var euroScoreII: Int?
     // NIHSS (NIH Stroke Scale) total 0–42; 0=no deficit, 1-4=minor, 5-15=moderate, 16-20=moderate-severe, 21-42=severe
     var nihssScore: Int?
+    // modified Rankin Scale 0–6; 0=no symptoms, 3=moderate disability, 5=severe dependency, 6=dead
+    var mrsScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

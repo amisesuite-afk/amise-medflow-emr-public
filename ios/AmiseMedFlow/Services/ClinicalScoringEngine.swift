@@ -3057,6 +3057,94 @@ enum ClinicalScoringEngine {
         )
     }
 
+    // MARK: - modified Rankin Scale (mRS)
+
+    struct MRSInput: Equatable {
+        // modified Rankin Scale (van Swieten JC et al. Stroke 1988;19:604–607)
+        // 0–6 ordinal scale of stroke-related disability / dependence
+        // 0 = no symptoms; 1 = no significant disability; 2 = slight disability;
+        // 3 = moderate disability; 4 = moderately severe disability;
+        // 5 = severe disability; 6 = dead
+        var level: Int = 0   // 0–6
+    }
+
+    static func mRS(_ i: MRSInput) -> ClinicalScore {
+        let level = max(0, min(6, i.level))
+
+        let (risk, interp, recs, flags): (ScoreRisk, String, [String], [String]) = switch level {
+        case 0:
+            (.low, "No symptoms",
+             ["Confirm aetiology and initiate secondary prevention (antiplatelet/anticoagulation, statin, antihypertensive)",
+              "Risk factor optimisation: BP <130/80, LDL-C <1.8 mmol/L in stroke/TIA",
+              "Outpatient neurology or stroke follow-up at 1 month"],
+             [])
+        case 1:
+            (.low, "No significant disability despite symptoms — all usual duties and activities carried out",
+             ["Secondary prevention as above",
+              "Reassure re: functional recovery; lifestyle counselling (exercise, diet, smoking cessation)",
+              "Driving may be permitted subject to local DVLA / transport authority guidelines"],
+             [])
+        case 2:
+            (.low, "Slight disability — unable to carry out some previous activities but independent without assistance in own affairs",
+             ["Outpatient physiotherapy and occupational therapy assessment",
+              "Driving restrictions: assess individually; typically restricted ≥1 month post-stroke",
+              "Cognitive assessment if memory or executive function concerns",
+              "Secondary prevention and risk factor control"],
+             [])
+        case 3:
+            (.moderate, "Moderate disability — requiring some help but able to walk without assistance",
+             ["Inpatient or community stroke rehabilitation programme",
+              "OT home assessment for adaptive equipment and environmental modification",
+              "Speech and language therapy if communication or swallowing affected",
+              "Carer support services referral",
+              "Antispasticity management if upper/lower limb spasticity present"],
+             [])
+        case 4:
+            (.high, "Moderately severe disability — unable to walk and attend to own bodily needs without assistance",
+             ["Inpatient rehabilitation or specialist nursing facility",
+              "Multidisciplinary stroke team: physiotherapy, OT, SLT, dietetics, psychology",
+              "Spasticity management, pressure ulcer prevention, deep vein thrombosis prophylaxis",
+              "Carer training and community discharge planning",
+              "Depression and post-stroke emotional lability screening (PHQ-9)"],
+             ["mRS 4 — high care dependency; discharge planning must address 24-hour care needs"])
+        case 5:
+            (.high, "Severe disability — bedridden, incontinent and requiring constant nursing care and attention",
+             ["Ongoing inpatient or long-term care placement",
+              "Goal-setting with family: rehabilitation potential vs. palliative approach",
+              "Enteral nutrition if dysphagia prevents adequate oral intake",
+              "Spasticity, contracture, and pressure care intensive management",
+              "Palliative care team involvement if appropriate"],
+             ["mRS 5 — severe dependency; high mortality within 1 year; multi-disciplinary goals-of-care discussion required"])
+        default: // 6
+            (.high, "Dead",
+             ["Document cause of death; complete relevant notifications",
+              "Offer family bereavement support",
+              "Mortality and morbidity review if stroke care quality concerns"],
+             ["mRS 6 — patient deceased"])
+        }
+
+        let labels = ["No symptoms",
+                      "No significant disability",
+                      "Slight disability — independent",
+                      "Moderate disability — walks unaided",
+                      "Moderately severe disability — needs assistance",
+                      "Severe disability — fully dependent",
+                      "Dead"]
+        let items = [ScoreItem(label: "mRS Level \(level): \(labels[level])", points: Double(level), present: true)]
+
+        return ClinicalScore(
+            systemName: "modified Rankin Scale",
+            abbreviation: "mRS \(level)",
+            score: Double(level), maxScore: 6,
+            risk: risk,
+            interpretation: "mRS \(level) — \(interp)",
+            items: items,
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "van Swieten JC et al. Stroke 1988;19:604–607. Rankin J. Scott Med J 1957;2:200–215."
+        )
+    }
+
     // MARK: - EuroSCORE II (Cardiac Surgery Operative Mortality)
 
     static func euroScoreII(_ i: EuroScoreIIInput) -> ClinicalScore {

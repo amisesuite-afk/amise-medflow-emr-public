@@ -125,6 +125,7 @@ enum BayesianDiagnosisEngine {
         barthelScore: Int? = nil,     // Barthel Index (0–100); ≤20 = severe ADL dependency
         euroScoreII: Int? = nil,      // EuroSCORE II predicted mortality ×10 (e.g. 35 = 3.5%); ≥50 = high risk
         nihssScore: Int? = nil,       // NIHSS (0–42); ≥16 = moderate-severe/severe stroke
+        mrsScore: Int? = nil,         // mRS (0–6); ≥3 = moderate-severe disability
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -1635,7 +1636,7 @@ enum BayesianDiagnosisEngine {
               ccL.contains("raised amylase") || ccL.contains("lipase elevated") ||
               ccL.contains("elevated lipase") || ccL.contains("raised lipase")) &&
              !ccL.contains("chest pain"):
-            candidates = externalPool("acutePancreatitis") ?? biliaryColic
+            candidates = externalPool("acutePancreatitis") ?? externalPool("biliaryColic") ?? []
             if ccL.contains("gallstone") || ccL.contains("biliary") { mergePool("biliaryColic") }
 
         // Abnormal LFTs / elevated bilirubin — investigation-first jaundice workup
@@ -2580,7 +2581,7 @@ enum BayesianDiagnosisEngine {
                 case 2...6:  (isCritical ? 6 : 4,   "SOFA \(sofa) — organ dysfunction; sepsis criteria met if infected")
                 default:     (isCritical ? -4 : -2,  "SOFA \(sofa) — no significant organ dysfunction")
                 }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2598,7 +2599,7 @@ enum BayesianDiagnosisEngine {
                 case 1.30...: (6,  String(format: "FIB-4 %.2f — indeterminate; fibrosis cannot be excluded", fib4))
                 default:      (-4, String(format: "FIB-4 %.2f — low fibrosis risk (F0–F1)", fib4))
                 }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2618,7 +2619,7 @@ enum BayesianDiagnosisEngine {
                 case 1:    (4,  "CURB-65 1 — low-moderate CAP, outpatient with monitoring")
                 default:   (-2, "CURB-65 0 — low severity CAP, <3% mortality; outpatient")
                 }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2636,7 +2637,7 @@ enum BayesianDiagnosisEngine {
                 case 4...5: (10, "Padua \(pad) — high VTE risk; LMWH prophylaxis indicated")
                 default:    (4,  "Padua \(pad) — intermediate VTE risk; reassess daily")
                 }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2656,7 +2657,7 @@ enum BayesianDiagnosisEngine {
                 case 15...19: (10, "APACHE II \(apache) — high severity: ~25% predicted mortality")
                 default:      (5,  "APACHE II \(apache) — moderate severity: ~15% predicted mortality")
                 }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2676,7 +2677,7 @@ enum BayesianDiagnosisEngine {
                 case 15..<30: (8, String(format: "P-POSSUM predicted mortality %.1f%% — high operative risk", mortPct))
                 default:    (4, String(format: "P-POSSUM predicted mortality %.1f%% — moderate operative risk", mortPct))
                 }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2696,7 +2697,7 @@ enum BayesianDiagnosisEngine {
                 default:    (0, "")
                 }
                 guard adj > 0 else { continue }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2717,7 +2718,7 @@ enum BayesianDiagnosisEngine {
                 default:   (0, "")
                 }
                 guard adj > 0 else { continue }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2736,7 +2737,7 @@ enum BayesianDiagnosisEngine {
                 default:    (0, "")
                 }
                 guard adj > 0 else { continue }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2759,7 +2760,7 @@ enum BayesianDiagnosisEngine {
                 default:   (0,  "")
                 }
                 guard adj > 0 else { continue }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2779,7 +2780,7 @@ enum BayesianDiagnosisEngine {
                 default:   (0, "")
                 }
                 guard adj > 0 else { continue }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2799,7 +2800,7 @@ enum BayesianDiagnosisEngine {
                 default:   (0, "")
                 }
                 guard adj > 0 else { continue }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2814,7 +2815,7 @@ enum BayesianDiagnosisEngine {
                 guard osaTargets.contains(where: { nameLow.contains($0) }) else { continue }
                 let adj = mc >= 4 ? 8 : 5
                 let label = "Mallampati class \(mc) — crowded oropharynx; elevated OSA risk"
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2834,7 +2835,7 @@ enum BayesianDiagnosisEngine {
                 default:   (0, "")
                 }
                 guard adj > 0 else { continue }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2854,7 +2855,7 @@ enum BayesianDiagnosisEngine {
                 default:   (0, "")
                 }
                 guard adj > 0 else { continue }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2874,7 +2875,7 @@ enum BayesianDiagnosisEngine {
                 default:   (0, "")
                 }
                 guard adj > 0 else { continue }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2894,7 +2895,7 @@ enum BayesianDiagnosisEngine {
                 default:   (0, "")
                 }
                 guard adj > 0 else { continue }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2913,7 +2914,7 @@ enum BayesianDiagnosisEngine {
                 case 0...20: (12, "DASI \(dasi) — severely poor functional capacity (<4 METs); markedly elevated perioperative cardiac risk")
                 default:     (7,  "DASI \(dasi) — poor functional capacity (<4 METs); elevated perioperative cardiac risk")
                 }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2933,7 +2934,7 @@ enum BayesianDiagnosisEngine {
                 default: (0, "")
                 }
                 guard adj > 0 else { continue }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2955,7 +2956,7 @@ enum BayesianDiagnosisEngine {
                 default: (0, "")
                 }
                 guard adj > 0 else { continue }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -2979,7 +2980,31 @@ enum BayesianDiagnosisEngine {
                 default: (0, "")
                 }
                 guard adj > 0 else { continue }
-                scored[i].logPosterior += Double(adj)
+                scored[i].logPosterior += adj
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // mRS: pre-existing disability boosts stroke, dementia, and neurodegenerative candidates
+        if let mrs = mrsScore, mrs >= 2 {
+            let mrsTargets = ["ischaemic stroke", "hemorrhagic stroke", "tia",
+                               "subarachnoid haemorrhage", "cerebral venous sinus thrombosis",
+                               "dementia", "vascular dementia", "parkinson", "multiple sclerosis",
+                               "motor neurone disease", "spinal cord injury",
+                               "hemiplegia", "hemiparesis", "frailty syndrome",
+                               "post-stroke depression"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard mrsTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch mrs {
+                case 4...: (10, "mRS ≥4 — severe pre-existing neurological disability; major neurological disease burden")
+                case 3: (6, "mRS 3 — moderate disability requiring some help; significant neurological disease")
+                case 2: (3, "mRS 2 — slight disability; some neurological disease likely")
+                default: (0, "")
+                }
+                guard adj > 0 else { continue }
+                scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }

@@ -68,6 +68,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case barthel          = "Barthel Index (ADL)"
     case euroScoreII      = "EuroSCORE II (Cardiac Surgery)"
     case nihss            = "NIHSS (Stroke Severity)"
+    case mrs              = "modified Rankin Scale (Disability)"
 
     var category: ScoreCategory {
         switch self {
