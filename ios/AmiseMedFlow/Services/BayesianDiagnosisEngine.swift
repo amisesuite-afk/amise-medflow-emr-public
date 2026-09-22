@@ -117,6 +117,7 @@ enum BayesianDiagnosisEngine {
         heartScore: Int? = nil,       // HEART Score (0–10); ≥4 = moderate/high MACE risk
         mallampatiClass: Int? = nil,  // Mallampati class (1–4); ≥3 = potentially difficult airway
         cfsScore: Int? = nil,         // CFS (1–9); ≥5 = mild frailty — boosts frailty-related candidates
+        timiScore: Int? = nil,        // TIMI (0–7); ≥3 = intermediate, ≥5 = high ACS risk
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2749,6 +2750,26 @@ enum BayesianDiagnosisEngine {
                 case 4:    (7,  "Forrest IIb — adherent clot; rebleed risk 22%; high-risk stigmata")
                 case 5:    (3,  "Forrest IIc — flat spot; rebleed risk 10%; lower-risk stigmata")
                 default:   (0,  "")
+                }
+                guard adj > 0 else { continue }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // TIMI: boosts ACS/UA/NSTEMI candidates based on risk score
+        if let timi = timiScore, timi >= 3 {
+            let acsTargets = ["acute coronary syndrome", "unstable angina", "nstemi",
+                               "myocardial infarction", "angina", "ischaemic heart disease",
+                               "coronary artery disease", "aortic stenosis"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard acsTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch timi {
+                case 5...: (12, "TIMI ≥5 — high risk UA/NSTEMI (~26–40% 14-day MACE)")
+                case 3..<5: (7, "TIMI 3–4 — intermediate risk UA/NSTEMI (~13–20% 14-day MACE)")
+                default:   (0, "")
                 }
                 guard adj > 0 else { continue }
                 scored[i].logPosterior += Double(adj)

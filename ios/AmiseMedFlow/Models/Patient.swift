@@ -123,6 +123,8 @@ final class Patient {
     var mallampatiScore: Int?
     // Clinical Frailty Scale (1–9); ≥5=mild frailty increases perioperative risk
     var cfsScore: Int?
+    // TIMI Risk Score for UA/NSTEMI (0–7); ≥3=intermediate, ≥5=high 14-day MACE risk
+    var timiScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

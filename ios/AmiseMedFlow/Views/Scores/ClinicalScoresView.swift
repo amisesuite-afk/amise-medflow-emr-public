@@ -60,6 +60,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case heart            = "HEART Score (Chest Pain)"
     case mallampati       = "Mallampati Airway Class"
     case cfs              = "Clinical Frailty Scale"
+    case timi             = "TIMI (UA/NSTEMI Risk)"
 
     var category: ScoreCategory {
         switch self {
@@ -75,7 +76,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .preop
         case .abcd2, .lrinec, .gcs:
             return .neuro
-        case .cha2ds2vasc, .hasBled, .heart:
+        case .cha2ds2vasc, .hasBled, .heart, .timi:
             return .cardiac
         case .mews, .news2:
             return .monitoring
@@ -120,6 +121,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .heart:          return "heart.text.clipboard"
         case .mallampati:     return "mouth"
         case .cfs:            return "figure.walk.circle"
+        case .timi:           return "waveform.path.ecg.rectangle"
         }
     }
 }
@@ -216,6 +218,8 @@ struct ClinicalScoresView: View {
     @State private var mallampatiI = MallampatiInput()
     // Clinical Frailty Scale
     @State private var cfsI = ClinicalFrailtyInput()
+    // TIMI
+    @State private var timiI = TIMIInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -605,6 +609,9 @@ struct ClinicalScoresView: View {
         case .cfs:
             let (input, fill) = PatientScoreAutoPopulator.cfs(patient: patient)
             cfsI = input; autoFill = fill
+        case .timi:
+            let (input, fill) = PatientScoreAutoPopulator.timi(patient: patient)
+            timiI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -702,6 +709,7 @@ struct ClinicalScoresView: View {
         case .heart:        ClinicalScoringEngine.heart(heartI)
         case .mallampati:   ClinicalScoringEngine.mallampati(mallampatiI)
         case .cfs:          ClinicalScoringEngine.clinicalFrailty(cfsI)
+        case .timi:         ClinicalScoringEngine.timi(timiI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -739,6 +747,7 @@ struct ClinicalScoresView: View {
         case .heart:        patient.heartScore = intScore
         case .mallampati:   patient.mallampatiScore = intScore
         case .cfs:          patient.cfsScore = intScore
+        case .timi:         patient.timiScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -814,6 +823,7 @@ struct ClinicalScoresView: View {
         case .heart:        heartForm
         case .mallampati:   mallampatiForm
         case .cfs:          cfsForm
+        case .timi:         timiForm
         }
     }
 
@@ -1865,6 +1875,17 @@ struct ClinicalScoresView: View {
         case .heart:
             // HEART domain scores are numeric pickers — no boolean toggle confirm
             break
+        case .timi:
+            switch field.id {
+            case "ageOver65":                   timiI.ageOver65 = true
+            case "threeOrMoreRiskFactors":      timiI.threeOrMoreRiskFactors = true
+            case "priorCoronaryArteryStenosis": timiI.priorCoronaryArteryStenosis = true
+            case "stDeviationOnECG":            timiI.stDeviationOnECG = true
+            case "twoOrMoreAnginalEvents":      timiI.twoOrMoreAnginalEvents = true
+            case "aspirinUseInLast7Days":       timiI.aspirinUseInLast7Days = true
+            case "elevatedCardiacMarkers":      timiI.elevatedCardiacMarkers = true
+            default: break
+            }
         case .cfs:
             // CFS is a single ordinal picker — no boolean toggle confirm
             break
@@ -2350,6 +2371,26 @@ struct ClinicalScoresView: View {
                 scoreToggle("Age ≥70 years", binding: $nrsI.ageOver70, points: "+1", autoKey: "ageOver70")
             }
             .onChange(of: nrsI) { _, _ in recalculate() }
+        }
+    }
+
+    // MARK: - TIMI Risk Score (UA/NSTEMI)
+
+    private var timiForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("TIMI Risk Score for UA/NSTEMI (Antman et al, JAMA 2000). 7 binary risk factors; score 0–7. 0–2 = low risk (~8% 14-day MACE), 3–4 = intermediate (~13–20%), 5–7 = high (~26–40%).")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
+            Group {
+                sectionHeader("Risk Factors")
+                scoreToggle("Age ≥65 years", binding: $timiI.ageOver65, points: "+1", autoKey: "ageOver65")
+                scoreToggle("≥3 CAD risk factors (FH / HTN / hypercholesterolaemia / DM / active smoker)", binding: $timiI.threeOrMoreRiskFactors, points: "+1", autoKey: "threeOrMoreRiskFactors")
+                scoreToggle("Known CAD: prior coronary stenosis ≥50%", binding: $timiI.priorCoronaryArteryStenosis, points: "+1", autoKey: "priorCoronaryArteryStenosis")
+                scoreToggle("ST-segment deviation on presenting ECG", binding: $timiI.stDeviationOnECG, points: "+1", autoKey: "stDeviationOnECG")
+                scoreToggle("≥2 anginal events in prior 24 hours", binding: $timiI.twoOrMoreAnginalEvents, points: "+1", autoKey: "twoOrMoreAnginalEvents")
+                scoreToggle("Aspirin use in the prior 7 days (angina despite aspirin)", binding: $timiI.aspirinUseInLast7Days, points: "+1", autoKey: "aspirinUseInLast7Days")
+                scoreToggle("Elevated serum cardiac markers (troponin or CK-MB)", binding: $timiI.elevatedCardiacMarkers, points: "+1", autoKey: "elevatedCardiacMarkers")
+            }
+            .onChange(of: timiI) { _, _ in recalculate() }
         }
     }
 

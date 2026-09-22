@@ -476,6 +476,18 @@ struct ForrestInput: Equatable {
     var grade: Int = 1
 }
 
+struct TIMIInput: Equatable {
+    // TIMI Risk Score for UA/NSTEMI (Antman et al, JAMA 2000)
+    // 7 binary risk factors; score 0–7; predicts 14-day composite endpoint
+    var ageOver65: Bool = false         // age ≥65 years
+    var threeOrMoreRiskFactors: Bool = false // ≥3 CAD risk factors (FH, HTN, hypercholesterolaemia, DM, active smoker)
+    var priorCoronaryArteryStenosis: Bool = false // known CAD: prior coronary stenosis ≥50%
+    var stDeviationOnECG: Bool = false  // ST-segment deviation on presenting ECG
+    var twoOrMoreAnginalEvents: Bool = false // ≥2 anginal events in prior 24 h
+    var aspirinUseInLast7Days: Bool = false  // aspirin use in the prior 7 days (despite aspirin)
+    var elevatedCardiacMarkers: Bool = false // elevated serum cardiac markers (troponin or CK-MB)
+}
+
 struct ClinicalFrailtyInput: Equatable {
     // Clinical Frailty Scale (Rockwood et al, CMAJ 2005; Rockwood et al, Lancet 2019)
     // 9-level ordinal scale assessing functional capacity and frailty in adults ≥65
@@ -2834,6 +2846,66 @@ enum ClinicalScoringEngine {
             recommendations: data.recs,
             redFlags: data.flags,
             evidenceNote: "Forrest JAH et al. Lancet 1974; 2:394–397. Laine L & Peterson WL. N Engl J Med 1994; 331:717–727."
+        )
+    }
+
+    // MARK: - TIMI Risk Score (UA/NSTEMI)
+
+    static func timi(_ i: TIMIInput) -> ClinicalScore {
+        var total = 0
+        if i.ageOver65 { total += 1 }
+        if i.threeOrMoreRiskFactors { total += 1 }
+        if i.priorCoronaryArteryStenosis { total += 1 }
+        if i.stDeviationOnECG { total += 1 }
+        if i.twoOrMoreAnginalEvents { total += 1 }
+        if i.aspirinUseInLast7Days { total += 1 }
+        if i.elevatedCardiacMarkers { total += 1 }
+
+        let (risk, interp, recs, flags): (ScoreRisk, String, [String], [String]) = switch total {
+        case 0...2:
+            (.low, "Low risk — 14-day composite event rate ~8%",
+             ["Conservative management; serial troponins (0, 3, 6 h)",
+              "Non-invasive stress testing before discharge if troponins negative",
+              "Dual antiplatelet therapy and anticoagulation per ACS pathway",
+              "Cardiology follow-up within 72 h"],
+             [])
+        case 3...4:
+            (.moderate, "Intermediate risk — 14-day composite event rate ~13–20%",
+             ["Hospital admission; cardiology review",
+              "Inpatient stress testing or early invasive strategy depending on clinical context",
+              "Dual antiplatelet + anticoagulation; consider GP IIb/IIIa inhibitor if high-risk features",
+              "Echocardiography to assess LV function"],
+             [])
+        default:
+            (.high, "High risk — 14-day composite event rate ~26–40%",
+             ["Early invasive strategy (coronary angiography within 24–48 h)",
+              "Dual antiplatelet therapy (aspirin + P2Y12 inhibitor)",
+              "Anticoagulation (LMWH or fondaparinux) unless contraindicated",
+              "Continuous cardiac monitoring; cardiology on-call review urgently",
+              "Glycoprotein IIb/IIIa inhibitor if refractory ischaemia or catheter lab planned"],
+             ["High TIMI score — early invasive strategy strongly recommended"])
+        }
+
+        let items: [ScoreItem] = [
+            ScoreItem(label: "Age ≥65",                           points: 1, present: i.ageOver65),
+            ScoreItem(label: "≥3 CAD risk factors",              points: 1, present: i.threeOrMoreRiskFactors),
+            ScoreItem(label: "Prior coronary stenosis ≥50%",     points: 1, present: i.priorCoronaryArteryStenosis),
+            ScoreItem(label: "ST deviation on ECG",              points: 1, present: i.stDeviationOnECG),
+            ScoreItem(label: "≥2 anginal events in prior 24 h",  points: 1, present: i.twoOrMoreAnginalEvents),
+            ScoreItem(label: "Aspirin use in prior 7 days",      points: 1, present: i.aspirinUseInLast7Days),
+            ScoreItem(label: "Elevated cardiac markers",         points: 1, present: i.elevatedCardiacMarkers)
+        ]
+
+        return ClinicalScore(
+            systemName: "TIMI Risk Score (UA/NSTEMI)",
+            abbreviation: "TIMI",
+            score: Double(total), maxScore: 7,
+            risk: risk,
+            interpretation: "TIMI \(total)/7 — \(interp)",
+            items: items,
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Antman EM et al. JAMA 2000;284:835–842."
         )
     }
 

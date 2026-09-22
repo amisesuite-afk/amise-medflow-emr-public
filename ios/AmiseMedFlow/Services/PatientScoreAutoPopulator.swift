@@ -1704,6 +1704,56 @@ enum PatientScoreAutoPopulator {
         return (i, f)
     }
 
+    // MARK: - TIMI Risk Score (UA/NSTEMI)
+
+    static func timi(patient: Patient) -> (TIMIInput, ScoreAutoFill) {
+        var i = TIMIInput()
+        var f = ScoreAutoFill()
+        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                       patient.pmhNotes, patient.workingDiagnosis, patient.notes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Age
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 0
+            if age >= 65 {
+                i.ageOver65 = true
+                f.addAutoFilled(key: "ageOver65", label: "Age ≥65 (from DOB)", source: "Date of birth")
+            }
+        }
+
+        // CAD risk factors from clinical text
+        let riskFactorKeywords = ["hypertension", "hypercholesterol", "hyperlipid", "diabetes",
+                                   "diabet", "smoker", "smoking", "family history of cad",
+                                   "family history of coronary", "ischaemic heart disease"]
+        let riskCount = riskFactorKeywords.filter { allText.contains($0) }.count
+        if riskCount >= 3 {
+            i.threeOrMoreRiskFactors = true
+            f.addAutoFilled(key: "threeOrMoreRiskFactors", label: "≥3 CAD risk factors detected — verify", source: "PMH / clinical text")
+        }
+
+        // Prior coronary stenosis
+        if allText.contains("coronary artery disease") || allText.contains("cad") ||
+           allText.contains("coronary stenosis") || allText.contains("prior mi") ||
+           allText.contains("previous mi") || allText.contains("pci") ||
+           allText.contains("cabg") || allText.contains("stent") {
+            i.priorCoronaryArteryStenosis = true
+            f.addAutoFilled(key: "priorCoronaryArteryStenosis", label: "Prior CAD detected from clinical text — verify stenosis ≥50%", source: "PMH / clinical text")
+        }
+
+        // Aspirin use
+        if allText.contains("aspirin") || allText.contains("acetylsalicylic") {
+            i.aspirinUseInLast7Days = true
+            f.addAutoFilled(key: "aspirinUseInLast7Days", label: "Aspirin use noted in clinical text — verify recent use", source: "Clinical text / medications")
+        }
+
+        // ST deviation and cardiac markers require ECG/lab — mark pending
+        f.addPending(key: "stDeviationOnECG", label: "ST deviation — requires current ECG", source: "ECG")
+        f.addPending(key: "twoOrMoreAnginalEvents", label: "Anginal episodes in prior 24 h — clinical history", source: "Clinical history")
+        f.addPending(key: "elevatedCardiacMarkers", label: "Cardiac markers (troponin / CK-MB) — requires laboratory result", source: "Laboratory")
+        return (i, f)
+    }
+
     // MARK: - Clinical Frailty Scale
 
     static func cfs(patient: Patient) -> (ClinicalFrailtyInput, ScoreAutoFill) {
