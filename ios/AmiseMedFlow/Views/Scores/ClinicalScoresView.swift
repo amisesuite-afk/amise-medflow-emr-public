@@ -53,10 +53,11 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case padua            = "Padua (Medical VTE Risk)"
     case apacheII         = "APACHE II (ICU Severity)"
     case ppossum          = "P-POSSUM (Surgical Risk)"
+    case mpi              = "Mannheim Peritonitis Index"
 
     var category: ScoreCategory {
         switch self {
-        case .alvarado, .tokyoChole, .tokyoCholang, .ranson, .glasgow, .bisap:
+        case .alvarado, .tokyoChole, .tokyoCholang, .ranson, .glasgow, .bisap, .mpi:
             return .acute
         case .rockall, .blatchford, .aims65:
             return .gi
@@ -106,6 +107,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .padua:          return "figure.walk"
         case .apacheII:       return "cross.circle.fill"
         case .ppossum:        return "scissors"
+        case .mpi:            return "cross.circle"
         }
     }
 }
@@ -188,6 +190,8 @@ struct ClinicalScoresView: View {
     @State private var apacheIII = APACHEIIInput()
     // P-POSSUM
     @State private var ppossumI = PPOSSUMInput()
+    // MPI
+    @State private var mpiI = MPIInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -556,6 +560,9 @@ struct ClinicalScoresView: View {
         case .ppossum:
             let (input, fill) = PatientScoreAutoPopulator.ppossum(patient: patient)
             ppossumI = input; autoFill = fill
+        case .mpi:
+            let (input, fill) = PatientScoreAutoPopulator.mpi(patient: patient)
+            mpiI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -646,6 +653,7 @@ struct ClinicalScoresView: View {
         case .padua:        ClinicalScoringEngine.padua(paduaI)
         case .apacheII:     ClinicalScoringEngine.apacheII(apacheIII)
         case .ppossum:      ClinicalScoringEngine.ppossum(ppossumI)
+        case .mpi:          ClinicalScoringEngine.mpi(mpiI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -676,6 +684,7 @@ struct ClinicalScoresView: View {
         case .padua:        patient.paduaScore    = intScore
         case .apacheII:     patient.apacheIIScore    = intScore
         case .ppossum:      patient.ppossumMortPct10 = Int(r.score * 10)
+        case .mpi:          patient.mpiScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -744,6 +753,7 @@ struct ClinicalScoresView: View {
         case .padua:        paduaForm
         case .apacheII:     apacheIIForm
         case .ppossum:      ppossumForm
+        case .mpi:          mpiForm
         }
     }
 
@@ -1770,6 +1780,17 @@ struct ClinicalScoresView: View {
         case .ppossum:
             // P-POSSUM fields are numeric selectors — no boolean toggle confirm
             break
+        case .mpi:
+            switch field.id {
+            case "ageOver50":            mpiI.ageOver50            = true
+            case "femaleSex":            mpiI.femaleSex            = true
+            case "organFailure":         mpiI.organFailure         = true
+            case "malignancy":           mpiI.malignancy           = true
+            case "durationOver24h":      mpiI.durationOver24h      = true
+            case "nonColonicOrigin":     mpiI.nonColonicOrigin     = true
+            case "generalizedPeritonitis": mpiI.generalizedPeritonitis = true
+            default: break
+            }
         default: break
         }
 
@@ -2214,6 +2235,40 @@ struct ClinicalScoresView: View {
                 options: [(1, "Elective"), (4, "Emergency >2 h (resuscitated)"), (8, "Emergency <2 h (not resuscitated)")])
         }
         .onChange(of: ppossumI) { _, _ in recalculate() }
+    }
+
+    // MARK: - MPI
+
+    private var mpiForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Mannheim Peritonitis Index (Wacha & Linder 1983). Max score 47. <21 = low risk (<9% mortality), 21–29 = intermediate (~29%), ≥30 = high (>60%).")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
+            mpiBodySection
+        }
+    }
+
+    @ViewBuilder private var mpiBodySection: some View {
+        Group {
+            sectionHeader("Patient Factors")
+            scoreToggle("Age >50 years",         binding: $mpiI.ageOver50,   points: "+5", autoKey: "ageOver50")
+            scoreToggle("Female sex",             binding: $mpiI.femaleSex,   points: "+5", autoKey: "femaleSex")
+            scoreToggle("Organ failure (BP <80 mmHg, Cr >177 µmol/L, or respiratory failure)",
+                        binding: $mpiI.organFailure, points: "+7", autoKey: "organFailure")
+            scoreToggle("Malignancy",             binding: $mpiI.malignancy,  points: "+4", autoKey: "malignancy")
+        }
+        .onChange(of: mpiI) { _, _ in recalculate() }
+        Group {
+            sectionHeader("Operative Findings")
+            scoreToggle("Pre-op peritonitis duration >24 h",
+                        binding: $mpiI.durationOver24h,       points: "+4", autoKey: "durationOver24h")
+            scoreToggle("Non-colonic source (gastric / duodenal / small bowel)",
+                        binding: $mpiI.nonColonicOrigin,      points: "+4", autoKey: "nonColonicOrigin")
+            scoreToggle("Generalised (4-quadrant) peritonitis",
+                        binding: $mpiI.generalizedPeritonitis, points: "+6", autoKey: "generalizedPeritonitis")
+            apacheSegment("Exudate Character", selection: $mpiI.exudate,
+                options: [(0, "Clear / serous"), (6, "Cloudy / purulent"), (12, "Faecal / faeculent")])
+        }
+        .onChange(of: mpiI) { _, _ in recalculate() }
     }
 
     private func scoreHistoryColor(_ riskRaw: String) -> Color {

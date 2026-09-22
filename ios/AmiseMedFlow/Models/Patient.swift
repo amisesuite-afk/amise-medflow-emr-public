@@ -109,6 +109,8 @@ final class Patient {
     var apacheIIScore: Int?
     // P-POSSUM predicted mortality (× 10 for Int storage, e.g. 85 = 8.5%); Portsmouth surgical risk
     var ppossumMortPct10: Int?
+    // Mannheim Peritonitis Index (0–47); ≥30 = predicted mortality >60%
+    var mpiScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

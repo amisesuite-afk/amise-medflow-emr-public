@@ -469,6 +469,19 @@ struct APACHEIIInput: Equatable {
     var chronicHealthPoints: Int = 0 // 0=none, 2=elective postop, 5=nonop or emergency postop with severe organ insufficiency/immunocompromised
 }
 
+struct MPIInput: Equatable {
+    // Mannheim Peritonitis Index (Wacha & Linder, Theor Surg 1983)
+    // 8 variables; score 0–47. <21=low, 21–29=intermediate, ≥30=high mortality.
+    var ageOver50: Bool = false           // +5
+    var femaleSex: Bool = false           // +5
+    var organFailure: Bool = false        // +7 — BP <80 mmHg, Cr >177 µmol/L, or resp failure
+    var malignancy: Bool = false          // +4
+    var durationOver24h: Bool = false     // +4 — pre-op peritonitis >24 h
+    var nonColonicOrigin: Bool = false    // +4 — gastric / duodenal / small bowel source
+    var generalizedPeritonitis: Bool = false // +6 — diffuse four-quadrant peritonitis
+    var exudate: Int = 0                  // 0=clear/serous, 6=cloudy/purulent, 12=faecal
+}
+
 struct SOFAInput: Equatable {
     // Sequential Organ Failure Assessment (Sepsis-3, JAMA 2016)
     // Each domain scored 0–4; total 0–24
@@ -2600,6 +2613,75 @@ enum ClinicalScoringEngine {
                      "Formal goals-of-care discussion with family",
                      "Consider palliative pathway if refractory to maximal treatment"],
                     ["APACHE II ≥25: predicted mortality >55% — critical — immediate review"])
+        }
+    }
+
+    // MARK: - Mannheim Peritonitis Index (MPI)
+
+    static func mpi(_ i: MPIInput) -> ClinicalScore {
+        var score = 0
+        func add(_ pts: Int, _ cond: Bool) { if cond { score += pts } }
+        add(5, i.ageOver50)
+        add(5, i.femaleSex)
+        add(7, i.organFailure)
+        add(4, i.malignancy)
+        add(4, i.durationOver24h)
+        add(4, i.nonColonicOrigin)
+        add(6, i.generalizedPeritonitis)
+        score += i.exudate
+
+        let exLabel: String = switch i.exudate {
+        case 6:  "Cloudy / purulent exudate"
+        case 12: "Faecal / faeculent exudate"
+        default: "Clear / serous exudate"
+        }
+        let items: [ScoredItem] = [
+            ScoredItem(label: "Age >50 years",                              points: 5,  present: i.ageOver50),
+            ScoredItem(label: "Female sex",                                 points: 5,  present: i.femaleSex),
+            ScoredItem(label: "Organ failure (BP <80 / Cr >177 / resp)",    points: 7,  present: i.organFailure),
+            ScoredItem(label: "Malignancy",                                 points: 4,  present: i.malignancy),
+            ScoredItem(label: "Duration of peritonitis >24 h pre-op",       points: 4,  present: i.durationOver24h),
+            ScoredItem(label: "Non-colonic origin (gastric/duodenal/SB)",   points: 4,  present: i.nonColonicOrigin),
+            ScoredItem(label: "Diffuse generalised peritonitis",            points: 6,  present: i.generalizedPeritonitis),
+            ScoredItem(label: exLabel,                                      points: Double(i.exudate), present: i.exudate > 0),
+        ]
+        let (risk, interpretation, recs, redFlags) = mpiRisk(score)
+        return ClinicalScore(
+            systemName: "Mannheim Peritonitis Index",
+            abbreviation: "MPI \(score)",
+            score: Double(score), maxScore: 47,
+            risk: risk, interpretation: interpretation,
+            recommendations: recs, items: items, redFlags: redFlags,
+            evidenceNote: "Wacha H & Linder MM, Theor Surg 1983. Score <21 = low risk (<9% mortality); 21–29 = intermediate (~29%); ≥30 = high (>60%). Validated across general surgical populations. Guides laparotomy strategy, ICU admission, and goals-of-care discussions."
+        )
+    }
+
+    private static func mpiRisk(_ s: Int) -> (ScoreRisk, String, [String], [String]) {
+        switch s {
+        case ..<21:
+            return (.low,
+                    "MPI \(s) — low-risk peritonitis (predicted mortality <9%)",
+                    ["Standard perioperative care",
+                     "Source-control surgery — primary repair / anastomosis appropriate",
+                     "Document score for surgical audit"],
+                    [])
+        case 21..<30:
+            return (.moderate,
+                    "MPI \(s) — intermediate peritonitis risk (predicted mortality ~29%)",
+                    ["Optimise resuscitation before theatre",
+                     "ICU or high-dependency admission post-operatively",
+                     "Consider damage-control strategy if haemodynamically unstable",
+                     "Planned relook at 48 h if contamination was extensive"],
+                    ["MPI 21–29: significant predicted mortality — HDU/ICU review required"])
+        default:  // ≥30
+            return (.critical,
+                    "MPI \(s) — high-risk peritonitis (predicted mortality >60%)",
+                    ["Aggressive resuscitation — septic shock protocol",
+                     "Damage-control laparotomy; defer definitive reconstruction",
+                     "Planned open-abdomen / relook strategy",
+                     "Mandatory ICU admission",
+                     "Early goals-of-care discussion with patient and family"],
+                    ["MPI ≥30: predicted mortality >60% — urgent multi-disciplinary decision required"])
         }
     }
 }

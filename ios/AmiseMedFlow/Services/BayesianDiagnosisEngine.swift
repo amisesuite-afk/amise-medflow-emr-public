@@ -110,6 +110,7 @@ enum BayesianDiagnosisEngine {
         paduaScore: Int? = nil,       // Padua (0–20); ≥4 = high VTE risk in medical patients
         apacheIIScore: Int? = nil,    // APACHE II (0–71); ≥20 = high ICU mortality risk
         ppossumMortPct10: Int? = nil, // P-POSSUM predicted mortality ×10 (e.g. 85 = 8.5%)
+        mpiScore: Int? = nil,         // MPI (0–47); ≥21 = significant mortality; ≥30 = critical
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2661,6 +2662,26 @@ enum BayesianDiagnosisEngine {
                 case 15..<30: (8, String(format: "P-POSSUM predicted mortality %.1f%% — high operative risk", mortPct))
                 default:    (4, String(format: "P-POSSUM predicted mortality %.1f%% — moderate operative risk", mortPct))
                 }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // MPI: boosts peritonitis, septic abdomen, and abdominal-sepsis candidates
+        if let mpi = mpiScore, mpi >= 21 {
+            let peritonitisTargets = ["peritonitis", "septic abdomen", "abdominal sepsis",
+                                       "bowel perforation", "hollow viscus perforation", "anastomotic leak",
+                                       "sepsis", "septic shock", "acute kidney injury", "ileus"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard peritonitisTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch mpi {
+                case 30...: (14, "MPI ≥30 — high peritonitis severity (predicted mortality >60%)")
+                case 21..<30: (8, "MPI 21–29 — intermediate peritonitis severity (~29% mortality)")
+                default:    (0, "")
+                }
+                guard adj > 0 else { continue }
                 scored[i].logPosterior += Double(adj)
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)

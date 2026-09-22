@@ -1611,4 +1611,46 @@ enum PatientScoreAutoPopulator {
 
         return (i, f)
     }
+
+    // MARK: - MPI (Mannheim Peritonitis Index)
+
+    static func mpi(patient: Patient) -> (MPIInput, ScoreAutoFill) {
+        var i = MPIInput()
+        var f = ScoreAutoFill()
+
+        // Age >50
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: .now).year ?? 0
+            if age > 50 { i.ageOver50 = true; f.autoFieldKeys.insert("ageOver50") }
+        }
+
+        // Female sex
+        if patient.sex == .female { i.femaleSex = true; f.autoFieldKeys.insert("femaleSex") }
+
+        // Malignancy from PMH keywords
+        let cancerKw = ["cancer", "carcinoma", "malignancy", "malignant", "lymphoma", "leukemia",
+                        "leukaemia", "sarcoma", "melanoma", "adenocarcinoma", "neoplasm", "tumour", "tumor"]
+        if patient.clinicalTextContains(cancerKw) {
+            i.malignancy = true; f.autoFieldKeys.insert("malignancy")
+        }
+
+        // Pending: operative and haemodynamic findings require intraoperative data
+        f.addPending(key: "organFailure",
+            label: "Organ failure (BP <80 mmHg, creatinine >177 µmol/L, or respiratory failure)",
+            source: "Haemodynamic / laboratory assessment")
+        f.addPending(key: "durationOver24h",
+            label: "Peritonitis duration >24 h before operation",
+            source: "History / operative note")
+        f.addPending(key: "nonColonicOrigin",
+            label: "Non-colonic source (gastric, duodenal, or small bowel)",
+            source: "Operative findings")
+        f.addPending(key: "generalizedPeritonitis",
+            label: "Generalised 4-quadrant peritonitis",
+            source: "Operative findings")
+        f.addPending(key: "exudate",
+            label: "Exudate character (serous / purulent / faecal)",
+            source: "Operative findings")
+
+        return (i, f)
+    }
 }
