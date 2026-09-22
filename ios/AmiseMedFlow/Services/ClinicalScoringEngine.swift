@@ -6707,13 +6707,13 @@ enum ClinicalScoringEngine {
 
     // MARK: - #93 Maddrey Discriminant Function (Alcoholic Hepatitis)
 
-    struct MaddreyInput {
+    struct MaddreyInput: Equatable {
         var ptSeconds: Double          // patient PT in seconds
         var controlPTSeconds: Double   // control PT in seconds
         var bilirubinMgDL: Double      // serum bilirubin in mg/dL
     }
 
-    func maddrey(_ i: MaddreyInput) -> ClinicalScore {
+    static func maddrey(_ i: MaddreyInput) -> ClinicalScore {
         let mdf = 4.6 * (i.ptSeconds - i.controlPTSeconds) + i.bilirubinMgDL
         let risk: ScoreRisk
         let interp: String
@@ -6767,7 +6767,7 @@ enum ClinicalScoringEngine {
 
     // MARK: - #94 Manning Criteria for IBS
 
-    struct ManningInput {
+    struct ManningInput: Equatable {
         var painRelievedByDefecation: Bool
         var looserStoolsWithOnsetOfPain: Bool
         var increasedFrequencyWithOnsetOfPain: Bool
@@ -6776,7 +6776,7 @@ enum ClinicalScoringEngine {
         var feelingOfIncompleteEmptying: Bool
     }
 
-    func manning(_ i: ManningInput) -> ClinicalScore {
+    static func manning(_ i: ManningInput) -> ClinicalScore {
         var score = 0
         if i.painRelievedByDefecation        { score += 1 }
         if i.looserStoolsWithOnsetOfPain     { score += 1 }
@@ -6833,14 +6833,14 @@ enum ClinicalScoringEngine {
 
     // MARK: - #95 LACE Index (30-Day Readmission Risk)
 
-    struct LACEInput {
+    struct LACEInput: Equatable {
         var lengthOfStayDays: Int    // L: 0–14+ days
         var acuteAdmission: Bool     // A: unplanned/acute vs elective
         var charlsonIndex: Int       // C: CCI score (clamped to 0–4)
         var edVisitsLast6Months: Int // E: number of ED visits (clamped to 0–4)
     }
 
-    func lace(_ i: LACEInput) -> ClinicalScore {
+    static func lace(_ i: LACEInput) -> ClinicalScore {
         // L — length of stay (0–7 scale)
         let los = i.lengthOfStayDays
         let lScore: Int
@@ -6916,7 +6916,7 @@ enum ClinicalScoringEngine {
 
     // MARK: - #96 FINDRISC (Finnish Type 2 Diabetes Risk Score)
 
-    struct FINDRISCInput {
+    struct FINDRISCInput: Equatable {
         var ageGroup: Int          // 0=<45, 2=45–54, 3=55–64, 4=≥65
         var bmi: Double            // kg/m²
         var waistCircumferenceCm: Double
@@ -6928,7 +6928,7 @@ enum ClinicalScoringEngine {
         var familyHistoryDiabetes: Int      // 0=none, 3=second-degree, 5=first-degree
     }
 
-    func findrisc(_ i: FINDRISCInput) -> ClinicalScore {
+    static func findrisc(_ i: FINDRISCInput) -> ClinicalScore {
         var score = 0
 
         // Age
@@ -7037,7 +7037,7 @@ enum ClinicalScoringEngine {
         var lesionSizeRatio: Int // 1=<1/3 cortex, 2=1/3–2/3, 3=>2/3
     }
 
-    func mirels(_ i: MirelsInput) -> ClinicalScore {
+    static func mirels(_ i: MirelsInput) -> ClinicalScore {
         let total = i.site + i.pain + i.lesionType + i.lesionSizeRatio
         let risk: ScoreRisk
         let interp: String
@@ -7097,7 +7097,7 @@ enum ClinicalScoringEngine {
         var raceAA: Bool                 // African American (2021 equation drops this; retained for legacy)
     }
 
-    func ckdEpi(_ i: CKDEPIInput) -> ClinicalScore {
+    static func ckdEpi(_ i: CKDEPIInput) -> ClinicalScore {
         // CKD-EPI 2021 (race-free) Cr equation
         // eGFR = 142 × min(Scr/κ, 1)^α × max(Scr/κ, 1)^(-1.200) × 0.9938^Age [× 1.012 if female]
         let kappa: Double = i.sex.lowercased() == "female" ? 0.7 : 0.9
@@ -7203,7 +7203,7 @@ enum ClinicalScoringEngine {
         var emergencyProcedure: Bool
     }
 
-    func ariscat(_ i: ARISCATInput) -> ClinicalScore {
+    static func ariscat(_ i: ARISCATInput) -> ClinicalScore {
         var score = 0
 
         // Age
@@ -7291,7 +7291,7 @@ enum ClinicalScoringEngine {
         var ceaOver200: Bool                 // preoperative CEA > 200 ng/mL
     }
 
-    func fongCRS(_ i: FongCRSInput) -> ClinicalScore {
+    static func fongCRS(_ i: FongCRSInput) -> ClinicalScore {
         var score = 0
         if i.nodePosivePrimaryTumour        { score += 1 }
         if i.diseaseFreeIntervalLess12Mo    { score += 1 }
