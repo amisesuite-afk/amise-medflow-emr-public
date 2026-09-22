@@ -4526,6 +4526,7 @@ struct ConsultationView: View {
             patient.chiefComplaint = hint
         }
 
+        let latestVitals = patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
         bayesianDx = BayesianDiagnosisEngine.infer(
             chiefComplaint: patient.chiefComplaint,
             socratesSelections: augmented,
@@ -4543,6 +4544,12 @@ struct ConsultationView: View {
             ageYears: patient.ageYears,
             sex: patient.sex,
             longitudinal: patient.longitudinalContext,
+            latestHR: latestVitals?.heartRate,
+            latestSBP: latestVitals?.bpSystolic,
+            latestTemp: latestVitals?.temperatureCelsius,
+            latestSpO2: latestVitals?.spo2,
+            latestRR: latestVitals?.respiratoryRate,
+            news2Score: latestVitals.flatMap { $0.hasAnyValue ? $0.news2Score : nil },
             specialtyHint: selectedSpecialtyHint
         )
 

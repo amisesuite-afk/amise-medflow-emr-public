@@ -308,7 +308,13 @@ final class SequentialDiagnosisEngine: ObservableObject {
         wellsPEScore: Double? = nil,
         abcd2Score: Int? = nil,
         lrinecScore: Int? = nil,
-        qsofaScore: Int? = nil
+        qsofaScore: Int? = nil,
+        latestHR: Int? = nil,
+        latestSBP: Int? = nil,
+        latestTemp: Double? = nil,
+        latestSpO2: Int? = nil,
+        latestRR: Int? = nil,
+        news2Score: Int? = nil
     ) {
         let results = BayesianDiagnosisEngine.infer(
             chiefComplaint: chiefComplaint,
@@ -334,7 +340,13 @@ final class SequentialDiagnosisEngine: ObservableObject {
             wellsPEScore: wellsPEScore,
             abcd2Score: abcd2Score,
             lrinecScore: lrinecScore,
-            qsofaScore: qsofaScore
+            qsofaScore: qsofaScore,
+            latestHR: latestHR,
+            latestSBP: latestSBP,
+            latestTemp: latestTemp,
+            latestSpO2: latestSpO2,
+            latestRR: latestRR,
+            news2Score: news2Score
         )
 
         guard !results.isEmpty else {

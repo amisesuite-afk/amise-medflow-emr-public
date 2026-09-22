@@ -174,6 +174,7 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
             return combined.isEmpty ? nil : combined
         }()
 
+        let latestV = patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
         sequentialEngine.seed(
             chiefComplaint:    augmentedCC,
             socratesSelections: augmentedSocrates,
@@ -198,7 +199,13 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
             wellsPEScore:                patient.wellsPEScore,
             abcd2Score:                  patient.abcd2Score,
             lrinecScore:                 patient.lrinecScore,
-            qsofaScore:                  patient.qsofaScore
+            qsofaScore:                  patient.qsofaScore,
+            latestHR:    latestV?.heartRate,
+            latestSBP:   latestV?.bpSystolic,
+            latestTemp:  latestV?.temperatureCelsius,
+            latestSpO2:  latestV?.spo2,
+            latestRR:    latestV?.respiratoryRate,
+            news2Score:  latestV.flatMap { $0.hasAnyValue ? $0.news2Score : nil }
         )
 
         let seeded = sequentialEngine.topDiagnoses(n: 10)
