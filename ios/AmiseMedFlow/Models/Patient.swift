@@ -143,6 +143,10 @@ final class Patient {
     var mrsScore: Int?
     // MUST malnutrition risk 0–6; 0=low, 1=medium, ≥2=high
     var mustScore: Int?
+    // Clavien-Dindo complication grade 0–7 (0=none, 1=I…7=V)
+    var clavienDindoScore: Int?
+    // Modified Aldrete PACU recovery score 0–10; ≥9 = fit for discharge
+    var aldreteScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

@@ -257,6 +257,8 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
             nihssScore:                  patient.nihssScore,
             mrsScore:                    patient.mrsScore,
             mustScore:                   patient.mustScore,
+            clavienDindoScore:           patient.clavienDindoScore,
+            aldreteScore:                patient.aldreteScore,
             latestHR:    latestV?.heartRate,
             latestSBP:   latestV?.bpSystolic,
             latestTemp:  latestV?.temperatureCelsius,

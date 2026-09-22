@@ -2880,18 +2880,18 @@ enum ClinicalScoringEngine {
     static func ctsi(_ i: CTSIInput) -> ClinicalScore {
         let total = i.balthazarGrade + i.necrosisScore
         let (risk, interp, recs, flags) = ctsiRisk(total)
-        var items: [ScoreItem] = []
+        var items: [ScoredItem] = []
         let gradeLabels = ["A — Normal pancreas", "B — Oedematous pancreas",
                            "C — Peripancreatic fat stranding",
                            "D — Single peripancreatic fluid collection",
                            "E — ≥2 fluid collections or gas in/around pancreas"]
         let gradeLabel = i.balthazarGrade < gradeLabels.count
             ? gradeLabels[i.balthazarGrade] : "Grade \(i.balthazarGrade)"
-        items.append(ScoreItem(label: "Balthazar grade — \(gradeLabel)",
+        items.append(ScoredItem(label: "Balthazar grade — \(gradeLabel)",
                                points: Double(i.balthazarGrade),
                                present: i.balthazarGrade > 0))
         let necLabels = [0: "None", 2: "Necrosis <33%", 4: "Necrosis 33–50%", 6: "Necrosis >50%"]
-        items.append(ScoreItem(label: necLabels[i.necrosisScore] ?? "Necrosis",
+        items.append(ScoredItem(label: necLabels[i.necrosisScore] ?? "Necrosis",
                                points: Double(i.necrosisScore),
                                present: i.necrosisScore > 0))
         return ClinicalScore(
@@ -2956,8 +2956,8 @@ enum ClinicalScoringEngine {
                 flags: [])
         ]
         let data = table[i.grade] ?? table[6]!
-        let items: [ScoreItem] = [
-            ScoreItem(label: data.label, points: Double(data.rebleedPct), present: true)
+        let items: [ScoredItem] = [
+            ScoredItem(label: data.label, points: Double(data.rebleedPct), present: true)
         ]
         return ClinicalScore(
             systemName: "Forrest Classification",
@@ -3026,22 +3026,22 @@ enum ClinicalScoringEngine {
              ["NIHSS ≥21 — severe stroke; high mortality and disability risk; ICU-level care and early neurosurgical consultation required"])
         }
 
-        let items: [ScoreItem] = [
-            ScoreItem(label: "Level of consciousness (\(["Alert","Not alert/arousable","Obtunded","Unresponsive"][min(i.consciousness,3)]))", points: Double(i.consciousness), present: i.consciousness > 0),
-            ScoreItem(label: "LOC questions (month/age) (\(["Both correct","One correct","Neither"][min(i.locQuestions,2)]))", points: Double(i.locQuestions), present: i.locQuestions > 0),
-            ScoreItem(label: "LOC commands (open/close eyes, grip) (\(["Both","One","Neither"][min(i.locCommands,2)]))", points: Double(i.locCommands), present: i.locCommands > 0),
-            ScoreItem(label: "Gaze (\(["Normal","Partial palsy","Forced deviation"][min(i.gazeDeviation,2)]))", points: Double(i.gazeDeviation), present: i.gazeDeviation > 0),
-            ScoreItem(label: "Visual fields (\(["No loss","Partial hemianopia","Complete hemianopia","Bilateral"][min(i.visualFields,3)]))", points: Double(i.visualFields), present: i.visualFields > 0),
-            ScoreItem(label: "Facial palsy (\(["Normal","Minor","Partial","Complete"][min(i.facialPalsy,3)]))", points: Double(i.facialPalsy), present: i.facialPalsy > 0),
-            ScoreItem(label: "Motor arm left (\(["No drift","Drift <10s","Effort vs gravity","No effort","No movement"][min(i.motorArmLeft,4)]))", points: Double(i.motorArmLeft), present: i.motorArmLeft > 0),
-            ScoreItem(label: "Motor arm right (\(["No drift","Drift <10s","Effort vs gravity","No effort","No movement"][min(i.motorArmRight,4)]))", points: Double(i.motorArmRight), present: i.motorArmRight > 0),
-            ScoreItem(label: "Motor leg left (\(["No drift","Drift <5s","Effort vs gravity","No effort","No movement"][min(i.motorLegLeft,4)]))", points: Double(i.motorLegLeft), present: i.motorLegLeft > 0),
-            ScoreItem(label: "Motor leg right (\(["No drift","Drift <5s","Effort vs gravity","No effort","No movement"][min(i.motorLegRight,4)]))", points: Double(i.motorLegRight), present: i.motorLegRight > 0),
-            ScoreItem(label: "Limb ataxia (\(["Absent","One limb","Two limbs"][min(i.limbAtaxia,2)]))", points: Double(i.limbAtaxia), present: i.limbAtaxia > 0),
-            ScoreItem(label: "Sensory (\(["Normal","Mild-moderate loss","Severe/absent"][min(i.sensory,2)]))", points: Double(i.sensory), present: i.sensory > 0),
-            ScoreItem(label: "Language (\(["No aphasia","Mild aphasia","Severe aphasia","Mute/global"][min(i.language,3)]))", points: Double(i.language), present: i.language > 0),
-            ScoreItem(label: "Dysarthria (\(["Normal","Mild-moderate","Severe/intubated"][min(i.dysarthria,2)]))", points: Double(i.dysarthria), present: i.dysarthria > 0),
-            ScoreItem(label: "Extinction/inattention (\(["None","One modality","Profound"][min(i.extinction,2)]))", points: Double(i.extinction), present: i.extinction > 0)
+        let items: [ScoredItem] = [
+            ScoredItem(label: "Level of consciousness (\(["Alert","Not alert/arousable","Obtunded","Unresponsive"][min(i.consciousness,3)]))", points: Double(i.consciousness), present: i.consciousness > 0),
+            ScoredItem(label: "LOC questions (month/age) (\(["Both correct","One correct","Neither"][min(i.locQuestions,2)]))", points: Double(i.locQuestions), present: i.locQuestions > 0),
+            ScoredItem(label: "LOC commands (open/close eyes, grip) (\(["Both","One","Neither"][min(i.locCommands,2)]))", points: Double(i.locCommands), present: i.locCommands > 0),
+            ScoredItem(label: "Gaze (\(["Normal","Partial palsy","Forced deviation"][min(i.gazeDeviation,2)]))", points: Double(i.gazeDeviation), present: i.gazeDeviation > 0),
+            ScoredItem(label: "Visual fields (\(["No loss","Partial hemianopia","Complete hemianopia","Bilateral"][min(i.visualFields,3)]))", points: Double(i.visualFields), present: i.visualFields > 0),
+            ScoredItem(label: "Facial palsy (\(["Normal","Minor","Partial","Complete"][min(i.facialPalsy,3)]))", points: Double(i.facialPalsy), present: i.facialPalsy > 0),
+            ScoredItem(label: "Motor arm left (\(["No drift","Drift <10s","Effort vs gravity","No effort","No movement"][min(i.motorArmLeft,4)]))", points: Double(i.motorArmLeft), present: i.motorArmLeft > 0),
+            ScoredItem(label: "Motor arm right (\(["No drift","Drift <10s","Effort vs gravity","No effort","No movement"][min(i.motorArmRight,4)]))", points: Double(i.motorArmRight), present: i.motorArmRight > 0),
+            ScoredItem(label: "Motor leg left (\(["No drift","Drift <5s","Effort vs gravity","No effort","No movement"][min(i.motorLegLeft,4)]))", points: Double(i.motorLegLeft), present: i.motorLegLeft > 0),
+            ScoredItem(label: "Motor leg right (\(["No drift","Drift <5s","Effort vs gravity","No effort","No movement"][min(i.motorLegRight,4)]))", points: Double(i.motorLegRight), present: i.motorLegRight > 0),
+            ScoredItem(label: "Limb ataxia (\(["Absent","One limb","Two limbs"][min(i.limbAtaxia,2)]))", points: Double(i.limbAtaxia), present: i.limbAtaxia > 0),
+            ScoredItem(label: "Sensory (\(["Normal","Mild-moderate loss","Severe/absent"][min(i.sensory,2)]))", points: Double(i.sensory), present: i.sensory > 0),
+            ScoredItem(label: "Language (\(["No aphasia","Mild aphasia","Severe aphasia","Mute/global"][min(i.language,3)]))", points: Double(i.language), present: i.language > 0),
+            ScoredItem(label: "Dysarthria (\(["Normal","Mild-moderate","Severe/intubated"][min(i.dysarthria,2)]))", points: Double(i.dysarthria), present: i.dysarthria > 0),
+            ScoredItem(label: "Extinction/inattention (\(["None","One modality","Profound"][min(i.extinction,2)]))", points: Double(i.extinction), present: i.extinction > 0)
         ]
 
         return ClinicalScore(
@@ -3130,7 +3130,7 @@ enum ClinicalScoringEngine {
                       "Moderately severe disability — needs assistance",
                       "Severe disability — fully dependent",
                       "Dead"]
-        let items = [ScoreItem(label: "mRS Level \(level): \(labels[level])", points: Double(level), present: true)]
+        let items = [ScoredItem(label: "mRS Level \(level): \(labels[level])", points: Double(level), present: true)]
 
         return ClinicalScore(
             systemName: "modified Rankin Scale",
@@ -3184,9 +3184,9 @@ enum ClinicalScoringEngine {
         let acuteLabel   = i.acuteDiseaseScore == 2 ? "Acute disease effect: Yes (+2)" : "Acute disease effect: No (+0)"
 
         let items = [
-            ScoreItem(label: bmiLabels[min(2, i.bmiScore)],           points: Double(i.bmiScore),           present: i.bmiScore > 0),
-            ScoreItem(label: wlLabels[min(2, i.weightLossScore)],     points: Double(i.weightLossScore),     present: i.weightLossScore > 0),
-            ScoreItem(label: acuteLabel,                               points: Double(i.acuteDiseaseScore),  present: i.acuteDiseaseScore > 0)
+            ScoredItem(label: bmiLabels[min(2, i.bmiScore)],           points: Double(i.bmiScore),           present: i.bmiScore > 0),
+            ScoredItem(label: wlLabels[min(2, i.weightLossScore)],     points: Double(i.weightLossScore),     present: i.weightLossScore > 0),
+            ScoredItem(label: acuteLabel,                               points: Double(i.acuteDiseaseScore),  present: i.acuteDiseaseScore > 0)
         ]
 
         return ClinicalScore(
@@ -3295,26 +3295,26 @@ enum ClinicalScoringEngine {
         let wLabels = ["Isolated CABG", "Single non-CABG procedure", "Two procedures", "Three or more procedures"]
         let phLabels = ["None", "Moderate 31–55 mmHg", "Severe >55 mmHg"]
 
-        let items: [ScoreItem] = [
-            ScoreItem(label: "Age \(i.age) years (+\(String(format: "%.3f", ageBoost)) above 60)", points: ageBoost, present: i.age > 60),
-            ScoreItem(label: "Female sex +0.220", points: 0.2196434, present: i.female),
-            ScoreItem(label: "Renal impairment: \(renalLabels[min(i.renalImpairment, 2)])", points: i.renalImpairment == 1 ? 0.3541226 : 0.6521653, present: i.renalImpairment > 0),
-            ScoreItem(label: "Extracardiac arteriopathy +0.509", points: 0.5085682, present: i.extracardiacArteriopathy),
-            ScoreItem(label: "Poor mobility +0.297", points: 0.2971552, present: i.poorMobility),
-            ScoreItem(label: "Previous cardiac surgery +1.002", points: 1.0023510, present: i.previousCardiacSurgery),
-            ScoreItem(label: "Chronic lung disease +0.189", points: 0.1886564, present: i.chronicLungDisease),
-            ScoreItem(label: "Active endocarditis +0.619", points: 0.6194522, present: i.activeEndocarditis),
-            ScoreItem(label: "Critical preoperative state +1.086", points: 1.0856296, present: i.criticalPreoperativeState),
-            ScoreItem(label: "Diabetes on insulin +0.330", points: 0.3304052, present: i.diabetesOnInsulin),
-            ScoreItem(label: "NYHA class \(nyhaLabels[min(i.nyhaClass, 3)])", points: [0, 0.1070545, 0.2338955, 0.5718132][min(i.nyhaClass, 3)], present: i.nyhaClass > 0),
-            ScoreItem(label: "CCS Class 4 angina +0.222", points: 0.2218732, present: i.ccsClass4Angina),
-            ScoreItem(label: "LV function: \(lvLabels[min(i.lvFunction, 2)])", points: [0, 0.3196276, 1.5169013][min(i.lvFunction, 2)], present: i.lvFunction > 0),
-            ScoreItem(label: "Recent MI (<90 days) +0.546", points: 0.5460218, present: i.recentMI),
-            ScoreItem(label: "Pulmonary hypertension: \(phLabels[min(i.pulmonaryHypertension, 2)])", points: i.pulmonaryHypertension == 1 ? 0.6084972 : 1.3765812, present: i.pulmonaryHypertension > 0),
-            ScoreItem(label: "Urgency: \(urgencyLabels[min(i.urgency, 3)])", points: [0, 0.4084417, 0.9361202, 1.8071808][min(i.urgency, 3)], present: i.urgency > 0),
-            ScoreItem(label: "Weight of intervention: \(wLabels[min(i.weightOfIntervention, 3)])", points: [0, 0.5521478, 0.9724533, 1.6151723][min(i.weightOfIntervention, 3)], present: i.weightOfIntervention > 0),
-            ScoreItem(label: "Surgery on thoracic aorta +1.175", points: 1.1745886, present: i.surgeryOnThoracicAorta),
-            ScoreItem(label: "Post-infarct septal rupture +1.463", points: 1.4630660, present: i.postInfarctSeptalRupture)
+        let items: [ScoredItem] = [
+            ScoredItem(label: "Age \(i.age) years (+\(String(format: "%.3f", ageBoost)) above 60)", points: ageBoost, present: i.age > 60),
+            ScoredItem(label: "Female sex +0.220", points: 0.2196434, present: i.female),
+            ScoredItem(label: "Renal impairment: \(renalLabels[min(i.renalImpairment, 2)])", points: i.renalImpairment == 1 ? 0.3541226 : 0.6521653, present: i.renalImpairment > 0),
+            ScoredItem(label: "Extracardiac arteriopathy +0.509", points: 0.5085682, present: i.extracardiacArteriopathy),
+            ScoredItem(label: "Poor mobility +0.297", points: 0.2971552, present: i.poorMobility),
+            ScoredItem(label: "Previous cardiac surgery +1.002", points: 1.0023510, present: i.previousCardiacSurgery),
+            ScoredItem(label: "Chronic lung disease +0.189", points: 0.1886564, present: i.chronicLungDisease),
+            ScoredItem(label: "Active endocarditis +0.619", points: 0.6194522, present: i.activeEndocarditis),
+            ScoredItem(label: "Critical preoperative state +1.086", points: 1.0856296, present: i.criticalPreoperativeState),
+            ScoredItem(label: "Diabetes on insulin +0.330", points: 0.3304052, present: i.diabetesOnInsulin),
+            ScoredItem(label: "NYHA class \(nyhaLabels[min(i.nyhaClass, 3)])", points: [0, 0.1070545, 0.2338955, 0.5718132][min(i.nyhaClass, 3)], present: i.nyhaClass > 0),
+            ScoredItem(label: "CCS Class 4 angina +0.222", points: 0.2218732, present: i.ccsClass4Angina),
+            ScoredItem(label: "LV function: \(lvLabels[min(i.lvFunction, 2)])", points: [0, 0.3196276, 1.5169013][min(i.lvFunction, 2)], present: i.lvFunction > 0),
+            ScoredItem(label: "Recent MI (<90 days) +0.546", points: 0.5460218, present: i.recentMI),
+            ScoredItem(label: "Pulmonary hypertension: \(phLabels[min(i.pulmonaryHypertension, 2)])", points: i.pulmonaryHypertension == 1 ? 0.6084972 : 1.3765812, present: i.pulmonaryHypertension > 0),
+            ScoredItem(label: "Urgency: \(urgencyLabels[min(i.urgency, 3)])", points: [0, 0.4084417, 0.9361202, 1.8071808][min(i.urgency, 3)], present: i.urgency > 0),
+            ScoredItem(label: "Weight of intervention: \(wLabels[min(i.weightOfIntervention, 3)])", points: [0, 0.5521478, 0.9724533, 1.6151723][min(i.weightOfIntervention, 3)], present: i.weightOfIntervention > 0),
+            ScoredItem(label: "Surgery on thoracic aorta +1.175", points: 1.1745886, present: i.surgeryOnThoracicAorta),
+            ScoredItem(label: "Post-infarct septal rupture +1.463", points: 1.4630660, present: i.postInfarctSeptalRupture)
         ]
 
         return ClinicalScore(
@@ -3372,17 +3372,17 @@ enum ClinicalScoringEngine {
              [])
         }
 
-        let items: [ScoreItem] = [
-            ScoreItem(label: "Feeding (\(["0 — unable","5 — needs help","10 — independent"][min(i.feeding/5, 2)]))", points: Double(i.feeding), present: i.feeding > 0),
-            ScoreItem(label: "Bathing (\(i.bathing == 0 ? "0 — dependent" : "5 — independent"))", points: Double(i.bathing), present: i.bathing > 0),
-            ScoreItem(label: "Grooming (\(i.grooming == 0 ? "0 — dependent" : "5 — independent"))", points: Double(i.grooming), present: i.grooming > 0),
-            ScoreItem(label: "Dressing (\(["0 — dependent","5 — needs help","10 — independent"][min(i.dressing/5, 2)]))", points: Double(i.dressing), present: i.dressing > 0),
-            ScoreItem(label: "Bowel control (\(["0 — incontinent","5 — occasional accident","10 — continent"][min(i.bowels/5, 2)]))", points: Double(i.bowels), present: i.bowels > 0),
-            ScoreItem(label: "Bladder control (\(["0 — incontinent","5 — occasional accident","10 — continent"][min(i.bladder/5, 2)]))", points: Double(i.bladder), present: i.bladder > 0),
-            ScoreItem(label: "Toilet use (\(["0 — dependent","5 — needs help","10 — independent"][min(i.toiletUse/5, 2)]))", points: Double(i.toiletUse), present: i.toiletUse > 0),
-            ScoreItem(label: "Transfers bed-chair (\(["0 — unable","5 — major help","10 — minor help","15 — independent"][min(i.transfers/5, 3)]))", points: Double(i.transfers), present: i.transfers > 0),
-            ScoreItem(label: "Mobility (\(["0 — immobile","5 — wheelchair","10 — walks with help","15 — independent"][min(i.mobility/5, 3)]))", points: Double(i.mobility), present: i.mobility > 0),
-            ScoreItem(label: "Stairs (\(["0 — unable","5 — needs help","10 — independent"][min(i.stairs/5, 2)]))", points: Double(i.stairs), present: i.stairs > 0)
+        let items: [ScoredItem] = [
+            ScoredItem(label: "Feeding (\(["0 — unable","5 — needs help","10 — independent"][min(i.feeding/5, 2)]))", points: Double(i.feeding), present: i.feeding > 0),
+            ScoredItem(label: "Bathing (\(i.bathing == 0 ? "0 — dependent" : "5 — independent"))", points: Double(i.bathing), present: i.bathing > 0),
+            ScoredItem(label: "Grooming (\(i.grooming == 0 ? "0 — dependent" : "5 — independent"))", points: Double(i.grooming), present: i.grooming > 0),
+            ScoredItem(label: "Dressing (\(["0 — dependent","5 — needs help","10 — independent"][min(i.dressing/5, 2)]))", points: Double(i.dressing), present: i.dressing > 0),
+            ScoredItem(label: "Bowel control (\(["0 — incontinent","5 — occasional accident","10 — continent"][min(i.bowels/5, 2)]))", points: Double(i.bowels), present: i.bowels > 0),
+            ScoredItem(label: "Bladder control (\(["0 — incontinent","5 — occasional accident","10 — continent"][min(i.bladder/5, 2)]))", points: Double(i.bladder), present: i.bladder > 0),
+            ScoredItem(label: "Toilet use (\(["0 — dependent","5 — needs help","10 — independent"][min(i.toiletUse/5, 2)]))", points: Double(i.toiletUse), present: i.toiletUse > 0),
+            ScoredItem(label: "Transfers bed-chair (\(["0 — unable","5 — major help","10 — minor help","15 — independent"][min(i.transfers/5, 3)]))", points: Double(i.transfers), present: i.transfers > 0),
+            ScoredItem(label: "Mobility (\(["0 — immobile","5 — wheelchair","10 — walks with help","15 — independent"][min(i.mobility/5, 3)]))", points: Double(i.mobility), present: i.mobility > 0),
+            ScoredItem(label: "Stairs (\(["0 — unable","5 — needs help","10 — independent"][min(i.stairs/5, 2)]))", points: Double(i.stairs), present: i.stairs > 0)
         ]
 
         return ClinicalScore(
@@ -3443,19 +3443,19 @@ enum ClinicalScoringEngine {
              [])
         }
 
-        let items: [ScoreItem] = [
-            ScoreItem(label: "Can take care of self (ADLs) +2.75", points: 2.75, present: i.takeCareOfSelf),
-            ScoreItem(label: "Can walk indoors on level ground +1.75", points: 1.75, present: i.walkIndoors),
-            ScoreItem(label: "Can walk 1–2 blocks on level ground +2.75", points: 2.75, present: i.walkOneOrTwoBlocks),
-            ScoreItem(label: "Can climb a flight of stairs or walk up a hill +5.50", points: 5.50, present: i.climbStairs),
-            ScoreItem(label: "Can run a short distance +8.00", points: 8.00, present: i.runShortDistance),
-            ScoreItem(label: "Can do light housework (dusting, washing dishes) +2.70", points: 2.70, present: i.doLightWork),
-            ScoreItem(label: "Can do moderate housework (vacuuming, carrying groceries) +3.50", points: 3.50, present: i.doModerateWork),
-            ScoreItem(label: "Can do heavy work (scrubbing floors, moving furniture) +8.00", points: 8.00, present: i.doHeavyWork),
-            ScoreItem(label: "Can do yardwork (raking, weeding, pushing mower) +4.50", points: 4.50, present: i.doYardWork),
-            ScoreItem(label: "Can have sexual activity +5.25", points: 5.25, present: i.haveSexualActivity),
-            ScoreItem(label: "Moderate recreation (golf, bowling, dancing) +6.00", points: 6.00, present: i.participateInModerateRecreation),
-            ScoreItem(label: "Strenuous sports (swimming, tennis, football) +7.50", points: 7.50, present: i.participateInStrenuous)
+        let items: [ScoredItem] = [
+            ScoredItem(label: "Can take care of self (ADLs) +2.75", points: 2.75, present: i.takeCareOfSelf),
+            ScoredItem(label: "Can walk indoors on level ground +1.75", points: 1.75, present: i.walkIndoors),
+            ScoredItem(label: "Can walk 1–2 blocks on level ground +2.75", points: 2.75, present: i.walkOneOrTwoBlocks),
+            ScoredItem(label: "Can climb a flight of stairs or walk up a hill +5.50", points: 5.50, present: i.climbStairs),
+            ScoredItem(label: "Can run a short distance +8.00", points: 8.00, present: i.runShortDistance),
+            ScoredItem(label: "Can do light housework (dusting, washing dishes) +2.70", points: 2.70, present: i.doLightWork),
+            ScoredItem(label: "Can do moderate housework (vacuuming, carrying groceries) +3.50", points: 3.50, present: i.doModerateWork),
+            ScoredItem(label: "Can do heavy work (scrubbing floors, moving furniture) +8.00", points: 8.00, present: i.doHeavyWork),
+            ScoredItem(label: "Can do yardwork (raking, weeding, pushing mower) +4.50", points: 4.50, present: i.doYardWork),
+            ScoredItem(label: "Can have sexual activity +5.25", points: 5.25, present: i.haveSexualActivity),
+            ScoredItem(label: "Moderate recreation (golf, bowling, dancing) +6.00", points: 6.00, present: i.participateInModerateRecreation),
+            ScoredItem(label: "Strenuous sports (swimming, tennis, football) +7.50", points: 7.50, present: i.participateInStrenuous)
         ]
 
         let rounded = (total * 10).rounded() / 10
@@ -3512,15 +3512,15 @@ enum ClinicalScoringEngine {
              ["GRACE >140 — high in-hospital mortality; urgent cardiologist involvement required"])
         }
 
-        let items: [ScoreItem] = [
-            ScoreItem(label: "Age category (\(["<40","40–49","50–59","60–69","70–79","≥80"][min(i.ageCategory,5)])) +\(agePts)", points: Double(agePts), present: true),
-            ScoreItem(label: "Heart rate (\(["<70","70–89","90–109","110–149","150–199","≥200"][min(i.heartRate,5)]) bpm) +\(hrPts)", points: Double(hrPts), present: true),
-            ScoreItem(label: "Systolic BP (\(["<80","80–99","100–119","120–139","140–159","160–199","≥200"][min(i.systolicBP,6)]) mmHg) +\(sbpPts)", points: Double(sbpPts), present: true),
-            ScoreItem(label: "Creatinine (\(["0–0.39","0.4–0.79","0.8–1.19","1.2–1.59","1.6–1.99","2.0–3.99","≥4.0"][min(i.creatinine,6)]) mg/dL) +\(creatPts)", points: Double(creatPts), present: true),
-            ScoreItem(label: "Killip class \(i.killipClass + 1) +\(killipPts)", points: Double(killipPts), present: true),
-            ScoreItem(label: "Cardiac arrest at admission +43", points: 43, present: i.cardiacArrest),
-            ScoreItem(label: "Elevated cardiac markers +15", points: 15, present: i.elevatedMarkers),
-            ScoreItem(label: "ST-segment deviation +30", points: 30, present: i.stDeviation)
+        let items: [ScoredItem] = [
+            ScoredItem(label: "Age category (\(["<40","40–49","50–59","60–69","70–79","≥80"][min(i.ageCategory,5)])) +\(agePts)", points: Double(agePts), present: true),
+            ScoredItem(label: "Heart rate (\(["<70","70–89","90–109","110–149","150–199","≥200"][min(i.heartRate,5)]) bpm) +\(hrPts)", points: Double(hrPts), present: true),
+            ScoredItem(label: "Systolic BP (\(["<80","80–99","100–119","120–139","140–159","160–199","≥200"][min(i.systolicBP,6)]) mmHg) +\(sbpPts)", points: Double(sbpPts), present: true),
+            ScoredItem(label: "Creatinine (\(["0–0.39","0.4–0.79","0.8–1.19","1.2–1.59","1.6–1.99","2.0–3.99","≥4.0"][min(i.creatinine,6)]) mg/dL) +\(creatPts)", points: Double(creatPts), present: true),
+            ScoredItem(label: "Killip class \(i.killipClass + 1) +\(killipPts)", points: Double(killipPts), present: true),
+            ScoredItem(label: "Cardiac arrest at admission +43", points: 43, present: i.cardiacArrest),
+            ScoredItem(label: "Elevated cardiac markers +15", points: 15, present: i.elevatedMarkers),
+            ScoredItem(label: "ST-segment deviation +30", points: 30, present: i.stDeviation)
         ]
 
         return ClinicalScore(
@@ -3606,10 +3606,10 @@ enum ClinicalScoringEngine {
         let eblLabels = [">1000 mL (+0)", "601-1000 mL (+1)", "101-600 mL (+2)", "≤100 mL (+3)"]
         let mapLabels = ["<40 mmHg (+0)", "40–54 mmHg (+1)", "55–69 mmHg (+2)", "≥70 mmHg (+3)"]
         let hrLabels  = ["≥120 bpm (+0)", "101–119 bpm (+0)", "86–100 bpm (+1)", "56–85 bpm (+3)", "41–55 bpm (+2)", "≤40 bpm (+0)"]
-        let items: [ScoreItem] = [
-            ScoreItem(label: "Estimated blood loss: \(eblLabels[min(i.estimatedBloodLoss, 3)])", points: Double(eblPts), present: true),
-            ScoreItem(label: "Lowest MAP: \(mapLabels[min(i.lowestMAP, 3)])", points: Double(mapPts), present: true),
-            ScoreItem(label: "Lowest heart rate: \(hrLabels[min(i.lowestHeartRate, 5)])", points: Double(hrPts), present: true)
+        let items: [ScoredItem] = [
+            ScoredItem(label: "Estimated blood loss: \(eblLabels[min(i.estimatedBloodLoss, 3)])", points: Double(eblPts), present: true),
+            ScoredItem(label: "Lowest MAP: \(mapLabels[min(i.lowestMAP, 3)])", points: Double(mapPts), present: true),
+            ScoredItem(label: "Lowest heart rate: \(hrLabels[min(i.lowestHeartRate, 5)])", points: Double(hrPts), present: true)
         ]
 
         return ClinicalScore(
@@ -3669,17 +3669,17 @@ enum ClinicalScoringEngine {
              ["Very high pressure ulcer risk — TVN referral; specialist mattress required"])
         }
 
-        let items: [ScoreItem] = [
-            ScoreItem(label: "Build/Weight", points: Double(i.buildWeight), present: i.buildWeight > 0),
-            ScoreItem(label: "Skin type", points: Double(i.skinType), present: i.skinType > 0),
-            ScoreItem(label: "Sex/Age", points: Double(i.sexAge), present: i.sexAge > 0),
-            ScoreItem(label: "Mobility", points: Double(i.mobility), present: i.mobility > 0),
-            ScoreItem(label: "Continence", points: Double(i.continence), present: i.continence > 0),
-            ScoreItem(label: "Appetite", points: Double(i.appetite), present: i.appetite > 0),
-            ScoreItem(label: "Tissue malnutrition / cachexia", points: 8, present: i.tissuemalnutrition),
-            ScoreItem(label: "Neurological deficit", points: 5, present: i.neurologicalDeficit),
-            ScoreItem(label: "Major surgery / trauma", points: 5, present: i.majorSurgery),
-            ScoreItem(label: "Cytotoxics / high-dose steroids", points: 4, present: i.onCytotoxics)
+        let items: [ScoredItem] = [
+            ScoredItem(label: "Build/Weight", points: Double(i.buildWeight), present: i.buildWeight > 0),
+            ScoredItem(label: "Skin type", points: Double(i.skinType), present: i.skinType > 0),
+            ScoredItem(label: "Sex/Age", points: Double(i.sexAge), present: i.sexAge > 0),
+            ScoredItem(label: "Mobility", points: Double(i.mobility), present: i.mobility > 0),
+            ScoredItem(label: "Continence", points: Double(i.continence), present: i.continence > 0),
+            ScoredItem(label: "Appetite", points: Double(i.appetite), present: i.appetite > 0),
+            ScoredItem(label: "Tissue malnutrition / cachexia", points: 8, present: i.tissuemalnutrition),
+            ScoredItem(label: "Neurological deficit", points: 5, present: i.neurologicalDeficit),
+            ScoredItem(label: "Major surgery / trauma", points: 5, present: i.majorSurgery),
+            ScoredItem(label: "Cytotoxics / high-dose steroids", points: 4, present: i.onCytotoxics)
         ]
 
         return ClinicalScore(
@@ -3732,14 +3732,14 @@ enum ClinicalScoringEngine {
              ["High TIMI score — early invasive strategy strongly recommended"])
         }
 
-        let items: [ScoreItem] = [
-            ScoreItem(label: "Age ≥65",                           points: 1, present: i.ageOver65),
-            ScoreItem(label: "≥3 CAD risk factors",              points: 1, present: i.threeOrMoreRiskFactors),
-            ScoreItem(label: "Prior coronary stenosis ≥50%",     points: 1, present: i.priorCoronaryArteryStenosis),
-            ScoreItem(label: "ST deviation on ECG",              points: 1, present: i.stDeviationOnECG),
-            ScoreItem(label: "≥2 anginal events in prior 24 h",  points: 1, present: i.twoOrMoreAnginalEvents),
-            ScoreItem(label: "Aspirin use in prior 7 days",      points: 1, present: i.aspirinUseInLast7Days),
-            ScoreItem(label: "Elevated cardiac markers",         points: 1, present: i.elevatedCardiacMarkers)
+        let items: [ScoredItem] = [
+            ScoredItem(label: "Age ≥65",                           points: 1, present: i.ageOver65),
+            ScoredItem(label: "≥3 CAD risk factors",              points: 1, present: i.threeOrMoreRiskFactors),
+            ScoredItem(label: "Prior coronary stenosis ≥50%",     points: 1, present: i.priorCoronaryArteryStenosis),
+            ScoredItem(label: "ST deviation on ECG",              points: 1, present: i.stDeviationOnECG),
+            ScoredItem(label: "≥2 anginal events in prior 24 h",  points: 1, present: i.twoOrMoreAnginalEvents),
+            ScoredItem(label: "Aspirin use in prior 7 days",      points: 1, present: i.aspirinUseInLast7Days),
+            ScoredItem(label: "Elevated cardiac markers",         points: 1, present: i.elevatedCardiacMarkers)
         ]
 
         return ClinicalScore(
@@ -3817,8 +3817,8 @@ enum ClinicalScoringEngine {
                 flags: ["Terminal illness — surgical intervention not appropriate except for palliative symptom relief"])
         ]
         let data = table[i.level] ?? table[1]!
-        let items: [ScoreItem] = [
-            ScoreItem(label: data.label, points: Double(i.level), present: true)
+        let items: [ScoredItem] = [
+            ScoredItem(label: data.label, points: Double(i.level), present: true)
         ]
         return ClinicalScore(
             systemName: "Clinical Frailty Scale",
@@ -3897,14 +3897,14 @@ enum ClinicalScoringEngine {
         if i.mallampatiClass >= 3 { flags.append("Mallampati class \(i.mallampatiClass) — senior anaesthetic input required") }
         if additionalPredictors >= 2 { flags.append("\(additionalPredictors) additional airway predictors — combined difficult airway risk significantly elevated") }
 
-        let items: [ScoreItem] = [
-            ScoreItem(label: classLabel, points: Double(i.mallampatiClass), present: true),
-            ScoreItem(label: "Reduced mouth opening", points: 1, present: i.mouthOpening),
-            ScoreItem(label: "Restricted neck mobility", points: 1, present: i.neckMobility),
-            ScoreItem(label: "Short thyromental distance", points: 1, present: i.thyromental),
-            ScoreItem(label: "Retrognathia / micrognathia", points: 1, present: i.retrognathia),
-            ScoreItem(label: "Obesity / large neck", points: 1, present: i.obesity),
-            ScoreItem(label: "Beard or poorly-fitting dentures", points: 1, present: i.beardOrDentures)
+        let items: [ScoredItem] = [
+            ScoredItem(label: classLabel, points: Double(i.mallampatiClass), present: true),
+            ScoredItem(label: "Reduced mouth opening", points: 1, present: i.mouthOpening),
+            ScoredItem(label: "Restricted neck mobility", points: 1, present: i.neckMobility),
+            ScoredItem(label: "Short thyromental distance", points: 1, present: i.thyromental),
+            ScoredItem(label: "Retrognathia / micrognathia", points: 1, present: i.retrognathia),
+            ScoredItem(label: "Obesity / large neck", points: 1, present: i.obesity),
+            ScoredItem(label: "Beard or poorly-fitting dentures", points: 1, present: i.beardOrDentures)
         ]
 
         return ClinicalScore(
@@ -3925,12 +3925,12 @@ enum ClinicalScoringEngine {
     static func heart(_ i: HEARTInput) -> ClinicalScore {
         let total = i.history + i.ecg + i.ageScore + i.riskFactors + i.troponin
         let (risk, interp, recs, flags) = heartRisk(total)
-        let items: [ScoreItem] = [
-            ScoreItem(label: "History",      points: Double(i.history),     present: i.history > 0),
-            ScoreItem(label: "ECG",          points: Double(i.ecg),         present: i.ecg > 0),
-            ScoreItem(label: "Age",          points: Double(i.ageScore),    present: i.ageScore > 0),
-            ScoreItem(label: "Risk factors", points: Double(i.riskFactors), present: i.riskFactors > 0),
-            ScoreItem(label: "Troponin",     points: Double(i.troponin),    present: i.troponin > 0)
+        let items: [ScoredItem] = [
+            ScoredItem(label: "History",      points: Double(i.history),     present: i.history > 0),
+            ScoredItem(label: "ECG",          points: Double(i.ecg),         present: i.ecg > 0),
+            ScoredItem(label: "Age",          points: Double(i.ageScore),    present: i.ageScore > 0),
+            ScoredItem(label: "Risk factors", points: Double(i.riskFactors), present: i.riskFactors > 0),
+            ScoredItem(label: "Troponin",     points: Double(i.troponin),    present: i.troponin > 0)
         ]
         return ClinicalScore(
             systemName: "HEART Score",
@@ -3988,14 +3988,14 @@ enum ClinicalScoringEngine {
                         "1 — Minor stress: hip fracture, chronic disease with complications, chemotherapy",
                         "2 — Moderate stress: major abdominal surgery, stroke, haematological malignancy, ICU APACHE <10",
                         "3 — Severe stress: head injury, bone marrow transplant, ICU APACHE ≥10"]
-        var items: [ScoreItem] = []
-        items.append(ScoreItem(
+        var items: [ScoredItem] = []
+        items.append(ScoredItem(
             label: i.nutritionalStatus < nsLabels.count ? nsLabels[i.nutritionalStatus] : "Nutritional status \(i.nutritionalStatus)",
             points: Double(i.nutritionalStatus), present: i.nutritionalStatus > 0))
-        items.append(ScoreItem(
+        items.append(ScoredItem(
             label: i.diseaseSeverity < dsLabels.count ? dsLabels[i.diseaseSeverity] : "Disease severity \(i.diseaseSeverity)",
             points: Double(i.diseaseSeverity), present: i.diseaseSeverity > 0))
-        items.append(ScoreItem(label: "Age ≥70 years", points: 1, present: i.ageOver70))
+        items.append(ScoredItem(label: "Age ≥70 years", points: 1, present: i.ageOver70))
         return ClinicalScore(
             systemName: "NRS-2002",
             abbreviation: "NRS \(total)",
@@ -4059,5 +4059,152 @@ enum ClinicalScoringEngine {
                      "Parenteral or jejunal nutrition support"],
                     ["CTSI ≥7 — predicted mortality 17%+ and complication rate >50%"])
         }
+    }
+
+    // MARK: - Clavien-Dindo Classification (Surgical Complication Grading)
+
+    struct ClavienDindoInput: Equatable {
+        // 0=None, 1=Grade I, 2=Grade II, 3=Grade IIIa, 4=Grade IIIb,
+        // 5=Grade IVa, 6=Grade IVb, 7=Grade V
+        var grade: Int = 0
+    }
+
+    static func clavienDindo(_ i: ClavienDindoInput) -> ClinicalScore {
+        let gradeStrings = ["None", "I", "II", "IIIa", "IIIb", "IVa", "IVb", "V"]
+        let gradeStr = i.grade < gradeStrings.count ? gradeStrings[i.grade] : "?"
+        let risk: ScoreRisk
+        let interpretation: String
+        var recs: [String] = []
+        var flags: [String] = []
+
+        switch i.grade {
+        case 0:
+            risk = .low
+            interpretation = "No complication — uneventful postoperative course"
+        case 1:
+            risk = .low
+            interpretation = "Grade I — Minor deviation; bedside management only"
+            recs = ["Antiemetics, antipyretics, analgesia, diuretics, or electrolytes as needed",
+                    "Physiotherapy permitted",
+                    "Wound drainage at bedside is included in this grade"]
+        case 2:
+            risk = .moderate
+            interpretation = "Grade II — Pharmacological treatment beyond Grade I allowances"
+            recs = ["Blood transfusion or total parenteral nutrition if indicated",
+                    "Antimicrobials for organ-space infection",
+                    "Document drug name, dose, and indication"]
+            flags = ["Complication requiring drug therapy beyond simple analgesia/antiemetic"]
+        case 3:
+            risk = .high
+            interpretation = "Grade IIIa — Surgical/endoscopic/radiological intervention; no general anaesthesia"
+            recs = ["Proceed to indicated intervention under local/regional anaesthesia",
+                    "Obtain informed consent; document indication and technique",
+                    "Radiological drainage, bedside washout, or flexible endoscopy as appropriate"]
+            flags = ["Procedural intervention required (no GA)"]
+        case 4:
+            risk = .high
+            interpretation = "Grade IIIb — Surgical/endoscopic/radiological intervention; general anaesthesia"
+            recs = ["Return to theatre or interventional suite under GA",
+                    "Anaesthetic review and pre-operative optimisation",
+                    "Inform next of kin; consent for return to theatre"]
+            flags = ["Return to theatre required — GA", "Anaesthetic review needed"]
+        case 5:
+            risk = .critical
+            interpretation = "Grade IVa — Life-threatening complication; single organ dysfunction"
+            recs = ["Immediate ICU admission",
+                    "Single organ support (e.g. renal replacement, mechanical ventilation)",
+                    "Senior surgeon and intensivist co-management",
+                    "Daily MDT review; family meeting within 24 h"]
+            flags = ["Life-threatening — ICU required", "Single organ failure"]
+        case 6:
+            risk = .critical
+            interpretation = "Grade IVb — Life-threatening complication; multiorgan dysfunction"
+            recs = ["Immediate ICU admission with multiorgan support",
+                    "Senior surgeon, intensivist, and relevant specialist co-management",
+                    "Consider goals-of-care discussion with family",
+                    "Daily MDT review; detailed documentation of trajectory"]
+            flags = ["Life-threatening — ICU required", "Multiorgan failure", "Consider goals-of-care discussion"]
+        default:
+            risk = .critical
+            interpretation = "Grade V — Death"
+            recs = ["Complete incident documentation and mortality review",
+                    "M&M case registration",
+                    "Coroner notification per local jurisdiction if required"]
+            flags = ["Fatal complication — mortality review mandatory"]
+        }
+
+        return ClinicalScore(
+            systemName: "Clavien-Dindo Classification",
+            abbreviation: "Clavien-Dindo \(gradeStr)",
+            score: Double(i.grade), maxScore: 7,
+            risk: risk,
+            interpretation: interpretation,
+            items: [ScoredItem(label: "Complication grade: \(gradeStr)", points: Double(i.grade), present: i.grade > 0)],
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Dindo D, Demartines N, Clavien PA. Ann Surg 2004;240:205–213. Dindo D et al. World J Surg 2010. Standard surgical complication classification used in ACS NSQIP and ESCP audits."
+        )
+    }
+
+    // MARK: - Modified Aldrete Recovery Score (PACU Discharge Readiness)
+
+    struct AldreteInput: Equatable {
+        var activity: Int = 0       // 0=No movement; 1=Moves 2 limbs; 2=Moves all limbs
+        var respiration: Int = 0    // 0=Apnoeic; 1=Dyspnoea/shallow; 2=Deep/coughs freely
+        var circulation: Int = 0    // 0=BP >±50 mmHg pre-op; 1=±20–50 mmHg; 2=±20 mmHg
+        var consciousness: Int = 0  // 0=Unresponsive; 1=Arousable on calling; 2=Fully awake
+        var oxygenSat: Int = 0      // 0=<90% on O₂; 1=Needs O₂ to maintain ≥90%; 2=≥92% RA
+    }
+
+    static func aldrete(_ i: AldreteInput) -> ClinicalScore {
+        let total = i.activity + i.respiration + i.circulation + i.consciousness + i.oxygenSat
+        let risk: ScoreRisk
+        let interpretation: String
+        var recs: [String]
+        var flags: [String] = []
+
+        switch total {
+        case 9...10:
+            risk = .low
+            interpretation = "Score \(total)/10 — Fit for discharge from PACU"
+            recs = ["Transfer to ward when pain and nausea controlled",
+                    "Confirm vital signs stable ≥15 min before transfer",
+                    "Hand over written PACU summary to ward nurse"]
+        case 7..<9:
+            risk = .moderate
+            interpretation = "Score \(total)/10 — Continued PACU observation; reassess in 30 min"
+            recs = ["Identify and address limiting parameters",
+                    "Oxygen supplementation if SpO₂ <92% on air",
+                    "Anti-emetics and analgesia as required",
+                    "Anaesthetist review if score not improving at 60 min"]
+        default:
+            risk = .high
+            interpretation = "Score \(total)/10 — Not fit for transfer; active management required"
+            recs = ["Ongoing PACU monitoring with anaesthetist review",
+                    "Active management of circulatory, respiratory, or neurological deficiencies",
+                    "Consider ICU/HDU referral if score ≤4 or not improving"]
+            if i.circulation == 0 { flags.append("Haemodynamic instability — BP >50 mmHg from baseline") }
+            if i.respiration == 0 { flags.append("Apnoea — airway management required") }
+            if i.consciousness == 0 { flags.append("Unresponsive — anaesthetic review urgent") }
+            if i.oxygenSat == 0    { flags.append("Hypoxaemia on supplemental O₂") }
+        }
+
+        return ClinicalScore(
+            systemName: "Modified Aldrete Recovery Score",
+            abbreviation: "Aldrete \(total)/10",
+            score: Double(total), maxScore: 10,
+            risk: risk,
+            interpretation: interpretation,
+            items: [
+                ScoredItem(label: "Activity",          points: Double(i.activity),      present: i.activity > 0),
+                ScoredItem(label: "Respiration",       points: Double(i.respiration),   present: i.respiration > 0),
+                ScoredItem(label: "Circulation",       points: Double(i.circulation),   present: i.circulation > 0),
+                ScoredItem(label: "Consciousness",     points: Double(i.consciousness), present: i.consciousness > 0),
+                ScoredItem(label: "Oxygen saturation", points: Double(i.oxygenSat),     present: i.oxygenSat > 0)
+            ],
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Aldrete JA, Kroulik D. Anesth Analg 1970;49:924–934. Aldrete JA. J Clin Anesth 1995;7:89–91 (modified). Score ≥9/10 = fit for PACU discharge."
+        )
     }
 }

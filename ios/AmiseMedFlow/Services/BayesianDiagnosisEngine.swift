@@ -127,6 +127,8 @@ enum BayesianDiagnosisEngine {
         nihssScore: Int? = nil,       // NIHSS (0–42); ≥16 = moderate-severe/severe stroke
         mrsScore: Int? = nil,         // mRS (0–6); ≥3 = moderate-severe disability
         mustScore: Int? = nil,        // MUST (0–6); ≥2 = high malnutrition risk
+        clavienDindoScore: Int? = nil, // Clavien-Dindo grade 0–7; ≥3 = procedural/surgical intervention required
+        aldreteScore: Int? = nil,     // Modified Aldrete 0–10; <9 = not fit for PACU discharge
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3033,6 +3035,69 @@ enum BayesianDiagnosisEngine {
                 default: (0, "")
                 }
                 guard adj > 0 else { continue }
+                scored[i].logPosterior += adj
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // Clavien-Dindo: grade ≥3 indicates a serious surgical complication requiring
+        // procedural or intensive intervention — boosts post-op complication candidates
+        if let cd = clavienDindoScore, cd >= 2 {
+            let cdTargets = ["anastomotic leak", "anastomotic", "wound dehiscence",
+                             "surgical site infection", "intra-abdominal abscess",
+                             "post-operative haemorrhage", "haematoma",
+                             "ileus", "post-operative ileus", "small bowel obstruction",
+                             "bile leak", "biliary leak", "bile duct injury",
+                             "pancreatic fistula", "duodenal stump leak",
+                             "pulmonary embolism", "deep vein thrombosis",
+                             "pneumonia", "urinary tract infection",
+                             "post-operative sepsis", "sepsis", "septic shock",
+                             "acute kidney injury", "acute renal failure",
+                             "cardiac complications", "myocardial infarction",
+                             "respiratory failure", "renal failure",
+                             "multi-organ failure", "multi-organ dysfunction"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard cdTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let adj: Int
+                let label: String
+                switch cd {
+                case 5...: adj = 12; label = "Clavien-Dindo ≥IVa — life-threatening complication; severe organ dysfunction strongly supports this diagnosis"
+                case 4:    adj = 10; label = "Clavien-Dindo IIIb — return-to-theatre complication; major surgical complication"
+                case 3:    adj = 8;  label = "Clavien-Dindo IIIa — procedural intervention required; significant surgical complication"
+                default:   adj = 5;  label = "Clavien-Dindo II — pharmacological intervention; post-operative complication"
+                }
+                scored[i].logPosterior += adj
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // Aldrete: low score (<7) in the post-operative setting boosts causes of
+        // delayed awakening, respiratory compromise, and haemodynamic instability
+        if let ald = aldreteScore, ald < 7 {
+            let aldTargets = ["delayed emergence", "post-operative confusion",
+                              "respiratory depression", "respiratory failure",
+                              "airway obstruction", "laryngospasm", "bronchospasm",
+                              "hypotension", "hypovolaemia", "vasovagal",
+                              "opioid toxicity", "opiate overdose", "benzodiazepine",
+                              "hypoxia", "hypoxaemia", "oxygen desaturation",
+                              "hypothermia", "malignant hyperthermia",
+                              "anaphylaxis", "anaphylactic shock",
+                              "hypoglycaemia", "hyponatraemia",
+                              "cardiac arrest", "arrhythmia", "atrial fibrillation",
+                              "pulmonary oedema", "aspiration", "aspiration pneumonia"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard aldTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let adj: Int
+                let label: String
+                switch ald {
+                case ..<4: adj = 10; label = "Aldrete <4/10 — severely impaired PACU recovery; immediate anaesthetic review required"
+                case 4..<7: adj = 6; label = "Aldrete <7/10 — impaired PACU recovery; consider anaesthetic/systemic cause"
+                default:    adj = 3; label = "Aldrete borderline — monitor for evolving complication in PACU"
+                }
                 scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)

@@ -70,6 +70,8 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case nihss            = "NIHSS (Stroke Severity)"
     case mrs              = "modified Rankin Scale (Disability)"
     case must             = "MUST (Malnutrition Risk)"
+    case clavienDindo     = "Clavien-Dindo (Complication Grade)"
+    case aldrete          = "Modified Aldrete (PACU Recovery)"
 
     var category: ScoreCategory {
         switch self {
@@ -87,6 +89,8 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .neuro
         case .must:
             return .preop
+        case .clavienDindo, .aldrete:
+            return .monitoring
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
         case .mews, .news2, .waterlow, .surgicalApgar:
@@ -142,6 +146,8 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .nihss:          return "brain"
         case .mrs:            return "figure.roll"
         case .must:           return "fork.knife.circle"
+        case .clavienDindo:   return "bandage.fill"
+        case .aldrete:        return "bed.double.fill"
         }
     }
 }
@@ -258,6 +264,10 @@ struct ClinicalScoresView: View {
     @State private var mrsI = MRSInput()
     // MUST
     @State private var mustI = ClinicalScoringEngine.MUSTInput()
+    // Clavien-Dindo
+    @State private var cdI = ClinicalScoringEngine.ClavienDindoInput()
+    // Aldrete
+    @State private var aldreteI = ClinicalScoringEngine.AldreteInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -674,6 +684,12 @@ struct ClinicalScoresView: View {
         case .must:
             let (input, fill) = PatientScoreAutoPopulator.must(patient: patient)
             mustI = input; autoFill = fill
+        case .clavienDindo:
+            // Clavien-Dindo grade is recorded post-operatively — no auto-populate from text
+            autoFill = ScoreAutoFill()
+        case .aldrete:
+            // Aldrete is a bedside recovery assessment — no clinical-text auto-populate
+            autoFill = ScoreAutoFill()
         default:
             autoFill = ScoreAutoFill()
         }
@@ -781,6 +797,8 @@ struct ClinicalScoresView: View {
         case .nihss:         ClinicalScoringEngine.nihss(nihssI)
         case .mrs:           ClinicalScoringEngine.mRS(mrsI)
         case .must:          ClinicalScoringEngine.must(mustI)
+        case .clavienDindo:  ClinicalScoringEngine.clavienDindo(cdI)
+        case .aldrete:       ClinicalScoringEngine.aldrete(aldreteI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -828,6 +846,8 @@ struct ClinicalScoresView: View {
         case .nihss:         patient.nihssScore = intScore
         case .mrs:           patient.mrsScore = intScore
         case .must:          patient.mustScore = intScore
+        case .clavienDindo:  patient.clavienDindoScore = intScore
+        case .aldrete:       patient.aldreteScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -913,6 +933,8 @@ struct ClinicalScoresView: View {
         case .nihss:         nihssForm
         case .mrs:           mrsForm
         case .must:          mustForm
+        case .clavienDindo:  clavienDindoForm
+        case .aldrete:       aldreteForm
         }
     }
 
@@ -2047,6 +2069,10 @@ struct ClinicalScoresView: View {
             break
         case .must:
             // MUST fields are categorical pickers confirmed directly in the form
+            break
+        case .clavienDindo:
+            break
+        case .aldrete:
             break
         default: break
         }
@@ -3222,5 +3248,62 @@ struct ClinicalScoresView: View {
                 ])
         }
         .onChange(of: mustI) { _, _ in recalculate() }
+    }
+
+    // MARK: - Clavien-Dindo
+
+    private var clavienDindoForm: some View {
+        Group {
+            apacheSegment("Complication Grade", selection: $cdI.grade,
+                options: [
+                    (0, "None — Uneventful postoperative course"),
+                    (1, "Grade I — Minor deviation; bedside management only (antiemetic, analgesia, diuretic, physio)"),
+                    (2, "Grade II — Pharmacological treatment, blood transfusion, or TPN required"),
+                    (3, "Grade IIIa — Surgical/endoscopic/radiological intervention without GA"),
+                    (4, "Grade IIIb — Surgical/endoscopic/radiological intervention under GA"),
+                    (5, "Grade IVa — Life-threatening; single organ dysfunction (ICU)"),
+                    (6, "Grade IVb — Life-threatening; multiorgan dysfunction (ICU)"),
+                    (7, "Grade V — Death")
+                ])
+        }
+        .onChange(of: cdI) { _, _ in recalculate() }
+    }
+
+    // MARK: - Modified Aldrete
+
+    private var aldreteForm: some View {
+        Group {
+            apacheSegment("Activity — Voluntary limb movement", selection: $aldreteI.activity,
+                options: [
+                    (0, "0 — Unable to move any extremity on command"),
+                    (1, "1 — Able to move 2 extremities on command"),
+                    (2, "2 — Able to move all extremities on command")
+                ])
+            apacheSegment("Respiration", selection: $aldreteI.respiration,
+                options: [
+                    (0, "0 — Apnoeic"),
+                    (1, "1 — Dyspnoea, shallow or limited breathing"),
+                    (2, "2 — Able to breathe deeply and cough freely")
+                ])
+            apacheSegment("Circulation — BP vs. pre-operative baseline", selection: $aldreteI.circulation,
+                options: [
+                    (0, "0 — BP ±>50 mmHg of pre-op value"),
+                    (1, "1 — BP ±20–50 mmHg of pre-op value"),
+                    (2, "2 — BP ±<20 mmHg of pre-op value")
+                ])
+            apacheSegment("Consciousness", selection: $aldreteI.consciousness,
+                options: [
+                    (0, "0 — Not responding to stimuli"),
+                    (1, "1 — Arousable on calling"),
+                    (2, "2 — Fully awake")
+                ])
+            apacheSegment("Oxygen Saturation", selection: $aldreteI.oxygenSat,
+                options: [
+                    (0, "0 — SpO₂ <90% even with O₂ supplementation"),
+                    (1, "1 — Needs O₂ supplementation to maintain SpO₂ ≥90%"),
+                    (2, "2 — SpO₂ ≥92% on room air")
+                ])
+        }
+        .onChange(of: aldreteI) { _, _ in recalculate() }
     }
 }
