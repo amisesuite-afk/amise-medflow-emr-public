@@ -455,6 +455,7 @@ struct ConsentFormView: View {
                 HStack(spacing: 6) {
                     ForEach(options, id: \.self) { opt in
                         let on = selected.wrappedValue.contains(opt)
+                        let chipColor: Color = on ? AMColor.accent : Color.secondary.opacity(0.12)
                         Button {
                             if on { selected.wrappedValue.removeAll { $0 == opt } }
                             else  { selected.wrappedValue.append(opt) }
@@ -463,7 +464,7 @@ struct ConsentFormView: View {
                                 .font(.system(size: 11, weight: on ? .semibold : .regular))
                                 .foregroundStyle(on ? .white : .primary)
                                 .padding(.horizontal, 10).padding(.vertical, 5)
-                                .background(on ? AMColor.accent : Color.secondary.opacity(0.12), in: Capsule())
+                                .background(chipColor, in: Capsule())
                         }
                         .buttonStyle(.plain)
                     }

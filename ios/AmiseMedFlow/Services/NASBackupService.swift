@@ -361,7 +361,7 @@ struct PatientBackup: Codable {
         mrn              = p.mrn
         setting          = p.setting.rawValue
         location         = p.location.rawValue
-        acuity           = p.acuity.rawValue
+        acuity           = p.acuity.label
         chiefComplaint   = p.chiefComplaint
         workingDiagnosis = p.workingDiagnosis
         managementPlan   = p.managementPlan
