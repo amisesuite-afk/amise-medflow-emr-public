@@ -185,6 +185,14 @@ enum BayesianDiagnosisEngine {
         ripasaScore: Double? = nil,     // RIPASA 0–16; ≥7.5 = probable appendicitis
         fgsiScore: Int? = nil,          // FGSI 0+; ≥9 = high-mortality Fournier gangrene
         hincheyStage: Int? = nil,       // Hinchey 1–5; ≥3 = purulent/faecal peritonitis
+        sirsScore: Int? = nil,          // SIRS 0–4; ≥2 = systemic inflammatory response
+        mewsScore: Int? = nil,          // MEWS 0–14; ≥5 = urgent deterioration
+        independentNews2: Int? = nil,   // Standalone NEWS2 0–20; ≥7 = urgent response
+        gcsScore: Int? = nil,           // GCS 3–15; ≤8 = severe neurological impairment
+        rcriScore: Int? = nil,          // RCRI 0–6; ≥2 = elevated periop cardiac risk
+        stopBangScore: Int? = nil,      // STOP-BANG 0–8; ≥3 = intermediate/high OSA risk
+        cha2ds2vascScore: Int? = nil,   // CHA₂DS₂-VASc 0–9; ≥2M/≥3F = anticoagulation
+        hasBledScore: Int? = nil,       // HAS-BLED 0–9; ≥3 = high bleeding risk
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3954,6 +3962,114 @@ enum BayesianDiagnosisEngine {
                 let nameLow = scored[i].candidate.name.lowercased()
                 guard hincheyTargets.contains(where: { nameLow.contains($0) }) else { continue }
                 let label = "Hinchey Stage \(hinchey) — \(hinchey >= 4 ? "faecal peritonitis" : "purulent peritonitis")"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // SIRS boost: ≥2 criteria raises sepsis/infection candidates
+        if let sirs = sirsScore, sirs >= 2 {
+            let sirsTargets = ["sepsis", "infection", "pneumonia", "peritonitis", "cholangitis",
+                               "pyelonephritis", "meningitis", "endocarditis", "abscess"]
+            let adj = sirs >= 4 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard sirsTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "SIRS \(sirs)/4 criteria — systemic inflammatory response"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // MEWS / NEWS2 deterioration boost
+        let deteriorationScore = mewsScore ?? independentNews2
+        if let ds = deteriorationScore, ds >= 5 {
+            let deteriorTargets = ["sepsis", "shock", "respiratory failure", "acute heart failure",
+                                   "acute coronary syndrome", "pulmonary embolism", "stroke",
+                                   "acute liver failure", "diabetic ketoacidosis"]
+            let adj = ds >= 7 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard deteriorTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "Early warning score \(ds) — significant clinical deterioration"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // GCS boost: impaired consciousness raises neurological/metabolic candidates
+        if let gcs = gcsScore, gcs <= 13 {
+            let gcsTargets = ["stroke", "traumatic brain injury", "subdural haematoma",
+                              "subarachnoid haemorrhage", "hepatic encephalopathy",
+                              "diabetic ketoacidosis", "hypoglycaemia", "meningitis", "sepsis"]
+            let adj = gcs <= 8 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard gcsTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "GCS \(gcs)/15 — \(gcs <= 8 ? "severe" : "moderate") neurological impairment"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // RCRI boost: elevated score raises periop cardiac complications candidates
+        if let rcri = rcriScore, rcri >= 2 {
+            let rcriTargets = ["acute coronary syndrome", "myocardial infarction", "heart failure",
+                               "cardiac arrest", "atrial fibrillation", "perioperative"]
+            let adj = rcri >= 3 ? 6 : 4
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard rcriTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "RCRI \(rcri) — elevated perioperative cardiac risk"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // STOP-BANG boost: intermediate/high OSA raises obstructive sleep apnoea candidates
+        if let sb = stopBangScore, sb >= 3 {
+            let sbTargets = ["obstructive sleep apnoea", "sleep apnoea", "obesity hypoventilation",
+                             "pulmonary hypertension", "right heart failure"]
+            let adj = sb >= 5 ? 6 : 4
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard sbTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "STOP-BANG \(sb)/8 — intermediate/high OSA risk"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // CHA₂DS₂-VASc boost: high score raises AF-related stroke candidates
+        if let chads = cha2ds2vascScore, chads >= 2 {
+            let chadsTargets = ["atrial fibrillation", "ischaemic stroke", "TIA",
+                                "cerebral embolism", "cardioembolic stroke"]
+            let adj = chads >= 4 ? 6 : 4
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard chadsTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "CHA₂DS₂-VASc \(chads) — high AF-related stroke risk"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // HAS-BLED boost: high score raises bleeding risk candidates
+        if let hasbled = hasBledScore, hasbled >= 3 {
+            let hasbledTargets = ["gastrointestinal bleeding", "haematemesis", "melaena",
+                                  "intracranial haemorrhage", "anticoagulant-related bleeding"]
+            let adj = hasbled >= 5 ? 6 : 4
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard hasbledTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "HAS-BLED \(hasbled)/9 — high bleeding risk on anticoagulation"
                 scored[i].logPosterior += adj
                 scored[i].evidence.append(label)
                 scored[i].evidenceSources["score", default: []].append(label)

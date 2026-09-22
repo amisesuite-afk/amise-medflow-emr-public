@@ -224,6 +224,14 @@ final class Patient {
     var ripasaScore: Double?      // RIPASA Appendicitis Score (continuous; ≥7.5 = probable appendicitis)
     var fgsiScore: Int?           // Fournier Gangrene Severity Index (0+; ≥9 = high mortality)
     var hincheyStage: Int?        // Hinchey Classification perforated diverticulitis (1–5)
+    var sirsScore: Int?           // SIRS criteria met (0–4; ≥2 = SIRS)
+    var mewsScore: Int?           // Modified Early Warning Score (0–14; ≥5 = urgent review)
+    var independentNews2: Int?    // Standalone NEWS2 from scores screen (0–20; ≥7 = urgent)
+    var gcsScore: Int?            // Glasgow Coma Scale (3–15; ≤8 = severe TBI, intubation threshold)
+    var rcriScore: Int?           // Revised Cardiac Risk Index (0–6; ≥2 = elevated periop cardiac risk)
+    var stopBangScore: Int?       // STOP-BANG OSA Screen (0–8; ≥3 = intermediate/high OSA risk)
+    var cha2ds2vascScore: Int?    // CHA₂DS₂-VASc AF stroke risk (0–9; ≥2 male/≥3 female = anticoag)
+    var hasBledScore: Int?        // HAS-BLED bleeding risk (0–9; ≥3 = high bleeding risk on anticoag)
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

@@ -875,6 +875,9 @@ struct ClinicalScoresView: View {
         case .childPugh:
             let (input, fill) = PatientScoreAutoPopulator.childPugh(patient: patient)
             cp = input; autoFill = fill
+        case .gcs:
+            let (input, fill) = PatientScoreAutoPopulator.gcs(patient: patient)
+            gcsI = input; autoFill = fill
         case .lrinec:
             let (input, fill) = PatientScoreAutoPopulator.lrinec(patient: patient)
             lrin = input; autoFill = fill
@@ -1358,6 +1361,14 @@ struct ClinicalScoresView: View {
         case .pts:           patient.ptsScore       = intScore
         case .ripasa:        patient.ripasaScore    = r.score   // continuous Double
         case .fgsi:          patient.fgsiScore      = intScore
+        case .sirs:          patient.sirsScore          = intScore
+        case .mews:          patient.mewsScore          = intScore
+        case .news2:         patient.independentNews2   = intScore
+        case .gcs:           patient.gcsScore           = intScore
+        case .rcri:          patient.rcriScore          = intScore
+        case .stopBang:      patient.stopBangScore      = intScore
+        case .cha2ds2vasc:   patient.cha2ds2vascScore   = intScore
+        case .hasBled:       patient.hasBledScore       = intScore
         default: break
         }
         patient.updatedAt = .now

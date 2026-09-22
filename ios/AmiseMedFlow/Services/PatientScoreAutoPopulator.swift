@@ -4588,4 +4588,27 @@ enum PatientScoreAutoPopulator {
         f.addPending(key: "bicarb",      label: "Bicarbonate (mmol/L) — ABG/VBG result", source: "Labs")
         return (i, f)
     }
+
+    // MARK: - GCS
+    static func gcs(patient: Patient) -> (GCSInput, ScoreAutoFill) {
+        var i = GCSInput()
+        var f = ScoreAutoFill()
+        // GCS components are bedside assessments — not derivable from stored data.
+        // The assessmentText and hpi are scanned for qualitative cues only.
+        let text = [patient.assessmentText, patient.hpi, patient.chiefComplaint]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+        if text.contains("unconscious") || text.contains("unresponsive") || text.contains("comatose") {
+            i.eyeOpening    = .none
+            i.verbalResponse = .none
+            i.motorResponse  = .none
+            f.addAutoFilled(key: "gcs", label: "Possible unresponsive state detected in assessment text — verify at bedside", source: "Assessment text")
+        } else if text.contains("confused") || text.contains("disorientated") || text.contains("disoriented") {
+            i.verbalResponse = .confused
+            f.addAutoFilled(key: "verbal", label: "Confusion noted in assessment — verbal may be 4", source: "Assessment text")
+        }
+        f.addPending(key: "eye",    label: "Eye opening (E1–E4) — bedside assessment", source: "Clinical")
+        f.addPending(key: "verbal", label: "Verbal response (V1–V5) — bedside assessment", source: "Clinical")
+        f.addPending(key: "motor",  label: "Motor response (M1–M6) — bedside assessment", source: "Clinical")
+        return (i, f)
+    }
 }
