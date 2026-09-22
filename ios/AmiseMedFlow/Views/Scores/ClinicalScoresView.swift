@@ -74,6 +74,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case aldrete          = "Modified Aldrete (PACU Recovery)"
     case fourT            = "4T Score (HIT Probability)"
     case oakland          = "Oakland Score (LGIB Discharge)"
+    case kingsCriteria    = "King's College Criteria (ALF)"
 
     var category: ScoreCategory {
         switch self {
@@ -96,6 +97,8 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .fourT:
             return .vascular
         case .oakland:
+            return .gi
+        case .kingsCriteria:
             return .gi
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
@@ -156,6 +159,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .aldrete:        return "bed.double.fill"
         case .fourT:          return "syringe.fill"
         case .oakland:        return "drop.degreesign.fill"
+        case .kingsCriteria:  return "staroflife.circle.fill"
         }
     }
 }
@@ -280,6 +284,8 @@ struct ClinicalScoresView: View {
     @State private var fourTI = ClinicalScoringEngine.FourTInput()
     // Oakland
     @State private var oaklandI = ClinicalScoringEngine.OaklandInput()
+    // King's Criteria
+    @State private var kingsI = ClinicalScoringEngine.KingsCriteriaInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -708,6 +714,9 @@ struct ClinicalScoresView: View {
         case .oakland:
             let (input, fill) = PatientScoreAutoPopulator.oakland(patient: patient)
             oaklandI = input; autoFill = fill
+        case .kingsCriteria:
+            let (input, fill) = PatientScoreAutoPopulator.kingsCriteria(patient: patient)
+            kingsI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -819,6 +828,7 @@ struct ClinicalScoresView: View {
         case .aldrete:       ClinicalScoringEngine.aldrete(aldreteI)
         case .fourT:         ClinicalScoringEngine.fourT(fourTI)
         case .oakland:       ClinicalScoringEngine.oakland(oaklandI)
+        case .kingsCriteria: ClinicalScoringEngine.kingsCriteria(kingsI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -870,6 +880,7 @@ struct ClinicalScoresView: View {
         case .aldrete:       patient.aldreteScore = intScore
         case .fourT:         patient.fourTScore = intScore
         case .oakland:       patient.oaklandScore = intScore
+        case .kingsCriteria: patient.kingsCriteriaScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -959,6 +970,7 @@ struct ClinicalScoresView: View {
         case .aldrete:       aldreteForm
         case .fourT:         fourTForm
         case .oakland:       oaklandForm
+        case .kingsCriteria: kingsCriteriaForm
         }
     }
 
@@ -2101,6 +2113,8 @@ struct ClinicalScoresView: View {
         case .fourT:
             break
         case .oakland:
+            break
+        case .kingsCriteria:
             break
         default: break
         }
@@ -3408,5 +3422,30 @@ struct ClinicalScoresView: View {
                 ])
         }
         .onChange(of: oaklandI) { _, _ in recalculate() }
+    }
+
+    private var kingsCriteriaForm: some View {
+        Group {
+            scoreToggle("Paracetamol (acetaminophen) aetiology", binding: $kingsI.isParacetamol, points: "arm")
+            Divider().padding(.vertical, 4)
+            if kingsI.isParacetamol {
+                Text("Paracetamol arm — Criteria").font(.caption).foregroundStyle(.secondary).padding(.top, 2)
+                scoreToggle("Arterial pH < 7.30 (after resuscitation)", binding: $kingsI.acidosisPhBelow730, points: "single")
+                Text("— OR all three of —").font(.caption).foregroundStyle(.secondary).italic()
+                scoreToggle("Prothrombin time > 100 s", binding: $kingsI.ptAbove100, points: "triple")
+                scoreToggle("Creatinine > 300 µmol/L", binding: $kingsI.creatinineAbove300, points: "triple")
+                scoreToggle("Hepatic encephalopathy grade III or IV", binding: $kingsI.encephalopathyGrade34, points: "triple")
+            } else {
+                Text("Non-paracetamol arm — Criteria").font(.caption).foregroundStyle(.secondary).padding(.top, 2)
+                scoreToggle("Prothrombin time > 100 s (alone sufficient)", binding: $kingsI.ptAbove100, points: "major")
+                Text("— OR ≥ 3 of the following —").font(.caption).foregroundStyle(.secondary).italic()
+                scoreToggle("Prothrombin time > 50 s", binding: $kingsI.ptAbove50, points: "minor")
+                scoreToggle("Age < 10 or > 40 years", binding: $kingsI.ageUnder10OrAbove40, points: "minor")
+                scoreToggle("Jaundice to encephalopathy > 7 days", binding: $kingsI.jaundiceToDays, points: "minor")
+                scoreToggle("Bilirubin > 300 µmol/L", binding: $kingsI.bilirubinAbove300, points: "minor")
+                scoreToggle("Unfavourable aetiology (drug/indeterminate)", binding: $kingsI.unfavourableAetiology, points: "minor")
+            }
+        }
+        .onChange(of: kingsI) { _, _ in recalculate() }
     }
 }

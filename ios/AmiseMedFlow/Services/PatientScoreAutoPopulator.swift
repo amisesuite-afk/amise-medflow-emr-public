@@ -2561,4 +2561,58 @@ enum PatientScoreAutoPopulator {
         f.addPending(key: "hbScore", label: "Haemoglobin (g/dL) — enter FBC result", source: "Laboratory")
         return (i, f)
     }
+
+    static func kingsCriteria(patient: Patient) -> (ClinicalScoringEngine.KingsCriteriaInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.KingsCriteriaInput()
+        var f = ScoreAutoFill()
+
+        let text = ([patient.chiefComplaint, patient.hpi, patient.pmhNotes,
+                     patient.workingDiagnosis, patient.assessmentText]
+            .compactMap { $0 }.joined(separator: " ")).lowercased()
+
+        let paracetamolKw = ["paracetamol", "acetaminophen", "panadol", "calpol",
+                             "paracetamol overdose", "acetaminophen overdose", "paracetamol toxicity"]
+        if paracetamolKw.contains(where: { text.contains($0) }) {
+            i.isParacetamol = true
+            f.addAutoFilled(key: "isParacetamol", label: "Paracetamol aetiology detected", source: "History/diagnosis")
+        }
+
+        let alfKw = ["acute liver failure", "fulminant liver failure", "acute hepatic failure",
+                     "fulminant hepatitis", "hepatic encephalopathy", "subacute liver failure"]
+        if alfKw.contains(where: { text.contains($0) }) {
+            f.addAutoFilled(key: "aetiology", label: "Acute liver failure context detected", source: "Working diagnosis")
+        }
+
+        let unfavKw = ["drug-induced", "seronegative", "indeterminate", "cryptogenic",
+                       "wilson", "budd-chiari", "mushroom", "amanita"]
+        if unfavKw.contains(where: { text.contains($0) }) {
+            i.unfavourableAetiology = true
+            f.addAutoFilled(key: "unfavourableAetiology", label: "Unfavourable aetiology keyword detected", source: "History")
+        }
+
+        let ageKw = ["age < 10", "age under 10", "paediatric", "pediatric", "age > 40", "age over 40"]
+        if ageKw.contains(where: { text.contains($0) }) {
+            i.ageUnder10OrAbove40 = true
+            f.addAutoFilled(key: "ageUnder10OrAbove40", label: "Age criterion detected from notes", source: "History")
+        } else if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 0
+            if age < 10 || age > 40 {
+                i.ageUnder10OrAbove40 = true
+                f.addAutoFilled(key: "ageUnder10OrAbove40", label: "Age \(age) — criterion met (<10 or >40)", source: "DOB")
+            } else {
+                f.addAutoFilled(key: "ageUnder10OrAbove40", label: "Age \(age) — criterion not met", source: "DOB")
+            }
+        }
+
+        // All coagulation, creatinine, bilirubin and encephalopathy data require lab/clinical input
+        f.addPending(key: "ptAbove100", label: "Prothrombin time > 100 s — document INR/PT result", source: "Coagulation screen")
+        f.addPending(key: "ptAbove50", label: "Prothrombin time > 50 s (non-paracetamol minor criterion)", source: "Coagulation screen")
+        f.addPending(key: "acidosisPhBelow730", label: "Arterial pH < 7.30 after resuscitation (paracetamol arm)", source: "ABG")
+        f.addPending(key: "creatinineAbove300", label: "Creatinine > 300 µmol/L (paracetamol arm)", source: "U&E")
+        f.addPending(key: "encephalopathyGrade34", label: "Hepatic encephalopathy grade III or IV", source: "Clinical examination")
+        f.addPending(key: "jaundiceToDays", label: "Jaundice to encephalopathy interval > 7 days", source: "Clinical history")
+        f.addPending(key: "bilirubinAbove300", label: "Bilirubin > 300 µmol/L (non-paracetamol minor criterion)", source: "LFTs")
+
+        return (i, f)
+    }
 }

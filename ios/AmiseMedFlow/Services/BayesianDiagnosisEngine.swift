@@ -131,6 +131,7 @@ enum BayesianDiagnosisEngine {
         aldreteScore: Int? = nil,     // Modified Aldrete 0–10; <9 = not fit for PACU discharge
         fourTScore: Int? = nil,       // 4T Score 0–8; ≥4 = intermediate/high HIT probability
         oaklandScore: Int? = nil,     // Oakland Score 0–29; ≤8=low risk, ≥15=high risk LGIB
+        kingsCriteriaScore: Int? = nil, // King's College Criteria 0=not met, 1=met (transplant referral)
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3149,6 +3150,26 @@ enum BayesianDiagnosisEngine {
                 default:    adj = 5; label = "Oakland 9–14 — intermediate-risk LGIB; significant lower GI bleeding requiring inpatient workup"
                 }
                 scored[i].logPosterior += adj
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // King's College Criteria met: boosts acute liver failure and its major causes
+        if let kc = kingsCriteriaScore, kc >= 1 {
+            let kcTargets = ["acute liver failure", "fulminant liver failure",
+                             "paracetamol toxicity", "paracetamol overdose", "acetaminophen",
+                             "hepatic encephalopathy", "wilson", "autoimmune hepatitis",
+                             "viral hepatitis", "hepatitis a", "hepatitis b", "hepatitis e",
+                             "ischaemic hepatitis", "congestive hepatopathy",
+                             "budd-chiari", "veno-occlusive", "drug-induced liver injury",
+                             "mushroom poisoning", "amanita", "liver failure",
+                             "acute-on-chronic liver failure", "hepatorenal syndrome"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard kcTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "King's College Criteria met — acute liver failure requiring transplant referral; strongly supports hepatic aetiology"
+                scored[i].logPosterior += 15
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }

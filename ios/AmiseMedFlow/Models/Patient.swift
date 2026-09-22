@@ -151,6 +151,8 @@ final class Patient {
     var fourTScore: Int?
     // Oakland Score (lower GI bleed) 0–29; ≤8=safe discharge, ≥15=high risk
     var oaklandScore: Int?
+    // King's College Criteria met (1) or not met (0) for acute liver failure transplant referral
+    var kingsCriteriaScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

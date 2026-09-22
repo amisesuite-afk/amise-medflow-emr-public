@@ -4344,4 +4344,101 @@ enum ClinicalScoringEngine {
             evidenceNote: "Oakland K et al. BMJ 2017;356:i6432. Validated for safe-discharge decision in acute LGIB presenting to ED. Score ≤8 = 95% probability of safe discharge without adverse outcome."
         )
     }
+
+    // MARK: - King's College Criteria (Acute Liver Failure — Transplant Referral)
+
+    struct KingsCriteriaInput: Equatable {
+        var isParacetamol: Bool = false  // true = paracetamol aetiology; false = non-paracetamol
+
+        // Shared / non-paracetamol criteria
+        var ptAbove100: Bool = false          // PT >100 s (INR >6.5) — single-criterion for non-paracetamol
+        var ptAbove50: Bool = false           // PT >50 s (one of 5 non-paracetamol minor criteria)
+        var ageUnder10OrAbove40: Bool = false // Age <10 or >40 years
+        var jaundiceToDays: Bool = false      // Jaundice-to-encephalopathy interval >7 days
+        var bilirubinAbove300: Bool = false   // Bilirubin >300 µmol/L
+        var unfavourableAetiology: Bool = false // Drug (non-paracetamol), Wilson's, or indeterminate
+
+        // Paracetamol-specific
+        var acidosisPhBelow730: Bool = false  // Arterial pH <7.30 after resuscitation (strongest predictor)
+        var creatinineAbove300: Bool = false  // Creatinine >300 µmol/L (or anuria)
+        var encephalopathyGrade34: Bool = false // Grade III or IV hepatic encephalopathy
+    }
+
+    static func kingsCriteria(_ i: KingsCriteriaInput) -> ClinicalScore {
+        let met: Bool
+        let interpretation: String
+        var recs: [String]
+        var flags: [String]
+
+        if i.isParacetamol {
+            // Paracetamol: pH criterion OR (PT+Cr+Encephalopathy triple)
+            let tripleMet = i.ptAbove100 && i.creatinineAbove300 && i.encephalopathyGrade34
+            met = i.acidosisPhBelow730 || tripleMet
+            if i.acidosisPhBelow730 {
+                interpretation = "King's Criteria MET — Arterial pH <7.30 (paracetamol ALF)"
+            } else if tripleMet {
+                interpretation = "King's Criteria MET — Triple criterion: PT>100 + Cr>300 + Grade III/IV encephalopathy"
+            } else {
+                let countNear = [i.ptAbove100, i.creatinineAbove300, i.encephalopathyGrade34].filter { $0 }.count
+                interpretation = "King's Criteria NOT met — monitor closely (\(countNear)/3 triple criteria present)"
+            }
+        } else {
+            // Non-paracetamol: PT>100 alone, OR ≥3 of 5 minor criteria
+            let minorCount = [i.ageUnder10OrAbove40, i.jaundiceToDays, i.ptAbove50,
+                               i.bilirubinAbove300, i.unfavourableAetiology].filter { $0 }.count
+            met = i.ptAbove100 || minorCount >= 3
+            if i.ptAbove100 {
+                interpretation = "King's Criteria MET — PT >100 s (non-paracetamol ALF)"
+            } else if minorCount >= 3 {
+                interpretation = "King's Criteria MET — \(minorCount)/5 minor criteria satisfied (non-paracetamol ALF)"
+            } else {
+                interpretation = "King's Criteria NOT met — \(minorCount)/5 minor criteria; re-evaluate as disease evolves"
+            }
+        }
+
+        if met {
+            recs = ["Urgent hepatology/transplant centre referral — do not delay",
+                    "Contact nearest liver transplant unit immediately",
+                    "Ensure adequate venous access; correct coagulopathy only if active bleeding",
+                    "N-acetylcysteine infusion if paracetamol aetiology (continue even if criteria met)",
+                    "ICU-level monitoring: GCS/encephalopathy grade, ICP monitoring if grade III–IV",
+                    "Avoid sedation, nephrotoxins, and hepatotoxic drugs",
+                    "Low threshold for renal replacement therapy",
+                    "Glucose and electrolyte correction; lactulose for encephalopathy"]
+            flags = ["KING'S CRITERIA MET — immediate liver transplant unit referral indicated",
+                     "Without transplant, mortality in paracetamol ALF meeting criteria ≈85%"]
+        } else {
+            recs = ["Continue intensive monitoring of PT, bilirubin, creatinine, and encephalopathy grade",
+                    "Hepatology review; daily reassessment against criteria as disease may evolve",
+                    "N-acetylcysteine if paracetamol aetiology regardless of criteria status",
+                    "Identify and treat underlying aetiology (viral, autoimmune, Wilson's, ischaemic, Budd-Chiari)",
+                    "Maintain close liaison with liver transplant unit — early informal notification recommended"]
+            flags = []
+        }
+
+        let score: Double = met ? 1 : 0
+        return ClinicalScore(
+            systemName: "King's College Criteria (ALF)",
+            abbreviation: met ? "King's: REFER" : "King's: Monitor",
+            score: score, maxScore: 1,
+            risk: met ? .critical : .moderate,
+            interpretation: interpretation,
+            items: i.isParacetamol ? [
+                ScoredItem(label: "Arterial pH <7.30",                           points: i.acidosisPhBelow730 ? 1 : 0,   present: i.acidosisPhBelow730),
+                ScoredItem(label: "PT >100 s",                                   points: i.ptAbove100 ? 1 : 0,           present: i.ptAbove100),
+                ScoredItem(label: "Creatinine >300 µmol/L",                     points: i.creatinineAbove300 ? 1 : 0,   present: i.creatinineAbove300),
+                ScoredItem(label: "Grade III/IV encephalopathy",                 points: i.encephalopathyGrade34 ? 1 : 0, present: i.encephalopathyGrade34)
+            ] : [
+                ScoredItem(label: "PT >100 s (single criterion)",               points: i.ptAbove100 ? 2 : 0,            present: i.ptAbove100),
+                ScoredItem(label: "Age <10 or >40 years",                       points: i.ageUnder10OrAbove40 ? 1 : 0,  present: i.ageUnder10OrAbove40),
+                ScoredItem(label: "Jaundice-to-encephalopathy >7 days",         points: i.jaundiceToDays ? 1 : 0,       present: i.jaundiceToDays),
+                ScoredItem(label: "PT >50 s",                                   points: i.ptAbove50 ? 1 : 0,            present: i.ptAbove50),
+                ScoredItem(label: "Bilirubin >300 µmol/L",                     points: i.bilirubinAbove300 ? 1 : 0,    present: i.bilirubinAbove300),
+                ScoredItem(label: "Unfavourable aetiology (drug/Wilson's/indeterminate)", points: i.unfavourableAetiology ? 1 : 0, present: i.unfavourableAetiology)
+            ],
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "O'Grady JG et al. Gastroenterology 1989;97:439–445. Standard transplant referral criteria for acute liver failure used by British Society of Gastroenterology and AASLD. Paracetamol ALF: pH <7.30 alone sufficient."
+        )
+    }
 }
