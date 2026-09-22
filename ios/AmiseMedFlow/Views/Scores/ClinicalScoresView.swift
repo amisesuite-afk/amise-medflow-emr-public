@@ -520,7 +520,7 @@ struct ClinicalScoresView: View {
     @State private var fongI         = ClinicalScoringEngine.FongCRSInput(nodePosivePrimaryTumour: false, diseaseFreeIntervalLess12Mo: false, moreThanOneHepaticTumour: false, largestTumourOver5cm: false, ceaOver200: false)
     @State private var berlinI       = ClinicalScoringEngine.BerlinARDSInput(pao2FiO2Ratio: 300.0, peepOrCPAP: 5, acuteOnsetWithin1Week: true, bilateralOpacitiesOnImaging: false, notExplainedByCardiacFailure: false)
     @State private var cageI         = ClinicalScoringEngine.CAGEInput(feltCutDown: false, annoyedByCriticism: false, feltGuilty: false, eyeOpener: false)
-    @State private var dukeI         = ClinicalScoringEngine.DukeInput(positiveBloodCultures: 0, endocardialInvolvement: 0, fever: false, vascularPhenomena: false, immunologicalPhenomena: false, microbiologicalEvidence: false, predisposingHeartCondition: false, injectionDrugUse: false, newRegurgitationMurmur: false)
+    @State private var dukeI         = ClinicalScoringEngine.DukeInput(positiveBloodCultures: 0, endocardialInvolvement: 0, predisposedHeartCondition: false, ivDrugUse: false, feverGe38: false, vascularPhenomena: false, immunologicPhenomena: false, positiveBloodCultureMinor: false, echoMinor: false)
     @State private var mmrcI         = ClinicalScoringEngine.MMRCInput(grade: 0)
     @State private var ptsI          = ClinicalScoringEngine.PTSInput(weight: 0, airway: 0, systolicBP: 0, cns: 0, openWound: 0, fracture: 0)
     // RIPASA Score
@@ -5349,20 +5349,20 @@ struct ClinicalScoresView: View {
                 .onChange(of: dukeI.endocardialInvolvement) { _, _ in recalculate() }
             }
             Text("Minor criteria").font(.caption).bold().foregroundStyle(.secondary)
-            scoreToggle("Predisposing heart condition or injection drug use",
-                        binding: $dukeI.predisposingHeartCondition, points: "Minor")
+            scoreToggle("Predisposing heart condition (known valve disease, prosthetic valve, prior IE)",
+                        binding: $dukeI.predisposedHeartCondition, points: "Minor")
+            scoreToggle("Injection drug use",
+                        binding: $dukeI.ivDrugUse, points: "Minor")
             scoreToggle("Fever ≥38°C",
-                        binding: $dukeI.fever, points: "Minor")
+                        binding: $dukeI.feverGe38, points: "Minor")
             scoreToggle("Vascular phenomena (major arterial emboli, septic pulmonary infarcts, mycotic aneurysm, intracranial haemorrhage, conjunctival haemorrhage, Janeway lesions)",
                         binding: $dukeI.vascularPhenomena, points: "Minor")
             scoreToggle("Immunological phenomena (glomerulonephritis, Osler nodes, Roth spots, positive rheumatoid factor)",
-                        binding: $dukeI.immunologicalPhenomena, points: "Minor")
-            scoreToggle("Microbiological evidence (positive blood culture not meeting major criterion or serological evidence of active infection)",
-                        binding: $dukeI.microbiologicalEvidence, points: "Minor")
-            scoreToggle("New regurgitation murmur on auscultation (not previously documented)",
-                        binding: $dukeI.newRegurgitationMurmur, points: "Minor")
-            scoreToggle("Injection drug use",
-                        binding: $dukeI.injectionDrugUse, points: "Minor")
+                        binding: $dukeI.immunologicPhenomena, points: "Minor")
+            scoreToggle("Positive blood culture (not meeting major criterion) or serological evidence",
+                        binding: $dukeI.positiveBloodCultureMinor, points: "Minor")
+            scoreToggle("Echo findings consistent with IE (not meeting major criterion)",
+                        binding: $dukeI.echoMinor, points: "Minor")
         }
         .onChange(of: dukeI) { _, _ in recalculate() }
     }
