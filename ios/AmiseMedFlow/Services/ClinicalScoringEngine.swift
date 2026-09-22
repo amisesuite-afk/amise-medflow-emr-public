@@ -7664,5 +7664,465 @@ enum ClinicalScoringEngine {
         )
     }
 
+    // MARK: - #105 Paediatric Trauma Score (PTS)
+
+    struct PTSInput: Equatable {
+        var weight: Int          // 0 = >20 kg (+2), 1 = 10–20 kg (+1), 2 = <10 kg (−1)
+        var airway: Int          // 0 = normal (+2), 1 = maintainable (+1), 2 = unmaintainable (−1)
+        var systolicBP: Int      // 0 = >90 mmHg (+2), 1 = 50–90 mmHg (+1), 2 = <50 mmHg (−1)
+        var cns: Int             // 0 = awake (+2), 1 = obtunded (+1), 2 = comatose (−1)
+        var openWound: Int       // 0 = none (+2), 1 = minor (+1), 2 = major/penetrating (−1)
+        var fracture: Int        // 0 = none (+2), 1 = closed (+1), 2 = open/multiple (−1)
+    }
+
+    func pts(_ i: PTSInput) -> ClinicalScore {
+        let points: [[Int: Int]] = [
+            [0: 2, 1: 1, 2: -1], [0: 2, 1: 1, 2: -1],
+            [0: 2, 1: 1, 2: -1], [0: 2, 1: 1, 2: -1],
+            [0: 2, 1: 1, 2: -1], [0: 2, 1: 1, 2: -1]
+        ]
+        let vals = [i.weight, i.airway, i.systolicBP, i.cns, i.openWound, i.fracture]
+        var score = 0
+        for (j, v) in vals.enumerated() {
+            switch v {
+            case 0:  score += points[j][0] ?? 0
+            case 1:  score += points[j][1] ?? 0
+            default: score += points[j][2] ?? 0
+            }
+        }
+        score = max(-6, min(12, score))
+
+        let risk: ScoreRisk
+        let interp: String
+        var recs: [String]
+        var flags: [String] = []
+
+        switch score {
+        case 9...12:
+            risk  = .low
+            interp = "PTS \(score) — Minor/no major trauma. Low mortality risk."
+            recs  = ["Standard paediatric assessment and monitoring",
+                     "Reassess if clinical condition changes"]
+        case 6...8:
+            risk  = .moderate
+            interp = "PTS \(score) — Moderate paediatric trauma. Potential for significant injury."
+            recs  = ["Secondary survey for occult injuries",
+                     "IV access, fluid resuscitation if haemodynamically compromised",
+                     "Urgent paediatric surgical review",
+                     "CT trauma protocol as clinically indicated"]
+        case 0...5:
+            risk  = .high
+            interp = "PTS \(score) — Major paediatric trauma. High risk of significant morbidity and mortality."
+            recs  = ["Immediate trauma team activation",
+                     "Primary ABCDE survey — airway management priority",
+                     "IV/IO access, blood transfusion protocol activation",
+                     "CT trauma protocol (head, C-spine, chest, abdomen, pelvis)",
+                     "Paediatric surgery + neurosurgery review",
+                     "Consider transfer to paediatric major trauma centre"]
+            flags = ["PTS ≤8: triage to a paediatric trauma centre when available"]
+        default:
+            risk  = .critical
+            interp = "PTS \(score) — Critical paediatric trauma. Immediate resuscitation required."
+            recs  = ["Immediate life-saving interventions (airway, haemorrhage control, decompression)",
+                     "Full trauma team response",
+                     "Massive transfusion protocol consideration",
+                     "Urgent neurosurgical consultation if head injury",
+                     "Immediate transfer to paediatric trauma centre"]
+            flags = ["PTS ≤0: critical — immediate resuscitation and trauma centre transfer"]
+        }
+
+        return ClinicalScore(
+            name:          "Paediatric Trauma Score (PTS)",
+            score:         Double(score),
+            maxScore:      12,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            redFlags:      flags,
+            evidenceNote:  "Tepas JJ et al. J Pediatr Surg 1987;22(1):14. PTS assesses weight, airway, systolic BP, CNS, open wound, fracture: each parameter scored +2/+1/−1. Range −6 to +12. Score ≤8 = major trauma requiring paediatric trauma centre; used as triage criterion. Comparable in predictive accuracy to the Revised Trauma Score (RTS) for paediatric populations. PTS ≤0 = 100% mortality in original series."
+        )
+    }
+
+    // MARK: - #106 P-POSSUM (Portsmouth POSSUM)
+
+    struct PPOSSUMInput: Equatable {
+        // Physiological parameters (P score 1–4 each)
+        var age: Int              // years
+        var cardiacHistory: Int   // 1=none/mild, 2=CCF on treatment, 4=limiting dyspnoea/CCF, 8=severe
+        var respiratoryHistory: Int // 1=none, 2=mild COAD/dyspnoea on exertion, 4=moderate COAD, 8=fibrosis/consolidation
+        var ecg: Int              // 1=normal, 4=AF rate 60-90, 8=any other change
+        var systolicBP: Int       // mmHg
+        var heartRate: Int        // bpm
+        var glasgowComaScale: Int // 1=15, 2=12-14, 4=9-11, 8=<9
+        var haemoglobin: Double   // g/dL
+        var whiteCount: Double    // ×10⁹/L
+        var urea: Double          // mmol/L
+        var sodium: Double        // mmol/L
+        var potassium: Double     // mmol/L
+        // Operative severity (O score)
+        var operativeUrgency: Int     // 1=elective, 4=emergency resuscitable, 8=emergency not resuscitable
+        var operativeSeverity: Int    // 1=minor, 2=moderate, 3=major, 4=major+
+        var peritonealContamination: Int // 1=none, 2=minor, 4=local pus, 8=free bowel content/pus/blood
+        var malignancy: Int           // 1=none, 2=primary only, 4=nodal mets, 8=distant mets
+        var operativeProcedures: Int  // 1=one, 2=two, 4=three or more
+    }
+
+    func ppossum(_ i: PPOSSUMInput) -> ClinicalScore {
+        // Physiological score (P)
+        var physScore = 0
+
+        // Age
+        physScore += i.age < 61 ? 1 : (i.age < 71 ? 2 : (i.age < 81 ? 4 : 8))
+
+        // Cardiac history
+        physScore += i.cardiacHistory
+
+        // Respiratory history
+        physScore += i.respiratoryHistory
+
+        // ECG
+        physScore += i.ecg
+
+        // Systolic BP bands
+        physScore += (i.systolicBP >= 110 && i.systolicBP <= 130) ? 1 :
+                     (i.systolicBP >= 131 && i.systolicBP <= 170) || (i.systolicBP >= 100 && i.systolicBP <= 109) ? 2 :
+                     (i.systolicBP >= 171) || (i.systolicBP >= 90 && i.systolicBP <= 99) ? 4 : 8
+
+        // Heart rate bands
+        physScore += (i.heartRate >= 50 && i.heartRate <= 80) ? 1 :
+                     (i.heartRate >= 81 && i.heartRate <= 100) || (i.heartRate >= 40 && i.heartRate <= 49) ? 2 :
+                     (i.heartRate >= 101 && i.heartRate <= 120) ? 4 : 8
+
+        // GCS
+        physScore += i.glasgowComaScale
+
+        // Haemoglobin bands
+        physScore += (i.haemoglobin >= 13.0 && i.haemoglobin <= 16.9) ? 1 :
+                     (i.haemoglobin >= 11.5 && i.haemoglobin <= 12.9) || (i.haemoglobin >= 17.0 && i.haemoglobin <= 18.0) ? 2 :
+                     (i.haemoglobin >= 10.0 && i.haemoglobin <= 11.4) || (i.haemoglobin > 18.0) ? 4 : 8
+
+        // White cell count bands
+        physScore += (i.whiteCount >= 4.0 && i.whiteCount <= 10.0) ? 1 :
+                     (i.whiteCount > 10.0 && i.whiteCount <= 20.0) || (i.whiteCount >= 3.0 && i.whiteCount < 4.0) ? 2 :
+                     (i.whiteCount > 20.0) || (i.whiteCount < 3.0) ? 4 : 1
+
+        // Urea bands
+        physScore += i.urea < 7.5 ? 1 : (i.urea < 10.0 ? 2 : (i.urea < 15.0 ? 4 : 8))
+
+        // Sodium bands
+        physScore += i.sodium >= 136 ? 1 : (i.sodium >= 131 ? 2 : (i.sodium >= 126 ? 4 : 8))
+
+        // Potassium bands
+        physScore += (i.potassium >= 3.5 && i.potassium <= 5.0) ? 1 :
+                     (i.potassium >= 3.2 && i.potassium < 3.5) || (i.potassium > 5.0 && i.potassium <= 5.3) ? 2 :
+                     (i.potassium < 3.2) || (i.potassium > 5.3) ? 4 : 1
+
+        physScore = max(12, physScore)
+
+        // Operative score (O)
+        var opScore = 0
+        opScore += i.operativeUrgency
+        opScore += i.operativeSeverity
+        opScore += i.peritonealContamination
+        opScore += i.malignancy
+        opScore += i.operativeProcedures
+        opScore = max(6, opScore)
+
+        // P-POSSUM mortality prediction (Prytherch 1998)
+        let logMort = -7.04 + (0.13 * Double(physScore)) + (0.16 * Double(opScore))
+        let mortRisk = exp(logMort) / (1.0 + exp(logMort)) * 100.0
+
+        let risk: ScoreRisk
+        let interp: String
+        var recs: [String]
+        var flags: [String] = []
+
+        switch mortRisk {
+        case ..<5:
+            risk  = .low
+            interp = String(format: "P-POSSUM predicted 30-day mortality %.1f%% — Low risk (P=%d, O=%d).", mortRisk, physScore, opScore)
+            recs  = ["Proceed with planned procedure with standard perioperative care",
+                     "Standard anaesthetic assessment",
+                     "Document predicted risk in operative consent"]
+        case 5..<20:
+            risk  = .moderate
+            interp = String(format: "P-POSSUM predicted 30-day mortality %.1f%% — Moderate risk (P=%d, O=%d).", mortRisk, physScore, opScore)
+            recs  = ["Senior anaesthetist involvement",
+                     "Consider ICU/HDU bed booking preoperatively",
+                     "Optimise reversible comorbidities before elective surgery",
+                     "Informed consent must document predicted mortality risk",
+                     "Consider cardiopulmonary exercise testing (CPET) for major elective surgery"]
+        case 20..<50:
+            risk  = .high
+            interp = String(format: "P-POSSUM predicted 30-day mortality %.1f%% — High risk (P=%d, O=%d).", mortRisk, physScore, opScore)
+            recs  = ["Consultant anaesthetist and senior surgeon involvement mandatory",
+                     "ICU/HDU bed booking confirmed preoperatively",
+                     "Multidisciplinary preoperative optimisation",
+                     "Full informed consent including predicted mortality and morbidity",
+                     "Consider surgical alternatives (non-operative, radiological) if available",
+                     "CPET if not emergency; cardiology review if cardiac comorbidity"]
+            flags = ["P-POSSUM mortality ≥20%: senior multidisciplinary review required"]
+        default:
+            risk  = .critical
+            interp = String(format: "P-POSSUM predicted 30-day mortality %.1f%% — Very high risk (P=%d, O=%d).", mortRisk, physScore, opScore)
+            recs  = ["Consultant-level decision on whether surgical intervention is appropriate",
+                     "Ethics/palliative care discussion if emergency",
+                     "Full resuscitation with ICU involvement if proceeding",
+                     "Documented decision-making capacity and advance directive status",
+                     "Consider palliation or minimally invasive alternatives"]
+            flags = ["P-POSSUM mortality ≥50%: consider alternative to open surgery; document patient/family discussion"]
+        }
+
+        return ClinicalScore(
+            name:          "P-POSSUM (Operative Mortality)",
+            score:         mortRisk,
+            maxScore:      nil,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            redFlags:      flags,
+            evidenceNote:  "Prytherch DR et al. Br J Surg 1998;85:1217. P-POSSUM modifies the original POSSUM logistic equation (Copeland 1991) to correct for over-prediction of mortality at low risk. Physiological score (P): 12 parameters each 1–8; range 12–88. Operative score (O): 6 parameters; range 6–44. Predicted mortality % = e^L / (1 + e^L) × 100, where L = −7.04 + 0.13P + 0.16O. Validated across general, vascular, colorectal, and upper GI surgery. Standard of care for perioperative risk communication and consent in UK (Royal College of Surgeons guidance)."
+        )
+    }
+
+    // MARK: - #107 Caprini VTE Risk Score
+
+    struct CapriniInput: Equatable {
+        // 1-point items
+        var age41to60: Bool
+        var minorSurgeryPlanned: Bool
+        var bmi30plus: Bool
+        var swollenLegs: Bool
+        var varicoseVeins: Bool
+        var pregnancy: Bool
+        var historyOfMiscarriage: Bool
+        var oralContraceptiveOrHRT: Bool
+        var sepsisPast1Month: Bool
+        var seriousLungDiseasePast1Month: Bool
+        var abnormalPulmonaryFunction: Bool
+        var acuteMIorCHF: Bool
+        var bedrideInpatient: Bool
+        var historyOfIBD: Bool
+        var medicalPatientAtBedRest: Bool
+        // 2-point items
+        var age61to74: Bool
+        var arthroscopy: Bool
+        var malignancy: Bool
+        var majorSurgeryOver45min: Bool
+        var laparoscopyOver45min: Bool
+        var bedRestOver72h: Bool
+        var immobilisingPlasterCast: Bool
+        var centralVenousAccess: Bool
+        // 3-point items
+        var age75plus: Bool
+        var personalHistoryVTE: Bool
+        var familyHistoryVTE: Bool
+        var factor5LeidenPositive: Bool
+        var prothrombinMutation: Bool
+        var lupusAnticoagulant: Bool
+        var elevatedAntiphospholipid: Bool
+        var serum_homocysteineElevated: Bool
+        var heparinInducedThrombocytopenia: Bool
+        var otherCongenitalThrombophilia: Bool
+        // 5-point items
+        var strokePast1Month: Bool
+        var multipleFracturesPast1Month: Bool
+        var arthroplastyOrHipFractureRepair: Bool
+        var spinalCordInjuryOrParalysis: Bool
+        var acuteAMIPast1Month: Bool
+    }
+
+    func caprini(_ i: CapriniInput) -> ClinicalScore {
+        var score = 0
+
+        // 1-point items
+        if i.age41to60 { score += 1 }
+        if i.minorSurgeryPlanned { score += 1 }
+        if i.bmi30plus { score += 1 }
+        if i.swollenLegs { score += 1 }
+        if i.varicoseVeins { score += 1 }
+        if i.pregnancy { score += 1 }
+        if i.historyOfMiscarriage { score += 1 }
+        if i.oralContraceptiveOrHRT { score += 1 }
+        if i.sepsisPast1Month { score += 1 }
+        if i.seriousLungDiseasePast1Month { score += 1 }
+        if i.abnormalPulmonaryFunction { score += 1 }
+        if i.acuteMIorCHF { score += 1 }
+        if i.bedrideInpatient { score += 1 }
+        if i.historyOfIBD { score += 1 }
+        if i.medicalPatientAtBedRest { score += 1 }
+
+        // 2-point items
+        if i.age61to74 { score += 2 }
+        if i.arthroscopy { score += 2 }
+        if i.malignancy { score += 2 }
+        if i.majorSurgeryOver45min { score += 2 }
+        if i.laparoscopyOver45min { score += 2 }
+        if i.bedRestOver72h { score += 2 }
+        if i.immobilisingPlasterCast { score += 2 }
+        if i.centralVenousAccess { score += 2 }
+
+        // 3-point items
+        if i.age75plus { score += 3 }
+        if i.personalHistoryVTE { score += 3 }
+        if i.familyHistoryVTE { score += 3 }
+        if i.factor5LeidenPositive { score += 3 }
+        if i.prothrombinMutation { score += 3 }
+        if i.lupusAnticoagulant { score += 3 }
+        if i.elevatedAntiphospholipid { score += 3 }
+        if i.serum_homocysteineElevated { score += 3 }
+        if i.heparinInducedThrombocytopenia { score += 3 }
+        if i.otherCongenitalThrombophilia { score += 3 }
+
+        // 5-point items
+        if i.strokePast1Month { score += 5 }
+        if i.multipleFracturesPast1Month { score += 5 }
+        if i.arthroplastyOrHipFractureRepair { score += 5 }
+        if i.spinalCordInjuryOrParalysis { score += 5 }
+        if i.acuteAMIPast1Month { score += 5 }
+
+        let risk: ScoreRisk
+        let interp: String
+        var recs: [String]
+        var flags: [String] = []
+
+        switch score {
+        case 0:
+            risk  = .low
+            interp = "Caprini score 0 — Very low VTE risk (<0.5%)."
+            recs  = ["Early ambulation",
+                     "No pharmacological or mechanical prophylaxis indicated for surgical patients",
+                     "Reassess if clinical status changes"]
+        case 1...2:
+            risk  = .low
+            interp = "Caprini score \(score) — Low VTE risk (~1.5%)."
+            recs  = ["Early ambulation",
+                     "Mechanical prophylaxis: compression stockings or pneumatic compression devices",
+                     "Consider pharmacological prophylaxis for higher-risk surgical procedures"]
+        case 3...4:
+            risk  = .moderate
+            interp = "Caprini score \(score) — Moderate VTE risk (~3%)."
+            recs  = ["Mechanical prophylaxis: pneumatic compression devices",
+                     "Pharmacological prophylaxis: LMWH or UFH unless contraindicated",
+                     "Continue prophylaxis until mobile and for duration of hospitalisation",
+                     "Extended prophylaxis (28 days) if major abdominal/pelvic surgery for cancer"]
+        case 5...8:
+            risk  = .high
+            interp = "Caprini score \(score) — High VTE risk (~6%)."
+            recs  = ["Pharmacological prophylaxis: LMWH strongly recommended",
+                     "Mechanical prophylaxis concurrently (sequential compression devices)",
+                     "Extended prophylaxis 28–35 days for cancer surgery",
+                     "Consider IVC filter only if anticoagulation absolutely contraindicated"]
+            flags = ["Caprini ≥5: high VTE risk — commence LMWH unless bleeding risk prohibits"]
+        default:
+            risk  = .critical
+            interp = "Caprini score \(score) — Very high VTE risk (>6%)."
+            recs  = ["LMWH at therapeutic-weight prophylactic dosing",
+                     "Mechanical prophylaxis in addition to pharmacological",
+                     "Extended prophylaxis ≥35 days post major surgery",
+                     "Haematology review if thrombophilia markers positive",
+                     "Consider direct oral anticoagulants (DOACs) as per local guideline"]
+            flags = ["Caprini ≥9: very high VTE risk — immediate pharmacological + mechanical prophylaxis; haematology review if thrombophilia"]
+        }
+
+        return ClinicalScore(
+            name:          "Caprini VTE Risk Score",
+            score:         Double(score),
+            maxScore:      nil,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            redFlags:      flags,
+            evidenceNote:  "Caprini JA. Semin Thromb Hemost 2010;36:62. Evidence-based VTE risk stratification model with 40+ weighted risk factors. Validated in >15 000 surgical patients. Score 0=very low, 1–2=low, 3–4=moderate, ≥5=high, ≥9=very high. ACCP 9th edition guidelines (2012) and NICE CG92 recommend prophylaxis stratification using Caprini or Padua models. High scores (≥5) in non-orthopaedic surgical patients correspond to 6% symptomatic VTE vs <0.5% in very-low-risk patients."
+        )
+    }
+
+    // MARK: - #108 Child-Pugh Score
+
+    struct ChildPughInput: Equatable {
+        var totalBilirubin: Double   // μmol/L (or mg/dL — see formula note)
+        var albumin: Double          // g/L
+        var inrValue: Double         // INR
+        var ascites: Int             // 1=none, 2=mild/controlled, 3=refractory
+        var encephalopathy: Int      // 1=none, 2=grade I–II, 3=grade III–IV
+        var bilirubinInMgDL: Bool    // true if bilirubin entered in mg/dL (primary biliary units)
+    }
+
+    func childPugh(_ i: ChildPughInput) -> ClinicalScore {
+        // Bilirubin in μmol/L for thresholds; convert if entered as mg/dL
+        let bilirubinUmol = i.bilirubinInMgDL ? i.totalBilirubin * 17.1 : i.totalBilirubin
+
+        var score = 0
+
+        // Bilirubin
+        score += bilirubinUmol < 34 ? 1 : (bilirubinUmol <= 51 ? 2 : 3)
+
+        // Albumin
+        score += i.albumin > 35 ? 1 : (i.albumin >= 28 ? 2 : 3)
+
+        // INR
+        score += i.inrValue < 1.7 ? 1 : (i.inrValue <= 2.2 ? 2 : 3)
+
+        // Ascites and encephalopathy (already scored 1–3)
+        score += max(1, min(3, i.ascites))
+        score += max(1, min(3, i.encephalopathy))
+
+        let cpClass: String
+        let oneYearSurvival: String
+        let twoYearSurvival: String
+        let risk: ScoreRisk
+        var recs: [String]
+        var flags: [String] = []
+
+        switch score {
+        case 5...6:
+            cpClass          = "A"
+            oneYearSurvival  = "100%"
+            twoYearSurvival  = "85%"
+            risk             = .low
+            recs = ["Liver function is compensated — standard surgical risk",
+                    "Annual surveillance for HCC: USS ± AFP every 6 months",
+                    "Variceal screening: OGD at diagnosis; re-screen per guidelines",
+                    "Monitor LFTs, albumin, INR, FBC every 6 months",
+                    "Avoid NSAIDs and nephrotoxic agents"]
+        case 7...9:
+            cpClass          = "B"
+            oneYearSurvival  = "81%"
+            twoYearSurvival  = "57%"
+            risk             = .moderate
+            recs = ["Significantly elevated operative risk — specialist hepatology review required",
+                    "Consider referral for transplant assessment",
+                    "Optimise portal hypertension: non-selective beta-blocker ± endoscopic therapy",
+                    "Nutritional support: high-calorie, high-protein diet; BCAA supplementation",
+                    "Avoid elective non-hepatic surgery until optimised",
+                    "Major surgery requires hepatobiliary/HPB centre"]
+            flags = ["Child-Pugh B: refer for transplant assessment; avoid elective non-liver surgery if possible"]
+        default:
+            cpClass          = "C"
+            oneYearSurvival  = "45%"
+            twoYearSurvival  = "35%"
+            risk             = .critical
+            recs = ["Decompensated cirrhosis — urgent hepatology and hepatobiliary surgery review",
+                    "Urgent transplant listing assessment if eligible",
+                    "Treat acute decompensation: infections (SBP prophylaxis), AKI (ACLF protocol), HE management",
+                    "Palliative care referral if not transplant candidate",
+                    "Surgery carries >25–30% mortality — avoid unless life-saving"]
+            flags = ["Child-Pugh C: surgery contraindicated except for life-threatening indications; immediate hepatology referral"]
+        }
+
+        let interp = "Child-Pugh Class \(cpClass) (score \(score)/15) — 1-year survival \(oneYearSurvival), 2-year survival \(twoYearSurvival)."
+
+        return ClinicalScore(
+            name:          "Child-Pugh Score",
+            score:         Double(score),
+            maxScore:      15,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            redFlags:      flags,
+            evidenceNote:  "Child CG, Turcotte JG. Surgery and Portal Hypertension. In: The Liver and Portal Hypertension. Philadelphia: Saunders, 1964:50. Modified by Pugh (Br J Surg 1973;60:646) to add INR in place of nutritional status. Classifies cirrhosis severity: A=5–6 (compensated), B=7–9 (significant functional impairment), C=10–15 (decompensated). Predicts 1- and 2-year survival; used for hepatic resection candidacy, transplant listing, and TIPS candidacy. Largely supplanted by MELD for transplant allocation but remains widely used for operative risk stratification and clinical decision-making."
+        )
+    }
+
 
 }

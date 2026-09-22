@@ -118,6 +118,10 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case cage             = "CAGE Questionnaire (Alcohol Use Disorder)"
     case dukeIE           = "Duke Criteria (Infective Endocarditis)"
     case mmrc             = "mMRC Dyspnoea Scale"
+    case pts              = "Paediatric Trauma Score (PTS)"
+    case ppossum          = "P-POSSUM (Operative Mortality Risk)"
+    case caprini          = "Caprini VTE Risk Score"
+    case childPugh        = "Child-Pugh Score (Hepatic Severity)"
 
     var category: ScoreCategory {
         switch self {
@@ -225,6 +229,14 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .sepsis
         case .mmrc:
             return .monitoring
+        case .pts:
+            return .acute
+        case .ppossum:
+            return .preop
+        case .caprini:
+            return .preop
+        case .childPugh:
+            return .gi
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
         case .mews, .news2, .waterlow, .surgicalApgar:
@@ -328,6 +340,10 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .cage:           return "wineglass.fill"
         case .dukeIE:         return "stethoscope"
         case .mmrc:           return "figure.walk.motion"
+        case .pts:            return "cross.circle.fill"
+        case .ppossum:        return "chart.bar.doc.horizontal"
+        case .caprini:        return "vein.fill"
+        case .childPugh:      return "drop.triangle.fill"
         }
     }
 }
@@ -513,6 +529,10 @@ struct ClinicalScoresView: View {
     @State private var cageI         = ClinicalScoringEngine.CAGEInput(feltCutDown: false, annoyedByCriticism: false, feltGuilty: false, eyeOpener: false)
     @State private var dukeI         = ClinicalScoringEngine.DukeInput(positiveBloodCultures: 0, endocardialInvolvement: 0, fever: false, vascularPhenomena: false, immunologicalPhenomena: false, microbiologicalEvidence: false, predisposingHeartCondition: false, injectionDrugUse: false, newRegurgitationMurmur: false)
     @State private var mmrcI         = ClinicalScoringEngine.MMRCInput(grade: 0)
+    @State private var ptsI          = ClinicalScoringEngine.PTSInput(weight: 0, airway: 0, systolicBP: 0, cns: 0, openWound: 0, fracture: 0)
+    @State private var ppossumI      = ClinicalScoringEngine.PPOSSUMInput(age: 50, cardiacHistory: 1, respiratoryHistory: 1, ecg: 1, systolicBP: 120, heartRate: 75, glasgowComaScale: 1, haemoglobin: 13.5, whiteCount: 7.0, urea: 5.0, sodium: 138, potassium: 4.0, operativeUrgency: 1, operativeSeverity: 2, peritonealContamination: 1, malignancy: 1, operativeProcedures: 1)
+    @State private var capriniI      = ClinicalScoringEngine.CapriniInput(age41to60: false, minorSurgeryPlanned: false, bmi30plus: false, swollenLegs: false, varicoseVeins: false, pregnancy: false, historyOfMiscarriage: false, oralContraceptiveOrHRT: false, sepsisPast1Month: false, seriousLungDiseasePast1Month: false, abnormalPulmonaryFunction: false, acuteMIorCHF: false, bedrideInpatient: false, historyOfIBD: false, medicalPatientAtBedRest: false, age61to74: false, arthroscopy: false, malignancy: false, majorSurgeryOver45min: false, laparoscopyOver45min: false, bedRestOver72h: false, immobilisingPlasterCast: false, centralVenousAccess: false, age75plus: false, personalHistoryVTE: false, familyHistoryVTE: false, factor5LeidenPositive: false, prothrombinMutation: false, lupusAnticoagulant: false, elevatedAntiphospholipid: false, serum_homocysteineElevated: false, heparinInducedThrombocytopenia: false, otherCongenitalThrombophilia: false, strokePast1Month: false, multipleFracturesPast1Month: false, arthroplastyOrHipFractureRepair: false, spinalCordInjuryOrParalysis: false, acuteAMIPast1Month: false)
+    @State private var childPughI    = ClinicalScoringEngine.ChildPughInput(totalBilirubin: 20.0, albumin: 38.0, inrValue: 1.1, ascites: 1, encephalopathy: 1, bilirubinInMgDL: false)
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -1074,6 +1094,18 @@ struct ClinicalScoresView: View {
         case .mmrc:
             let (input, fill) = PatientScoreAutoPopulator.mmrc(patient: patient)
             mmrcI = input; autoFill = fill
+        case .pts:
+            let (input, fill) = PatientScoreAutoPopulator.pts(patient: patient)
+            ptsI = input; autoFill = fill
+        case .ppossum:
+            let (input, fill) = PatientScoreAutoPopulator.ppossum(patient: patient)
+            ppossumI = input; autoFill = fill
+        case .caprini:
+            let (input, fill) = PatientScoreAutoPopulator.caprini(patient: patient)
+            capriniI = input; autoFill = fill
+        case .childPugh:
+            let (input, fill) = PatientScoreAutoPopulator.childPugh(patient: patient)
+            childPughI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -1230,6 +1262,10 @@ struct ClinicalScoresView: View {
         case .cage:          ClinicalScoringEngine.cage(cageI)
         case .dukeIE:        ClinicalScoringEngine.dukeIE(dukeI)
         case .mmrc:          ClinicalScoringEngine.mmrc(mmrcI)
+        case .pts:           ClinicalScoringEngine.pts(ptsI)
+        case .ppossum:       ClinicalScoringEngine.ppossum(ppossumI)
+        case .caprini:       ClinicalScoringEngine.caprini(capriniI)
+        case .childPugh:     ClinicalScoringEngine.childPugh(childPughI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -1329,6 +1365,10 @@ struct ClinicalScoresView: View {
         case .cage:          patient.cageScore      = intScore
         case .dukeIE:        patient.dukeIEScore    = r.score   // continuous Double (majorCount×2 + minorCount)
         case .mmrc:          patient.mmrcGrade      = intScore
+        case .pts:           patient.ptsScore       = intScore
+        case .ppossum:       patient.ppossum30dMortality = r.score  // continuous Double (%)
+        case .caprini:       patient.capriniScore   = intScore
+        case .childPugh:     patient.childPughScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -1462,6 +1502,10 @@ struct ClinicalScoresView: View {
         case .cage:          cageForm
         case .dukeIE:        dukeIEForm
         case .mmrc:          mmrcForm
+        case .pts:           ptsForm
+        case .ppossum:       ppossumForm
+        case .caprini:       capriniForm
+        case .childPugh:     childPughForm
         }
     }
 
@@ -5326,6 +5370,281 @@ struct ClinicalScoresView: View {
                 }
                 .pickerStyle(.inline)
                 .onChange(of: mmrcI.grade) { _, _ in recalculate() }
+            }
+        }
+    }
+
+    // MARK: - Paediatric Trauma Score
+
+    private var ptsForm: some View {
+        Group {
+            Text("PTS: 6 parameters scored +2/+1/−1. Range −6 to +12. Score ≤8 = major trauma — triage to paediatric trauma centre.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Weight")
+                Picker("Weight", selection: $ptsI.weight) {
+                    Text(">20 kg (+2)").tag(0)
+                    Text("10–20 kg (+1)").tag(1)
+                    Text("<10 kg (−1)").tag(2)
+                }.pickerStyle(.segmented)
+                  .onChange(of: ptsI.weight) { _, _ in recalculate() }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Airway")
+                Picker("Airway", selection: $ptsI.airway) {
+                    Text("Normal (+2)").tag(0)
+                    Text("Maintainable (+1)").tag(1)
+                    Text("Unmaintainable (−1)").tag(2)
+                }.pickerStyle(.segmented)
+                  .onChange(of: ptsI.airway) { _, _ in recalculate() }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Systolic BP")
+                Picker("BP", selection: $ptsI.systolicBP) {
+                    Text(">90 mmHg (+2)").tag(0)
+                    Text("50–90 mmHg (+1)").tag(1)
+                    Text("<50 mmHg (−1)").tag(2)
+                }.pickerStyle(.segmented)
+                  .onChange(of: ptsI.systolicBP) { _, _ in recalculate() }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("CNS")
+                Picker("CNS", selection: $ptsI.cns) {
+                    Text("Awake (+2)").tag(0)
+                    Text("Obtunded/LOC (+1)").tag(1)
+                    Text("Comatose (−1)").tag(2)
+                }.pickerStyle(.segmented)
+                  .onChange(of: ptsI.cns) { _, _ in recalculate() }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Open wound")
+                Picker("Wound", selection: $ptsI.openWound) {
+                    Text("None (+2)").tag(0)
+                    Text("Minor (+1)").tag(1)
+                    Text("Major / penetrating (−1)").tag(2)
+                }.pickerStyle(.segmented)
+                  .onChange(of: ptsI.openWound) { _, _ in recalculate() }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Fracture")
+                Picker("Fracture", selection: $ptsI.fracture) {
+                    Text("None (+2)").tag(0)
+                    Text("Closed (+1)").tag(1)
+                    Text("Open / multiple (−1)").tag(2)
+                }.pickerStyle(.segmented)
+                  .onChange(of: ptsI.fracture) { _, _ in recalculate() }
+            }
+        }
+    }
+
+    // MARK: - P-POSSUM
+
+    private var ppossumForm: some View {
+        Group {
+            Text("P-POSSUM: Physiological score (12 parameters) + Operative score (6 parameters). Predicts 30-day postoperative mortality using the Prytherch 1998 logistic equation.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
+            Text("Physiological parameters").font(.caption).bold().foregroundStyle(.secondary)
+            sapsIIStepper("Age (years)", value: $ppossumI.age, range: 1...110, step: 1)
+                .onChange(of: ppossumI.age) { _, _ in recalculate() }
+            HStack {
+                Text("Systolic BP (mmHg)")
+                Spacer()
+                Stepper("\(ppossumI.systolicBP)", value: $ppossumI.systolicBP, in: 40...260, step: 5)
+                    .fixedSize()
+                    .onChange(of: ppossumI.systolicBP) { _, _ in recalculate() }
+            }
+            HStack {
+                Text("Heart rate (bpm)")
+                Spacer()
+                Stepper("\(ppossumI.heartRate)", value: $ppossumI.heartRate, in: 20...200, step: 5)
+                    .fixedSize()
+                    .onChange(of: ppossumI.heartRate) { _, _ in recalculate() }
+            }
+            HStack {
+                Text("Haemoglobin (g/dL)")
+                Spacer()
+                Stepper(String(format: "%.1f", ppossumI.haemoglobin),
+                        onIncrement: { ppossumI.haemoglobin = min(25, ppossumI.haemoglobin + 0.5); recalculate() },
+                        onDecrement: { ppossumI.haemoglobin = max(5, ppossumI.haemoglobin - 0.5); recalculate() })
+                    .fixedSize()
+            }
+            HStack {
+                Text("Urea (mmol/L)")
+                Spacer()
+                Stepper(String(format: "%.1f", ppossumI.urea),
+                        onIncrement: { ppossumI.urea = min(50, ppossumI.urea + 0.5); recalculate() },
+                        onDecrement: { ppossumI.urea = max(0, ppossumI.urea - 0.5); recalculate() })
+                    .fixedSize()
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Cardiac history")
+                Picker("Cardiac", selection: $ppossumI.cardiacHistory) {
+                    Text("None / mild (1)").tag(1)
+                    Text("CCF on treatment (2)").tag(2)
+                    Text("Limiting dyspnoea (4)").tag(4)
+                    Text("Severe cardiac disease (8)").tag(8)
+                }.pickerStyle(.inline)
+                  .onChange(of: ppossumI.cardiacHistory) { _, _ in recalculate() }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Respiratory history")
+                Picker("Resp", selection: $ppossumI.respiratoryHistory) {
+                    Text("None (1)").tag(1)
+                    Text("Mild COAD (2)").tag(2)
+                    Text("Moderate COAD (4)").tag(4)
+                    Text("Fibrosis / consolidation (8)").tag(8)
+                }.pickerStyle(.inline)
+                  .onChange(of: ppossumI.respiratoryHistory) { _, _ in recalculate() }
+            }
+            Text("Operative parameters").font(.caption).bold().foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Urgency")
+                Picker("Urgency", selection: $ppossumI.operativeUrgency) {
+                    Text("Elective (1)").tag(1)
+                    Text("Emergency — resuscitable (4)").tag(4)
+                    Text("Emergency — not resuscitable (8)").tag(8)
+                }.pickerStyle(.segmented)
+                  .onChange(of: ppossumI.operativeUrgency) { _, _ in recalculate() }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Operative severity")
+                Picker("Severity", selection: $ppossumI.operativeSeverity) {
+                    Text("Minor (1)").tag(1)
+                    Text("Moderate (2)").tag(2)
+                    Text("Major (3)").tag(3)
+                    Text("Major+ (4)").tag(4)
+                }.pickerStyle(.segmented)
+                  .onChange(of: ppossumI.operativeSeverity) { _, _ in recalculate() }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Peritoneal contamination")
+                Picker("Contamination", selection: $ppossumI.peritonealContamination) {
+                    Text("None (1)").tag(1)
+                    Text("Minor (2)").tag(2)
+                    Text("Local pus (4)").tag(4)
+                    Text("Free bowel content/pus/blood (8)").tag(8)
+                }.pickerStyle(.segmented)
+                  .onChange(of: ppossumI.peritonealContamination) { _, _ in recalculate() }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Malignancy")
+                Picker("Malignancy", selection: $ppossumI.malignancy) {
+                    Text("None (1)").tag(1)
+                    Text("Primary only (2)").tag(2)
+                    Text("Nodal mets (4)").tag(4)
+                    Text("Distant mets (8)").tag(8)
+                }.pickerStyle(.segmented)
+                  .onChange(of: ppossumI.malignancy) { _, _ in recalculate() }
+            }
+        }
+    }
+
+    // MARK: - Caprini VTE Risk Score
+
+    private var capriniForm: some View {
+        Group {
+            Text("Caprini VTE Risk Score. Each item carries 1, 2, 3, or 5 points. Score 0=very low, 1–2=low, 3–4=moderate, ≥5=high, ≥9=very high VTE risk.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
+            Text("1-point items").font(.caption).bold().foregroundStyle(.secondary)
+            scoreToggle("Age 41–60 years", binding: $capriniI.age41to60, points: "+1")
+            scoreToggle("Minor surgery planned", binding: $capriniI.minorSurgeryPlanned, points: "+1")
+            scoreToggle("BMI ≥30 kg/m²", binding: $capriniI.bmi30plus, points: "+1")
+            scoreToggle("Swollen legs (currently)", binding: $capriniI.swollenLegs, points: "+1")
+            scoreToggle("Varicose veins", binding: $capriniI.varicoseVeins, points: "+1")
+            scoreToggle("Pregnancy or postpartum", binding: $capriniI.pregnancy, points: "+1")
+            scoreToggle("History of unexplained or recurrent spontaneous miscarriage", binding: $capriniI.historyOfMiscarriage, points: "+1")
+            scoreToggle("Oral contraceptives or hormone replacement therapy", binding: $capriniI.oralContraceptiveOrHRT, points: "+1")
+            scoreToggle("Sepsis within past 1 month", binding: $capriniI.sepsisPast1Month, points: "+1")
+            scoreToggle("Serious lung disease including pneumonia within 1 month", binding: $capriniI.seriousLungDiseasePast1Month, points: "+1")
+            scoreToggle("Abnormal pulmonary function (COPD, etc.)", binding: $capriniI.abnormalPulmonaryFunction, points: "+1")
+            scoreToggle("Acute MI or CHF within 1 month", binding: $capriniI.acuteMIorCHF, points: "+1")
+            scoreToggle("Bedridden inpatient / medical patient at bed rest", binding: $capriniI.bedrideInpatient, points: "+1")
+            scoreToggle("History of inflammatory bowel disease", binding: $capriniI.historyOfIBD, points: "+1")
+            Text("2-point items").font(.caption).bold().foregroundStyle(.secondary)
+            scoreToggle("Age 61–74 years", binding: $capriniI.age61to74, points: "+2")
+            scoreToggle("Arthroscopic surgery", binding: $capriniI.arthroscopy, points: "+2")
+            scoreToggle("Malignancy (present or previous)", binding: $capriniI.malignancy, points: "+2")
+            scoreToggle("Major surgery (>45 min) / laparotomy", binding: $capriniI.majorSurgeryOver45min, points: "+2")
+            scoreToggle("Laparoscopic surgery (>45 min)", binding: $capriniI.laparoscopyOver45min, points: "+2")
+            scoreToggle("Patient confined to bed >72 hours", binding: $capriniI.bedRestOver72h, points: "+2")
+            scoreToggle("Immobilising plaster cast", binding: $capriniI.immobilisingPlasterCast, points: "+2")
+            scoreToggle("Central venous access", binding: $capriniI.centralVenousAccess, points: "+2")
+            Text("3-point items").font(.caption).bold().foregroundStyle(.secondary)
+            scoreToggle("Age ≥75 years", binding: $capriniI.age75plus, points: "+3")
+            scoreToggle("Personal history of DVT or PE", binding: $capriniI.personalHistoryVTE, points: "+3")
+            scoreToggle("Family history of DVT or PE", binding: $capriniI.familyHistoryVTE, points: "+3")
+            scoreToggle("Factor V Leiden positive", binding: $capriniI.factor5LeidenPositive, points: "+3")
+            scoreToggle("Prothrombin gene mutation 20210A", binding: $capriniI.prothrombinMutation, points: "+3")
+            scoreToggle("Lupus anticoagulant positive", binding: $capriniI.lupusAnticoagulant, points: "+3")
+            scoreToggle("Elevated anticardiolipin antibodies", binding: $capriniI.elevatedAntiphospholipid, points: "+3")
+            scoreToggle("Elevated serum homocysteine", binding: $capriniI.serum_homocysteineElevated, points: "+3")
+            scoreToggle("Heparin-induced thrombocytopenia (HIT)", binding: $capriniI.heparinInducedThrombocytopenia, points: "+3")
+            scoreToggle("Other congenital or acquired thrombophilia", binding: $capriniI.otherCongenitalThrombophilia, points: "+3")
+            Text("5-point items").font(.caption).bold().foregroundStyle(.secondary)
+            scoreToggle("Stroke within 1 month", binding: $capriniI.strokePast1Month, points: "+5")
+            scoreToggle("Multiple fractures within 1 month", binding: $capriniI.multipleFracturesPast1Month, points: "+5")
+            scoreToggle("Elective lower extremity arthroplasty or hip fracture repair", binding: $capriniI.arthroplastyOrHipFractureRepair, points: "+5")
+            scoreToggle("Spinal cord injury with acute paralysis", binding: $capriniI.spinalCordInjuryOrParalysis, points: "+5")
+            scoreToggle("Acute MI within 1 month (high-risk)", binding: $capriniI.acuteAMIPast1Month, points: "+5")
+        }
+        .onChange(of: capriniI) { _, _ in recalculate() }
+    }
+
+    // MARK: - Child-Pugh Score
+
+    private var childPughForm: some View {
+        Group {
+            Text("Child-Pugh Score for cirrhosis severity. Class A (5–6) = compensated; Class B (7–9) = significant dysfunction; Class C (10–15) = decompensated.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
+            HStack {
+                Text("Total bilirubin")
+                Spacer()
+                Toggle("Enter in mg/dL", isOn: $childPughI.bilirubinInMgDL)
+                    .labelsHidden()
+                    .onChange(of: childPughI.bilirubinInMgDL) { _, _ in recalculate() }
+                Text(childPughI.bilirubinInMgDL ? "mg/dL" : "μmol/L").foregroundStyle(.secondary)
+            }
+            HStack {
+                Text(childPughI.bilirubinInMgDL ? "Bilirubin (mg/dL)" : "Bilirubin (μmol/L)")
+                Spacer()
+                Stepper(String(format: "%.0f", childPughI.totalBilirubin),
+                        onIncrement: { childPughI.totalBilirubin = min(300, childPughI.totalBilirubin + (childPughI.bilirubinInMgDL ? 0.5 : 5)); recalculate() },
+                        onDecrement: { childPughI.totalBilirubin = max(0, childPughI.totalBilirubin - (childPughI.bilirubinInMgDL ? 0.5 : 5)); recalculate() })
+                    .fixedSize()
+            }
+            HStack {
+                Text("Albumin (g/L)")
+                Spacer()
+                Stepper(String(format: "%.0f", childPughI.albumin),
+                        onIncrement: { childPughI.albumin = min(60, childPughI.albumin + 1); recalculate() },
+                        onDecrement: { childPughI.albumin = max(10, childPughI.albumin - 1); recalculate() })
+                    .fixedSize()
+            }
+            HStack {
+                Text("INR")
+                Spacer()
+                Stepper(String(format: "%.1f", childPughI.inrValue),
+                        onIncrement: { childPughI.inrValue = min(6.0, childPughI.inrValue + 0.1); recalculate() },
+                        onDecrement: { childPughI.inrValue = max(0.8, childPughI.inrValue - 0.1); recalculate() })
+                    .fixedSize()
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Ascites")
+                Picker("Ascites", selection: $childPughI.ascites) {
+                    Text("None (1)").tag(1)
+                    Text("Mild/controlled (2)").tag(2)
+                    Text("Refractory (3)").tag(3)
+                }.pickerStyle(.segmented)
+                  .onChange(of: childPughI.ascites) { _, _ in recalculate() }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Hepatic encephalopathy")
+                Picker("HE", selection: $childPughI.encephalopathy) {
+                    Text("None (1)").tag(1)
+                    Text("Grade I–II (2)").tag(2)
+                    Text("Grade III–IV (3)").tag(3)
+                }.pickerStyle(.segmented)
+                  .onChange(of: childPughI.encephalopathy) { _, _ in recalculate() }
             }
         }
     }

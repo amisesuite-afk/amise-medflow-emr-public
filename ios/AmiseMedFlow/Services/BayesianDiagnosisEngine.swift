@@ -179,6 +179,9 @@ enum BayesianDiagnosisEngine {
         cageScore: Int? = nil,          // CAGE 0–4; ≥2 = probable alcohol use disorder
         dukeIEScore: Double? = nil,     // Duke IE classification score (majorCount×2 + minorCount)
         mmrcGrade: Int? = nil,          // mMRC dyspnoea grade 0–4; ≥3 = severe impairment
+        ptsScore: Int? = nil,           // Paediatric Trauma Score −6 to +12; ≤8 = major trauma
+        capriniScore: Int? = nil,       // Caprini VTE 0+; ≥5 = high VTE risk
+        childPughScore: Int? = nil,     // Child-Pugh 5–15; ≥10 = decompensated cirrhosis (Class C)
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3858,6 +3861,52 @@ enum BayesianDiagnosisEngine {
                 let nameLow = scored[i].candidate.name.lowercased()
                 guard mmrcTargets.contains(where: { nameLow.contains($0) }) else { continue }
                 let label = "mMRC grade \(mmrc) — severe dyspnoea"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // PTS boost: major paediatric trauma raises trauma-related diagnosis candidates
+        if let pts = ptsScore, pts <= 8 {
+            let ptsTargets = ["trauma", "traumatic injury", "paediatric trauma", "polytrauma",
+                              "head injury", "abdominal trauma", "thoracic trauma"]
+            let adj = pts <= 0 ? 9 : (pts <= 5 ? 7 : 5)
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard ptsTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "PTS \(pts) — \(pts <= 0 ? "critical" : "major") paediatric trauma"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // Caprini boost: high VTE risk raises DVT and PE candidates
+        if let caprini = capriniScore, caprini >= 5 {
+            let capriniTargets = ["deep vein thrombosis", "dvt", "pulmonary embolism", "pe",
+                                  "thromboembolism", "venous thrombosis"]
+            let adj = caprini >= 9 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard capriniTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "Caprini \(caprini) — \(caprini >= 9 ? "very high" : "high") VTE risk"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // Child-Pugh boost: Class B/C raises cirrhosis and portal hypertension candidates
+        if let cp = childPughScore, cp >= 7 {
+            let cpTargets = ["cirrhosis", "portal hypertension", "hepatic encephalopathy",
+                             "liver failure", "oesophageal varices", "spontaneous bacterial peritonitis",
+                             "hepatorenal syndrome", "liver disease"]
+            let adj = cp >= 10 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard cpTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "Child-Pugh \(cp) — Class \(cp >= 10 ? "C" : "B") cirrhosis"
                 scored[i].logPosterior += adj
                 scored[i].evidence.append(label)
                 scored[i].evidenceSources["score", default: []].append(label)

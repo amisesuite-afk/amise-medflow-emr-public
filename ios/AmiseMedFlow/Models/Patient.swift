@@ -217,6 +217,10 @@ final class Patient {
     var cageScore: Int?           // CAGE alcohol use disorder screen (0–4; ≥2 = probable AUD)
     var dukeIEScore: Double?      // Duke IE criteria classification score (no fixed max; classification-based)
     var mmrcGrade: Int?           // mMRC Dyspnoea Scale (0–4; ≥2 = significant functional impairment)
+    var ptsScore: Int?            // Paediatric Trauma Score (−6 to +12; ≤8 = major trauma, triage to trauma centre)
+    var ppossum30dMortality: Double? // P-POSSUM 30-day mortality risk (continuous %; nil until calculated)
+    var capriniScore: Int?        // Caprini VTE Risk Score (0+; ≥5 = high, ≥9 = very high)
+    var childPughScore: Int?      // Child-Pugh Score (5–15; Class A=5–6, B=7–9, C=10–15)
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

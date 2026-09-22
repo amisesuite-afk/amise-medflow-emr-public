@@ -4263,4 +4263,231 @@ enum PatientScoreAutoPopulator {
         }
         return (i, f)
     }
+
+    // MARK: - #105 Paediatric Trauma Score
+
+    static func pts(patient: Patient) -> (ClinicalScoringEngine.PTSInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.PTSInput(weight: 0, airway: 0, systolicBP: 0, cns: 0, openWound: 0, fracture: 0)
+        var f = ScoreAutoFill()
+
+        // Weight from patient record
+        let latestV = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first
+        if let kg = latestV?.weightKg {
+            i.weight = kg > 20 ? 0 : (kg >= 10 ? 1 : 2)
+            f.addAutoFilled(key: "weight", label: String(format: "Weight %.1f kg from vitals", kg), source: "Vitals")
+        } else {
+            f.addPending(key: "weight", label: "Child's weight (>20 kg / 10–20 kg / <10 kg)", source: "Vitals/Exam")
+        }
+
+        // Systolic BP from vitals
+        if let sbp = latestV?.bpSystolic {
+            i.systolicBP = sbp > 90 ? 0 : (sbp >= 50 ? 1 : 2)
+            f.addAutoFilled(key: "sbp", label: "Systolic BP \(sbp) mmHg from vitals", source: "Vitals")
+        } else {
+            f.addPending(key: "sbp", label: "Systolic BP (>90 / 50–90 / <50 mmHg)", source: "Vitals")
+        }
+
+        // CNS — from AVPU if available
+        if let avpu = latestV?.avpu {
+            switch avpu {
+            case .alert:    i.cns = 0; f.addAutoFilled(key: "cns", label: "AVPU Alert — CNS awake", source: "Vitals")
+            case .voice:    i.cns = 1; f.addAutoFilled(key: "cns", label: "AVPU Voice — CNS obtunded", source: "Vitals")
+            case .pain:     i.cns = 1; f.addAutoFilled(key: "cns", label: "AVPU Pain — CNS obtunded", source: "Vitals")
+            case .unresponsive: i.cns = 2; f.addAutoFilled(key: "cns", label: "AVPU Unresponsive — CNS comatose", source: "Vitals")
+            }
+        } else {
+            f.addPending(key: "cns", label: "CNS status (Awake / Obtunded / Comatose)", source: "Examination")
+        }
+
+        f.addPending(key: "airway", label: "Airway (Normal / Maintainable / Unmaintainable)", source: "Examination")
+        f.addPending(key: "wound", label: "Open wound (None / Minor / Major penetrating)", source: "Examination")
+        f.addPending(key: "fracture", label: "Fracture (None / Closed / Open or multiple)", source: "Imaging/Exam")
+        return (i, f)
+    }
+
+    // MARK: - #106 P-POSSUM
+
+    static func ppossum(patient: Patient) -> (ClinicalScoringEngine.PPOSSUMInput, ScoreAutoFill) {
+        let cal = Calendar.current
+        let age = cal.dateComponents([.year], from: patient.dateOfBirth, to: .now).year ?? 50
+        var i = ClinicalScoringEngine.PPOSSUMInput(
+            age: max(1, min(110, age)),
+            cardiacHistory: 1, respiratoryHistory: 1, ecg: 1,
+            systolicBP: 120, heartRate: 75,
+            glasgowComaScale: 1,
+            haemoglobin: 13.5, whiteCount: 7.0, urea: 5.0,
+            sodium: 138, potassium: 4.0,
+            operativeUrgency: 1, operativeSeverity: 2,
+            peritonealContamination: 1, malignancy: 1, operativeProcedures: 1
+        )
+        var f = ScoreAutoFill()
+
+        f.addAutoFilled(key: "age", label: "Age \(age) years from date of birth", source: "Demographics")
+
+        let latestV = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first
+        if let sbp = latestV?.bpSystolic {
+            i.systolicBP = sbp
+            f.addAutoFilled(key: "sbp", label: "Systolic BP \(sbp) mmHg from vitals", source: "Vitals")
+        } else { f.addPending(key: "sbp", label: "Systolic BP (mmHg)", source: "Vitals") }
+
+        if let hr = latestV?.heartRate {
+            i.heartRate = hr
+            f.addAutoFilled(key: "hr", label: "Heart rate \(hr) bpm from vitals", source: "Vitals")
+        } else { f.addPending(key: "hr", label: "Heart rate (bpm)", source: "Vitals") }
+
+        // Emergency urgency
+        if patient.setting == .emergency {
+            i.operativeUrgency = 4
+            f.addAutoFilled(key: "urgency", label: "Emergency setting → operative urgency = emergency resuscitable", source: "Setting")
+        }
+
+        // Malignancy from diagnosis
+        let text = [patient.workingDiagnosis, patient.assessmentText, patient.hpi, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+        if text.contains("carcinoma") || text.contains("malignancy") || text.contains("cancer") || text.contains("metastas") {
+            i.malignancy = text.contains("metastas") || text.contains("nodal") ? 4 : 2
+            f.addAutoFilled(key: "malignancy", label: "Malignancy detected from working diagnosis/notes", source: "Diagnosis/Notes")
+        }
+
+        f.addPending(key: "haemoglobin", label: "Haemoglobin (g/dL) — FBC result", source: "Labs")
+        f.addPending(key: "urea", label: "Urea (mmol/L) — renal function", source: "Labs")
+        f.addPending(key: "sodium", label: "Sodium (mmol/L) — electrolytes", source: "Labs")
+        f.addPending(key: "wbc", label: "White cell count (×10⁹/L) — FBC result", source: "Labs")
+        f.addPending(key: "opSeverity", label: "Operative severity (minor/moderate/major/major+)", source: "Operative")
+        f.addPending(key: "contamination", label: "Peritoneal contamination — intraoperative finding", source: "Operative")
+        return (i, f)
+    }
+
+    // MARK: - #107 Caprini VTE Risk Score
+
+    static func caprini(patient: Patient) -> (ClinicalScoringEngine.CapriniInput, ScoreAutoFill) {
+        let cal = Calendar.current
+        let age = cal.dateComponents([.year], from: patient.dateOfBirth, to: .now).year ?? 40
+        var i = ClinicalScoringEngine.CapriniInput(
+            age41to60: false, minorSurgeryPlanned: false, bmi30plus: false, swollenLegs: false,
+            varicoseVeins: false, pregnancy: false, historyOfMiscarriage: false,
+            oralContraceptiveOrHRT: false, sepsisPast1Month: false, seriousLungDiseasePast1Month: false,
+            abnormalPulmonaryFunction: false, acuteMIorCHF: false, bedrideInpatient: false,
+            historyOfIBD: false, medicalPatientAtBedRest: false, age61to74: false,
+            arthroscopy: false, malignancy: false, majorSurgeryOver45min: false,
+            laparoscopyOver45min: false, bedRestOver72h: false, immobilisingPlasterCast: false,
+            centralVenousAccess: false, age75plus: false, personalHistoryVTE: false,
+            familyHistoryVTE: false, factor5LeidenPositive: false, prothrombinMutation: false,
+            lupusAnticoagulant: false, elevatedAntiphospholipid: false,
+            serum_homocysteineElevated: false, heparinInducedThrombocytopenia: false,
+            otherCongenitalThrombophilia: false, strokePast1Month: false,
+            multipleFracturesPast1Month: false, arthroplastyOrHipFractureRepair: false,
+            spinalCordInjuryOrParalysis: false, acuteAMIPast1Month: false
+        )
+        var f = ScoreAutoFill()
+
+        // Age bracket
+        if age >= 75 {
+            i.age75plus = true
+            f.addAutoFilled(key: "age", label: "Age \(age) years — Caprini 3-point age bracket", source: "Demographics")
+        } else if age >= 61 {
+            i.age61to74 = true
+            f.addAutoFilled(key: "age", label: "Age \(age) years — Caprini 2-point age bracket", source: "Demographics")
+        } else if age >= 41 {
+            i.age41to60 = true
+            f.addAutoFilled(key: "age", label: "Age \(age) years — Caprini 1-point age bracket", source: "Demographics")
+        }
+
+        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes,
+                    patient.workingDiagnosis, patient.prescriptions.map { $0.drug }.joined(separator: " ")]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // BMI
+        let latestV = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first
+        if let kg = latestV?.weightKg, kg > 0 {
+            // Height not stored — use text inference or mark pending
+            if text.contains("obese") || text.contains("obesity") || text.contains("bmi") {
+                i.bmi30plus = true
+                f.addAutoFilled(key: "bmi", label: "Obesity/BMI ≥30 inferred from clinical notes", source: "History")
+            } else {
+                f.addPending(key: "bmi", label: "BMI ≥30? — weight \(Int(kg)) kg, height needed", source: "Anthropometrics")
+            }
+        } else {
+            f.addPending(key: "bmi", label: "BMI ≥30 kg/m²? — weight and height required", source: "Vitals")
+        }
+
+        // Malignancy
+        if text.contains("carcinoma") || text.contains("cancer") || text.contains("malignancy") || text.contains("tumour") {
+            i.malignancy = true
+            f.addAutoFilled(key: "malignancy", label: "Active malignancy detected from diagnosis/notes", source: "Diagnosis")
+        }
+
+        // VTE history
+        if text.contains("dvt") || text.contains("deep vein thrombosis") || text.contains("pulmonary embolism") || text.contains("pe ") {
+            i.personalHistoryVTE = true
+            f.addAutoFilled(key: "personalVTE", label: "Personal history of VTE detected in notes", source: "History/PMH")
+        }
+
+        // IBD
+        if text.contains("inflammatory bowel") || text.contains("crohn") || text.contains("ulcerative colitis") || text.contains("ibd") {
+            i.historyOfIBD = true
+            f.addAutoFilled(key: "ibd", label: "IBD detected from diagnosis/PMH", source: "History/PMH")
+        }
+
+        // Inpatient/bed rest
+        if patient.setting == .inpatient {
+            i.bedrideInpatient = true
+            f.addAutoFilled(key: "bedrest", label: "Inpatient setting — bedridden/at-risk status", source: "Setting")
+        }
+
+        // Hormone therapy from prescriptions
+        let rxText = patient.prescriptions.map { $0.drug.lowercased() }.joined(separator: " ")
+        if rxText.contains("estrogen") || rxText.contains("oestrogen") || rxText.contains("progesteron") ||
+           rxText.contains("oral contraceptive") || rxText.contains("hrt") {
+            i.oralContraceptiveOrHRT = true
+            f.addAutoFilled(key: "hrt", label: "OCP/HRT detected in prescription list", source: "Prescriptions")
+        }
+
+        f.addPending(key: "surgery", label: "Planned surgery type and duration — operative details required", source: "Operative")
+        f.addPending(key: "familyVTE", label: "Family history of DVT/PE?", source: "Family History")
+        f.addPending(key: "thrombophilia", label: "Known thrombophilia? (Factor V Leiden, prothrombin mutation, etc.)", source: "Labs/Genetics")
+        return (i, f)
+    }
+
+    // MARK: - #108 Child-Pugh Score
+
+    static func childPugh(patient: Patient) -> (ClinicalScoringEngine.ChildPughInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.ChildPughInput(
+            totalBilirubin: 20.0, albumin: 38.0, inrValue: 1.1,
+            ascites: 1, encephalopathy: 1, bilirubinInMgDL: false
+        )
+        var f = ScoreAutoFill()
+
+        // Restore from stored score
+        if let stored = patient.childPughScore {
+            f.addAutoFilled(key: "storedScore", label: "Child-Pugh \(stored) restored from stored value", source: "Stored Score")
+        }
+
+        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes, patient.workingDiagnosis]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Ascites inference
+        if text.contains("refractory ascites") || text.contains("large volume ascites") || text.contains("tense ascites") {
+            i.ascites = 3
+            f.addAutoFilled(key: "ascites", label: "Refractory ascites detected in notes", source: "History/Notes")
+        } else if text.contains("ascites") || text.contains("shifting dullness") || text.contains("fluid wave") {
+            i.ascites = 2
+            f.addAutoFilled(key: "ascites", label: "Ascites documented in clinical notes", source: "History/Exam")
+        }
+
+        // Encephalopathy inference
+        if text.contains("hepatic encephalopathy grade iii") || text.contains("hepatic encephalopathy grade iv") ||
+           text.contains("he grade 3") || text.contains("he grade 4") || text.contains("comatose") {
+            i.encephalopathy = 3
+            f.addAutoFilled(key: "he", label: "Grade III–IV encephalopathy detected in notes", source: "Notes")
+        } else if text.contains("hepatic encephalopathy") || text.contains("asterixis") || text.contains("he grade") || text.contains("confusion") {
+            i.encephalopathy = 2
+            f.addAutoFilled(key: "he", label: "Hepatic encephalopathy Grade I–II detected", source: "Notes")
+        }
+
+        f.addPending(key: "bilirubin", label: "Total bilirubin (μmol/L or mg/dL) — LFT result", source: "Labs")
+        f.addPending(key: "albumin",   label: "Albumin (g/L) — LFT/serum protein result", source: "Labs")
+        f.addPending(key: "inr",       label: "INR — coagulation screen result", source: "Labs")
+        return (i, f)
+    }
 }
