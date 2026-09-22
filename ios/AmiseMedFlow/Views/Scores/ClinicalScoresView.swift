@@ -84,6 +84,9 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case spesi            = "sPESI (PE Severity)"
     case decaf            = "DECAF (COPD Exacerbation)"
     case hinchey          = "Hinchey (Diverticulitis)"
+    case airScore         = "AIR Score (Appendicitis)"
+    case perc             = "PERC Rule (PE Rule-out)"
+    case shockIndex       = "Shock Index"
 
     var category: ScoreCategory {
         switch self {
@@ -127,6 +130,12 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .sepsis
         case .hinchey:
             return .acute
+        case .airScore:
+            return .acute
+        case .perc:
+            return .vascular
+        case .shockIndex:
+            return .monitoring
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
         case .mews, .news2, .waterlow, .surgicalApgar:
@@ -196,6 +205,9 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .spesi:          return "lungs.fill"
         case .decaf:          return "wind"
         case .hinchey:        return "cross.circle.fill"
+        case .airScore:       return "allergens"
+        case .perc:           return "checkmark.shield.fill"
+        case .shockIndex:     return "bolt.heart.fill"
         }
     }
 }
@@ -340,6 +352,12 @@ struct ClinicalScoresView: View {
     @State private var decafI = ClinicalScoringEngine.DECAFInput()
     // Hinchey
     @State private var hincheyI = ClinicalScoringEngine.HincheyInput()
+    // AIR Score
+    @State private var airI = ClinicalScoringEngine.AIRInput()
+    // PERC Rule
+    @State private var percI = ClinicalScoringEngine.PERCInput()
+    // Shock Index
+    @State private var siI = ClinicalScoringEngine.ShockIndexInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -798,6 +816,15 @@ struct ClinicalScoresView: View {
         case .hinchey:
             let (input, fill) = PatientScoreAutoPopulator.hinchey(patient: patient)
             hincheyI = input; autoFill = fill
+        case .airScore:
+            let (input, fill) = PatientScoreAutoPopulator.airScore(patient: patient)
+            airI = input; autoFill = fill
+        case .perc:
+            let (input, fill) = PatientScoreAutoPopulator.perc(patient: patient)
+            percI = input; autoFill = fill
+        case .shockIndex:
+            let (input, fill) = PatientScoreAutoPopulator.shockIndex(patient: patient)
+            siI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -919,6 +946,9 @@ struct ClinicalScoresView: View {
         case .spesi:         ClinicalScoringEngine.spesi(spesiI)
         case .decaf:         ClinicalScoringEngine.decaf(decafI)
         case .hinchey:       ClinicalScoringEngine.hinchey(hincheyI)
+        case .airScore:      ClinicalScoringEngine.air(airI)
+        case .perc:          ClinicalScoringEngine.perc(percI)
+        case .shockIndex:    ClinicalScoringEngine.shockIndex(siI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -983,6 +1013,9 @@ struct ClinicalScoresView: View {
         case .spesi:         patient.spesiScore = intScore
         case .decaf:         patient.decafScore = intScore
         case .hinchey:       patient.hincheyGrade = intScore
+        case .airScore:      patient.airScore = intScore
+        case .perc:          patient.percViolations = intScore
+        case .shockIndex:    patient.shockIndex = Int((r.score * 100).rounded())
         case .caprini:       patient.capriniScore = intScore
         default: break
         }
@@ -1083,6 +1116,9 @@ struct ClinicalScoresView: View {
         case .spesi:         spesiForm
         case .decaf:         decafForm
         case .hinchey:       hincheyForm
+        case .airScore:      airScoreForm
+        case .perc:          percForm
+        case .shockIndex:    shockIndexForm
         }
     }
 
@@ -2251,6 +2287,27 @@ struct ClinicalScoresView: View {
             }
         case .hinchey:
             // Grade is a numeric picker — no boolean toggle confirm
+            break
+        case .airScore:
+            switch field.id {
+            case "vomiting":          airI.vomiting = true
+            case "painRIF":           airI.painRIF = true
+            case "tempAbove38point5": airI.tempAbove38point5 = true
+            default: break
+            }
+        case .perc:
+            switch field.id {
+            case "hrAbove99":           percI.hrAbove99 = true
+            case "spo2Below95":         percI.spo2Below95 = true
+            case "legSwelling":         percI.legSwelling = true
+            case "haemoptysis":         percI.haemoptysis = true
+            case "exogenousEstrogen":   percI.exogenousEstrogen = true
+            case "priorDVTorPE":        percI.priorDVTorPE = true
+            case "recentSurgeryOrTrauma": percI.recentSurgeryOrTrauma = true
+            default: break
+            }
+        case .shockIndex:
+            // Shock Index is computed from vitals — no boolean confirm
             break
         default: break
         }
@@ -3761,6 +3818,72 @@ struct ClinicalScoresView: View {
                 ])
         }
         .onChange(of: hincheyI) { _, _ in recalculate() }
+    }
+
+    // MARK: - AIR Score (#70)
+
+    private var airScoreForm: some View {
+        Group {
+            scoreToggle("Vomiting", binding: $airI.vomiting, points: "+1", autoKey: "vomiting")
+            scoreToggle("Pain in right iliac fossa", binding: $airI.painRIF, points: "+1", autoKey: "painRIF")
+            apacheSegment("Rebound tenderness / guarding", selection: $airI.reboundTenderness,
+                options: [
+                    (0, "Absent"),
+                    (1, "Mild — pain on release of pressure"),
+                    (2, "Moderate — involuntary guarding"),
+                    (3, "Strong — board-like rigidity / peritonism")
+                ])
+            scoreToggle("Temperature ≥ 38.5°C", binding: $airI.tempAbove38point5, points: "+1", autoKey: "tempAbove38point5")
+            apacheSegment("PMN (polymorphonuclear leucocytes)", selection: $airI.pmn,
+                options: [
+                    (0, "< 70%"),
+                    (1, "70–84%  (+1)"),
+                    (2, "≥ 85%   (+2)")
+                ])
+            apacheSegment("WBC (white blood cell count)", selection: $airI.wbc,
+                options: [
+                    (0, "< 10 × 10⁹/L"),
+                    (1, "10–14.9 × 10⁹/L  (+1)"),
+                    (2, "≥ 15 × 10⁹/L     (+2)")
+                ])
+            apacheSegment("CRP (C-reactive protein)", selection: $airI.crp,
+                options: [
+                    (0, "< 10 mg/L"),
+                    (1, "10–49 mg/L  (+1)"),
+                    (2, "≥ 50 mg/L   (+2)")
+                ])
+        }
+        .onChange(of: airI) { _, _ in recalculate() }
+    }
+
+    // MARK: - PERC Rule (#71)
+
+    private var percForm: some View {
+        Group {
+            mewsSlider("Age (years)", value: Binding(get: { Double(percI.age) }, set: { percI.age = Int($0) }),
+                       range: 18...110, step: 1, unit: "yrs")
+            scoreToggle("Heart rate ≥ 100 bpm", binding: $percI.hrAbove99, points: "PERC fail", autoKey: "hrAbove99")
+            scoreToggle("SpO₂ < 95%", binding: $percI.spo2Below95, points: "PERC fail", autoKey: "spo2Below95")
+            scoreToggle("Unilateral leg swelling", binding: $percI.legSwelling, points: "PERC fail", autoKey: "legSwelling")
+            scoreToggle("Haemoptysis", binding: $percI.haemoptysis, points: "PERC fail", autoKey: "haemoptysis")
+            scoreToggle("Exogenous oestrogen (OCP, HRT)", binding: $percI.exogenousEstrogen, points: "PERC fail", autoKey: "exogenousEstrogen")
+            scoreToggle("Prior DVT or PE", binding: $percI.priorDVTorPE, points: "PERC fail", autoKey: "priorDVTorPE")
+            scoreToggle("Recent surgery or trauma (≤ 4 weeks, requiring hospitalisation)",
+                        binding: $percI.recentSurgeryOrTrauma, points: "PERC fail", autoKey: "recentSurgeryOrTrauma")
+        }
+        .onChange(of: percI) { _, _ in recalculate() }
+    }
+
+    // MARK: - Shock Index (#72)
+
+    private var shockIndexForm: some View {
+        Group {
+            mewsSlider("Heart rate (bpm)", value: Binding(get: { Double(siI.heartRate) }, set: { siI.heartRate = Int($0) }),
+                       range: 30...220, step: 1, unit: "bpm")
+            mewsSlider("Systolic blood pressure (mmHg)", value: Binding(get: { Double(siI.systolicBP) }, set: { siI.systolicBP = Int($0) }),
+                       range: 40...250, step: 1, unit: "mmHg")
+        }
+        .onChange(of: siI) { _, _ in recalculate() }
     }
 
 }

@@ -144,6 +144,9 @@ enum BayesianDiagnosisEngine {
         spesiScore: Int? = nil,       // sPESI 0–6; 0 = low risk PE, ≥1 = high risk PE
         decafScore: Int? = nil,       // DECAF 0–6; ≥3 = high risk COPD exacerbation
         hincheyGrade: Int? = nil,     // Hinchey 1–4; ≥3 = emergency surgery for diverticulitis
+        airScore: Int? = nil,         // AIR 0–12; ≥9 = high-risk appendicitis
+        percViolations: Int? = nil,   // PERC 0–8; 0 = PE excluded (low pretest)
+        shockIndex: Int? = nil,       // SI × 100; ≥100 = significant haemodynamic compromise
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3369,6 +3372,51 @@ enum BayesianDiagnosisEngine {
                 let nameLow = scored[i].candidate.name.lowercased()
                 guard hincheyTargets.contains(where: { nameLow.contains($0) }) else { continue }
                 let label = "Hinchey \(hg) — complicated diverticulitis; boosts septic/surgical diagnoses"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // AIR: boosts appendicitis and peritonitis diagnoses
+        if let air = airScore, air >= 5 {
+            let airTargets = ["appendicitis", "acute appendicitis", "perforated appendicitis",
+                              "appendicular abscess", "appendicular mass", "peritonitis"]
+            let adj = air >= 9 ? 15 : 9
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard airTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "AIR \(air) — intermediate/high-risk appendicitis; boosts appendicitis diagnoses"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // PERC: negative PERC (0 violations) suppresses PE in low-pretest context
+        if let pv = percViolations, pv == 0 {
+            let peTargets = ["pulmonary embolism", "pe ", "venous thromboembolism", "dvt", "deep vein thrombosis"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard peTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "PERC Rule met (0/8 violations) — PE less likely in low-pretest setting"
+                scored[i].logPosterior -= 6
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // Shock Index: high SI boosts haemorrhagic and septic shock diagnoses
+        if let si = shockIndex, si >= 100 {
+            let siTargets = ["haemorrhagic shock", "hemorrhagic shock", "hypovolaemic shock",
+                             "hypovolemic shock", "septic shock", "traumatic shock",
+                             "gastrointestinal bleed", "ruptured aortic aneurysm",
+                             "ruptured ectopic", "postpartum haemorrhage", "major trauma"]
+            let adj = si >= 140 ? 14 : 9
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard siTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "Shock Index \(Double(si)/100) ≥ 1.0 — significant haemodynamic compromise; boosts shock diagnoses"
                 scored[i].logPosterior += adj
                 scored[i].evidence.append(label)
                 scored[i].evidenceSources["score", default: []].append(label)

@@ -5033,4 +5033,260 @@ enum ClinicalScoringEngine {
         )
     }
 
+    // MARK: - AIR Score (Appendicitis Inflammatory Response)
+    struct AIRInput: Equatable {
+        var vomiting: Bool = false                // 1 pt
+        var painRIF: Bool = false                  // 1 pt — pain in right iliac fossa
+        var reboundTenderness: Int = 0             // 0=none, 1=mild, 2=moderate, 3=strong
+        var tempAbove38point5: Bool = false        // 1 pt — T ≥ 38.5°C
+        var pmn: Int = 0                           // 0=<70%, 1=70–84%, 2=≥85%
+        var wbc: Int = 0                           // 0=<10, 1=10–14.9, 2=≥15 ×10⁹/L
+        var crp: Int = 0                           // 0=<10, 1=10–49, 2=≥50 mg/L
+    }
+
+    static func air(_ i: AIRInput) -> ClinicalScore {
+        var pts = 0
+        if i.vomiting      { pts += 1 }
+        if i.painRIF       { pts += 1 }
+        pts += min(i.reboundTenderness, 3)
+        if i.tempAbove38point5 { pts += 1 }
+        pts += min(i.pmn, 2)
+        pts += min(i.wbc, 2)
+        pts += min(i.crp, 2)
+
+        let (risk, interp): (ScoreRisk, String)
+        let flags: [String]
+        let recs: [String]
+
+        switch pts {
+        case 0...4:
+            risk = .low
+            interp = "AIR \(pts)/12 — Low risk. Appendicitis unlikely. Consider observation, analgesia, and discharge with safety-net advice. D/W senior if clinical picture worsens."
+            flags = []
+            recs = [
+                "Low risk — active observation or discharge with clear safety-net advice",
+                "Reassess at 4–6 hours if admitted; repeat bloods and CRP if borderline",
+                "Consider USS abdomen in children and women of childbearing age",
+                "Return precautions: worsening pain, fever, vomiting — return immediately",
+                "Avoid routine CT in low-risk AIR — radiation exposure not justified"
+            ]
+        case 5...8:
+            risk = .moderate
+            interp = "AIR \(pts)/12 — Intermediate risk. Significant probability of appendicitis. Admit for serial observation; imaging and surgical review recommended."
+            flags = []
+            recs = [
+                "Admit for in-hospital observation — serial abdominal examinations",
+                "Repeat FBC and CRP at 4–8 hours",
+                "Ultrasound abdomen: first-line imaging (no radiation), especially in children and women",
+                "CT abdomen/pelvis if USS non-diagnostic and clinical picture unclear",
+                "Early surgical review — low threshold for diagnostic laparoscopy if clinical deterioration",
+                "IV access and fluids; nil by mouth pending surgical decision"
+            ]
+        default:
+            risk = .high
+            interp = "AIR \(pts)/12 — High risk. Appendicitis highly likely. Surgical referral and theatre planning."
+            flags = ["AIR ≥ 9 — high-risk appendicitis: urgent surgical assessment required"]
+            recs = [
+                "Urgent surgical referral — arrange theatre",
+                "Nil by mouth, IV access, IV fluids, analgesia (morphine + anti-emetic)",
+                "Preoperative bloods: FBC, CRP, U&E, LFT, coagulation, G&S",
+                "IV antibiotics at induction: co-amoxiclav 1.2 g or cefuroxime + metronidazole",
+                "Laparoscopic appendicectomy is the standard approach — open if laparoscopic not available",
+                "Perforation risk increases with each additional hour — avoid unnecessary delay",
+                "Imaging only if it will not delay theatre (may be omitted in classic high-risk presentations)"
+            ]
+        }
+        return ClinicalScore(
+            systemName: "AIR Score (Appendicitis Inflammatory Response)",
+            abbreviation: "AIR \(pts)/12",
+            score: Double(pts),
+            maxScore: 12,
+            risk: risk,
+            interpretation: interp,
+            items: [
+                ScoredItem(label: "Vomiting", points: 1, present: i.vomiting),
+                ScoredItem(label: "Pain in right iliac fossa", points: 1, present: i.painRIF),
+                ScoredItem(label: "Rebound tenderness/guarding (mild)", points: 1, present: i.reboundTenderness == 1),
+                ScoredItem(label: "Rebound tenderness/guarding (moderate)", points: 2, present: i.reboundTenderness == 2),
+                ScoredItem(label: "Rebound tenderness/guarding (strong)", points: 3, present: i.reboundTenderness == 3),
+                ScoredItem(label: "Temperature ≥ 38.5°C", points: 1, present: i.tempAbove38point5),
+                ScoredItem(label: "PMN 70–84%", points: 1, present: i.pmn == 1),
+                ScoredItem(label: "PMN ≥ 85%", points: 2, present: i.pmn == 2),
+                ScoredItem(label: "WBC 10–14.9 × 10⁹/L", points: 1, present: i.wbc == 1),
+                ScoredItem(label: "WBC ≥ 15 × 10⁹/L", points: 2, present: i.wbc == 2),
+                ScoredItem(label: "CRP 10–49 mg/L", points: 1, present: i.crp == 1),
+                ScoredItem(label: "CRP ≥ 50 mg/L", points: 2, present: i.crp == 2)
+            ],
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Andersson M, Andersson RE. World J Surg 2008;32:1843–1849. AIR score validated across adult acute surgical populations. Sensitivity 96%, specificity 87% for scores ≥9. Superior to Alvarado in inflammatory marker specificity; requires FBC and CRP. Validated in Swedish and international cohorts."
+        )
+    }
+
+    // MARK: - PERC Rule (Pulmonary Embolism Rule-out Criteria)
+    struct PERCInput: Equatable {
+        var age: Int = 40                    // years
+        var hrAbove99: Bool = false           // HR ≥ 100 bpm
+        var spo2Below95: Bool = false         // SpO2 < 95%
+        var legSwelling: Bool = false         // unilateral leg swelling
+        var haemoptysis: Bool = false
+        var exogenousEstrogen: Bool = false   // OCP, HRT, or other exogenous oestrogen
+        var priorDVTorPE: Bool = false
+        var recentSurgeryOrTrauma: Bool = false  // hospitalisation for surgery or trauma in past 4 weeks
+    }
+
+    static func perc(_ i: PERCInput) -> ClinicalScore {
+        var criteria = 0  // how many PERC criteria are VIOLATED (not met)
+        if i.age >= 50          { criteria += 1 }
+        if i.hrAbove99          { criteria += 1 }
+        if i.spo2Below95        { criteria += 1 }
+        if i.legSwelling        { criteria += 1 }
+        if i.haemoptysis        { criteria += 1 }
+        if i.exogenousEstrogen  { criteria += 1 }
+        if i.priorDVTorPE       { criteria += 1 }
+        if i.recentSurgeryOrTrauma { criteria += 1 }
+
+        let allMet = criteria == 0
+
+        let (risk, interp): (ScoreRisk, String)
+        let flags: [String]
+        let recs: [String]
+
+        if allMet {
+            risk = .low
+            interp = "PERC Rule met (0/8 criteria failed). In patients with pre-test probability < 15%, PE can be excluded without D-dimer or imaging — reducing unnecessary workup and radiation."
+            flags = []
+            recs = [
+                "PERC-negative: PE excluded in low pre-test probability setting (<15%)",
+                "No D-dimer or CTPA required if pre-test clinical probability is genuinely low",
+                "Reassess if symptoms worsen, new onset tachycardia, or SpO2 drops",
+                "Document clinical probability assessment alongside PERC result",
+                "If pre-test probability is ≥15%, PERC rule does NOT apply — proceed to Wells + D-dimer"
+            ]
+        } else {
+            risk = .moderate
+            interp = "PERC Rule NOT met (\(criteria)/8 criteria failed). Further evaluation required — proceed with clinical probability assessment (Wells PE) and D-dimer or direct imaging."
+            flags = criteria >= 3 ? ["PERC ≥ 3 criteria: proceed directly to Wells PE + CTPA pathway"] : []
+            recs = [
+                "PERC-positive: PE not excluded — formal risk stratification required",
+                "Apply Wells PE score to determine pre-test probability",
+                "D-dimer if Wells PE low/moderate probability; CTPA if high probability or D-dimer positive",
+                "Anticoagulation immediately if Wells PE high probability and no contraindication while awaiting imaging",
+                "Consider bilateral leg Doppler USS if CTPA contraindicated or inconclusive"
+            ]
+        }
+        return ClinicalScore(
+            systemName: "PERC Rule (PE Rule-out Criteria)",
+            abbreviation: allMet ? "PERC Met" : "PERC Fail \(criteria)/8",
+            score: Double(criteria),
+            maxScore: 8,
+            risk: risk,
+            interpretation: interp,
+            items: [
+                ScoredItem(label: "Age ≥ 50 years", points: 1, present: i.age >= 50),
+                ScoredItem(label: "Heart rate ≥ 100 bpm", points: 1, present: i.hrAbove99),
+                ScoredItem(label: "SpO₂ < 95%", points: 1, present: i.spo2Below95),
+                ScoredItem(label: "Unilateral leg swelling", points: 1, present: i.legSwelling),
+                ScoredItem(label: "Haemoptysis", points: 1, present: i.haemoptysis),
+                ScoredItem(label: "Exogenous oestrogen use", points: 1, present: i.exogenousEstrogen),
+                ScoredItem(label: "Prior DVT or PE", points: 1, present: i.priorDVTorPE),
+                ScoredItem(label: "Recent surgery or trauma requiring hospitalisation (≤4 weeks)", points: 1, present: i.recentSurgeryOrTrauma)
+            ],
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Kline JA et al. J Thromb Haemost 2004;2:1247–1255. PERC validated in ED cohorts; reduces CTPA use by ~20% in low-pretest-probability patients. Must be applied only when physician-assessed pre-test probability is <15%. Not a standalone rule — requires gestalt clinical probability estimate first."
+        )
+    }
+
+    // MARK: - Shock Index (Haemodynamic Instability)
+    struct ShockIndexInput: Equatable {
+        var heartRate: Int = 80       // bpm
+        var systolicBP: Int = 120     // mmHg
+    }
+
+    static func shockIndex(_ i: ShockIndexInput) -> ClinicalScore {
+        guard i.systolicBP > 0 else {
+            return ClinicalScore(
+                systemName: "Shock Index",
+                abbreviation: "SI — Invalid",
+                score: 0,
+                maxScore: 3,
+                risk: .critical,
+                interpretation: "Invalid: systolic BP must be > 0.",
+                items: [],
+                recommendations: ["Check vital signs — systolic BP cannot be zero."],
+                redFlags: ["SBP = 0 entered — verify patient vitals immediately"],
+                evidenceNote: ""
+            )
+        }
+        let si = Double(i.heartRate) / Double(i.systolicBP)
+        let siRounded = (si * 100).rounded() / 100
+
+        let (risk, interp): (ScoreRisk, String)
+        let flags: [String]
+        let recs: [String]
+
+        switch si {
+        case ..<0.6:
+            risk = .low
+            interp = "Shock Index \(siRounded) — Normal. No haemodynamic compromise. Routine monitoring appropriate."
+            flags = []
+            recs = [
+                "Normal range — routine vital-sign monitoring",
+                "Reassess if clinical condition changes"
+            ]
+        case 0.6..<1.0:
+            risk = .moderate
+            interp = "Shock Index \(siRounded) — Mild abnormality. Some studies suggest slight increase in adverse outcomes. Correlate clinically."
+            flags = []
+            recs = [
+                "Mild elevation — ensure adequate IV access",
+                "Reassess in 15–30 minutes",
+                "Consider fluid responsiveness assessment if clinical concern"
+            ]
+        case 1.0..<1.4:
+            risk = .high
+            interp = "Shock Index \(siRounded) — Significant haemodynamic compromise. Associated with 30-day mortality up to 30% in trauma. Urgent assessment required."
+            flags = ["SI ≥ 1.0 — significant haemorrhagic shock risk: urgent assessment"]
+            recs = [
+                "Urgent assessment — likely haemodynamic compromise",
+                "Large-bore IV access ×2 (14–16G), cross-match, activate MTP protocol if trauma",
+                "IV fluid resuscitation: balanced crystalloid, targeting MAP >65 mmHg",
+                "Identify source of blood loss: abdominal USS (FAST), chest X-ray",
+                "Vasopressors (noradrenaline) if fluid-unresponsive hypotension",
+                "Consider damage-control resuscitation: 1:1:1 (pRBC:FFP:platelets)",
+                "Activate trauma team if trauma mechanism"
+            ]
+        default:
+            risk = .critical
+            interp = "Shock Index \(siRounded) — Severe haemodynamic compromise (class III–IV haemorrhagic shock). Immediate resuscitation and source control required. Mortality risk > 50% without intervention."
+            flags = ["SI ≥ 1.4 — severe haemorrhagic shock: immediate resuscitation and surgical control"]
+            recs = [
+                "Immediate resuscitation — class III/IV haemorrhagic shock",
+                "Activate massive transfusion protocol (MTP): 1:1:1 ratio",
+                "Immediate surgical/interventional haemostasis — IR embolisation or emergency surgery",
+                "Permissive hypotension (target SBP 80–90 mmHg) until haemostasis achieved",
+                "TXA 1 g IV within 3 hours of injury (CRASH-2 trial)",
+                "Correct hypothermia, acidaemia, coagulopathy — the 'lethal triad'",
+                "ICU admission post-resuscitation"
+            ]
+        }
+        return ClinicalScore(
+            systemName: "Shock Index",
+            abbreviation: "SI \(siRounded)",
+            score: si,
+            maxScore: 3,
+            risk: risk,
+            interpretation: interp,
+            items: [
+                ScoredItem(label: "Heart rate (bpm)", points: i.heartRate, present: true),
+                ScoredItem(label: "Systolic BP (mmHg)", points: i.systolicBP, present: true),
+                ScoredItem(label: "Shock Index (HR ÷ SBP)", points: Int(siRounded * 100), present: true)
+            ],
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Allgöwer M, Burri C. Dtsch Med Wochenschr 1967;92:1947–1950. Shock Index validated in trauma (Mutschler 2013) and obstetric haemorrhage (Bhatt 2018). SI ≥ 1.0 predicts need for massive transfusion (sensitivity 87%). Limitations: less reliable in patients on beta-blockers or with pre-existing hypertension/bradycardia."
+        )
+    }
+
 }

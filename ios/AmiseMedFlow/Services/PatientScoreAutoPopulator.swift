@@ -2912,6 +2912,152 @@ enum PatientScoreAutoPopulator {
         return (i, f)
     }
 
+    // MARK: - AIR Score (#70)
+    static func airScore(patient: Patient) -> (ClinicalScoringEngine.AIRInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.AIRInput()
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Vomiting
+        let vomitKw = ["vomiting", "nausea and vomiting", "vomited", "emesis", "sick"]
+        if vomitKw.contains(where: { text.contains($0) }) {
+            i.vomiting = true
+            f.addAutoFilled(key: "vomiting", label: "Vomiting keyword detected", source: "History")
+        } else {
+            f.addPending(key: "vomiting", label: "Vomiting — confirm from history", source: "History")
+        }
+
+        // RIF pain
+        let rifKw = ["right iliac fossa", "rif", "right lower quadrant", "rlq",
+                     "mcburney", "right lower abdominal", "right sided abdominal pain"]
+        if rifKw.contains(where: { text.contains($0) }) {
+            i.painRIF = true
+            f.addAutoFilled(key: "painRIF", label: "Right iliac fossa pain keyword detected", source: "History")
+        } else {
+            f.addPending(key: "painRIF", label: "Pain in right iliac fossa — confirm on examination", source: "Examination")
+        }
+
+        // Temperature
+        if let v = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+           let temp = v.temperatureCelsius, temp >= 38.5 {
+            i.tempAbove38point5 = true
+            f.addAutoFilled(key: "tempAbove38point5", label: "Temperature \(temp)°C ≥ 38.5°C from latest vitals", source: "Vitals")
+        } else {
+            f.addPending(key: "tempAbove38point5", label: "Temperature ≥ 38.5°C — check vitals", source: "Vitals")
+        }
+
+        // Rebound tenderness, PMN, WBC, CRP — must be confirmed manually
+        f.addPending(key: "reboundTenderness", label: "Rebound tenderness / guarding grade — clinical examination", source: "Examination")
+        f.addPending(key: "pmn", label: "PMN % — check FBC differential (polymorphonuclear leucocytes)", source: "Haematology")
+        f.addPending(key: "wbc", label: "WBC — check FBC total white cell count", source: "Haematology")
+        f.addPending(key: "crp", label: "CRP (mg/L) — check inflammatory markers", source: "Biochemistry")
+
+        return (i, f)
+    }
+
+    // MARK: - PERC Rule (#71)
+    static func perc(patient: Patient) -> (ClinicalScoringEngine.PERCInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.PERCInput()
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Age from DOB
+        if let dob = patient.dateOfBirth {
+            i.age = Calendar.current.dateComponents([.year], from: dob, to: .now).year ?? 40
+        }
+
+        // Vitals auto-fill
+        if let v = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
+            if let hr = v.heartRate, hr >= 100 {
+                i.hrAbove99 = true
+                f.addAutoFilled(key: "hrAbove99", label: "HR \(hr) ≥ 100 bpm from latest vitals", source: "Vitals")
+            }
+            if let spo2 = v.spo2, spo2 < 95 {
+                i.spo2Below95 = true
+                f.addAutoFilled(key: "spo2Below95", label: "SpO₂ \(spo2)% < 95% from latest vitals", source: "Vitals")
+            }
+        } else {
+            f.addPending(key: "hrAbove99", label: "HR ≥ 100 bpm — check vitals", source: "Vitals")
+            f.addPending(key: "spo2Below95", label: "SpO₂ < 95% — check vitals", source: "Vitals")
+        }
+
+        // Leg swelling
+        let legKw = ["leg swelling", "calf swelling", "leg oedema", "unilateral oedema",
+                     "unilateral swelling", "left calf", "right calf", "dvt", "deep vein"]
+        if legKw.contains(where: { text.contains($0) }) {
+            i.legSwelling = true
+            f.addAutoFilled(key: "legSwelling", label: "Leg swelling keyword detected", source: "History/Examination")
+        } else {
+            f.addPending(key: "legSwelling", label: "Unilateral leg swelling — confirm on examination", source: "Examination")
+        }
+
+        // Haemoptysis
+        if text.contains("haemoptysis") || text.contains("hemoptysis") || text.contains("coughing blood") {
+            i.haemoptysis = true
+            f.addAutoFilled(key: "haemoptysis", label: "Haemoptysis keyword detected", source: "History")
+        } else {
+            f.addPending(key: "haemoptysis", label: "Haemoptysis — confirm from history", source: "History")
+        }
+
+        // Exogenous oestrogen
+        let oeKw = ["oral contraceptive", "ocp", "combined pill", "hrt", "hormone replacement",
+                    "oestrogen", "estrogen", "tamoxifen", "conjugated oestrogen"]
+        if oeKw.contains(where: { text.contains($0) }) {
+            i.exogenousEstrogen = true
+            f.addAutoFilled(key: "exogenousEstrogen", label: "Exogenous oestrogen keyword detected", source: "Medications")
+        } else {
+            f.addPending(key: "exogenousEstrogen", label: "Exogenous oestrogen use (OCP, HRT) — check medications", source: "Medications")
+        }
+
+        // Prior DVT/PE
+        let priorKw = ["prior dvt", "previous dvt", "prior pe", "previous pe", "prior pulmonary embolism",
+                       "history of dvt", "history of pe", "recurrent pe", "recurrent dvt"]
+        if priorKw.contains(where: { text.contains($0) }) {
+            i.priorDVTorPE = true
+            f.addAutoFilled(key: "priorDVTorPE", label: "Prior DVT/PE keyword detected", source: "PMH")
+        } else {
+            f.addPending(key: "priorDVTorPE", label: "Prior DVT or PE — confirm from PMH", source: "PMH")
+        }
+
+        // Recent surgery/trauma
+        let sxKw = ["recent surgery", "recent operation", "post-operative", "postoperative",
+                    "recent trauma", "hospitalised last 4 weeks", "hospitalised last month"]
+        if sxKw.contains(where: { text.contains($0) }) {
+            i.recentSurgeryOrTrauma = true
+            f.addAutoFilled(key: "recentSurgeryOrTrauma", label: "Recent surgery/trauma keyword detected", source: "History")
+        } else {
+            f.addPending(key: "recentSurgeryOrTrauma", label: "Surgery or trauma requiring hospitalisation ≤ 4 weeks", source: "History")
+        }
+
+        return (i, f)
+    }
+
+    // MARK: - Shock Index (#72)
+    static func shockIndex(patient: Patient) -> (ClinicalScoringEngine.ShockIndexInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.ShockIndexInput()
+        var f = ScoreAutoFill()
+
+        if let v = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
+            if let hr = v.heartRate {
+                i.heartRate = hr
+                f.addAutoFilled(key: "heartRate", label: "Heart rate \(hr) bpm from latest vitals", source: "Vitals")
+            }
+            if let sbp = v.bpSystolic {
+                i.systolicBP = sbp
+                f.addAutoFilled(key: "systolicBP", label: "Systolic BP \(sbp) mmHg from latest vitals", source: "Vitals")
+            }
+        } else {
+            f.addPending(key: "heartRate", label: "Heart rate (bpm) — record from vitals", source: "Vitals")
+            f.addPending(key: "systolicBP", label: "Systolic BP (mmHg) — record from vitals", source: "Vitals")
+        }
+
+        return (i, f)
+    }
+
     // MARK: - Hinchey (#69)
     static func hinchey(patient: Patient) -> (ClinicalScoringEngine.HincheyInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.HincheyInput()

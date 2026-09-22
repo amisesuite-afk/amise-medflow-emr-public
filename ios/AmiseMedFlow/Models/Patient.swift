@@ -177,6 +177,12 @@ final class Patient {
     var decafScore: Int?
     // Hinchey Grade 1–4 (Perforated Diverticulitis)
     var hincheyGrade: Int?
+    // AIR Score 0–12 (Appendicitis Inflammatory Response)
+    var airScore: Int?
+    // PERC violations 0–8 (PE Rule-out Criteria); 0 = PERC met
+    var percViolations: Int?
+    // Shock Index × 100 (e.g., 90 = SI of 0.90)
+    var shockIndex: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?
