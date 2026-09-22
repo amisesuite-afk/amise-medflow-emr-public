@@ -7369,7 +7369,7 @@ enum ClinicalScoringEngine {
 
     static func berlinARDS(_ i: BerlinARDSInput) -> ClinicalScore {
         // Berlin 2012: requires all 3 non-severity criteria first
-        var qualifies = i.acuteOnsetWithin1Week && i.bilateralOpacitiesOnImaging && i.notExplainedByCardiacFailure
+        let qualifies = i.acuteOnsetWithin1Week && i.bilateralOpacitiesOnImaging && i.notExplainedByCardiacFailure
 
         let risk: ScoreRisk
         let interp: String

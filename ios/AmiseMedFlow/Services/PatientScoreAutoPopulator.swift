@@ -3183,7 +3183,7 @@ enum PatientScoreAutoPopulator {
 
     // MARK: - ALBI Score
     static func albi(patient: Patient) -> (ClinicalScoringEngine.ALBIInput, ScoreAutoFill) {
-        var i = ClinicalScoringEngine.ALBIInput()
+        let i = ClinicalScoringEngine.ALBIInput()
         var f = ScoreAutoFill(); f.isAttempted = true
         // ALBI requires current lab values — both are pending for clinician entry
         f.addPending(key: "albumin",   label: "Serum albumin (g/L) — check LFTs",        source: "LFTs")
@@ -3298,7 +3298,7 @@ enum PatientScoreAutoPopulator {
 
     // MARK: - Los Angeles Classification
     static func losAngeles(patient: Patient) -> (ClinicalScoringEngine.LosAngelesInput, ScoreAutoFill) {
-        var i = ClinicalScoringEngine.LosAngelesInput()
+        let i = ClinicalScoringEngine.LosAngelesInput()
         var f = ScoreAutoFill(); f.isAttempted = true
         // Grade must be assigned from OGD report — no auto-fill possible
         f.addPending(key: "laGrade", label: "LA Grade (A–D) — record from OGD report", source: "Endoscopy")
@@ -3400,7 +3400,7 @@ enum PatientScoreAutoPopulator {
     // MARK: - IPSS (International Prostate Symptom Score)
 
     static func ipss(patient: Patient) -> (ClinicalScoringEngine.IPSSInput, ScoreAutoFill) {
-        var i = ClinicalScoringEngine.IPSSInput()
+        let i = ClinicalScoringEngine.IPSSInput()
         var f = ScoreAutoFill(); f.isAttempted = true
         // IPSS requires direct patient self-report; all items pending
         let items: [(String, String)] = [
@@ -3493,7 +3493,7 @@ enum PatientScoreAutoPopulator {
     // MARK: - #93 Maddrey Discriminant Function
 
     static func maddrey(patient: Patient) -> (ClinicalScoringEngine.MaddreyInput, ScoreAutoFill) {
-        var i = ClinicalScoringEngine.MaddreyInput(ptSeconds: 14, controlPTSeconds: 12, bilirubinMgDL: 1.0)
+        let i = ClinicalScoringEngine.MaddreyInput(ptSeconds: 14, controlPTSeconds: 12, bilirubinMgDL: 1.0)
         var f = ScoreAutoFill()
         // PT and bilirubin require laboratory results — always pending
         f.addPending(key: "ptSeconds",        label: "Patient prothrombin time (seconds) — coagulation screen", source: "Labs")
@@ -3869,7 +3869,7 @@ enum PatientScoreAutoPopulator {
     // MARK: - #102 CAGE Questionnaire
 
     static func cage(patient: Patient) -> (ClinicalScoringEngine.CAGEInput, ScoreAutoFill) {
-        var i = ClinicalScoringEngine.CAGEInput(
+        let i = ClinicalScoringEngine.CAGEInput(
             feltCutDown: false, annoyedByCriticism: false,
             feltGuilty: false, eyeOpener: false
         )

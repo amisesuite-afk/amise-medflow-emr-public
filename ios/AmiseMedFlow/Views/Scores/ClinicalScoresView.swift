@@ -962,12 +962,6 @@ struct ClinicalScoresView: View {
         case .must:
             let (input, fill) = PatientScoreAutoPopulator.must(patient: patient)
             mustI = input; autoFill = fill
-        case .clavienDindo:
-            // Clavien-Dindo grade is recorded post-operatively — no auto-populate from text
-            autoFill = ScoreAutoFill()
-        case .aldrete:
-            // Aldrete is a bedside recovery assessment — no clinical-text auto-populate
-            autoFill = ScoreAutoFill()
         case .fourT:
             let (input, fill) = PatientScoreAutoPopulator.fourT(patient: patient)
             fourTI = input; autoFill = fill
@@ -1115,8 +1109,6 @@ struct ClinicalScoresView: View {
         case .fgsi:
             let (input, fill) = PatientScoreAutoPopulator.fgsi(patient: patient)
             fgsiI = input; autoFill = fill
-        default:
-            autoFill = ScoreAutoFill()
         }
     }
 
@@ -1384,7 +1376,6 @@ struct ClinicalScoresView: View {
         case .stopBang:      patient.stopBangScore      = intScore
         case .cha2ds2vasc:   patient.cha2ds2vascScore   = intScore
         case .hasBled:       patient.hasBledScore       = intScore
-        default: break
         }
         patient.updatedAt = .now
         patient.pendingSync = true
@@ -2681,7 +2672,7 @@ struct ClinicalScoresView: View {
             break
         case .childPugh, .meld, .asa:
             break
-        case .ecog, .rts, .kdigo, .baux, .iss, .apacheII, .sofa, .nutric, .caprini, .curb65:
+        case .ecog, .rts, .kdigo, .baux, .iss, .nutric:
             break
         case .spesi:
             switch field.id {
