@@ -26,6 +26,10 @@ struct ScoreAutoFill {
     mutating func addPending(key: String, label: String, source: String) {
         pendingFields.append(PendingScoreField(id: key, label: label, source: source))
     }
+
+    mutating func addAutoFilled(key: String, label: String = "", source: String = "") {
+        autoFieldKeys.insert(key)
+    }
 }
 
 // MARK: - Patient data helpers (module-internal)
@@ -1003,7 +1007,7 @@ enum PatientScoreAutoPopulator {
         var f = ScoreAutoFill(); f.isAttempted = true
 
         // Age ≥65
-        let ageYears = Calendar.current.dateComponents([.year], from: patient.dateOfBirth, to: .now).year ?? 0
+        let ageYears = Calendar.current.dateComponents([.year], from: patient.dateOfBirth ?? Date(), to: .now).year ?? 0
         if ageYears >= 65 { i.ageOver65 = true; f.autoFieldKeys.insert("ageOver65") }
 
         // Systolic BP ≤90 from latest vitals
@@ -1026,7 +1030,7 @@ enum PatientScoreAutoPopulator {
         var f = ScoreAutoFill(); f.isAttempted = true
 
         // Age
-        let ageYears = Calendar.current.dateComponents([.year], from: patient.dateOfBirth, to: .now).year ?? 0
+        let ageYears = Calendar.current.dateComponents([.year], from: patient.dateOfBirth ?? Date(), to: .now).year ?? 0
         if ageYears > 60 { i.ageOver60 = true; f.autoFieldKeys.insert("ageOver60") }
 
         // SIRS components from latest vitals
@@ -1056,7 +1060,7 @@ enum PatientScoreAutoPopulator {
 
         // Age and sex contribution
         let calendar = Calendar.current
-        let ageYears = calendar.dateComponents([.year], from: patient.dateOfBirth, to: .now).year ?? 0
+        let ageYears = calendar.dateComponents([.year], from: patient.dateOfBirth ?? Date(), to: .now).year ?? 0
         if patient.sex == .male {
             i.ageMale = max(0, ageYears)
             f.autoFieldKeys.insert("ageMale")
