@@ -89,6 +89,10 @@ final class Patient {
     var lrinecScore: Int?
     // qSOFA score (0–3); ≥2 with suspected infection = sepsis
     var qsofaScore: Int?
+    // PSI/PORT Class (1–5) for community-acquired pneumonia severity
+    var psiScore: Int?
+    // Caprini VTE Risk Score (0–n); ≥5 = very high risk
+    var capriniScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?
