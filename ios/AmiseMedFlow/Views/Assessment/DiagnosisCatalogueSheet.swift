@@ -181,7 +181,7 @@ struct DiagnosisCatalogueSheet: View {
             Image(systemName: "magnifyingglass.circle")
                 .font(.system(size: 44))
                 .foregroundStyle(.tertiary)
-            Text("No matches for "\(query)"")
+            Text("No matches for \"\(query)\"")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             Button("Add Custom Diagnosis") {
