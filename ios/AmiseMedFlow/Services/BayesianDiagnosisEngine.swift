@@ -150,6 +150,9 @@ enum BayesianDiagnosisEngine {
         parklandVolume: Int? = nil,   // burns fluid (mL); presence indicates significant burn injury
         pasScore: Int? = nil,         // PAS 0–10; ≥7 = high-risk paediatric appendicitis
         revisedGenevaScore: Int? = nil, // Revised Geneva 0–22; ≥11 = high probability PE
+        cciScore: Int? = nil,           // CCI 0–37 (age-adjusted); ≥5 = high comorbidity burden
+        mfi5Score: Int? = nil,          // mFI-5 0–5; ≥3 = severe frailty; modifies all diagnoses
+        hapsScore: Int? = nil,          // HAPS 0–3; 3 = harmless AP; <3 = potentially severe
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3468,6 +3471,54 @@ enum BayesianDiagnosisEngine {
                 scored[i].logPosterior += adj
                 scored[i].evidence.append(label)
                 scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // CCI boost: high comorbidity burden elevates chronic disease differentials
+        if let cc = cciScore, cc >= 3 {
+            let cciTargets = ["chronic", "malignancy", "cancer", "heart failure", "renal", "liver",
+                              "diabetes", "dementia", "copd", "peripheral vascular", "lymphoma",
+                              "leukaemia", "metastatic", "cirrhosis"]
+            let adj = cc >= 5 ? 7 : 4
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard cciTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "CCI \(cc) — high comorbidity burden increases chronic/oncological differentials"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // mFI-5 boost: frailty elevates post-operative complications and frailty-related presentations
+        if let mf = mfi5Score, mf >= 2 {
+            let mfTargets = ["delirium", "deconditioning", "aspiration", "pneumonia", "heart failure",
+                             "urinary tract infection", "sepsis", "ileus", "pressure", "wound"]
+            let adj = mf >= 3 ? 7 : 4
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard mfTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "mFI-5 = \(mf) — frailty elevates post-operative complication risk"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // HAPS boost: score < 3 elevates severe pancreatitis / complications
+        if let haps = hapsScore {
+            let hapsTargets = ["pancreatitis", "pancreatic", "pancreas", "peripancreatic",
+                               "pseudocyst", "necrotising", "infected necrosis", "splanchnic"]
+            if haps < 3 {
+                let adj = 9
+                for i in scored.indices {
+                    let nameLow = scored[i].candidate.name.lowercased()
+                    guard hapsTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                    let label = "HAPS \(haps)/3 — not harmless; severe acute pancreatitis cannot be excluded"
+                    scored[i].logPosterior += adj
+                    scored[i].evidence.append(label)
+                    scored[i].evidenceSources["score", default: []].append(label)
+                }
             }
         }
 

@@ -90,6 +90,9 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case parkland         = "Parkland Formula (Burns)"
     case pas              = "Paediatric Appendicitis Score"
     case revisedGeneva    = "Revised Geneva Score (PE)"
+    case cci              = "Charlson Comorbidity Index"
+    case mfi5             = "Modified Frailty Index-5"
+    case haps             = "Harmless Acute Pancreatitis Score"
 
     var category: ScoreCategory {
         switch self {
@@ -145,6 +148,10 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .acute
         case .revisedGeneva:
             return .vascular
+        case .cci, .mfi5:
+            return .preop
+        case .haps:
+            return .gi
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
         case .mews, .news2, .waterlow, .surgicalApgar:
@@ -220,6 +227,9 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .parkland:       return "drop.triangle.fill"
         case .pas:            return "figure.child"
         case .revisedGeneva:  return "lungs"
+        case .cci:            return "list.bullet.clipboard.fill"
+        case .mfi5:           return "figure.walk.motion"
+        case .haps:           return "flame.fill"
         }
     }
 }
@@ -376,6 +386,9 @@ struct ClinicalScoresView: View {
     @State private var pasI = ClinicalScoringEngine.PASInput()
     // Revised Geneva
     @State private var rgI = ClinicalScoringEngine.RevisedGenevaInput()
+    @State private var cciI = ClinicalScoringEngine.CCIInput()
+    @State private var mfi5I = ClinicalScoringEngine.MFI5Input()
+    @State private var hapsI = ClinicalScoringEngine.HAPSInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -852,6 +865,15 @@ struct ClinicalScoresView: View {
         case .revisedGeneva:
             let (input, fill) = PatientScoreAutoPopulator.revisedGeneva(patient: patient)
             rgI = input; autoFill = fill
+        case .cci:
+            let (input, fill) = PatientScoreAutoPopulator.cci(patient: patient)
+            cciI = input; autoFill = fill
+        case .mfi5:
+            let (input, fill) = PatientScoreAutoPopulator.mfi5(patient: patient)
+            mfi5I = input; autoFill = fill
+        case .haps:
+            let (input, fill) = PatientScoreAutoPopulator.haps(patient: patient)
+            hapsI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -979,6 +1001,9 @@ struct ClinicalScoresView: View {
         case .parkland:      ClinicalScoringEngine.parkland(parklandI)
         case .pas:           ClinicalScoringEngine.pas(pasI)
         case .revisedGeneva: ClinicalScoringEngine.revisedGeneva(rgI)
+        case .cci:           ClinicalScoringEngine.cci(cciI)
+        case .mfi5:          ClinicalScoringEngine.mfi5(mfi5I)
+        case .haps:          ClinicalScoringEngine.haps(hapsI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -1047,6 +1072,12 @@ struct ClinicalScoresView: View {
         case .perc:          patient.percViolations = intScore
         case .shockIndex:    patient.shockIndex = Int((r.score * 100).rounded())
         case .caprini:       patient.capriniScore = intScore
+        case .parkland:      patient.parklandVolume = intScore
+        case .pas:           patient.pasScore = intScore
+        case .revisedGeneva: patient.revisedGenevaScore = intScore
+        case .cci:           patient.cciScore = intScore
+        case .mfi5:          patient.mfi5Score = intScore
+        case .haps:          patient.hapsScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -1149,6 +1180,12 @@ struct ClinicalScoresView: View {
         case .airScore:      airScoreForm
         case .perc:          percForm
         case .shockIndex:    shockIndexForm
+        case .parkland:      parklandForm
+        case .pas:           pasForm
+        case .revisedGeneva: revisedGenevaForm
+        case .cci:           cciForm
+        case .mfi5:          mfi5Form
+        case .haps:          hapsForm
         }
     }
 
@@ -2354,8 +2391,8 @@ struct ClinicalScoresView: View {
             // Shock Index is computed from vitals — no boolean confirm
             break
         case .parkland:
-            // Parkland formula inputs are numeric sliders — no boolean toggle confirm
-            break
+            // Parkland formula inputs are numeric sliders — inhalation injury can be pending-confirmed
+            if field.id == "hasInhalationInjury" { parklandI.hasInhalationInjury = true }
         case .pas:
             switch field.id {
             case "anorexia":               pasI.anorexia = true
@@ -2378,6 +2415,45 @@ struct ClinicalScoresView: View {
             case "heartRateAbove74":             rgI.heartRateAbove74 = true
             case "heartRateAbove94":             rgI.heartRateAbove94 = true
             case "painOnPalpationLimbAndEdema":  rgI.painOnPalpationLimbAndEdema = true
+            default: break
+            }
+        case .cci:
+            switch field.id {
+            case "myocardialInfarction":         cciI.myocardialInfarction = true
+            case "congestiveHeartFailure":       cciI.congestiveHeartFailure = true
+            case "peripheralVascularDisease":    cciI.peripheralVascularDisease = true
+            case "cerebrovascularDisease":       cciI.cerebrovascularDisease = true
+            case "dementia":                     cciI.dementia = true
+            case "chronicPulmonaryDisease":      cciI.chronicPulmonaryDisease = true
+            case "connectiveTissueDisease":      cciI.connectiveTissueDisease = true
+            case "pepticulcer":                  cciI.pepticulcer = true
+            case "mildLiverDisease":             cciI.mildLiverDisease = true
+            case "diabetesUncomplicated":        cciI.diabetesUncomplicated = true
+            case "diabetesWithEndOrganDamage":   cciI.diabetesWithEndOrganDamage = true
+            case "hemiplecia":                   cciI.hemiplecia = true
+            case "moderateOrSevereCKD":          cciI.moderateOrSevereCKD = true
+            case "solidTumour":                  cciI.solidTumour = true
+            case "leukaemia":                    cciI.leukaemia = true
+            case "lymphoma":                     cciI.lymphoma = true
+            case "moderateOrSevereLiverDisease": cciI.moderateOrSevereLiverDisease = true
+            case "metastaticSolidTumour":        cciI.metastaticSolidTumour = true
+            case "aids":                         cciI.aids = true
+            default: break
+            }
+        case .mfi5:
+            switch field.id {
+            case "diabetes":               mfi5I.diabetes = true
+            case "functionalDependence":   mfi5I.functionalDependence = true
+            case "COPD":                   mfi5I.COPD = true
+            case "congestiveHeartFailure": mfi5I.congestiveHeartFailure = true
+            case "hypertension":           mfi5I.hypertension = true
+            default: break
+            }
+        case .haps:
+            switch field.id {
+            case "peritonismAbsent":   hapsI.peritonismAbsent = true
+            case "creatinineNormal":   hapsI.creatinineNormal = true
+            case "haematocritNormal":  hapsI.haematocritNormal = true
             default: break
             }
         default: break
@@ -4002,6 +4078,62 @@ struct ClinicalScoresView: View {
             scoreToggle("Pain on deep palpation of lower limb + unilateral oedema", binding: $rgI.painOnPalpationLimbAndEdema, points: "+4", autoKey: "painOnPalpationLimbAndEdema")
         }
         .onChange(of: rgI) { _, _ in recalculate() }
+    }
+
+    // MARK: - Charlson Comorbidity Index (#76)
+
+    private var cciForm: some View {
+        Group {
+            mewsSlider("Age (years — for age-adjusted CCI)", value: Binding(get: { Double(cciI.age) }, set: { cciI.age = Int($0) }),
+                       range: 18...110, step: 1, unit: "yrs")
+            sectionHeader("1-Point Conditions")
+            scoreToggle("Myocardial infarction (any prior history)", binding: $cciI.myocardialInfarction, points: "+1", autoKey: "myocardialInfarction")
+            scoreToggle("Congestive heart failure", binding: $cciI.congestiveHeartFailure, points: "+1", autoKey: "congestiveHeartFailure")
+            scoreToggle("Peripheral vascular disease", binding: $cciI.peripheralVascularDisease, points: "+1", autoKey: "peripheralVascularDisease")
+            scoreToggle("Cerebrovascular disease / TIA", binding: $cciI.cerebrovascularDisease, points: "+1", autoKey: "cerebrovascularDisease")
+            scoreToggle("Dementia", binding: $cciI.dementia, points: "+1", autoKey: "dementia")
+            scoreToggle("Chronic pulmonary disease (COPD / asthma)", binding: $cciI.chronicPulmonaryDisease, points: "+1", autoKey: "chronicPulmonaryDisease")
+            scoreToggle("Connective tissue / rheumatological disease", binding: $cciI.connectiveTissueDisease, points: "+1", autoKey: "connectiveTissueDisease")
+            scoreToggle("Peptic ulcer disease", binding: $cciI.pepticulcer, points: "+1", autoKey: "pepticulcer")
+            scoreToggle("Mild liver disease (no portal hypertension)", binding: $cciI.mildLiverDisease, points: "+1", autoKey: "mildLiverDisease")
+            scoreToggle("Diabetes mellitus (uncomplicated)", binding: $cciI.diabetesUncomplicated, points: "+1", autoKey: "diabetesUncomplicated")
+            sectionHeader("2-Point Conditions")
+            scoreToggle("Diabetes with end-organ damage (retinopathy, nephropathy, neuropathy)", binding: $cciI.diabetesWithEndOrganDamage, points: "+2", autoKey: "diabetesWithEndOrganDamage")
+            scoreToggle("Hemiplegia / paraplegia", binding: $cciI.hemiplecia, points: "+2", autoKey: "hemiplecia")
+            scoreToggle("Moderate/severe CKD (creatinine > 3 mg/dL or dialysis)", binding: $cciI.moderateOrSevereCKD, points: "+2", autoKey: "moderateOrSevereCKD")
+            scoreToggle("Solid tumour (within 5 years, no metastasis)", binding: $cciI.solidTumour, points: "+2", autoKey: "solidTumour")
+            scoreToggle("Leukaemia (AML, CML, ALL, CLL)", binding: $cciI.leukaemia, points: "+2", autoKey: "leukaemia")
+            scoreToggle("Lymphoma / multiple myeloma / Waldenström's", binding: $cciI.lymphoma, points: "+2", autoKey: "lymphoma")
+            sectionHeader("3–6-Point Conditions")
+            scoreToggle("Moderate/severe liver disease (portal hypertension, varices, ascites)", binding: $cciI.moderateOrSevereLiverDisease, points: "+3", autoKey: "moderateOrSevereLiverDisease")
+            scoreToggle("Metastatic solid tumour", binding: $cciI.metastaticSolidTumour, points: "+6", autoKey: "metastaticSolidTumour")
+            scoreToggle("AIDS (not HIV+ only)", binding: $cciI.aids, points: "+6", autoKey: "aids")
+        }
+        .onChange(of: cciI) { _, _ in recalculate() }
+    }
+
+    // MARK: - Modified Frailty Index-5 (#77)
+
+    private var mfi5Form: some View {
+        Group {
+            scoreToggle("Diabetes mellitus (requiring medication)", binding: $mfi5I.diabetes, points: "+1", autoKey: "diabetes")
+            scoreToggle("Functional dependence (partial or total — ADL)", binding: $mfi5I.functionalDependence, points: "+1", autoKey: "functionalDependence")
+            scoreToggle("COPD or pneumonia requiring hospitalisation (past year)", binding: $mfi5I.COPD, points: "+1", autoKey: "COPD")
+            scoreToggle("Congestive heart failure", binding: $mfi5I.congestiveHeartFailure, points: "+1", autoKey: "congestiveHeartFailure")
+            scoreToggle("Hypertension requiring medication", binding: $mfi5I.hypertension, points: "+1", autoKey: "hypertension")
+        }
+        .onChange(of: mfi5I) { _, _ in recalculate() }
+    }
+
+    // MARK: - Harmless Acute Pancreatitis Score (#78)
+
+    private var hapsForm: some View {
+        Group {
+            scoreToggle("No peritoneal irritation on examination", binding: $hapsI.peritonismAbsent, points: "+1", autoKey: "peritonismAbsent")
+            scoreToggle("Serum creatinine ≤ 177 µmol/L (< 2 mg/dL)", binding: $hapsI.creatinineNormal, points: "+1", autoKey: "creatinineNormal")
+            scoreToggle("Haematocrit ≤ 43% (M) / ≤ 39.6% (F)", binding: $hapsI.haematocritNormal, points: "+1", autoKey: "haematocritNormal")
+        }
+        .onChange(of: hapsI) { _, _ in recalculate() }
     }
 
 }

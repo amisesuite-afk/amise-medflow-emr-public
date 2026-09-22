@@ -3283,4 +3283,138 @@ enum PatientScoreAutoPopulator {
 
         return (i, f)
     }
+
+    // MARK: - Charlson Comorbidity Index (#76)
+    static func cci(patient: Patient) -> (ClinicalScoringEngine.CCIInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.CCIInput()
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Age from DOB
+        if let dob = patient.dateOfBirth {
+            i.age = Calendar.current.dateComponents([.year], from: dob, to: .now).year ?? 60
+        }
+
+        let kw: [(String, [String], String)] = [
+            ("myocardialInfarction",       ["myocardial infarction", "heart attack", "mi ", "stemi", "nstemi", "previous mi"], "MI / myocardial infarction — confirm from PMH"),
+            ("congestiveHeartFailure",     ["heart failure", "congestive heart failure", "chf", "cardiomyopathy", "lv dysfunction"], "Congestive heart failure — confirm from PMH"),
+            ("peripheralVascularDisease",  ["peripheral vascular", "pvd", "pad ", "peripheral arterial", "claudication", "aortic aneurysm"], "Peripheral vascular disease — confirm from PMH"),
+            ("cerebrovascularDisease",     ["cerebrovascular", "stroke", "tia", "transient ischaemic", "cva "], "Cerebrovascular disease — confirm from PMH"),
+            ("dementia",                   ["dementia", "alzheimer", "vascular dementia", "cognitive impairment"], "Dementia — confirm from PMH"),
+            ("chronicPulmonaryDisease",    ["copd", "emphysema", "chronic obstructive", "chronic bronchitis", "asthma", "bronchiectasis"], "Chronic pulmonary disease — confirm from PMH"),
+            ("connectiveTissueDisease",    ["rheumatoid arthritis", "sle", "lupus", "connective tissue", "systemic sclerosis", "polymyalgia", "vasculitis"], "Connective tissue disease — confirm from PMH"),
+            ("pepticulcer",                ["peptic ulcer", "gastric ulcer", "duodenal ulcer", "pud "], "Peptic ulcer disease — confirm from PMH"),
+            ("mildLiverDisease",           ["mild liver disease", "hepatitis", "fatty liver", "nafld", "nash", "cirrhosis without portal"], "Mild liver disease — confirm from PMH"),
+            ("diabetesUncomplicated",      ["diabetes mellitus", "type 1 diabetes", "type 2 diabetes", "t2dm", "t1dm", "dm type"], "Diabetes (uncomplicated) — confirm from PMH"),
+            ("diabetesWithEndOrganDamage", ["diabetic nephropathy", "diabetic retinopathy", "diabetic neuropathy", "diabetes with complications"], "Diabetes with end-organ damage — confirm from PMH"),
+            ("hemiplecia",                 ["hemiplegia", "paraplegia", "hemiparesis", "spinal cord injury"], "Hemiplegia / paraplegia — confirm from PMH"),
+            ("moderateOrSevereCKD",        ["chronic kidney disease stage 3", "ckd stage 4", "ckd stage 5", "dialysis", "haemodialysis", "renal failure", "esrd"], "Moderate/severe CKD — confirm from PMH"),
+            ("solidTumour",                ["solid tumour", "carcinoma", "adenocarcinoma", "sarcoma", "cancer of", "tumour of"], "Solid tumour (≤5yr, no mets) — confirm from PMH"),
+            ("leukaemia",                  ["leukaemia", "leukemia", "aml", "cml", "all ", "cll "], "Leukaemia — confirm from PMH"),
+            ("lymphoma",                   ["lymphoma", "multiple myeloma", "waldenstrom", "hodgkin", "non-hodgkin"], "Lymphoma / multiple myeloma — confirm from PMH"),
+            ("moderateOrSevereLiverDisease", ["cirrhosis", "portal hypertension", "oesophageal varices", "hepatic encephalopathy", "ascites", "end-stage liver"], "Moderate/severe liver disease — confirm from PMH"),
+            ("metastaticSolidTumour",      ["metastatic", "metastasis", "stage 4", "advanced cancer", "disseminated"], "Metastatic solid tumour — confirm from PMH"),
+            ("aids",                       ["aids", "acquired immunodeficiency", "hiv with aids", "cd4 < 200"], "AIDS — confirm from PMH"),
+        ]
+
+        for (fieldKey, keywords, pendingLabel) in kw {
+            if keywords.contains(where: { text.contains($0) }) {
+                f.addAutoFilled(key: fieldKey, label: "\(keywords[0].capitalized) keyword detected in PMH", source: "PMH")
+                switch fieldKey {
+                case "myocardialInfarction":         i.myocardialInfarction = true
+                case "congestiveHeartFailure":       i.congestiveHeartFailure = true
+                case "peripheralVascularDisease":    i.peripheralVascularDisease = true
+                case "cerebrovascularDisease":       i.cerebrovascularDisease = true
+                case "dementia":                     i.dementia = true
+                case "chronicPulmonaryDisease":      i.chronicPulmonaryDisease = true
+                case "connectiveTissueDisease":      i.connectiveTissueDisease = true
+                case "pepticulcer":                  i.pepticulcer = true
+                case "mildLiverDisease":             i.mildLiverDisease = true
+                case "diabetesUncomplicated":        i.diabetesUncomplicated = true
+                case "diabetesWithEndOrganDamage":   i.diabetesWithEndOrganDamage = true
+                case "hemiplecia":                   i.hemiplecia = true
+                case "moderateOrSevereCKD":          i.moderateOrSevereCKD = true
+                case "solidTumour":                  i.solidTumour = true
+                case "leukaemia":                    i.leukaemia = true
+                case "lymphoma":                     i.lymphoma = true
+                case "moderateOrSevereLiverDisease": i.moderateOrSevereLiverDisease = true
+                case "metastaticSolidTumour":        i.metastaticSolidTumour = true
+                case "aids":                         i.aids = true
+                default: break
+                }
+            } else {
+                f.addPending(key: fieldKey, label: pendingLabel, source: "PMH")
+            }
+        }
+
+        return (i, f)
+    }
+
+    // MARK: - Modified Frailty Index-5 (#77)
+    static func mfi5(patient: Patient) -> (ClinicalScoringEngine.MFI5Input, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.MFI5Input()
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        if ["diabetes", "t2dm", "t1dm", "insulin", "metformin", "hypoglycaemic"].contains(where: { text.contains($0) }) {
+            i.diabetes = true
+            f.addAutoFilled(key: "diabetes", label: "Diabetes keyword detected in PMH", source: "PMH")
+        } else { f.addPending(key: "diabetes", label: "Diabetes mellitus (requiring medication) — confirm from PMH", source: "PMH") }
+
+        if ["dependent", "functional dependence", "activities of daily living", "adl", "limited independence",
+            "nursing home", "residential care", "carer required"].contains(where: { text.contains($0) }) {
+            i.functionalDependence = true
+            f.addAutoFilled(key: "functionalDependence", label: "Functional dependence keyword detected", source: "PMH/Social Hx")
+        } else { f.addPending(key: "functionalDependence", label: "Functional dependence (ADL) — confirm from history", source: "Social Hx") }
+
+        if ["copd", "chronic obstructive", "emphysema", "chronic bronchitis", "pneumonia admission",
+            "hospitalised for chest", "admitted for chest"].contains(where: { text.contains($0) }) {
+            i.COPD = true
+            f.addAutoFilled(key: "COPD", label: "COPD/pneumonia hospitalisation keyword detected", source: "PMH")
+        } else { f.addPending(key: "COPD", label: "COPD or pneumonia requiring hospitalisation — confirm from PMH", source: "PMH") }
+
+        if ["heart failure", "congestive heart failure", "chf", "cardiac failure", "lv failure"].contains(where: { text.contains($0) }) {
+            i.congestiveHeartFailure = true
+            f.addAutoFilled(key: "congestiveHeartFailure", label: "CHF keyword detected in PMH", source: "PMH")
+        } else { f.addPending(key: "congestiveHeartFailure", label: "Congestive heart failure — confirm from PMH", source: "PMH") }
+
+        if ["hypertension", "high blood pressure", "antihypertensive", "amlodipine", "ramipril",
+            "lisinopril", "atenolol", "bisoprolol", "on bp tablet"].contains(where: { text.contains($0) }) {
+            i.hypertension = true
+            f.addAutoFilled(key: "hypertension", label: "Hypertension keyword detected", source: "PMH")
+        } else { f.addPending(key: "hypertension", label: "Hypertension requiring medication — confirm from PMH", source: "PMH") }
+
+        return (i, f)
+    }
+
+    // MARK: - Harmless Acute Pancreatitis Score (#78)
+    static func haps(patient: Patient) -> (ClinicalScoringEngine.HAPSInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.HAPSInput()
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Peritonism absence
+        let peritonismKw = ["peritonism", "peritoneal irritation", "generalised tenderness",
+                            "guarding", "rigidity", "board-like"]
+        if peritonismKw.contains(where: { text.contains($0) }) {
+            f.addPending(key: "peritonismAbsent", label: "Peritoneal signs detected — confirm absence/presence on examination", source: "Examination")
+        } else {
+            i.peritonismAbsent = true
+            f.addAutoFilled(key: "peritonismAbsent", label: "No peritoneal irritation documented in clinical text", source: "History/Notes")
+        }
+
+        // Creatinine
+        f.addPending(key: "creatinineNormal", label: "Serum creatinine ≤ 177 µmol/L — check urea and electrolytes", source: "U&E/Bloods")
+
+        // Haematocrit
+        f.addPending(key: "haematocritNormal", label: "Haematocrit ≤ 43% (male) / ≤ 39.6% (female) — check FBC", source: "FBC")
+
+        return (i, f)
+    }
 }

@@ -189,6 +189,9 @@ final class Patient {
     var pasScore: Int?
     // Revised Geneva Score 0–22
     var revisedGenevaScore: Int?
+    var cciScore: Int?            // Charlson Comorbidity Index (age-adjusted)
+    var mfi5Score: Int?           // Modified Frailty Index-5 (0–5)
+    var hapsScore: Int?           // Harmless Acute Pancreatitis Score (0–3)
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?
