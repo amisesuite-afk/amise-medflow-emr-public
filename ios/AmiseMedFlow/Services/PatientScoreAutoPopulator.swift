@@ -3618,4 +3618,148 @@ enum PatientScoreAutoPopulator {
         f.addPending(key: "frictionShear",     label: "Friction/Shear — bedside assessment required",      source: "Clinical")
         return (i, f)
     }
+
+    // MARK: - Centor / McIsaac Score
+
+    static func centor(patient: Patient) -> (ClinicalScoringEngine.CentorInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.CentorInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+        // Exudate
+        if text.contains("exudate") || text.contains("pus on tonsil") || text.contains("tonsillar exudate") {
+            i.tonsillarExudate = true
+            f.addAutoFilled(key: "tonsillarExudate", label: "Tonsillar exudate documented", source: "History")
+        } else {
+            f.addPending(key: "tonsillarExudate", label: "Tonsillar exudate — examination finding required", source: "Examination")
+        }
+        // Tender anterior cervical nodes
+        if text.contains("tender cervical") || text.contains("anterior cervical lymph") || text.contains("lymphadenopathy") {
+            i.tenderAnteriorCervical = true
+            f.addAutoFilled(key: "tenderAnteriorCervical", label: "Tender anterior cervical lymphadenopathy documented", source: "History")
+        } else {
+            f.addPending(key: "tenderAnteriorCervical", label: "Tender anterior cervical nodes — examination required", source: "Examination")
+        }
+        // Fever
+        if let v = patient.vitalsEntries?.max(by: { ($0.recordedAt) < ($1.recordedAt) }),
+           let t = v.temperatureCelsius, t >= 38.0 {
+            i.feverHistory = true
+            f.addAutoFilled(key: "feverHistory", label: "Fever ≥38°C from vitals", source: "Vitals")
+        } else if text.contains("fever") || text.contains("pyrexia") || text.contains("temperature") {
+            i.feverHistory = true
+            f.addAutoFilled(key: "feverHistory", label: "Fever documented in history", source: "History")
+        } else {
+            f.addPending(key: "feverHistory", label: "Fever history — confirm temperature ≥38°C", source: "Vitals/History")
+        }
+        // Absence of cough (score positive = no cough)
+        let coughKw = ["no cough", "absence of cough", "non-productive", "no productive cough"]
+        if coughKw.contains(where: { text.contains($0) }) {
+            i.noCough = true
+            f.addAutoFilled(key: "noCough", label: "Absence of cough documented", source: "History")
+        } else {
+            f.addPending(key: "noCough", label: "Cough absence — confirm no cough present", source: "History")
+        }
+        // Age group from DOB
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: .now).year ?? 0
+            if age < 15      { i.ageGroup = 0 }
+            else if age < 45 { i.ageGroup = 1 }
+            else             { i.ageGroup = 2 }
+            f.addAutoFilled(key: "ageGroup", label: "Age group derived from date of birth", source: "Demographics")
+        }
+        return (i, f)
+    }
+
+    // MARK: - IPSS (International Prostate Symptom Score)
+
+    static func ipss(patient: Patient) -> (ClinicalScoringEngine.IPSSInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.IPSSInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+        // IPSS requires direct patient self-report; all items pending
+        let items: [(String, String)] = [
+            ("incompleteEmptying", "Incomplete bladder emptying (0–5)"),
+            ("frequency",          "Urinary frequency (0–5)"),
+            ("intermittency",      "Intermittency of stream (0–5)"),
+            ("urgency",            "Urgency (0–5)"),
+            ("weakStream",         "Weak stream (0–5)"),
+            ("straining",          "Straining to void (0–5)"),
+            ("nocturia",           "Nocturia frequency (0–5)"),
+            ("qualityOfLife",      "Quality of life (0–6)"),
+        ]
+        for (key, label) in items {
+            f.addPending(key: key, label: "\(label) — patient self-report required", source: "Patient")
+        }
+        return (i, f)
+    }
+
+    // MARK: - Truelove-Witts Severity Index
+
+    static func trueloveWitts(patient: Patient) -> (ClinicalScoringEngine.TruelovewIttsInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.TruelovewIttsInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+        // Stool frequency — needs clinical input
+        f.addPending(key: "stoolsPerDay", label: "Stool frequency per day — current episode", source: "Clinical")
+        // Blood in stool
+        if text.contains("blood in stool") || text.contains("bloody stool") || text.contains("haematochezia") || text.contains("rectal bleed") {
+            i.macroscopicBlood = true
+            f.addAutoFilled(key: "macroscopicBlood", label: "Blood in stool documented", source: "History")
+        } else {
+            f.addPending(key: "macroscopicBlood", label: "Macroscopic blood in stool — confirm", source: "Examination")
+        }
+        // HR from vitals
+        if let v = patient.vitalsEntries?.max(by: { $0.recordedAt < $1.recordedAt }),
+           let hr = v.heartRate, hr > 90 {
+            i.hrAbove90 = true
+            f.addAutoFilled(key: "hrAbove90", label: "HR \(hr) bpm > 90 — from vitals", source: "Vitals")
+        } else {
+            f.addPending(key: "hrAbove90", label: "Heart rate > 90 bpm — confirm from vitals", source: "Vitals")
+        }
+        // Temperature from vitals
+        if let v = patient.vitalsEntries?.max(by: { $0.recordedAt < $1.recordedAt }),
+           let t = v.temperatureCelsius, t > 37.5 {
+            i.tempAbove375 = true
+            f.addAutoFilled(key: "tempAbove375", label: "Temp \(String(format: "%.1f", t))°C > 37.5 — from vitals", source: "Vitals")
+        } else {
+            f.addPending(key: "tempAbove375", label: "Temperature > 37.5°C — confirm from vitals", source: "Vitals")
+        }
+        // Haemoglobin and ESR need lab results
+        f.addPending(key: "hbBelow105",  label: "Haemoglobin < 10.5 g/dL — lab result required", source: "Labs")
+        f.addPending(key: "esrAbove30",  label: "ESR > 30 mm/h — lab result required",            source: "Labs")
+        return (i, f)
+    }
+
+    // MARK: - Harvey-Bradshaw Index
+
+    static func harveyBradshaw(patient: Patient) -> (ClinicalScoringEngine.HarveyBradshawInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.HarveyBradshawInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+        // Wellbeing — patient self-report
+        f.addPending(key: "generalWellbeing", label: "General wellbeing (0–4) — patient self-report", source: "Patient")
+        // Abdominal pain severity
+        let painKw = ["severe abdominal pain", "severe pain", "abdominal pain +++"]
+        if painKw.contains(where: { text.contains($0) }) {
+            i.abdominalPain = 3
+            f.addAutoFilled(key: "abdominalPain", label: "Severe abdominal pain documented", source: "History")
+        } else {
+            f.addPending(key: "abdominalPain", label: "Abdominal pain (0–3) — confirm severity", source: "History")
+        }
+        // Liquid stool count
+        f.addPending(key: "liquidStoolsPerDay", label: "Liquid stool count per day — current episode", source: "Clinical")
+        // Abdominal mass — exam
+        f.addPending(key: "abdominalMass", label: "Abdominal mass (0–3) — examination finding", source: "Examination")
+        // Complications
+        let compKw = ["arthralgia", "arthritis", "uveitis", "erythema nodosum", "pyoderma", "fistula", "abscess"]
+        let compCount = compKw.filter { text.contains($0) }.count
+        if compCount > 0 {
+            i.complications = min(compCount, 10)
+            f.addAutoFilled(key: "complications", label: "\(compCount) extraintestinal complication(s) detected", source: "History")
+        } else {
+            f.addPending(key: "complications", label: "Extraintestinal complications (number) — review history", source: "History")
+        }
+        return (i, f)
+    }
 }

@@ -201,6 +201,10 @@ final class Patient {
     var losAngelesGrade: Int?     // LA Classification for GERD/oesophagitis (0–4; 0=none, 4=Grade D)
     var meld3Score: Double?       // MELD 3.0 liver severity score (continuous; ≥15 = transplant threshold)
     var bradenScore: Int?         // Braden Scale pressure injury risk (6–23; ≤18 = at risk)
+    var centorScore: Int?         // Centor/McIsaac Score (-1 to 5; ≥4 = high GAS probability)
+    var ipssScore: Int?           // IPSS Lower Urinary Tract Symptoms (0–35; ≥20 = severe)
+    var trueloveWittsScore: Int?  // Truelove-Witts UC Severity (1=mild, 2=moderate, 3=severe)
+    var harveyBradshawScore: Int? // Harvey-Bradshaw Index Crohn's Activity (0+; ≥8 = moderate)
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

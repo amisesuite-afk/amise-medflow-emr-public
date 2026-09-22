@@ -102,6 +102,10 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case losAngeles       = "LA Classification (GERD)"
     case meld3            = "MELD 3.0 (Liver Severity)"
     case braden           = "Braden Scale (Pressure Injury)"
+    case centor           = "Centor / McIsaac (Pharyngitis)"
+    case ipss             = "IPSS (Prostate Symptoms)"
+    case trueloveWitts    = "Truelove-Witts (UC Severity)"
+    case harveyBradshaw   = "Harvey-Bradshaw Index (Crohn's)"
 
     var category: ScoreCategory {
         switch self {
@@ -177,6 +181,14 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .gi
         case .braden:
             return .monitoring
+        case .centor:
+            return .sepsis
+        case .ipss:
+            return .monitoring
+        case .trueloveWitts:
+            return .gi
+        case .harveyBradshaw:
+            return .gi
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
         case .mews, .news2, .waterlow, .surgicalApgar:
@@ -264,6 +276,10 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .losAngeles:     return "esophagus"
         case .meld3:          return "liver"
         case .braden:         return "bed.double"
+        case .centor:         return "microbe"
+        case .ipss:           return "drop.degreesign"
+        case .trueloveWitts:  return "flame.circle"
+        case .harveyBradshaw: return "chart.bar.xaxis"
         }
     }
 }
@@ -433,6 +449,10 @@ struct ClinicalScoresView: View {
     @State private var losAngelesI   = ClinicalScoringEngine.LosAngelesInput()
     @State private var meld3I        = ClinicalScoringEngine.MELD3Input()
     @State private var bradenI       = ClinicalScoringEngine.BradenInput()
+    @State private var centorI       = ClinicalScoringEngine.CentorInput()
+    @State private var ipssI         = ClinicalScoringEngine.IPSSInput()
+    @State private var trueloveI     = ClinicalScoringEngine.TruelovewIttsInput()
+    @State private var harveyI       = ClinicalScoringEngine.HarveyBradshawInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -945,6 +965,18 @@ struct ClinicalScoresView: View {
         case .braden:
             let (input, fill) = PatientScoreAutoPopulator.braden(patient: patient)
             bradenI = input; autoFill = fill
+        case .centor:
+            let (input, fill) = PatientScoreAutoPopulator.centor(patient: patient)
+            centorI = input; autoFill = fill
+        case .ipss:
+            let (input, fill) = PatientScoreAutoPopulator.ipss(patient: patient)
+            ipssI = input; autoFill = fill
+        case .trueloveWitts:
+            let (input, fill) = PatientScoreAutoPopulator.trueloveWitts(patient: patient)
+            trueloveI = input; autoFill = fill
+        case .harveyBradshaw:
+            let (input, fill) = PatientScoreAutoPopulator.harveyBradshaw(patient: patient)
+            harveyI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -1084,6 +1116,10 @@ struct ClinicalScoresView: View {
         case .losAngeles:    ClinicalScoringEngine.losAngeles(losAngelesI)
         case .meld3:         ClinicalScoringEngine.meld3(meld3I)
         case .braden:        ClinicalScoringEngine.braden(bradenI)
+        case .centor:        ClinicalScoringEngine.centor(centorI)
+        case .ipss:          ClinicalScoringEngine.ipss(ipssI)
+        case .trueloveWitts: ClinicalScoringEngine.truelovewItts(trueloveI)
+        case .harveyBradshaw:ClinicalScoringEngine.harveyBradshaw(harveyI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -1166,7 +1202,11 @@ struct ClinicalScoresView: View {
         case .stone:         patient.stoneScore     = intScore
         case .losAngeles:    patient.losAngelesGrade = intScore
         case .meld3:         patient.meld3Score     = r.score   // continuous Double
-        case .braden:        patient.bradenScore    = intScore
+        case .braden:        patient.bradenScore         = intScore
+        case .centor:        patient.centorScore         = intScore
+        case .ipss:          patient.ipssScore           = intScore
+        case .trueloveWitts: patient.trueloveWittsScore  = intScore
+        case .harveyBradshaw:patient.harveyBradshawScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -1284,6 +1324,10 @@ struct ClinicalScoresView: View {
         case .losAngeles:    losAngelesForm
         case .meld3:         meld3Form
         case .braden:        bradenForm
+        case .centor:        centorForm
+        case .ipss:          ipssForm
+        case .trueloveWitts: trueloveWittsForm
+        case .harveyBradshaw:harveyBradshawForm
         }
     }
 
@@ -2584,6 +2628,23 @@ struct ClinicalScoresView: View {
             break
         case .braden:
             break
+        case .centor:
+            switch field.id {
+            case "tonsillarExudate":          centorI.tonsillarExudate = true
+            case "tenderAnteriorCervical":    centorI.tenderAnteriorCervical = true
+            case "feverHistory":              centorI.feverHistory = true
+            case "noCough":                   centorI.noCough = true
+            default: break
+            }
+        case .trueloveWitts:
+            switch field.id {
+            case "macroscopicBlood":  trueloveI.macroscopicBlood = true
+            case "hrAbove90":         trueloveI.hrAbove90 = true
+            case "tempAbove375":      trueloveI.tempAbove375 = true
+            case "hbBelow105":        trueloveI.hbBelow105 = true
+            case "esrAbove30":        trueloveI.esrAbove30 = true
+            default: break
+            }
         default: break
         }
 
@@ -4585,6 +4646,105 @@ struct ClinicalScoresView: View {
             }
             .pickerStyle(.menu)
         }
+    }
+
+    // MARK: - Centor / McIsaac
+
+    private var centorForm: some View {
+        Group {
+            scoreToggle("Tonsillar exudate", binding: $centorI.tonsillarExudate, points: "+1", autoKey: "tonsillarExudate")
+            scoreToggle("Tender anterior cervical lymphadenopathy", binding: $centorI.tenderAnteriorCervical, points: "+1", autoKey: "tenderAnteriorCervical")
+            scoreToggle("Fever history (≥38°C)", binding: $centorI.feverHistory, points: "+1", autoKey: "feverHistory")
+            scoreToggle("Absence of cough", binding: $centorI.noCough, points: "+1", autoKey: "noCough")
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Age group").font(.subheadline)
+                Picker("", selection: $centorI.ageGroup) {
+                    Text("< 15 years (+1)").tag(0)
+                    Text("15–44 years (0)").tag(1)
+                    Text("≥ 45 years (−1)").tag(2)
+                }
+                .pickerStyle(.segmented)
+            }
+        }
+        .onChange(of: centorI) { _, _ in recalculate() }
+    }
+
+    // MARK: - IPSS
+
+    private var ipssForm: some View {
+        Group {
+            ForEach([
+                ("Incomplete emptying", \ClinicalScoringEngine.IPSSInput.incompleteEmptying),
+                ("Frequency",           \ClinicalScoringEngine.IPSSInput.frequency),
+                ("Intermittency",       \ClinicalScoringEngine.IPSSInput.intermittency),
+                ("Urgency",             \ClinicalScoringEngine.IPSSInput.urgency),
+                ("Weak stream",         \ClinicalScoringEngine.IPSSInput.weakStream),
+                ("Straining",           \ClinicalScoringEngine.IPSSInput.straining),
+                ("Nocturia",            \ClinicalScoringEngine.IPSSInput.nocturia),
+            ], id: \.0) { label, kp in
+                ipssItemPicker(label, keyPath: kp)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Quality of life (0 = delighted, 6 = terrible)").font(.subheadline)
+                Stepper("\(ipssI.qualityOfLife)", value: $ipssI.qualityOfLife, in: 0...6)
+            }
+        }
+        .onChange(of: ipssI) { _, _ in recalculate() }
+    }
+
+    private func ipssItemPicker(_ label: String, keyPath: WritableKeyPath<ClinicalScoringEngine.IPSSInput, Int>) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("\(label) (0–5)").font(.subheadline)
+            Stepper("\(ipssI[keyPath: keyPath])",
+                    value: Binding(get: { ipssI[keyPath: keyPath] },
+                                   set: { ipssI[keyPath: keyPath] = $0 }),
+                    in: 0...5)
+        }
+    }
+
+    // MARK: - Truelove-Witts
+
+    private var trueloveWittsForm: some View {
+        Group {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Stools per day").font(.subheadline)
+                Stepper("\(trueloveI.stoolsPerDay)", value: $trueloveI.stoolsPerDay, in: 0...30)
+            }
+            scoreToggle("Macroscopic blood in stool", binding: $trueloveI.macroscopicBlood, points: "+1", autoKey: "macroscopicBlood")
+            scoreToggle("Heart rate > 90 bpm", binding: $trueloveI.hrAbove90, points: "+1", autoKey: "hrAbove90")
+            scoreToggle("Temperature > 37.5°C", binding: $trueloveI.tempAbove375, points: "+1", autoKey: "tempAbove375")
+            scoreToggle("Haemoglobin < 10.5 g/dL", binding: $trueloveI.hbBelow105, points: "+1", autoKey: "hbBelow105")
+            scoreToggle("ESR > 30 mm/h", binding: $trueloveI.esrAbove30, points: "+1", autoKey: "esrAbove30")
+        }
+        .onChange(of: trueloveI) { _, _ in recalculate() }
+    }
+
+    // MARK: - Harvey-Bradshaw Index
+
+    private var harveyBradshawForm: some View {
+        Group {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("General wellbeing (0 = very well, 4 = terrible)").font(.subheadline)
+                Stepper("\(harveyI.generalWellbeing)", value: $harveyI.generalWellbeing, in: 0...4)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Abdominal pain (0 = none, 3 = severe)").font(.subheadline)
+                Stepper("\(harveyI.abdominalPain)", value: $harveyI.abdominalPain, in: 0...3)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Liquid stools per day").font(.subheadline)
+                Stepper("\(harveyI.liquidStoolsPerDay)", value: $harveyI.liquidStoolsPerDay, in: 0...30)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Abdominal mass (0 = none, 3 = tender)").font(.subheadline)
+                Stepper("\(harveyI.abdominalMass)", value: $harveyI.abdominalMass, in: 0...3)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Complications (arthralgia, uveitis, etc.)").font(.subheadline)
+                Stepper("\(harveyI.complications)", value: $harveyI.complications, in: 0...10)
+            }
+        }
+        .onChange(of: harveyI) { _, _ in recalculate() }
     }
 
 

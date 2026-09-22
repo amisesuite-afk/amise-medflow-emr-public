@@ -163,6 +163,10 @@ enum BayesianDiagnosisEngine {
         losAngelesGrade: Int? = nil,    // LA Class 0–4; ≥3 = severe oesophagitis
         meld3Score: Double? = nil,      // MELD 3.0 continuous; ≥15 = transplant threshold
         bradenScore: Int? = nil,        // Braden 6–23; ≤12 = high/very-high pressure injury risk
+        centorScore: Int? = nil,        // Centor/McIsaac -1–5; ≥3 = moderate GAS probability
+        ipssScore: Int? = nil,          // IPSS 0–35; ≥20 = severe LUTS suggesting BPH/obstruction
+        trueloveWittsScore: Int? = nil, // Truelove-Witts 1–3; 3 = severe UC/colitis
+        harveyBradshawScore: Int? = nil,// Harvey-Bradshaw 0+; ≥8 = moderate–severe Crohn's activity
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3636,6 +3640,65 @@ enum BayesianDiagnosisEngine {
                 let nameLow = scored[i].candidate.name.lowercased()
                 guard meldTargets.contains(where: { nameLow.contains($0) }) else { continue }
                 let label = "MELD 3.0 \(String(format: "%.1f", m3)) — significant/severe hepatic dysfunction"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // Centor/McIsaac boost: high score raises streptococcal pharyngitis / tonsillitis candidates
+        if let ct = centorScore, ct >= 3 {
+            let ctTargets = ["streptococcal", "strep", "pharyngitis", "tonsillitis", "tonsil", "peritonsillar"]
+            let adj = ct >= 4 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard ctTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "Centor/McIsaac \(ct)/5 — significant GAS pharyngitis probability"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // IPSS boost: severe LUTS raises BPH / bladder-outlet-obstruction candidates
+        if let ip = ipssScore, ip >= 20 {
+            let ipTargets = ["benign prostatic", "bph", "prostatic hyperplasia",
+                             "bladder outlet", "urinary retention", "prostate"]
+            let adj = ip >= 30 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard ipTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "IPSS \(ip)/35 — severe lower urinary tract symptoms"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // Truelove-Witts boost: severe colitis raises UC / colitis candidates
+        if let tw = trueloveWittsScore, tw >= 3 {
+            let twTargets = ["ulcerative colitis", "colitis", "inflammatory bowel",
+                             "severe colitis", "toxic megacolon"]
+            let adj = 9
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard twTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "Truelove-Witts score \(tw)/3 — severe UC activity"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // Harvey-Bradshaw boost: moderate–severe score raises Crohn's disease candidates
+        if let hb = harveyBradshawScore, hb >= 8 {
+            let hbTargets = ["crohn", "crohn's", "inflammatory bowel", "ileitis",
+                             "terminal ileitis", "small bowel inflammation"]
+            let adj = hb >= 16 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard hbTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "Harvey-Bradshaw Index \(hb) — moderate/severe Crohn's activity"
                 scored[i].logPosterior += adj
                 scored[i].evidence.append(label)
                 scored[i].evidenceSources["score", default: []].append(label)
