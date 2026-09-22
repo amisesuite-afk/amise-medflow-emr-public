@@ -231,7 +231,7 @@ private struct PlanForm: View {
 
         // Lab-based perioperative flags from investigation results
         var riskInputs = SurgicalRiskInputs(
-            pmh: patient.pmhChips,
+            pmh: [],
             medicationNames: patient.prescriptions.map { $0.drug },
             ageYears: patient.ageYears,
             bmiKgM2: patient.latestBMI(),
