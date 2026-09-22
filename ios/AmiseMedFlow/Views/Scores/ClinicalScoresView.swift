@@ -64,6 +64,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case waterlow         = "Waterlow Pressure Ulcer Risk"
     case surgicalApgar    = "Surgical Apgar Score"
     case grace            = "GRACE Score (ACS)"
+    case dasi             = "DASI (Functional Capacity)"
 
     var category: ScoreCategory {
         switch self {
@@ -75,7 +76,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .vascular
         case .sirs, .qsofa, .psiPort, .sofa, .curb65, .apacheII:
             return .sepsis
-        case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4, .ppossum, .nrs2002, .mallampati, .cfs:
+        case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4, .ppossum, .nrs2002, .mallampati, .cfs, .dasi:
             return .preop
         case .abcd2, .lrinec, .gcs:
             return .neuro
@@ -128,6 +129,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .waterlow:       return "bed.double"
         case .surgicalApgar:  return "cross.case"
         case .grace:          return "chart.line.uptrend.xyaxis"
+        case .dasi:           return "figure.run"
         }
     }
 }
@@ -232,6 +234,8 @@ struct ClinicalScoresView: View {
     @State private var surgApgarI = SurgicalApgarInput()
     // GRACE Score
     @State private var graceI = GRACEInput()
+    // DASI
+    @State private var dasiI = DASIInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -633,6 +637,9 @@ struct ClinicalScoresView: View {
         case .grace:
             let (input, fill) = PatientScoreAutoPopulator.grace(patient: patient)
             graceI = input; autoFill = fill
+        case .dasi:
+            let (input, fill) = PatientScoreAutoPopulator.dasi(patient: patient)
+            dasiI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -734,6 +741,7 @@ struct ClinicalScoresView: View {
         case .waterlow:     ClinicalScoringEngine.waterlow(waterlowI)
         case .surgicalApgar: ClinicalScoringEngine.surgicalApgar(surgApgarI)
         case .grace:         ClinicalScoringEngine.grace(graceI)
+        case .dasi:          ClinicalScoringEngine.dasi(dasiI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -775,6 +783,7 @@ struct ClinicalScoresView: View {
         case .waterlow:     patient.waterlowScore = intScore
         case .surgicalApgar: patient.surgicalApgarScore = intScore
         case .grace:         patient.graceScore = intScore
+        case .dasi:          patient.dasiScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -854,6 +863,7 @@ struct ClinicalScoresView: View {
         case .waterlow:     waterlowForm
         case .surgicalApgar: surgicalApgarForm
         case .grace:         graceForm
+        case .dasi:          dasiForm
         }
     }
 
@@ -1947,6 +1957,23 @@ struct ClinicalScoresView: View {
             case "stDeviation":      graceI.stDeviation = true
             default: break
             }
+        case .dasi:
+            // All fields are boolean toggles; auto-confirmed from patient-reported keywords
+            switch field.id {
+            case "takeCareOfSelf":           dasiI.takeCareOfSelf = true
+            case "walkIndoors":              dasiI.walkIndoors = true
+            case "walkOneOrTwoBlocks":       dasiI.walkOneOrTwoBlocks = true
+            case "climbStairs":              dasiI.climbStairs = true
+            case "runShortDistance":         dasiI.runShortDistance = true
+            case "doLightWork":              dasiI.doLightWork = true
+            case "doModerateWork":           dasiI.doModerateWork = true
+            case "doHeavyWork":              dasiI.doHeavyWork = true
+            case "doYardWork":               dasiI.doYardWork = true
+            case "haveSexualActivity":       dasiI.haveSexualActivity = true
+            case "participateInModerateRecreation": dasiI.participateInModerateRecreation = true
+            case "participateInStrenuous":   dasiI.participateInStrenuous = true
+            default: break
+            }
         default: break
         }
 
@@ -2615,6 +2642,34 @@ struct ClinicalScoresView: View {
                 scoreToggle("Medication: cytotoxic agents / high-dose steroids", binding: $waterlowI.onCytotoxics, points: "+4", autoKey: "onCytotoxics")
             }
             .onChange(of: waterlowI) { _, _ in recalculate() }
+        }
+    }
+
+    // MARK: - DASI (Duke Activity Status Index)
+
+    private var dasiForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Duke Activity Status Index (Hlatky MA et al. Am J Cardiol 1989;64:651–654). 12 yes/no questions weighted by MET equivalent. DASI <34 ≈ <4 METs (poor functional capacity, elevated perioperative cardiac risk); 34–46 ≈ 4–6 METs (moderate); >46 ≈ >6 METs (good).")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
+            Group {
+                sectionHeader("Activities of Daily Living")
+                scoreToggle("Can take care of yourself (eating, dressing, bathing, toilet)", binding: $dasiI.takeCareOfSelf, points: "+2.75", autoKey: "takeCareOfSelf")
+                scoreToggle("Can walk indoors on level ground", binding: $dasiI.walkIndoors, points: "+1.75", autoKey: "walkIndoors")
+                scoreToggle("Can walk 1–2 blocks on level ground", binding: $dasiI.walkOneOrTwoBlocks, points: "+2.75", autoKey: "walkOneOrTwoBlocks")
+                sectionHeader("Physical Exertion")
+                scoreToggle("Can climb a flight of stairs or walk up a hill", binding: $dasiI.climbStairs, points: "+5.50", autoKey: "climbStairs")
+                scoreToggle("Can run a short distance", binding: $dasiI.runShortDistance, points: "+8.00", autoKey: "runShortDistance")
+                sectionHeader("Household Work")
+                scoreToggle("Can do light housework (dusting, washing dishes)", binding: $dasiI.doLightWork, points: "+2.70", autoKey: "doLightWork")
+                scoreToggle("Can do moderate housework (vacuuming, sweeping, carrying groceries)", binding: $dasiI.doModerateWork, points: "+3.50", autoKey: "doModerateWork")
+                scoreToggle("Can do heavy work (scrubbing floors, moving furniture)", binding: $dasiI.doHeavyWork, points: "+8.00", autoKey: "doHeavyWork")
+                scoreToggle("Can do yardwork (raking, weeding, pushing lawn mower)", binding: $dasiI.doYardWork, points: "+4.50", autoKey: "doYardWork")
+                sectionHeader("Recreation")
+                scoreToggle("Can have sexual activity", binding: $dasiI.haveSexualActivity, points: "+5.25", autoKey: "haveSexualActivity")
+                scoreToggle("Moderate recreation (golf, bowling, dancing, doubles tennis)", binding: $dasiI.participateInModerateRecreation, points: "+6.00", autoKey: "participateInModerateRecreation")
+                scoreToggle("Strenuous sports (swimming, singles tennis, football, basketball, skiing)", binding: $dasiI.participateInStrenuous, points: "+7.50", autoKey: "participateInStrenuous")
+            }
+            .onChange(of: dasiI) { _, _ in recalculate() }
         }
     }
 

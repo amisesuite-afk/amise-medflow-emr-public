@@ -121,6 +121,7 @@ enum BayesianDiagnosisEngine {
         waterlowScore: Int? = nil,    // Waterlow (0–64); ≥15 = high, ≥20 = very high pressure ulcer risk
         surgicalApgarScore: Int? = nil, // Surgical Apgar (0–10); ≤4 = high risk of major surgical complication
         graceScore: Int? = nil,       // GRACE (0–372); >140 = high in-hospital ACS mortality
+        dasiScore: Int? = nil,        // DASI (0–58); <34 = poor functional capacity (<4 METs)
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2890,6 +2891,25 @@ enum BayesianDiagnosisEngine {
                 default:   (0, "")
                 }
                 guard adj > 0 else { continue }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // DASI: poor functional capacity boosts perioperative risk and cardiorespiratory candidates
+        if let dasi = dasiScore, dasi < 34 {
+            let dasiTargets = ["heart failure", "coronary artery disease", "angina", "myocardial infarction",
+                               "pulmonary hypertension", "chronic obstructive pulmonary disease", "cardiomyopathy",
+                               "aortic stenosis", "peripheral arterial disease", "deconditioning",
+                               "post-operative complication", "pulmonary embolism", "anaemia"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard dasiTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch dasi {
+                case 0...20: (12, "DASI \(dasi) — severely poor functional capacity (<4 METs); markedly elevated perioperative cardiac risk")
+                default:     (7,  "DASI \(dasi) — poor functional capacity (<4 METs); elevated perioperative cardiac risk")
+                }
                 scored[i].logPosterior += Double(adj)
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)

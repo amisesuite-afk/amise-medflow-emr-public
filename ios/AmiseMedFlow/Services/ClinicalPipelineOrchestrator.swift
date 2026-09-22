@@ -251,6 +251,7 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
             waterlowScore:               patient.waterlowScore,
             surgicalApgarScore:          patient.surgicalApgarScore,
             graceScore:                  patient.graceScore,
+            dasiScore:                   patient.dasiScore,
             latestHR:    latestV?.heartRate,
             latestSBP:   latestV?.bpSystolic,
             latestTemp:  latestV?.temperatureCelsius,

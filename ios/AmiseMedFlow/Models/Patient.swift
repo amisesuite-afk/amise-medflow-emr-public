@@ -131,6 +131,8 @@ final class Patient {
     var surgicalApgarScore: Int?
     // GRACE Score (0–372); <109=low in-hospital mortality, 109-140=moderate, >140=high
     var graceScore: Int?
+    // DASI (0–58, rounded); <34=poor functional capacity (<4 METs), 34-46=moderate (4-6 METs), >46=good (>6 METs)
+    var dasiScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

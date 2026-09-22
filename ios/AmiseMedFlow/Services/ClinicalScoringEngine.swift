@@ -476,6 +476,23 @@ struct ForrestInput: Equatable {
     var grade: Int = 1
 }
 
+struct DASIInput: Equatable {
+    // Duke Activity Status Index (Hlatky et al, Am J Cardiol 1989)
+    // 12 yes/no functional capacity questions; sum of MET weights; DASI <34 ~ <4 METs (poor functional capacity)
+    var takeCareOfSelf: Bool = false         // Can take care of self (eating, dressing, bathing, using toilet) — 2.75 pts
+    var walkIndoors: Bool = false            // Can walk indoors on level ground — 1.75 pts
+    var walkOneOrTwoBlocks: Bool = false     // Can walk 1–2 blocks on level ground — 2.75 pts
+    var climbStairs: Bool = false            // Can climb a flight of stairs or walk up a hill — 5.50 pts
+    var runShortDistance: Bool = false       // Can run a short distance — 8.00 pts
+    var doLightWork: Bool = false            // Can do light housework (dusting, washing dishes) — 2.70 pts
+    var doModerateWork: Bool = false         // Can do moderate housework (vacuuming, sweeping, carrying groceries) — 3.50 pts
+    var doHeavyWork: Bool = false            // Can do heavy work (scrubbing floors, moving furniture) — 8.00 pts
+    var doYardWork: Bool = false             // Can do yardwork (raking, weeding, pushing mower) — 4.50 pts
+    var haveSexualActivity: Bool = false     // Can have sexual activity — 5.25 pts
+    var participateInModerateRecreation: Bool = false // Moderate recreational activities (golf, bowling, dancing) — 6.00 pts
+    var participateInStrenuous: Bool = false // Strenuous sports (swimming, tennis, football, basketball) — 7.50 pts
+}
+
 struct GRACEInput: Equatable {
     // GRACE Score (Granger CB et al, Lancet 2003; Fox KA et al, Eur Heart J 2006)
     // Predicts in-hospital and 6-month mortality after ACS (NSTEMI/STEMI/UA)
@@ -2888,6 +2905,80 @@ enum ClinicalScoringEngine {
             recommendations: data.recs,
             redFlags: data.flags,
             evidenceNote: "Forrest JAH et al. Lancet 1974; 2:394–397. Laine L & Peterson WL. N Engl J Med 1994; 331:717–727."
+        )
+    }
+
+    // MARK: - DASI (Duke Activity Status Index)
+
+    static func dasi(_ i: DASIInput) -> ClinicalScore {
+        // MET-weighted sum of 12 yes/no functional capacity questions
+        // Hlatky MA et al. A brief self-administered questionnaire to determine functional capacity.
+        // Am J Cardiol 1989;64:651–654.
+        var total = 0.0
+        if i.takeCareOfSelf            { total += 2.75 }
+        if i.walkIndoors               { total += 1.75 }
+        if i.walkOneOrTwoBlocks        { total += 2.75 }
+        if i.climbStairs               { total += 5.50 }
+        if i.runShortDistance          { total += 8.00 }
+        if i.doLightWork               { total += 2.70 }
+        if i.doModerateWork            { total += 3.50 }
+        if i.doHeavyWork               { total += 8.00 }
+        if i.doYardWork                { total += 4.50 }
+        if i.haveSexualActivity        { total += 5.25 }
+        if i.participateInModerateRecreation { total += 6.00 }
+        if i.participateInStrenuous    { total += 7.50 }
+
+        // <34 ≈ <4 METs (poor), 34–46 ≈ 4–6 METs (moderate), >46 ≈ >6 METs (good)
+        let (risk, interp, recs, flags): (ScoreRisk, String, [String], [String]) = switch total {
+        case ..<34:
+            (.high, "Poor functional capacity (<4 METs) — elevated perioperative cardiac risk",
+             ["Formal cardiopulmonary exercise testing (CPET) if major surgery planned",
+              "Cardiology pre-operative assessment prior to elective intermediate/high-risk surgery",
+              "Optimise modifiable risk factors: blood pressure, diabetes, anaemia, dyspnoea",
+              "Consider cardiac stress imaging if functional capacity cannot be adequately assessed",
+              "Physiotherapy prehabilitation programme to improve exercise tolerance before surgery"],
+             ["DASI <34 — functional capacity below 4 METs; elevated perioperative cardiac risk; cardiology review recommended before major surgery"])
+        case 34...46:
+            (.moderate, "Moderate functional capacity (4–6 METs)",
+             ["Routine pre-operative cardiorespiratory assessment",
+              "Optimise cardiovascular risk factors pre-operatively",
+              "Anaesthetic team review for high-risk or prolonged procedures",
+              "Encourage graduated aerobic conditioning before elective major surgery"],
+             [])
+        default:
+            (.low, "Good functional capacity (>6 METs) — low perioperative cardiac risk",
+             ["Standard pre-operative assessment — no additional cardiac workup required for most procedures",
+              "Maintain current physical activity levels; document exercise tolerance in surgical consent",
+              "Reassess if new cardiorespiratory symptoms develop pre-operatively"],
+             [])
+        }
+
+        let items: [ScoreItem] = [
+            ScoreItem(label: "Can take care of self (ADLs) +2.75", points: 2.75, present: i.takeCareOfSelf),
+            ScoreItem(label: "Can walk indoors on level ground +1.75", points: 1.75, present: i.walkIndoors),
+            ScoreItem(label: "Can walk 1–2 blocks on level ground +2.75", points: 2.75, present: i.walkOneOrTwoBlocks),
+            ScoreItem(label: "Can climb a flight of stairs or walk up a hill +5.50", points: 5.50, present: i.climbStairs),
+            ScoreItem(label: "Can run a short distance +8.00", points: 8.00, present: i.runShortDistance),
+            ScoreItem(label: "Can do light housework (dusting, washing dishes) +2.70", points: 2.70, present: i.doLightWork),
+            ScoreItem(label: "Can do moderate housework (vacuuming, carrying groceries) +3.50", points: 3.50, present: i.doModerateWork),
+            ScoreItem(label: "Can do heavy work (scrubbing floors, moving furniture) +8.00", points: 8.00, present: i.doHeavyWork),
+            ScoreItem(label: "Can do yardwork (raking, weeding, pushing mower) +4.50", points: 4.50, present: i.doYardWork),
+            ScoreItem(label: "Can have sexual activity +5.25", points: 5.25, present: i.haveSexualActivity),
+            ScoreItem(label: "Moderate recreation (golf, bowling, dancing) +6.00", points: 6.00, present: i.participateInModerateRecreation),
+            ScoreItem(label: "Strenuous sports (swimming, tennis, football) +7.50", points: 7.50, present: i.participateInStrenuous)
+        ]
+
+        let rounded = (total * 10).rounded() / 10
+        return ClinicalScore(
+            systemName: "Duke Activity Status Index",
+            abbreviation: "DASI",
+            score: rounded, maxScore: 58.2,
+            risk: risk,
+            interpretation: "DASI \(String(format: "%.1f", rounded)) — \(interp)",
+            items: items,
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Hlatky MA et al. Am J Cardiol 1989;64:651–654."
         )
     }
 

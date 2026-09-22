@@ -2027,4 +2027,112 @@ enum PatientScoreAutoPopulator {
         f.addPending(key: "appetite", label: "Appetite / nutritional intake — requires dietary or nursing assessment", source: "Nursing assessment")
         return (i, f)
     }
+
+    // MARK: - DASI (Duke Activity Status Index)
+
+    static func dasi(patient: Patient) -> (DASIInput, ScoreAutoFill) {
+        var i = DASIInput()
+        var f = ScoreAutoFill()
+        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                       patient.pmhNotes, patient.notes, patient.workingDiagnosis,
+                       patient.managementPlan]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Self-care / ADLs
+        if allText.contains("independent") || allText.contains("adl") ||
+           allText.contains("self-care") || allText.contains("self care") ||
+           allText.contains("able to dress") || allText.contains("ambulat") {
+            i.takeCareOfSelf = true
+            f.addAutoFilled(key: "takeCareOfSelf", label: "Independent ADLs suggested in clinical text — confirm with patient", source: "Clinical text")
+        }
+
+        // Walking ability from text
+        if allText.contains("walks") || allText.contains("walking") ||
+           allText.contains("mobile") || allText.contains("ambulat") ||
+           allText.contains("independent gait") {
+            i.walkIndoors = true
+            i.walkOneOrTwoBlocks = true
+            f.addAutoFilled(key: "walkIndoors", label: "Walking ability suggested — confirm with patient", source: "Clinical text")
+            f.addAutoFilled(key: "walkOneOrTwoBlocks", label: "Community ambulation suggested — confirm with patient", source: "Clinical text")
+        }
+
+        // Stair climbing ability
+        if allText.contains("stair") || allText.contains("climb") ||
+           allText.contains("hill") || allText.contains("incline") {
+            i.climbStairs = true
+            f.addAutoFilled(key: "climbStairs", label: "Stair/hill climbing suggested — confirm with patient", source: "Clinical text")
+        }
+
+        // Exercise tolerance / running
+        if allText.contains("jog") || allText.contains("run") || allText.contains("sprint") ||
+           allText.contains("active") && allText.contains("exercise") {
+            i.runShortDistance = true
+            f.addAutoFilled(key: "runShortDistance", label: "Running / jogging suggested — confirm with patient", source: "Clinical text")
+        }
+
+        // Light housework
+        if allText.contains("household") || allText.contains("housework") ||
+           allText.contains("housekeep") || allText.contains("light domestic") {
+            i.doLightWork = true
+            f.addAutoFilled(key: "doLightWork", label: "Light housework ability suggested — confirm with patient", source: "Clinical text")
+        }
+
+        // Moderate housework / grocery
+        if allText.contains("groceries") || allText.contains("vacuuming") ||
+           allText.contains("sweeping") || allText.contains("moderate household") {
+            i.doModerateWork = true
+            f.addAutoFilled(key: "doModerateWork", label: "Moderate housework ability suggested — confirm with patient", source: "Clinical text")
+        }
+
+        // Strenuous sports / recreation
+        if allText.contains("swim") || allText.contains("tennis") || allText.contains("football") ||
+           allText.contains("basketball") || allText.contains("rugby") || allText.contains("cricket") ||
+           allText.contains("marathon") || allText.contains("triathlon") {
+            i.participateInStrenuous = true
+            f.addAutoFilled(key: "participateInStrenuous", label: "Strenuous sport participation suggested — confirm with patient", source: "Clinical text")
+        }
+
+        // Moderate recreation
+        if allText.contains("golf") || allText.contains("bowling") || allText.contains("dancing") ||
+           allText.contains("recreational sport") || allText.contains("leisure") {
+            i.participateInModerateRecreation = true
+            f.addAutoFilled(key: "participateInModerateRecreation", label: "Moderate recreational activity suggested — confirm with patient", source: "Clinical text")
+        }
+
+        // Poor functional capacity markers — if present, set all fields to false and flag pending
+        if allText.contains("bedbound") || allText.contains("bed-bound") ||
+           allText.contains("wheelchair") || allText.contains("housebound") ||
+           allText.contains("unable to walk") || allText.contains("non-ambulatory") ||
+           allText.contains("poor functional") || allText.contains("limited mobility") ||
+           allText.contains("less than 4 met") || allText.contains("<4 met") {
+            // Override auto-fills — poor functional capacity; all confirmed as false
+            i = DASIInput()
+            f = ScoreAutoFill()
+            f.addAutoFilled(key: "takeCareOfSelf", label: "Poor functional capacity suggested — all activities set to 'No'; verify with patient", source: "Clinical text")
+        }
+
+        // Most DASI fields require direct patient self-report — mark remaining unpopulated fields as pending
+        if !f.autoFieldKeys.contains("takeCareOfSelf") && !i.takeCareOfSelf {
+            f.addPending(key: "takeCareOfSelf", label: "Can patient take care of self (ADLs)? — requires patient self-report", source: "Patient interview")
+        }
+        if !f.autoFieldKeys.contains("walkIndoors") && !i.walkIndoors {
+            f.addPending(key: "walkIndoors", label: "Can patient walk indoors on level ground? — requires patient self-report", source: "Patient interview")
+        }
+        if !f.autoFieldKeys.contains("walkOneOrTwoBlocks") && !i.walkOneOrTwoBlocks {
+            f.addPending(key: "walkOneOrTwoBlocks", label: "Can patient walk 1–2 blocks? — requires patient self-report", source: "Patient interview")
+        }
+        if !f.autoFieldKeys.contains("climbStairs") && !i.climbStairs {
+            f.addPending(key: "climbStairs", label: "Can patient climb a flight of stairs? — requires patient self-report", source: "Patient interview")
+        }
+        if !f.autoFieldKeys.contains("runShortDistance") && !i.runShortDistance {
+            f.addPending(key: "runShortDistance", label: "Can patient run a short distance? — requires patient self-report", source: "Patient interview")
+        }
+        if !f.autoFieldKeys.contains("doHeavyWork") && !i.doHeavyWork {
+            f.addPending(key: "doHeavyWork", label: "Can patient do heavy housework? — requires patient self-report", source: "Patient interview")
+        }
+        if !f.autoFieldKeys.contains("doYardWork") && !i.doYardWork {
+            f.addPending(key: "doYardWork", label: "Can patient do yardwork? — requires patient self-report", source: "Patient interview")
+        }
+        return (i, f)
+    }
 }
