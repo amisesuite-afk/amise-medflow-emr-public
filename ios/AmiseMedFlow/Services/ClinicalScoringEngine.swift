@@ -476,6 +476,20 @@ struct ForrestInput: Equatable {
     var grade: Int = 1
 }
 
+struct MallampatiInput: Equatable {
+    // Mallampati Classification (Mallampati et al, Can Anaesth Soc J 1985; Samsoon & Young, Anaesthesia 1987)
+    // Airway classification for anticipated difficulty of laryngoscopy / intubation (modified Mallampati)
+    // class: 1=full visibility (soft palate/uvula/pillars), 2=soft palate/uvula only, 3=soft palate/base of uvula, 4=soft palate not visible
+    var mallampatiClass: Int = 1
+    // Additional predictors
+    var mouthOpening: Bool = false     // reduced mouth opening (<4 cm inter-incisor distance)
+    var neckMobility: Bool = false     // reduced neck extension (<80°)
+    var thyromental: Bool = false      // short thyromental distance (<6 cm / <3 FB)
+    var retrognathia: Bool = false     // micrognathia / retrognathia
+    var obesity: Bool = false          // BMI ≥30 or neck circumference ≥40 cm
+    var beardOrDentures: Bool = false  // beard or poorly-fitting dentures (mask seal/grade uncertainty)
+}
+
 struct HEARTInput: Equatable {
     // HEART Score (Backus et al, Neth Heart J 2010; Six et al, AHJ 2008)
     // Chest pain risk stratification: History, ECG, Age, Risk factors, Troponin
@@ -2812,6 +2826,93 @@ enum ClinicalScoringEngine {
             recommendations: data.recs,
             redFlags: data.flags,
             evidenceNote: "Forrest JAH et al. Lancet 1974; 2:394–397. Laine L & Peterson WL. N Engl J Med 1994; 331:717–727."
+        )
+    }
+
+    // MARK: - Mallampati Classification (airway)
+
+    static func mallampati(_ i: MallampatiInput) -> ClinicalScore {
+        // Modified Mallampati class I–IV: higher class = greater predicted difficulty
+        let classLabel: String
+        let baseRisk: ScoreRisk
+        switch i.mallampatiClass {
+        case 1:
+            classLabel = "Class I — Soft palate, uvula, tonsillar pillars visible"; baseRisk = .low
+        case 2:
+            classLabel = "Class II — Soft palate and uvula visible (pillars obscured)"; baseRisk = .low
+        case 3:
+            classLabel = "Class III — Only soft palate and base of uvula visible"; baseRisk = .moderate
+        default:
+            classLabel = "Class IV — Soft palate not visible (hard palate only)"; baseRisk = .high
+        }
+
+        // Each additional predictor elevates overall risk
+        var additionalPredictors = 0
+        if i.mouthOpening   { additionalPredictors += 1 }
+        if i.neckMobility   { additionalPredictors += 1 }
+        if i.thyromental    { additionalPredictors += 1 }
+        if i.retrognathia   { additionalPredictors += 1 }
+        if i.obesity        { additionalPredictors += 1 }
+        if i.beardOrDentures { additionalPredictors += 1 }
+
+        let finalRisk: ScoreRisk
+        if baseRisk == .high || (baseRisk == .moderate && additionalPredictors >= 1) || additionalPredictors >= 3 {
+            finalRisk = .high
+        } else if baseRisk == .moderate || additionalPredictors >= 1 {
+            finalRisk = .moderate
+        } else {
+            finalRisk = .low
+        }
+
+        let difficultyDesc: String
+        switch finalRisk {
+        case .high:     difficultyDesc = "anticipated difficult airway — senior anaesthetic input essential"
+        case .moderate: difficultyDesc = "potentially difficult airway — plan for airway management alternatives"
+        default:        difficultyDesc = "likely straightforward airway — standard precautions"
+        }
+
+        var recs: [String] = ["Document airway assessment formally in anaesthetic pre-assessment"]
+        switch finalRisk {
+        case .high:
+            recs += ["Discuss with senior anaesthetist before induction",
+                     "Consider awake fibreoptic intubation or video laryngoscopy as primary plan",
+                     "Ensure difficult airway trolley immediately available",
+                     "Mark airway as difficult in patient record and wristband if required",
+                     "Surgical airway standby (front-of-neck access) for cannot-intubate-cannot-oxygenate scenario"]
+        case .moderate:
+            recs += ["Video laryngoscopy as first-line or standby",
+                     "Second anaesthetist/assistant available at induction",
+                     "Pre-oxygenate for ≥3 min; consider ramp positioning",
+                     "Difficult airway trolley in room"]
+        default:
+            recs += ["Standard pre-oxygenation; direct laryngoscopy anticipated to be straightforward",
+                     "Difficult airway trolley available in department per standard protocol"]
+        }
+
+        var flags: [String] = []
+        if i.mallampatiClass >= 3 { flags.append("Mallampati class \(i.mallampatiClass) — senior anaesthetic input required") }
+        if additionalPredictors >= 2 { flags.append("\(additionalPredictors) additional airway predictors — combined difficult airway risk significantly elevated") }
+
+        let items: [ScoreItem] = [
+            ScoreItem(label: classLabel, points: Double(i.mallampatiClass), present: true),
+            ScoreItem(label: "Reduced mouth opening", points: 1, present: i.mouthOpening),
+            ScoreItem(label: "Restricted neck mobility", points: 1, present: i.neckMobility),
+            ScoreItem(label: "Short thyromental distance", points: 1, present: i.thyromental),
+            ScoreItem(label: "Retrognathia / micrognathia", points: 1, present: i.retrognathia),
+            ScoreItem(label: "Obesity / large neck", points: 1, present: i.obesity),
+            ScoreItem(label: "Beard or poorly-fitting dentures", points: 1, present: i.beardOrDentures)
+        ]
+
+        return ClinicalScore(
+            systemName: "Mallampati Airway Classification",
+            abbreviation: "Class \(["I","II","III","IV"][max(0,i.mallampatiClass-1)])",
+            score: Double(i.mallampatiClass + additionalPredictors), maxScore: 10,
+            risk: finalRisk,
+            interpretation: "\(classLabel); \(additionalPredictors) additional predictor(s) — \(difficultyDesc)",
+            items: items,
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Mallampati SR et al. Can Anaesth Soc J 1985;32:429–434. Samsoon GL & Young JR. Anaesthesia 1987;42:487–490."
         )
     }
 

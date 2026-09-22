@@ -115,6 +115,7 @@ enum BayesianDiagnosisEngine {
         nrs2002Score: Int? = nil,     // NRS-2002 (0–7); ≥3 = nutritional risk — malnutrition boosts
         forrestGrade: Int? = nil,     // Forrest grade (1–6); 1–2=active bleed, 3=visible vessel (high rebleed)
         heartScore: Int? = nil,       // HEART Score (0–10); ≥4 = moderate/high MACE risk
+        mallampatiClass: Int? = nil,  // Mallampati class (1–4); ≥3 = potentially difficult airway
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2749,6 +2750,21 @@ enum BayesianDiagnosisEngine {
                 default:   (0,  "")
                 }
                 guard adj > 0 else { continue }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // Mallampati: boosts OSA and obesity hypoventilation when class 3–4 (crowded oropharynx)
+        if let mc = mallampatiClass, mc >= 3 {
+            let osaTargets = ["obstructive sleep apnoea", "obstructive sleep apnea",
+                               "obesity hypoventilation", "osa", "sleep disordered breathing"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard osaTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let adj = mc >= 4 ? 8 : 5
+                let label = "Mallampati class \(mc) — crowded oropharynx; elevated OSA risk"
                 scored[i].logPosterior += Double(adj)
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)

@@ -119,6 +119,8 @@ final class Patient {
     var forrestGrade: Int?
     // HEART Score (0–10); ≤3=low MACE risk, 4–6=moderate, ≥7=high; chest pain triage
     var heartScore: Int?
+    // Mallampati class (1–4) + additional predictors; stored as composite Int for display
+    var mallampatiScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

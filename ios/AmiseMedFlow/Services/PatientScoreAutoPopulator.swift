@@ -1704,6 +1704,39 @@ enum PatientScoreAutoPopulator {
         return (i, f)
     }
 
+    // MARK: - Mallampati Airway Classification
+
+    static func mallampati(patient: Patient) -> (MallampatiInput, ScoreAutoFill) {
+        var i = MallampatiInput()
+        var f = ScoreAutoFill()
+        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                       patient.examGeneral, patient.pmhNotes, patient.notes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Obesity predictor from clinical text or BMI
+        if allText.contains("obese") || allText.contains("obesity") ||
+           allText.contains("bmi ≥30") || allText.contains("bmi >30") ||
+           allText.contains("bmi>30") || allText.contains("morbid") ||
+           allText.contains("neck circumference") {
+            i.obesity = true
+            f.addAutoFilled(key: "obesity", label: "Obesity / large neck detected in clinical text", source: "Clinical text")
+        }
+
+        // Retrognathia from clinical text
+        if allText.contains("retrognath") || allText.contains("micrognath") ||
+           allText.contains("receding jaw") || allText.contains("small mandible") {
+            i.retrognathia = true
+            f.addAutoFilled(key: "retrognathia", label: "Retrognathia / micrognathia noted in clinical text", source: "Clinical text")
+        }
+
+        // Mallampati class requires direct examination — mark pending
+        f.addPending(key: "mallampatiClass", label: "Mallampati class (I–IV) — requires direct oropharyngeal examination", source: "Physical examination")
+        f.addPending(key: "mouthOpening", label: "Mouth opening — requires physical measurement", source: "Physical examination")
+        f.addPending(key: "neckMobility", label: "Neck extension — requires physical assessment", source: "Physical examination")
+        f.addPending(key: "thyromental", label: "Thyromental distance — requires physical measurement", source: "Physical examination")
+        return (i, f)
+    }
+
     // MARK: - HEART Score
 
     static func heart(patient: Patient) -> (HEARTInput, ScoreAutoFill) {

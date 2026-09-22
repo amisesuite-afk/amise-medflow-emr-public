@@ -58,6 +58,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case nrs2002          = "NRS-2002 (Nutritional Risk)"
     case forrest          = "Forrest Classification"
     case heart            = "HEART Score (Chest Pain)"
+    case mallampati       = "Mallampati Airway Class"
 
     var category: ScoreCategory {
         switch self {
@@ -69,7 +70,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .vascular
         case .sirs, .qsofa, .psiPort, .sofa, .curb65, .apacheII:
             return .sepsis
-        case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4, .ppossum, .nrs2002:
+        case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4, .ppossum, .nrs2002, .mallampati:
             return .preop
         case .abcd2, .lrinec, .gcs:
             return .neuro
@@ -116,6 +117,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .nrs2002:        return "fork.knife"
         case .forrest:        return "eye.circle"
         case .heart:          return "heart.text.clipboard"
+        case .mallampati:     return "mouth"
         }
     }
 }
@@ -208,6 +210,8 @@ struct ClinicalScoresView: View {
     @State private var forrestI = ForrestInput()
     // HEART Score
     @State private var heartI = HEARTInput()
+    // Mallampati Airway
+    @State private var mallampatiI = MallampatiInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -591,6 +595,9 @@ struct ClinicalScoresView: View {
         case .heart:
             let (input, fill) = PatientScoreAutoPopulator.heart(patient: patient)
             heartI = input; autoFill = fill
+        case .mallampati:
+            let (input, fill) = PatientScoreAutoPopulator.mallampati(patient: patient)
+            mallampatiI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -686,6 +693,7 @@ struct ClinicalScoresView: View {
         case .nrs2002:      ClinicalScoringEngine.nrs2002(nrsI)
         case .forrest:      ClinicalScoringEngine.forrest(forrestI)
         case .heart:        ClinicalScoringEngine.heart(heartI)
+        case .mallampati:   ClinicalScoringEngine.mallampati(mallampatiI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -721,6 +729,7 @@ struct ClinicalScoresView: View {
         case .nrs2002:      patient.nrs2002Score = intScore
         case .forrest:      patient.forrestGrade = intScore
         case .heart:        patient.heartScore = intScore
+        case .mallampati:   patient.mallampatiScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -794,6 +803,7 @@ struct ClinicalScoresView: View {
         case .nrs2002:      nrs2002Form
         case .forrest:      forrestForm
         case .heart:        heartForm
+        case .mallampati:   mallampatiForm
         }
     }
 
@@ -1845,6 +1855,16 @@ struct ClinicalScoresView: View {
         case .heart:
             // HEART domain scores are numeric pickers — no boolean toggle confirm
             break
+        case .mallampati:
+            switch field.id {
+            case "mouthOpening":   mallampatiI.mouthOpening   = true
+            case "neckMobility":   mallampatiI.neckMobility   = true
+            case "thyromental":    mallampatiI.thyromental    = true
+            case "retrognathia":   mallampatiI.retrognathia   = true
+            case "obesity":        mallampatiI.obesity        = true
+            case "beardOrDentures": mallampatiI.beardOrDentures = true
+            default: break
+            }
         default: break
         }
 
@@ -2317,6 +2337,33 @@ struct ClinicalScoresView: View {
                 scoreToggle("Age ≥70 years", binding: $nrsI.ageOver70, points: "+1", autoKey: "ageOver70")
             }
             .onChange(of: nrsI) { _, _ in recalculate() }
+        }
+    }
+
+    // MARK: - Mallampati Airway Classification
+
+    private var mallampatiForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Modified Mallampati Airway Classification (Mallampati et al, Can Anaesth Soc J 1985; Samsoon & Young, Anaesthesia 1987). Class I–IV based on oropharyngeal visibility. Additional predictors further increase difficult airway risk.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
+            Group {
+                sectionHeader("Mallampati Class (mouth open, tongue protruded, no phonation)")
+                apacheSegment("Mallampati Class", selection: $mallampatiI.mallampatiClass,
+                    options: [
+                        (1, "Class I — Soft palate, uvula, fauces, tonsillar pillars fully visible"),
+                        (2, "Class II — Soft palate, uvula, fauces visible (pillars obscured by tongue)"),
+                        (3, "Class III — Soft palate and base of uvula visible only"),
+                        (4, "Class IV — Only hard palate visible (soft palate not seen)")
+                    ])
+                sectionHeader("Additional Airway Predictors")
+                scoreToggle("Reduced mouth opening (<4 cm / <3 finger-breadths)", binding: $mallampatiI.mouthOpening, points: "+risk", autoKey: "mouthOpening")
+                scoreToggle("Restricted neck extension (<80°)", binding: $mallampatiI.neckMobility, points: "+risk", autoKey: "neckMobility")
+                scoreToggle("Short thyromental distance (<6 cm / <3 finger-breadths)", binding: $mallampatiI.thyromental, points: "+risk", autoKey: "thyromental")
+                scoreToggle("Retrognathia / micrognathia", binding: $mallampatiI.retrognathia, points: "+risk", autoKey: "retrognathia")
+                scoreToggle("Obesity (BMI ≥30) or neck circumference ≥40 cm", binding: $mallampatiI.obesity, points: "+risk", autoKey: "obesity")
+                scoreToggle("Beard or poorly-fitting dentures", binding: $mallampatiI.beardOrDentures, points: "+risk", autoKey: "beardOrDentures")
+            }
+            .onChange(of: mallampatiI) { _, _ in recalculate() }
         }
     }
 
