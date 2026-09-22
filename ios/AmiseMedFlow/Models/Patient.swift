@@ -95,6 +95,8 @@ final class Patient {
     var capriniScore: Int?
     // BISAP Score (0–5) for acute pancreatitis severity; ≥3 = severe
     var bisapScore: Int?
+    // AIMS65 Score (0–5) for upper GI bleed in-hospital mortality
+    var aims65Score: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

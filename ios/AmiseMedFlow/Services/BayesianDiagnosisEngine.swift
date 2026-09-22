@@ -103,6 +103,7 @@ enum BayesianDiagnosisEngine {
         psiScore: Int? = nil,         // PSI/PORT class (1–5) for pneumonia severity
         capriniScore: Int? = nil,     // Caprini VTE risk total score
         bisapScore: Int? = nil,       // BISAP (0–5) for acute pancreatitis severity; ≥3 = severe
+        aims65Score: Int? = nil,      // AIMS65 (0–5) for upper GI bleed in-hospital mortality
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2518,6 +2519,26 @@ enum BayesianDiagnosisEngine {
                     scored[i].evidence.insert(label, at: 0)
                     scored[i].evidenceSources["score", default: []].insert(label, at: 0)
                 }
+            }
+        }
+
+        // AIMS65 Score → upper GI haemorrhage candidates
+        // Predicts in-hospital mortality for UGIB; ≥3 = high risk (12.7%+).
+        if let aims = aims65Score, aims > 0 {
+            let ugiTargets = ["bleeding peptic", "peptic ulcer", "oesophageal varices",
+                              "gastric", "gastro-oesophageal", "mallory", "haemorrhage", "hemorrhage"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard ugiTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch aims {
+                case 4...: (16, "AIMS65 \(aims) — critical UGIB, mortality \(aims >= 5 ? "~24.5%" : "~18.7%")")
+                case 3:    (12, "AIMS65 3 — high-risk UGIB, in-hospital mortality ~12.7%")
+                case 2:    (8,  "AIMS65 2 — moderate UGIB risk, mortality ~4.3%")
+                default:   (4,  "AIMS65 1 — low UGIB risk, mortality ~1.2%")
+                }
+                scored[i].logPosterior += adj
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
         }
 

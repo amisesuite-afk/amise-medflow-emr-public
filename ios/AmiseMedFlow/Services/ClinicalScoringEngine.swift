@@ -1836,6 +1836,79 @@ enum ClinicalScoringEngine {
         }
     }
 
+    // MARK: AIMS65 (Upper GI Bleed In-Hospital Mortality)
+
+    struct AIMS65Input: Equatable {
+        var albuminUnder3: Bool = false      // serum albumin <3.0 g/dL (+1)
+        var inrOver1point5: Bool = false     // INR >1.5 (+1)
+        var alteredMentalStatus: Bool = false // altered mental status (+1)
+        var systolicBPUnder90: Bool = false  // systolic BP ≤90 mmHg (+1)
+        var ageOver65: Bool = false          // age ≥65 years (+1)
+    }
+
+    static func aims65(_ i: AIMS65Input) -> ClinicalScore {
+        let flags = [i.albuminUnder3, i.inrOver1point5, i.alteredMentalStatus,
+                     i.systolicBPUnder90, i.ageOver65]
+        let score = Double(flags.filter { $0 }.count)
+        let items: [ScoredItem] = [
+            .init(label: "A — Albumin <3.0 g/dL",                           points: 1, present: i.albuminUnder3),
+            .init(label: "I — INR >1.5",                                     points: 1, present: i.inrOver1point5),
+            .init(label: "M — Altered mental status (disorientation / hepatic encephalopathy)", points: 1, present: i.alteredMentalStatus),
+            .init(label: "S — Systolic BP ≤90 mmHg",                        points: 1, present: i.systolicBPUnder90),
+            .init(label: "5 — Age ≥65 years",                               points: 1, present: i.ageOver65),
+        ]
+        let (risk, interp, recs, redFlags): (ScoreRisk, String, [String], [String]) = switch Int(score) {
+        case 0:
+            (.low,      "AIMS65 0 — In-hospital mortality 0.3%",
+             ["Standard upper GI bleed pathway",
+              "Early endoscopy within 24 h (within 12 h if haemodynamically unstable)",
+              "IV PPI bolus + infusion after endoscopy if peptic ulcer confirmed",
+              "Consider discharge within 24 h post-endoscopy if haemostasis confirmed"],
+             [])
+        case 1:
+            (.low,      "AIMS65 1 — In-hospital mortality 1.2%",
+             ["IV access × 2; FBC, U&E, coagulation, crossmatch",
+              "IV fluid resuscitation; transfuse to Hb ≥70 g/L (>80 if ACS)",
+              "Urgent upper GI endoscopy within 24 h",
+              "IV PPI if peptic ulcer aetiology likely"],
+             [])
+        case 2:
+            (.moderate, "AIMS65 2 — In-hospital mortality 4.3%",
+             ["HDU-level nursing; continuous monitoring",
+              "Early endoscopy within 12 h",
+              "IV PPI (omeprazole 80 mg bolus then 8 mg/h for 72 h) after endoscopy",
+              "Gastroenterology and surgical review",
+              "Correct coagulopathy: FFP, platelets, vitamin K as indicated"],
+             ["AIMS65 ≥2: consider HDU care"])
+        case 3:
+            (.high,     "AIMS65 3 — In-hospital mortality 12.7%",
+             ["ICU-level care / resuscitation bay",
+              "Urgent endoscopy within 12 h — resuscitate before scoping if haemodynamically compromised",
+              "Activate massive transfusion protocol if needed",
+              "Interventional radiology or surgery on standby",
+              "Haematology review for coagulopathy reversal",
+              "Consider vasopressors if refractory hypotension"],
+             ["AIMS65 ≥3: high in-hospital mortality risk — escalate immediately"])
+        default:
+            (.critical, "AIMS65 \(Int(score)) — In-hospital mortality \(score >= 5 ? "~24.5%" : "~18.7%")",
+             ["Emergency resuscitation; immediate ICU/resuscitation bay",
+              "Massive transfusion protocol; correct all coagulopathy urgently",
+              "Emergency endoscopy only when haemodynamically stabilised",
+              "Surgery or interventional radiology for refractory haemorrhage",
+              "Critical care + surgical + haematology joint review",
+              "Discuss prognosis and goals of care early"],
+             ["AIMS65 ≥4: critical upper GI haemorrhage — mortality approaching 25%"])
+        }
+        return ClinicalScore(
+            systemName: "AIMS65 Score",
+            abbreviation: "AIMS65 \(Int(score))/5",
+            score: score, maxScore: 5,
+            risk: risk, interpretation: interp,
+            recommendations: recs, items: items, redFlags: redFlags,
+            evidenceNote: "Saltzman et al, Gastroenterology 2011. Validated in 29,222 patients. Predicts in-hospital mortality for upper GI haemorrhage. AUROC 0.77 vs Blatchford 0.68 for in-hospital mortality."
+        )
+    }
+
     // MARK: BISAP (Bedside Index for Severity in Acute Pancreatitis)
 
     struct BISAPInput: Equatable {

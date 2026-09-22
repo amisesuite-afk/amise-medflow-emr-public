@@ -46,12 +46,13 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case news2            = "NEWS2 (National Early Warning)"
     case psiPort          = "PSI/PORT (Pneumonia Severity)"
     case bisap            = "BISAP (Pancreatitis Severity)"
+    case aims65           = "AIMS65 (UGI Bleed Mortality)"
 
     var category: ScoreCategory {
         switch self {
         case .alvarado, .tokyoChole, .tokyoCholang, .ranson, .glasgow, .bisap:
             return .acute
-        case .rockall, .blatchford:
+        case .rockall, .blatchford, .aims65:
             return .gi
         case .wellsDVT, .wellsPE, .caprini:
             return .vascular
@@ -92,6 +93,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .stopBang:       return "moon.zzz"
         case .psiPort:        return "lungs"
         case .bisap:          return "flame.fill"
+        case .aims65:         return "drop.triangle.fill"
         }
     }
 }
@@ -160,6 +162,8 @@ struct ClinicalScoresView: View {
     @State private var psiI = PSIPortInput()
     // BISAP
     @State private var bisapI = ClinicalScoringEngine.BISAPInput()
+    // AIMS65
+    @State private var aims65I = ClinicalScoringEngine.AIMS65Input()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -474,6 +478,9 @@ struct ClinicalScoresView: View {
         case .bisap:
             let (input, fill) = PatientScoreAutoPopulator.bisap(patient: patient)
             bisapI = input; autoFill = fill
+        case .aims65:
+            let (input, fill) = PatientScoreAutoPopulator.aims65(patient: patient)
+            aims65I = input; autoFill = fill
         case .cha2ds2vasc:
             let (input, fill) = PatientScoreAutoPopulator.cha2ds2vasc(patient: patient)
             cha2I = input; autoFill = fill
@@ -590,6 +597,7 @@ struct ClinicalScoresView: View {
         case .news2:        ClinicalScoringEngine.news2(news2I)
         case .psiPort:      ClinicalScoringEngine.psiPort(psiI)
         case .bisap:        ClinicalScoringEngine.bisap(bisapI)
+        case .aims65:       ClinicalScoringEngine.aims65(aims65I)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -612,7 +620,8 @@ struct ClinicalScoresView: View {
         case .psiPort:
             // Store the PSI class (1–5) extracted from the abbreviation string
             patient.psiScore = Int(r.abbreviation.components(separatedBy: "Class ").last ?? "") ?? 0
-        case .bisap:        patient.bisapScore = intScore
+        case .bisap:        patient.bisapScore  = intScore
+        case .aims65:       patient.aims65Score = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -674,6 +683,7 @@ struct ClinicalScoresView: View {
         case .news2:        news2Form
         case .psiPort:      psiPortForm
         case .bisap:        bisapForm
+        case .aims65:       aims65Form
         }
     }
 
@@ -1628,6 +1638,14 @@ struct ClinicalScoresView: View {
             case "pao2Below60": glas.pao2Below60 = true
             default: break
             }
+        case .aims65:
+            switch field.id {
+            case "albuminUnder3":       aims65I.albuminUnder3       = true
+            case "inrOver1point5":      aims65I.inrOver1point5      = true
+            case "alteredMentalStatus": aims65I.alteredMentalStatus = true
+            case "systolicBPUnder90":   aims65I.systolicBPUnder90   = true
+            default: break
+            }
         case .bisap:
             switch field.id {
             case "bunOver9mmolL":       bisapI.bunOver9mmolL       = true
@@ -1761,6 +1779,19 @@ struct ClinicalScoresView: View {
             scoreToggle("Pleural effusion on imaging",             binding: $psiI.pleuralEffusion,          points: "+10", autoKey: "pleuralEffusion")
         }
         .onChange(of: psiI) { _, _ in recalculate() }
+    }
+
+    // MARK: - AIMS65
+
+    private var aims65Form: some View {
+        Group {
+            scoreToggle("A — Albumin <3.0 g/dL",                     binding: $aims65I.albuminUnder3,       points: "+1", autoKey: "albuminUnder3")
+            scoreToggle("I — INR >1.5",                               binding: $aims65I.inrOver1point5,      points: "+1", autoKey: "inrOver1point5")
+            scoreToggle("M — Altered mental status",                  binding: $aims65I.alteredMentalStatus, points: "+1", autoKey: "alteredMentalStatus")
+            scoreToggle("S — Systolic BP ≤90 mmHg",                  binding: $aims65I.systolicBPUnder90,   points: "+1", autoKey: "systolicBPUnder90")
+            scoreToggle("5 — Age ≥65 years",                         binding: $aims65I.ageOver65,           points: "+1", autoKey: "ageOver65")
+        }
+        .onChange(of: aims65I) { _, _ in recalculate() }
     }
 
     // MARK: - BISAP

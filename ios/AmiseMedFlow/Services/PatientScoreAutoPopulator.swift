@@ -996,6 +996,29 @@ enum PatientScoreAutoPopulator {
         return (i, f)
     }
 
+    // MARK: AIMS65 (from patient demographics, vitals, and labs)
+
+    static func aims65(patient: Patient) -> (ClinicalScoringEngine.AIMS65Input, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.AIMS65Input()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        // Age ≥65
+        let ageYears = Calendar.current.dateComponents([.year], from: patient.dateOfBirth, to: .now).year ?? 0
+        if ageYears >= 65 { i.ageOver65 = true; f.autoFieldKeys.insert("ageOver65") }
+
+        // Systolic BP ≤90 from latest vitals
+        if let v = patient.latestVitals, let sbp = v.bpSystolic, sbp <= 90 {
+            i.systolicBPUnder90 = true; f.autoFieldKeys.insert("systolicBPUnder90")
+        }
+
+        // Lab and clinical values need manual entry
+        f.addPending(key: "albuminUnder3",       label: "Albumin <3.0 g/dL",                         source: "LFT / albumin result")
+        f.addPending(key: "inrOver1point5",       label: "INR >1.5",                                  source: "Coagulation screen")
+        f.addPending(key: "alteredMentalStatus",  label: "Altered mental status (disorientation, hepatic encephalopathy)", source: "Clinical assessment")
+
+        return (i, f)
+    }
+
     // MARK: BISAP (from patient demographics and vitals)
 
     static func bisap(patient: Patient) -> (ClinicalScoringEngine.BISAPInput, ScoreAutoFill) {
