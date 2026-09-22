@@ -78,6 +78,10 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case ecog             = "ECOG Performance Status"
     case rts              = "Revised Trauma Score"
     case kdigo            = "KDIGO AKI Staging"
+    case baux             = "Baux Score"
+    case iss              = "Injury Severity Score"
+    case apacheII         = "APACHE II"
+    case sofa             = "SOFA Score"
 
     var category: ScoreCategory {
         switch self {
@@ -108,6 +112,14 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .rts:
             return .acute
         case .kdigo:
+            return .sepsis
+        case .baux:
+            return .acute
+        case .iss:
+            return .acute
+        case .apacheII:
+            return .sepsis
+        case .sofa:
             return .sepsis
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
@@ -172,6 +184,10 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .ecog:           return "figure.stand"
         case .rts:            return "cross.case.circle.fill"
         case .kdigo:          return "drop.circle.fill"
+        case .baux:           return "flame.circle.fill"
+        case .iss:            return "bandage.fill"
+        case .apacheII:       return "waveform.path.ecg"
+        case .sofa:           return "lungs.fill"
         }
     }
 }
@@ -304,6 +320,14 @@ struct ClinicalScoresView: View {
     @State private var rtsI = ClinicalScoringEngine.RTSInput()
     // KDIGO AKI
     @State private var kdigoI = ClinicalScoringEngine.KDIGOInput()
+    // Baux Score
+    @State private var bauxI = ClinicalScoringEngine.BauxInput()
+    // ISS
+    @State private var issI = ClinicalScoringEngine.ISSInput()
+    // APACHE II
+    @State private var apacheIII = ClinicalScoringEngine.APACHEIIInput()
+    // SOFA
+    @State private var sofaI = ClinicalScoringEngine.SOFAInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -744,6 +768,18 @@ struct ClinicalScoresView: View {
         case .kdigo:
             let (input, fill) = PatientScoreAutoPopulator.kdigo(patient: patient)
             kdigoI = input; autoFill = fill
+        case .baux:
+            let (input, fill) = PatientScoreAutoPopulator.baux(patient: patient)
+            bauxI = input; autoFill = fill
+        case .iss:
+            let (input, fill) = PatientScoreAutoPopulator.iss(patient: patient)
+            issI = input; autoFill = fill
+        case .apacheII:
+            let (input, fill) = PatientScoreAutoPopulator.apacheII(patient: patient)
+            apacheIII = input; autoFill = fill
+        case .sofa:
+            let (input, fill) = PatientScoreAutoPopulator.sofa(patient: patient)
+            sofaI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -859,6 +895,10 @@ struct ClinicalScoresView: View {
         case .ecog:          ClinicalScoringEngine.ecog(ecogI)
         case .rts:           ClinicalScoringEngine.rts(rtsI)
         case .kdigo:         ClinicalScoringEngine.kdigo(kdigoI)
+        case .baux:          ClinicalScoringEngine.baux(bauxI)
+        case .iss:           ClinicalScoringEngine.iss(issI)
+        case .apacheII:      ClinicalScoringEngine.apacheII(apacheIII)
+        case .sofa:          ClinicalScoringEngine.sofa(sofaI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -917,6 +957,10 @@ struct ClinicalScoresView: View {
         case .ecog:          patient.ecogScore = intScore
         case .rts:           patient.rtsScore = Int((r.score * 100).rounded())
         case .kdigo:         patient.kdigoStage = intScore
+        case .baux:          patient.bauxScore = intScore
+        case .iss:           patient.issScore = intScore
+        case .apacheII:      patient.apacheIIScore = intScore
+        case .sofa:          patient.sofaScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -1010,6 +1054,10 @@ struct ClinicalScoresView: View {
         case .ecog:          ecogForm
         case .rts:           rtsForm
         case .kdigo:         kdigoForm
+        case .baux:          bauxForm
+        case .iss:           issForm
+        case .apacheII:      apacheIIForm
+        case .sofa:          sofaForm
         }
     }
 
@@ -2157,7 +2205,7 @@ struct ClinicalScoresView: View {
             break
         case .childPugh, .meld, .asa:
             break
-        case .ecog, .rts, .kdigo:
+        case .ecog, .rts, .kdigo, .baux, .iss, .apacheII, .sofa:
             break
         default: break
         }
@@ -3543,5 +3591,114 @@ struct ClinicalScoresView: View {
             scoreToggle("Renal replacement therapy required", binding: $kdigoI.requiresRRT, points: "Stage 3")
         }
         .onChange(of: kdigoI) { _, _ in recalculate() }
+    }
+
+    // MARK: - Baux Score (#60)
+
+    private var bauxForm: some View {
+        Group {
+            mewsSlider("Age (years)", value: Binding(get: { Double(bauxI.age) }, set: { bauxI.age = Int($0) }),
+                       range: 0...120, step: 1, unit: "yrs")
+            mewsSlider("Total Body Surface Area Burned", value: Binding(get: { Double(bauxI.tbsa) }, set: { bauxI.tbsa = Int($0) }),
+                       range: 0...100, step: 1, unit: "%")
+            scoreToggle("Inhalation injury confirmed", binding: $bauxI.hasInhalationInjury, points: "+17")
+        }
+        .onChange(of: bauxI) { _, _ in recalculate() }
+    }
+
+    // MARK: - ISS (#61)
+
+    private var issForm: some View {
+        Group {
+            apacheSegment("Head/Neck (incl. C-spine) — AIS", selection: $issI.head,
+                options: [(0,"0 — No injury"),(1,"1 — Minor"),(2,"2 — Moderate"),(3,"3 — Serious"),(4,"4 — Severe"),(5,"5 — Critical"),(6,"6 — Unsurvivable")])
+            apacheSegment("Face — AIS", selection: $issI.face,
+                options: [(0,"0 — No injury"),(1,"1 — Minor"),(2,"2 — Moderate"),(3,"3 — Serious"),(4,"4 — Severe"),(5,"5 — Critical"),(6,"6 — Unsurvivable")])
+            apacheSegment("Chest (incl. T-spine) — AIS", selection: $issI.chest,
+                options: [(0,"0 — No injury"),(1,"1 — Minor"),(2,"2 — Moderate"),(3,"3 — Serious"),(4,"4 — Severe"),(5,"5 — Critical"),(6,"6 — Unsurvivable")])
+            apacheSegment("Abdomen/Pelvis (incl. L-spine) — AIS", selection: $issI.abdomen,
+                options: [(0,"0 — No injury"),(1,"1 — Minor"),(2,"2 — Moderate"),(3,"3 — Serious"),(4,"4 — Severe"),(5,"5 — Critical"),(6,"6 — Unsurvivable")])
+            apacheSegment("Extremity/Pelvis — AIS", selection: $issI.extremity,
+                options: [(0,"0 — No injury"),(1,"1 — Minor"),(2,"2 — Moderate"),(3,"3 — Serious"),(4,"4 — Severe"),(5,"5 — Critical"),(6,"6 — Unsurvivable")])
+            apacheSegment("External (burns, lacerations) — AIS", selection: $issI.external,
+                options: [(0,"0 — No injury"),(1,"1 — Minor"),(2,"2 — Moderate"),(3,"3 — Serious"),(4,"4 — Severe"),(5,"5 — Critical"),(6,"6 — Unsurvivable")])
+        }
+        .onChange(of: issI) { _, _ in recalculate() }
+    }
+
+    // MARK: - APACHE II (#62)
+
+    private var apacheIIForm: some View {
+        Group {
+            mewsSlider("Age (years)", value: Binding(get: { Double(apacheIII.age) }, set: { apacheIII.age = Int($0) }),
+                       range: 0...100, step: 1, unit: "yrs")
+            mewsSlider("Temperature (°C)", value: $apacheIII.temperature,
+                       range: 28...44, step: 0.1, unit: "°C")
+            mewsSlider("Mean Arterial Pressure (mmHg)", value: Binding(get: { Double(apacheIII.map) }, set: { apacheIII.map = Int($0) }),
+                       range: 0...200, step: 1, unit: "mmHg")
+            mewsSlider("Heart Rate (bpm)", value: Binding(get: { Double(apacheIII.heartRate) }, set: { apacheIII.heartRate = Int($0) }),
+                       range: 0...200, step: 1, unit: "bpm")
+            mewsSlider("Respiratory Rate (/min)", value: Binding(get: { Double(apacheIII.respiratoryRate) }, set: { apacheIII.respiratoryRate = Int($0) }),
+                       range: 0...60, step: 1, unit: "/min")
+            mewsSlider("PaO2 (mmHg)", value: Binding(get: { Double(apacheIII.pao2) }, set: { apacheIII.pao2 = Int($0) }),
+                       range: 0...600, step: 1, unit: "mmHg")
+            mewsSlider("FiO2 (0.21–1.0)", value: $apacheIII.fio2,
+                       range: 0.21...1.0, step: 0.01, unit: "")
+            mewsSlider("Arterial pH", value: $apacheIII.ph,
+                       range: 6.8...7.8, step: 0.01, unit: "")
+            mewsSlider("Sodium (mmol/L)", value: Binding(get: { Double(apacheIII.sodium) }, set: { apacheIII.sodium = Int($0) }),
+                       range: 100...180, step: 1, unit: "mmol/L")
+            mewsSlider("Potassium (mmol/L)", value: $apacheIII.potassium,
+                       range: 1...9, step: 0.1, unit: "mmol/L")
+            mewsSlider("Creatinine (µmol/L)", value: $apacheIII.creatinine,
+                       range: 0...1000, step: 1, unit: "µmol/L")
+            mewsSlider("Haematocrit (%)", value: $apacheIII.haematocrit,
+                       range: 10...70, step: 0.5, unit: "%")
+            mewsSlider("WBC (×10⁹/L)", value: $apacheIII.wbc,
+                       range: 0...60, step: 0.1, unit: "×10⁹/L")
+            mewsSlider("GCS", value: Binding(get: { Double(apacheIII.gcs) }, set: { apacheIII.gcs = Int($0) }),
+                       range: 3...15, step: 1, unit: "")
+            scoreToggle("Acute renal failure (doubles creatinine score)", binding: $apacheIII.isAcuteRenalFailure, points: "×2 Cr")
+            apacheSegment("Chronic organ insufficiency / immunocompromise", selection: $apacheIII.chronicOrganInsufficiency,
+                options: [
+                    (0, "0 — None"),
+                    (2, "+2 — Elective post-op"),
+                    (5, "+5 — Emergency or non-operative")
+                ])
+        }
+        .onChange(of: apacheIII) { _, _ in recalculate() }
+    }
+
+    // MARK: - SOFA (#63)
+
+    private var sofaForm: some View {
+        Group {
+            mewsSlider("PaO2/FiO2 ratio (mmHg)", value: Binding(get: { Double(sofaI.pao2fio2) }, set: { sofaI.pao2fio2 = Int($0) }),
+                       range: 0...600, step: 1, unit: "mmHg")
+            mewsSlider("Platelets (×10⁹/L)", value: Binding(get: { Double(sofaI.plateletsX10_9) }, set: { sofaI.plateletsX10_9 = Int($0) }),
+                       range: 0...500, step: 1, unit: "×10⁹/L")
+            mewsSlider("Bilirubin (µmol/L)", value: Binding(get: { Double(sofaI.bilirubinUmolL) }, set: { sofaI.bilirubinUmolL = Int($0) }),
+                       range: 0...500, step: 1, unit: "µmol/L")
+            mewsSlider("GCS", value: Binding(get: { Double(sofaI.gcs) }, set: { sofaI.gcs = Int($0) }),
+                       range: 3...15, step: 1, unit: "")
+            mewsSlider("Mean Arterial Pressure (mmHg)", value: Binding(get: { Double(sofaI.map) }, set: { sofaI.map = Int($0) }),
+                       range: 0...200, step: 1, unit: "mmHg")
+            apacheSegment("Vasopressors", selection: $sofaI.vasopressors,
+                options: [
+                    (0, "0 — None (MAP ≥70 mmHg)"),
+                    (1, "1 — DA ≤5 or dobutamine any dose"),
+                    (2, "2 — DA >5 or NE/E ≤0.1 µg/kg/min"),
+                    (3, "3 — DA >15 or NE/E >0.1 µg/kg/min")
+                ])
+            mewsSlider("Creatinine (µmol/L)", value: Binding(get: { Double(sofaI.creatinineUmolL) }, set: { sofaI.creatinineUmolL = Int($0) }),
+                       range: 0...1000, step: 1, unit: "µmol/L")
+            apacheSegment("Urine Output", selection: $sofaI.urineOutput,
+                options: [
+                    (0, "0 — <200 mL/day (or anuria)"),
+                    (1, "1 — 200–500 mL/day"),
+                    (2, "2 — >500 mL/day (normal)")
+                ])
+        }
+        .onChange(of: sofaI) { _, _ in recalculate() }
     }
 }

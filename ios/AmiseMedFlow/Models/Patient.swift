@@ -165,6 +165,14 @@ final class Patient {
     var rtsScore: Int?
     // KDIGO AKI Stage 0–3
     var kdigoStage: Int?
+    // Baux Score (age + TBSA [+ 17 if inhalation injury])
+    var bauxScore: Int?
+    // ISS — Injury Severity Score 0–75
+    var issScore: Int?
+    // APACHE II Score 0–71
+    var apacheIIScore: Int?
+    // SOFA Score 0–24
+    var sofaScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

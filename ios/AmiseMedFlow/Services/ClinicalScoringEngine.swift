@@ -4602,4 +4602,463 @@ enum ClinicalScoringEngine {
             evidenceNote: "KDIGO AKI Work Group. Kidney Int Suppl 2012;2:1–138. Stage based on highest criterion met (creatinine rise or urine output). RRT requirement automatically stage 3."
         )
     }
+
+    // MARK: - Baux Score (Burn Mortality)
+    struct BauxInput: Equatable {
+        var age: Int = 40               // years
+        var tbsa: Int = 20              // % total body surface area burned
+        var hasInhalationInjury: Bool = false
+    }
+
+    static func baux(_ i: BauxInput) -> ClinicalScore {
+        // Baux = age + TBSA; revised Baux adds 17 for inhalation injury
+        let rawBaux = i.age + i.tbsa
+        let score = Double(i.hasInhalationInjury ? rawBaux + 17 : rawBaux)
+        let (risk, interp): (ScoreRisk, String)
+        switch score {
+        case ..<40:  (risk, interp) = (.low,      "Baux \(Int(score)): Expected mortality <5% in a specialist burns unit.")
+        case 40..<80:(risk, interp) = (.moderate, "Baux \(Int(score)): Expected mortality 5–40%. Burns unit admission mandatory.")
+        case 80..<120:(risk,interp) = (.high,     "Baux \(Int(score)): Expected mortality 40–80%. ICU-level burns care required.")
+        default:     (risk, interp) = (.critical, "Baux \(Int(score)): Expected mortality >80%. Discuss goals of care with family.")
+        }
+        let flags = score >= 120 ? ["Baux ≥120 — mortality >80%; early goals-of-care discussion"] :
+                    score >= 100 ? ["Baux ≥100 — mortality >60%; palliative pathway consideration"] : []
+        return ClinicalScore(
+            systemName: "Baux Score (Revised)",
+            abbreviation: "Baux \(Int(score))",
+            score: score,
+            maxScore: 200,
+            risk: risk,
+            interpretation: interp,
+            items: [
+                ScoredItem(label: "Age (\(i.age) years)", points: Double(i.age), present: true),
+                ScoredItem(label: "% TBSA burned (\(i.tbsa)%)", points: Double(i.tbsa), present: true),
+                ScoredItem(label: "Inhalation injury (+17)", points: 17, present: i.hasInhalationInjury)
+            ],
+            recommendations: score >= 80 ? [
+                "Immediate transfer to specialist burns unit / ICU",
+                "Early intubation if inhalation injury — don't delay for oedema progression",
+                "Formal fluid resuscitation: Parkland formula (4 mL × kg × %TBSA) — first 50% in 8 h",
+                "Escharotomy assessment within 2 hours for circumferential full-thickness burns",
+                "Burns surgery: early excision and grafting within 48–72 h",
+                "Multidisciplinary team: burns surgeon, ICU, nutrition, physiotherapy, psychology"
+            ] : score >= 40 ? [
+                "Burns unit admission",
+                "Fluid resuscitation per Parkland formula",
+                "Wound care: silver sulfadiazine / biosynthetic dressing",
+                "Early nutritional support — burns have extreme hypermetabolic demand",
+                "Analgesia and sedation protocol"
+            ] : [
+                "Wound assessment and dressing",
+                "Tetanus prophylaxis",
+                "Analgesia",
+                "Outpatient burns review if <15% TBSA, no face/hand/genitalia involvement"
+            ],
+            redFlags: flags,
+            evidenceNote: "Baux AC. Rev Chir 1961;10:3–10. Revised Baux adds 17 for inhalation injury (Ryan CM et al. J Burn Care Rehabil 1998). Correlates with la Lund–Browder chart TBSA estimate."
+        )
+    }
+
+    // MARK: - Injury Severity Score (ISS)
+    struct ISSInput: Equatable {
+        // AIS severity 0–5 for six body regions. 6 = unsurvivable (auto-scores 75).
+        var head: Int = 0          // head/neck (including cervical spine)
+        var face: Int = 0          // face
+        var chest: Int = 0         // chest (including thoracic spine)
+        var abdomen: Int = 0       // abdomen/pelvic contents (including lumbar spine)
+        var extremity: Int = 0     // extremity/pelvis (including pelvic girdle)
+        var external: Int = 0      // external (burns, lacerations, crush)
+    }
+
+    static func iss(_ i: ISSInput) -> ClinicalScore {
+        let regions = [i.head, i.face, i.chest, i.abdomen, i.extremity, i.external]
+        let regionNames = ["Head/Neck", "Face", "Chest", "Abdomen/Pelvis", "Extremity/Pelvis", "External"]
+        // If any region AIS=6 → ISS=75 (maximum, non-survivable)
+        if regions.contains(6) {
+            return ClinicalScore(
+                systemName: "Injury Severity Score",
+                abbreviation: "ISS 75",
+                score: 75,
+                maxScore: 75,
+                risk: .critical,
+                interpretation: "ISS 75 (AIS 6 region): Injury deemed non-survivable. Goals-of-care discussion essential.",
+                items: zip(regionNames, regions).map { ScoredItem(label: "\($0.0) AIS \($0.1)", points: Double($0.1 * $0.1), present: $0.1 > 0) },
+                recommendations: ["Immediate trauma team activation", "Goals-of-care discussion with next of kin", "Palliative care consult"],
+                redFlags: ["AIS 6 — non-survivable injury"],
+                evidenceNote: "Baker SP et al. J Trauma 1974;14:187–196."
+            )
+        }
+        // Top 3 AIS squared summed
+        let top3 = regions.sorted(by: >).prefix(3)
+        let score = Double(top3.reduce(0) { $0 + $1 * $1 })
+        let (risk, interp): (ScoreRisk, String)
+        switch score {
+        case ..<9:   (risk, interp) = (.low,      "ISS \(Int(score)): Minor injury. Standard trauma management.")
+        case 9..<16: (risk, interp) = (.moderate, "ISS \(Int(score)): Moderate injury. Trauma team review recommended.")
+        case 16..<25:(risk, interp) = (.high,     "ISS \(Int(score)): Severe injury. Trauma centre activation; ICU admission likely.")
+        default:     (risk, interp) = (.critical, "ISS \(Int(score)): Critical injury. Mortality risk significant; trauma centre mandatory.")
+        }
+        let flags = score >= 25 ? ["ISS ≥25 — major trauma; activate major trauma protocol"] : []
+        return ClinicalScore(
+            systemName: "Injury Severity Score",
+            abbreviation: "ISS \(Int(score))",
+            score: score,
+            maxScore: 75,
+            risk: risk,
+            interpretation: interp,
+            items: zip(regionNames, regions).map { ScoredItem(label: "\($0.0) AIS \($0.1)", points: Double($0.1 * $0.1), present: $0.1 > 0) },
+            recommendations: score >= 25 ? [
+                "Major trauma centre transfer if not already there",
+                "Full primary and secondary ATLS survey",
+                "CT trauma series (head, C-spine, thorax, abdomen, pelvis)",
+                "Massive haemorrhage protocol if haemodynamically unstable",
+                "Damage control surgery: haemorrhage control first, definitive repair delayed",
+                "Activate trauma team: surgery, orthopaedics, neurosurgery, anaesthesia"
+            ] : score >= 16 ? [
+                "Trauma team activation",
+                "Systematic ATLS primary survey with resuscitation",
+                "Targeted imaging per clinical findings",
+                "ICU admission planning",
+                "Orthopaedic and specialist review as indicated"
+            ] : [
+                "ATLS primary survey",
+                "Appropriate imaging and monitoring",
+                "Consider trauma team notification",
+                "Discharge with clear head-injury/fracture advice if criteria met"
+            ],
+            redFlags: flags,
+            evidenceNote: "Baker SP et al. J Trauma 1974;14:187–196. ISS = sum of squares of top 3 AIS body regions. ISS ≥16 = major trauma. AIS 6 auto-scores 75."
+        )
+    }
+
+    // MARK: - APACHE II Score (ICU Severity of Illness)
+    struct APACHEIIInput: Equatable {
+        var age: Int = 50                  // years
+        var temperature: Double = 37.0     // °C
+        var map: Int = 80                  // mean arterial pressure mmHg
+        var heartRate: Int = 80            // beats/min
+        var respiratoryRate: Int = 16      // breaths/min
+        var pao2: Int = 95                 // kPa×10 or mmHg — use mmHg; abnormal if <70 on room air (FiO2<0.5)
+        var fio2: Double = 0.21            // fraction inspired O2 (0.21 = room air)
+        var ph: Double = 7.40              // arterial pH
+        var sodium: Int = 140              // mmol/L
+        var potassium: Double = 4.0        // mmol/L
+        var creatinine: Double = 90.0      // µmol/L
+        var haematocrit: Double = 42.0     // %
+        var wbc: Double = 8.0              // ×10⁹/L
+        var gcs: Int = 15                  // Glasgow Coma Score
+        var isAcuteRenalFailure: Bool = false   // doubles creatinine score
+        var chronicOrganInsufficiency: Int = 0  // 0=none; 2=elective post-op; 5=emergency/non-op
+    }
+
+    static func apacheII(_ i: APACHEIIInput) -> ClinicalScore {
+        var pts = 0
+
+        // Temperature (°C)
+        switch i.temperature {
+        case 36.0..<38.5: pts += 0
+        case 34.0..<36.0, 38.5..<39.0: pts += 1
+        case 32.0..<34.0, 39.0..<41.0: pts += 2
+        case 30.0..<32.0, ..<30.0: pts += 3
+        case 41.0...: pts += 4
+        default: break
+        }
+
+        // MAP (mmHg)
+        switch i.map {
+        case 70..<110: pts += 0
+        case 50..<70, 110..<130: pts += 2
+        case 130..<160, ..<50: pts += 3
+        case 160...: pts += 4
+        default: break
+        }
+
+        // Heart rate
+        switch i.heartRate {
+        case 70..<110: pts += 0
+        case 55..<70, 110..<140: pts += 2
+        case 40..<55, 140..<180: pts += 3
+        case 180...: pts += 4
+        case ..<40: pts += 4
+        default: break
+        }
+
+        // Respiratory rate
+        switch i.respiratoryRate {
+        case 12..<25: pts += 0
+        case 10..<12, 25..<35: pts += 1
+        case 6..<10, 35..<50: pts += 2
+        case ..<6: pts += 4
+        case 50...: pts += 4
+        default: break
+        }
+
+        // Oxygenation: if FiO2 >= 0.5 use AaDO2; otherwise PaO2
+        if i.fio2 >= 0.5 {
+            let aado2 = Int((i.fio2 * 713) - (i.pao2 + 5))  // simplified AaDO2
+            switch aado2 {
+            case ..<200: pts += 0
+            case 200..<350: pts += 2
+            case 350..<500: pts += 3
+            case 500...: pts += 4
+            default: break
+            }
+        } else {
+            switch i.pao2 {
+            case 70...: pts += 0
+            case 61..<70: pts += 1
+            case 55..<61: pts += 3
+            case ..<55: pts += 4
+            default: break
+            }
+        }
+
+        // Arterial pH
+        switch i.ph {
+        case 7.33..<7.50: pts += 0
+        case 7.50..<7.60: pts += 1
+        case 7.25..<7.33: pts += 2
+        case 7.60..<7.70: pts += 3
+        case ..<7.15: pts += 4
+        case 7.70...: pts += 4
+        default: break
+        }
+
+        // Sodium (mmol/L)
+        switch i.sodium {
+        case 130..<150: pts += 0
+        case 150..<155: pts += 1
+        case 120..<130, 155..<160: pts += 2
+        case 111..<120, 160..<180: pts += 3
+        case ..<111, 180...: pts += 4
+        default: break
+        }
+
+        // Potassium (mmol/L)
+        switch i.potassium {
+        case 3.5..<5.5: pts += 0
+        case 3.0..<3.5, 5.5..<6.0: pts += 1
+        case 2.5..<3.0: pts += 2
+        case 6.0..<7.0: pts += 3
+        case ..<2.5, 7.0...: pts += 4
+        default: break
+        }
+
+        // Creatinine (µmol/L) — doubled if acute renal failure
+        let creScore: Int
+        switch i.creatinine {
+        case ..<53: creScore = 3
+        case 53..<123: creScore = 0
+        case 123..<177: creScore = 2
+        case 177..<309: creScore = 3
+        case 309...: creScore = 4
+        default: creScore = 0
+        }
+        pts += i.isAcuteRenalFailure ? creScore * 2 : creScore
+
+        // Haematocrit (%)
+        switch i.haematocrit {
+        case 30..<46: pts += 0
+        case 20..<30, 46..<50: pts += 1
+        case 50..<60: pts += 2
+        case ..<20, 60...: pts += 4
+        default: break
+        }
+
+        // WBC (×10⁹/L)
+        switch i.wbc {
+        case 3..<15: pts += 0
+        case 1..<3, 15..<20: pts += 2
+        case 20...: pts += 4
+        case ..<1: pts += 4
+        default: break
+        }
+
+        // GCS contribution: 15 - GCS
+        pts += (15 - max(3, min(15, i.gcs)))
+
+        // Age points
+        switch i.age {
+        case ..<45: pts += 0
+        case 45..<55: pts += 2
+        case 55..<65: pts += 3
+        case 65..<75: pts += 5
+        case 75...: pts += 6
+        default: break
+        }
+
+        // Chronic organ insufficiency
+        pts += i.chronicOrganInsufficiency
+
+        let score = Double(pts)
+        let (risk, interp): (ScoreRisk, String)
+        // Approximate hospital mortality from original APACHE II paper
+        switch score {
+        case ..<5:   (risk, interp) = (.low,      "APACHE II \(pts): Estimated ICU mortality <5%. Routine ICU monitoring.")
+        case 5..<10: (risk, interp) = (.low,      "APACHE II \(pts): Estimated mortality 5–10%.")
+        case 10..<15:(risk, interp) = (.moderate, "APACHE II \(pts): Estimated mortality 10–20%.")
+        case 15..<20:(risk, interp) = (.moderate, "APACHE II \(pts): Estimated mortality 20–30%.")
+        case 20..<25:(risk, interp) = (.high,     "APACHE II \(pts): Estimated mortality 30–45%.")
+        case 25..<30:(risk, interp) = (.high,     "APACHE II \(pts): Estimated mortality 45–60%.")
+        default:     (risk, interp) = (.critical, "APACHE II \(pts): Estimated mortality ≥60%. Reassess goals of care.")
+        }
+        let flags = score >= 25 ? ["APACHE II ≥25 — mortality ≥45%; goals-of-care discussion recommended"] : []
+        return ClinicalScore(
+            systemName: "APACHE II Score",
+            abbreviation: "APACHE II \(pts)",
+            score: score,
+            maxScore: 71,
+            risk: risk,
+            interpretation: interp,
+            items: [
+                ScoredItem(label: "GCS contribution (\(15 - max(3,min(15,i.gcs))))", points: Double(15 - max(3,min(15,i.gcs))), present: i.gcs < 15),
+                ScoredItem(label: "Age points", points: Double(i.age >= 75 ? 6 : i.age >= 65 ? 5 : i.age >= 55 ? 3 : i.age >= 45 ? 2 : 0), present: i.age >= 45),
+                ScoredItem(label: "Chronic organ failure (+\(i.chronicOrganInsufficiency))", points: Double(i.chronicOrganInsufficiency), present: i.chronicOrganInsufficiency > 0)
+            ],
+            recommendations: score >= 25 ? [
+                "ICU-level monitoring with daily organ function reassessment",
+                "Multidisciplinary team review including ICU consultant",
+                "Goals-of-care discussion with patient and family",
+                "Vasopressor support algorithm, ventilator bundle, nutrition protocol",
+                "Daily sedation holds and spontaneous breathing trials",
+                "Reassess APACHE II every 24–48 h for trend"
+            ] : score >= 15 ? [
+                "HDU/ICU admission",
+                "Organ-specific supportive care",
+                "Daily clinical reassessment and repeat scoring",
+                "Nutritional support via NGT if oral intake not established within 48 h"
+            ] : [
+                "Regular monitoring (4-hourly observations)",
+                "Address underlying diagnosis",
+                "Reassess in 24 h — early deterioration may not be reflected in initial score"
+            ],
+            redFlags: flags,
+            evidenceNote: "Knaus WA et al. Crit Care Med 1985;13:818–829. APACHE II validated in medical-surgical ICU patients. Predictive at admission; trends more useful than single values."
+        )
+    }
+
+    // MARK: - SOFA Score (Sequential Organ Failure Assessment)
+    struct SOFAInput: Equatable {
+        var pao2fio2: Int = 400        // PaO2/FiO2 ratio (mmHg); 400=normal; <200=severe ARDS
+        var plateletsX10_9: Int = 250  // platelet count ×10⁹/L
+        var bilirubinUmolL: Int = 15   // µmol/L
+        var gcs: Int = 15              // Glasgow Coma Score
+        var map: Int = 80              // mean arterial pressure mmHg (or vasopressor requirement)
+        var vasopressors: Int = 0      // 0=none; 1=DA≤5 or dobutamine any; 2=DA>5 or NE/E≤0.1; 3=DA>15 or NE/E>0.1
+        var creatinineUmolL: Int = 88  // µmol/L
+        var urineOutput: Int = 1       // 0=<200mL/d; 1=200–500mL/d; 2=>500mL/d
+    }
+
+    static func sofa(_ i: SOFAInput) -> ClinicalScore {
+        var pts = 0
+
+        // Respiratory: PaO2/FiO2
+        switch i.pao2fio2 {
+        case 400...: pts += 0
+        case 300..<400: pts += 1
+        case 200..<300: pts += 2
+        case 100..<200: pts += 3
+        case ..<100: pts += 4
+        default: break
+        }
+
+        // Coagulation: platelets
+        switch i.plateletsX10_9 {
+        case 150...: pts += 0
+        case 100..<150: pts += 1
+        case 50..<100: pts += 2
+        case 20..<50: pts += 3
+        case ..<20: pts += 4
+        default: break
+        }
+
+        // Liver: bilirubin
+        switch i.bilirubinUmolL {
+        case ..<20: pts += 0
+        case 20..<33: pts += 1
+        case 33..<102: pts += 2
+        case 102..<204: pts += 3
+        case 204...: pts += 4
+        default: break
+        }
+
+        // Neurological: GCS
+        switch i.gcs {
+        case 15: pts += 0
+        case 13..<15: pts += 1
+        case 10..<13: pts += 2
+        case 6..<10: pts += 3
+        case ..<6: pts += 4
+        default: break
+        }
+
+        // Cardiovascular: MAP or vasopressors
+        if i.vasopressors == 0 {
+            pts += i.map >= 70 ? 0 : 1
+        } else {
+            pts += min(i.vasopressors, 4)
+        }
+
+        // Renal: creatinine + urine output (highest of the two)
+        let creScore: Int
+        switch i.creatinineUmolL {
+        case ..<110: creScore = 0
+        case 110..<171: creScore = 1
+        case 171..<300: creScore = 2
+        case 300..<440: creScore = 3
+        case 440...: creScore = 4
+        default: creScore = 0
+        }
+        let uoScore = i.urineOutput <= 0 ? 4 : i.urineOutput == 1 ? 3 : 0
+        pts += max(creScore, uoScore)
+
+        let score = Double(pts)
+        let (risk, interp): (ScoreRisk, String)
+        switch score {
+        case ..<2:   (risk, interp) = (.low,      "SOFA \(pts): Minimal organ dysfunction. Standard monitoring.")
+        case 2..<7:  (risk, interp) = (.moderate, "SOFA \(pts): Moderate organ dysfunction. ICU admission recommended.")
+        case 7..<11: (risk, interp) = (.high,     "SOFA \(pts): Severe organ dysfunction. Estimated mortality 20–40%.")
+        default:     (risk, interp) = (.critical, "SOFA \(pts): Critical organ dysfunction. Estimated mortality 40–80%+.")
+        }
+        let flags = score >= 11 ? ["SOFA ≥11 — mortality >40%; intensive organ support and goals-of-care discussion"] :
+                    score >= 7  ? ["SOFA ≥7 — significant mortality risk; escalation to ICU recommended"] : []
+        return ClinicalScore(
+            systemName: "SOFA Score",
+            abbreviation: "SOFA \(pts)",
+            score: score,
+            maxScore: 24,
+            risk: risk,
+            interpretation: interp,
+            items: [
+                ScoredItem(label: "Respiratory (PaO2/FiO2 \(i.pao2fio2))", points: i.pao2fio2 < 100 ? 4 : i.pao2fio2 < 200 ? 3 : i.pao2fio2 < 300 ? 2 : i.pao2fio2 < 400 ? 1 : 0, present: i.pao2fio2 < 400),
+                ScoredItem(label: "Coagulation (platelets \(i.plateletsX10_9) ×10⁹)", points: i.plateletsX10_9 < 20 ? 4 : i.plateletsX10_9 < 50 ? 3 : i.plateletsX10_9 < 100 ? 2 : i.plateletsX10_9 < 150 ? 1 : 0, present: i.plateletsX10_9 < 150),
+                ScoredItem(label: "Liver (bilirubin \(i.bilirubinUmolL) µmol/L)", points: i.bilirubinUmolL >= 204 ? 4 : i.bilirubinUmolL >= 102 ? 3 : i.bilirubinUmolL >= 33 ? 2 : i.bilirubinUmolL >= 20 ? 1 : 0, present: i.bilirubinUmolL >= 20),
+                ScoredItem(label: "Cardiovascular", points: Double(min(i.vasopressors, 4)), present: i.vasopressors > 0 || i.map < 70),
+                ScoredItem(label: "Neurological (GCS \(i.gcs))", points: i.gcs >= 15 ? 0 : i.gcs >= 13 ? 1 : i.gcs >= 10 ? 2 : i.gcs >= 6 ? 3 : 4, present: i.gcs < 15),
+                ScoredItem(label: "Renal (creatinine \(i.creatinineUmolL) µmol/L)", points: Double(max(creScore, uoScore)), present: i.creatinineUmolL >= 110 || i.urineOutput <= 1)
+            ],
+            recommendations: score >= 11 ? [
+                "Full ICU organ support — mechanical ventilation, vasopressors, RRT as indicated",
+                "Daily organ function review; repeat SOFA every 24–48 h",
+                "Goals-of-care discussion if trajectory not improving",
+                "Sepsis bundle if infectious cause: blood cultures, lactate, IV antibiotics within 1 h",
+                "Nutrition via NGT; avoid over-resuscitation"
+            ] : score >= 7 ? [
+                "ICU admission",
+                "Targeted organ support: respiratory, cardiovascular, renal, haematological",
+                "Serial SOFA scoring to track trajectory",
+                "Treat underlying cause aggressively"
+            ] : score >= 2 ? [
+                "HDU/ICU monitoring",
+                "Organ-specific supportive care",
+                "Daily reassessment — rising SOFA indicates deterioration"
+            ] : [
+                "Ward-level monitoring",
+                "Address underlying diagnosis",
+                "Repeat SOFA if clinical concern"
+            ],
+            redFlags: flags,
+            evidenceNote: "Vincent JL et al. Intensive Care Med 1996;22:707–710. Used in Sepsis-3 definition (Singer M et al. JAMA 2016). SOFA ≥2 from baseline = organ dysfunction in sepsis. Trend more prognostic than single measurement."
+        )
+    }
 }

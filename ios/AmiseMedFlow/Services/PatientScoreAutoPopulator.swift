@@ -2690,6 +2690,124 @@ enum PatientScoreAutoPopulator {
         return (i, f)
     }
 
+    // MARK: - Baux Score (#60)
+    static func baux(patient: Patient) -> (ClinicalScoringEngine.BauxInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.BauxInput()
+        var f = ScoreAutoFill()
+        // Auto-fill age from DOB
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 40
+            i.age = max(0, min(120, age))
+            f.addAutoFilled(key: "age", label: "Age \(i.age) years from date of birth", source: "DOB")
+        } else {
+            f.addPending(key: "age", label: "Patient age required for Baux score — enter DOB or age manually", source: "Demographics")
+        }
+        // Detect inhalation injury from text
+        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let inhKw = ["inhalation injury", "smoke inhalation", "inhalation burn", "respiratory burn",
+                     "airway burn", "carbonaceous sputum", "singed nasal", "hoarse voice", "stridor"]
+        if inhKw.contains(where: { text.contains($0) }) {
+            i.hasInhalationInjury = true
+            f.addAutoFilled(key: "hasInhalationInjury", label: "Inhalation injury keyword detected", source: "History/Diagnosis")
+        }
+        f.addPending(key: "tbsa", label: "% TBSA burned — use Lund–Browder chart or Rule of Nines to estimate", source: "Burns assessment")
+        return (i, f)
+    }
+
+    // MARK: - ISS (#61)
+    static func iss(patient: Patient) -> (ClinicalScoringEngine.ISSInput, ScoreAutoFill) {
+        let i = ClinicalScoringEngine.ISSInput()
+        var f = ScoreAutoFill()
+        f.addPending(key: "head", label: "Head/Neck AIS — review imaging and neurological assessment", source: "Trauma survey")
+        f.addPending(key: "face", label: "Face AIS — review CT face / clinical examination", source: "Trauma survey")
+        f.addPending(key: "chest", label: "Chest AIS — review CT thorax", source: "Imaging")
+        f.addPending(key: "abdomen", label: "Abdomen/Pelvis AIS — review CT abdomen/pelvis", source: "Imaging")
+        f.addPending(key: "extremity", label: "Extremity/Pelvis AIS — review X-rays and orthopaedic assessment", source: "Imaging")
+        f.addPending(key: "external", label: "External AIS — burns/lacerations/contusions", source: "Clinical examination")
+        return (i, f)
+    }
+
+    // MARK: - APACHE II (#62)
+    static func apacheII(patient: Patient) -> (ClinicalScoringEngine.APACHEIIInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.APACHEIIInput()
+        var f = ScoreAutoFill()
+        // Auto-fill age
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 50
+            i.age = max(0, min(100, age))
+            f.addAutoFilled(key: "age", label: "Age \(i.age) years from date of birth", source: "DOB")
+        } else {
+            f.addPending(key: "age", label: "Patient age required — enter DOB or age manually", source: "Demographics")
+        }
+        // Auto-fill GCS from stored score
+        if let gcs = patient.gcsScore {
+            i.gcs = gcs
+            f.addAutoFilled(key: "gcs", label: "GCS \(gcs) from stored GCS score", source: "GCS score")
+        } else {
+            f.addPending(key: "gcs", label: "GCS required — perform neurological assessment", source: "Neurological exam")
+        }
+        // Auto-fill vitals from latest entry
+        if let latest = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
+            if let hr = latest.heartRate {
+                i.heartRate = hr
+                f.addAutoFilled(key: "heartRate", label: "HR \(hr) bpm from latest vitals", source: "Vitals")
+            }
+            if let rr = latest.respiratoryRate {
+                i.respiratoryRate = rr
+                f.addAutoFilled(key: "respiratoryRate", label: "RR \(rr)/min from latest vitals", source: "Vitals")
+            }
+            if let temp = latest.temperatureCelsius {
+                i.temperature = temp
+                f.addAutoFilled(key: "temperature", label: "Temperature \(String(format: "%.1f", temp))°C from latest vitals", source: "Vitals")
+            }
+            if let sbp = latest.bpSystolic, let dbp = latest.bpDiastolic {
+                i.map = (sbp + 2 * dbp) / 3
+                f.addAutoFilled(key: "map", label: "MAP estimated \(i.map) mmHg from BP \(sbp)/\(dbp)", source: "Vitals")
+            }
+        }
+        // Mark lab values pending
+        f.addPending(key: "pao2", label: "PaO2 — arterial blood gas required", source: "ABG")
+        f.addPending(key: "fio2", label: "FiO2 — document oxygen delivery mode", source: "Oxygen therapy")
+        f.addPending(key: "ph", label: "Arterial pH — arterial blood gas required", source: "ABG")
+        f.addPending(key: "sodium", label: "Sodium (mmol/L) — review U&E", source: "Biochemistry")
+        f.addPending(key: "potassium", label: "Potassium (mmol/L) — review U&E", source: "Biochemistry")
+        f.addPending(key: "creatinine", label: "Creatinine (µmol/L) — review U&E", source: "Biochemistry")
+        f.addPending(key: "haematocrit", label: "Haematocrit (%) — review FBC", source: "Haematology")
+        f.addPending(key: "wbc", label: "WBC (×10⁹/L) — review FBC", source: "Haematology")
+        return (i, f)
+    }
+
+    // MARK: - SOFA Score (#63)
+    static func sofa(patient: Patient) -> (ClinicalScoringEngine.SOFAInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.SOFAInput()
+        var f = ScoreAutoFill()
+        // Auto-fill GCS
+        if let gcs = patient.gcsScore {
+            i.gcs = gcs
+            f.addAutoFilled(key: "gcs", label: "GCS \(gcs) from stored GCS score", source: "GCS score")
+        } else {
+            f.addPending(key: "gcs", label: "GCS — neurological assessment required", source: "Neurological exam")
+        }
+        // Auto-fill MAP from vitals
+        if let latest = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+           let sbp = latest.bpSystolic, let dbp = latest.bpDiastolic {
+            i.map = (sbp + 2 * dbp) / 3
+            f.addAutoFilled(key: "map", label: "MAP estimated \(i.map) mmHg from BP \(sbp)/\(dbp)", source: "Vitals")
+        } else {
+            f.addPending(key: "map", label: "MAP — measure blood pressure", source: "Vitals")
+        }
+        // Mark lab and clinical values pending
+        f.addPending(key: "pao2fio2", label: "PaO2/FiO2 ratio — ABG + FiO2 required", source: "ABG/Oxygen therapy")
+        f.addPending(key: "plateletsX10_9", label: "Platelets (×10⁹/L) — review FBC", source: "Haematology")
+        f.addPending(key: "bilirubinUmolL", label: "Bilirubin (µmol/L) — review LFTs", source: "Biochemistry")
+        f.addPending(key: "vasopressors", label: "Vasopressor requirement — review drug chart", source: "Drug chart")
+        f.addPending(key: "creatinineUmolL", label: "Creatinine (µmol/L) — review U&E", source: "Biochemistry")
+        f.addPending(key: "urineOutput", label: "Urine output (mL/day) — review fluid balance chart", source: "Fluid balance")
+        return (i, f)
+    }
+
     // MARK: - KDIGO AKI Staging (#59)
     static func kdigo(patient: Patient) -> (ClinicalScoringEngine.KDIGOInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.KDIGOInput()

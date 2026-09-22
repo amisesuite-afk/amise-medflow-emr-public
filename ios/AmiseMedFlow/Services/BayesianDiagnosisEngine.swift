@@ -138,6 +138,10 @@ enum BayesianDiagnosisEngine {
         ecogScore: Int? = nil,        // ECOG 0–4; ≥2 = reduced fitness
         rtsScore: Int? = nil,         // RTS ×100 as Int; <400 = critical trauma
         kdigoStage: Int? = nil,       // KDIGO AKI 0–3
+        bauxScore: Int? = nil,        // Baux score (age + TBSA [+17 inhalation]); ≥40 = significant burns
+        issScore: Int? = nil,         // ISS 0–75; ≥16 = major trauma
+        apacheIIScore: Int? = nil,    // APACHE II 0–71; ≥15 = high ICU mortality
+        sofaScore: Int? = nil,        // SOFA 0–24; ≥7 = critical organ dysfunction
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3268,6 +3272,72 @@ enum BayesianDiagnosisEngine {
                 let nameLow = scored[i].candidate.name.lowercased()
                 guard akiTargets.contains(where: { nameLow.contains($0) }) else { continue }
                 let label = "KDIGO AKI Stage \(ak) — acute kidney injury severity supports renal/precipitating diagnosis"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // Baux Score: boosts burn and inhalation injury diagnoses
+        if let bx = bauxScore, bx >= 40 {
+            let burnTargets = ["burn", "inhalation injury", "smoke inhalation", "chemical burn",
+                               "flame burn", "electrical burn", "scald", "radiation burn"]
+            let adj = bx >= 120 ? 12 : bx >= 80 ? 8 : bx >= 60 ? 6 : 4
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard burnTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "Baux Score \(bx) — significant burn injury supports burn/inhalation diagnoses"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // ISS: boosts trauma diagnoses by severity
+        if let is_ = issScore, is_ >= 9 {
+            let traumaTargets = ["trauma", "injury", "fracture", "haemothorax", "pneumothorax",
+                                 "haemoperitoneum", "splenic laceration", "liver laceration",
+                                 "aortic injury", "traumatic brain injury", "tbi",
+                                 "crush injury", "blast injury", "polytrauma", "blunt abdominal"]
+            let adj = is_ >= 25 ? 12 : is_ >= 16 ? 8 : 4
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard traumaTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "ISS \(is_) — \(is_ >= 25 ? "major" : "moderate") trauma severity supports traumatic diagnoses"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // APACHE II: boosts ICU-level / critical illness diagnoses
+        if let ap = apacheIIScore, ap >= 15 {
+            let apacheTargets = ["sepsis", "septic shock", "pneumonia", "respiratory failure",
+                                 "acute liver failure", "hepatic failure", "multiorgan failure",
+                                 "acute pancreatitis", "severe pancreatitis", "meningitis",
+                                 "encephalopathy", "peritonitis", "necrotising fasciitis"]
+            let adj = ap >= 30 ? 12 : ap >= 25 ? 9 : ap >= 20 ? 6 : 4
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard apacheTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "APACHE II \(ap) — ICU-level illness severity supports critical/systemic diagnosis"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // SOFA: boosts organ failure / sepsis diagnoses
+        if let sf = sofaScore, sf >= 2 {
+            let sofaTargets = ["sepsis", "septic shock", "organ failure", "multiorgan failure",
+                               "acute respiratory distress", "ards", "acute liver failure",
+                               "acute kidney injury", "disseminated intravascular coagulation",
+                               "dic", "cardiogenic shock", "vasodilatory shock"]
+            let adj = sf >= 11 ? 12 : sf >= 7 ? 8 : sf >= 4 ? 5 : 3
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard sofaTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "SOFA \(sf) — organ dysfunction score supports systemic/organ failure diagnoses"
                 scored[i].logPosterior += adj
                 scored[i].evidence.append(label)
                 scored[i].evidenceSources["score", default: []].append(label)
