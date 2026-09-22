@@ -5886,5 +5886,324 @@ enum ClinicalScoringEngine {
         )
     }
 
+    // MARK: - ALBI Score (Albumin-Bilirubin)
+    struct ALBIInput: Equatable {
+        var albuminGperL: Double = 40.0   // g/L  (normal 35–50)
+        var bilirubinUmolL: Double = 17.0 // μmol/L (normal <21)
+    }
+    static func albi(_ i: ALBIInput) -> ClinicalScore {
+        // ALBI = (log₁₀(bilirubin_μmol/L) × 0.66) + (albumin_g/L × −0.085)
+        let bili = max(i.bilirubinUmolL, 0.1)
+        let alb  = i.albuminGperL
+        let score = (log10(bili) * 0.66) + (alb * -0.085)
+        let rounded = (score * 100).rounded() / 100
+        let (grade, risk, recs): (String, ScoreRisk, [String])
+        switch score {
+        case ..<(-2.60):
+            grade = "Grade 1 — Well-preserved liver function"
+            risk  = .low
+            recs  = ["Major hepatic resection is generally safe",
+                     "Child-Pugh A equivalent functional reserve",
+                     "Proceed with planned surgical strategy"]
+        case -2.60 ..< -1.39:
+            grade = "Grade 2 — Moderate liver dysfunction"
+            risk  = .moderate
+            recs  = ["Limit resection to <50% hepatic volume",
+                     "Consider portal vein embolisation if extended resection planned",
+                     "Optimise nutrition and correct coagulopathy pre-operatively",
+                     "Hepatology review recommended"]
+        default:
+            grade = "Grade 3 — Severe liver dysfunction"
+            risk  = .high
+            recs  = ["Major hepatic resection carries prohibitive risk — avoid",
+                     "Prioritise liver function optimisation (lactulose, diuretics, albumin infusion)",
+                     "Consider transplant evaluation if HCC / end-stage disease",
+                     "Multidisciplinary hepatobiliary conference mandatory"]
+        }
+        return ClinicalScore(
+            name:          "ALBI Score",
+            score:         rounded,
+            maxScore:      nil,
+            risk:          risk,
+            interpretation: grade,
+            recommendations: recs,
+            evidenceNote:  "Johnson PJ et al. J Clin Oncol 2015;33:550–558. Continuous hepatic reserve score using albumin and bilirubin. Validated in HCC, cholangiocarcinoma, and resectional hepatic surgery. Preferred over Child-Pugh for granular hepatic reserve stratification."
+        )
+    }
+
+    // MARK: - AUDIT-C (Alcohol Use Disorders Identification Test — Consumption)
+    struct AUDITCInput: Equatable {
+        var frequency: Int = 0   // Q1: 0=never,1=monthly,2=2-4×/month,3=2-3×/week,4=4+/week
+        var typicalDrinks: Int = 0 // Q2: 0=1-2,1=3-4,2=5-6,3=7-9,4=10+
+        var bingeDrinks: Int = 0   // Q3: 0=never,1=<monthly,2=monthly,3=weekly,4=daily
+        var isFemale: Bool = false
+    }
+    static func auditC(_ i: AUDITCInput) -> ClinicalScore {
+        let total = i.frequency + i.typicalDrinks + i.bingeDrinks
+        let threshold = i.isFemale ? 3 : 4
+        let (interp, risk, recs): (String, ScoreRisk, [String])
+        if total < threshold {
+            interp = "Negative screen — low-risk alcohol use"
+            risk   = .low
+            recs   = ["No specific alcohol-related intervention indicated",
+                      "Encourage continued low-risk drinking patterns"]
+        } else if total <= 7 {
+            interp = "Positive screen — hazardous or harmful drinking"
+            risk   = .moderate
+            recs   = ["Brief motivational intervention (5–15 min) recommended",
+                      "Assess for alcohol dependence (CAGE/full AUDIT)",
+                      "Counsel on safe drinking limits: ≤14 units/week, ≤3 units/occasion",
+                      "Pre-operative alcohol cessation ≥4 weeks reduces surgical complications"]
+        } else {
+            interp = "High-risk — probable alcohol use disorder"
+            risk   = .high
+            recs   = ["Urgent addiction medicine / liaison psychiatry referral",
+                      "Assess for alcohol dependence before elective surgery",
+                      "Anticipate alcohol withdrawal — consider CIWA-Ar monitoring post-op",
+                      "Pre-operative abstinence ≥4 weeks mandatory for elective cases",
+                      "Supplement thiamine (100 mg TDS × 5 days) peri-operatively"]
+        }
+        return ClinicalScore(
+            name:          "AUDIT-C",
+            score:         Double(total),
+            maxScore:      12,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            evidenceNote:  "Bush K et al. Arch Intern Med 1998;158:1789–1795. 3-item alcohol consumption sub-scale of the full AUDIT. Threshold ≥4 (men) / ≥3 (women). Validated for pre-operative alcohol risk screening; hazardous drinking independently increases surgical mortality and SSI rate."
+        )
+    }
+
+    // MARK: - PHQ-9 (Patient Health Questionnaire — Depression)
+    struct PHQ9Input: Equatable {
+        var anhedonia: Int = 0       // Q1: 0–3
+        var depressedMood: Int = 0   // Q2: 0–3
+        var sleepProblem: Int = 0    // Q3: 0–3
+        var fatigue: Int = 0         // Q4: 0–3
+        var appetiteChange: Int = 0  // Q5: 0–3
+        var selfWorth: Int = 0       // Q6: 0–3
+        var concentration: Int = 0  // Q7: 0–3
+        var psychomotor: Int = 0     // Q8: 0–3
+        var suicidalThought: Int = 0 // Q9: 0–3
+    }
+    static func phq9(_ i: PHQ9Input) -> ClinicalScore {
+        let total = i.anhedonia + i.depressedMood + i.sleepProblem + i.fatigue +
+                    i.appetiteChange + i.selfWorth + i.concentration + i.psychomotor +
+                    i.suicidalThought
+        let (interp, risk, recs): (String, ScoreRisk, [String])
+        switch total {
+        case 0...4:
+            interp = "Minimal or no depressive symptoms"
+            risk   = .low
+            recs   = ["Monitor at routine follow-up",
+                      "Lifestyle counselling if sub-threshold symptoms present"]
+        case 5...9:
+            interp = "Mild depression"
+            risk   = .low
+            recs   = ["Active monitoring — reassess in 4–6 weeks",
+                      "Consider watchful waiting with structured follow-up",
+                      "Low-intensity psychological intervention (guided self-help) appropriate"]
+        case 10...14:
+            interp = "Moderate depression"
+            risk   = .moderate
+            recs   = ["Treatment indicated — offer antidepressant OR structured psychotherapy",
+                      "Advise adequate sleep, physical activity, and social engagement",
+                      "Pre-operatively: assess impact on surgical recovery and consent capacity",
+                      "Psychiatric liaison review if elective major surgery planned"]
+        case 15...19:
+            interp = "Moderately severe depression"
+            risk   = .high
+            recs   = ["Active treatment required — combined antidepressant + CBT preferred",
+                      "Psychiatric referral within 1–2 weeks",
+                      "Consider delaying elective surgery until stabilised",
+                      "Safety planning if passive suicidal ideation present (Q9 ≥1)"]
+        default:
+            interp = "Severe depression"
+            risk   = .high
+            recs   = ["Urgent psychiatric assessment required",
+                      "If Q9 ≥2 (active suicidal ideation): same-day emergency psychiatry review",
+                      "Withhold elective surgery until psychiatric clearance obtained",
+                      "Inpatient psychiatric admission may be required"]
+        }
+        var finalRecs = recs
+        if i.suicidalThought >= 2 {
+            finalRecs.insert("⚠️ Active suicidal ideation (Q9 ≥2) — immediate risk assessment required", at: 0)
+        }
+        return ClinicalScore(
+            name:          "PHQ-9",
+            score:         Double(total),
+            maxScore:      27,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: finalRecs,
+            evidenceNote:  "Kroenke K, Spitzer RL, Williams JBW. J Gen Intern Med 2001;16:606–613. Validated 9-item depression scale. Each item scored 0 (not at all) to 3 (nearly every day), total 0–27. Pre-operative depression screening recommended by ANZCA and RCoA pre-assessment guidelines; undertreated depression independently predicts poor surgical outcomes and prolonged rehabilitation."
+        )
+    }
+
+    // MARK: - SAPS II (Simplified Acute Physiology Score II)
+    struct SAPSIIInput: Equatable {
+        // Age
+        var ageYears: Int = 0
+        // Vitals (worst in first 24 h ICU)
+        var heartRateMax: Int = 0       // bpm
+        var sbpMin: Int = 0             // systolic, mmHg
+        var tempMax: Double = 37.0      // °C
+        // Oxygenation
+        var pao2FiO2: Int = 0           // mmHg (for non-ventilated use actual PaO₂; 0=on ventilator)
+        var onVentilator: Bool = false
+        // Labs
+        var urineOutputML: Int = 0      // mL/24 h
+        var bunMmolL: Double = 0        // mmol/L (× 2.8 to get mg/dL)
+        var wbc: Double = 0             // × 10⁹/L
+        var sodiumMmolL: Int = 0        // mmol/L
+        var potassiumMmolL: Double = 0  // mmol/L
+        var bicarbonateMmolL: Int = 0   // mmol/L
+        var bilirubinUmolL: Double = 0  // μmol/L
+        // Neuro (GCS)
+        var gcsScore: Int = 15
+        // Admission type
+        var scheduledSurgical: Bool = false
+        var unscheduledSurgical: Bool = false
+        // Chronic disease
+        var metastaticCancer: Bool = false
+        var haematologicalMalignancy: Bool = false
+        var aids: Bool = false
+    }
+    static func sapsII(_ i: SAPSIIInput) -> ClinicalScore {
+        var points = 0
+        // Age
+        switch i.ageYears {
+        case ..<40:  points += 0
+        case 40...59: points += 7
+        case 60...69: points += 12
+        case 70...74: points += 15
+        case 75...79: points += 16
+        default:     points += 18
+        }
+        // Heart rate
+        switch i.heartRateMax {
+        case ..<40:         points += 11
+        case 40...69:       points += 2
+        case 70...119:      points += 0
+        case 120...159:     points += 4
+        default:            points += 7
+        }
+        // Systolic BP (use minimum)
+        switch i.sbpMin {
+        case ..<70:         points += 13
+        case 70...99:       points += 5
+        case 100...199:     points += 0
+        default:            points += 2
+        }
+        // Temperature (use maximum)
+        if i.tempMax >= 39.0 { points += 3 }
+        // PaO₂/FiO₂ (only if ventilated)
+        if i.onVentilator {
+            switch i.pao2FiO2 {
+            case ..<100:   points += 11
+            case 100...199: points += 9
+            default:       points += 6
+            }
+        }
+        // Urine output
+        switch i.urineOutputML {
+        case ..<500:        points += 11
+        case 500...999:     points += 4
+        default:            points += 0
+        }
+        // BUN (mg/dL equivalent: mmol/L × 2.8)
+        let bunMgDL = i.bunMmolL * 2.8
+        switch bunMgDL {
+        case ..<28:         points += 0
+        case 28...83:       points += 6
+        default:            points += 10
+        }
+        // WBC
+        switch i.wbc {
+        case ..<1.0:        points += 12
+        case 1.0...19.9:    points += 0
+        default:            points += 3
+        }
+        // Sodium
+        switch i.sodiumMmolL {
+        case ..<125:        points += 5
+        case 125...144:     points += 0
+        default:            points += 1
+        }
+        // Potassium
+        if i.potassiumMmolL < 3.0 || i.potassiumMmolL >= 5.0 { points += 3 }
+        // Bicarbonate
+        switch i.bicarbonateMmolL {
+        case ..<15:         points += 6
+        case 15...19:       points += 3
+        default:            points += 0
+        }
+        // Bilirubin (μmol/L; 68.4 = 4 mg/dL, 102.6 = 6 mg/dL)
+        switch i.bilirubinUmolL {
+        case ..<68.4:       points += 0
+        case 68.4...102.5:  points += 4
+        default:            points += 9
+        }
+        // GCS
+        switch i.gcsScore {
+        case ..<6:          points += 26
+        case 6...8:         points += 13
+        case 9...10:        points += 7
+        case 11...13:       points += 5
+        default:            points += 0
+        }
+        // Admission type
+        if i.scheduledSurgical        { points += 0 }
+        else if i.unscheduledSurgical { points += 8 }
+        else                          { points += 6 } // medical
+        // Chronic disease
+        if i.metastaticCancer              { points += 9 }
+        if i.haematologicalMalignancy      { points += 10 }
+        if i.aids                          { points += 17 }
+        // Probability of hospital mortality: ln(p/1-p) = −7.7631 + 0.0737×SAPS + 0.9971×ln(SAPS+1)
+        let s = Double(points)
+        let logit = -7.7631 + 0.0737 * s + 0.9971 * log(s + 1)
+        let mortalityPct = (exp(logit) / (1 + exp(logit)) * 100).rounded()
+        let (interp, risk, recs): (String, ScoreRisk, [String])
+        switch points {
+        case 0...29:
+            interp = "Low severity (predicted mortality ~10%)"
+            risk   = .low
+            recs   = ["Standard ICU monitoring protocol",
+                      "Early mobilisation and rehabilitation planning",
+                      "Daily goal-directed fluid strategy"]
+        case 30...59:
+            interp = "Moderate severity (predicted mortality ~30%)"
+            risk   = .moderate
+            recs   = ["Intensify monitoring: hourly vitals, 6-hourly labs",
+                      "Senior ICU review twice daily",
+                      "Consider early subspecialty involvement (renal, respiratory)",
+                      "ICU duration expected 5–10 days — communicate to family"]
+        case 60...89:
+            interp = "High severity (predicted mortality ~60%)"
+            risk   = .high
+            recs   = ["Consultant-led daily ICU round mandatory",
+                      "Goals-of-care discussion with patient and family",
+                      "Optimise organ support: vasopressors, renal replacement as indicated",
+                      "Avoid further major surgery unless life-saving"]
+        default:
+            interp = "Very high severity (predicted mortality >80%)"
+            risk   = .high
+            recs   = ["Urgent goals-of-care and ceiling-of-treatment discussion",
+                      "Palliative/comfort-measures pathway should be formally considered",
+                      "Any invasive interventions require consultant and family agreement",
+                      "Document DNACPR decision if appropriate after discussion"]
+        }
+        return ClinicalScore(
+            name:          "SAPS II",
+            score:         Double(points),
+            maxScore:      163,
+            risk:          risk,
+            interpretation: "\(interp)\nEstimated hospital mortality: \(Int(mortalityPct))%",
+            recommendations: recs,
+            evidenceNote:  "Le Gall JR et al. JAMA 1993;270:2957–2963. Simplified Acute Physiology Score II; 17 variables scored from worst values in first 24 h of ICU admission. Calibrated for hospital mortality prediction across mixed ICU populations. SAPS II ≥40 correlates with >30% hospital mortality."
+        )
+    }
+
 
 }

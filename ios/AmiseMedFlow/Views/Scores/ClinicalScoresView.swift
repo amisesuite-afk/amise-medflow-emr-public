@@ -94,6 +94,10 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case mfi5             = "Modified Frailty Index-5"
     case haps             = "Harmless Acute Pancreatitis Score"
     case glasgowImrie     = "Glasgow-Imrie Score"
+    case albi             = "ALBI Score (Liver)"
+    case auditC           = "AUDIT-C (Alcohol Screen)"
+    case phq9             = "PHQ-9 (Depression)"
+    case sapsII           = "SAPS II (ICU Severity)"
 
     var category: ScoreCategory {
         switch self {
@@ -153,6 +157,14 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .preop
         case .haps, .glasgowImrie:
             return .gi
+        case .albi:
+            return .gi
+        case .auditC:
+            return .gi
+        case .phq9:
+            return .monitoring
+        case .sapsII:
+            return .monitoring
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
         case .mews, .news2, .waterlow, .surgicalApgar:
@@ -232,6 +244,10 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .mfi5:           return "figure.walk.motion"
         case .haps:           return "flame.fill"
         case .glasgowImrie:   return "thermometer.sun.fill"
+        case .albi:           return "drop.circle"
+        case .auditC:         return "wineglass"
+        case .phq9:           return "brain.head.profile"
+        case .sapsII:         return "waveform.path.ecg.rectangle"
         }
     }
 }
@@ -393,6 +409,10 @@ struct ClinicalScoresView: View {
     @State private var hapsI = ClinicalScoringEngine.HAPSInput()
     @State private var bisapI = ClinicalScoringEngine.BISAPInput()
     @State private var glasgowImrieI = ClinicalScoringEngine.GlasgowImrieInput()
+    @State private var albiI         = ClinicalScoringEngine.ALBIInput()
+    @State private var auditCI       = ClinicalScoringEngine.AUDITCInput()
+    @State private var phq9I         = ClinicalScoringEngine.PHQ9Input()
+    @State private var sapsIII       = ClinicalScoringEngine.SAPSIIInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -881,6 +901,18 @@ struct ClinicalScoresView: View {
         case .glasgowImrie:
             let (input, fill) = PatientScoreAutoPopulator.glasgowImrie(patient: patient)
             glasgowImrieI = input; autoFill = fill
+        case .albi:
+            let (input, fill) = PatientScoreAutoPopulator.albi(patient: patient)
+            albiI = input; autoFill = fill
+        case .auditC:
+            let (input, fill) = PatientScoreAutoPopulator.auditC(patient: patient)
+            auditCI = input; autoFill = fill
+        case .phq9:
+            let (input, fill) = PatientScoreAutoPopulator.phq9(patient: patient)
+            phq9I = input; autoFill = fill
+        case .sapsII:
+            let (input, fill) = PatientScoreAutoPopulator.sapsII(patient: patient)
+            sapsIII = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -1012,6 +1044,10 @@ struct ClinicalScoresView: View {
         case .mfi5:          ClinicalScoringEngine.mfi5(mfi5I)
         case .haps:          ClinicalScoringEngine.haps(hapsI)
         case .glasgowImrie:  ClinicalScoringEngine.glasgowImrie(glasgowImrieI)
+        case .albi:          ClinicalScoringEngine.albi(albiI)
+        case .auditC:        ClinicalScoringEngine.auditC(auditCI)
+        case .phq9:          ClinicalScoringEngine.phq9(phq9I)
+        case .sapsII:        ClinicalScoringEngine.sapsII(sapsIII)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -1087,6 +1123,10 @@ struct ClinicalScoresView: View {
         case .mfi5:          patient.mfi5Score = intScore
         case .haps:          patient.hapsScore = intScore
         case .glasgowImrie:  patient.glasgowImrieScore = intScore
+        case .albi:          patient.albiScore    = r.score     // continuous Double
+        case .auditC:        patient.auditCScore  = intScore
+        case .phq9:          patient.phq9Score    = intScore
+        case .sapsII:        patient.sapsIIScore  = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -1196,6 +1236,10 @@ struct ClinicalScoresView: View {
         case .mfi5:          mfi5Form
         case .haps:          hapsForm
         case .glasgowImrie:  glasgowImrieForm
+        case .albi:          albiForm
+        case .auditC:        auditCForm
+        case .phq9:          phq9Form
+        case .sapsII:        sapsIIForm
         }
     }
 
@@ -2478,6 +2522,16 @@ struct ClinicalScoresView: View {
             case "glucoseAbove10":   glasgowImrieI.glucoseAbove10 = true
             default: break
             }
+        case .albi:
+            // ALBI uses continuous numeric inputs — pending fields prompt the clinician
+            // to enter values; confirmPendingField is a no-op for numeric steppers
+            break
+        case .auditC:
+            break
+        case .phq9:
+            break
+        case .sapsII:
+            break
         default: break
         }
 
@@ -4178,6 +4232,179 @@ struct ClinicalScoresView: View {
             scoreToggle("Serum glucose > 10 mmol/L (non-diabetic)", binding: $glasgowImrieI.glucoseAbove10, points: "+1", autoKey: "glucoseAbove10")
         }
         .onChange(of: glasgowImrieI) { _, _ in recalculate() }
+    }
+
+    // MARK: - ALBI
+    private var albiForm: some View {
+        Group {
+            Text("Enter current serum albumin (g/L) and bilirubin (μmol/L). Use most recent lab values.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
+            HStack {
+                Text("Albumin (g/L)")
+                Spacer()
+                Stepper("\(Int(albiI.albuminGperL)) g/L",
+                        value: $albiI.albuminGperL, in: 5...60, step: 1)
+                    .fixedSize()
+            }
+            HStack {
+                Text("Bilirubin (μmol/L)")
+                Spacer()
+                Stepper("\(Int(albiI.bilirubinUmolL)) μmol/L",
+                        value: $albiI.bilirubinUmolL, in: 1...500, step: 1)
+                    .fixedSize()
+            }
+            Text("ALBI = (log₁₀(bilirubin) × 0.66) + (albumin × −0.085). Grade 1 ≤−2.60 (safe); Grade 3 >−1.39 (prohibitive risk).")
+                .font(.caption2).foregroundStyle(.secondary).padding(.top, 4)
+        }
+        .onChange(of: albiI) { _, _ in recalculate() }
+    }
+
+    // MARK: - AUDIT-C
+    private var auditCForm: some View {
+        Group {
+            Text("3-item alcohol consumption screen. Threshold: ≥4 (men) / ≥3 (women).")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
+            auditCPicker("How often do you have a drink?",
+                         labels: ["Never","Monthly or less","2–4×/month","2–3×/week","4+/week"],
+                         value: $auditCI.frequency)
+            auditCPicker("How many drinks on a typical day?",
+                         labels: ["1–2","3–4","5–6","7–9","10+"],
+                         value: $auditCI.typicalDrinks)
+            auditCPicker("How often do you have 6+ drinks on one occasion?",
+                         labels: ["Never","Less than monthly","Monthly","Weekly","Daily or almost daily"],
+                         value: $auditCI.bingeDrinks)
+            Toggle("Female (lower threshold: ≥3)", isOn: $auditCI.isFemale)
+        }
+        .onChange(of: auditCI) { _, _ in recalculate() }
+    }
+
+    private func auditCPicker(_ label: String, labels: [String], value: Binding<Int>) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label).font(.subheadline)
+            Picker("", selection: value) {
+                ForEach(0..<labels.count, id: \.self) { idx in
+                    Text("(\(idx)) \(labels[idx])").tag(idx)
+                }
+            }
+            .pickerStyle(.menu)
+        }
+    }
+
+    // MARK: - PHQ-9
+    private var phq9Form: some View {
+        let items: [(String, WritableKeyPath<ClinicalScoringEngine.PHQ9Input, Int>)] = [
+            ("Little interest or pleasure in doing things", \.anhedonia),
+            ("Feeling down, depressed, or hopeless", \.depressedMood),
+            ("Trouble falling or staying asleep, or sleeping too much", \.sleepProblem),
+            ("Feeling tired or having little energy", \.fatigue),
+            ("Poor appetite or overeating", \.appetiteChange),
+            ("Feeling bad about yourself — or that you are a failure", \.selfWorth),
+            ("Trouble concentrating on things", \.concentration),
+            ("Moving or speaking so slowly (or being fidgety/restless)", \.psychomotor),
+            ("Thoughts that you would be better off dead, or of hurting yourself", \.suicidalThought),
+        ]
+        return Group {
+            Text("Over the last 2 weeks, how often have you been bothered by the following? (0=Not at all, 1=Several days, 2=More than half the days, 3=Nearly every day)")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
+            ForEach(items.indices, id: \.self) { idx in
+                let (itemLabel, kp) = items[idx]
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("\(idx + 1). \(itemLabel)").font(.subheadline)
+                    Picker("", selection: Binding(
+                        get: { phq9I[keyPath: kp] },
+                        set: { phq9I[keyPath: kp] = $0 }
+                    )) {
+                        Text("0 — Not at all").tag(0)
+                        Text("1 — Several days").tag(1)
+                        Text("2 — More than half").tag(2)
+                        Text("3 — Nearly every day").tag(3)
+                    }
+                    .pickerStyle(.segmented)
+                }
+                .padding(.vertical, 2)
+            }
+            if phq9I.suicidalThought >= 2 {
+                Label("⚠️ Q9 ≥2 — immediate psychiatric risk assessment required",
+                      systemImage: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.red)
+                    .font(.footnote.bold())
+                    .padding(.top, 4)
+            }
+        }
+        .onChange(of: phq9I) { _, _ in recalculate() }
+    }
+
+    // MARK: - SAPS II
+    private var sapsIIForm: some View {
+        Group {
+            Text("Worst values within first 24 hours of ICU admission.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
+            sapsIIStepper("Age (years)", value: $sapsIII.ageYears, range: 0...120, step: 1)
+            sapsIIStepper("Max heart rate (bpm)", value: $sapsIII.heartRateMax, range: 0...300, step: 1)
+            sapsIIStepper("Min systolic BP (mmHg)", value: $sapsIII.sbpMin, range: 0...300, step: 1)
+            HStack {
+                Text("Max temperature (°C)")
+                Spacer()
+                Stepper(String(format: "%.1f °C", sapsIII.tempMax),
+                        value: $sapsIII.tempMax, in: 30.0...45.0, step: 0.1)
+                    .fixedSize()
+            }
+            Toggle("Ventilated (PaO₂/FiO₂ applicable)", isOn: $sapsIII.onVentilator)
+            if sapsIII.onVentilator {
+                sapsIIStepper("PaO₂/FiO₂ ratio (mmHg)", value: $sapsIII.pao2FiO2, range: 0...600, step: 5)
+            }
+            sapsIIStepper("Urine output (mL/24 h)", value: $sapsIII.urineOutputML, range: 0...5000, step: 50)
+            HStack {
+                Text("BUN (mmol/L)")
+                Spacer()
+                Stepper(String(format: "%.1f mmol/L", sapsIII.bunMmolL),
+                        value: $sapsIII.bunMmolL, in: 0...100, step: 0.5)
+                    .fixedSize()
+            }
+            HStack {
+                Text("WBC (× 10⁹/L)")
+                Spacer()
+                Stepper(String(format: "%.1f ×10⁹/L", sapsIII.wbc),
+                        value: $sapsIII.wbc, in: 0...100, step: 0.5)
+                    .fixedSize()
+            }
+            sapsIIStepper("Sodium (mmol/L)", value: $sapsIII.sodiumMmolL, range: 100...180, step: 1)
+            HStack {
+                Text("Potassium (mmol/L)")
+                Spacer()
+                Stepper(String(format: "%.1f mmol/L", sapsIII.potassiumMmolL),
+                        value: $sapsIII.potassiumMmolL, in: 0...10, step: 0.1)
+                    .fixedSize()
+            }
+            sapsIIStepper("Bicarbonate (mmol/L)", value: $sapsIII.bicarbonateMmolL, range: 0...60, step: 1)
+            HStack {
+                Text("Bilirubin (μmol/L)")
+                Spacer()
+                Stepper(String(format: "%.0f μmol/L", sapsIII.bilirubinUmolL),
+                        value: $sapsIII.bilirubinUmolL, in: 0...600, step: 5)
+                    .fixedSize()
+            }
+            sapsIIStepper("GCS (3–15)", value: $sapsIII.gcsScore, range: 3...15, step: 1)
+            Divider()
+            Text("Admission type").font(.subheadline.bold())
+            Toggle("Scheduled surgical admission", isOn: $sapsIII.scheduledSurgical)
+            Toggle("Unscheduled surgical admission", isOn: $sapsIII.unscheduledSurgical)
+            Divider()
+            Text("Chronic disease").font(.subheadline.bold())
+            Toggle("Metastatic cancer", isOn: $sapsIII.metastaticCancer)
+            Toggle("Haematological malignancy", isOn: $sapsIII.haematologicalMalignancy)
+            Toggle("AIDS", isOn: $sapsIII.aids)
+        }
+        .onChange(of: sapsIII) { _, _ in recalculate() }
+    }
+
+    private func sapsIIStepper(_ label: String, value: Binding<Int>, range: ClosedRange<Int>, step: Int) -> some View {
+        HStack {
+            Text(label)
+            Spacer()
+            Stepper("\(value.wrappedValue)", value: value, in: range, step: step)
+                .fixedSize()
+        }
     }
 
 

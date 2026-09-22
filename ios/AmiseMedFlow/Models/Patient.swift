@@ -193,6 +193,10 @@ final class Patient {
     var mfi5Score: Int?           // Modified Frailty Index-5 (0–5)
     var hapsScore: Int?           // Harmless Acute Pancreatitis Score (0–3)
     var glasgowImrieScore: Int?   // Glasgow-Imrie Pancreatitis Score (0–8)
+    var albiScore: Double?        // ALBI Score (continuous; Grade 1 ≤-2.60, Grade 2 -2.60–-1.39, Grade 3 >-1.39)
+    var auditCScore: Int?         // AUDIT-C Alcohol Screening (0–12)
+    var phq9Score: Int?           // PHQ-9 Depression Score (0–27)
+    var sapsIIScore: Int?         // SAPS II ICU Severity Score (0–163)
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

@@ -3454,4 +3454,93 @@ enum PatientScoreAutoPopulator {
 
         return (i, f)
     }
+
+    // MARK: - ALBI Score
+    static func albi(patient: Patient) -> (ClinicalScoringEngine.ALBIInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.ALBIInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+        // ALBI requires current lab values — both are pending for clinician entry
+        f.addPending(key: "albumin",   label: "Serum albumin (g/L) — check LFTs",        source: "LFTs")
+        f.addPending(key: "bilirubin", label: "Serum bilirubin (μmol/L) — check LFTs",   source: "LFTs")
+        return (i, f)
+    }
+
+    // MARK: - AUDIT-C
+    static func auditC(patient: Patient) -> (ClinicalScoringEngine.AUDITCInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.AUDITCInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                    patient.pmhNotes, patient.workingDiagnosis]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+        // Sex from patient model
+        if patient.sex == .female { i.isFemale = true }
+        // Alcohol use disorder keyword hints — if positive, set highest category as auto-filled
+        let alcoholDisorderKw = ["alcohol use disorder", "alcohol dependence", "alcoholic liver",
+                                 "alcoholic pancreatitis", "delirium tremens", "dt's", "wernicke"]
+        if alcoholDisorderKw.contains(where: { text.contains($0) }) {
+            i.frequency    = 4  // ≥4×/week
+            i.typicalDrinks = 3  // 7–9 drinks
+            i.bingeDrinks  = 3  // weekly binge
+            f.addAutoFilled(key: "frequency", label: "Alcohol use disorder/dependence documented — maximum category pre-set", source: "History/PMH")
+        } else {
+            // All 3 questions are self-reported; mark as pending
+            f.addPending(key: "q1frequency",    label: "Q1 — How often do you drink alcohol?",                        source: "Patient")
+            f.addPending(key: "q2typical",      label: "Q2 — How many drinks on a typical drinking day?",             source: "Patient")
+            f.addPending(key: "q3binge",        label: "Q3 — How often do you have 6 or more drinks on one occasion?", source: "Patient")
+        }
+        return (i, f)
+    }
+
+    // MARK: - PHQ-9
+    static func phq9(patient: Patient) -> (ClinicalScoringEngine.PHQ9Input, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.PHQ9Input()
+        var f = ScoreAutoFill(); f.isAttempted = true
+        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                    patient.pmhNotes, patient.workingDiagnosis]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+        // Documented severe depression / suicidal ideation — flag Q6 & Q9
+        let severeKw = ["severe depression", "suicidal", "self-harm", "self harm", "overdose attempt"]
+        if severeKw.contains(where: { text.contains($0) }) {
+            i.depressedMood = 3; i.anhedonia = 3; i.suicidalThought = 2
+            f.addAutoFilled(key: "depressedMood", label: "Severe depression/suicidal ideation documented — key items pre-set", source: "History")
+        } else {
+            // PHQ-9 is a patient-reported questionnaire — all items need clinician-assisted completion
+            let phqItems = ["anhedonia","depressedMood","sleepProblem","fatigue","appetiteChange",
+                            "selfWorth","concentration","psychomotor","suicidalThought"]
+            for key in phqItems {
+                f.addPending(key: key, label: "PHQ-9 item — requires patient self-report", source: "Patient")
+            }
+        }
+        return (i, f)
+    }
+
+    // MARK: - SAPS II
+    static func sapsII(patient: Patient) -> (ClinicalScoringEngine.SAPSIIInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.SAPSIIInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+        // Age from DOB
+        let ageYears = Calendar.current.dateComponents([.year], from: patient.dateOfBirth ?? Date(), to: .now).year ?? 0
+        if ageYears > 0 {
+            i.ageYears = ageYears
+            f.addAutoFilled(key: "age", label: "Age \(ageYears) years (from date of birth)", source: "Demographics")
+        }
+        // Admission type: surgical if patient has operative plans
+        if let plans = patient.operativePlans, !plans.isEmpty {
+            i.scheduledSurgical = true
+            f.addAutoFilled(key: "admissionType", label: "Operative plan found — pre-set as scheduled surgical", source: "Operative Plans")
+        }
+        // All ICU variables need measurement
+        f.addPending(key: "heartRateMax",    label: "Worst heart rate (bpm) — first 24 h ICU",          source: "Vitals")
+        f.addPending(key: "sbpMin",          label: "Worst systolic BP (mmHg) — first 24 h ICU",         source: "Vitals")
+        f.addPending(key: "tempMax",         label: "Worst temperature (°C) — first 24 h ICU",           source: "Vitals")
+        f.addPending(key: "urineOutput",     label: "Urine output (mL/24 h) — first 24 h ICU",           source: "Fluid balance")
+        f.addPending(key: "bun",             label: "BUN / urea (mmol/L) — check U&E",                   source: "Bloods")
+        f.addPending(key: "wbc",             label: "WBC (× 10⁹/L) — check FBC",                        source: "FBC")
+        f.addPending(key: "sodium",          label: "Sodium (mmol/L) — check U&E",                       source: "Bloods")
+        f.addPending(key: "potassium",       label: "Potassium (mmol/L) — check U&E",                    source: "Bloods")
+        f.addPending(key: "bicarbonate",     label: "Bicarbonate (mmol/L) — check VBG or U&E",           source: "Bloods")
+        f.addPending(key: "bilirubin",       label: "Bilirubin (μmol/L) — check LFTs",                   source: "LFTs")
+        f.addPending(key: "gcs",             label: "GCS (3–15) — clinical assessment",                  source: "Neuro exam")
+        return (i, f)
+    }
 }

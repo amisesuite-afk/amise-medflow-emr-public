@@ -155,6 +155,10 @@ enum BayesianDiagnosisEngine {
         hapsScore: Int? = nil,          // HAPS 0–3; 3 = harmless AP; <3 = potentially severe
         bisapScore: Int? = nil,         // BISAP 0–5; ≥3 = severe AP; guides ICU/CT need
         glasgowImrieScore: Int? = nil,  // Glasgow-Imrie 0–8; ≥3 = severe AP (48-h variables)
+        albiScore: Double? = nil,       // ALBI continuous; Grade 1 ≤-2.60, Grade 3 >-1.39
+        auditCScore: Int? = nil,        // AUDIT-C 0–12; ≥4(M)/≥3(F) = hazardous drinking
+        phq9Score: Int? = nil,          // PHQ-9 0–27; ≥10 = moderate depression
+        sapsIIScore: Int? = nil,        // SAPS II 0–163; ≥40 = >30% predicted mortality
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3556,6 +3560,51 @@ enum BayesianDiagnosisEngine {
                     scored[i].evidence.append(label)
                     scored[i].evidenceSources["score", default: []].append(label)
                 }
+            }
+        }
+
+        // ALBI boost: severe dysfunction elevates hepatic/biliary candidates
+        if let albi = albiScore, albi > -1.39 {
+            let albiTargets = ["liver", "hepatic", "hepatocellular", "cirrhosis", "cholangiocarcinoma",
+                               "hepatitis", "portal hypertension", "varices", "ascites"]
+            let adj = albi > -1.0 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard albiTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "ALBI Grade 3 (\(String(format: "%.2f", albi))) — severe hepatic dysfunction"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // AUDIT-C boost: hazardous drinking elevates alcohol-related and hepatic candidates
+        if let ac = auditCScore, ac >= 4 {
+            let acTargets = ["alcohol", "alcoholic", "liver", "hepatic", "pancreatitis",
+                             "oesophageal", "gastritis", "neuropathy", "delirium tremens"]
+            let adj = ac >= 8 ? 8 : 5
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard acTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "AUDIT-C \(ac)/12 — hazardous/harmful drinking"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // SAPS II boost: high ICU severity elevates critical/sepsis candidates
+        if let saps = sapsIIScore, saps >= 40 {
+            let sapsTargets = ["sepsis", "septic shock", "multi-organ", "organ failure",
+                               "peritonitis", "necrotising", "ischaemia", "infarction"]
+            let adj = saps >= 70 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard sapsTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "SAPS II \(saps) — high ICU severity (predicted mortality ≥30%)"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
             }
         }
 
