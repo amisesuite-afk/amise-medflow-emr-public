@@ -1654,6 +1654,41 @@ enum PatientScoreAutoPopulator {
         return (i, f)
     }
 
+    // MARK: - NRS-2002 (Nutritional Risk Screening 2002)
+
+    static func nrs2002(patient: Patient) -> (NRS2002Input, ScoreAutoFill) {
+        var i = NRS2002Input()
+        var f = ScoreAutoFill()
+
+        // Age ≥70
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: .now).year ?? 0
+            if age >= 70 { i.ageOver70 = true; f.autoFieldKeys.insert("ageOver70") }
+        }
+
+        // Disease severity from setting / surgical context
+        let seriousKw = ["major abdominal", "laparotomy", "bowel resection", "colectomy",
+                         "gastrectomy", "oesophagectomy", "pancreatectomy", "hepatectomy",
+                         "stroke", "head injury", "bone marrow"]
+        let minorKw = ["chemotherapy", "dialysis", "haemodialysis", "chronic obstructive",
+                       "liver cirrhosis", "diabetes", "hip fracture"]
+        let allText = [patient.chiefComplaint, patient.hpi, patient.workingDiagnosis,
+                       patient.pmhNotes, patient.assessmentText,
+                       patient.managementPlan].compactMap { $0 }.joined(separator: " ").lowercased()
+        if seriousKw.contains(where: { allText.contains($0) }) {
+            i.diseaseSeverity = 2; f.autoFieldKeys.insert("diseaseSeverity")
+        } else if minorKw.contains(where: { allText.contains($0) }) {
+            i.diseaseSeverity = 1; f.autoFieldKeys.insert("diseaseSeverity")
+        }
+
+        // Pending: nutritional status requires bedside assessment (weight, BMI, intake history)
+        f.addPending(key: "nutritionalStatus",
+            label: "Nutritional status — assess weight loss, BMI, and recent oral intake",
+            source: "Dietitian / nursing assessment")
+
+        return (i, f)
+    }
+
     // MARK: - CTSI (Balthazar CT Severity Index)
 
     static func ctsi(patient: Patient) -> (CTSIInput, ScoreAutoFill) {

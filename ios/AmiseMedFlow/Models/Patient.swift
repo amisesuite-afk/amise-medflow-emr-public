@@ -113,6 +113,8 @@ final class Patient {
     var mpiScore: Int?
     // CT Severity Index / Balthazar (0–10); ≥7 = severe pancreatitis
     var ctsiScore: Int?
+    // NRS-2002 nutritional risk screen (0–7); ≥3 = at nutritional risk
+    var nrs2002Score: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

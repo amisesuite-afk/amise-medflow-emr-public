@@ -112,6 +112,7 @@ enum BayesianDiagnosisEngine {
         ppossumMortPct10: Int? = nil, // P-POSSUM predicted mortality ×10 (e.g. 85 = 8.5%)
         mpiScore: Int? = nil,         // MPI (0–47); ≥21 = significant mortality; ≥30 = critical
         ctsiScore: Int? = nil,        // CTSI (0–10); ≥4 = moderate, ≥7 = severe pancreatitis
+        nrs2002Score: Int? = nil,     // NRS-2002 (0–7); ≥3 = nutritional risk — malnutrition boosts
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2681,6 +2682,27 @@ enum BayesianDiagnosisEngine {
                 case 30...: (14, "MPI ≥30 — high peritonitis severity (predicted mortality >60%)")
                 case 21..<30: (8, "MPI 21–29 — intermediate peritonitis severity (~29% mortality)")
                 default:    (0, "")
+                }
+                guard adj > 0 else { continue }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // NRS-2002: boosts malnutrition-related and post-operative complication candidates
+        if let nrs = nrs2002Score, nrs >= 3 {
+            let malnutritionTargets = ["malnutrition", "protein-energy malnutrition",
+                                        "sarcopenia", "cachexia", "nutritional deficiency",
+                                        "wound dehiscence", "surgical site infection",
+                                        "anastomotic leak", "poor wound healing", "pressure ulcer"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard malnutritionTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch nrs {
+                case 5...: (10, "NRS-2002 ≥5 — high nutritional risk; significantly elevated surgical complication risk")
+                case 3..<5: (5, "NRS-2002 3–4 — nutritional risk; increased complication risk")
+                default:   (0, "")
                 }
                 guard adj > 0 else { continue }
                 scored[i].logPosterior += Double(adj)

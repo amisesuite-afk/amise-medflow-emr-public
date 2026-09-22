@@ -55,6 +55,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case ppossum          = "P-POSSUM (Surgical Risk)"
     case mpi              = "Mannheim Peritonitis Index"
     case ctsi             = "CT Severity Index (Pancreatitis)"
+    case nrs2002          = "NRS-2002 (Nutritional Risk)"
 
     var category: ScoreCategory {
         switch self {
@@ -66,7 +67,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .vascular
         case .sirs, .qsofa, .psiPort, .sofa, .curb65, .apacheII:
             return .sepsis
-        case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4, .ppossum:
+        case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4, .ppossum, .nrs2002:
             return .preop
         case .abcd2, .lrinec, .gcs:
             return .neuro
@@ -110,6 +111,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .ppossum:        return "scissors"
         case .mpi:            return "cross.circle"
         case .ctsi:           return "photo.on.rectangle"
+        case .nrs2002:        return "fork.knife"
         }
     }
 }
@@ -196,6 +198,8 @@ struct ClinicalScoresView: View {
     @State private var mpiI = MPIInput()
     // CTSI
     @State private var ctsiI = CTSIInput()
+    // NRS-2002
+    @State private var nrsI = NRS2002Input()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -570,6 +574,9 @@ struct ClinicalScoresView: View {
         case .ctsi:
             let (input, fill) = PatientScoreAutoPopulator.ctsi(patient: patient)
             ctsiI = input; autoFill = fill
+        case .nrs2002:
+            let (input, fill) = PatientScoreAutoPopulator.nrs2002(patient: patient)
+            nrsI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -662,6 +669,7 @@ struct ClinicalScoresView: View {
         case .ppossum:      ClinicalScoringEngine.ppossum(ppossumI)
         case .mpi:          ClinicalScoringEngine.mpi(mpiI)
         case .ctsi:         ClinicalScoringEngine.ctsi(ctsiI)
+        case .nrs2002:      ClinicalScoringEngine.nrs2002(nrsI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -694,6 +702,7 @@ struct ClinicalScoresView: View {
         case .ppossum:      patient.ppossumMortPct10 = Int(r.score * 10)
         case .mpi:          patient.mpiScore = intScore
         case .ctsi:         patient.ctsiScore = intScore
+        case .nrs2002:      patient.nrs2002Score = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -764,6 +773,7 @@ struct ClinicalScoresView: View {
         case .ppossum:      ppossumForm
         case .mpi:          mpiForm
         case .ctsi:         ctsiForm
+        case .nrs2002:      nrs2002Form
         }
     }
 
@@ -1804,6 +1814,11 @@ struct ClinicalScoresView: View {
         case .ctsi:
             // CTSI fields are numeric selectors — no boolean toggle confirm
             break
+        case .nrs2002:
+            switch field.id {
+            case "ageOver70": nrsI.ageOver70 = true
+            default: break
+            }
         default: break
         }
 
@@ -2248,6 +2263,35 @@ struct ClinicalScoresView: View {
                 options: [(1, "Elective"), (4, "Emergency >2 h (resuscitated)"), (8, "Emergency <2 h (not resuscitated)")])
         }
         .onChange(of: ppossumI) { _, _ in recalculate() }
+    }
+
+    // MARK: - NRS-2002
+
+    private var nrs2002Form: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Nutritional Risk Screening 2002 (Kondrup et al, Clin Nutr 2003). Score ≥3 = at nutritional risk; initiate nutritional support plan. Validated in 128 randomised trials.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
+            Group {
+                sectionHeader("Nutritional Status (impaired nutrition)")
+                apacheSegment("Nutritional Status Score", selection: $nrsI.nutritionalStatus,
+                    options: [
+                        (0, "Normal nutritional status"),
+                        (1, "Mild — weight loss >5% in 3 months, or food intake 50–75% of normal in past week"),
+                        (2, "Moderate — weight loss >5% in 2 months, or BMI 18.5–20.5 with impaired general condition, or food intake 25–60% of normal"),
+                        (3, "Severe — weight loss >5% in 1 month (>15% in 3 months), BMI <18.5, or food intake <25% of normal")
+                    ])
+                sectionHeader("Disease Severity (stress metabolism)")
+                apacheSegment("Disease Severity Score", selection: $nrsI.diseaseSeverity,
+                    options: [
+                        (0, "Normal requirements"),
+                        (1, "Minor — hip fracture, chronic disease with complications (liver cirrhosis, COPD, haemodialysis, diabetes, chemotherapy)"),
+                        (2, "Moderate — major abdominal surgery, stroke, haematological malignancy, ICU APACHE II <10"),
+                        (3, "Severe — head injury, bone marrow transplant, ICU APACHE II ≥10")
+                    ])
+                scoreToggle("Age ≥70 years", binding: $nrsI.ageOver70, points: "+1", autoKey: "ageOver70")
+            }
+            .onChange(of: nrsI) { _, _ in recalculate() }
+        }
     }
 
     // MARK: - CTSI (Balthazar CT Severity Index)

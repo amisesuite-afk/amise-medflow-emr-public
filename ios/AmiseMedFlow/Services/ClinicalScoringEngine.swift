@@ -469,6 +469,14 @@ struct APACHEIIInput: Equatable {
     var chronicHealthPoints: Int = 0 // 0=none, 2=elective postop, 5=nonop or emergency postop with severe organ insufficiency/immunocompromised
 }
 
+struct NRS2002Input: Equatable {
+    // Nutritional Risk Screening 2002 (Kondrup et al, Clin Nutr 2003)
+    // Total score = nutritionalStatus (0–3) + diseaseSeverity (0–3) + ageAdj (0–1). ≥3 = at risk.
+    var nutritionalStatus: Int = 0  // 0=normal, 1=mild (wt loss 5–10% in 3m or intake 50–75%), 2=moderate (wt loss 5% in 2m or BMI 18.5–20.5 or intake 25–60%), 3=severe (wt loss >5% in 1m/BMI<18.5/intake<25%)
+    var diseaseSeverity: Int = 0    // 0=absent, 1=minor (hip Fx, ChemRx, chronic disease), 2=moderate (major abdo Sx, stroke, haem malignancy, ICU APACHE<10), 3=severe (head injury, BMT, ICU APACHE≥10)
+    var ageOver70: Bool = false     // +1 if ≥70 years
+}
+
 struct CTSIInput: Equatable {
     // Balthazar CT Severity Index (Balthazar et al, Radiology 1990)
     // Balthazar grade (A=0, B=1, C=2, D=3, E=4) + necrosis score (0/2/4/6). Total 0–10.
@@ -2722,6 +2730,66 @@ enum ClinicalScoringEngine {
             redFlags: flags,
             evidenceNote: "Balthazar EA et al. Radiology 1990; 174:331–336."
         )
+    }
+
+    // MARK: - NRS-2002 (Nutritional Risk Screening 2002)
+
+    static func nrs2002(_ i: NRS2002Input) -> ClinicalScore {
+        let total = i.nutritionalStatus + i.diseaseSeverity + (i.ageOver70 ? 1 : 0)
+        let (risk, interp, recs, flags) = nrs2002Risk(total)
+        let nsLabels = ["0 — Normal nutritional status",
+                        "1 — Mild: weight loss 5–10% in 3 months, or intake 50–75% of requirement",
+                        "2 — Moderate: weight loss 5% in 2 months, or BMI 18.5–20.5 with impaired general condition, or intake 25–60%",
+                        "3 — Severe: weight loss >5% in 1 month / >15% in 3 months, BMI <18.5, or intake <25%"]
+        let dsLabels = ["0 — No disease",
+                        "1 — Minor stress: hip fracture, chronic disease with complications, chemotherapy",
+                        "2 — Moderate stress: major abdominal surgery, stroke, haematological malignancy, ICU APACHE <10",
+                        "3 — Severe stress: head injury, bone marrow transplant, ICU APACHE ≥10"]
+        var items: [ScoreItem] = []
+        items.append(ScoreItem(
+            label: i.nutritionalStatus < nsLabels.count ? nsLabels[i.nutritionalStatus] : "Nutritional status \(i.nutritionalStatus)",
+            points: Double(i.nutritionalStatus), present: i.nutritionalStatus > 0))
+        items.append(ScoreItem(
+            label: i.diseaseSeverity < dsLabels.count ? dsLabels[i.diseaseSeverity] : "Disease severity \(i.diseaseSeverity)",
+            points: Double(i.diseaseSeverity), present: i.diseaseSeverity > 0))
+        items.append(ScoreItem(label: "Age ≥70 years", points: 1, present: i.ageOver70))
+        return ClinicalScore(
+            systemName: "NRS-2002",
+            abbreviation: "NRS \(total)",
+            score: Double(total), maxScore: 7,
+            risk: risk,
+            interpretation: interp,
+            items: items,
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Kondrup J et al. Clin Nutr 2003; 22:415–421. Validated in 128 RCTs."
+        )
+    }
+
+    private static func nrs2002Risk(_ s: Int) -> (ScoreRisk, String, [String], [String]) {
+        if s < 3 {
+            return (.low, "Not at nutritional risk (score \(s))",
+                    ["Routine dietary intake; re-screen weekly if inpatient",
+                     "Document baseline weight and BMI",
+                     "Re-screen if clinical condition deteriorates"],
+                    [])
+        } else if s < 5 {
+            return (.moderate, "Nutritional risk (score \(s)) — intervention indicated",
+                    ["Refer to dietitian for formal nutritional assessment within 24–48 h",
+                     "Set individualised nutritional goals (25–35 kcal/kg/day; 1.2–1.5 g protein/kg/day)",
+                     "Oral nutritional supplements or enhanced catering as first-line",
+                     "Consider enteral nutrition if oral intake insufficient",
+                     "Monitor weight, biochemistry (electrolytes, albumin, pre-albumin) regularly"],
+                    [])
+        } else {
+            return (.high, "High nutritional risk (score \(s)) — urgent intervention",
+                    ["Immediate dietitian review",
+                     "Initiate nutritional support within 24 h; enteral route preferred",
+                     "Parenteral nutrition only if enteral route is not feasible",
+                     "Monitor for refeeding syndrome: check and correct phosphate, potassium, magnesium",
+                     "Weekly formal reassessment; optimise pre-operatively if elective surgery planned"],
+                    ["NRS-2002 ≥5 — high risk of peri-operative complications; discuss with nutrition team before surgery"])
+        }
     }
 
     private static func ctsiRisk(_ s: Int) -> (ScoreRisk, String, [String], [String]) {
