@@ -113,6 +113,7 @@ enum BayesianDiagnosisEngine {
         mpiScore: Int? = nil,         // MPI (0–47); ≥21 = significant mortality; ≥30 = critical
         ctsiScore: Int? = nil,        // CTSI (0–10); ≥4 = moderate, ≥7 = severe pancreatitis
         nrs2002Score: Int? = nil,     // NRS-2002 (0–7); ≥3 = nutritional risk — malnutrition boosts
+        forrestGrade: Int? = nil,     // Forrest grade (1–6); 1–2=active bleed, 3=visible vessel (high rebleed)
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2722,6 +2723,29 @@ enum BayesianDiagnosisEngine {
                 case 7...: (14, "CTSI ≥7 — severe pancreatitis (mortality 17%+, complication rate >50%)")
                 case 4..<7: (8, "CTSI 4–6 — moderate pancreatitis (~30–50% complication rate)")
                 default:    (0, "")
+                }
+                guard adj > 0 else { continue }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // Forrest: boosts upper GI bleed / peptic ulcer candidates based on endoscopic grade
+        if let fg = forrestGrade {
+            let giBleedTargets = ["peptic ulcer", "duodenal ulcer", "gastric ulcer",
+                                   "upper gi bleed", "upper gastrointestinal bleed",
+                                   "haematemesis", "hematemesis", "melena", "melaena",
+                                   "mallory-weiss", "dieulafoy"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard giBleedTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch fg {
+                case 1, 2: (14, "Forrest Ia/Ib — active bleeding; rebleed risk 55–90%; endoscopic therapy required")
+                case 3:    (10, "Forrest IIa — visible vessel; rebleed risk 43%; endoscopic therapy recommended")
+                case 4:    (7,  "Forrest IIb — adherent clot; rebleed risk 22%; high-risk stigmata")
+                case 5:    (3,  "Forrest IIc — flat spot; rebleed risk 10%; lower-risk stigmata")
+                default:   (0,  "")
                 }
                 guard adj > 0 else { continue }
                 scored[i].logPosterior += Double(adj)

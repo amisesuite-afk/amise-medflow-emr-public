@@ -469,6 +469,13 @@ struct APACHEIIInput: Equatable {
     var chronicHealthPoints: Int = 0 // 0=none, 2=elective postop, 5=nonop or emergency postop with severe organ insufficiency/immunocompromised
 }
 
+struct ForrestInput: Equatable {
+    // Forrest Classification (Forrest et al, Lancet 1974; Laine & Peterson, N Engl J Med 1994)
+    // Endoscopic stigmata of peptic ulcer bleeding. Single classification grade.
+    // grade: 1=Ia(spurting), 2=Ib(oozing), 3=IIa(visible vessel), 4=IIb(adherent clot), 5=IIc(flat spot), 6=III(clean base)
+    var grade: Int = 1
+}
+
 struct NRS2002Input: Equatable {
     // Nutritional Risk Screening 2002 (Kondrup et al, Clin Nutr 2003)
     // Total score = nutritionalStatus (0–3) + diseaseSeverity (0–3) + ageAdj (0–1). ≥3 = at risk.
@@ -2729,6 +2736,71 @@ enum ClinicalScoringEngine {
             recommendations: recs,
             redFlags: flags,
             evidenceNote: "Balthazar EA et al. Radiology 1990; 174:331–336."
+        )
+    }
+
+    // MARK: - Forrest Classification (peptic ulcer bleeding stigmata)
+
+    static func forrest(_ i: ForrestInput) -> ClinicalScore {
+        // Map grade to rebleed risk %, endoscopy recommendation, and score representation
+        struct ForrestData {
+            let label: String; let rebleedPct: Int; let risk: ScoreRisk
+            let recs: [String]; let flags: [String]
+        }
+        let table: [Int: ForrestData] = [
+            1: ForrestData(label: "Ia — Spurting arterial bleeding", rebleedPct: 90, risk: .critical,
+                recs: ["Dual endoscopic therapy (injection + thermal/clip)",
+                        "IV proton pump inhibitor infusion (80 mg bolus then 8 mg/h for 72 h)",
+                        "Repeat endoscopy at 24 h",
+                        "Surgical or interventional radiology backup immediately available",
+                        "ICU-level monitoring; cross-match 4–6 units blood"],
+                flags: ["Active arterial spurting — highest rebleed risk (~90%); surgery/IR if endoscopic haemostasis fails"]),
+            2: ForrestData(label: "Ib — Oozing / non-spurting active bleeding", rebleedPct: 55, risk: .critical,
+                recs: ["Dual endoscopic therapy",
+                        "IV PPI infusion (80 mg bolus then 8 mg/h for 72 h)",
+                        "Repeat endoscopy at 24 h if high-risk features persist",
+                        "ICU/HDU monitoring; blood transfusion threshold Hb <80 g/L"],
+                flags: ["Active oozing — rebleed risk ~55%"]),
+            3: ForrestData(label: "IIa — Non-bleeding visible vessel", rebleedPct: 43, risk: .high,
+                recs: ["Endoscopic therapy (thermal coagulation ± injection)",
+                        "IV PPI infusion 72 h",
+                        "Hospital admission; repeat endoscopy in 24 h",
+                        "Oral PPI once infusion complete; H. pylori test and treat"],
+                flags: ["Visible vessel — rebleed risk ~43%"]),
+            4: ForrestData(label: "IIb — Adherent clot", rebleedPct: 22, risk: .moderate,
+                recs: ["Attempt clot removal with endoscopic therapy (injection then wash)",
+                        "If underlying vessel visible → treat as IIa",
+                        "IV PPI infusion 72 h; oral PPI maintenance",
+                        "Hospital admission 48–72 h; H. pylori test and treat"],
+                flags: []),
+            5: ForrestData(label: "IIc — Flat pigmented haematin spot", rebleedPct: 10, risk: .low,
+                recs: ["Endoscopic therapy not routinely required",
+                        "High-dose oral PPI (40 mg bd for 14 days)",
+                        "H. pylori test and treat if not already done",
+                        "Early discharge may be appropriate in low-risk patients (Blatchford 0–1)"],
+                flags: []),
+            6: ForrestData(label: "III — Clean ulcer base", rebleedPct: 5, risk: .low,
+                recs: ["No endoscopic therapy required",
+                        "Oral PPI (40 mg once daily × 4–8 weeks)",
+                        "H. pylori test and treat",
+                        "Consider early discharge in Blatchford score 0 patients",
+                        "Outpatient follow-up; consider repeat endoscopy at 6–8 weeks if gastric ulcer"],
+                flags: [])
+        ]
+        let data = table[i.grade] ?? table[6]!
+        let items: [ScoreItem] = [
+            ScoreItem(label: data.label, points: Double(data.rebleedPct), present: true)
+        ]
+        return ClinicalScore(
+            systemName: "Forrest Classification",
+            abbreviation: i.grade <= 2 ? "Ia/Ib" : i.grade == 3 ? "IIa" : i.grade == 4 ? "IIb" : i.grade == 5 ? "IIc" : "III",
+            score: Double(i.grade), maxScore: 6,
+            risk: data.risk,
+            interpretation: "\(data.label) — estimated rebleed risk \(data.rebleedPct)%",
+            items: items,
+            recommendations: data.recs,
+            redFlags: data.flags,
+            evidenceNote: "Forrest JAH et al. Lancet 1974; 2:394–397. Laine L & Peterson WL. N Engl J Med 1994; 331:717–727."
         )
     }
 

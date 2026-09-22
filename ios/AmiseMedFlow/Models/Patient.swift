@@ -115,6 +115,8 @@ final class Patient {
     var ctsiScore: Int?
     // NRS-2002 nutritional risk screen (0–7); ≥3 = at nutritional risk
     var nrs2002Score: Int?
+    // Forrest Classification grade (1–6); 1=Ia spurting, 2=Ib oozing, 3=IIa visible vessel, 4=IIb clot, 5=IIc flat spot, 6=III clean
+    var forrestGrade: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

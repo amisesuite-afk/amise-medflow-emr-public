@@ -56,12 +56,13 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case mpi              = "Mannheim Peritonitis Index"
     case ctsi             = "CT Severity Index (Pancreatitis)"
     case nrs2002          = "NRS-2002 (Nutritional Risk)"
+    case forrest          = "Forrest Classification"
 
     var category: ScoreCategory {
         switch self {
         case .alvarado, .tokyoChole, .tokyoCholang, .ranson, .glasgow, .bisap, .mpi, .ctsi:
             return .acute
-        case .rockall, .blatchford, .aims65:
+        case .rockall, .blatchford, .aims65, .forrest:
             return .gi
         case .wellsDVT, .wellsPE, .caprini, .padua:
             return .vascular
@@ -112,6 +113,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .mpi:            return "cross.circle"
         case .ctsi:           return "photo.on.rectangle"
         case .nrs2002:        return "fork.knife"
+        case .forrest:        return "eye.circle"
         }
     }
 }
@@ -200,6 +202,8 @@ struct ClinicalScoresView: View {
     @State private var ctsiI = CTSIInput()
     // NRS-2002
     @State private var nrsI = NRS2002Input()
+    // Forrest Classification
+    @State private var forrestI = ForrestInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -577,6 +581,9 @@ struct ClinicalScoresView: View {
         case .nrs2002:
             let (input, fill) = PatientScoreAutoPopulator.nrs2002(patient: patient)
             nrsI = input; autoFill = fill
+        case .forrest:
+            let (input, fill) = PatientScoreAutoPopulator.forrest(patient: patient)
+            forrestI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -670,6 +677,7 @@ struct ClinicalScoresView: View {
         case .mpi:          ClinicalScoringEngine.mpi(mpiI)
         case .ctsi:         ClinicalScoringEngine.ctsi(ctsiI)
         case .nrs2002:      ClinicalScoringEngine.nrs2002(nrsI)
+        case .forrest:      ClinicalScoringEngine.forrest(forrestI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -703,6 +711,7 @@ struct ClinicalScoresView: View {
         case .mpi:          patient.mpiScore = intScore
         case .ctsi:         patient.ctsiScore = intScore
         case .nrs2002:      patient.nrs2002Score = intScore
+        case .forrest:      patient.forrestGrade = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -774,6 +783,7 @@ struct ClinicalScoresView: View {
         case .mpi:          mpiForm
         case .ctsi:         ctsiForm
         case .nrs2002:      nrs2002Form
+        case .forrest:      forrestForm
         }
     }
 
@@ -1819,6 +1829,9 @@ struct ClinicalScoresView: View {
             case "ageOver70": nrsI.ageOver70 = true
             default: break
             }
+        case .forrest:
+            // Forrest grade is a single numeric picker — no boolean toggle confirm
+            break
         default: break
         }
 
@@ -2291,6 +2304,28 @@ struct ClinicalScoresView: View {
                 scoreToggle("Age ≥70 years", binding: $nrsI.ageOver70, points: "+1", autoKey: "ageOver70")
             }
             .onChange(of: nrsI) { _, _ in recalculate() }
+        }
+    }
+
+    // MARK: - Forrest Classification
+
+    private var forrestForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Forrest Classification of peptic ulcer bleeding (Forrest et al, Lancet 1974; Laine & Peterson, N Engl J Med 1994). Endoscopic classification. Guides need for endoscopic haemostasis and rebleeding risk stratification.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
+            Group {
+                sectionHeader("Endoscopic Finding")
+                apacheSegment("Forrest Grade", selection: $forrestI.grade,
+                    options: [
+                        (1, "Ia — Spurting haemorrhage (active bleeding jet; rebleed ~90%)"),
+                        (2, "Ib — Oozing haemorrhage (active bleeding ooze; rebleed ~55%)"),
+                        (3, "IIa — Visible vessel (non-bleeding; rebleed ~43%)"),
+                        (4, "IIb — Adherent clot (rebleed ~22%)"),
+                        (5, "IIc — Flat pigmented spot (rebleed ~10%)"),
+                        (6, "III — Clean ulcer base (rebleed ~5%)")
+                    ])
+            }
+            .onChange(of: forrestI) { _, _ in recalculate() }
         }
     }
 

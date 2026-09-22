@@ -1703,4 +1703,16 @@ enum PatientScoreAutoPopulator {
             source: "CT report")
         return (i, f)
     }
+
+    // MARK: - Forrest Classification
+
+    static func forrest(patient: Patient) -> (ForrestInput, ScoreAutoFill) {
+        let i = ForrestInput()
+        var f = ScoreAutoFill()
+        // Forrest grade requires direct endoscopic visualisation — no auto-fill possible
+        f.addPending(key: "grade",
+            label: "Forrest grade (Ia–III) — requires upper GI endoscopy report",
+            source: "Endoscopy report")
+        return (i, f)
+    }
 }
