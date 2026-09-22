@@ -476,6 +476,27 @@ struct ForrestInput: Equatable {
     var grade: Int = 1
 }
 
+struct NIHSSInput: Equatable {
+    // NIH Stroke Scale (Brott T et al. Stroke 1989;20:864–870)
+    // 11 items; total 0–42; higher = more severe
+    // 0=no deficit; 1-4=minor; 5-15=moderate; 16-20=moderate-severe; 21-42=severe
+    var consciousness: Int = 0        // 0=alert, 1=not alert but arousable, 2=not alert obtunded, 3=unresponsive
+    var locQuestions: Int = 0         // answers 2 questions (month, age): 0=both correct, 1=one correct, 2=neither
+    var locCommands: Int = 0          // obeys 2 commands (open/close eyes, grip): 0=both, 1=one, 2=neither
+    var gazeDeviation: Int = 0        // 0=normal, 1=partial gaze palsy, 2=forced deviation
+    var visualFields: Int = 0         // 0=no loss, 1=partial hemianopia, 2=complete hemianopia, 3=bilateral/cortical blindness
+    var facialPalsy: Int = 0          // 0=normal, 1=minor, 2=partial, 3=complete
+    var motorArmLeft: Int = 0         // 0=no drift, 1=drift <10s, 2=some effort against gravity, 3=no effort against gravity, 4=no movement
+    var motorArmRight: Int = 0        // same scale as motorArmLeft
+    var motorLegLeft: Int = 0         // 0=no drift, 1=drift <5s, 2=some effort against gravity, 3=no effort, 4=no movement
+    var motorLegRight: Int = 0        // same scale as motorLegLeft
+    var limbAtaxia: Int = 0           // 0=absent, 1=one limb, 2=two limbs
+    var sensory: Int = 0              // 0=normal, 1=mild-moderate loss, 2=severe loss / absent
+    var language: Int = 0             // 0=no aphasia, 1=mild aphasia, 2=severe aphasia, 3=mute/global aphasia
+    var dysarthria: Int = 0           // 0=normal, 1=mild-moderate, 2=severe / intubated
+    var extinction: Int = 0           // 0=no abnormality, 1=inattention one modality, 2=profound hemi-inattention
+}
+
 struct EuroScoreIIInput: Equatable {
     // EuroSCORE II — European System for Cardiac Operative Risk Evaluation
     // Nashef SAM et al. Eur J Cardiothorac Surg 2012;41:734–745.
@@ -2948,6 +2969,91 @@ enum ClinicalScoringEngine {
             recommendations: data.recs,
             redFlags: data.flags,
             evidenceNote: "Forrest JAH et al. Lancet 1974; 2:394–397. Laine L & Peterson WL. N Engl J Med 1994; 331:717–727."
+        )
+    }
+
+    // MARK: - NIHSS (NIH Stroke Scale)
+
+    static func nihss(_ i: NIHSSInput) -> ClinicalScore {
+        let total = i.consciousness + i.locQuestions + i.locCommands +
+                    i.gazeDeviation + i.visualFields + i.facialPalsy +
+                    i.motorArmLeft + i.motorArmRight +
+                    i.motorLegLeft + i.motorLegRight +
+                    i.limbAtaxia + i.sensory + i.language +
+                    i.dysarthria + i.extinction
+
+        let (risk, interp, recs, flags): (ScoreRisk, String, [String], [String]) = switch total {
+        case 0:
+            (.low, "No stroke deficit — NIHSS 0",
+             ["Review for TIA; consider DWI-MRI if symptoms resolved (ABCD² ≥4)",
+              "Assess for AF, carotid disease, and modifiable stroke risk factors",
+              "Early dual antiplatelet (if TIA/minor stroke): aspirin + clopidogrel for 21 days"],
+             [])
+        case 1...4:
+            (.low, "Minor stroke — NIHSS 1–4",
+             ["Admit to stroke unit for monitoring and investigation",
+              "Brain CT/MRI within 24 h; MRI DWI preferred for lacunar/posterior fossa lesions",
+              "Antiplatelet therapy or anticoagulation per aetiology (AF → NOAC; non-cardioembolic → antiplatelet)",
+              "Swallowing screen before oral intake; physiotherapy and OT assessment",
+              "Early secondary prevention: BP, lipid, glucose management"],
+             [])
+        case 5...15:
+            (.moderate, "Moderate stroke — NIHSS 5–15",
+             ["Immediate stroke unit admission; continuous monitoring",
+              "IV alteplase if within 4.5 h of onset and eligible (NIHSS 4–25 typical range)",
+              "Consider mechanical thrombectomy if large vessel occlusion (NIHSS ≥6) within 24 h",
+              "CT/CTA or MRI/MRA urgently; carotid imaging if anterior circulation stroke",
+              "Dysphagia assessment; NG feeding if unsafe swallow",
+              "Neurological rehabilitation team referral within 24–48 h"],
+             [])
+        case 16...20:
+            (.high, "Moderate-severe stroke — NIHSS 16–20",
+             ["Immediate stroke unit or HDU admission; airway protection assessment",
+              "Urgent thrombectomy evaluation for large vessel occlusion",
+              "Alteplase if within 4.5 h and no contraindications",
+              "Neurosurgical opinion for cerebellar or malignant MCA infarction",
+              "Intensive rehabilitation planning; speech and language therapy",
+              "Family counselling regarding functional prognosis"],
+             ["NIHSS 16–20 — moderate-severe stroke; urgent thrombectomy evaluation and stroke unit care required"])
+        default:
+            (.high, "Severe stroke — NIHSS ≥21",
+             ["ICU or stroke HDU; early discussion with neurosurgical team",
+              "Decompressive hemicraniectomy for malignant MCA infarction (age <60 within 48 h)",
+              "Consider thrombectomy if LVO identified and within intervention window",
+              "Palliative care consultation if appropriate given stroke severity and premorbid status",
+              "Full rehabilitation potential assessment after initial stabilisation",
+              "Hydration, aspiration pneumonia prevention, pressure care, anticoagulation for DVT prophylaxis"],
+             ["NIHSS ≥21 — severe stroke; high mortality and disability risk; ICU-level care and early neurosurgical consultation required"])
+        }
+
+        let items: [ScoreItem] = [
+            ScoreItem(label: "Level of consciousness (\(["Alert","Not alert/arousable","Obtunded","Unresponsive"][min(i.consciousness,3)]))", points: Double(i.consciousness), present: i.consciousness > 0),
+            ScoreItem(label: "LOC questions (month/age) (\(["Both correct","One correct","Neither"][min(i.locQuestions,2)]))", points: Double(i.locQuestions), present: i.locQuestions > 0),
+            ScoreItem(label: "LOC commands (open/close eyes, grip) (\(["Both","One","Neither"][min(i.locCommands,2)]))", points: Double(i.locCommands), present: i.locCommands > 0),
+            ScoreItem(label: "Gaze (\(["Normal","Partial palsy","Forced deviation"][min(i.gazeDeviation,2)]))", points: Double(i.gazeDeviation), present: i.gazeDeviation > 0),
+            ScoreItem(label: "Visual fields (\(["No loss","Partial hemianopia","Complete hemianopia","Bilateral"][min(i.visualFields,3)]))", points: Double(i.visualFields), present: i.visualFields > 0),
+            ScoreItem(label: "Facial palsy (\(["Normal","Minor","Partial","Complete"][min(i.facialPalsy,3)]))", points: Double(i.facialPalsy), present: i.facialPalsy > 0),
+            ScoreItem(label: "Motor arm left (\(["No drift","Drift <10s","Effort vs gravity","No effort","No movement"][min(i.motorArmLeft,4)]))", points: Double(i.motorArmLeft), present: i.motorArmLeft > 0),
+            ScoreItem(label: "Motor arm right (\(["No drift","Drift <10s","Effort vs gravity","No effort","No movement"][min(i.motorArmRight,4)]))", points: Double(i.motorArmRight), present: i.motorArmRight > 0),
+            ScoreItem(label: "Motor leg left (\(["No drift","Drift <5s","Effort vs gravity","No effort","No movement"][min(i.motorLegLeft,4)]))", points: Double(i.motorLegLeft), present: i.motorLegLeft > 0),
+            ScoreItem(label: "Motor leg right (\(["No drift","Drift <5s","Effort vs gravity","No effort","No movement"][min(i.motorLegRight,4)]))", points: Double(i.motorLegRight), present: i.motorLegRight > 0),
+            ScoreItem(label: "Limb ataxia (\(["Absent","One limb","Two limbs"][min(i.limbAtaxia,2)]))", points: Double(i.limbAtaxia), present: i.limbAtaxia > 0),
+            ScoreItem(label: "Sensory (\(["Normal","Mild-moderate loss","Severe/absent"][min(i.sensory,2)]))", points: Double(i.sensory), present: i.sensory > 0),
+            ScoreItem(label: "Language (\(["No aphasia","Mild aphasia","Severe aphasia","Mute/global"][min(i.language,3)]))", points: Double(i.language), present: i.language > 0),
+            ScoreItem(label: "Dysarthria (\(["Normal","Mild-moderate","Severe/intubated"][min(i.dysarthria,2)]))", points: Double(i.dysarthria), present: i.dysarthria > 0),
+            ScoreItem(label: "Extinction/inattention (\(["None","One modality","Profound"][min(i.extinction,2)]))", points: Double(i.extinction), present: i.extinction > 0)
+        ]
+
+        return ClinicalScore(
+            systemName: "NIH Stroke Scale",
+            abbreviation: "NIHSS",
+            score: Double(total), maxScore: 42,
+            risk: risk,
+            interpretation: "NIHSS \(total) — \(interp)",
+            items: items,
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Brott T et al. Stroke 1989;20:864–870. Adams HP et al. Stroke 1999;30:1765–1769."
         )
     }
 

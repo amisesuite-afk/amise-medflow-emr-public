@@ -124,6 +124,7 @@ enum BayesianDiagnosisEngine {
         dasiScore: Int? = nil,        // DASI (0–58); <34 = poor functional capacity (<4 METs)
         barthelScore: Int? = nil,     // Barthel Index (0–100); ≤20 = severe ADL dependency
         euroScoreII: Int? = nil,      // EuroSCORE II predicted mortality ×10 (e.g. 35 = 3.5%); ≥50 = high risk
+        nihssScore: Int? = nil,       // NIHSS (0–42); ≥16 = moderate-severe/severe stroke
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2951,6 +2952,30 @@ enum BayesianDiagnosisEngine {
                 let (adj, label): (Int, String) = switch pctTenths {
                 case 50...: (14, "EuroSCORE II ≥5% — high predicted operative mortality; major cardiac disease burden")
                 case 20..<50: (8, "EuroSCORE II 2–5% — elevated operative mortality risk; significant cardiac pathology")
+                default: (0, "")
+                }
+                guard adj > 0 else { continue }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // NIHSS: higher stroke severity boosts stroke/TIA and neurological candidates
+        if let nihss = nihssScore, nihss >= 1 {
+            let nihssTargets = ["ischaemic stroke", "hemorrhagic stroke", "tia", "transient ischaemic",
+                                 "subarachnoid haemorrhage", "intracerebral haemorrhage",
+                                 "cerebral venous sinus thrombosis", "cerebral abscess",
+                                 "subdural haematoma", "epidural haematoma", "brain tumour",
+                                 "hemiplegia", "hemiparesis", "aphasia", "dysarthria",
+                                 "carotid artery disease", "vertebrobasilar insufficiency"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard nihssTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch nihss {
+                case 16...: (12, "NIHSS ≥16 — moderate-severe/severe neurological deficit; major stroke until proven otherwise")
+                case 5..<16: (7, "NIHSS 5–15 — moderate stroke deficit; significant neurological involvement")
+                case 1..<5: (3, "NIHSS 1–4 — minor stroke deficit; neurological cause likely")
                 default: (0, "")
                 }
                 guard adj > 0 else { continue }

@@ -137,6 +137,8 @@ final class Patient {
     var barthelScore: Int?
     // EuroSCORE II predicted operative mortality (×10 as Int, e.g. 3.5% stored as 35)
     var euroScoreII: Int?
+    // NIHSS (NIH Stroke Scale) total 0–42; 0=no deficit, 1-4=minor, 5-15=moderate, 16-20=moderate-severe, 21-42=severe
+    var nihssScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

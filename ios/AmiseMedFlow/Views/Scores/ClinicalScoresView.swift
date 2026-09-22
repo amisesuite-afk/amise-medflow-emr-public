@@ -67,6 +67,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case dasi             = "DASI (Functional Capacity)"
     case barthel          = "Barthel Index (ADL)"
     case euroScoreII      = "EuroSCORE II (Cardiac Surgery)"
+    case nihss            = "NIHSS (Stroke Severity)"
 
     var category: ScoreCategory {
         switch self {
@@ -80,7 +81,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .sepsis
         case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4, .ppossum, .nrs2002, .mallampati, .cfs, .dasi, .barthel, .euroScoreII:
             return .preop
-        case .abcd2, .lrinec, .gcs:
+        case .abcd2, .lrinec, .gcs, .nihss:
             return .neuro
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
@@ -134,6 +135,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .dasi:           return "figure.run"
         case .barthel:        return "figure.roll"
         case .euroScoreII:    return "heart.text.clipboard.fill"
+        case .nihss:          return "brain"
         }
     }
 }
@@ -244,6 +246,8 @@ struct ClinicalScoresView: View {
     @State private var barthelI = BarthelInput()
     // EuroSCORE II
     @State private var euroScI = EuroScoreIIInput()
+    // NIHSS
+    @State private var nihssI = NIHSSInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -654,6 +658,9 @@ struct ClinicalScoresView: View {
         case .euroScoreII:
             let (input, fill) = PatientScoreAutoPopulator.euroScoreII(patient: patient)
             euroScI = input; autoFill = fill
+        case .nihss:
+            let (input, fill) = PatientScoreAutoPopulator.nihss(patient: patient)
+            nihssI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -758,6 +765,7 @@ struct ClinicalScoresView: View {
         case .dasi:          ClinicalScoringEngine.dasi(dasiI)
         case .barthel:       ClinicalScoringEngine.barthel(barthelI)
         case .euroScoreII:   ClinicalScoringEngine.euroScoreII(euroScI)
+        case .nihss:         ClinicalScoringEngine.nihss(nihssI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -802,6 +810,7 @@ struct ClinicalScoresView: View {
         case .dasi:          patient.dasiScore = intScore
         case .barthel:       patient.barthelScore = intScore
         case .euroScoreII:   patient.euroScoreII = Int((r.score * 10).rounded())
+        case .nihss:         patient.nihssScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -884,6 +893,7 @@ struct ClinicalScoresView: View {
         case .dasi:          dasiForm
         case .barthel:       barthelForm
         case .euroScoreII:   euroScoreIIForm
+        case .nihss:         nihssForm
         }
     }
 
@@ -2013,6 +2023,9 @@ struct ClinicalScoresView: View {
             case "participateInStrenuous":   dasiI.participateInStrenuous = true
             default: break
             }
+        case .nihss:
+            // NIHSS fields are numeric pickers — auto-fill applies only consciousness level from text
+            break
         default: break
         }
 
@@ -3025,6 +3038,124 @@ struct ClinicalScoresView: View {
         case ScoreRisk.moderate.rawValue: return .orange
         case ScoreRisk.high.rawValue:     return Color(red: 0.9, green: 0.4, blue: 0.1)
         default:                          return .red
+        }
+    }
+
+    // MARK: - NIHSS (NIH Stroke Scale)
+
+    private var nihssForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("NIH Stroke Scale (Brott T et al. Stroke 1989;20:864–870; Adams HP et al. Stroke 1999;30:2315–2328). 15 items; total 0–42. 0 = no deficit; 1–4 = minor; 5–15 = moderate; 16–20 = moderate-severe; 21–42 = severe. Requires bedside neurological examination.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
+            Group {
+                sectionHeader("Level of Consciousness (Item 1a–1c)")
+                apacheSegment("1a. Consciousness Level", selection: $nihssI.consciousness,
+                    options: [
+                        (0, "0 — Alert; keenly responsive"),
+                        (1, "1 — Not alert; arousable by minor stimulation"),
+                        (2, "2 — Not alert; requires repeated stimulation or painful stimuli"),
+                        (3, "3 — Unresponsive or responds only with reflex motor")
+                    ])
+                apacheSegment("1b. LOC Questions (month + age)", selection: $nihssI.locQuestions,
+                    options: [
+                        (0, "0 — Both correct"),
+                        (1, "1 — One correct (or intubated / dysarthric / dysphasic)"),
+                        (2, "2 — Neither correct")
+                    ])
+                apacheSegment("1c. LOC Commands (open/close eyes, grip/release)", selection: $nihssI.locCommands,
+                    options: [
+                        (0, "0 — Both obeyed"),
+                        (1, "1 — One obeyed"),
+                        (2, "2 — Neither obeyed")
+                    ])
+                sectionHeader("Eye Movements & Visual Fields (Items 2–3)")
+                apacheSegment("2. Best Gaze", selection: $nihssI.gazeDeviation,
+                    options: [
+                        (0, "0 — Normal"),
+                        (1, "1 — Partial gaze palsy; gaze abnormal but not forced"),
+                        (2, "2 — Forced deviation; total gaze paresis not overcome by oculocephalic manoeuvre")
+                    ])
+                apacheSegment("3. Visual Fields", selection: $nihssI.visualFields,
+                    options: [
+                        (0, "0 — No visual loss"),
+                        (1, "1 — Partial hemianopia"),
+                        (2, "2 — Complete hemianopia"),
+                        (3, "3 — Bilateral hemianopia / cortical blindness")
+                    ])
+                sectionHeader("Face & Motor Function (Items 4–8)")
+                apacheSegment("4. Facial Palsy", selection: $nihssI.facialPalsy,
+                    options: [
+                        (0, "0 — Normal"),
+                        (1, "1 — Minor paralysis (flattened nasolabial fold, asymmetric smile)"),
+                        (2, "2 — Partial paralysis (lower face only)"),
+                        (3, "3 — Complete paralysis; upper and lower face")
+                    ])
+                apacheSegment("5a. Motor Arm — Left", selection: $nihssI.motorArmLeft,
+                    options: [
+                        (0, "0 — No drift; holds 90° (or 45°) for 10 s"),
+                        (1, "1 — Drift; holds 90° but drifts before 10 s; does not hit bed"),
+                        (2, "2 — Some effort against gravity; arm cannot reach or maintain 90°"),
+                        (3, "3 — No effort against gravity; arm falls"),
+                        (4, "4 — No movement")
+                    ])
+                apacheSegment("5b. Motor Arm — Right", selection: $nihssI.motorArmRight,
+                    options: [
+                        (0, "0 — No drift"),
+                        (1, "1 — Drift before 10 s"),
+                        (2, "2 — Some effort against gravity"),
+                        (3, "3 — No effort against gravity"),
+                        (4, "4 — No movement")
+                    ])
+                apacheSegment("6a. Motor Leg — Left", selection: $nihssI.motorLegLeft,
+                    options: [
+                        (0, "0 — No drift; holds 30° for 5 s"),
+                        (1, "1 — Drift; leg falls by end of 5 s but does not hit bed"),
+                        (2, "2 — Some effort against gravity; falls to bed within 5 s"),
+                        (3, "3 — No effort against gravity; falls immediately"),
+                        (4, "4 — No movement")
+                    ])
+                apacheSegment("6b. Motor Leg — Right", selection: $nihssI.motorLegRight,
+                    options: [
+                        (0, "0 — No drift"),
+                        (1, "1 — Drift before 5 s"),
+                        (2, "2 — Some effort against gravity"),
+                        (3, "3 — No effort against gravity"),
+                        (4, "4 — No movement")
+                    ])
+                sectionHeader("Coordination, Sensation & Language (Items 7–11)")
+                apacheSegment("7. Limb Ataxia", selection: $nihssI.limbAtaxia,
+                    options: [
+                        (0, "0 — Absent"),
+                        (1, "1 — Present in one limb"),
+                        (2, "2 — Present in two limbs")
+                    ])
+                apacheSegment("8. Sensory", selection: $nihssI.sensory,
+                    options: [
+                        (0, "0 — Normal; no sensory loss"),
+                        (1, "1 — Mild-moderate sensory loss; feels pinprick as less sharp"),
+                        (2, "2 — Severe to total sensory loss; patient unaware of being touched")
+                    ])
+                apacheSegment("9. Best Language", selection: $nihssI.language,
+                    options: [
+                        (0, "0 — No aphasia; normal"),
+                        (1, "1 — Mild-moderate aphasia; some obvious loss; can identify"),
+                        (2, "2 — Severe aphasia; fragmentary expression; cannot identify"),
+                        (3, "3 — Mute; global aphasia; no usable speech or auditory comprehension")
+                    ])
+                apacheSegment("10. Dysarthria", selection: $nihssI.dysarthria,
+                    options: [
+                        (0, "0 — Normal"),
+                        (1, "1 — Mild-moderate; slurred but understandable"),
+                        (2, "2 — Severe; unintelligible or mute / intubated")
+                    ])
+                apacheSegment("11. Extinction / Inattention", selection: $nihssI.extinction,
+                    options: [
+                        (0, "0 — No abnormality"),
+                        (1, "1 — Inattention or extinction to one modality"),
+                        (2, "2 — Profound hemi-inattention / extinction to more than one modality")
+                    ])
+            }
+            .onChange(of: nihssI) { _, _ in recalculate() }
         }
     }
 }

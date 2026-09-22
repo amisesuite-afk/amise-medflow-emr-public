@@ -2317,4 +2317,77 @@ enum PatientScoreAutoPopulator {
         }
         return (i, f)
     }
+
+    // MARK: - NIHSS (NIH Stroke Scale)
+
+    static func nihss(patient: Patient) -> (NIHSSInput, ScoreAutoFill) {
+        var i = NIHSSInput()
+        var f = ScoreAutoFill()
+
+        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                       patient.examNeuro, patient.notes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Consciousness level — infer from documented GCS or clinical state
+        if allText.contains("unresponsive") || allText.contains("gcs 3") || allText.contains("gcs 4") || allText.contains("gcs 5") {
+            i.consciousness = 3
+            f.addAutoFilled(key: "consciousness3", label: "Unresponsive / GCS ≤5 documented", source: "Clinical notes")
+        } else if allText.contains("obtunded") || allText.contains("gcs 6") || allText.contains("gcs 7") || allText.contains("gcs 8") {
+            i.consciousness = 2
+            f.addAutoFilled(key: "consciousness2", label: "Obtunded / GCS 6–8 documented", source: "Clinical notes")
+        } else if allText.contains("drowsy") || allText.contains("somnolent") || allText.contains("lethargic") {
+            i.consciousness = 1
+            f.addAutoFilled(key: "consciousness1", label: "Drowsy/somnolent documented", source: "Clinical notes")
+        }
+
+        // Motor — if hemiplegia/hemiparesis mentioned, flag laterality
+        if allText.contains("left hemiplegia") || allText.contains("left-sided weakness") || allText.contains("left arm weakness") {
+            i.motorArmLeft = 4
+            i.motorLegLeft = 4
+            f.addAutoFilled(key: "leftMotorplegia", label: "Left hemiplegia documented — motor arm/leg left set to 4 (no movement); verify at bedside", source: "Clinical notes")
+        } else if allText.contains("left hemiparesis") {
+            i.motorArmLeft = 2
+            i.motorLegLeft = 2
+            f.addAutoFilled(key: "leftMotorparesis", label: "Left hemiparesis documented — motor arm/leg left set to 2; verify at bedside", source: "Clinical notes")
+        }
+        if allText.contains("right hemiplegia") || allText.contains("right-sided weakness") || allText.contains("right arm weakness") {
+            i.motorArmRight = 4
+            i.motorLegRight = 4
+            f.addAutoFilled(key: "rightMotorplegia", label: "Right hemiplegia documented — motor arm/leg right set to 4 (no movement); verify at bedside", source: "Clinical notes")
+        } else if allText.contains("right hemiparesis") {
+            i.motorArmRight = 2
+            i.motorLegRight = 2
+            f.addAutoFilled(key: "rightMotorparesis", label: "Right hemiparesis documented — motor arm/leg right set to 2; verify at bedside", source: "Clinical notes")
+        }
+
+        // Aphasia — language item
+        if allText.contains("global aphasia") || allText.contains("mute") {
+            i.language = 3
+            f.addAutoFilled(key: "language3", label: "Global aphasia / mute documented", source: "Clinical notes")
+        } else if allText.contains("severe aphasia") {
+            i.language = 2
+            f.addAutoFilled(key: "language2", label: "Severe aphasia documented", source: "Clinical notes")
+        } else if allText.contains("aphasia") || allText.contains("dysphasia") {
+            i.language = 1
+            f.addAutoFilled(key: "language1", label: "Aphasia / dysphasia documented", source: "Clinical notes")
+        }
+
+        // Dysarthria
+        if allText.contains("dysarthria") || allText.contains("slurred speech") {
+            i.dysarthria = 1
+            f.addAutoFilled(key: "dysarthria1", label: "Dysarthria / slurred speech documented", source: "Clinical notes")
+        }
+
+        // Most NIHSS items require direct bedside neurological examination — mark as pending
+        f.addPending(key: "locQuestions", label: "1b. LOC questions — ask month and age at bedside", source: "Bedside exam")
+        f.addPending(key: "locCommands", label: "1c. LOC commands — test eye opening and grip at bedside", source: "Bedside exam")
+        f.addPending(key: "gazeDeviation", label: "2. Best gaze — assess horizontal eye movements", source: "Bedside exam")
+        f.addPending(key: "visualFields", label: "3. Visual fields — confrontation testing required", source: "Bedside exam")
+        f.addPending(key: "facialPalsy", label: "4. Facial palsy — observe facial symmetry", source: "Bedside exam")
+        f.addPending(key: "limbAtaxia", label: "7. Limb ataxia — finger-nose-finger and heel-shin tests", source: "Bedside exam")
+        f.addPending(key: "sensory", label: "8. Sensory — pinprick testing both sides", source: "Bedside exam")
+        f.addPending(key: "extinction", label: "11. Extinction/inattention — double simultaneous stimulation", source: "Bedside exam")
+
+        return (i, f)
+    }
 }
