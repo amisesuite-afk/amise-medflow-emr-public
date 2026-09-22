@@ -1184,4 +1184,132 @@ enum PatientScoreAutoPopulator {
 
         return (i, f)
     }
+
+    // MARK: - CURB-65
+
+    static func curb65(patient: Patient) -> (CURB65Input, ScoreAutoFill) {
+        var i = CURB65Input()
+        var f = ScoreAutoFill(); f.isAttempted = true
+        let age = patient.ageYears
+
+        // Age ≥65
+        if age >= 65 { i.ageOver65 = true; f.autoFieldKeys.insert("ageOver65") }
+
+        // Respiratory rate ≥30 from latest vitals
+        if let v = patient.latestVitals, let rr = v.respiratoryRate, rr >= 30 {
+            i.respiratoryRateOver30 = true; f.autoFieldKeys.insert("respiratoryRateOver30")
+        }
+
+        // Low BP: SBP <90 or DBP ≤60 from latest vitals
+        if let v = patient.latestVitals {
+            let lowSBP = v.bpSystolic.map { $0 < 90 }  ?? false
+            let lowDBP = v.bpDiastolic.map { $0 <= 60 } ?? false
+            if lowSBP || lowDBP {
+                i.lowBP = true; f.autoFieldKeys.insert("lowBP")
+            }
+        }
+
+        // Urea >7 mmol/L from labs; values >50 = BUN mg/dL → ÷2.8
+        if let urea = patient.latestLab(named: ["urea","blood urea","bun","blood urea nitrogen"]) {
+            let mmol = urea > 50 ? urea / 2.8 : urea
+            if mmol > 7 { i.ureaDOver7 = true; f.autoFieldKeys.insert("ureaDOver7") }
+        }
+
+        // Confusion requires clinical assessment
+        f.addPending(key: "confusion",
+            label: "Confusion: new disorientation to person, place, or time",
+            source: "Clinical assessment / AMTS")
+        if !f.isAuto("ureaDOver7") {
+            f.addPending(key: "ureaDOver7",
+                label: "Urea >7 mmol/L (BUN >19 mg/dL)",
+                source: "U&E results")
+        }
+        if !f.isAuto("respiratoryRateOver30") {
+            f.addPending(key: "respiratoryRateOver30",
+                label: "Respiratory rate ≥30 /min",
+                source: "Measure at bedside")
+        }
+
+        return (i, f)
+    }
+
+    // MARK: - Padua Prediction Score
+
+    static func padua(patient: Patient) -> (PaduaInput, ScoreAutoFill) {
+        var i = PaduaInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+        let age = patient.ageYears
+
+        // Age ≥70
+        if age >= 70 { i.ageOver70 = true; f.autoFieldKeys.insert("ageOver70") }
+
+        // Active / recent cancer
+        let cancerKw = ["cancer","carcinoma","malignancy","malignant","lymphoma","leukemia",
+                        "leukaemia","sarcoma","melanoma","adenocarcinoma","neoplasm","tumour","tumor","metastas"]
+        if patient.clinicalTextContains(cancerKw) {
+            i.activeOrRecentCancer = true; f.autoFieldKeys.insert("activeOrRecentCancer")
+        }
+
+        // Previous VTE
+        let vteKw = ["dvt","deep vein thrombosis","deep venous thrombosis",
+                     "pulmonary embolism","vte","thromboembolism"]
+        if patient.clinicalTextContains(vteKw) {
+            i.previousVTE = true; f.autoFieldKeys.insert("previousVTE")
+        }
+
+        // Thrombophilia
+        let thrKw = ["thrombophilia","factor v leiden","protein c deficiency",
+                     "protein s deficiency","antiphospholipid","antithrombin deficiency"]
+        if patient.clinicalTextContains(thrKw) {
+            i.thrombophilia = true; f.autoFieldKeys.insert("thrombophilia")
+        }
+
+        // Reduced mobility / bed rest — inpatient setting or surgical
+        if patient.setting == .inpatient || patient.isSurgicalVisit {
+            i.reducedMobility = true; f.autoFieldKeys.insert("reducedMobility")
+        }
+
+        // Recent trauma or surgery ≤1 month
+        if patient.isSurgicalVisit {
+            i.recentTraumaOrSurgery = true; f.autoFieldKeys.insert("recentTraumaOrSurgery")
+        }
+
+        // Obesity: BMI ≥30
+        if let bmi = patient.latestBMI(), bmi >= 30 {
+            i.obese = true; f.autoFieldKeys.insert("obese")
+        }
+
+        // Heart failure or respiratory failure from PMH
+        let hfKw = ["heart failure","cardiac failure","congestive heart failure","ccf","chf",
+                    "respiratory failure","cor pulmonale"]
+        if patient.clinicalTextContains(hfKw) {
+            i.heartOrRespiratoryFailure = true; f.autoFieldKeys.insert("heartOrRespiratoryFailure")
+        }
+
+        // Acute MI or ischaemic stroke from PMH
+        let miKw = ["myocardial infarction","heart attack","nstemi","stemi"," mi ","mi,",
+                    "ischaemic stroke","ischemic stroke","stroke","cva"]
+        if patient.clinicalTextContains(miKw) {
+            i.acuteMIOrIschaemicStroke = true; f.autoFieldKeys.insert("acuteMIOrIschaemicStroke")
+        }
+
+        // Hormonal treatment from prescriptions
+        let hormKw = ["ocp","contraceptive","estrogen","oestrogen","hrt","hormone replacement",
+                      "tamoxifen","raloxifene","letrozole","anastrozole","progesterone"]
+        if patient.prescriptionsContain(hormKw) {
+            i.ongoingHormonalTreatment = true; f.autoFieldKeys.insert("ongoingHormonalTreatment")
+        }
+
+        // Pending: acute infection/inflammatory requires clinical judgement
+        if !f.isAuto("reducedMobility") {
+            f.addPending(key: "reducedMobility",
+                label: "Reduced mobility ≥3 days (bed rest / wheelchair-bound)",
+                source: "Clinical assessment")
+        }
+        f.addPending(key: "acuteInfectionOrInflammatory",
+            label: "Active acute infection or rheumatological disorder",
+            source: "Clinical assessment / inflammatory markers")
+
+        return (i, f)
+    }
 }

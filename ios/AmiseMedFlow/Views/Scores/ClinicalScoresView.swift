@@ -49,6 +49,8 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case aims65           = "AIMS65 (UGI Bleed Mortality)"
     case sofa             = "SOFA (Organ Failure)"
     case fib4             = "FIB-4 (Liver Fibrosis)"
+    case curb65           = "CURB-65 (CAP Severity)"
+    case padua            = "Padua (Medical VTE Risk)"
 
     var category: ScoreCategory {
         switch self {
@@ -56,9 +58,9 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .acute
         case .rockall, .blatchford, .aims65:
             return .gi
-        case .wellsDVT, .wellsPE, .caprini:
+        case .wellsDVT, .wellsPE, .caprini, .padua:
             return .vascular
-        case .sirs, .qsofa, .psiPort, .sofa:
+        case .sirs, .qsofa, .psiPort, .sofa, .curb65:
             return .sepsis
         case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4:
             return .preop
@@ -98,6 +100,8 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .aims65:         return "drop.triangle.fill"
         case .sofa:           return "bolt.heart.fill"
         case .fib4:           return "liver"
+        case .curb65:         return "lungs.fill"
+        case .padua:          return "figure.walk"
         }
     }
 }
@@ -172,6 +176,10 @@ struct ClinicalScoresView: View {
     @State private var sofaI = SOFAInput()
     // FIB-4
     @State private var fib4I = FIB4Input()
+    // CURB-65
+    @State private var curb65I = CURB65Input()
+    // Padua
+    @State private var paduaI = PaduaInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -528,6 +536,12 @@ struct ClinicalScoresView: View {
         case .glasgow:
             let (input, fill) = PatientScoreAutoPopulator.glasgowPancreatitis(patient: patient)
             glas = input; autoFill = fill
+        case .curb65:
+            let (input, fill) = PatientScoreAutoPopulator.curb65(patient: patient)
+            curb65I = input; autoFill = fill
+        case .padua:
+            let (input, fill) = PatientScoreAutoPopulator.padua(patient: patient)
+            paduaI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -614,6 +628,8 @@ struct ClinicalScoresView: View {
         case .aims65:       ClinicalScoringEngine.aims65(aims65I)
         case .sofa:         ClinicalScoringEngine.sofa(sofaI)
         case .fib4:         ClinicalScoringEngine.fib4(fib4I)
+        case .curb65:       ClinicalScoringEngine.curb65(curb65I)
+        case .padua:        ClinicalScoringEngine.padua(paduaI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -640,6 +656,8 @@ struct ClinicalScoresView: View {
         case .aims65:       patient.aims65Score = intScore
         case .sofa:         patient.sofaScore   = intScore
         case .fib4:         patient.fib4Score   = r.score
+        case .curb65:       patient.curb65Score = intScore
+        case .padua:        patient.paduaScore  = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -704,6 +722,8 @@ struct ClinicalScoresView: View {
         case .aims65:       aims65Form
         case .sofa:         sofaForm
         case .fib4:         fib4Form
+        case .curb65:       curb65Form
+        case .padua:        paduaForm
         }
     }
 
@@ -1700,6 +1720,30 @@ struct ClinicalScoresView: View {
         case .fib4:
             // FIB-4 inputs are continuous sliders; no boolean pending fields
             break
+        case .curb65:
+            switch field.id {
+            case "confusion":              curb65I.confusion              = true
+            case "ureaDOver7":             curb65I.ureaDOver7             = true
+            case "respiratoryRateOver30":  curb65I.respiratoryRateOver30  = true
+            case "lowBP":                  curb65I.lowBP                  = true
+            case "ageOver65":              curb65I.ageOver65              = true
+            default: break
+            }
+        case .padua:
+            switch field.id {
+            case "activeOrRecentCancer":         paduaI.activeOrRecentCancer         = true
+            case "previousVTE":                  paduaI.previousVTE                  = true
+            case "reducedMobility":              paduaI.reducedMobility              = true
+            case "thrombophilia":                paduaI.thrombophilia                = true
+            case "recentTraumaOrSurgery":        paduaI.recentTraumaOrSurgery        = true
+            case "ageOver70":                    paduaI.ageOver70                    = true
+            case "heartOrRespiratoryFailure":    paduaI.heartOrRespiratoryFailure    = true
+            case "acuteMIOrIschaemicStroke":     paduaI.acuteMIOrIschaemicStroke     = true
+            case "acuteInfectionOrInflammatory": paduaI.acuteInfectionOrInflammatory = true
+            case "obese":                        paduaI.obese                        = true
+            case "ongoingHormonalTreatment":     paduaI.ongoingHormonalTreatment     = true
+            default: break
+            }
         default: break
         }
 
@@ -1925,6 +1969,61 @@ struct ClinicalScoresView: View {
                        display: "\(Int(fib4I.altIUL)) IU/L")
         }
         .onChange(of: fib4I) { _, _ in recalculate() }
+    }
+
+    // MARK: - CURB-65
+
+    private var curb65Form: some View {
+        Group {
+            Text("Community-Acquired Pneumonia severity. Score ≥3 → consider hospital admission.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .padding(.bottom, 4)
+            scoreToggle("C — Confusion (new disorientation to person, place, or time)", binding: $curb65I.confusion,             points: "+1", autoKey: "confusion")
+            scoreToggle("U — Urea >7 mmol/L (BUN >19 mg/dL)",                          binding: $curb65I.ureaDOver7,            points: "+1", autoKey: "ureaDOver7")
+            scoreToggle("R — Respiratory rate ≥30 /min",                                binding: $curb65I.respiratoryRateOver30, points: "+1", autoKey: "respiratoryRateOver30")
+            scoreToggle("B — Low BP: SBP <90 or DBP ≤60 mmHg",                         binding: $curb65I.lowBP,                 points: "+1", autoKey: "lowBP")
+            scoreToggle("65 — Age ≥65 years",                                           binding: $curb65I.ageOver65,             points: "+1", autoKey: "ageOver65")
+        }
+        .onChange(of: curb65I) { _, _ in recalculate() }
+    }
+
+    // MARK: - Padua Prediction Score
+
+    private var paduaForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            paduaHighRiskSection
+            paduaLowRiskSection
+        }
+    }
+
+    @ViewBuilder private var paduaHighRiskSection: some View {
+        Group {
+            Text("Medical inpatient VTE risk. Score ≥4 → high risk; consider pharmacoprophylaxis.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .padding(.bottom, 4)
+            sectionHeader("High-risk Factors (+3 each)")
+            scoreToggle("Active / recent cancer (treatment ≤6 months or metastatic)",  binding: $paduaI.activeOrRecentCancer, points: "+3", autoKey: "activeOrRecentCancer")
+            scoreToggle("Previous VTE (excluding superficial vein thrombosis)",         binding: $paduaI.previousVTE,          points: "+3", autoKey: "previousVTE")
+            scoreToggle("Reduced mobility ≥3 days (bed rest / limited ambulation)",    binding: $paduaI.reducedMobility,      points: "+3", autoKey: "reducedMobility")
+            scoreToggle("Known thrombophilic condition (hereditary or acquired)",       binding: $paduaI.thrombophilia,        points: "+3", autoKey: "thrombophilia")
+        }
+        .onChange(of: paduaI) { _, _ in recalculate() }
+    }
+
+    @ViewBuilder private var paduaLowRiskSection: some View {
+        Group {
+            sectionHeader("Intermediate / Low-risk Factors")
+            scoreToggle("Recent trauma or surgery ≤1 month",  binding: $paduaI.recentTraumaOrSurgery,       points: "+2", autoKey: "recentTraumaOrSurgery")
+            scoreToggle("Age ≥70 years",                      binding: $paduaI.ageOver70,                   points: "+1", autoKey: "ageOver70")
+            scoreToggle("Heart failure or respiratory failure",binding: $paduaI.heartOrRespiratoryFailure,   points: "+1", autoKey: "heartOrRespiratoryFailure")
+            scoreToggle("Acute MI or ischaemic stroke",        binding: $paduaI.acuteMIOrIschaemicStroke,    points: "+1", autoKey: "acuteMIOrIschaemicStroke")
+            scoreToggle("Acute infection or rheumatological disorder", binding: $paduaI.acuteInfectionOrInflammatory, points: "+1", autoKey: "acuteInfectionOrInflammatory")
+            scoreToggle("BMI ≥30 kg/m² (obese)",             binding: $paduaI.obese,                       points: "+1", autoKey: "obese")
+            scoreToggle("Ongoing hormonal treatment",          binding: $paduaI.ongoingHormonalTreatment,    points: "+1", autoKey: "ongoingHormonalTreatment")
+        }
+        .onChange(of: paduaI) { _, _ in recalculate() }
     }
 
     private func scoreHistoryColor(_ riskRaw: String) -> Color {
