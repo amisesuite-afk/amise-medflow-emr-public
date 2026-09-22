@@ -221,6 +221,9 @@ final class Patient {
     var ppossum30dMortality: Double? // P-POSSUM 30-day mortality risk (continuous %; nil until calculated)
     var capriniScore: Int?        // Caprini VTE Risk Score (0+; ≥5 = high, ≥9 = very high)
     var childPughScore: Int?      // Child-Pugh Score (5–15; Class A=5–6, B=7–9, C=10–15)
+    var ripasaScore: Double?      // RIPASA Appendicitis Score (continuous; ≥7.5 = probable appendicitis)
+    var fgsiScore: Int?           // Fournier Gangrene Severity Index (0+; ≥9 = high mortality)
+    var hincheyStage: Int?        // Hinchey Classification perforated diverticulitis (1–5)
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

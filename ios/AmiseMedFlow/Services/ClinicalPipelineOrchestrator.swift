@@ -312,6 +312,8 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
             ptsScore:                    patient.ptsScore,
             capriniScore:                patient.capriniScore,
             childPughScore:              patient.childPughScore,
+            ripasaScore:                 patient.ripasaScore,
+            fgsiScore:                   patient.fgsiScore,
             latestHR:    latestV?.heartRate,
             latestSBP:   latestV?.bpSystolic,
             latestTemp:  latestV?.temperatureCelsius,

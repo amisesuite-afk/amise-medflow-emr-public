@@ -7367,7 +7367,7 @@ enum ClinicalScoringEngine {
         var notExplainedByCardiacFailure: Bool // not fully explained by cardiac failure/fluid overload
     }
 
-    func berlinARDS(_ i: BerlinARDSInput) -> ClinicalScore {
+    static func berlinARDS(_ i: BerlinARDSInput) -> ClinicalScore {
         // Berlin 2012: requires all 3 non-severity criteria first
         var qualifies = i.acuteOnsetWithin1Week && i.bilateralOpacitiesOnImaging && i.notExplainedByCardiacFailure
 
@@ -7462,7 +7462,7 @@ enum ClinicalScoringEngine {
         var eyeOpener: Bool           // Ever had a drink first thing in morning (Eye-opener)?
     }
 
-    func cage(_ i: CAGEInput) -> ClinicalScore {
+    static func cage(_ i: CAGEInput) -> ClinicalScore {
         let score = [i.feltCutDown, i.annoyedByCriticism, i.feltGuilty, i.eyeOpener].filter { $0 }.count
 
         let risk: ScoreRisk
@@ -7527,7 +7527,7 @@ enum ClinicalScoringEngine {
         var echoMinor: Bool                 // echo findings consistent with IE but not meeting major
     }
 
-    func dukeIE(_ i: DukeInput) -> ClinicalScore {
+    static func dukeIE(_ i: DukeInput) -> ClinicalScore {
         let majorCount = (i.positiveBloodCultures >= 1 ? 1 : 0) + (i.endocardialInvolvement >= 1 ? 1 : 0)
         let minorCount = [i.predisposedHeartCondition, i.ivDrugUse, i.feverGe38,
                           i.vascularPhenomena, i.immunologicPhenomena,
@@ -7603,7 +7603,7 @@ enum ClinicalScoringEngine {
         var grade: Int   // 0 = no dyspnoea on strenuous exercise; to 4 = too breathless to leave house
     }
 
-    func mmrc(_ i: MMRCInput) -> ClinicalScore {
+    static func mmrc(_ i: MMRCInput) -> ClinicalScore {
         let grade = max(0, min(4, i.grade))
         let risk: ScoreRisk
         let interp: String
@@ -7675,7 +7675,7 @@ enum ClinicalScoringEngine {
         var fracture: Int        // 0 = none (+2), 1 = closed (+1), 2 = open/multiple (−1)
     }
 
-    func pts(_ i: PTSInput) -> ClinicalScore {
+    static func pts(_ i: PTSInput) -> ClinicalScore {
         let points: [[Int: Int]] = [
             [0: 2, 1: 1, 2: -1], [0: 2, 1: 1, 2: -1],
             [0: 2, 1: 1, 2: -1], [0: 2, 1: 1, 2: -1],
@@ -7743,243 +7743,44 @@ enum ClinicalScoringEngine {
         )
     }
 
-    // MARK: - #106 P-POSSUM (Portsmouth POSSUM)
+    // MARK: - #110 RIPASA Score (Right Iliac Fossa Pain / Appendicitis)
 
-    struct PPOSSUMInput: Equatable {
-        // Physiological parameters (P score 1–4 each)
-        var age: Int              // years
-        var cardiacHistory: Int   // 1=none/mild, 2=CCF on treatment, 4=limiting dyspnoea/CCF, 8=severe
-        var respiratoryHistory: Int // 1=none, 2=mild COAD/dyspnoea on exertion, 4=moderate COAD, 8=fibrosis/consolidation
-        var ecg: Int              // 1=normal, 4=AF rate 60-90, 8=any other change
-        var systolicBP: Int       // mmHg
-        var heartRate: Int        // bpm
-        var glasgowComaScale: Int // 1=15, 2=12-14, 4=9-11, 8=<9
-        var haemoglobin: Double   // g/dL
-        var whiteCount: Double    // ×10⁹/L
-        var urea: Double          // mmol/L
-        var sodium: Double        // mmol/L
-        var potassium: Double     // mmol/L
-        // Operative severity (O score)
-        var operativeUrgency: Int     // 1=elective, 4=emergency resuscitable, 8=emergency not resuscitable
-        var operativeSeverity: Int    // 1=minor, 2=moderate, 3=major, 4=major+
-        var peritonealContamination: Int // 1=none, 2=minor, 4=local pus, 8=free bowel content/pus/blood
-        var malignancy: Int           // 1=none, 2=primary only, 4=nodal mets, 8=distant mets
-        var operativeProcedures: Int  // 1=one, 2=two, 4=three or more
+    struct RIPASAInput: Equatable {
+        var male: Bool
+        var age14to39: Bool          // foreign national adds 1 point
+        var foreignNational: Bool
+        var migratingToRIF: Bool
+        var anorexia: Bool
+        var nausea: Bool
+        var vomiting: Bool
+        var durationUnder48h: Bool
+        var rofFossaTenderness: Bool
+        var guarding: Bool
+        var reboundTenderness: Bool
+        var rovsing: Bool
+        var fever37_5to38_5: Bool
+        var elevatedWBC: Bool
+        var abnormalUrinalysis: Bool
     }
 
-    func ppossum(_ i: PPOSSUMInput) -> ClinicalScore {
-        // Physiological score (P)
-        var physScore = 0
+    static func ripasa(_ i: RIPASAInput) -> ClinicalScore {
+        var score = 0.0
 
-        // Age
-        physScore += i.age < 61 ? 1 : (i.age < 71 ? 2 : (i.age < 81 ? 4 : 8))
-
-        // Cardiac history
-        physScore += i.cardiacHistory
-
-        // Respiratory history
-        physScore += i.respiratoryHistory
-
-        // ECG
-        physScore += i.ecg
-
-        // Systolic BP bands
-        physScore += (i.systolicBP >= 110 && i.systolicBP <= 130) ? 1 :
-                     (i.systolicBP >= 131 && i.systolicBP <= 170) || (i.systolicBP >= 100 && i.systolicBP <= 109) ? 2 :
-                     (i.systolicBP >= 171) || (i.systolicBP >= 90 && i.systolicBP <= 99) ? 4 : 8
-
-        // Heart rate bands
-        physScore += (i.heartRate >= 50 && i.heartRate <= 80) ? 1 :
-                     (i.heartRate >= 81 && i.heartRate <= 100) || (i.heartRate >= 40 && i.heartRate <= 49) ? 2 :
-                     (i.heartRate >= 101 && i.heartRate <= 120) ? 4 : 8
-
-        // GCS
-        physScore += i.glasgowComaScale
-
-        // Haemoglobin bands
-        physScore += (i.haemoglobin >= 13.0 && i.haemoglobin <= 16.9) ? 1 :
-                     (i.haemoglobin >= 11.5 && i.haemoglobin <= 12.9) || (i.haemoglobin >= 17.0 && i.haemoglobin <= 18.0) ? 2 :
-                     (i.haemoglobin >= 10.0 && i.haemoglobin <= 11.4) || (i.haemoglobin > 18.0) ? 4 : 8
-
-        // White cell count bands
-        physScore += (i.whiteCount >= 4.0 && i.whiteCount <= 10.0) ? 1 :
-                     (i.whiteCount > 10.0 && i.whiteCount <= 20.0) || (i.whiteCount >= 3.0 && i.whiteCount < 4.0) ? 2 :
-                     (i.whiteCount > 20.0) || (i.whiteCount < 3.0) ? 4 : 1
-
-        // Urea bands
-        physScore += i.urea < 7.5 ? 1 : (i.urea < 10.0 ? 2 : (i.urea < 15.0 ? 4 : 8))
-
-        // Sodium bands
-        physScore += i.sodium >= 136 ? 1 : (i.sodium >= 131 ? 2 : (i.sodium >= 126 ? 4 : 8))
-
-        // Potassium bands
-        physScore += (i.potassium >= 3.5 && i.potassium <= 5.0) ? 1 :
-                     (i.potassium >= 3.2 && i.potassium < 3.5) || (i.potassium > 5.0 && i.potassium <= 5.3) ? 2 :
-                     (i.potassium < 3.2) || (i.potassium > 5.3) ? 4 : 1
-
-        physScore = max(12, physScore)
-
-        // Operative score (O)
-        var opScore = 0
-        opScore += i.operativeUrgency
-        opScore += i.operativeSeverity
-        opScore += i.peritonealContamination
-        opScore += i.malignancy
-        opScore += i.operativeProcedures
-        opScore = max(6, opScore)
-
-        // P-POSSUM mortality prediction (Prytherch 1998)
-        let logMort = -7.04 + (0.13 * Double(physScore)) + (0.16 * Double(opScore))
-        let mortRisk = exp(logMort) / (1.0 + exp(logMort)) * 100.0
-
-        let risk: ScoreRisk
-        let interp: String
-        var recs: [String]
-        var flags: [String] = []
-
-        switch mortRisk {
-        case ..<5:
-            risk  = .low
-            interp = String(format: "P-POSSUM predicted 30-day mortality %.1f%% — Low risk (P=%d, O=%d).", mortRisk, physScore, opScore)
-            recs  = ["Proceed with planned procedure with standard perioperative care",
-                     "Standard anaesthetic assessment",
-                     "Document predicted risk in operative consent"]
-        case 5..<20:
-            risk  = .moderate
-            interp = String(format: "P-POSSUM predicted 30-day mortality %.1f%% — Moderate risk (P=%d, O=%d).", mortRisk, physScore, opScore)
-            recs  = ["Senior anaesthetist involvement",
-                     "Consider ICU/HDU bed booking preoperatively",
-                     "Optimise reversible comorbidities before elective surgery",
-                     "Informed consent must document predicted mortality risk",
-                     "Consider cardiopulmonary exercise testing (CPET) for major elective surgery"]
-        case 20..<50:
-            risk  = .high
-            interp = String(format: "P-POSSUM predicted 30-day mortality %.1f%% — High risk (P=%d, O=%d).", mortRisk, physScore, opScore)
-            recs  = ["Consultant anaesthetist and senior surgeon involvement mandatory",
-                     "ICU/HDU bed booking confirmed preoperatively",
-                     "Multidisciplinary preoperative optimisation",
-                     "Full informed consent including predicted mortality and morbidity",
-                     "Consider surgical alternatives (non-operative, radiological) if available",
-                     "CPET if not emergency; cardiology review if cardiac comorbidity"]
-            flags = ["P-POSSUM mortality ≥20%: senior multidisciplinary review required"]
-        default:
-            risk  = .critical
-            interp = String(format: "P-POSSUM predicted 30-day mortality %.1f%% — Very high risk (P=%d, O=%d).", mortRisk, physScore, opScore)
-            recs  = ["Consultant-level decision on whether surgical intervention is appropriate",
-                     "Ethics/palliative care discussion if emergency",
-                     "Full resuscitation with ICU involvement if proceeding",
-                     "Documented decision-making capacity and advance directive status",
-                     "Consider palliation or minimally invasive alternatives"]
-            flags = ["P-POSSUM mortality ≥50%: consider alternative to open surgery; document patient/family discussion"]
-        }
-
-        return ClinicalScore(
-            name:          "P-POSSUM (Operative Mortality)",
-            score:         mortRisk,
-            maxScore:      nil,
-            risk:          risk,
-            interpretation: interp,
-            recommendations: recs,
-            redFlags:      flags,
-            evidenceNote:  "Prytherch DR et al. Br J Surg 1998;85:1217. P-POSSUM modifies the original POSSUM logistic equation (Copeland 1991) to correct for over-prediction of mortality at low risk. Physiological score (P): 12 parameters each 1–8; range 12–88. Operative score (O): 6 parameters; range 6–44. Predicted mortality % = e^L / (1 + e^L) × 100, where L = −7.04 + 0.13P + 0.16O. Validated across general, vascular, colorectal, and upper GI surgery. Standard of care for perioperative risk communication and consent in UK (Royal College of Surgeons guidance)."
-        )
-    }
-
-    // MARK: - #107 Caprini VTE Risk Score
-
-    struct CapriniInput: Equatable {
-        // 1-point items
-        var age41to60: Bool
-        var minorSurgeryPlanned: Bool
-        var bmi30plus: Bool
-        var swollenLegs: Bool
-        var varicoseVeins: Bool
-        var pregnancy: Bool
-        var historyOfMiscarriage: Bool
-        var oralContraceptiveOrHRT: Bool
-        var sepsisPast1Month: Bool
-        var seriousLungDiseasePast1Month: Bool
-        var abnormalPulmonaryFunction: Bool
-        var acuteMIorCHF: Bool
-        var bedrideInpatient: Bool
-        var historyOfIBD: Bool
-        var medicalPatientAtBedRest: Bool
-        // 2-point items
-        var age61to74: Bool
-        var arthroscopy: Bool
-        var malignancy: Bool
-        var majorSurgeryOver45min: Bool
-        var laparoscopyOver45min: Bool
-        var bedRestOver72h: Bool
-        var immobilisingPlasterCast: Bool
-        var centralVenousAccess: Bool
-        // 3-point items
-        var age75plus: Bool
-        var personalHistoryVTE: Bool
-        var familyHistoryVTE: Bool
-        var factor5LeidenPositive: Bool
-        var prothrombinMutation: Bool
-        var lupusAnticoagulant: Bool
-        var elevatedAntiphospholipid: Bool
-        var serum_homocysteineElevated: Bool
-        var heparinInducedThrombocytopenia: Bool
-        var otherCongenitalThrombophilia: Bool
-        // 5-point items
-        var strokePast1Month: Bool
-        var multipleFracturesPast1Month: Bool
-        var arthroplastyOrHipFractureRepair: Bool
-        var spinalCordInjuryOrParalysis: Bool
-        var acuteAMIPast1Month: Bool
-    }
-
-    func caprini(_ i: CapriniInput) -> ClinicalScore {
-        var score = 0
-
-        // 1-point items
-        if i.age41to60 { score += 1 }
-        if i.minorSurgeryPlanned { score += 1 }
-        if i.bmi30plus { score += 1 }
-        if i.swollenLegs { score += 1 }
-        if i.varicoseVeins { score += 1 }
-        if i.pregnancy { score += 1 }
-        if i.historyOfMiscarriage { score += 1 }
-        if i.oralContraceptiveOrHRT { score += 1 }
-        if i.sepsisPast1Month { score += 1 }
-        if i.seriousLungDiseasePast1Month { score += 1 }
-        if i.abnormalPulmonaryFunction { score += 1 }
-        if i.acuteMIorCHF { score += 1 }
-        if i.bedrideInpatient { score += 1 }
-        if i.historyOfIBD { score += 1 }
-        if i.medicalPatientAtBedRest { score += 1 }
-
-        // 2-point items
-        if i.age61to74 { score += 2 }
-        if i.arthroscopy { score += 2 }
-        if i.malignancy { score += 2 }
-        if i.majorSurgeryOver45min { score += 2 }
-        if i.laparoscopyOver45min { score += 2 }
-        if i.bedRestOver72h { score += 2 }
-        if i.immobilisingPlasterCast { score += 2 }
-        if i.centralVenousAccess { score += 2 }
-
-        // 3-point items
-        if i.age75plus { score += 3 }
-        if i.personalHistoryVTE { score += 3 }
-        if i.familyHistoryVTE { score += 3 }
-        if i.factor5LeidenPositive { score += 3 }
-        if i.prothrombinMutation { score += 3 }
-        if i.lupusAnticoagulant { score += 3 }
-        if i.elevatedAntiphospholipid { score += 3 }
-        if i.serum_homocysteineElevated { score += 3 }
-        if i.heparinInducedThrombocytopenia { score += 3 }
-        if i.otherCongenitalThrombophilia { score += 3 }
-
-        // 5-point items
-        if i.strokePast1Month { score += 5 }
-        if i.multipleFracturesPast1Month { score += 5 }
-        if i.arthroplastyOrHipFractureRepair { score += 5 }
-        if i.spinalCordInjuryOrParalysis { score += 5 }
-        if i.acuteAMIPast1Month { score += 5 }
+        if i.male { score += 1.0 }
+        if i.age14to39 { score += 1.0 }
+        if i.foreignNational { score += 1.0 }
+        if i.migratingToRIF { score += 0.5 }
+        if i.anorexia { score += 1.0 }
+        if i.nausea { score += 1.0 }
+        if i.vomiting { score += 1.0 }
+        if i.durationUnder48h { score += 1.0 }
+        if i.rofFossaTenderness { score += 1.0 }
+        if i.guarding { score += 2.0 }
+        if i.reboundTenderness { score += 1.0 }
+        if i.rovsing { score += 2.0 }
+        if i.fever37_5to38_5 { score += 1.0 }
+        if i.elevatedWBC { score += 1.0 }
+        if i.abnormalUrinalysis { score += 1.0 }
 
         let risk: ScoreRisk
         let interp: String
@@ -7987,140 +7788,137 @@ enum ClinicalScoringEngine {
         var flags: [String] = []
 
         switch score {
-        case 0:
+        case ..<5.5:
             risk  = .low
-            interp = "Caprini score 0 — Very low VTE risk (<0.5%)."
-            recs  = ["Early ambulation",
-                     "No pharmacological or mechanical prophylaxis indicated for surgical patients",
-                     "Reassess if clinical status changes"]
-        case 1...2:
-            risk  = .low
-            interp = "Caprini score \(score) — Low VTE risk (~1.5%)."
-            recs  = ["Early ambulation",
-                     "Mechanical prophylaxis: compression stockings or pneumatic compression devices",
-                     "Consider pharmacological prophylaxis for higher-risk surgical procedures"]
-        case 3...4:
+            interp = String(format: "RIPASA %.1f — Low probability of appendicitis. Observe with serial assessment.", score)
+            recs  = ["Observe for 4–12 hours; repeat clinical assessment",
+                     "Analgesia and IV fluids as needed",
+                     "Consider alternative diagnoses: ovarian pathology, mesenteric adenitis, Meckel's diverticulitis",
+                     "Discharge with written advice if improving and tolerating oral fluids"]
+        case 5.5..<7.5:
             risk  = .moderate
-            interp = "Caprini score \(score) — Moderate VTE risk (~3%)."
-            recs  = ["Mechanical prophylaxis: pneumatic compression devices",
-                     "Pharmacological prophylaxis: LMWH or UFH unless contraindicated",
-                     "Continue prophylaxis until mobile and for duration of hospitalisation",
-                     "Extended prophylaxis (28 days) if major abdominal/pelvic surgery for cancer"]
-        case 5...8:
+            interp = String(format: "RIPASA %.1f — Intermediate probability. Further investigation required.", score)
+            recs  = ["CT abdomen with IV contrast or USS (ultrasound guided)",
+                     "Serial examination 2–4 hourly",
+                     "FBC, CRP, urinalysis",
+                     "Surgical review",
+                     "Low threshold for diagnostic laparoscopy if no imaging clarification"]
+        case 7.5..<11.5:
             risk  = .high
-            interp = "Caprini score \(score) — High VTE risk (~6%)."
-            recs  = ["Pharmacological prophylaxis: LMWH strongly recommended",
-                     "Mechanical prophylaxis concurrently (sequential compression devices)",
-                     "Extended prophylaxis 28–35 days for cancer surgery",
-                     "Consider IVC filter only if anticoagulation absolutely contraindicated"]
-            flags = ["Caprini ≥5: high VTE risk — commence LMWH unless bleeding risk prohibits"]
+            interp = String(format: "RIPASA %.1f — High probability of appendicitis. Surgical intervention warranted.", score)
+            recs  = ["Surgical consent for laparoscopic appendicectomy",
+                     "IV antibiotics (pre-operative prophylaxis): co-amoxiclav or metronidazole + gentamicin",
+                     "CT abdomen if atypical features or diagnostic uncertainty",
+                     "NBM — arrange operating list",
+                     "IV fluids and analgesia"]
+            flags = ["RIPASA ≥7.5: appendicitis probable — consult surgeon urgently"]
         default:
             risk  = .critical
-            interp = "Caprini score \(score) — Very high VTE risk (>6%)."
-            recs  = ["LMWH at therapeutic-weight prophylactic dosing",
-                     "Mechanical prophylaxis in addition to pharmacological",
-                     "Extended prophylaxis ≥35 days post major surgery",
-                     "Haematology review if thrombophilia markers positive",
-                     "Consider direct oral anticoagulants (DOACs) as per local guideline"]
-            flags = ["Caprini ≥9: very high VTE risk — immediate pharmacological + mechanical prophylaxis; haematology review if thrombophilia"]
+            interp = String(format: "RIPASA %.1f — Very high probability / suspected perforation. Immediate intervention.", score)
+            recs  = ["Emergency laparoscopic appendicectomy",
+                     "IV broad-spectrum antibiotics commenced immediately (piperacillin-tazobactam or meropenem if sepsis)",
+                     "Urgent CT if perforation suspected and stable enough to delay",
+                     "NBM, IV fluids, analgesia, anti-emetics",
+                     "ICU/HDU booking if septic shock suspected"]
+            flags = ["RIPASA ≥11.5: probable perforated appendicitis — emergency surgery; IV broad-spectrum antibiotics now"]
         }
 
         return ClinicalScore(
-            name:          "Caprini VTE Risk Score",
+            name:          "RIPASA Score",
+            score:         score,
+            maxScore:      16,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            redFlags:      flags,
+            evidenceNote:  "Chong CF et al. Singapore Med J 2010;51(3):220. RIPASA (Right Iliac Fossa Pain Assessment Score) validated in Asian and Middle Eastern populations where Alvarado under-performs. 15 parameters; score <5.5=exclude, 5.5–7.5=observe, 7.5–11.5=probable appendicitis, ≥11.5=appendicitis very probable. Sensitivity 98%, specificity 81% vs Alvarado's sensitivity 71–88% in same populations. Incorporates demographic factors (sex, age, foreign national origin) that reflect different presentations and healthcare-seeking behaviour in Asian patients."
+        )
+    }
+
+    // MARK: - #111 Fournier Gangrene Severity Index (FGSI)
+
+    struct FGSIInput: Equatable {
+        var temperature: Double     // °C
+        var heartRate: Int          // bpm
+        var respiratoryRate: Int    // breaths/min
+        var sodium: Double          // mmol/L
+        var potassium: Double       // mmol/L
+        var creatinine: Double      // μmol/L
+        var haematocrit: Double     // %
+        var wbc: Double             // ×10⁹/L
+        var bicarbonate: Double     // mmol/L
+    }
+
+    static func fgsi(_ i: FGSIInput) -> ClinicalScore {
+        var score = 0
+
+        // Temperature deviation from normal (36.0–38.4 = 0)
+        let tempDev = abs(i.temperature - 37.0)
+        score += tempDev >= 4.0 ? 4 : (tempDev >= 2.0 ? 3 : (tempDev >= 1.0 ? 2 : (tempDev > 0.5 ? 1 : 0)))
+
+        // Heart rate (bpm)
+        score += i.heartRate < 55 ? 4 : (i.heartRate < 70 ? 3 : (i.heartRate < 110 ? 0 : (i.heartRate < 140 ? 2 : (i.heartRate < 180 ? 3 : 4))))
+
+        // Respiratory rate (breaths/min)
+        score += i.respiratoryRate < 6 ? 4 : (i.respiratoryRate < 10 ? 3 : (i.respiratoryRate < 12 ? 2 : (i.respiratoryRate < 25 ? 0 : (i.respiratoryRate < 35 ? 1 : (i.respiratoryRate < 50 ? 3 : 4)))))
+
+        // Sodium (mmol/L)
+        score += i.sodium < 111 ? 4 : (i.sodium < 122 ? 3 : (i.sodium < 132 ? 2 : (i.sodium < 152 ? 0 : (i.sodium < 162 ? 1 : (i.sodium < 172 ? 2 : (i.sodium < 182 ? 3 : 4))))))
+
+        // Potassium (mmol/L)
+        score += i.potassium < 2.5 ? 4 : (i.potassium < 3.0 ? 2 : (i.potassium < 3.5 ? 1 : (i.potassium <= 5.5 ? 0 : (i.potassium < 6.0 ? 1 : (i.potassium < 7.0 ? 3 : 4)))))
+
+        // Creatinine (μmol/L)
+        score += i.creatinine < 53 ? 3 : (i.creatinine < 107 ? 0 : (i.creatinine < 168 ? 2 : (i.creatinine < 309 ? 3 : 4)))
+
+        // Haematocrit (%)
+        score += i.haematocrit < 20 ? 4 : (i.haematocrit < 30 ? 2 : (i.haematocrit < 46 ? 0 : (i.haematocrit < 50 ? 1 : (i.haematocrit < 60 ? 2 : 4))))
+
+        // WBC (×10⁹/L)
+        score += i.wbc < 1.0 ? 4 : (i.wbc < 3.0 ? 2 : (i.wbc < 15.0 ? 0 : (i.wbc < 20.0 ? 1 : (i.wbc < 40.0 ? 2 : 4))))
+
+        // Bicarbonate (mmol/L)
+        score += i.bicarbonate < 15 ? 4 : (i.bicarbonate < 18 ? 3 : (i.bicarbonate < 22 ? 2 : (i.bicarbonate < 32 ? 0 : (i.bicarbonate < 41 ? 1 : 2))))
+
+        let risk: ScoreRisk
+        let interp: String
+        var recs: [String]
+        var flags: [String] = []
+
+        if score <= 9 {
+            risk  = .high
+            interp = "FGSI \(score) — Lower severity Fournier gangrene. Early mortality risk ~8–15%."
+            recs  = ["Emergency wide surgical debridement — do not delay",
+                     "IV broad-spectrum antibiotics: carbapenem + glycopeptide + metronidazole",
+                     "ICU admission",
+                     "Urology or colorectal surgery involvement depending on source",
+                     "Repeat debridement at 24–48 hours",
+                     "Vacuum-assisted wound closure (VAC) after debridement",
+                     "Consider hyperbaric oxygen therapy if available"]
+            flags = ["Fournier gangrene: emergency debridement regardless of FGSI — any score is life-threatening"]
+        } else {
+            risk  = .critical
+            interp = "FGSI \(score) — Severe Fournier gangrene. High mortality risk ≥50%."
+            recs  = ["Immediate emergency debridement — prognosis worsens with every hour of delay",
+                     "Aggressive ICU resuscitation: MAP ≥65 mmHg, ScvO₂ ≥70%, lactate clearance",
+                     "Broad-spectrum IV antibiotics: meropenem + vancomycin + metronidazole (consider IVIG)",
+                     "Multiple planned re-debridements (typically 24–48 h intervals until clean margins)",
+                     "Consider faecal diversion (defunctioning colostomy) if perianal involvement",
+                     "Plastic/reconstructive surgery involvement for wound reconstruction planning",
+                     "Hyperbaric oxygen therapy (5–10 sessions) — reduces mortality in observational data",
+                     "Early family discussion regarding prognosis"]
+            flags = ["FGSI ≥9: mortality ≥50% — immediate ICU + emergency surgery; critical prognosis discussion with family"]
+        }
+
+        return ClinicalScore(
+            name:          "Fournier Gangrene Severity Index (FGSI)",
             score:         Double(score),
             maxScore:      nil,
             risk:          risk,
             interpretation: interp,
             recommendations: recs,
             redFlags:      flags,
-            evidenceNote:  "Caprini JA. Semin Thromb Hemost 2010;36:62. Evidence-based VTE risk stratification model with 40+ weighted risk factors. Validated in >15 000 surgical patients. Score 0=very low, 1–2=low, 3–4=moderate, ≥5=high, ≥9=very high. ACCP 9th edition guidelines (2012) and NICE CG92 recommend prophylaxis stratification using Caprini or Padua models. High scores (≥5) in non-orthopaedic surgical patients correspond to 6% symptomatic VTE vs <0.5% in very-low-risk patients."
-        )
-    }
-
-    // MARK: - #108 Child-Pugh Score
-
-    struct ChildPughInput: Equatable {
-        var totalBilirubin: Double   // μmol/L (or mg/dL — see formula note)
-        var albumin: Double          // g/L
-        var inrValue: Double         // INR
-        var ascites: Int             // 1=none, 2=mild/controlled, 3=refractory
-        var encephalopathy: Int      // 1=none, 2=grade I–II, 3=grade III–IV
-        var bilirubinInMgDL: Bool    // true if bilirubin entered in mg/dL (primary biliary units)
-    }
-
-    func childPugh(_ i: ChildPughInput) -> ClinicalScore {
-        // Bilirubin in μmol/L for thresholds; convert if entered as mg/dL
-        let bilirubinUmol = i.bilirubinInMgDL ? i.totalBilirubin * 17.1 : i.totalBilirubin
-
-        var score = 0
-
-        // Bilirubin
-        score += bilirubinUmol < 34 ? 1 : (bilirubinUmol <= 51 ? 2 : 3)
-
-        // Albumin
-        score += i.albumin > 35 ? 1 : (i.albumin >= 28 ? 2 : 3)
-
-        // INR
-        score += i.inrValue < 1.7 ? 1 : (i.inrValue <= 2.2 ? 2 : 3)
-
-        // Ascites and encephalopathy (already scored 1–3)
-        score += max(1, min(3, i.ascites))
-        score += max(1, min(3, i.encephalopathy))
-
-        let cpClass: String
-        let oneYearSurvival: String
-        let twoYearSurvival: String
-        let risk: ScoreRisk
-        var recs: [String]
-        var flags: [String] = []
-
-        switch score {
-        case 5...6:
-            cpClass          = "A"
-            oneYearSurvival  = "100%"
-            twoYearSurvival  = "85%"
-            risk             = .low
-            recs = ["Liver function is compensated — standard surgical risk",
-                    "Annual surveillance for HCC: USS ± AFP every 6 months",
-                    "Variceal screening: OGD at diagnosis; re-screen per guidelines",
-                    "Monitor LFTs, albumin, INR, FBC every 6 months",
-                    "Avoid NSAIDs and nephrotoxic agents"]
-        case 7...9:
-            cpClass          = "B"
-            oneYearSurvival  = "81%"
-            twoYearSurvival  = "57%"
-            risk             = .moderate
-            recs = ["Significantly elevated operative risk — specialist hepatology review required",
-                    "Consider referral for transplant assessment",
-                    "Optimise portal hypertension: non-selective beta-blocker ± endoscopic therapy",
-                    "Nutritional support: high-calorie, high-protein diet; BCAA supplementation",
-                    "Avoid elective non-hepatic surgery until optimised",
-                    "Major surgery requires hepatobiliary/HPB centre"]
-            flags = ["Child-Pugh B: refer for transplant assessment; avoid elective non-liver surgery if possible"]
-        default:
-            cpClass          = "C"
-            oneYearSurvival  = "45%"
-            twoYearSurvival  = "35%"
-            risk             = .critical
-            recs = ["Decompensated cirrhosis — urgent hepatology and hepatobiliary surgery review",
-                    "Urgent transplant listing assessment if eligible",
-                    "Treat acute decompensation: infections (SBP prophylaxis), AKI (ACLF protocol), HE management",
-                    "Palliative care referral if not transplant candidate",
-                    "Surgery carries >25–30% mortality — avoid unless life-saving"]
-            flags = ["Child-Pugh C: surgery contraindicated except for life-threatening indications; immediate hepatology referral"]
-        }
-
-        let interp = "Child-Pugh Class \(cpClass) (score \(score)/15) — 1-year survival \(oneYearSurvival), 2-year survival \(twoYearSurvival)."
-
-        return ClinicalScore(
-            name:          "Child-Pugh Score",
-            score:         Double(score),
-            maxScore:      15,
-            risk:          risk,
-            interpretation: interp,
-            recommendations: recs,
-            redFlags:      flags,
-            evidenceNote:  "Child CG, Turcotte JG. Surgery and Portal Hypertension. In: The Liver and Portal Hypertension. Philadelphia: Saunders, 1964:50. Modified by Pugh (Br J Surg 1973;60:646) to add INR in place of nutritional status. Classifies cirrhosis severity: A=5–6 (compensated), B=7–9 (significant functional impairment), C=10–15 (decompensated). Predicts 1- and 2-year survival; used for hepatic resection candidacy, transplant listing, and TIPS candidacy. Largely supplanted by MELD for transplant allocation but remains widely used for operative risk stratification and clinical decision-making."
+            evidenceNote:  "Laor E et al. J Urol 1995;154:89. FGSI based on the APACHE II physiological subscale: 9 parameters, each scored 0–4 deviation from normal. Original threshold FGSI >9 predicts death (sensitivity 75%, specificity 84%; mortality 73% vs 12% for ≤9 in original series). Modern series report lower mortality with aggressive ICU care but FGSI >9 still identifies high-risk cohort. Note: FGSI does not capture extent of skin involvement — the Uludag FGSI (UFGSI) adds age and extent of involvement and has higher predictive accuracy in some series."
         )
     }
 

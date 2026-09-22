@@ -182,6 +182,9 @@ enum BayesianDiagnosisEngine {
         ptsScore: Int? = nil,           // Paediatric Trauma Score −6 to +12; ≤8 = major trauma
         capriniScore: Int? = nil,       // Caprini VTE 0+; ≥5 = high VTE risk
         childPughScore: Int? = nil,     // Child-Pugh 5–15; ≥10 = decompensated cirrhosis (Class C)
+        ripasaScore: Double? = nil,     // RIPASA 0–16; ≥7.5 = probable appendicitis
+        fgsiScore: Int? = nil,          // FGSI 0+; ≥9 = high-mortality Fournier gangrene
+        hincheyStage: Int? = nil,       // Hinchey 1–5; ≥3 = purulent/faecal peritonitis
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3907,6 +3910,50 @@ enum BayesianDiagnosisEngine {
                 let nameLow = scored[i].candidate.name.lowercased()
                 guard cpTargets.contains(where: { nameLow.contains($0) }) else { continue }
                 let label = "Child-Pugh \(cp) — Class \(cp >= 10 ? "C" : "B") cirrhosis"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // RIPASA boost: probable appendicitis raises appendicitis candidates
+        if let ripasa = ripasaScore, ripasa >= 7.5 {
+            let ripasaTargets = ["appendicitis", "appendix", "right iliac fossa", "rif pain"]
+            let adj = ripasa >= 11.5 ? 9 : 7
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard ripasaTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = String(format: "RIPASA %.1f — \(ripasa >= 11.5 ? "very probable" : "probable") appendicitis", ripasa)
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // FGSI boost: high FGSI raises Fournier gangrene candidates
+        if let fgsi = fgsiScore, fgsi >= 1 {
+            let fgsiTargets = ["fournier", "necrotising fasciitis", "necrotizing fasciitis",
+                               "perianal gangrene", "scrotal gangrene", "perineal gangrene"]
+            let adj = fgsi >= 9 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard fgsiTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "FGSI \(fgsi) — \(fgsi >= 9 ? "high-mortality" : "active") Fournier gangrene"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // Hinchey boost: high stage raises perforated diverticulitis and peritonitis candidates
+        if let hinchey = hincheyStage, hinchey >= 3 {
+            let hincheyTargets = ["diverticulitis", "perforated diverticulitis", "peritonitis",
+                                  "faecal peritonitis", "purulent peritonitis"]
+            let adj = hinchey >= 4 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard hincheyTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "Hinchey Stage \(hinchey) — \(hinchey >= 4 ? "faecal peritonitis" : "purulent peritonitis")"
                 scored[i].logPosterior += adj
                 scored[i].evidence.append(label)
                 scored[i].evidenceSources["score", default: []].append(label)

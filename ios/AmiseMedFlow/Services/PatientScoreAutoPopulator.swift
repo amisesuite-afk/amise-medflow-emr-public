@@ -4490,4 +4490,102 @@ enum PatientScoreAutoPopulator {
         f.addPending(key: "inr",       label: "INR — coagulation screen result", source: "Labs")
         return (i, f)
     }
+
+    // MARK: - #110 RIPASA Score
+
+    static func ripasa(patient: Patient) -> (ClinicalScoringEngine.RIPASAInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.RIPASAInput(
+            male: false, age14to39: false, foreignNational: false, migratingToRIF: false,
+            anorexia: false, nausea: false, vomiting: false, durationUnder48h: false,
+            rofFossaTenderness: false, guarding: false, reboundTenderness: false, rovsing: false,
+            fever37_5to38_5: false, elevatedWBC: false, abnormalUrinalysis: false)
+        var f = ScoreAutoFill()
+
+        // Sex from patient record
+        if patient.sex == .male {
+            i.male = true
+            f.addAutoFilled(key: "male", label: "Male sex from patient record", source: "Demographics")
+        }
+
+        // Age 14–39 from DOB
+        let cal = Calendar.current
+        let age = cal.dateComponents([.year], from: patient.dateOfBirth, to: .now).year ?? 0
+        if age >= 14 && age <= 39 {
+            i.age14to39 = true
+            f.addAutoFilled(key: "age14to39", label: "Age \(age) years (14–39 bracket)", source: "Demographics")
+        }
+
+        // Vitals: fever, WBC
+        let latestV = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first
+        if let temp = latestV?.temperatureCelsius {
+            if temp >= 37.5 && temp <= 38.5 {
+                i.fever37_5to38_5 = true
+                f.addAutoFilled(key: "fever", label: String(format: "Temperature %.1f °C from vitals", temp), source: "Vitals")
+            }
+        }
+
+        // Text scan for symptoms
+        let texts: [String?] = [patient.chiefComplaint, patient.hpi, patient.assessmentText]
+        let text = texts.compactMap { $0 }.joined(separator: " ").lowercased()
+        if text.contains("anorexia") || text.contains("loss of appetite") || text.contains("not eating") {
+            i.anorexia = true
+            f.addAutoFilled(key: "anorexia", label: "Anorexia detected in notes", source: "History")
+        }
+        if text.contains("nausea") {
+            i.nausea = true
+            f.addAutoFilled(key: "nausea", label: "Nausea mentioned in notes", source: "History")
+        }
+        if text.contains("vomit") {
+            i.vomiting = true
+            f.addAutoFilled(key: "vomiting", label: "Vomiting mentioned in notes", source: "History")
+        }
+        if text.contains("migrat") && (text.contains("rif") || text.contains("right iliac")) {
+            i.migratingToRIF = true
+            f.addAutoFilled(key: "migrating", label: "Pain migrating to RIF detected", source: "History")
+        }
+
+        f.addPending(key: "duration", label: "Duration of symptoms (< or ≥ 48 hours)", source: "History")
+        f.addPending(key: "tenderness", label: "RIF tenderness / guarding / rebound (examination)", source: "Examination")
+        f.addPending(key: "wbc", label: "WBC result (elevated = >11×10⁹/L)", source: "Labs")
+        return (i, f)
+    }
+
+    // MARK: - #111 FGSI
+
+    static func fgsi(patient: Patient) -> (ClinicalScoringEngine.FGSIInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.FGSIInput(
+            temperature: 37.0, heartRate: 80, respiratoryRate: 16,
+            sodium: 138.0, potassium: 4.0, creatinine: 88.0,
+            haematocrit: 40.0, wbc: 7.0, bicarbonate: 24.0)
+        var f = ScoreAutoFill()
+
+        let latestV = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first
+
+        if let temp = latestV?.temperatureCelsius {
+            i.temperature = temp
+            f.addAutoFilled(key: "temp", label: String(format: "Temperature %.1f °C from vitals", temp), source: "Vitals")
+        } else {
+            f.addPending(key: "temp", label: "Temperature (°C) — from vitals", source: "Vitals")
+        }
+        if let hr = latestV?.heartRate {
+            i.heartRate = hr
+            f.addAutoFilled(key: "hr", label: "Heart rate \(hr) bpm from vitals", source: "Vitals")
+        } else {
+            f.addPending(key: "hr", label: "Heart rate (bpm)", source: "Vitals")
+        }
+        if let rr = latestV?.respiratoryRate {
+            i.respiratoryRate = rr
+            f.addAutoFilled(key: "rr", label: "Respiratory rate \(rr)/min from vitals", source: "Vitals")
+        } else {
+            f.addPending(key: "rr", label: "Respiratory rate (/min)", source: "Vitals")
+        }
+
+        f.addPending(key: "sodium",      label: "Sodium (mmol/L) — U&E result", source: "Labs")
+        f.addPending(key: "potassium",   label: "Potassium (mmol/L) — U&E result", source: "Labs")
+        f.addPending(key: "creatinine",  label: "Creatinine (μmol/L) — U&E result", source: "Labs")
+        f.addPending(key: "haematocrit", label: "Haematocrit (%) — FBC result", source: "Labs")
+        f.addPending(key: "wbc",         label: "WBC (×10⁹/L) — FBC result", source: "Labs")
+        f.addPending(key: "bicarb",      label: "Bicarbonate (mmol/L) — ABG/VBG result", source: "Labs")
+        return (i, f)
+    }
 }
