@@ -62,6 +62,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case cfs              = "Clinical Frailty Scale"
     case timi             = "TIMI (UA/NSTEMI Risk)"
     case waterlow         = "Waterlow Pressure Ulcer Risk"
+    case surgicalApgar    = "Surgical Apgar Score"
 
     var category: ScoreCategory {
         switch self {
@@ -79,7 +80,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .neuro
         case .cha2ds2vasc, .hasBled, .heart, .timi:
             return .cardiac
-        case .mews, .news2, .waterlow:
+        case .mews, .news2, .waterlow, .surgicalApgar:
             return .monitoring
         }
     }
@@ -124,6 +125,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .cfs:            return "figure.walk.circle"
         case .timi:           return "waveform.path.ecg.rectangle"
         case .waterlow:       return "bed.double"
+        case .surgicalApgar:  return "cross.case"
         }
     }
 }
@@ -224,6 +226,8 @@ struct ClinicalScoresView: View {
     @State private var timiI = TIMIInput()
     // Waterlow
     @State private var waterlowI = WaterlowInput()
+    // Surgical Apgar Score
+    @State private var surgApgarI = SurgicalApgarInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -619,6 +623,9 @@ struct ClinicalScoresView: View {
         case .waterlow:
             let (input, fill) = PatientScoreAutoPopulator.waterlow(patient: patient)
             waterlowI = input; autoFill = fill
+        case .surgicalApgar:
+            let (input, fill) = PatientScoreAutoPopulator.surgicalApgar(patient: patient)
+            surgApgarI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -718,6 +725,7 @@ struct ClinicalScoresView: View {
         case .cfs:          ClinicalScoringEngine.clinicalFrailty(cfsI)
         case .timi:         ClinicalScoringEngine.timi(timiI)
         case .waterlow:     ClinicalScoringEngine.waterlow(waterlowI)
+        case .surgicalApgar: ClinicalScoringEngine.surgicalApgar(surgApgarI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -757,6 +765,7 @@ struct ClinicalScoresView: View {
         case .cfs:          patient.cfsScore = intScore
         case .timi:         patient.timiScore = intScore
         case .waterlow:     patient.waterlowScore = intScore
+        case .surgicalApgar: patient.surgicalApgarScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -834,6 +843,7 @@ struct ClinicalScoresView: View {
         case .cfs:          cfsForm
         case .timi:         timiForm
         case .waterlow:     waterlowForm
+        case .surgicalApgar: surgicalApgarForm
         }
     }
 
@@ -1917,6 +1927,9 @@ struct ClinicalScoresView: View {
             case "onCytotoxics":       waterlowI.onCytotoxics = true
             default: break
             }
+        case .surgicalApgar:
+            // All fields are numeric pickers — no boolean toggle confirm
+            break
         default: break
         }
 
@@ -2409,6 +2422,44 @@ struct ClinicalScoresView: View {
                 scoreToggle("Elevated serum cardiac markers (troponin or CK-MB)", binding: $timiI.elevatedCardiacMarkers, points: "+1", autoKey: "elevatedCardiacMarkers")
             }
             .onChange(of: timiI) { _, _ in recalculate() }
+        }
+    }
+
+    // MARK: - Surgical Apgar Score
+
+    private var surgicalApgarForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Surgical Apgar Score (Gawande et al, J Am Coll Surg 2007; Regenbogen et al, Ann Surg 2010). Three intraoperative variables; score 0–10. Higher score = lower risk. Score ≤4: high risk (~27–56% 30-day major complication/death); 5–6 moderate (~16–22%); 7–8 low (~9–10%); 9–10 very low (~3.5%).")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
+            Group {
+                sectionHeader("Estimated Blood Loss")
+                apacheSegment("Estimated Blood Loss (EBL)", selection: $surgApgarI.estimatedBloodLoss,
+                    options: [
+                        (0, ">1 000 mL (0 points)"),
+                        (1, "601–1 000 mL (1 point)"),
+                        (2, "101–600 mL (2 points)"),
+                        (3, "≤100 mL (3 points)")
+                    ])
+                sectionHeader("Lowest Intraoperative Mean Arterial Pressure")
+                apacheSegment("Lowest MAP", selection: $surgApgarI.lowestMAP,
+                    options: [
+                        (0, "<40 mmHg (0 points)"),
+                        (1, "40–54 mmHg (1 point)"),
+                        (2, "55–69 mmHg (2 points)"),
+                        (3, "≥70 mmHg (3 points)")
+                    ])
+                sectionHeader("Lowest Intraoperative Heart Rate")
+                apacheSegment("Lowest Heart Rate", selection: $surgApgarI.lowestHeartRate,
+                    options: [
+                        (0, "≥120 bpm (0 points)"),
+                        (1, "101–119 bpm (0 points)"),
+                        (2, "86–100 bpm (1 point)"),
+                        (3, "56–85 bpm (3 points — normal)"),
+                        (4, "41–55 bpm (2 points)"),
+                        (5, "≤40 bpm (0 points)")
+                    ])
+            }
+            .onChange(of: surgApgarI) { _, _ in recalculate() }
         }
     }
 

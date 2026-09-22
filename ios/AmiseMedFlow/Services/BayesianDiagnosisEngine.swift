@@ -119,6 +119,7 @@ enum BayesianDiagnosisEngine {
         cfsScore: Int? = nil,         // CFS (1–9); ≥5 = mild frailty — boosts frailty-related candidates
         timiScore: Int? = nil,        // TIMI (0–7); ≥3 = intermediate, ≥5 = high ACS risk
         waterlowScore: Int? = nil,    // Waterlow (0–64); ≥15 = high, ≥20 = very high pressure ulcer risk
+        surgicalApgarScore: Int? = nil, // Surgical Apgar (0–10); ≤4 = high risk of major surgical complication
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2845,6 +2846,26 @@ enum BayesianDiagnosisEngine {
                 let (adj, label): (Int, String) = switch wl {
                 case 20...: (12, "Waterlow ≥20 — very high pressure ulcer risk; dynamic mattress + immediate TVN referral")
                 case 15..<20: (7, "Waterlow 15–19 — high pressure ulcer risk; active prevention protocol + TVN review")
+                default:   (0, "")
+                }
+                guard adj > 0 else { continue }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // Surgical Apgar: low score boosts post-operative complication and organ failure candidates
+        if let sas = surgicalApgarScore, sas <= 4 {
+            let sasTargets = ["post-operative complication", "anastomotic leak", "wound dehiscence",
+                               "surgical site infection", "sepsis", "organ failure", "pulmonary embolism",
+                               "acute kidney injury", "haemorrhage", "ileus", "re-operation"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard sasTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch sas {
+                case 0...2: (12, "Surgical Apgar ≤2 — very high risk of major complication or death (~56%)")
+                case 3...4: (7,  "Surgical Apgar 3–4 — high risk of major post-operative complication (~27–43%)")
                 default:   (0, "")
                 }
                 guard adj > 0 else { continue }

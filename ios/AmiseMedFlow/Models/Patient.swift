@@ -127,6 +127,8 @@ final class Patient {
     var timiScore: Int?
     // Waterlow Pressure Ulcer Risk (0–64); 10–14=at risk, 15–19=high, ≥20=very high
     var waterlowScore: Int?
+    // Surgical Apgar Score (0–10); ≤2=very high risk, 3–4=high, 5–6=moderate, 7–8=low, 9–10=very low
+    var surgicalApgarScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

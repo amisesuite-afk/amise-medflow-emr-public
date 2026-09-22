@@ -1882,6 +1882,26 @@ enum PatientScoreAutoPopulator {
         return (i, f)
     }
 
+    // MARK: - Surgical Apgar Score
+
+    static func surgicalApgar(patient: Patient) -> (SurgicalApgarInput, ScoreAutoFill) {
+        let i = SurgicalApgarInput()
+        var f = ScoreAutoFill()
+        // All three variables (EBL, lowest MAP, lowest HR) are intraoperative measurements
+        // that require the anaesthetic or operative record — cannot be auto-populated from
+        // pre-operative or administrative fields.
+        f.addPending(key: "estimatedBloodLoss",
+            label: "Estimated blood loss (mL) — requires operative/anaesthetic record",
+            source: "Operative record")
+        f.addPending(key: "lowestMAP",
+            label: "Lowest intraoperative MAP (mmHg) — requires anaesthetic record",
+            source: "Anaesthetic record")
+        f.addPending(key: "lowestHeartRate",
+            label: "Lowest intraoperative heart rate (bpm) — requires anaesthetic record",
+            source: "Anaesthetic record")
+        return (i, f)
+    }
+
     // MARK: - Waterlow Pressure Ulcer Risk
 
     static func waterlow(patient: Patient) -> (WaterlowInput, ScoreAutoFill) {

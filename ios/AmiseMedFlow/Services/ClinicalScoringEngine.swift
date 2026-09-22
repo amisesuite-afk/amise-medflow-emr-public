@@ -476,6 +476,15 @@ struct ForrestInput: Equatable {
     var grade: Int = 1
 }
 
+struct SurgicalApgarInput: Equatable {
+    // Surgical Apgar Score (Gawande et al, J Am Coll Surg 2007; Regenbogen et al, Ann Surg 2010)
+    // Three intraoperative parameters; score 0–10; higher = lower risk
+    // 0–2: very high risk, 3–4: high risk, 5–6: moderate, 7–8: low, 9–10: very low
+    var estimatedBloodLoss: Int = 0  // 0=>1000 mL (+0), 1=601-1000 (+1), 2=101-600 (+2), 3=≤100 (+3)
+    var lowestMAP: Int = 0           // 0=<40 (+0), 1=40-54 (+1), 2=55-69 (+2), 3=≥70 (+3)
+    var lowestHeartRate: Int = 0     // 0=≥120 or <40 (+0), 1=101-119 (+0→use 1 pt), 2=86-100 (+1), 3=56-85 (+3), 4=41-55 (+2), 5=≤40 (+0)
+}
+
 struct WaterlowInput: Equatable {
     // Waterlow Pressure Ulcer Risk Assessment (Waterlow J, Nursing Times 1985; revised 2005)
     // Composite risk score from build/weight, skin type, sex/age, mobility, continence,
@@ -2863,6 +2872,95 @@ enum ClinicalScoringEngine {
             recommendations: data.recs,
             redFlags: data.flags,
             evidenceNote: "Forrest JAH et al. Lancet 1974; 2:394–397. Laine L & Peterson WL. N Engl J Med 1994; 331:717–727."
+        )
+    }
+
+    // MARK: - Surgical Apgar Score
+
+    static func surgicalApgar(_ i: SurgicalApgarInput) -> ClinicalScore {
+        // EBL points: >1000=0, 601-1000=1, 101-600=2, ≤100=3
+        let eblPts: Int = switch i.estimatedBloodLoss {
+        case 0: 0   // >1000
+        case 1: 1   // 601-1000
+        case 2: 2   // 101-600
+        default: 3  // ≤100
+        }
+        // Lowest MAP points: <40=0, 40-54=1, 55-69=2, ≥70=3
+        let mapPts: Int = switch i.lowestMAP {
+        case 0: 0   // <40
+        case 1: 1   // 40-54
+        case 2: 2   // 55-69
+        default: 3  // ≥70
+        }
+        // Lowest HR points: ≥120 or <40=0, 101-119=0, 86-100=1, 56-85=3, 41-55=2, ≤40=0
+        let hrPts: Int = switch i.lowestHeartRate {
+        case 0: 0   // ≥120
+        case 1: 0   // 101-119
+        case 2: 1   // 86-100
+        case 3: 3   // 56-85 (normal)
+        case 4: 2   // 41-55
+        default: 0  // ≤40
+        }
+        let total = eblPts + mapPts + hrPts
+
+        let (risk, interp, recs, flags): (ScoreRisk, String, [String], [String]) = switch total {
+        case 0...2:
+            (.critical, "Very high risk of major complication or death (~56% 30-day morbidity/mortality)",
+             ["Immediate postoperative ICU/HDU admission",
+              "Senior surgical and anaesthetic review; consider re-operation if clinical concern",
+              "Continuous haemodynamic monitoring; early vasopressor support if MAP <65 mmHg",
+              "Serial organ function monitoring (renal, hepatic, respiratory)",
+              "Involve critical care team in postoperative management plan"],
+             ["SAS ≤2 — very high surgical risk; ICU/HDU admission essential"])
+        case 3...4:
+            (.high, "High risk of major complication (~27–43% 30-day morbidity/mortality)",
+             ["HDU or high-dependency step-down admission",
+              "4-hourly vital sign monitoring with early-warning escalation",
+              "Daily surgical review; maintain fluid balance chart",
+              "DVT prophylaxis and early mobilisation when haemodynamically stable",
+              "Consider physiotherapy and enhanced recovery input"],
+             ["SAS 3–4 — high surgical risk; HDU monitoring recommended"])
+        case 5...6:
+            (.moderate, "Moderate risk of major complication (~16–22% 30-day morbidity/mortality)",
+             ["Surgical ward admission with 4-hourly observations",
+              "Early enhanced recovery protocol (oral fluid, mobilisation by day 1)",
+              "Daily surgical review; pain management optimisation",
+              "DVT prophylaxis; early removal of urinary catheter"],
+             [])
+        case 7...8:
+            (.low, "Low risk of major complication (~9–10% 30-day morbidity/mortality)",
+             ["Standard postoperative ward care",
+              "Early mobilisation; regular pain review",
+              "Routine enhanced recovery protocol",
+              "Discharge planning from day 1"],
+             [])
+        default:
+            (.low, "Very low risk of major complication (~3.5% 30-day morbidity/mortality)",
+             ["Standard postoperative ward care; early enhanced recovery",
+              "Aim for discharge by standard protocol timeline",
+              "Routine outpatient follow-up at 2–4 weeks"],
+             [])
+        }
+
+        let eblLabels = ["">1000 mL (+0)", "601–1000 mL (+1)", "101–600 mL (+2)", "≤100 mL (+3)"]
+        let mapLabels = ["<40 mmHg (+0)", "40–54 mmHg (+1)", "55–69 mmHg (+2)", "≥70 mmHg (+3)"]
+        let hrLabels  = ["≥120 bpm (+0)", "101–119 bpm (+0)", "86–100 bpm (+1)", "56–85 bpm (+3)", "41–55 bpm (+2)", "≤40 bpm (+0)"]
+        let items: [ScoreItem] = [
+            ScoreItem(label: "Estimated blood loss: \(eblLabels[min(i.estimatedBloodLoss, 3)])", points: Double(eblPts), present: true),
+            ScoreItem(label: "Lowest MAP: \(mapLabels[min(i.lowestMAP, 3)])", points: Double(mapPts), present: true),
+            ScoreItem(label: "Lowest heart rate: \(hrLabels[min(i.lowestHeartRate, 5)])", points: Double(hrPts), present: true)
+        ]
+
+        return ClinicalScore(
+            systemName: "Surgical Apgar Score",
+            abbreviation: "SAS",
+            score: Double(total), maxScore: 10,
+            risk: risk,
+            interpretation: "SAS \(total)/10 — \(interp)",
+            items: items,
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Gawande AA et al. J Am Coll Surg 2007;204:201–208. Regenbogen SE et al. Ann Surg 2010;252:706–712."
         )
     }
 
