@@ -122,6 +122,7 @@ enum BayesianDiagnosisEngine {
         surgicalApgarScore: Int? = nil, // Surgical Apgar (0–10); ≤4 = high risk of major surgical complication
         graceScore: Int? = nil,       // GRACE (0–372); >140 = high in-hospital ACS mortality
         dasiScore: Int? = nil,        // DASI (0–58); <34 = poor functional capacity (<4 METs)
+        barthelScore: Int? = nil,     // Barthel Index (0–100); ≤20 = severe ADL dependency
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2910,6 +2911,26 @@ enum BayesianDiagnosisEngine {
                 case 0...20: (12, "DASI \(dasi) — severely poor functional capacity (<4 METs); markedly elevated perioperative cardiac risk")
                 default:     (7,  "DASI \(dasi) — poor functional capacity (<4 METs); elevated perioperative cardiac risk")
                 }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // Barthel: severe dependency boosts conditions associated with functional impairment and rehabilitation need
+        if let bi = barthelScore, bi <= 60 {
+            let biTargets = ["stroke", "frailty", "deconditioning", "heart failure", "dementia",
+                             "parkinson", "multiple sclerosis", "spinal cord", "hip fracture",
+                             "post-operative complication", "delirium", "pressure ulcer", "fall"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard biTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch bi {
+                case 0...20: (12, "Barthel ≤20 — severe ADL dependency; indicates major functional impairment")
+                case 21...60: (6, "Barthel 21–60 — moderate ADL dependency; significant functional limitation")
+                default: (0, "")
+                }
+                guard adj > 0 else { continue }
                 scored[i].logPosterior += Double(adj)
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)

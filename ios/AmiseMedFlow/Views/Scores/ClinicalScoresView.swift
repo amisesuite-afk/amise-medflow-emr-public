@@ -65,6 +65,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case surgicalApgar    = "Surgical Apgar Score"
     case grace            = "GRACE Score (ACS)"
     case dasi             = "DASI (Functional Capacity)"
+    case barthel          = "Barthel Index (ADL)"
 
     var category: ScoreCategory {
         switch self {
@@ -76,7 +77,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .vascular
         case .sirs, .qsofa, .psiPort, .sofa, .curb65, .apacheII:
             return .sepsis
-        case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4, .ppossum, .nrs2002, .mallampati, .cfs, .dasi:
+        case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4, .ppossum, .nrs2002, .mallampati, .cfs, .dasi, .barthel:
             return .preop
         case .abcd2, .lrinec, .gcs:
             return .neuro
@@ -130,6 +131,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .surgicalApgar:  return "cross.case"
         case .grace:          return "chart.line.uptrend.xyaxis"
         case .dasi:           return "figure.run"
+        case .barthel:        return "figure.roll"
         }
     }
 }
@@ -236,6 +238,8 @@ struct ClinicalScoresView: View {
     @State private var graceI = GRACEInput()
     // DASI
     @State private var dasiI = DASIInput()
+    // Barthel Index
+    @State private var barthelI = BarthelInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -640,6 +644,9 @@ struct ClinicalScoresView: View {
         case .dasi:
             let (input, fill) = PatientScoreAutoPopulator.dasi(patient: patient)
             dasiI = input; autoFill = fill
+        case .barthel:
+            let (input, fill) = PatientScoreAutoPopulator.barthel(patient: patient)
+            barthelI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -742,6 +749,7 @@ struct ClinicalScoresView: View {
         case .surgicalApgar: ClinicalScoringEngine.surgicalApgar(surgApgarI)
         case .grace:         ClinicalScoringEngine.grace(graceI)
         case .dasi:          ClinicalScoringEngine.dasi(dasiI)
+        case .barthel:       ClinicalScoringEngine.barthel(barthelI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -784,6 +792,7 @@ struct ClinicalScoresView: View {
         case .surgicalApgar: patient.surgicalApgarScore = intScore
         case .grace:         patient.graceScore = intScore
         case .dasi:          patient.dasiScore = intScore
+        case .barthel:       patient.barthelScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -864,6 +873,7 @@ struct ClinicalScoresView: View {
         case .surgicalApgar: surgicalApgarForm
         case .grace:         graceForm
         case .dasi:          dasiForm
+        case .barthel:       barthelForm
         }
     }
 
@@ -1957,6 +1967,9 @@ struct ClinicalScoresView: View {
             case "stDeviation":      graceI.stDeviation = true
             default: break
             }
+        case .barthel:
+            // All fields are numeric pickers — no boolean toggle confirm
+            break
         case .dasi:
             // All fields are boolean toggles; auto-confirmed from patient-reported keywords
             switch field.id {
@@ -2642,6 +2655,51 @@ struct ClinicalScoresView: View {
                 scoreToggle("Medication: cytotoxic agents / high-dose steroids", binding: $waterlowI.onCytotoxics, points: "+4", autoKey: "onCytotoxics")
             }
             .onChange(of: waterlowI) { _, _ in recalculate() }
+        }
+    }
+
+    // MARK: - Barthel Index (ADL Functional Independence)
+
+    private var barthelForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Barthel Index of Activities of Daily Living (Mahoney & Barthel 1965). 10 items totalling 0–100. Higher score = greater independence. Severe dependency 0–20; Moderate 21–60; Mild 61–90; Independent ≥91.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
+            Group {
+                sectionHeader("Self-Care")
+                apacheSegment("Feeding", selection: $barthelI.feeding,
+                    options: [(0, "0 — Unable / totally dependent"), (5, "5 — Needs help (e.g. cutting food)"), (10, "10 — Independent")])
+                apacheSegment("Bathing", selection: $barthelI.bathing,
+                    options: [(0, "0 — Dependent"), (5, "5 — Independent (can bath/shower unsupervised)")])
+                apacheSegment("Grooming", selection: $barthelI.grooming,
+                    options: [(0, "0 — Dependent (face, hair, teeth, shaving)"), (5, "5 — Independent")])
+                apacheSegment("Dressing", selection: $barthelI.dressing,
+                    options: [(0, "0 — Dependent"), (5, "5 — Needs help but does ≥50% unaided"), (10, "10 — Independent")])
+                sectionHeader("Continence")
+                apacheSegment("Bowel Control", selection: $barthelI.bowels,
+                    options: [(0, "0 — Incontinent or needs enemas"), (5, "5 — Occasional accident (<once/week)"), (10, "10 — Continent")])
+                apacheSegment("Bladder Control", selection: $barthelI.bladder,
+                    options: [(0, "0 — Incontinent or catheterised and unable to manage"), (5, "5 — Occasional accident (<once/24 h)"), (10, "10 — Continent")])
+                apacheSegment("Toilet Use", selection: $barthelI.toiletUse,
+                    options: [(0, "0 — Dependent"), (5, "5 — Needs help but can do something unaided"), (10, "10 — Independent (on/off, wiping, clothing)")])
+                sectionHeader("Mobility & Transfers")
+                apacheSegment("Transfers (Bed ↔ Chair)", selection: $barthelI.transfers,
+                    options: [
+                        (0,  "0 — Unable; no sitting balance"),
+                        (5,  "5 — Major help needed (physical, 2 people)"),
+                        (10, "10 — Minor help needed (verbal or physical)"),
+                        (15, "15 — Independent")
+                    ])
+                apacheSegment("Mobility (Level Ground)", selection: $barthelI.mobility,
+                    options: [
+                        (0,  "0 — Immobile"),
+                        (5,  "5 — Wheelchair independent, including corners"),
+                        (10, "10 — Walks with help of 1 person (verbal or physical) ≥50 m"),
+                        (15, "15 — Independent (may use aid) ≥50 m")
+                    ])
+                apacheSegment("Stairs", selection: $barthelI.stairs,
+                    options: [(0, "0 — Unable"), (5, "5 — Needs help (verbal, physical, or carrying aid)"), (10, "10 — Independent up and down")])
+            }
+            .onChange(of: barthelI) { _, _ in recalculate() }
         }
     }
 

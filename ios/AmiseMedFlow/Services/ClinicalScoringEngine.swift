@@ -476,6 +476,22 @@ struct ForrestInput: Equatable {
     var grade: Int = 1
 }
 
+struct BarthelInput: Equatable {
+    // Barthel Index of Activities of Daily Living (Mahoney & Barthel, Maryland State Med J 1965)
+    // 10 items; total 0–100; higher = more independent
+    // Severe dependency 0–20, Moderate 21–60, Mild 61–90, Independent 91–100
+    var feeding: Int = 0        // 0=unable, 5=needs help, 10=independent
+    var bathing: Int = 0        // 0=dependent, 5=independent
+    var grooming: Int = 0       // 0=dependent (face/hair/teeth/shaving), 5=independent
+    var dressing: Int = 0       // 0=dependent, 5=needs help, 10=independent
+    var bowels: Int = 0         // 0=incontinent, 5=occasional accident (<once/week), 10=continent
+    var bladder: Int = 0        // 0=incontinent or catheterised, 5=occasional accident (<once/day), 10=continent
+    var toiletUse: Int = 0      // 0=dependent, 5=needs help, 10=independent
+    var transfers: Int = 0      // 0=unable (no sitting balance), 5=major help, 10=minor help, 15=independent
+    var mobility: Int = 0       // 0=immobile, 5=wheelchair independent, 10=walks with help, 15=independent ≥50 m
+    var stairs: Int = 0         // 0=unable, 5=needs help, 10=independent
+}
+
 struct DASIInput: Equatable {
     // Duke Activity Status Index (Hlatky et al, Am J Cardiol 1989)
     // 12 yes/no functional capacity questions; sum of MET weights; DASI <34 ~ <4 METs (poor functional capacity)
@@ -2905,6 +2921,74 @@ enum ClinicalScoringEngine {
             recommendations: data.recs,
             redFlags: data.flags,
             evidenceNote: "Forrest JAH et al. Lancet 1974; 2:394–397. Laine L & Peterson WL. N Engl J Med 1994; 331:717–727."
+        )
+    }
+
+    // MARK: - Barthel Index (ADL Functional Independence)
+
+    static func barthel(_ i: BarthelInput) -> ClinicalScore {
+        // Items and valid point values:
+        // feeding: 0, 5, 10  bathing: 0, 5  grooming: 0, 5  dressing: 0, 5, 10
+        // bowels: 0, 5, 10   bladder: 0, 5, 10  toiletUse: 0, 5, 10
+        // transfers: 0, 5, 10, 15   mobility: 0, 5, 10, 15   stairs: 0, 5, 10
+        let total = i.feeding + i.bathing + i.grooming + i.dressing +
+                    i.bowels + i.bladder + i.toiletUse +
+                    i.transfers + i.mobility + i.stairs
+
+        let (risk, interp, recs, flags): (ScoreRisk, String, [String], [String]) = switch total {
+        case 0...20:
+            (.high, "Severe functional dependency — total score \(total)/100",
+             ["Urgent occupational therapy and physiotherapy assessment",
+              "High-dependency care: pressure area care, continence support, assisted feeding",
+              "Consider inpatient rehabilitation or care facility placement",
+              "Full nursing dependency plan; regular functional reassessment",
+              "Screen for delirium, depression, and social support needs"],
+             ["Barthel ≤20 — severe dependency; high nursing and care needs; inpatient or institutional care may be required"])
+        case 21...60:
+            (.moderate, "Moderate functional dependency — score \(total)/100",
+             ["Physiotherapy and occupational therapy referral for rehabilitation programme",
+              "Assistive device assessment (walking aids, grab rails, bath seat)",
+              "Discharge planning: community care needs assessment",
+              "Falls risk assessment; structured ADL rehabilitation",
+              "Social work review if home support inadequate"],
+             [])
+        case 61...90:
+            (.low, "Mild functional dependency — score \(total)/100",
+             ["Occupational therapy home assessment before discharge",
+              "Identify specific ADL deficits and target with rehabilitation",
+              "Consider community physiotherapy or outpatient rehabilitation",
+              "Review home safety and carer support needs"],
+             [])
+        default:
+            (.low, "Functionally independent — score \(total)/100",
+             ["Standard discharge planning; no specific ADL support required",
+              "Reassess if functional decline develops post-operatively or during admission"],
+             [])
+        }
+
+        let items: [ScoreItem] = [
+            ScoreItem(label: "Feeding (\(["0 — unable","5 — needs help","10 — independent"][min(i.feeding/5, 2)]))", points: Double(i.feeding), present: i.feeding > 0),
+            ScoreItem(label: "Bathing (\(i.bathing == 0 ? "0 — dependent" : "5 — independent"))", points: Double(i.bathing), present: i.bathing > 0),
+            ScoreItem(label: "Grooming (\(i.grooming == 0 ? "0 — dependent" : "5 — independent"))", points: Double(i.grooming), present: i.grooming > 0),
+            ScoreItem(label: "Dressing (\(["0 — dependent","5 — needs help","10 — independent"][min(i.dressing/5, 2)]))", points: Double(i.dressing), present: i.dressing > 0),
+            ScoreItem(label: "Bowel control (\(["0 — incontinent","5 — occasional accident","10 — continent"][min(i.bowels/5, 2)]))", points: Double(i.bowels), present: i.bowels > 0),
+            ScoreItem(label: "Bladder control (\(["0 — incontinent","5 — occasional accident","10 — continent"][min(i.bladder/5, 2)]))", points: Double(i.bladder), present: i.bladder > 0),
+            ScoreItem(label: "Toilet use (\(["0 — dependent","5 — needs help","10 — independent"][min(i.toiletUse/5, 2)]))", points: Double(i.toiletUse), present: i.toiletUse > 0),
+            ScoreItem(label: "Transfers bed-chair (\(["0 — unable","5 — major help","10 — minor help","15 — independent"][min(i.transfers/5, 3)]))", points: Double(i.transfers), present: i.transfers > 0),
+            ScoreItem(label: "Mobility (\(["0 — immobile","5 — wheelchair","10 — walks with help","15 — independent"][min(i.mobility/5, 3)]))", points: Double(i.mobility), present: i.mobility > 0),
+            ScoreItem(label: "Stairs (\(["0 — unable","5 — needs help","10 — independent"][min(i.stairs/5, 2)]))", points: Double(i.stairs), present: i.stairs > 0)
+        ]
+
+        return ClinicalScore(
+            systemName: "Barthel Index",
+            abbreviation: "BI",
+            score: Double(total), maxScore: 100,
+            risk: risk,
+            interpretation: interp,
+            items: items,
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Mahoney FI, Barthel DW. Maryland State Med J 1965;14:61–65. Collin C et al. Disabil Rehabil 1988;10:63–67."
         )
     }
 

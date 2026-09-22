@@ -133,6 +133,8 @@ final class Patient {
     var graceScore: Int?
     // DASI (0–58, rounded); <34=poor functional capacity (<4 METs), 34-46=moderate (4-6 METs), >46=good (>6 METs)
     var dasiScore: Int?
+    // Barthel Index (0–100); 0-20=severe dependency, 21-60=moderate, 61-90=mild, 91-100=independent
+    var barthelScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

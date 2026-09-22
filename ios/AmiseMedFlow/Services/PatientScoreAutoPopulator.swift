@@ -2028,6 +2028,85 @@ enum PatientScoreAutoPopulator {
         return (i, f)
     }
 
+    // MARK: - Barthel Index (ADL Functional Independence)
+
+    static func barthel(patient: Patient) -> (BarthelInput, ScoreAutoFill) {
+        var i = BarthelInput()
+        var f = ScoreAutoFill()
+        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                       patient.examGeneral, patient.pmhNotes, patient.notes, patient.managementPlan]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Continence — urinary
+        if allText.contains("continent") || allText.contains("no incontinence") ||
+           allText.contains("voiding normally") {
+            i.bladder = 10
+            f.addAutoFilled(key: "bladder", label: "Urinary continence suggested — confirm with patient", source: "Clinical text")
+        } else if allText.contains("incontinen") || allText.contains("urinary incontinen") ||
+                  allText.contains("catheterised") || allText.contains("catheter") {
+            i.bladder = 0
+            f.addAutoFilled(key: "bladder", label: "Urinary incontinence or catheter detected — verify", source: "Clinical text")
+        }
+
+        // Bowels
+        if allText.contains("bowel incontinence") || allText.contains("faecal incontinence") ||
+           allText.contains("fecal incontinence") || allText.contains("doubly incontinen") {
+            i.bowels = 0
+            f.addAutoFilled(key: "bowels", label: "Bowel incontinence detected — verify", source: "Clinical text")
+        }
+
+        // Mobility
+        if allText.contains("bedbound") || allText.contains("bed-bound") ||
+           allText.contains("immobile") || allText.contains("non-ambulatory") ||
+           allText.contains("unable to walk") {
+            i.mobility = 0
+            i.transfers = 0
+            f.addAutoFilled(key: "mobility", label: "Immobility detected — confirm with nursing assessment", source: "Clinical text")
+            f.addAutoFilled(key: "transfers", label: "Transfer dependency inferred from immobility — verify", source: "Clinical text")
+        } else if allText.contains("wheelchair") {
+            i.mobility = 5
+            f.addAutoFilled(key: "mobility", label: "Wheelchair use detected — confirm independence level", source: "Clinical text")
+        } else if allText.contains("walks independently") || allText.contains("mobile") ||
+                  allText.contains("ambulat") && allText.contains("independent") {
+            i.mobility = 15
+            f.addAutoFilled(key: "mobility", label: "Independent mobility suggested — confirm with patient", source: "Clinical text")
+        }
+
+        // Fully independent — document notes independent in ADLs
+        if allText.contains("independent in adl") || allText.contains("fully independent") ||
+           allText.contains("self-caring") || allText.contains("self caring") {
+            i.feeding = 10; i.bathing = 5; i.grooming = 5; i.dressing = 10
+            i.bowels = 10; i.bladder = 10; i.toiletUse = 10
+            i.transfers = 15; i.mobility = 15; i.stairs = 10
+            f.addAutoFilled(key: "feeding", label: "Independent ADLs suggested — verify all Barthel items with patient", source: "Clinical text")
+        }
+
+        // Dementia or major neurological impairment — likely dependency
+        if allText.contains("dementia") || allText.contains("alzheimer") ||
+           allText.contains("severe cognitive") || allText.contains("severe stroke") {
+            if i.feeding == 0 { f.addPending(key: "feeding", label: "Dementia/cognitive impairment: feeding — may be dependent; assess", source: "Clinical text / nursing") }
+        }
+
+        // Mark remaining fields pending if not auto-filled
+        let filledKeys = f.autoFieldKeys
+        let pendingFields: [(String, String)] = [
+            ("feeding", "Feeding ability — requires nursing or OT assessment"),
+            ("bathing", "Bathing ability — requires nursing or OT assessment"),
+            ("grooming", "Grooming ability — requires nursing or OT assessment"),
+            ("dressing", "Dressing ability — requires nursing or OT assessment"),
+            ("bowels", "Bowel continence — requires nursing assessment"),
+            ("bladder", "Bladder continence — requires nursing assessment"),
+            ("toiletUse", "Toilet use ability — requires nursing or OT assessment"),
+            ("transfers", "Transfer ability (bed-chair) — requires nursing or physiotherapy assessment"),
+            ("mobility", "Mobility (level ground) — requires physiotherapy assessment"),
+            ("stairs", "Stair climbing ability — requires physiotherapy assessment")
+        ]
+        for (key, label) in pendingFields where !filledKeys.contains(key) {
+            f.addPending(key: key, label: label, source: "Clinical/nursing assessment")
+        }
+        return (i, f)
+    }
+
     // MARK: - DASI (Duke Activity Status Index)
 
     static func dasi(patient: Patient) -> (DASIInput, ScoreAutoFill) {
