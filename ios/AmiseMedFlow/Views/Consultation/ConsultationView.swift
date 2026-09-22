@@ -2649,7 +2649,7 @@ struct ConsultationView: View {
         }
     }
 
-    private func bayesColor(_ c: BayesianDiagnosisEngine.Confidence) -> Color {
+    private func bayesColor(_ c: DiagnosisResult.Confidence) -> Color {
         switch c {
         case .certain:  return .red
         case .high:     return .orange

@@ -2927,8 +2927,8 @@ enum ClinicalScoringEngine {
             score: Double(total), maxScore: 10,
             risk: risk,
             interpretation: interp,
-            items: items,
             recommendations: recs,
+            items: items,
             redFlags: flags,
             evidenceNote: "Balthazar EA et al. Radiology 1990; 174:331–336."
         )
@@ -2992,8 +2992,8 @@ enum ClinicalScoringEngine {
             score: Double(i.grade), maxScore: 6,
             risk: data.risk,
             interpretation: "\(data.label) — estimated rebleed risk \(data.rebleedPct)%",
-            items: items,
             recommendations: data.recs,
+            items: items,
             redFlags: data.flags,
             evidenceNote: "Forrest JAH et al. Lancet 1974; 2:394–397. Laine L & Peterson WL. N Engl J Med 1994; 331:717–727."
         )
@@ -3077,8 +3077,8 @@ enum ClinicalScoringEngine {
             score: Double(total), maxScore: 42,
             risk: risk,
             interpretation: "NIHSS \(total) — \(interp)",
-            items: items,
             recommendations: recs,
+            items: items,
             redFlags: flags,
             evidenceNote: "Brott T et al. Stroke 1989;20:864–870. Adams HP et al. Stroke 1999;30:1765–1769."
         )
@@ -3165,8 +3165,8 @@ enum ClinicalScoringEngine {
             score: Double(level), maxScore: 6,
             risk: risk,
             interpretation: "mRS \(level) — \(interp)",
-            items: items,
             recommendations: recs,
+            items: items,
             redFlags: flags,
             evidenceNote: "van Swieten JC et al. Stroke 1988;19:604–607. Rankin J. Scott Med J 1957;2:200–215."
         )
@@ -3222,8 +3222,8 @@ enum ClinicalScoringEngine {
             score: Double(total), maxScore: 6,
             risk: risk,
             interpretation: "MUST \(total) — \(abbrev)",
-            items: items,
             recommendations: recs,
+            items: items,
             redFlags: flags,
             evidenceNote: "Stratton RJ et al. Clin Nutr 2004;23:1060–1066. BAPEN MUST toolkit. Validated across hospital, community, and care-home settings."
         )
@@ -3350,8 +3350,8 @@ enum ClinicalScoringEngine {
             score: pctRounded, maxScore: 100,
             risk: risk,
             interpretation: interp,
-            items: items,
             recommendations: recs,
+            items: items,
             redFlags: flags,
             evidenceNote: "Nashef SAM et al. Eur J Cardiothorac Surg 2012;41:734–745. www.euroscore.org"
         )
@@ -3418,8 +3418,8 @@ enum ClinicalScoringEngine {
             score: Double(total), maxScore: 100,
             risk: risk,
             interpretation: interp,
-            items: items,
             recommendations: recs,
+            items: items,
             redFlags: flags,
             evidenceNote: "Mahoney FI, Barthel DW. Maryland State Med J 1965;14:61–65. Collin C et al. Disabil Rehabil 1988;10:63–67."
         )
@@ -3492,8 +3492,8 @@ enum ClinicalScoringEngine {
             score: rounded, maxScore: 58.2,
             risk: risk,
             interpretation: "DASI \(String(format: "%.1f", rounded)) — \(interp)",
-            items: items,
             recommendations: recs,
+            items: items,
             redFlags: flags,
             evidenceNote: "Hlatky MA et al. Am J Cardiol 1989;64:651–654."
         )
@@ -3556,8 +3556,8 @@ enum ClinicalScoringEngine {
             score: Double(total), maxScore: 372,
             risk: risk,
             interpretation: "GRACE \(total) — \(interp)",
-            items: items,
             recommendations: recs,
+            items: items,
             redFlags: flags,
             evidenceNote: "Granger CB et al. Lancet 2003;362:777–781. Fox KA et al. Eur Heart J 2006;27:2755–2764."
         )
@@ -3645,8 +3645,8 @@ enum ClinicalScoringEngine {
             score: Double(total), maxScore: 10,
             risk: risk,
             interpretation: "SAS \(total)/10 — \(interp)",
-            items: items,
             recommendations: recs,
+            items: items,
             redFlags: flags,
             evidenceNote: "Gawande AA et al. J Am Coll Surg 2007;204:201–208. Regenbogen SE et al. Ann Surg 2010;252:706–712."
         )
@@ -3715,8 +3715,8 @@ enum ClinicalScoringEngine {
             score: Double(total), maxScore: 64,
             risk: risk,
             interpretation: "Waterlow \(total) — \(interp)",
-            items: items,
             recommendations: recs,
+            items: items,
             redFlags: flags,
             evidenceNote: "Waterlow J. Nursing Times 1985;81:49–55. Waterlow J. Nursing Times 2005;101:62–66 (revised card)."
         )
@@ -3775,8 +3775,8 @@ enum ClinicalScoringEngine {
             score: Double(total), maxScore: 7,
             risk: risk,
             interpretation: "TIMI \(total)/7 — \(interp)",
-            items: items,
             recommendations: recs,
+            items: items,
             redFlags: flags,
             evidenceNote: "Antman EM et al. JAMA 2000;284:835–842."
         )
@@ -3853,8 +3853,8 @@ enum ClinicalScoringEngine {
             score: Double(i.level), maxScore: 9,
             risk: data.risk,
             interpretation: "\(data.label) — \(data.interp)",
-            items: items,
             recommendations: data.recs,
+            items: items,
             redFlags: data.flags,
             evidenceNote: "Rockwood K et al. CMAJ 2005;173:489–495. Rockwood K & Theou O. Lancet 2019;394:1651–1652."
         )
@@ -3940,8 +3940,8 @@ enum ClinicalScoringEngine {
             score: Double(i.mallampatiClass + additionalPredictors), maxScore: 10,
             risk: finalRisk,
             interpretation: "\(classLabel); \(additionalPredictors) additional predictor(s) — \(difficultyDesc)",
-            items: items,
             recommendations: recs,
+            items: items,
             redFlags: flags,
             evidenceNote: "Mallampati SR et al. Can Anaesth Soc J 1985;32:429–434. Samsoon GL & Young JR. Anaesthesia 1987;42:487–490."
         )
@@ -3965,8 +3965,8 @@ enum ClinicalScoringEngine {
             score: Double(total), maxScore: 10,
             risk: risk,
             interpretation: "HEART \(total)/10 — \(interp)",
-            items: items,
             recommendations: recs,
+            items: items,
             redFlags: flags,
             evidenceNote: "Backus BE et al. Neth Heart J 2010;18:422–428. Six AJ et al. Heart 2008;94:1509–1513. Mahler SA et al. Crit Pathw Cardiol 2015;14:1–8."
         )
@@ -4029,8 +4029,8 @@ enum ClinicalScoringEngine {
             score: Double(total), maxScore: 7,
             risk: risk,
             interpretation: interp,
-            items: items,
             recommendations: recs,
+            items: items,
             redFlags: flags,
             evidenceNote: "Kondrup J et al. Clin Nutr 2003; 22:415–421. Validated in 128 RCTs."
         )
@@ -4166,8 +4166,8 @@ enum ClinicalScoringEngine {
             score: Double(i.grade), maxScore: 7,
             risk: risk,
             interpretation: interpretation,
-            items: [ScoredItem(label: "Complication grade: \(gradeStr)", points: Double(i.grade), present: i.grade > 0)],
             recommendations: recs,
+            items: [ScoredItem(label: "Complication grade: \(gradeStr)", points: Double(i.grade), present: i.grade > 0)],
             redFlags: flags,
             evidenceNote: "Dindo D, Demartines N, Clavien PA. Ann Surg 2004;240:205–213. Dindo D et al. World J Surg 2010. Standard surgical complication classification used in ACS NSQIP and ESCP audits."
         )
@@ -4493,8 +4493,8 @@ enum ClinicalScoringEngine {
             maxScore: 4,
             risk: risk,
             interpretation: desc,
-            items: [ScoredItem(label: "Performance grade \(g)", points: g, present: true)],
             recommendations: g >= 3 ? [
+            items: [ScoredItem(label: "Performance grade \(g)", points: g, present: true)],
                 "Multidisciplinary team discussion before any elective surgery",
                 "Palliative intent should be considered as primary management approach",
                 "Nutritional support and rehabilitation assessment recommended"
@@ -4709,8 +4709,8 @@ enum ClinicalScoringEngine {
                 maxScore: 75,
                 risk: .critical,
                 interpretation: "ISS 75 (AIS 6 region): Injury deemed non-survivable. Goals-of-care discussion essential.",
-                items: zip(regionNames, regions).map { ScoredItem(label: "\($0.0) AIS \($0.1)", points: Double($0.1 * $0.1), present: $0.1 > 0) },
                 recommendations: ["Immediate trauma team activation", "Goals-of-care discussion with next of kin", "Palliative care consult"],
+                items: zip(regionNames, regions).map { ScoredItem(label: "\($0.0) AIS \($0.1)", points: Double($0.1 * $0.1), present: $0.1 > 0) },
                 redFlags: ["AIS 6 — non-survivable injury"],
                 evidenceNote: "Baker SP et al. J Trauma 1974;14:187–196."
             )
@@ -4733,8 +4733,8 @@ enum ClinicalScoringEngine {
             maxScore: 75,
             risk: risk,
             interpretation: interp,
-            items: zip(regionNames, regions).map { ScoredItem(label: "\($0.0) AIS \($0.1)", points: Double($0.1 * $0.1), present: $0.1 > 0) },
             recommendations: score >= 25 ? [
+            items: zip(regionNames, regions).map { ScoredItem(label: "\($0.0) AIS \($0.1)", points: Double($0.1 * $0.1), present: $0.1 > 0) },
                 "Major trauma centre transfer if not already there",
                 "Full primary and secondary ATLS survey",
                 "CT trauma series (head, C-spine, thorax, abdomen, pelvis)",
@@ -4884,8 +4884,8 @@ enum ClinicalScoringEngine {
             maxScore: 6,
             risk: risk,
             interpretation: interp,
-            items: items,
             recommendations: pts == 0 ? [
+            items: items,
                 "Consider outpatient management with LMWH or DOAC (e.g. rivaroxaban 15 mg BD for 21 days then 20 mg OD)",
                 "Oral anticoagulation for minimum 3 months; assess duration based on provoked vs unprovoked",
                 "Arrange close follow-up within 7–14 days",
@@ -4948,8 +4948,8 @@ enum ClinicalScoringEngine {
             maxScore: 6,
             risk: risk,
             interpretation: interp,
-            items: items,
             recommendations: pts >= 3 ? [
+            items: items,
                 "Early ICU/HDU referral — high mortality group",
                 "Non-invasive ventilation (NIV) if pH <7.35 with hypercapnia",
                 "Controlled oxygen therapy: target SpO2 88–92% (24% Venturi mask)",
@@ -5240,8 +5240,8 @@ enum ClinicalScoringEngine {
                 maxScore: 3,
                 risk: .critical,
                 interpretation: "Invalid: systolic BP must be > 0.",
-                items: [],
                 recommendations: ["Check vital signs — systolic BP cannot be zero."],
+                items: [],
                 redFlags: ["SBP = 0 entered — verify patient vitals immediately"],
                 evidenceNote: ""
             )

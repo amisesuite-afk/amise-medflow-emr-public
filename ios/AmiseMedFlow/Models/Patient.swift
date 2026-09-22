@@ -219,7 +219,6 @@ final class Patient {
     var mmrcGrade: Int?           // mMRC Dyspnoea Scale (0–4; ≥2 = significant functional impairment)
     var ptsScore: Int?            // Paediatric Trauma Score (−6 to +12; ≤8 = major trauma, triage to trauma centre)
     var ppossum30dMortality: Double? // P-POSSUM 30-day mortality risk (continuous %; nil until calculated)
-    var capriniScore: Int?        // Caprini VTE Risk Score (0+; ≥5 = high, ≥9 = very high)
     var ripasaScore: Double?      // RIPASA Appendicitis Score (continuous; ≥7.5 = probable appendicitis)
     var fgsiScore: Int?           // Fournier Gangrene Severity Index (0+; ≥9 = high mortality)
     var hincheyStage: Int?        // Hinchey Classification perforated diverticulitis (1–5)

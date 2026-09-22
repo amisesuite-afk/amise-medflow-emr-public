@@ -153,7 +153,6 @@ enum BayesianDiagnosisEngine {
         cciScore: Int? = nil,           // CCI 0–37 (age-adjusted); ≥5 = high comorbidity burden
         mfi5Score: Int? = nil,          // mFI-5 0–5; ≥3 = severe frailty; modifies all diagnoses
         hapsScore: Int? = nil,          // HAPS 0–3; 3 = harmless AP; <3 = potentially severe
-        bisapScore: Int? = nil,         // BISAP 0–5; ≥3 = severe AP; guides ICU/CT need
         glasgowImrieScore: Int? = nil,  // Glasgow-Imrie 0–8; ≥3 = severe AP (48-h variables)
         albiScore: Double? = nil,       // ALBI continuous; Grade 1 ≤-2.60, Grade 3 >-1.39
         auditCScore: Int? = nil,        // AUDIT-C 0–12; ≥4(M)/≥3(F) = hazardous drinking
@@ -180,8 +179,6 @@ enum BayesianDiagnosisEngine {
         dukeIEScore: Double? = nil,     // Duke IE classification score (majorCount×2 + minorCount)
         mmrcGrade: Int? = nil,          // mMRC dyspnoea grade 0–4; ≥3 = severe impairment
         ptsScore: Int? = nil,           // Paediatric Trauma Score −6 to +12; ≤8 = major trauma
-        capriniScore: Int? = nil,       // Caprini VTE 0+; ≥5 = high VTE risk
-        childPughScore: Int? = nil,     // Child-Pugh 5–15; ≥10 = decompensated cirrhosis (Class C)
         ripasaScore: Double? = nil,     // RIPASA 0–16; ≥7.5 = probable appendicitis
         fgsiScore: Int? = nil,          // FGSI 0+; ≥9 = high-mortality Fournier gangrene
         hincheyStage: Int? = nil,       // Hinchey 1–5; ≥3 = purulent/faecal peritonitis
