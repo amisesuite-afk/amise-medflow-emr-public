@@ -3417,4 +3417,41 @@ enum PatientScoreAutoPopulator {
 
         return (i, f)
     }
+
+    // MARK: – Glasgow-Imrie (48-h worst values)
+
+    static func glasgowImrie(patient: Patient) -> (ClinicalScoringEngine.GlasgowImrieInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.GlasgowImrieInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                    patient.pmhNotes, patient.workingDiagnosis].compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Age > 55
+        let ageYears = Calendar.current.dateComponents([.year], from: patient.dateOfBirth ?? Date(), to: .now).year ?? 0
+        if ageYears > 55 {
+            i.ageAbove55 = true
+            f.addAutoFilled(key: "ageAbove55", label: "Age > 55 years (derived from date of birth)", source: "Demographics")
+        }
+
+        // Hyperglycaemia (non-diabetic context): > 10 mmol/L
+        let diabetesKw = ["diabet", "insulin", "metformin", "hypoglycaem"]
+        let hasDiabetes = diabetesKw.contains(where: { text.contains($0) })
+        let glucoseKw = ["hyperglycaem", "raised glucose", "glucose > 10", "glucose >10",
+                         "blood glucose 1", "blood sugar 1"]
+        if !hasDiabetes && glucoseKw.contains(where: { text.contains($0) }) {
+            i.glucoseAbove10 = true
+            f.addAutoFilled(key: "glucoseAbove10", label: "Hyperglycaemia > 10 mmol/L detected in notes (non-diabetic)", source: "History/Notes")
+        }
+
+        // All laboratory values require manual confirmation
+        f.addPending(key: "pao2Below59",    label: "PaO₂ < 59.2 mmHg (< 7.9 kPa) — check ABG (worst value in 48 h)",    source: "ABG")
+        f.addPending(key: "wbcAbove15",     label: "WBC > 15 × 10⁹/L — check FBC (worst value in 48 h)",                  source: "FBC")
+        f.addPending(key: "calciumBelow2",  label: "Serum calcium < 2.0 mmol/L — check bone profile (48-h worst)",         source: "Bloods")
+        f.addPending(key: "albuminBelow32", label: "Serum albumin < 32 g/L — check LFTs / albumin (48-h worst)",           source: "LFTs")
+        f.addPending(key: "ldh180",         label: "LDH > 600 IU/L or > 3× ULN — check LDH (48-h worst)",                 source: "Bloods")
+        f.addPending(key: "ast100",         label: "AST/ALT > 200 IU/L — check LFTs (48-h worst)",                         source: "LFTs")
+
+        return (i, f)
+    }
 }

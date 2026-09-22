@@ -153,6 +153,8 @@ enum BayesianDiagnosisEngine {
         cciScore: Int? = nil,           // CCI 0–37 (age-adjusted); ≥5 = high comorbidity burden
         mfi5Score: Int? = nil,          // mFI-5 0–5; ≥3 = severe frailty; modifies all diagnoses
         hapsScore: Int? = nil,          // HAPS 0–3; 3 = harmless AP; <3 = potentially severe
+        bisapScore: Int? = nil,         // BISAP 0–5; ≥3 = severe AP; guides ICU/CT need
+        glasgowImrieScore: Int? = nil,  // Glasgow-Imrie 0–8; ≥3 = severe AP (48-h variables)
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3515,6 +3517,41 @@ enum BayesianDiagnosisEngine {
                     let nameLow = scored[i].candidate.name.lowercased()
                     guard hapsTargets.contains(where: { nameLow.contains($0) }) else { continue }
                     let label = "HAPS \(haps)/3 — not harmless; severe acute pancreatitis cannot be excluded"
+                    scored[i].logPosterior += adj
+                    scored[i].evidence.append(label)
+                    scored[i].evidenceSources["score", default: []].append(label)
+                }
+            }
+        }
+
+        // BISAP boost: ≥3 elevates severe pancreatitis candidates
+        if let bisap = bisapScore {
+            let bisapTargets = ["pancreatitis", "pancreatic", "pancreas", "peripancreatic",
+                                "pseudocyst", "necrotising", "infected necrosis", "splanchnic",
+                                "organ failure", "multi-organ"]
+            if bisap >= 3 {
+                let adj = bisap >= 4 ? 9 : 7
+                for i in scored.indices {
+                    let nameLow = scored[i].candidate.name.lowercased()
+                    guard bisapTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                    let label = "BISAP \(bisap)/5 — severe acute pancreatitis; ICU monitoring indicated"
+                    scored[i].logPosterior += adj
+                    scored[i].evidence.append(label)
+                    scored[i].evidenceSources["score", default: []].append(label)
+                }
+            }
+        }
+
+        // Glasgow-Imrie boost: ≥3 elevates severe pancreatitis candidates
+        if let gi = glasgowImrieScore {
+            let giTargets = ["pancreatitis", "pancreatic", "pancreas", "peripancreatic",
+                             "pseudocyst", "necrotising", "infected necrosis", "cholangitis"]
+            if gi >= 3 {
+                let adj = gi >= 5 ? 9 : 7
+                for i in scored.indices {
+                    let nameLow = scored[i].candidate.name.lowercased()
+                    guard giTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                    let label = "Glasgow-Imrie \(gi)/8 — severe acute pancreatitis predicted"
                     scored[i].logPosterior += adj
                     scored[i].evidence.append(label)
                     scored[i].evidenceSources["score", default: []].append(label)

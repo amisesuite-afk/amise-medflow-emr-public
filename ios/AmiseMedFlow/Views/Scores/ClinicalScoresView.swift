@@ -93,6 +93,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case cci              = "Charlson Comorbidity Index"
     case mfi5             = "Modified Frailty Index-5"
     case haps             = "Harmless Acute Pancreatitis Score"
+    case glasgowImrie     = "Glasgow-Imrie Score"
 
     var category: ScoreCategory {
         switch self {
@@ -150,7 +151,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .vascular
         case .cci, .mfi5:
             return .preop
-        case .haps:
+        case .haps, .glasgowImrie:
             return .gi
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
@@ -230,6 +231,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .cci:            return "list.bullet.clipboard.fill"
         case .mfi5:           return "figure.walk.motion"
         case .haps:           return "flame.fill"
+        case .glasgowImrie:   return "thermometer.sun.fill"
         }
     }
 }
@@ -389,6 +391,8 @@ struct ClinicalScoresView: View {
     @State private var cciI = ClinicalScoringEngine.CCIInput()
     @State private var mfi5I = ClinicalScoringEngine.MFI5Input()
     @State private var hapsI = ClinicalScoringEngine.HAPSInput()
+    @State private var bisapI = ClinicalScoringEngine.BISAPInput()
+    @State private var glasgowImrieI = ClinicalScoringEngine.GlasgowImrieInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -874,6 +878,9 @@ struct ClinicalScoresView: View {
         case .haps:
             let (input, fill) = PatientScoreAutoPopulator.haps(patient: patient)
             hapsI = input; autoFill = fill
+        case .glasgowImrie:
+            let (input, fill) = PatientScoreAutoPopulator.glasgowImrie(patient: patient)
+            glasgowImrieI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -1004,6 +1011,7 @@ struct ClinicalScoresView: View {
         case .cci:           ClinicalScoringEngine.cci(cciI)
         case .mfi5:          ClinicalScoringEngine.mfi5(mfi5I)
         case .haps:          ClinicalScoringEngine.haps(hapsI)
+        case .glasgowImrie:  ClinicalScoringEngine.glasgowImrie(glasgowImrieI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -1078,6 +1086,7 @@ struct ClinicalScoresView: View {
         case .cci:           patient.cciScore = intScore
         case .mfi5:          patient.mfi5Score = intScore
         case .haps:          patient.hapsScore = intScore
+        case .glasgowImrie:  patient.glasgowImrieScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -1186,6 +1195,7 @@ struct ClinicalScoresView: View {
         case .cci:           cciForm
         case .mfi5:          mfi5Form
         case .haps:          hapsForm
+        case .glasgowImrie:  glasgowImrieForm
         }
     }
 
@@ -2454,6 +2464,18 @@ struct ClinicalScoresView: View {
             case "peritonismAbsent":   hapsI.peritonismAbsent = true
             case "creatinineNormal":   hapsI.creatinineNormal = true
             case "haematocritNormal":  hapsI.haematocritNormal = true
+            default: break
+            }
+        case .glasgowImrie:
+            switch field.id {
+            case "pao2Below59":      glasgowImrieI.pao2Below59 = true
+            case "ageAbove55":       glasgowImrieI.ageAbove55 = true
+            case "wbcAbove15":       glasgowImrieI.wbcAbove15 = true
+            case "calciumBelow2":    glasgowImrieI.calciumBelow2 = true
+            case "albuminBelow32":   glasgowImrieI.albuminBelow32 = true
+            case "ldh180":           glasgowImrieI.ldh180 = true
+            case "ast100":           glasgowImrieI.ast100 = true
+            case "glucoseAbove10":   glasgowImrieI.glucoseAbove10 = true
             default: break
             }
         default: break
@@ -4135,5 +4157,28 @@ struct ClinicalScoresView: View {
         }
         .onChange(of: hapsI) { _, _ in recalculate() }
     }
+
+    // MARK: – BISAP Form
+
+    // MARK: – Glasgow-Imrie Form
+
+    private var glasgowImrieForm: some View {
+        Group {
+            Text("Variables assessed from WORST values within first 48 hours of admission")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .padding(.bottom, 4)
+            scoreToggle("PaO₂ < 59.2 mmHg (< 7.9 kPa)", binding: $glasgowImrieI.pao2Below59, points: "+1", autoKey: "pao2Below59")
+            scoreToggle("Age > 55 years", binding: $glasgowImrieI.ageAbove55, points: "+1", autoKey: "ageAbove55")
+            scoreToggle("WBC > 15 × 10⁹/L", binding: $glasgowImrieI.wbcAbove15, points: "+1", autoKey: "wbcAbove15")
+            scoreToggle("Serum calcium < 2.0 mmol/L", binding: $glasgowImrieI.calciumBelow2, points: "+1", autoKey: "calciumBelow2")
+            scoreToggle("Serum albumin < 32 g/L", binding: $glasgowImrieI.albuminBelow32, points: "+1", autoKey: "albuminBelow32")
+            scoreToggle("LDH > 600 IU/L (or > 3× ULN)", binding: $glasgowImrieI.ldh180, points: "+1", autoKey: "ldh180")
+            scoreToggle("AST / ALT > 200 IU/L", binding: $glasgowImrieI.ast100, points: "+1", autoKey: "ast100")
+            scoreToggle("Serum glucose > 10 mmol/L (non-diabetic)", binding: $glasgowImrieI.glucoseAbove10, points: "+1", autoKey: "glucoseAbove10")
+        }
+        .onChange(of: glasgowImrieI) { _, _ in recalculate() }
+    }
+
 
 }

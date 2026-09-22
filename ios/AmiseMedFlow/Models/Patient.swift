@@ -192,6 +192,7 @@ final class Patient {
     var cciScore: Int?            // Charlson Comorbidity Index (age-adjusted)
     var mfi5Score: Int?           // Modified Frailty Index-5 (0–5)
     var hapsScore: Int?           // Harmless Acute Pancreatitis Score (0–3)
+    var glasgowImrieScore: Int?   // Glasgow-Imrie Pancreatitis Score (0–8)
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

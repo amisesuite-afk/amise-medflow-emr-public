@@ -5810,4 +5810,81 @@ enum ClinicalScoringEngine {
         )
     }
 
+
+    // MARK: – #80 Glasgow-Imrie
+
+    struct GlasgowImrieInput: Equatable {
+        var pao2Below59: Bool = false         // PaO₂ < 59.2 mmHg (< 7.9 kPa)
+        var ageAbove55: Bool = false           // Age > 55 years
+        var wbcAbove15: Bool = false           // WBC > 15 × 10⁹/L
+        var calciumBelow2: Bool = false        // Serum calcium < 2.0 mmol/L
+        var albuminBelow32: Bool = false       // Serum albumin < 32 g/L
+        var ldh180: Bool = false              // LDH > 600 IU/L (original) or > 3× ULN (some versions)
+        var ast100: Bool = false              // AST / ALT > 200 IU/L
+        var glucoseAbove10: Bool = false       // Serum glucose > 10 mmol/L (non-diabetic)
+    }
+
+    static func glasgowImrie(_ i: GlasgowImrieInput) -> ClinicalScore {
+        let pts = [i.pao2Below59, i.ageAbove55, i.wbcAbove15, i.calciumBelow2,
+                   i.albuminBelow32, i.ldh180, i.ast100, i.glucoseAbove10].filter { $0 }.count
+
+        let risk: ScoreRisk
+        let interp: String
+        switch pts {
+        case 0...2:
+            risk = .low
+            interp = "Glasgow-Imrie \(pts)/8 — Mild acute pancreatitis. Low predicted complication rate (< 5% mortality). Standard IV fluid resuscitation, analgesia, and supportive care. Reassess at 48 h. Note: score is calculated on first 48 h data and may not be complete at admission."
+        case 3:
+            risk = .moderate
+            interp = "Glasgow-Imrie 3/8 — Moderate-to-severe pancreatitis predicted. Mortality risk ~10–15%. Organ complications possible. IV fluid resuscitation, close monitoring, HDU/ICU consideration if any organ dysfunction present. CT at 48–72 h."
+        default:
+            risk = .high
+            interp = "Glasgow-Imrie \(pts)/8 — Severe acute pancreatitis. Mortality risk 30–50% (≥ 3 criteria historically associated with severe disease). Immediate HDU/ICU admission, aggressive resuscitation, CT imaging, and HPB/gastroenterology specialist review."
+        }
+
+        let flags: [String] = pts >= 3 ? ["Glasgow-Imrie ≥ 3: severe acute pancreatitis predicted — HDU/ICU and specialist review required"] : []
+        let recs: [String]
+        if pts < 3 {
+            recs = [
+                "Mild acute pancreatitis predicted — aggressive fluid resuscitation for first 24 h.",
+                "Early oral intake when tolerated (24–48 h).",
+                "US abdomen to assess for gallstones and common bile duct dilation.",
+                "Monitor with serial bloods at 24 and 48 h.",
+                "Consider ERCP within 24–48 h if biliary pancreatitis with cholangitis."
+            ]
+        } else {
+            recs = [
+                "Severe acute pancreatitis predicted — HDU/ICU admission.",
+                "Aggressive IV crystalloid resuscitation (250–500 mL/h) guided by urine output.",
+                "CT abdomen with contrast at 48–72 h to assess for necrosis and complications.",
+                "Nasojejunal feeding preferred if enteral route feasible; PN if not.",
+                "Antibiotics only if infected necrosis confirmed or high clinical suspicion.",
+                "Multidisciplinary HPB/ICU/gastroenterology review.",
+                "ERCP if biliary aetiology with cholangitis (within 24 h for cholangitis)."
+            ]
+        }
+
+        return ClinicalScore(
+            name: "Glasgow-Imrie Pancreatitis Score",
+            score: Double(pts),
+            maxScore: 8,
+            risk: risk,
+            interpretation: interp,
+            items: [
+                ScoredItem(label: "PaO₂ < 59.2 mmHg (< 7.9 kPa)", points: 1, present: i.pao2Below59),
+                ScoredItem(label: "Age > 55 years", points: 1, present: i.ageAbove55),
+                ScoredItem(label: "WBC > 15 × 10⁹/L", points: 1, present: i.wbcAbove15),
+                ScoredItem(label: "Serum calcium < 2.0 mmol/L", points: 1, present: i.calciumBelow2),
+                ScoredItem(label: "Serum albumin < 32 g/L", points: 1, present: i.albuminBelow32),
+                ScoredItem(label: "LDH > 600 IU/L (or > 3× ULN)", points: 1, present: i.ldh180),
+                ScoredItem(label: "AST/ALT > 200 IU/L", points: 1, present: i.ast100),
+                ScoredItem(label: "Serum glucose > 10 mmol/L (non-diabetic)", points: 1, present: i.glucoseAbove10)
+            ],
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Imrie CW et al. Br J Surg 1978;65:478–480. Modified by Blamey SL et al. Gut 1984;25:1340–1346. Eight variables, assessed at 48 h from admission. Score ≥ 3 predicts severe acute pancreatitis with sensitivity ~70%, specificity ~85%. Widely used in UK/Commonwealth clinical practice. Variables must be based on worst values within first 48 h — not all may be available at admission. Compare with BISAP (admission-only) and APACHE II (daily, more complex)."
+        )
+    }
+
+
 }
