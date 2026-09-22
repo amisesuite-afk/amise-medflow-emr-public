@@ -81,6 +81,9 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case baux             = "Baux Score"
     case iss              = "Injury Severity Score"
     case nutric           = "NUTRIC Score"
+    case spesi            = "sPESI (PE Severity)"
+    case decaf            = "DECAF (COPD Exacerbation)"
+    case hinchey          = "Hinchey (Diverticulitis)"
 
     var category: ScoreCategory {
         switch self {
@@ -118,6 +121,12 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .acute
         case .nutric:
             return .sepsis
+        case .spesi:
+            return .vascular
+        case .decaf:
+            return .sepsis
+        case .hinchey:
+            return .acute
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
         case .mews, .news2, .waterlow, .surgicalApgar:
@@ -184,6 +193,9 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .baux:           return "flame.circle.fill"
         case .iss:            return "bandage.fill"
         case .nutric:         return "fork.knife.circle.fill"
+        case .spesi:          return "lungs.fill"
+        case .decaf:          return "wind"
+        case .hinchey:        return "cross.circle.fill"
         }
     }
 }
@@ -322,6 +334,12 @@ struct ClinicalScoresView: View {
     @State private var issI = ClinicalScoringEngine.ISSInput()
     // NUTRIC
     @State private var nutricI = ClinicalScoringEngine.NUTRICInput()
+    // sPESI
+    @State private var spesiI = ClinicalScoringEngine.SPESIInput()
+    // DECAF
+    @State private var decafI = ClinicalScoringEngine.DECAFInput()
+    // Hinchey
+    @State private var hincheyI = ClinicalScoringEngine.HincheyInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -771,6 +789,15 @@ struct ClinicalScoresView: View {
         case .nutric:
             let (input, fill) = PatientScoreAutoPopulator.nutric(patient: patient)
             nutricI = input; autoFill = fill
+        case .spesi:
+            let (input, fill) = PatientScoreAutoPopulator.spesi(patient: patient)
+            spesiI = input; autoFill = fill
+        case .decaf:
+            let (input, fill) = PatientScoreAutoPopulator.decaf(patient: patient)
+            decafI = input; autoFill = fill
+        case .hinchey:
+            let (input, fill) = PatientScoreAutoPopulator.hinchey(patient: patient)
+            hincheyI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -889,6 +916,9 @@ struct ClinicalScoresView: View {
         case .baux:          ClinicalScoringEngine.baux(bauxI)
         case .iss:           ClinicalScoringEngine.iss(issI)
         case .nutric:        ClinicalScoringEngine.nutric(nutricI)
+        case .spesi:         ClinicalScoringEngine.spesi(spesiI)
+        case .decaf:         ClinicalScoringEngine.decaf(decafI)
+        case .hinchey:       ClinicalScoringEngine.hinchey(hincheyI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -950,6 +980,9 @@ struct ClinicalScoresView: View {
         case .baux:          patient.bauxScore = intScore
         case .iss:           patient.issScore = intScore
         case .nutric:        patient.nutricScore = intScore
+        case .spesi:         patient.spesiScore = intScore
+        case .decaf:         patient.decafScore = intScore
+        case .hinchey:       patient.hincheyGrade = intScore
         case .caprini:       patient.capriniScore = intScore
         default: break
         }
@@ -1047,6 +1080,9 @@ struct ClinicalScoresView: View {
         case .baux:          bauxForm
         case .iss:           issForm
         case .nutric:        nutricForm
+        case .spesi:         spesiForm
+        case .decaf:         decafForm
+        case .hinchey:       hincheyForm
         }
     }
 
@@ -2195,6 +2231,26 @@ struct ClinicalScoresView: View {
         case .childPugh, .meld, .asa:
             break
         case .ecog, .rts, .kdigo, .baux, .iss, .apacheII, .sofa, .nutric, .caprini, .curb65:
+            break
+        case .spesi:
+            switch field.id {
+            case "cancer":                  spesiI.cancer = true
+            case "cardiopulmonaryDisease":  spesiI.cardiopulmonaryDisease = true
+            case "heartRateAbove109":       spesiI.heartRateAbove109 = true
+            case "sbpBelow100":             spesiI.sbpBelow100 = true
+            case "spo2Below90":             spesiI.spo2Below90 = true
+            default: break
+            }
+        case .decaf:
+            switch field.id {
+            case "eosinopenia":          decafI.eosinopenia = true
+            case "consolidation":        decafI.consolidation = true
+            case "acidaemia":            decafI.acidaemia = true
+            case "atrialFibrillation":   decafI.atrialFibrillation = true
+            default: break
+            }
+        case .hinchey:
+            // Grade is a numeric picker — no boolean toggle confirm
             break
         default: break
         }
@@ -3613,6 +3669,98 @@ struct ClinicalScoresView: View {
                 options: [(0,"0 — No injury"),(1,"1 — Minor"),(2,"2 — Moderate"),(3,"3 — Serious"),(4,"4 — Severe"),(5,"5 — Critical"),(6,"6 — Unsurvivable")])
         }
         .onChange(of: issI) { _, _ in recalculate() }
+    }
+
+    // MARK: - NUTRIC Score (#62)
+
+    private var nutricForm: some View {
+        Group {
+            mewsSlider("Age (years)", value: Binding(get: { Double(nutricI.age) }, set: { nutricI.age = Int($0) }),
+                       range: 18...100, step: 1, unit: "yrs")
+            apacheSegment("APACHE II score at ICU admission", selection: $nutricI.apacheII,
+                options: [
+                    (0, "< 15"),
+                    (10, "15–19"),
+                    (20, "20–27"),
+                    (28, "≥ 28")
+                ])
+            apacheSegment("SOFA score at ICU admission", selection: $nutricI.sofa,
+                options: [
+                    (0, "< 6"),
+                    (6, "6–9"),
+                    (10, "≥ 10")
+                ])
+            apacheSegment("Number of comorbidities (Charlson-equivalent)", selection: $nutricI.comorbidities,
+                options: [
+                    (0, "0–1"),
+                    (2, "≥ 2")
+                ])
+            apacheSegment("Days from hospital admission to ICU", selection: $nutricI.daysHospitalToICU,
+                options: [
+                    (0, "0–1 days"),
+                    (2, "≥ 2 days")
+                ])
+        }
+        .onChange(of: nutricI) { _, _ in recalculate() }
+    }
+
+    // MARK: - sPESI (#67)
+
+    private var spesiForm: some View {
+        Group {
+            mewsSlider("Age (years)", value: Binding(get: { Double(spesiI.age) }, set: { spesiI.age = Int($0) }),
+                       range: 18...110, step: 1, unit: "yrs")
+            scoreToggle("Active cancer (treatment within 6 months or palliative)",
+                        binding: $spesiI.cancer, points: "+1", autoKey: "cancer")
+            scoreToggle("Chronic cardiopulmonary disease (heart failure or COPD)",
+                        binding: $spesiI.cardiopulmonaryDisease, points: "+1", autoKey: "cardiopulmonaryDisease")
+            scoreToggle("Heart rate ≥ 110 bpm",
+                        binding: $spesiI.heartRateAbove109, points: "+1", autoKey: "heartRateAbove109")
+            scoreToggle("Systolic BP < 100 mmHg",
+                        binding: $spesiI.sbpBelow100, points: "+1", autoKey: "sbpBelow100")
+            scoreToggle("SpO₂ < 90%",
+                        binding: $spesiI.spo2Below90, points: "+1", autoKey: "spo2Below90")
+        }
+        .onChange(of: spesiI) { _, _ in recalculate() }
+    }
+
+    // MARK: - DECAF (#68)
+
+    private var decafForm: some View {
+        Group {
+            apacheSegment("MRC Dyspnoea Grade (baseline, pre-exacerbation)", selection: $decafI.dyspnoeaMRC,
+                options: [
+                    (1, "Grade 1 — breathless on strenuous exercise"),
+                    (2, "Grade 2 — breathless hurrying on flat"),
+                    (3, "Grade 3 — walks slower than peers; stops for breath"),
+                    (4, "Grade 4 — stops for breath after 100 m on flat"),
+                    (5, "Grade 5 — too breathless to leave house / undress")
+                ])
+            scoreToggle("Eosinopenia (eosinophils < 0.05 × 10⁹/L)",
+                        binding: $decafI.eosinopenia, points: "+1", autoKey: "eosinopenia")
+            scoreToggle("Consolidation on chest X-ray",
+                        binding: $decafI.consolidation, points: "+1", autoKey: "consolidation")
+            scoreToggle("Acidaemia (pH < 7.30 on ABG)",
+                        binding: $decafI.acidaemia, points: "+1", autoKey: "acidaemia")
+            scoreToggle("Atrial fibrillation (new or pre-existing)",
+                        binding: $decafI.atrialFibrillation, points: "+1", autoKey: "atrialFibrillation")
+        }
+        .onChange(of: decafI) { _, _ in recalculate() }
+    }
+
+    // MARK: - Hinchey (#69)
+
+    private var hincheyForm: some View {
+        Group {
+            apacheSegment("Hinchey Grade", selection: $hincheyI.grade,
+                options: [
+                    (1, "Grade Ia/Ib — pericolic or mesorectal abscess"),
+                    (2, "Grade II — pelvic or distant abscess"),
+                    (3, "Grade III — generalised purulent peritonitis"),
+                    (4, "Grade IV — generalised faecal peritonitis")
+                ])
+        }
+        .onChange(of: hincheyI) { _, _ in recalculate() }
     }
 
 }

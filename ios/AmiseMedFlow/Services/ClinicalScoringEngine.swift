@@ -4814,4 +4814,223 @@ enum ClinicalScoringEngine {
         )
     }
 
+    // MARK: - sPESI (Simplified Pulmonary Embolism Severity Index)
+    struct SPESIInput: Equatable {
+        var age: Int = 40               // years
+        var cancer: Bool = false         // active malignancy
+        var cardiopulmonaryDisease: Bool = false  // chronic cardiopulmonary disease (chronic HF or COPD)
+        var heartRateAbove109: Bool = false       // HR ≥110 bpm at presentation
+        var sbpBelow100: Bool = false             // SBP <100 mmHg
+        var spo2Below90: Bool = false             // SpO2 <90% on room air
+    }
+
+    static func spesi(_ i: SPESIInput) -> ClinicalScore {
+        var pts = 0
+        var items: [ScoredItem] = []
+
+        let agePt = i.age > 80 ? 1 : 0
+        pts += agePt
+        items.append(ScoredItem(label: "Age >80 years", points: 1, present: i.age > 80))
+        items.append(ScoredItem(label: "Active cancer", points: 1, present: i.cancer))
+        if i.cancer { pts += 1 }
+        items.append(ScoredItem(label: "Chronic cardiopulmonary disease (HF or COPD)", points: 1, present: i.cardiopulmonaryDisease))
+        if i.cardiopulmonaryDisease { pts += 1 }
+        items.append(ScoredItem(label: "HR ≥110 bpm", points: 1, present: i.heartRateAbove109))
+        if i.heartRateAbove109 { pts += 1 }
+        items.append(ScoredItem(label: "SBP <100 mmHg", points: 1, present: i.sbpBelow100))
+        if i.sbpBelow100 { pts += 1 }
+        items.append(ScoredItem(label: "SpO₂ <90%", points: 1, present: i.spo2Below90))
+        if i.spo2Below90 { pts += 1 }
+
+        let score = Double(pts)
+        let flags: [String] = pts >= 1 ? ["sPESI ≥1 — high-risk PE: 30-day mortality ~10.9% vs 1.0% for sPESI 0"] : []
+        let (risk, interp): (ScoreRisk, String)
+        if pts == 0 {
+            (risk, interp) = (.low, "sPESI 0/6: Low-risk PE. Consider outpatient treatment or short hospital stay. 30-day mortality ~1.0%. Criteria: age ≤80, no cancer, no cardiopulmonary disease, HR <110, SBP ≥100, SpO2 ≥90%.")
+        } else {
+            (risk, interp) = (.high, "sPESI \(pts)/6: High-risk PE. Inpatient management required. 30-day mortality ~10.9%. Consider systemic anticoagulation, risk stratify further with echocardiogram and troponin.")
+        }
+        return ClinicalScore(
+            systemName: "Simplified PESI",
+            abbreviation: "sPESI \(pts)/6",
+            score: score,
+            maxScore: 6,
+            risk: risk,
+            interpretation: interp,
+            items: items,
+            recommendations: pts == 0 ? [
+                "Consider outpatient management with LMWH or DOAC (e.g. rivaroxaban 15 mg BD for 21 days then 20 mg OD)",
+                "Oral anticoagulation for minimum 3 months; assess duration based on provoked vs unprovoked",
+                "Arrange close follow-up within 7–14 days",
+                "Educate on signs of PE recurrence and bleeding"
+            ] : [
+                "Admit for inpatient anticoagulation and monitoring",
+                "Initiate parenteral anticoagulation (LMWH or UFH) immediately",
+                "Echo + troponin/BNP to risk-stratify for intermediate-high vs high-risk PE",
+                "If massive PE (haemodynamic instability): systemic thrombolysis or catheter-directed therapy",
+                "If intermediate-high risk: consider NOAC after clinical stability, monitor for deterioration",
+                "Supplemental oxygen to maintain SpO2 ≥95%",
+                "Avoid bed rest in haemodynamically stable patients — early mobilisation"
+            ],
+            redFlags: flags,
+            evidenceNote: "Jiménez D et al. Lancet 2010;376:1043–1048. sPESI validated across multiple cohorts. sPESI 0 identifies patients safe for outpatient PE treatment. ESC 2019 guidelines recommend sPESI for initial PE risk stratification."
+        )
+    }
+
+    // MARK: - DECAF Score (COPD Exacerbation Severity)
+    struct DECAFInput: Equatable {
+        var dyspnoeaMRC: Int = 3         // Medical Research Council dyspnoea grade 1–5 (at baseline pre-exacerbation)
+        var eosinopenia: Bool = false    // Eosinophils <0.05×10⁹/L on admission bloods
+        var consolidation: Bool = false  // Chest X-ray consolidation at presentation
+        var acidaemia: Bool = false      // pH <7.30 on arterial blood gas
+        var atrialFibrillation: Bool = false  // AF on ECG or history of paroxysmal AF
+    }
+
+    static func decaf(_ i: DECAFInput) -> ClinicalScore {
+        var pts = 0
+        var items: [ScoredItem] = []
+
+        // Dyspnoea MRC ≥4 or ≥5
+        let dyspPts = i.dyspnoeaMRC >= 5 ? 2 : (i.dyspnoeaMRC >= 4 ? 1 : 0)
+        pts += dyspPts
+        items.append(ScoredItem(label: "MRC dyspnoea grade \(i.dyspnoeaMRC) (MRC 3=0, MRC 4=1, MRC 5a/5b=2)", points: dyspPts, present: i.dyspnoeaMRC >= 4))
+        items.append(ScoredItem(label: "Eosinopenia (eosinophils <0.05×10⁹/L)", points: 1, present: i.eosinopenia))
+        if i.eosinopenia { pts += 1 }
+        items.append(ScoredItem(label: "Consolidation on CXR", points: 1, present: i.consolidation))
+        if i.consolidation { pts += 1 }
+        items.append(ScoredItem(label: "Acidaemia (pH <7.30)", points: 1, present: i.acidaemia))
+        if i.acidaemia { pts += 1 }
+        items.append(ScoredItem(label: "Atrial fibrillation (AF)", points: 1, present: i.atrialFibrillation))
+        if i.atrialFibrillation { pts += 1 }
+
+        let score = Double(pts)
+        let flags: [String] = pts >= 3 ? ["DECAF ≥3 — in-hospital mortality 25–49%: consider early ICU/HDU referral"] : []
+        let (risk, interp): (ScoreRisk, String)
+        switch pts {
+        case 0...1:
+            (risk, interp) = (.low, "DECAF \(pts)/6: Low risk. In-hospital mortality ~1.4–2.5%. Standard ward management appropriate. Consider early supported discharge pathway if ≤1.")
+        case 2:
+            (risk, interp) = (.moderate, "DECAF \(pts)/6: Moderate risk. In-hospital mortality ~6.3%. Admission required; close monitoring for deterioration.")
+        default:
+            (risk, interp) = (.high, "DECAF \(pts)/6: High risk. In-hospital mortality 25–49%. Early ICU/HDU assessment required. Consider NIV if pH <7.35.")
+        }
+        return ClinicalScore(
+            systemName: "DECAF Score",
+            abbreviation: "DECAF \(pts)/6",
+            score: score,
+            maxScore: 6,
+            risk: risk,
+            interpretation: interp,
+            items: items,
+            recommendations: pts >= 3 ? [
+                "Early ICU/HDU referral — high mortality group",
+                "Non-invasive ventilation (NIV) if pH <7.35 with hypercapnia",
+                "Controlled oxygen therapy: target SpO2 88–92% (24% Venturi mask)",
+                "Systemic corticosteroids: prednisolone 30–40 mg daily for 5 days",
+                "Antibiotics if sputum purulent or consolidation on CXR",
+                "Bronchodilators: salbutamol and ipratropium nebulisers",
+                "Thromboprophylaxis with LMWH",
+                "Review goals of care and ceiling of treatment early"
+            ] : pts == 2 ? [
+                "Admit to respiratory ward; 4-hourly observations minimum",
+                "Controlled oxygen therapy: SpO2 88–92%",
+                "Systemic corticosteroids and bronchodilators",
+                "Antibiotics if purulent sputum or fever",
+                "Monitor for acidaemia — repeat ABG at 1 h if pH <7.35 on arrival",
+                "LMWH thromboprophylaxis"
+            ] : [
+                "Standard medical ward admission",
+                "Controlled oxygen: SpO2 88–92%",
+                "Oral prednisolone 30 mg for 5 days",
+                "Short-acting bronchodilators (salbutamol + ipratropium nebulisers 4-hourly)",
+                "Consider early supported discharge at 24–48 h if clinical improvement"
+            ],
+            redFlags: flags,
+            evidenceNote: "Steer J et al. Thorax 2012;67:970–976. DECAF validated in UK COPD cohorts (n=920). DECAF 0–1 identifies low-risk patients suitable for early discharge pathways. Superior to APACHE II for acute COPD exacerbations."
+        )
+    }
+
+    // MARK: - Hinchey Classification (Perforated Diverticulitis)
+    struct HincheyInput: Equatable {
+        var grade: Int = 1  // 1a=pericolic abscess, 1b=mesorectal abscess, 2=pelvic abscess, 3=purulent peritonitis, 4=faecal peritonitis
+    }
+
+    static func hinchey(_ i: HincheyInput) -> ClinicalScore {
+        let score = Double(i.grade)
+        let flags: [String] = i.grade >= 3 ? ["Hinchey III/IV — generalised peritonitis: emergency surgery required"] : []
+        let (risk, interp, recs): (ScoreRisk, String, [String])
+        switch i.grade {
+        case 1:
+            (risk, interp, recs) = (
+                .low,
+                "Hinchey I (pericolic/mesorectal abscess): Localised pericolic or mesorectal abscess. Conservative management appropriate in most cases.",
+                [
+                    "IV antibiotics: co-amoxiclav 1.2 g TDS or piperacillin-tazobactam 4.5 g TDS",
+                    "Nil by mouth until clinical improvement; then clear fluids",
+                    "CT-guided percutaneous drainage if abscess >4 cm",
+                    "Bowel rest and IV fluids",
+                    "Reassess at 48–72 h; consider surgery if failure to improve",
+                    "Elective sigmoid resection (laparoscopic Hartmann's or primary anastomosis) 6–8 weeks after recovery"
+                ]
+            )
+        case 2:
+            (risk, interp, recs) = (
+                .moderate,
+                "Hinchey II (pelvic abscess): Pelvic or distant abscess. CT-guided drainage is first-line; surgery if drainage fails.",
+                [
+                    "CT-guided percutaneous drainage if technically feasible",
+                    "IV antibiotics: piperacillin-tazobactam 4.5 g TDS + metronidazole 500 mg TDS",
+                    "Monitor WBC, CRP, and fever curve",
+                    "Failure to respond at 48–72 h: laparoscopic lavage vs Hartmann's procedure",
+                    "Plan interval sigmoid resection 6–8 weeks after recovery"
+                ]
+            )
+        case 3:
+            (risk, interp, recs) = (
+                .high,
+                "Hinchey III (purulent peritonitis): Generalised purulent peritonitis. Emergency surgery required — laparoscopic lavage vs Hartmann's procedure.",
+                [
+                    "Emergency surgical referral — theatre within 24 h in most cases",
+                    "Resuscitation: IV fluids, electrolyte correction, Foley catheter",
+                    "IV antibiotics: piperacillin-tazobactam 4.5 g TDS + metronidazole 500 mg TDS",
+                    "Laparoscopic lavage and drainage (LADIES trial evidence) in select stable patients",
+                    "Hartmann's procedure (sigmoid resection, end colostomy) for haemodynamic instability",
+                    "ICU admission post-operatively for organ support if required",
+                    "Stoma reversal considered at 6–12 months if patient fit"
+                ]
+            )
+        default:
+            (risk, interp, recs) = (
+                .critical,
+                "Hinchey IV (faecal peritonitis): Generalised faecal peritonitis. Life-threatening — emergency surgery within hours. Mortality 35–50%.",
+                [
+                    "Emergency surgery — immediate theatre (within 6 hours of diagnosis)",
+                    "Aggressive resuscitation: target MAP >65 mmHg, lactate clearance",
+                    "Vasopressors if septic shock: noradrenaline first-line",
+                    "Hartmann's procedure (sigmoid resection, end colostomy) is standard",
+                    "Damage control surgery if physiologically deranged (pH <7.2, T <34°C, coagulopathy)",
+                    "ICU admission post-operatively",
+                    "Mortality 35–50% — early goals of care discussion with family"
+                ]
+            )
+        }
+        return ClinicalScore(
+            systemName: "Hinchey Classification",
+            abbreviation: "Hinchey \(["0","Ia/Ib","II","III","IV"][min(i.grade, 4)])",
+            score: score,
+            maxScore: 4,
+            risk: risk,
+            interpretation: interp,
+            items: [
+                ScoredItem(label: "Grade Ia — pericolic abscess", points: 0, present: i.grade == 1),
+                ScoredItem(label: "Grade II — pelvic/distant abscess", points: 0, present: i.grade == 2),
+                ScoredItem(label: "Grade III — purulent peritonitis", points: 0, present: i.grade == 3),
+                ScoredItem(label: "Grade IV — faecal peritonitis", points: 0, present: i.grade == 4)
+            ],
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Hinchey EJ et al. Adv Surg 1978;12:85–109. Modified by Wasvary (1999) to include Grade Ia/Ib. LADIES trial (Br J Surg 2019) supports laparoscopic lavage for Hinchey III in stable patients. Faecal peritonitis (IV) remains a surgical emergency with high mortality."
+        )
+    }
+
 }

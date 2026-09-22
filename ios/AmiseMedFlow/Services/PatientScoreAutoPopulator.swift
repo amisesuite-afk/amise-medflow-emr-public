@@ -2790,4 +2790,167 @@ enum PatientScoreAutoPopulator {
         }
         return (i, f)
     }
+
+    // MARK: - sPESI (#67)
+    static func spesi(patient: Patient) -> (ClinicalScoringEngine.SPESIInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.SPESIInput()
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Age
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: .now).year ?? 0
+            i.age = age
+            if age > 80 {
+                f.addAutoFilled(key: "ageAbove80", label: "Age > 80 years — sPESI point", source: "Demographics")
+            }
+        }
+
+        // Cancer
+        let cancerKw = ["cancer", "malignancy", "carcinoma", "tumour", "tumor", "oncology",
+                        "chemotherapy", "radiotherapy", "palliative", "metastatic", "neoplasm"]
+        if cancerKw.contains(where: { text.contains($0) }) {
+            i.cancer = true
+            f.addAutoFilled(key: "cancer", label: "Active cancer keyword detected", source: "PMH/Diagnosis")
+        } else {
+            f.addPending(key: "cancer", label: "Active cancer within 6 months or palliative — confirm", source: "PMH")
+        }
+
+        // Cardiopulmonary disease
+        let cardioKw = ["heart failure", "cardiac failure", "ccf", "lv failure", "copd",
+                        "chronic obstructive", "emphysema", "cor pulmonale", "pulmonary hypertension"]
+        if cardioKw.contains(where: { text.contains($0) }) {
+            i.cardiopulmonaryDisease = true
+            f.addAutoFilled(key: "cardiopulmonaryDisease", label: "Chronic cardiopulmonary disease keyword detected", source: "PMH/Diagnosis")
+        } else {
+            f.addPending(key: "cardiopulmonaryDisease", label: "Chronic heart failure or COPD — confirm", source: "PMH")
+        }
+
+        // Vitals auto-fill
+        if let v = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
+            if let hr = v.heartRate, hr >= 110 {
+                i.heartRateAbove109 = true
+                f.addAutoFilled(key: "heartRateAbove109", label: "HR \(hr) ≥ 110 bpm from latest vitals", source: "Vitals")
+            }
+            if let sbp = v.bpSystolic, sbp < 100 {
+                i.sbpBelow100 = true
+                f.addAutoFilled(key: "sbpBelow100", label: "SBP \(sbp) < 100 mmHg from latest vitals", source: "Vitals")
+            }
+            if let spo2 = v.spo2, spo2 < 90 {
+                i.spo2Below90 = true
+                f.addAutoFilled(key: "spo2Below90", label: "SpO₂ \(spo2)% < 90% from latest vitals", source: "Vitals")
+            }
+        } else {
+            f.addPending(key: "heartRateAbove109", label: "HR ≥ 110 bpm — check vitals", source: "Vitals")
+            f.addPending(key: "sbpBelow100", label: "SBP < 100 mmHg — check vitals", source: "Vitals")
+            f.addPending(key: "spo2Below90", label: "SpO₂ < 90% — check latest SpO₂", source: "Vitals")
+        }
+
+        return (i, f)
+    }
+
+    // MARK: - DECAF (#68)
+    static func decaf(patient: Patient) -> (ClinicalScoringEngine.DECAFInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.DECAFInput()
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // MRC dyspnoea — attempt detection from text
+        let mrc5Kw = ["unable to leave house", "too breathless to leave", "housebound", "confined to"]
+        let mrc4Kw = ["stops after 100m", "100 metres", "100 meters", "severe dyspnoea", "severe breathlessness"]
+        let mrc3Kw = ["slower than peers", "stops on flat", "moderate dyspnoea", "exertional dyspnoea"]
+        if mrc5Kw.contains(where: { text.contains($0) }) {
+            i.dyspnoeaMRC = 5
+            f.addAutoFilled(key: "mrcGrade", label: "MRC Grade 5 keywords detected — housebound", source: "History")
+        } else if mrc4Kw.contains(where: { text.contains($0) }) {
+            i.dyspnoeaMRC = 4
+            f.addAutoFilled(key: "mrcGrade", label: "MRC Grade 4 keywords detected — stops after 100 m", source: "History")
+        } else if mrc3Kw.contains(where: { text.contains($0) }) {
+            i.dyspnoeaMRC = 3
+            f.addAutoFilled(key: "mrcGrade", label: "MRC Grade 3 keywords detected", source: "History")
+        } else {
+            f.addPending(key: "mrcGrade", label: "MRC dyspnoea grade (baseline, pre-exacerbation) — confirm", source: "History")
+        }
+
+        // Eosinopenia
+        f.addPending(key: "eosinopenia", label: "Eosinopenia (eosinophils < 0.05 × 10⁹/L) — check FBC differential", source: "Haematology")
+
+        // Consolidation
+        let cxrKw = ["consolidation", "pneumonia", "lobar consolidation", "cxr consolidation",
+                     "chest x-ray consolidation", "chest xray consolidation"]
+        if cxrKw.contains(where: { text.contains($0) }) {
+            i.consolidation = true
+            f.addAutoFilled(key: "consolidation", label: "Consolidation keyword detected on CXR", source: "Imaging")
+        } else {
+            f.addPending(key: "consolidation", label: "Consolidation on CXR — confirm radiology report", source: "Imaging")
+        }
+
+        // Acidaemia
+        let acidKw = ["acidaemia", "acidemia", "ph 7.2", "ph 7.1", "ph <7.3", "ph < 7.3",
+                      "type 2 respiratory failure", "hypercapnic", "respiratory acidosis"]
+        if acidKw.contains(where: { text.contains($0) }) {
+            i.acidaemia = true
+            f.addAutoFilled(key: "acidaemia", label: "Acidaemia/hypercapnia keyword detected", source: "History/ABG")
+        } else {
+            f.addPending(key: "acidaemia", label: "Acidaemia pH < 7.30 — check ABG", source: "Arterial blood gas")
+        }
+
+        // Atrial fibrillation
+        let afKw = ["atrial fibrillation", "af ", " af,", "afib", "fast af", "fast atrial fibrillation",
+                    "new af", "paroxysmal af"]
+        if afKw.contains(where: { text.contains($0) }) {
+            i.atrialFibrillation = true
+            f.addAutoFilled(key: "atrialFibrillation", label: "Atrial fibrillation keyword detected", source: "History/ECG")
+        } else {
+            f.addPending(key: "atrialFibrillation", label: "Atrial fibrillation (new or pre-existing) — confirm ECG", source: "ECG")
+        }
+
+        return (i, f)
+    }
+
+    // MARK: - Hinchey (#69)
+    static func hinchey(patient: Patient) -> (ClinicalScoringEngine.HincheyInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.HincheyInput()
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Grade detection from text
+        let grade4Kw = ["faecal peritonitis", "fecal peritonitis", "hinchey 4", "hinchey iv",
+                        "hinchey grade 4", "faecal contamination", "fecal contamination"]
+        let grade3Kw = ["purulent peritonitis", "hinchey 3", "hinchey iii", "hinchey grade 3",
+                        "generalised peritonitis", "generalized peritonitis", "free perforation"]
+        let grade2Kw = ["pelvic abscess", "hinchey 2", "hinchey ii", "hinchey grade 2",
+                        "distant abscess", "mesenteric abscess"]
+        let grade1Kw = ["pericolic abscess", "hinchey 1", "hinchey i ", "hinchey grade 1",
+                        "mesorectal abscess", "localised abscess"]
+
+        if grade4Kw.contains(where: { text.contains($0) }) {
+            i.grade = 4
+            f.addAutoFilled(key: "grade", label: "Hinchey IV (faecal peritonitis) keyword detected", source: "History/Imaging")
+        } else if grade3Kw.contains(where: { text.contains($0) }) {
+            i.grade = 3
+            f.addAutoFilled(key: "grade", label: "Hinchey III (purulent peritonitis) keyword detected", source: "History/Imaging")
+        } else if grade2Kw.contains(where: { text.contains($0) }) {
+            i.grade = 2
+            f.addAutoFilled(key: "grade", label: "Hinchey II (pelvic abscess) keyword detected", source: "History/Imaging")
+        } else if grade1Kw.contains(where: { text.contains($0) }) {
+            i.grade = 1
+            f.addAutoFilled(key: "grade", label: "Hinchey I (pericolic abscess) keyword detected", source: "History/CT")
+        } else {
+            // Check for diverticulitis context
+            let divKw = ["diverticulitis", "diverticular disease", "complicated diverticulitis",
+                         "sigmoid diverticulitis", "diverticular abscess", "diverticular perforation"]
+            if divKw.contains(where: { text.contains($0) }) {
+                f.addPending(key: "grade", label: "Diverticulitis detected — confirm Hinchey grade from CT report", source: "CT Abdomen/Pelvis")
+            }
+        }
+
+        return (i, f)
+    }
 }

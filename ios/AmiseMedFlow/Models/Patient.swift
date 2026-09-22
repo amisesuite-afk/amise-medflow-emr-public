@@ -171,6 +171,12 @@ final class Patient {
     var issScore: Int?
     // NUTRIC Score 0–9 (without IL-6)
     var nutricScore: Int?
+    // sPESI — Simplified Pulmonary Embolism Severity Index 0–6
+    var spesiScore: Int?
+    // DECAF Score 0–6 (COPD Exacerbation)
+    var decafScore: Int?
+    // Hinchey Grade 1–4 (Perforated Diverticulitis)
+    var hincheyGrade: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

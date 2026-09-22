@@ -141,6 +141,9 @@ enum BayesianDiagnosisEngine {
         bauxScore: Int? = nil,        // Baux score (age + TBSA [+17 inhalation]); ≥40 = significant burns
         issScore: Int? = nil,         // ISS 0–75; ≥16 = major trauma
         nutricScore: Int? = nil,      // NUTRIC 0–9; ≥6 = high nutritional risk in ICU
+        spesiScore: Int? = nil,       // sPESI 0–6; 0 = low risk PE, ≥1 = high risk PE
+        decafScore: Int? = nil,       // DECAF 0–6; ≥3 = high risk COPD exacerbation
+        hincheyGrade: Int? = nil,     // Hinchey 1–4; ≥3 = emergency surgery for diverticulitis
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3319,6 +3322,53 @@ enum BayesianDiagnosisEngine {
                 let nameLow = scored[i].candidate.name.lowercased()
                 guard nutricTargets.contains(where: { nameLow.contains($0) }) else { continue }
                 let label = "NUTRIC \(nt) — high nutritional risk supports malnutrition/wasting diagnoses"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // sPESI: boosts pulmonary embolism in high-risk patients
+        if let sp = spesiScore, sp >= 1 {
+            let spesiTargets = ["pulmonary embolism", "pe", "venous thromboembolism", "vte",
+                                "deep vein thrombosis", "right heart strain"]
+            let adj = sp >= 3 ? 12 : 8
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard spesiTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "sPESI \(sp) — high-risk PE; boosts thromboembolic diagnoses"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // DECAF: boosts COPD exacerbation and respiratory failure diagnoses
+        if let dc = decafScore, dc >= 2 {
+            let decafTargets = ["copd", "chronic obstructive pulmonary disease",
+                                "acute exacerbation", "respiratory failure",
+                                "hypercapnic respiratory failure", "type 2 respiratory failure"]
+            let adj = dc >= 3 ? 10 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard decafTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "DECAF \(dc) — moderate/high-risk COPD exacerbation"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // Hinchey: boosts complicated diverticulitis and peritonitis diagnoses
+        if let hg = hincheyGrade, hg >= 2 {
+            let hincheyTargets = ["diverticulitis", "diverticular", "peritonitis",
+                                  "complicated diverticulitis", "sigmoid diverticulitis",
+                                  "intra-abdominal sepsis", "colonic perforation"]
+            let adj = hg >= 3 ? 14 : 9
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard hincheyTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "Hinchey \(hg) — complicated diverticulitis; boosts septic/surgical diagnoses"
                 scored[i].logPosterior += adj
                 scored[i].evidence.append(label)
                 scored[i].evidenceSources["score", default: []].append(label)
