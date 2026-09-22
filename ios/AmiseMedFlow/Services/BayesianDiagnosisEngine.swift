@@ -147,6 +147,9 @@ enum BayesianDiagnosisEngine {
         airScore: Int? = nil,         // AIR 0–12; ≥9 = high-risk appendicitis
         percViolations: Int? = nil,   // PERC 0–8; 0 = PE excluded (low pretest)
         shockIndex: Int? = nil,       // SI × 100; ≥100 = significant haemodynamic compromise
+        parklandVolume: Int? = nil,   // burns fluid (mL); presence indicates significant burn injury
+        pasScore: Int? = nil,         // PAS 0–10; ≥7 = high-risk paediatric appendicitis
+        revisedGenevaScore: Int? = nil, // Revised Geneva 0–22; ≥11 = high probability PE
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3417,6 +3420,51 @@ enum BayesianDiagnosisEngine {
                 let nameLow = scored[i].candidate.name.lowercased()
                 guard siTargets.contains(where: { nameLow.contains($0) }) else { continue }
                 let label = "Shock Index \(Double(si)/100) ≥ 1.0 — significant haemodynamic compromise; boosts shock diagnoses"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // Parkland: significant burn injury boosts burn-related diagnoses
+        if let pv = parklandVolume, pv > 0 {
+            let burnTargets = ["burns", "thermal injury", "chemical burns", "electrical burns",
+                               "inhalation injury", "toxic epidermal necrolysis"]
+            let adj = pv >= 10000 ? 14 : pv >= 5000 ? 10 : 7
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard burnTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "Parkland volume \(pv) mL calculated — significant burn injury confirmed"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // PAS: boosts paediatric appendicitis diagnoses
+        if let ps = pasScore, ps >= 4 {
+            let pasTargets = ["appendicitis", "acute appendicitis", "perforated appendicitis",
+                              "appendicular abscess", "mesenteric adenitis"]
+            let adj = ps >= 7 ? 14 : 8
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard pasTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "PAS \(ps) — intermediate/high-risk paediatric appendicitis"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // Revised Geneva: boosts pulmonary embolism diagnoses
+        if let rg = revisedGenevaScore, rg >= 4 {
+            let rgTargets = ["pulmonary embolism", "pe ", "venous thromboembolism", "vte",
+                             "right ventricular strain", "dvt"]
+            let adj = rg >= 11 ? 13 : 8
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard rgTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "Revised Geneva \(rg) — moderate/high PE probability"
                 scored[i].logPosterior += adj
                 scored[i].evidence.append(label)
                 scored[i].evidenceSources["score", default: []].append(label)

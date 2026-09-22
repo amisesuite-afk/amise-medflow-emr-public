@@ -183,6 +183,12 @@ final class Patient {
     var percViolations: Int?
     // Shock Index × 100 (e.g., 90 = SI of 0.90)
     var shockIndex: Int?
+    // Parkland total 24 h volume (mL); computed from weight × TBSA
+    var parklandVolume: Int?
+    // Paediatric Appendicitis Score 0–10
+    var pasScore: Int?
+    // Revised Geneva Score 0–22
+    var revisedGenevaScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

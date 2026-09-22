@@ -87,6 +87,9 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case airScore         = "AIR Score (Appendicitis)"
     case perc             = "PERC Rule (PE Rule-out)"
     case shockIndex       = "Shock Index"
+    case parkland         = "Parkland Formula (Burns)"
+    case pas              = "Paediatric Appendicitis Score"
+    case revisedGeneva    = "Revised Geneva Score (PE)"
 
     var category: ScoreCategory {
         switch self {
@@ -136,6 +139,12 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .vascular
         case .shockIndex:
             return .monitoring
+        case .parkland:
+            return .acute
+        case .pas:
+            return .acute
+        case .revisedGeneva:
+            return .vascular
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
         case .mews, .news2, .waterlow, .surgicalApgar:
@@ -208,6 +217,9 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .airScore:       return "allergens"
         case .perc:           return "checkmark.shield.fill"
         case .shockIndex:     return "bolt.heart.fill"
+        case .parkland:       return "drop.triangle.fill"
+        case .pas:            return "figure.child"
+        case .revisedGeneva:  return "lungs"
         }
     }
 }
@@ -358,6 +370,12 @@ struct ClinicalScoresView: View {
     @State private var percI = ClinicalScoringEngine.PERCInput()
     // Shock Index
     @State private var siI = ClinicalScoringEngine.ShockIndexInput()
+    // Parkland Formula
+    @State private var parklandI = ClinicalScoringEngine.ParklandInput()
+    // PAS
+    @State private var pasI = ClinicalScoringEngine.PASInput()
+    // Revised Geneva
+    @State private var rgI = ClinicalScoringEngine.RevisedGenevaInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -825,6 +843,15 @@ struct ClinicalScoresView: View {
         case .shockIndex:
             let (input, fill) = PatientScoreAutoPopulator.shockIndex(patient: patient)
             siI = input; autoFill = fill
+        case .parkland:
+            let (input, fill) = PatientScoreAutoPopulator.parkland(patient: patient)
+            parklandI = input; autoFill = fill
+        case .pas:
+            let (input, fill) = PatientScoreAutoPopulator.pas(patient: patient)
+            pasI = input; autoFill = fill
+        case .revisedGeneva:
+            let (input, fill) = PatientScoreAutoPopulator.revisedGeneva(patient: patient)
+            rgI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -949,6 +976,9 @@ struct ClinicalScoresView: View {
         case .airScore:      ClinicalScoringEngine.air(airI)
         case .perc:          ClinicalScoringEngine.perc(percI)
         case .shockIndex:    ClinicalScoringEngine.shockIndex(siI)
+        case .parkland:      ClinicalScoringEngine.parkland(parklandI)
+        case .pas:           ClinicalScoringEngine.pas(pasI)
+        case .revisedGeneva: ClinicalScoringEngine.revisedGeneva(rgI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -1611,6 +1641,20 @@ struct ClinicalScoresView: View {
                 Slider(value: value, in: range, step: step)
                     .tint(autoFill.isAuto(autoKey) ? .teal : AMColor.accent)
                 Text(display).font(.caption.monospacedDigit()).frame(width: 54, alignment: .trailing)
+            }
+        }
+    }
+
+    // Convenience overload: no autoKey, uses `range:` external label and `unit:` for display suffix.
+    private func mewsSlider(_ label: String, value: Binding<Double>,
+                             range: ClosedRange<Double>, step: Double.Stride, unit: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label).font(.caption.weight(.semibold)).foregroundStyle(.secondary).textCase(.uppercase)
+            HStack {
+                Slider(value: value, in: range, step: step).tint(AMColor.accent)
+                let v = value.wrappedValue
+                let display = step < 1 ? String(format: "%.2f \(unit)", v) : "\(Int(v)) \(unit)"
+                Text(display).font(.caption.monospacedDigit()).frame(width: 66, alignment: .trailing)
             }
         }
     }
@@ -2309,6 +2353,33 @@ struct ClinicalScoresView: View {
         case .shockIndex:
             // Shock Index is computed from vitals — no boolean confirm
             break
+        case .parkland:
+            // Parkland formula inputs are numeric sliders — no boolean toggle confirm
+            break
+        case .pas:
+            switch field.id {
+            case "anorexia":               pasI.anorexia = true
+            case "nausea":                 pasI.nausea = true
+            case "migration":              pasI.migration = true
+            case "tendernessRIF":          pasI.tendernessRIF = true
+            case "coughPercussionHop":     pasI.coughPercussionHop = true
+            case "pyrexia":                pasI.pyrexia = true
+            case "leukocytosis":           pasI.leukocytosis = true
+            case "polymorphonuclearShift": pasI.polymorphonuclearShift = true
+            default: break
+            }
+        case .revisedGeneva:
+            switch field.id {
+            case "priorDVTorPE":                 rgI.priorDVTorPE = true
+            case "surgeryOrFractureInMonth":     rgI.surgeryOrFractureInMonth = true
+            case "activeMalignancy":             rgI.activeMalignancy = true
+            case "unilateralLimbPain":           rgI.unilateralLimbPain = true
+            case "haemoptysis":                  rgI.haemoptysis = true
+            case "heartRateAbove74":             rgI.heartRateAbove74 = true
+            case "heartRateAbove94":             rgI.heartRateAbove94 = true
+            case "painOnPalpationLimbAndEdema":  rgI.painOnPalpationLimbAndEdema = true
+            default: break
+            }
         default: break
         }
 
@@ -3884,6 +3955,53 @@ struct ClinicalScoresView: View {
                        range: 40...250, step: 1, unit: "mmHg")
         }
         .onChange(of: siI) { _, _ in recalculate() }
+    }
+
+    // MARK: - Parkland Formula (#73)
+
+    private var parklandForm: some View {
+        Group {
+            mewsSlider("Body weight (kg)", value: $parklandI.weightKg,
+                       range: 1...250, step: 1, unit: "kg")
+            mewsSlider("Total body surface area burned (%TBSA)", value: $parklandI.tbsaPercent,
+                       range: 0...100, step: 1, unit: "%")
+            scoreToggle("Inhalation injury (adds 10% to TBSA)", binding: $parklandI.hasInhalationInjury, points: "+10% TBSA")
+        }
+        .onChange(of: parklandI) { _, _ in recalculate() }
+    }
+
+    // MARK: - Paediatric Appendicitis Score (#74)
+
+    private var pasForm: some View {
+        Group {
+            scoreToggle("Anorexia", binding: $pasI.anorexia, points: "+1", autoKey: "anorexia")
+            scoreToggle("Nausea or vomiting", binding: $pasI.nausea, points: "+1", autoKey: "nausea")
+            scoreToggle("Migration of pain to right iliac fossa", binding: $pasI.migration, points: "+1", autoKey: "migration")
+            scoreToggle("Tenderness in right iliac fossa", binding: $pasI.tendernessRIF, points: "+2", autoKey: "tendernessRIF")
+            scoreToggle("Pain with cough, percussion, or hopping", binding: $pasI.coughPercussionHop, points: "+2", autoKey: "coughPercussionHop")
+            scoreToggle("Pyrexia (temperature ≥ 38°C)", binding: $pasI.pyrexia, points: "+1", autoKey: "pyrexia")
+            scoreToggle("Leukocytosis (WBC ≥ 10 × 10⁹/L)", binding: $pasI.leukocytosis, points: "+2", autoKey: "leukocytosis")
+            scoreToggle("Polymorphonuclear leucocyte shift > 75%", binding: $pasI.polymorphonuclearShift, points: "+1", autoKey: "polymorphonuclearShift")
+        }
+        .onChange(of: pasI) { _, _ in recalculate() }
+    }
+
+    // MARK: - Revised Geneva Score (#75)
+
+    private var revisedGenevaForm: some View {
+        Group {
+            mewsSlider("Age (years)", value: Binding(get: { Double(rgI.age) }, set: { rgI.age = Int($0) }),
+                       range: 18...110, step: 1, unit: "yrs")
+            scoreToggle("Prior DVT or PE", binding: $rgI.priorDVTorPE, points: "+3", autoKey: "priorDVTorPE")
+            scoreToggle("Surgery or lower-limb fracture within 1 month", binding: $rgI.surgeryOrFractureInMonth, points: "+2", autoKey: "surgeryOrFractureInMonth")
+            scoreToggle("Active malignancy (solid or haematological)", binding: $rgI.activeMalignancy, points: "+2", autoKey: "activeMalignancy")
+            scoreToggle("Unilateral lower-limb pain", binding: $rgI.unilateralLimbPain, points: "+3", autoKey: "unilateralLimbPain")
+            scoreToggle("Haemoptysis", binding: $rgI.haemoptysis, points: "+2", autoKey: "haemoptysis")
+            scoreToggle("Heart rate 75–94 bpm", binding: $rgI.heartRateAbove74, points: "+3", autoKey: "heartRateAbove74")
+            scoreToggle("Heart rate ≥ 95 bpm", binding: $rgI.heartRateAbove94, points: "+5", autoKey: "heartRateAbove94")
+            scoreToggle("Pain on deep palpation of lower limb + unilateral oedema", binding: $rgI.painOnPalpationLimbAndEdema, points: "+4", autoKey: "painOnPalpationLimbAndEdema")
+        }
+        .onChange(of: rgI) { _, _ in recalculate() }
     }
 
 }

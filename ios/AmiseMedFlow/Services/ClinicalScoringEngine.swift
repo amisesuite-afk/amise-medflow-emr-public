@@ -5289,4 +5289,251 @@ enum ClinicalScoringEngine {
         )
     }
 
+    // MARK: - Parkland Formula (Burns Fluid Resuscitation)
+    struct ParklandInput: Equatable {
+        var weightKg: Double = 70     // body weight in kilograms
+        var tbsaPercent: Double = 20  // total body surface area burned (%)
+        var hasInhalationInjury: Bool = false
+    }
+
+    static func parkland(_ i: ParklandInput) -> ClinicalScore {
+        // Parkland: 4 mL × kg × TBSA% in 24 h (adults)
+        // Modified Brooke (commonly used): 2 mL × kg × TBSA%
+        // Using Parkland (4 mL/kg/%TBSA) — the established UK/Caribbean standard
+        let totalVol = 4.0 * i.weightKg * i.tbsaPercent
+        let firstHalf = totalVol / 2     // first 8 h from time of burn
+        let secondHalf = totalVol / 2    // next 16 h
+        let rateFirst8h = firstHalf / 8
+        let rateNext16h = secondHalf / 16
+
+        let (risk, interp): (ScoreRisk, String)
+        let flags: [String]
+        switch i.tbsaPercent {
+        case ..<15:
+            risk = .low
+            interp = "Minor burn (TBSA \(Int(i.tbsaPercent))%). Total Parkland volume: \(Int(totalVol)) mL over 24 h. May be managed with oral fluids if alert. IV access recommended."
+            flags = []
+        case 15..<25:
+            risk = .moderate
+            interp = "Moderate burn (TBSA \(Int(i.tbsaPercent))%). Total Parkland volume: \(Int(totalVol)) mL over 24 h. IV resuscitation mandatory."
+            flags = []
+        case 25..<40:
+            risk = .high
+            interp = "Major burn (TBSA \(Int(i.tbsaPercent))%). Total Parkland volume: \(Int(totalVol)) mL. Risk of burn shock — aggressive resuscitation and ICU admission."
+            flags = ["Major burn ≥25% TBSA — burn shock risk: strict fluid monitoring required"]
+        default:
+            risk = .critical
+            interp = "Critical burn (TBSA \(Int(i.tbsaPercent))%). Total Parkland volume: \(Int(totalVol)) mL. Life-threatening — burns unit, early intubation if inhalation injury."
+            flags = ["Critical burn ≥40% TBSA — mortality risk >50%; burns centre transfer if available"]
+        }
+        let inhalationNote = i.hasInhalationInjury ? " Inhalation injury: early intubation strongly recommended — airway oedema peaks at 8–12 h." : ""
+        return ClinicalScore(
+            systemName: "Parkland Formula (Burns Fluid)",
+            abbreviation: "Parkland \(Int(totalVol)) mL",
+            score: totalVol,
+            maxScore: 4 * 100 * 100,
+            risk: risk,
+            interpretation: interp + inhalationNote,
+            items: [
+                ScoredItem(label: "Weight (\(Int(i.weightKg)) kg)", points: Int(i.weightKg), present: true),
+                ScoredItem(label: "TBSA burned (\(Int(i.tbsaPercent))%)", points: Int(i.tbsaPercent), present: true),
+                ScoredItem(label: "Total 24 h volume: \(Int(totalVol)) mL Hartmann's", points: Int(totalVol), present: true),
+                ScoredItem(label: "First 8 h: \(Int(firstHalf)) mL at \(Int(rateFirst8h)) mL/h", points: Int(firstHalf), present: true),
+                ScoredItem(label: "Next 16 h: \(Int(secondHalf)) mL at \(Int(rateNext16h)) mL/h", points: Int(secondHalf), present: true),
+                ScoredItem(label: "Inhalation injury (+additional airway management)", points: 0, present: i.hasInhalationInjury)
+            ],
+            recommendations: [
+                "Parkland formula: 4 mL × \(Int(i.weightKg)) kg × \(Int(i.tbsaPercent))% TBSA = \(Int(totalVol)) mL Hartmann's/Ringer's lactate over 24 h",
+                "First half (\(Int(firstHalf)) mL) in first 8 h from TIME OF BURN (not from arrival) — at \(Int(rateFirst8h)) mL/h",
+                "Second half (\(Int(secondHalf)) mL) over next 16 h — at \(Int(rateNext16h)) mL/h",
+                "Target urine output: 0.5–1.0 mL/kg/h (adult) — titrate infusion rate accordingly",
+                "Urinary catheter mandatory — strict fluid balance; avoid under- and over-resuscitation",
+                "Do NOT include colloid in first 12 h (Parkland protocol)",
+                "Add colloid (albumin 5%) from 12–24 h if resuscitation requirements excessive",
+                i.hasInhalationInjury ? "INHALATION INJURY: early anaesthetic/ICU review for intubation before oedema develops" : "Analgesia: IV morphine + anti-emetic; oral if minor burn",
+                "Wound care: cool running water for 20 min if <3 h post-burn; non-adherent dressings",
+                "Transfer to regional burns unit if: TBSA >15% adult, full-thickness, face/hands/perineum/circumferential"
+            ],
+            redFlags: flags,
+            evidenceNote: "Baxter CR, Shires T. Ann N Y Acad Sci 1968;150:874–894. Parkland formula: 4 mL/kg/%TBSA Hartmann's in 24 h. Standard in UK (ISBI, NICE). The formula is a guide — adjust rate to urine output 0.5–1 mL/kg/h. Over-resuscitation causes abdominal compartment syndrome and pulmonary oedema; under-resuscitation causes burn shock. Reassess fluid rate hourly."
+        )
+    }
+
+    // MARK: - Paediatric Appendicitis Score (PAS)
+    struct PASInput: Equatable {
+        var anorexia: Bool = false              // 1 pt
+        var nausea: Bool = false                // 1 pt
+        var migration: Bool = false             // 1 pt — pain migrating to RIF
+        var tendernessRIF: Bool = false         // 2 pts
+        var coughPercussionHop: Bool = false    // 2 pts — cough/percussion/hopping worsens pain
+        var pyrexia: Bool = false               // 1 pt — T ≥ 38.0°C
+        var leukocytosis: Bool = false          // 2 pts — WBC > 10 × 10⁹/L
+        var polymorphonuclearShift: Bool = false // 1 pt — PMN > 7.5 × 10⁹/L
+    }
+
+    static func pas(_ i: PASInput) -> ClinicalScore {
+        var pts = 0
+        if i.anorexia    { pts += 1 }
+        if i.nausea      { pts += 1 }
+        if i.migration   { pts += 1 }
+        if i.tendernessRIF       { pts += 2 }
+        if i.coughPercussionHop  { pts += 2 }
+        if i.pyrexia     { pts += 1 }
+        if i.leukocytosis         { pts += 2 }
+        if i.polymorphonuclearShift { pts += 1 }
+
+        let (risk, interp): (ScoreRisk, String)
+        let flags: [String]
+        let recs: [String]
+        switch pts {
+        case 0...3:
+            risk = .low
+            interp = "PAS \(pts)/10 — Low risk. Appendicitis unlikely in this child. Consider discharge with safety-net advice or short observation."
+            flags = []
+            recs = [
+                "Low risk — observation 4–6 hours or discharge with clear safety-net advice",
+                "Return immediately if: worsening pain, fever, vomiting, or inability to walk",
+                "Consider USS abdomen if diagnosis remains uncertain",
+                "Paediatric surgeon review if any deterioration during observation"
+            ]
+        case 4...6:
+            risk = .moderate
+            interp = "PAS \(pts)/10 — Intermediate risk. Significant probability of appendicitis. Admit, serial examination, imaging."
+            flags = []
+            recs = [
+                "Admit for in-hospital observation and serial abdominal examinations",
+                "FBC + CRP; repeat at 6–8 hours if borderline",
+                "USS abdomen: first-line imaging in children (no radiation)",
+                "MRI abdomen if USS non-diagnostic (preferred over CT in paediatric patients)",
+                "Paediatric surgical review within 2–4 hours",
+                "IV access, nil by mouth pending surgical decision"
+            ]
+        default:
+            risk = .high
+            interp = "PAS \(pts)/10 — High risk. Appendicitis likely in this child. Urgent surgical referral."
+            flags = ["PAS ≥ 7 — high-risk paediatric appendicitis: urgent surgical referral"]
+            recs = [
+                "Urgent paediatric surgical referral — theatre planning",
+                "IV access, IV fluids, analgesia (weight-adjusted morphine + ondansetron)",
+                "Nil by mouth, FBC, CRP, U&E, group and save",
+                "IV antibiotics at induction: co-amoxiclav (weight-adjusted dose)",
+                "Laparoscopic appendicectomy is first-line in children",
+                "Consider pre-op USS even in high PAS — may change operative approach if perforation/abscess",
+                "Inform parents of perforation risk (~15–20% in paediatric appendicitis)"
+            ]
+        }
+        return ClinicalScore(
+            systemName: "Paediatric Appendicitis Score (PAS)",
+            abbreviation: "PAS \(pts)/10",
+            score: Double(pts),
+            maxScore: 10,
+            risk: risk,
+            interpretation: interp,
+            items: [
+                ScoredItem(label: "Anorexia", points: 1, present: i.anorexia),
+                ScoredItem(label: "Nausea / vomiting", points: 1, present: i.nausea),
+                ScoredItem(label: "Migration of pain to RIF", points: 1, present: i.migration),
+                ScoredItem(label: "Tenderness in right iliac fossa", points: 2, present: i.tendernessRIF),
+                ScoredItem(label: "Cough / percussion / hop worsens pain", points: 2, present: i.coughPercussionHop),
+                ScoredItem(label: "Pyrexia ≥ 38.0°C", points: 1, present: i.pyrexia),
+                ScoredItem(label: "Leukocytosis (WBC > 10 × 10⁹/L)", points: 2, present: i.leukocytosis),
+                ScoredItem(label: "Polymorphonuclear shift (PMN > 7.5 × 10⁹/L)", points: 1, present: i.polymorphonuclearShift)
+            ],
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Samuel M. J Pediatr Surg 2002;37:877–881. PAS validated in children aged 2–18. Sensitivity 83%, specificity 80% for scores ≥7. Less specific than AIR for adults; use PAS in paediatric populations (<16 yrs). USS first-line imaging in children — CT reserved for diagnostic uncertainty only."
+        )
+    }
+
+    // MARK: - Revised Geneva Score (Pulmonary Embolism)
+    struct RevisedGenevaInput: Equatable {
+        var age: Int = 40                       // years
+        var priorDVTorPE: Bool = false           // 3 pts
+        var surgeryOrFractureInMonth: Bool = false // 2 pts — surgery or fracture ≤ 1 month
+        var activeMalignancy: Bool = false       // 2 pts
+        var unilateralLimbPain: Bool = false     // 3 pts
+        var haemoptysis: Bool = false            // 2 pts
+        var heartRateAbove74: Bool = false       // HR 75–94 = 3 pts
+        var heartRateAbove94: Bool = false       // HR ≥ 95 = 5 pts
+        var painOnPalpationLimbAndEdema: Bool = false // 4 pts
+    }
+
+    static func revisedGeneva(_ i: RevisedGenevaInput) -> ClinicalScore {
+        var pts = 0
+        if i.age >= 65 { pts += 1 }
+        if i.priorDVTorPE             { pts += 3 }
+        if i.surgeryOrFractureInMonth { pts += 2 }
+        if i.activeMalignancy         { pts += 2 }
+        if i.unilateralLimbPain       { pts += 3 }
+        if i.haemoptysis              { pts += 2 }
+        if i.heartRateAbove94 {
+            pts += 5
+        } else if i.heartRateAbove74 {
+            pts += 3
+        }
+        if i.painOnPalpationLimbAndEdema { pts += 4 }
+
+        let (risk, interp): (ScoreRisk, String)
+        let flags: [String]
+        let recs: [String]
+        switch pts {
+        case 0...3:
+            risk = .low
+            interp = "Revised Geneva \(pts)/22 — Low clinical probability for PE. D-dimer recommended; if negative, PE excluded."
+            flags = []
+            recs = [
+                "Low probability — D-dimer testing: negative result excludes PE in low-probability patients",
+                "If D-dimer positive: CTPA (CT pulmonary angiography)",
+                "Combine with PERC rule: if all 8 PERC criteria met AND low pretest probability → no D-dimer needed",
+                "Consider leg Doppler USS if CTPA contraindicated",
+                "Reassess if symptoms change or new tachycardia develops"
+            ]
+        case 4...10:
+            risk = .moderate
+            interp = "Revised Geneva \(pts)/22 — Moderate clinical probability for PE. D-dimer or direct CTPA depending on clinical urgency."
+            flags = []
+            recs = [
+                "Moderate probability — D-dimer if not clinically decompensated",
+                "CTPA if D-dimer positive or clinical status deteriorating",
+                "IV access; oxygen if SpO2 < 94%; analgesia",
+                "Low-molecular-weight heparin (LMWH) if clinical deterioration occurs while awaiting imaging",
+                "Echocardiography if haemodynamically unstable to rule out massive PE"
+            ]
+        default:
+            risk = .high
+            interp = "Revised Geneva \(pts)/22 — High clinical probability for PE. CTPA immediately; anticoagulate without awaiting result."
+            flags = ["Revised Geneva ≥ 11 — high probability PE: CTPA and anticoagulation without delay"]
+            recs = [
+                "High probability — anticoagulate immediately (LMWH or unfractionated heparin) unless contraindicated",
+                "CTPA urgent — do not delay anticoagulation for imaging result",
+                "Haemodynamically unstable massive PE: consider systemic thrombolysis (alteplase 100 mg) or surgical embolectomy",
+                "sPESI score to assess severity and disposition (ambulatory vs. HDU/ICU)",
+                "Cardiac echo to assess right ventricular strain (prognostic)",
+                "Notify ITU/HDU if hypotensive, HR > 120, or SpO2 < 90%"
+            ]
+        }
+        return ClinicalScore(
+            systemName: "Revised Geneva Score (PE)",
+            abbreviation: "Geneva \(pts)/22",
+            score: Double(pts),
+            maxScore: 22,
+            risk: risk,
+            interpretation: interp,
+            items: [
+                ScoredItem(label: "Age ≥ 65 years", points: 1, present: i.age >= 65),
+                ScoredItem(label: "Prior DVT or PE", points: 3, present: i.priorDVTorPE),
+                ScoredItem(label: "Surgery or fracture ≤ 1 month", points: 2, present: i.surgeryOrFractureInMonth),
+                ScoredItem(label: "Active malignancy", points: 2, present: i.activeMalignancy),
+                ScoredItem(label: "Unilateral lower-limb pain", points: 3, present: i.unilateralLimbPain),
+                ScoredItem(label: "Haemoptysis", points: 2, present: i.haemoptysis),
+                ScoredItem(label: "Heart rate 75–94 bpm", points: 3, present: i.heartRateAbove74 && !i.heartRateAbove94),
+                ScoredItem(label: "Heart rate ≥ 95 bpm", points: 5, present: i.heartRateAbove94),
+                ScoredItem(label: "Pain on deep palpation of lower limb AND oedema", points: 4, present: i.painOnPalpationLimbAndEdema)
+            ],
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Le Gal G et al. Ann Intern Med 2006;144:165–171. Revised Geneva Score validated in 965 consecutive patients; AUC 0.74. Low risk: 7% PE prevalence; Moderate: 29%; High: 64%. Does not require physician gestalt — all items are objective. Equivalent performance to Wells PE in meta-analyses."
+        )
+    }
+
 }

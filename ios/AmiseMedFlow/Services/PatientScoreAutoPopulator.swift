@@ -3099,4 +3099,188 @@ enum PatientScoreAutoPopulator {
 
         return (i, f)
     }
+
+    // MARK: - Parkland Formula (#73)
+    static func parkland(patient: Patient) -> (ClinicalScoringEngine.ParklandInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.ParklandInput()
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Weight from latest vitals
+        if let v = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+           let wt = v.weightKg {
+            i.weightKg = wt
+            f.addAutoFilled(key: "weightKg", label: "Weight \(Int(wt)) kg from latest vitals", source: "Vitals")
+        } else {
+            f.addPending(key: "weightKg", label: "Body weight (kg) — required for Parkland calculation", source: "Vitals/Demographics")
+        }
+
+        // TBSA from free-text keywords
+        let tbsaPattern = try? NSRegularExpression(pattern: #"(\d{1,3})\s*%\s*(?:tbsa|total body surface|burn)"#)
+        if let m = tbsaPattern?.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
+           let r = Range(m.range(at: 1), in: text), let pct = Double(text[r]) {
+            i.tbsaPercent = min(pct, 100)
+            f.addAutoFilled(key: "tbsaPercent", label: "\(Int(pct))% TBSA extracted from clinical text", source: "History/Examination")
+        } else {
+            f.addPending(key: "tbsaPercent", label: "Total body surface area burned (%) — assess from clinical examination", source: "Examination")
+        }
+
+        // Inhalation injury keywords
+        let inhalKw = ["inhalation injury", "inhalation burn", "smoke inhalation",
+                       "airway burn", "singed nasal hair", "carbonaceous sputum"]
+        if inhalKw.contains(where: { text.contains($0) }) {
+            i.hasInhalationInjury = true
+            f.addAutoFilled(key: "hasInhalationInjury", label: "Inhalation injury keyword detected", source: "History")
+        }
+
+        return (i, f)
+    }
+
+    // MARK: - Paediatric Appendicitis Score (#74)
+    static func pas(patient: Patient) -> (ClinicalScoringEngine.PASInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.PASInput()
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Anorexia
+        if ["anorexia", "not eating", "reduced appetite", "loss of appetite", "off food"].contains(where: { text.contains($0) }) {
+            i.anorexia = true
+            f.addAutoFilled(key: "anorexia", label: "Anorexia keyword detected", source: "History")
+        } else { f.addPending(key: "anorexia", label: "Anorexia — confirm from history", source: "History") }
+
+        // Nausea / vomiting
+        if ["nausea", "vomiting", "vomit", "nauseous"].contains(where: { text.contains($0) }) {
+            i.nausea = true
+            f.addAutoFilled(key: "nausea", label: "Nausea/vomiting keyword detected", source: "History")
+        } else { f.addPending(key: "nausea", label: "Nausea or vomiting — confirm from history", source: "History") }
+
+        // Migration of pain
+        if ["migrat", "moved to right", "moved to rif", "started periumbilical", "periumbilical pain"].contains(where: { text.contains($0) }) {
+            i.migration = true
+            f.addAutoFilled(key: "migration", label: "Pain migration to RIF keyword detected", source: "History")
+        } else { f.addPending(key: "migration", label: "Migration of pain to right iliac fossa — confirm from history", source: "History") }
+
+        // RIF tenderness
+        if ["rif tenderness", "right iliac fossa tenderness", "mcburney", "right lower quadrant tender"].contains(where: { text.contains($0) }) {
+            i.tendernessRIF = true
+            f.addAutoFilled(key: "tendernessRIF", label: "RIF tenderness keyword detected", source: "Examination")
+        } else { f.addPending(key: "tendernessRIF", label: "Tenderness in right iliac fossa — confirm on examination", source: "Examination") }
+
+        // Cough/percussion/hop
+        if ["rovsing", "cough tenderness", "percussion tenderness", "hop test", "rebound"].contains(where: { text.contains($0) }) {
+            i.coughPercussionHop = true
+            f.addAutoFilled(key: "coughPercussionHop", label: "Pain with cough/percussion keyword detected", source: "Examination")
+        } else { f.addPending(key: "coughPercussionHop", label: "Pain with cough, percussion, or hopping — confirm on examination", source: "Examination") }
+
+        // Pyrexia
+        if let v = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+           let temp = v.temperatureCelsius, temp >= 38.0 {
+            i.pyrexia = true
+            f.addAutoFilled(key: "pyrexia", label: "Temperature \(String(format: "%.1f", temp))°C ≥ 38°C from vitals", source: "Vitals")
+        } else if text.contains("fever") || text.contains("febrile") || text.contains("pyrexia") {
+            i.pyrexia = true
+            f.addAutoFilled(key: "pyrexia", label: "Pyrexia keyword detected", source: "History")
+        } else { f.addPending(key: "pyrexia", label: "Pyrexia (temperature ≥ 38°C) — check vitals", source: "Vitals") }
+
+        // Leukocytosis (WBC ≥ 10)
+        if text.contains("leukocytosis") || text.contains("raised wbc") || text.contains("elevated wbc")
+            || text.contains("wbc > 10") || text.contains("wbc ≥ 10") {
+            i.leukocytosis = true
+            f.addAutoFilled(key: "leukocytosis", label: "Leukocytosis keyword detected", source: "FBC")
+        } else { f.addPending(key: "leukocytosis", label: "Leukocytosis (WBC ≥ 10 × 10⁹/L) — check FBC", source: "FBC") }
+
+        // PMN shift
+        if text.contains("neutrophilia") || text.contains("left shift") || text.contains("neutrophil > 75")
+            || text.contains("pmn > 75") || text.contains("polymorphonuclear") {
+            i.polymorphonuclearShift = true
+            f.addAutoFilled(key: "polymorphonuclearShift", label: "Polymorphonuclear shift keyword detected", source: "FBC")
+        } else { f.addPending(key: "polymorphonuclearShift", label: "PMN leucocyte shift > 75% — check FBC differential", source: "FBC") }
+
+        return (i, f)
+    }
+
+    // MARK: - Revised Geneva Score (#75)
+    static func revisedGeneva(patient: Patient) -> (ClinicalScoringEngine.RevisedGenevaInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.RevisedGenevaInput()
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Age from DOB
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: .now).year ?? 0
+            i.age = age
+            if age > 65 {
+                f.addAutoFilled(key: "age", label: "Age \(age) years from date of birth", source: "Demographics")
+            }
+        } else {
+            f.addPending(key: "age", label: "Age — required for Revised Geneva (+1 pt if ≥ 65)", source: "Demographics")
+        }
+
+        // Prior DVT/PE
+        let priorPEKw = ["prior pe", "previous pe", "prior dvt", "previous dvt", "prior pulmonary embolism",
+                         "previous pulmonary embolism", "history of dvt", "history of pe"]
+        if priorPEKw.contains(where: { text.contains($0) }) {
+            i.priorDVTorPE = true
+            f.addAutoFilled(key: "priorDVTorPE", label: "Prior DVT/PE keyword detected", source: "PMH")
+        } else { f.addPending(key: "priorDVTorPE", label: "Prior DVT or PE — confirm from PMH", source: "PMH") }
+
+        // Surgery / fracture within 1 month
+        let sxKw = ["recent surgery", "post-operative", "recent fracture", "lower limb fracture",
+                    "operated last month", "surgery last month", "hip fracture", "knee replacement"]
+        if sxKw.contains(where: { text.contains($0) }) {
+            i.surgeryOrFractureInMonth = true
+            f.addAutoFilled(key: "surgeryOrFractureInMonth", label: "Recent surgery/fracture keyword detected", source: "History")
+        } else { f.addPending(key: "surgeryOrFractureInMonth", label: "Surgery or lower-limb fracture within 1 month — confirm from history", source: "History") }
+
+        // Active malignancy
+        let malKw = ["malignancy", "cancer", "carcinoma", "oncology", "chemotherapy", "radiotherapy",
+                     "active tumour", "active tumor", "metastatic"]
+        if malKw.contains(where: { text.contains($0) }) {
+            i.activeMalignancy = true
+            f.addAutoFilled(key: "activeMalignancy", label: "Active malignancy keyword detected", source: "PMH")
+        } else { f.addPending(key: "activeMalignancy", label: "Active malignancy — confirm from PMH/oncology", source: "PMH") }
+
+        // Unilateral limb pain
+        if ["unilateral leg pain", "unilateral limb pain", "calf pain", "leg pain"].contains(where: { text.contains($0) }) {
+            i.unilateralLimbPain = true
+            f.addAutoFilled(key: "unilateralLimbPain", label: "Unilateral limb pain keyword detected", source: "History")
+        } else { f.addPending(key: "unilateralLimbPain", label: "Unilateral lower-limb pain — confirm from history", source: "History") }
+
+        // Haemoptysis
+        if ["haemoptysis", "hemoptysis", "coughing blood", "blood in sputum"].contains(where: { text.contains($0) }) {
+            i.haemoptysis = true
+            f.addAutoFilled(key: "haemoptysis", label: "Haemoptysis keyword detected", source: "History")
+        } else { f.addPending(key: "haemoptysis", label: "Haemoptysis — confirm from history", source: "History") }
+
+        // Heart rate from vitals
+        if let v = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+           let hr = v.heartRate {
+            if hr >= 95 {
+                i.heartRateAbove94 = true
+                i.heartRateAbove74 = false
+                f.addAutoFilled(key: "heartRateAbove94", label: "HR \(hr) bpm ≥ 95 from latest vitals", source: "Vitals")
+            } else if hr >= 75 {
+                i.heartRateAbove74 = true
+                f.addAutoFilled(key: "heartRateAbove74", label: "HR \(hr) bpm 75–94 from latest vitals", source: "Vitals")
+            }
+        } else {
+            f.addPending(key: "heartRateAbove74", label: "Heart rate (75–94 bpm) — check vitals", source: "Vitals")
+            f.addPending(key: "heartRateAbove94", label: "Heart rate (≥ 95 bpm) — check vitals", source: "Vitals")
+        }
+
+        // Limb pain on palpation + oedema
+        if ["deep vein thrombosis", "dvt", "limb oedema", "limb swelling", "calf swelling",
+            "palpation limb", "limb tenderness"].contains(where: { text.contains($0) }) {
+            i.painOnPalpationLimbAndEdema = true
+            f.addAutoFilled(key: "painOnPalpationLimbAndEdema", label: "Limb pain/oedema keyword detected", source: "Examination")
+        } else { f.addPending(key: "painOnPalpationLimbAndEdema", label: "Pain on deep palpation of lower limb + unilateral oedema — confirm on examination", source: "Examination") }
+
+        return (i, f)
+    }
 }
