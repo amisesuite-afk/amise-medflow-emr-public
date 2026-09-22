@@ -171,6 +171,10 @@ enum BayesianDiagnosisEngine {
         manningScore: Int? = nil,       // Manning 0–6; ≥3 = probable IBS
         laceScore: Int? = nil,          // LACE 0–19; ≥10 = high 30-day readmission risk
         findRiscScore: Int? = nil,      // FINDRISC 0–26; ≥12 = T2DM screening required
+        mirelsScore: Int? = nil,        // Mirels 4–12; ≥9 = prophylactic fixation
+        ckdEpiEgfr: Double? = nil,      // CKD-EPI eGFR mL/min/1.73m²; <60 = CKD
+        ariscatScore: Int? = nil,       // ARISCAT 0–123; ≥26 = intermediate/high PPC risk
+        fongCrsScore: Int? = nil,       // Fong CRS 0–5; ≥3 = poor prognosis for CLM resection
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3747,6 +3751,50 @@ enum BayesianDiagnosisEngine {
                 let nameLow = scored[i].candidate.name.lowercased()
                 guard frTargets.contains(where: { nameLow.contains($0) }) else { continue }
                 let label = "FINDRISC \(fr) — high T2DM risk"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // Mirels boost: high pathological fracture risk raises bone met / metastatic cancer candidates
+        if let mr = mirelsScore, mr >= 9 {
+            let mrTargets = ["bone metastasis", "metastatic", "pathological fracture",
+                             "skeletal metastasis", "bony metastasis", "osseous metastasis"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard mrTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "Mirels \(mr)/12 — high pathological fracture risk"
+                scored[i].logPosterior += 9
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // CKD-EPI boost: reduced eGFR raises CKD / renal failure candidates
+        if let egfr = ckdEpiEgfr, egfr < 60 {
+            let ckdTargets = ["chronic kidney disease", "ckd", "renal failure",
+                              "renal impairment", "renal insufficiency", "nephropathy"]
+            let adj = egfr < 15 ? 9 : (egfr < 30 ? 6 : 4)
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard ckdTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "CKD-EPI eGFR \(String(format: "%.1f", egfr)) — CKD stage \(egfr < 15 ? "G5" : egfr < 30 ? "G4" : "G3")"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // Fong boost: high CRS raises colorectal liver metastasis candidates
+        if let fong = fongCrsScore, fong >= 3 {
+            let fongTargets = ["colorectal liver", "hepatic metastasis", "liver metastasis",
+                               "colorectal cancer", "colorectal carcinoma", "colon cancer"]
+            let adj = fong >= 5 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard fongTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "Fong CRS \(fong)/5 — poor prognosis colorectal liver metastases"
                 scored[i].logPosterior += adj
                 scored[i].evidence.append(label)
                 scored[i].evidenceSources["score", default: []].append(label)

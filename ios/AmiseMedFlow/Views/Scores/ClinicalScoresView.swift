@@ -110,6 +110,10 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case manning          = "Manning Criteria (IBS)"
     case lace             = "LACE Index (Readmission Risk)"
     case findRisc         = "FINDRISC (T2DM Risk)"
+    case mirels           = "Mirels Criteria (Pathological Fracture)"
+    case ckdEpi           = "CKD-EPI eGFR (Renal Staging)"
+    case ariscat          = "ARISCAT (Pulmonary Complication Risk)"
+    case fongCrs          = "Fong CRS (Colorectal Liver Mets)"
 
     var category: ScoreCategory {
         switch self {
@@ -201,6 +205,14 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .monitoring
         case .findRisc:
             return .monitoring
+        case .mirels:
+            return .preop
+        case .ckdEpi:
+            return .monitoring
+        case .ariscat:
+            return .preop
+        case .fongCrs:
+            return .gi
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
         case .mews, .news2, .waterlow, .surgicalApgar:
@@ -296,6 +308,10 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .manning:        return "list.bullet.clipboard"
         case .lace:           return "arrow.clockwise.heart"
         case .findRisc:       return "chart.line.uptrend.xyaxis"
+        case .mirels:         return "figure.walk.broken"
+        case .ckdEpi:         return "kidney"
+        case .ariscat:        return "lungs"
+        case .fongCrs:        return "cross.case"
         }
     }
 }
@@ -473,6 +489,10 @@ struct ClinicalScoresView: View {
     @State private var manningI      = ClinicalScoringEngine.ManningInput(painRelievedByDefecation: false, looserStoolsWithOnsetOfPain: false, increasedFrequencyWithOnsetOfPain: false, abdomenVisiblyDistended: false, mucusPerRectum: false, feelingOfIncompleteEmptying: false)
     @State private var laceI         = ClinicalScoringEngine.LACEInput(lengthOfStayDays: 1, acuteAdmission: false, charlsonIndex: 0, edVisitsLast6Months: 0)
     @State private var findRiscI     = ClinicalScoringEngine.FINDRISCInput(ageGroup: 0, bmi: 22, waistCircumferenceCm: 80, sex: "male", physicalActivityMinPerWeek: 150, vegetablesFruitDaily: true, hypertensionMeds: false, highBloodGlucoseHistory: false, familyHistoryDiabetes: 0)
+    @State private var mirelsI       = ClinicalScoringEngine.MirelsInput(site: 2, pain: 1, lesionType: 1, lesionSizeRatio: 1)
+    @State private var ckdEpiI       = ClinicalScoringEngine.CKDEPIInput(serumCreatinineMgDL: 0.9, ageYears: 50, sex: "male", raceAA: false)
+    @State private var ariscatI      = ClinicalScoringEngine.ARISCATInput(age: 50, spo2Preop: 98, respiratoryInfection: false, preOpHaemoglobin: 13.5, surgicalIncision: 0, surgicalDurationHrs: 1.0, emergencyProcedure: false)
+    @State private var fongI         = ClinicalScoringEngine.FongCRSInput(nodePosivePrimaryTumour: false, diseaseFreeIntervalLess12Mo: false, moreThanOneHepaticTumour: false, largestTumourOver5cm: false, ceaOver200: false)
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -1010,6 +1030,18 @@ struct ClinicalScoresView: View {
         case .findRisc:
             let (input, fill) = PatientScoreAutoPopulator.findRisc(patient: patient)
             findRiscI = input; autoFill = fill
+        case .mirels:
+            let (input, fill) = PatientScoreAutoPopulator.mirels(patient: patient)
+            mirelsI = input; autoFill = fill
+        case .ckdEpi:
+            let (input, fill) = PatientScoreAutoPopulator.ckdEpi(patient: patient)
+            ckdEpiI = input; autoFill = fill
+        case .ariscat:
+            let (input, fill) = PatientScoreAutoPopulator.ariscat(patient: patient)
+            ariscatI = input; autoFill = fill
+        case .fongCrs:
+            let (input, fill) = PatientScoreAutoPopulator.fongCrs(patient: patient)
+            fongI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -1158,6 +1190,10 @@ struct ClinicalScoresView: View {
         case .manning:       ClinicalScoringEngine.manning(manningI)
         case .lace:          ClinicalScoringEngine.lace(laceI)
         case .findRisc:      ClinicalScoringEngine.findrisc(findRiscI)
+        case .mirels:        ClinicalScoringEngine.mirels(mirelsI)
+        case .ckdEpi:        ClinicalScoringEngine.ckdEpi(ckdEpiI)
+        case .ariscat:       ClinicalScoringEngine.ariscat(ariscatI)
+        case .fongCrs:       ClinicalScoringEngine.fongCRS(fongI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -1249,6 +1285,10 @@ struct ClinicalScoresView: View {
         case .manning:       patient.manningScore  = intScore
         case .lace:          patient.laceScore     = intScore
         case .findRisc:      patient.findRiscScore = intScore
+        case .mirels:        patient.mirelsScore   = intScore
+        case .ckdEpi:        patient.ckdEpiEgfr    = r.score     // continuous Double
+        case .ariscat:       patient.ariscatScore  = intScore
+        case .fongCrs:       patient.fongCrsScore  = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -1374,6 +1414,10 @@ struct ClinicalScoresView: View {
         case .manning:       manningForm
         case .lace:          laceForm
         case .findRisc:      findRiscForm
+        case .mirels:        mirelsForm
+        case .ckdEpi:        ckdEpiForm
+        case .ariscat:       ariscatForm
+        case .fongCrs:       fongCrsForm
         }
     }
 
@@ -4971,6 +5015,160 @@ struct ClinicalScoresView: View {
         .onChange(of: findRiscI.hypertensionMeds)         { _, _ in recalculate() }
         .onChange(of: findRiscI.highBloodGlucoseHistory)  { _, _ in recalculate() }
         .onChange(of: findRiscI.familyHistoryDiabetes)    { _, _ in recalculate() }
+    }
+
+    // MARK: - Mirels Criteria
+
+    private var mirelsForm: some View {
+        Group {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Lesion site").font(.subheadline)
+                Picker("Site", selection: $mirelsI.site) {
+                    Text("Upper limb (+1)").tag(1)
+                    Text("Lower limb (+2)").tag(2)
+                    Text("Peritrochanteric (+3)").tag(3)
+                }
+                .pickerStyle(.segmented)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Pain").font(.subheadline)
+                Picker("Pain", selection: $mirelsI.pain) {
+                    Text("Mild (+1)").tag(1)
+                    Text("Moderate (+2)").tag(2)
+                    Text("Functional (+3)").tag(3)
+                }
+                .pickerStyle(.segmented)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Lesion type (radiological)").font(.subheadline)
+                Picker("Lesion", selection: $mirelsI.lesionType) {
+                    Text("Blastic (+1)").tag(1)
+                    Text("Mixed (+2)").tag(2)
+                    Text("Lytic (+3)").tag(3)
+                }
+                .pickerStyle(.segmented)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Lesion size (cortical diameter)").font(.subheadline)
+                Picker("Size", selection: $mirelsI.lesionSizeRatio) {
+                    Text("< 1/3 (+1)").tag(1)
+                    Text("1/3 – 2/3 (+2)").tag(2)
+                    Text("> 2/3 (+3)").tag(3)
+                }
+                .pickerStyle(.segmented)
+            }
+        }
+        .onChange(of: mirelsI) { _, _ in recalculate() }
+    }
+
+    // MARK: - CKD-EPI eGFR
+
+    private var ckdEpiForm: some View {
+        Group {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Serum creatinine (mg/dL)").font(.subheadline)
+                HStack {
+                    Slider(value: $ckdEpiI.serumCreatinineMgDL, in: 0.4...15, step: 0.1)
+                    Text(String(format: "%.1f", ckdEpiI.serumCreatinineMgDL))
+                        .frame(width: 50)
+                        .font(.caption.monospacedDigit())
+                }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Age (years)").font(.subheadline)
+                Stepper("\(ckdEpiI.ageYears) yrs", value: $ckdEpiI.ageYears, in: 18...100)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Sex").font(.subheadline)
+                Picker("Sex", selection: $ckdEpiI.sex) {
+                    Text("Male").tag("male")
+                    Text("Female").tag("female")
+                }
+                .pickerStyle(.segmented)
+            }
+        }
+        .onChange(of: ckdEpiI.serumCreatinineMgDL) { _, _ in recalculate() }
+        .onChange(of: ckdEpiI.ageYears)             { _, _ in recalculate() }
+        .onChange(of: ckdEpiI.sex)                  { _, _ in recalculate() }
+    }
+
+    // MARK: - ARISCAT Score
+
+    private var ariscatForm: some View {
+        Group {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Age (years)").font(.subheadline)
+                Stepper("\(ariscatI.age) yrs", value: $ariscatI.age, in: 0...110)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Pre-op SpO₂ (%)").font(.subheadline)
+                Stepper("\(ariscatI.spo2Preop)%", value: $ariscatI.spo2Preop, in: 70...100)
+            }
+            Toggle(isOn: $ariscatI.respiratoryInfection) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Acute respiratory infection (last month)").font(.subheadline)
+                    Text("+17 if present").font(.caption).foregroundStyle(.secondary)
+                }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Pre-op haemoglobin (g/dL)").font(.subheadline)
+                HStack {
+                    Slider(value: $ariscatI.preOpHaemoglobin, in: 5...20, step: 0.5)
+                    Text(String(format: "%.1f", ariscatI.preOpHaemoglobin))
+                        .frame(width: 50)
+                        .font(.caption.monospacedDigit())
+                }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Surgical incision type").font(.subheadline)
+                Picker("Incision", selection: $ariscatI.surgicalIncision) {
+                    Text("Peripheral (+0)").tag(0)
+                    Text("Upper abdominal (+15)").tag(1)
+                    Text("Intrathoracic (+24)").tag(2)
+                }
+                .pickerStyle(.segmented)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Planned surgical duration (hours)").font(.subheadline)
+                HStack {
+                    Slider(value: $ariscatI.surgicalDurationHrs, in: 0.5...10, step: 0.5)
+                    Text(String(format: "%.1f h", ariscatI.surgicalDurationHrs))
+                        .frame(width: 55)
+                        .font(.caption.monospacedDigit())
+                }
+            }
+            Toggle(isOn: $ariscatI.emergencyProcedure) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Emergency procedure").font(.subheadline)
+                    Text("+8 if emergency").font(.caption).foregroundStyle(.secondary)
+                }
+            }
+        }
+        .onChange(of: ariscatI.age)                 { _, _ in recalculate() }
+        .onChange(of: ariscatI.spo2Preop)           { _, _ in recalculate() }
+        .onChange(of: ariscatI.respiratoryInfection){ _, _ in recalculate() }
+        .onChange(of: ariscatI.preOpHaemoglobin)    { _, _ in recalculate() }
+        .onChange(of: ariscatI.surgicalIncision)    { _, _ in recalculate() }
+        .onChange(of: ariscatI.surgicalDurationHrs) { _, _ in recalculate() }
+        .onChange(of: ariscatI.emergencyProcedure)  { _, _ in recalculate() }
+    }
+
+    // MARK: - Fong Clinical Risk Score
+
+    private var fongCrsForm: some View {
+        Group {
+            scoreToggle("Lymph node–positive primary tumour",
+                        binding: $fongI.nodePosivePrimaryTumour, points: "+1")
+            scoreToggle("Disease-free interval < 12 months",
+                        binding: $fongI.diseaseFreeIntervalLess12Mo, points: "+1")
+            scoreToggle("More than 1 hepatic metastasis",
+                        binding: $fongI.moreThanOneHepaticTumour, points: "+1")
+            scoreToggle("Largest hepatic tumour > 5 cm",
+                        binding: $fongI.largestTumourOver5cm, points: "+1")
+            scoreToggle("Preoperative CEA > 200 ng/mL",
+                        binding: $fongI.ceaOver200, points: "+1")
+        }
+        .onChange(of: fongI) { _, _ in recalculate() }
     }
 
 

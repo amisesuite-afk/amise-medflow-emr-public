@@ -3942,4 +3942,153 @@ enum PatientScoreAutoPopulator {
         f.addPending(key: "waist", label: "Waist circumference (cm) — measure at examination", source: "Examination")
         return (i, f)
     }
+
+    // MARK: - #97 Mirels Criteria
+
+    static func mirels(patient: Patient) -> (ClinicalScoringEngine.MirelsInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.MirelsInput(site: 2, pain: 1, lesionType: 1, lesionSizeRatio: 1)
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.workingDiagnosis]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Site — from diagnosis / history keywords
+        if text.contains("peritrochanteric") || text.contains("femoral neck") || text.contains("trochanter") {
+            i.site = 3
+            f.addAutoFilled(key: "site", label: "Peritrochanteric site detected", source: "History")
+        } else if text.contains("femur") || text.contains("tibia") || text.contains("lower limb") || text.contains("leg") {
+            i.site = 2
+            f.addAutoFilled(key: "site", label: "Lower limb site detected", source: "History")
+        } else if text.contains("humerus") || text.contains("upper limb") || text.contains("arm") {
+            i.site = 1
+            f.addAutoFilled(key: "site", label: "Upper limb site detected", source: "History")
+        } else {
+            f.addPending(key: "site", label: "Lesion site (upper limb / lower limb / peritrochanteric)", source: "Imaging")
+        }
+
+        // Pain — from keywords
+        if text.contains("functional pain") || text.contains("unable to weight") || text.contains("cannot walk") {
+            i.pain = 3
+            f.addAutoFilled(key: "pain", label: "Functional pain detected", source: "History")
+        } else if text.contains("moderate pain") || text.contains("severe pain") {
+            i.pain = 2
+            f.addAutoFilled(key: "pain", label: "Moderate pain detected", source: "History")
+        } else {
+            f.addPending(key: "pain", label: "Pain severity (mild / moderate / functional) — confirm", source: "History")
+        }
+
+        // Lesion type and size — always from imaging
+        f.addPending(key: "lesionType", label: "Lesion radiological type (blastic/mixed/lytic) — imaging report", source: "Imaging")
+        f.addPending(key: "lesionSize", label: "Lesion size as fraction of cortical diameter — imaging", source: "Imaging")
+        return (i, f)
+    }
+
+    // MARK: - #98 CKD-EPI eGFR
+
+    static func ckdEpi(patient: Patient) -> (ClinicalScoringEngine.CKDEPIInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.CKDEPIInput(serumCreatinineMgDL: 0.9, ageYears: 50, sex: "male", raceAA: false)
+        var f = ScoreAutoFill()
+
+        // Age from DOB
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 50
+            i.ageYears = max(18, age)
+            f.addAutoFilled(key: "age", label: "Age \(i.ageYears)y from date of birth", source: "Demographics")
+        } else {
+            f.addPending(key: "age", label: "Patient age — date of birth not recorded", source: "Demographics")
+        }
+
+        // Sex
+        switch patient.sex {
+        case .male:
+            i.sex = "male"
+            f.addAutoFilled(key: "sex", label: "Male — from demographics", source: "Demographics")
+        case .female:
+            i.sex = "female"
+            f.addAutoFilled(key: "sex", label: "Female — from demographics", source: "Demographics")
+        default:
+            f.addPending(key: "sex", label: "Patient sex — set in demographics", source: "Demographics")
+        }
+
+        // Creatinine always needs labs
+        f.addPending(key: "creatinine", label: "Serum creatinine (mg/dL) — current renal function", source: "Labs")
+        return (i, f)
+    }
+
+    // MARK: - #99 ARISCAT Score
+
+    static func ariscat(patient: Patient) -> (ClinicalScoringEngine.ARISCATInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.ARISCATInput(
+            age: 50, spo2Preop: 98, respiratoryInfection: false,
+            preOpHaemoglobin: 13.5, surgicalIncision: 0,
+            surgicalDurationHrs: 1.0, emergencyProcedure: false
+        )
+        var f = ScoreAutoFill()
+
+        // Age from DOB
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 50
+            i.age = max(18, age)
+            f.addAutoFilled(key: "age", label: "Age \(i.age)y from date of birth", source: "Demographics")
+        } else {
+            f.addPending(key: "age", label: "Patient age — date of birth not recorded", source: "Demographics")
+        }
+
+        // SpO₂ from latest vitals
+        let latestVitals = patient.vitalsEntries?.sorted { $0.recordedAt > $1.recordedAt }.first
+        if let spo2 = latestVitals?.spo2 {
+            i.spo2Preop = spo2
+            f.addAutoFilled(key: "spo2", label: "SpO₂ \(spo2)% from latest vitals", source: "Vitals")
+        } else {
+            f.addPending(key: "spo2", label: "Pre-op SpO₂ (%) — record in vitals", source: "Vitals")
+        }
+
+        // Emergency from setting
+        if patient.setting == .emergency {
+            i.emergencyProcedure = true
+            f.addAutoFilled(key: "emergency", label: "Emergency setting detected", source: "Setting")
+        } else {
+            f.addPending(key: "emergency", label: "Emergency vs elective procedure — confirm", source: "Setting")
+        }
+
+        // Haemoglobin, incision type, and duration — always pending
+        f.addPending(key: "haemoglobin",   label: "Pre-op haemoglobin (g/dL) — FBC result", source: "Labs")
+        f.addPending(key: "incision",      label: "Surgical incision type (peripheral/upper abdominal/intrathoracic)", source: "Operative")
+        f.addPending(key: "duration",      label: "Planned surgical duration (hours)", source: "Operative")
+        f.addPending(key: "urti",          label: "Acute respiratory infection in last month?", source: "History")
+        return (i, f)
+    }
+
+    // MARK: - #100 Fong Clinical Risk Score
+
+    static func fongCrs(patient: Patient) -> (ClinicalScoringEngine.FongCRSInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.FongCRSInput(
+            nodePosivePrimaryTumour: false, diseaseFreeIntervalLess12Mo: false,
+            moreThanOneHepaticTumour: false, largestTumourOver5cm: false, ceaOver200: false
+        )
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes, patient.workingDiagnosis]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Node-positive primary
+        if text.contains("node positive") || text.contains("lymph node involved") || text.contains("n1") || text.contains("n2") {
+            i.nodePosivePrimaryTumour = true
+            f.addAutoFilled(key: "nodePositive", label: "Node-positive primary tumour detected from notes", source: "History")
+        } else {
+            f.addPending(key: "nodePositive", label: "Was primary tumour lymph node positive? — staging records", source: "Records")
+        }
+
+        // DFI from admission date / text
+        if text.contains("synchronous") || text.contains("same time as primary") {
+            i.diseaseFreeIntervalLess12Mo = true
+            f.addAutoFilled(key: "dfi", label: "Synchronous metastases — DFI < 12 months", source: "History")
+        } else {
+            f.addPending(key: "dfi", label: "Disease-free interval < 12 months from primary resection?", source: "History")
+        }
+
+        // All imaging-dependent fields — always pending
+        f.addPending(key: "numMets",    label: "Number of hepatic metastases — CT/MRI report", source: "Imaging")
+        f.addPending(key: "metSize",    label: "Largest hepatic metastasis size (> 5 cm?) — imaging", source: "Imaging")
+        f.addPending(key: "cea",        label: "Preoperative CEA level (> 200 ng/mL?) — tumour markers", source: "Labs")
+        return (i, f)
+    }
 }

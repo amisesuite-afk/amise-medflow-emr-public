@@ -209,6 +209,10 @@ final class Patient {
     var manningScore: Int?        // Manning Criteria for IBS (0–6; ≥3 = probable IBS)
     var laceScore: Int?           // LACE 30-day Readmission Risk (0–19; ≥10 = high risk)
     var findRiscScore: Int?       // FINDRISC Type 2 Diabetes Risk (0–26; ≥12 = screen required)
+    var mirelsScore: Int?         // Mirels Criteria pathological fracture risk (4–12; ≥9 = fixation)
+    var ckdEpiEgfr: Double?       // CKD-EPI eGFR (mL/min/1.73m²; continuous; G1≥90 … G5<15)
+    var ariscatScore: Int?        // ARISCAT postop pulmonary complication risk (0–123; ≥26 = intermediate)
+    var fongCrsScore: Int?        // Fong Clinical Risk Score colorectal liver mets (0–5; ≥3 = poor prognosis)
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

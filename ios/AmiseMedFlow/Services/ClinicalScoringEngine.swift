@@ -7028,5 +7028,334 @@ enum ClinicalScoringEngine {
         )
     }
 
+    // MARK: - #97 Mirels Criteria (Pathological Fracture Risk)
+
+    struct MirelsInput: Equatable {
+        var site: Int        // 1=upper limb, 2=lower limb, 3=peritrochanteric
+        var pain: Int        // 1=mild, 2=moderate, 3=functional
+        var lesionType: Int  // 1=blastic, 2=mixed, 3=lytic
+        var lesionSizeRatio: Int // 1=<1/3 cortex, 2=1/3–2/3, 3=>2/3
+    }
+
+    func mirels(_ i: MirelsInput) -> ClinicalScore {
+        let total = i.site + i.pain + i.lesionType + i.lesionSizeRatio
+        let risk: ScoreRisk
+        let interp: String
+        var recs: [String]
+        var flags: [String] = []
+
+        if total >= 9 {
+            risk  = .critical
+            interp = "Mirels \(total)/12 — High fracture risk. Prophylactic fixation strongly recommended before radiotherapy."
+            recs  = [
+                "Urgent orthopaedic surgery / oncology review for prophylactic fixation",
+                "Avoid weight-bearing on the affected limb until fixed",
+                "Postoperative radiotherapy to the fixation site",
+                "Multidisciplinary oncology bone meeting review",
+                "Pain management: bisphosphonate or RANK-L inhibitor (denosumab)"
+            ]
+            flags = ["Mirels ≥9 — prophylactic fixation recommended; do not delay for radiotherapy alone"]
+        } else if total == 8 {
+            risk  = .high
+            interp = "Mirels \(total)/12 — Indeterminate fracture risk. Consider prophylactic fixation (borderline threshold)."
+            recs  = [
+                "Multidisciplinary review: orthopaedic surgery, radiation oncology, medical oncology",
+                "Individual clinical assessment — patient fitness, systemic disease burden, expected survival",
+                "If not fixating, restrict weight-bearing; radiotherapy to lesion",
+                "Repeat imaging in 4–6 weeks to assess progression"
+            ]
+        } else {
+            risk  = .moderate
+            interp = "Mirels \(total)/12 — Lower fracture risk. Radiotherapy and conservative management appropriate."
+            recs  = [
+                "Radiotherapy to the lesion",
+                "Weight-bearing as tolerated if lower-limb lesion",
+                "Regular reassessment — repeat imaging at 6–8 weeks",
+                "Bone-modifying agent (bisphosphonate or denosumab)",
+                "Reassess if pain escalates or lesion enlarges"
+            ]
+        }
+
+        return ClinicalScore(
+            name:          "Mirels Criteria",
+            score:         Double(total),
+            maxScore:      12,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            redFlags:      flags,
+            evidenceNote:  "Mirels H. Clin Orthop Relat Res 1989;249:256. Four-variable scoring system for pathological fracture risk in metastatic bone disease: site (1–3), pain (1–3), lesion type (1–3), radiological size ratio (1–3). Total 4–12. Score ≥9 = prophylactic fixation recommended (fracture risk >33%). Score 8 = borderline (15% fracture risk). Score ≤7 = radiotherapy alone acceptable (<4% fracture risk). Widely used in surgical oncology and orthopaedic oncology multidisciplinary practice."
+        )
+    }
+
+    // MARK: - #98 CKD-EPI eGFR (Chronic Kidney Disease Staging)
+
+    struct CKDEPIInput: Equatable {
+        var serumCreatinineMgDL: Double  // serum creatinine in mg/dL
+        var ageYears: Int
+        var sex: String                  // "male" or "female"
+        var raceAA: Bool                 // African American (2021 equation drops this; retained for legacy)
+    }
+
+    func ckdEpi(_ i: CKDEPIInput) -> ClinicalScore {
+        // CKD-EPI 2021 (race-free) Cr equation
+        // eGFR = 142 × min(Scr/κ, 1)^α × max(Scr/κ, 1)^(-1.200) × 0.9938^Age [× 1.012 if female]
+        let kappa: Double = i.sex.lowercased() == "female" ? 0.7 : 0.9
+        let alpha: Double = i.sex.lowercased() == "female" ? -0.241 : -0.302
+        let scr = i.serumCreatinineMgDL
+        let ratio = scr / kappa
+        let term1 = pow(min(ratio, 1.0), alpha)
+        let term2 = pow(max(ratio, 1.0), -1.200)
+        let term3 = pow(0.9938, Double(i.ageYears))
+        let sexFactor: Double = i.sex.lowercased() == "female" ? 1.012 : 1.0
+        let egfr = 142.0 * term1 * term2 * term3 * sexFactor
+
+        let risk: ScoreRisk
+        let interp: String
+        var recs: [String]
+        var flags: [String] = []
+
+        let egfrStr = String(format: "%.1f", egfr)
+        let (stage, stageName) = ckdStage(egfr)
+
+        switch stage {
+        case 1:
+            risk  = .low
+            interp = "eGFR \(egfrStr) mL/min/1.73m² — CKD Stage G1 (\(stageName)). Normal/high GFR."
+            recs  = [
+                "Treat underlying cause (proteinuria, hypertension, diabetes)",
+                "Annual ACR (albumin:creatinine ratio) to assess proteinuria",
+                "Blood pressure target <130/80 mmHg (ACEi/ARB if proteinuria present)",
+                "Nephrology referral if cause unclear or rapidly progressive"
+            ]
+        case 2:
+            risk  = .low
+            interp = "eGFR \(egfrStr) mL/min/1.73m² — CKD Stage G2 (\(stageName)). Mildly decreased."
+            recs  = [
+                "Identify and treat underlying cause",
+                "Monitor annually: eGFR, ACR, BP, electrolytes",
+                "Avoid nephrotoxins (NSAIDs, IV contrast without precautions)"
+            ]
+        case 3:
+            risk  = .moderate
+            interp = "eGFR \(egfrStr) mL/min/1.73m² — CKD Stage G3 (\(stageName)). Moderately decreased."
+            recs  = [
+                "Nephrology co-management if not yet involved",
+                "6-monthly monitoring: eGFR, ACR, potassium, bicarbonate, phosphate, Hb",
+                "Avoid all nephrotoxins; adjust medication doses to eGFR",
+                "Anaemia work-up: iron studies, consider erythropoiesis-stimulating agents",
+                "Calcium-phosphate management; vitamin D supplementation if deficient",
+                "Dietary sodium restriction and protein optimisation"
+            ]
+        case 4:
+            risk  = .high
+            interp = "eGFR \(egfrStr) mL/min/1.73m² — CKD Stage G4 (\(stageName)). Severely decreased."
+            recs  = [
+                "Nephrology review — renal replacement therapy planning",
+                "AV fistula creation referral if haemodialysis planned",
+                "Peritoneal dialysis and transplant workup discussion",
+                "3-monthly monitoring of all metabolic parameters",
+                "Review all medications for dose adjustment"
+            ]
+            flags = ["eGFR <30 — prepare for renal replacement therapy; nephrology must be involved"]
+        default:
+            risk  = .critical
+            interp = "eGFR \(egfrStr) mL/min/1.73m² — CKD Stage G5 (\(stageName)). Kidney failure."
+            recs  = [
+                "Urgent nephrology review — dialysis or transplant required if not already initiated",
+                "Emergency haemodialysis if symptomatic uraemia, severe hyperkalaemia, or fluid overload",
+                "Conservative pathway discussion if dialysis not appropriate",
+                "Palliative care input for uraemic symptom management if appropriate"
+            ]
+            flags = ["eGFR <15 — kidney failure; renal replacement therapy or conservative pathway urgently"]
+        }
+
+        return ClinicalScore(
+            name:          "CKD-EPI eGFR",
+            score:         egfr,
+            maxScore:      nil,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            redFlags:      flags,
+            evidenceNote:  "Inker LA et al. NEJM 2021;385:1737. CKD-EPI 2021 race-free creatinine equation. eGFR ≥90 = G1, 60–89 = G2, 45–59 = G3a, 30–44 = G3b, 15–29 = G4, <15 = G5. KDIGO 2022 guidelines recommend staging by both eGFR and albuminuria (ACR) categories. The 2021 update removed the race coefficient; prior versions using the AF-American race multiplier are no longer recommended by major nephrology societies."
+        )
+    }
+
+    private func ckdStage(_ egfr: Double) -> (Int, String) {
+        if egfr >= 90      { return (1, "normal or high") }
+        else if egfr >= 60 { return (2, "mildly decreased") }
+        else if egfr >= 45 { return (3, "mildly–moderately decreased") }
+        else if egfr >= 30 { return (3, "moderately–severely decreased") }
+        else if egfr >= 15 { return (4, "severely decreased") }
+        else               { return (5, "kidney failure") }
+    }
+
+    // MARK: - #99 ARISCAT Score (Postoperative Pulmonary Complications)
+
+    struct ARISCATInput: Equatable {
+        var age: Int             // years
+        var spo2Preop: Int       // pre-operative SpO₂ (%)
+        var respiratoryInfection: Bool  // acute URTI in last month
+        var preOpHaemoglobin: Double    // g/dL
+        var surgicalIncision: Int  // 0=peripheral, 1=upper abdominal, 2=intrathoracic
+        var surgicalDurationHrs: Double // planned/actual operative duration (hours)
+        var emergencyProcedure: Bool
+    }
+
+    func ariscat(_ i: ARISCATInput) -> ClinicalScore {
+        var score = 0
+
+        // Age
+        if i.age >= 80      { score += 16 }
+        else if i.age >= 51 { score += 3 }
+
+        // SpO₂
+        if i.spo2Preop <= 90      { score += 24 }
+        else if i.spo2Preop <= 95 { score += 8 }
+
+        // Respiratory infection
+        if i.respiratoryInfection { score += 17 }
+
+        // Pre-op haemoglobin
+        if i.preOpHaemoglobin <= 10 { score += 11 }
+
+        // Surgical incision
+        if i.surgicalIncision == 2      { score += 24 }   // intrathoracic
+        else if i.surgicalIncision == 1 { score += 15 }   // upper abdominal
+
+        // Duration
+        if i.surgicalDurationHrs >= 3      { score += 16 }
+        else if i.surgicalDurationHrs >= 2 { score += 8 }
+
+        // Emergency
+        if i.emergencyProcedure { score += 8 }
+
+        let risk: ScoreRisk
+        let interp: String
+        var recs: [String]
+        var flags: [String] = []
+
+        if score >= 45 {
+            risk  = .critical
+            interp = "ARISCAT \(score) — High risk of postoperative pulmonary complications (PPC rate ~42%)."
+            recs  = [
+                "Preoperative physiotherapy and breathing exercises — begin ≥2 weeks before surgery",
+                "Optimise pre-existing respiratory conditions (asthma, COPD)",
+                "Treat any current URTI; delay elective surgery until resolved",
+                "Correct anaemia preoperatively (transfusion or IV iron as appropriate)",
+                "Discuss enhanced recovery after surgery (ERAS) pulmonary protocol with anaesthesia",
+                "Plan postoperative care: HDU/ICU likely; early physiotherapy post-op",
+                "Consider regional anaesthesia techniques to reduce systemic opioid use"
+            ]
+            flags = ["ARISCAT ≥45 — high PPC risk; preoperative optimisation and HDU/ICU planning required"]
+        } else if score >= 26 {
+            risk  = .high
+            interp = "ARISCAT \(score) — Intermediate risk of postoperative pulmonary complications (PPC rate ~13%)."
+            recs  = [
+                "Preoperative respiratory physiotherapy if time permits",
+                "Optimise respiratory comorbidities",
+                "Anaesthetic review: consider lung-protective ventilation strategy",
+                "Early postoperative mobilisation and incentive spirometry",
+                "Monitor SpO₂ closely in recovery"
+            ]
+        } else {
+            risk  = .low
+            interp = "ARISCAT \(score) — Low risk of postoperative pulmonary complications (PPC rate ~1.6%)."
+            recs  = [
+                "Standard ERAS respiratory protocol",
+                "Early mobilisation and breathing exercises postoperatively",
+                "Routine monitoring"
+            ]
+        }
+
+        return ClinicalScore(
+            name:          "ARISCAT Score",
+            score:         Double(score),
+            maxScore:      123,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            redFlags:      flags,
+            evidenceNote:  "Canet J et al. Anesthesiology 2010;113:1338. Validated 7-item preoperative risk score for postoperative pulmonary complications (PPC). Score 0–123; low <26 (PPC 1.6%), intermediate 26–44 (12.8%), high ≥45 (42.1%). Originally developed and validated in a European multicentre cohort of 2,464 non-cardiac surgical patients. Included in ESA/ESAIC preoperative assessment guidelines."
+        )
+    }
+
+    // MARK: - #100 Fong Clinical Risk Score (Colorectal Liver Metastases)
+
+    struct FongCRSInput: Equatable {
+        var nodePosivePrimaryTumour: Bool    // lymph node–positive primary CRC
+        var diseaseFreeIntervalLess12Mo: Bool // DFI < 12 months from primary resection
+        var moreThanOneHepaticTumour: Bool   // > 1 hepatic metastasis
+        var largestTumourOver5cm: Bool       // largest hepatic met > 5 cm
+        var ceaOver200: Bool                 // preoperative CEA > 200 ng/mL
+    }
+
+    func fongCRS(_ i: FongCRSInput) -> ClinicalScore {
+        var score = 0
+        if i.nodePosivePrimaryTumour        { score += 1 }
+        if i.diseaseFreeIntervalLess12Mo    { score += 1 }
+        if i.moreThanOneHepaticTumour       { score += 1 }
+        if i.largestTumourOver5cm          { score += 1 }
+        if i.ceaOver200                    { score += 1 }
+
+        let risk: ScoreRisk
+        let interp: String
+        var recs: [String]
+        var flags: [String] = []
+
+        switch score {
+        case 0:
+            risk  = .low
+            interp = "Fong CRS \(score)/5 — Favourable prognosis. Estimated 5-year survival ~60% after hepatic resection."
+            recs  = [
+                "Proceed to hepatic resection if technically feasible and patient fit",
+                "Colorectal MDT review",
+                "Perioperative systemic chemotherapy (FOLFOX/CAPOX) per EPOC trial principles",
+                "Consider ablation for small residual lesions if margins tight"
+            ]
+        case 1, 2:
+            risk  = .moderate
+            interp = "Fong CRS \(score)/5 — Intermediate prognosis. Estimated 5-year survival ~40% after hepatic resection."
+            recs  = [
+                "Colorectal liver MDT — hepato-pancreato-biliary surgeon, oncologist, radiologist",
+                "Perioperative chemotherapy (FOLFOX/CAPOX): consider neoadjuvant to test tumour biology",
+                "Staging FDG-PET CT to exclude extrahepatic disease before committing to resection",
+                "Hepatic resection if ≥1 cm negative margin achievable and FLR adequate"
+            ]
+        case 3, 4:
+            risk  = .high
+            interp = "Fong CRS \(score)/5 — Poor prognosis. Estimated 5-year survival ~20% after hepatic resection."
+            recs  = [
+                "Oncology-led MDT discussion — systemic chemotherapy as primary treatment",
+                "PET-CT mandatory to exclude extrahepatic disease",
+                "Surgery only if good response to chemotherapy (≥30% tumour shrinkage) and fit patient",
+                "Consider ablative techniques as alternative to open resection"
+            ]
+            flags = ["CRS ≥3 — poor prognosis; chemotherapy response before surgery is critical"]
+        default:
+            risk  = .critical
+            interp = "Fong CRS \(score)/5 — Very poor prognosis. Surgery unlikely to confer survival benefit."
+            recs  = [
+                "Systemic chemotherapy — reassess for hepatic surgery after documented response",
+                "Clinical trial enrolment if available (e.g. EGFR/VEGF-targeted therapy for RAS wild-type)",
+                "Best supportive care and palliative care involvement early",
+                "Reassess resectability after 3–4 cycles with repeat CT/PET"
+            ]
+            flags = ["CRS 5/5 — very poor 5-year survival; surgery not recommended without prior response to chemotherapy"]
+        }
+
+        return ClinicalScore(
+            name:          "Fong Clinical Risk Score",
+            score:         Double(score),
+            maxScore:      5,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            redFlags:      flags,
+            evidenceNote:  "Fong Y et al. Ann Surg 1999;230:309. Five-variable CRS for predicting outcome after hepatic resection of colorectal liver metastases: node-positive primary, DFI <12 months, >1 hepatic tumour, largest tumour >5 cm, preoperative CEA >200 ng/mL. Score 0–5; each point progressively worsens 5-year survival (score 0 ≈60%; score 5 ≈14%). Validated in multiple external cohorts and widely used in hepato-pancreato-biliary surgical oncology decision-making."
+        )
+    }
+
 
 }
