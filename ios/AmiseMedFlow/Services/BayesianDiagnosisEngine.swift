@@ -211,6 +211,12 @@ enum BayesianDiagnosisEngine {
         let ccL = baseCCL.isEmpty ? invTerms : (invTerms.isEmpty ? baseCCL : baseCCL + " " + invTerms)
 
         var candidates: [Candidate]
+        var seenNames = Set<String>()
+        func mergePool(_ name: String) {
+            guard let extra = externalPool(name) else { return }
+            let novel = extra.filter { seenNames.insert($0.name).inserted }
+            candidates.append(contentsOf: novel)
+        }
         switch true {
         case ccL.contains("jaundice") || ccL.contains("yellow") ||
              ccL.contains("dark urine") || ccL.contains("pale stool") ||
@@ -1792,12 +1798,7 @@ enum BayesianDiagnosisEngine {
         // When the CC spans several symptom domains (e.g. "chest pain and
         // shortness of breath"), merge candidates from up to two secondary
         // pools so the Bayesian scorer sees the full differential.
-        var seenNames = Set<String>(candidates.map(\.name))
-        func mergePool(_ name: String) {
-            guard let extra = externalPool(name) else { return }
-            let novel = extra.filter { seenNames.insert($0.name).inserted }
-            candidates.append(contentsOf: novel)
-        }
+        seenNames.formUnion(candidates.map(\.name))
         // Secondary pool: respiratory
         if ccL.contains("cough") || ccL.contains("breathless") ||
            ccL.contains("dyspnoea") || ccL.contains("dyspnea") { mergePool("cough") }
