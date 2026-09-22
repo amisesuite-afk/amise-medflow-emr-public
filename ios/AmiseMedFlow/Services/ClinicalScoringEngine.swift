@@ -3145,6 +3145,63 @@ enum ClinicalScoringEngine {
         )
     }
 
+    // MARK: - MUST (Malnutrition Universal Screening Tool)
+
+    struct MUSTInput: Equatable {
+        var bmiScore: Int = 0         // 0 = BMI >20; 1 = 18.5–20; 2 = <18.5
+        var weightLossScore: Int = 0  // 0 = <5%; 1 = 5–10%; 2 = >10% in past 3–6 months
+        var acuteDiseaseScore: Int = 0 // 0 = no effect; 2 = acutely ill and nil/negligible intake likely >5 days
+    }
+
+    static func must(_ i: MUSTInput) -> ClinicalScore {
+        let total = max(0, i.bmiScore + i.weightLossScore + i.acuteDiseaseScore)
+
+        let (risk, abbrev, recs, flags): (ScoreRisk, String, [String], [String]) = switch total {
+        case 0:
+            (.low, "Low Risk",
+             ["Routine nutritional care; re-screen weekly (hospital) or monthly (community/care home)",
+              "Encourage balanced diet and adequate fluid intake"],
+             [])
+        case 1:
+            (.moderate, "Medium Risk",
+             ["Document 3-day food intake; if adequate, re-screen weekly (hospital)",
+              "If intake inadequate, refer to dietitian or implement local nutritional protocol",
+              "Consider high-protein / high-energy oral nutritional supplements"],
+             ["MUST 1 — medium malnutrition risk; dietetic review recommended"])
+        default:
+            (.high, "High Risk",
+             ["Urgent dietitian referral",
+              "Initiate nutritional support plan within 24 hours: oral supplements, enteral, or parenteral route based on clinical status",
+              "Multi-disciplinary nutrition team involvement (dietitian, nurse, pharmacist)",
+              "Optimise metabolic control before elective surgery; delay if correctable",
+              "Re-screen weekly; document nutritional support goals and response"],
+             ["MUST ≥2 — high malnutrition risk; associated with increased morbidity, prolonged LOS, and higher mortality",
+              "Surgery risk: malnutrition doubles 30-day complication rate; address before elective procedures"])
+        }
+
+        let bmiLabels    = ["BMI >20 kg/m² (+0)", "BMI 18.5–20 kg/m² (+1)", "BMI <18.5 kg/m² (+2)"]
+        let wlLabels     = ["Weight loss <5% (+0)", "Weight loss 5–10% (+1)", "Weight loss >10% (+2)"]
+        let acuteLabel   = i.acuteDiseaseScore == 2 ? "Acute disease effect: Yes (+2)" : "Acute disease effect: No (+0)"
+
+        let items = [
+            ScoreItem(label: bmiLabels[min(2, i.bmiScore)],           points: Double(i.bmiScore),           present: i.bmiScore > 0),
+            ScoreItem(label: wlLabels[min(2, i.weightLossScore)],     points: Double(i.weightLossScore),     present: i.weightLossScore > 0),
+            ScoreItem(label: acuteLabel,                               points: Double(i.acuteDiseaseScore),  present: i.acuteDiseaseScore > 0)
+        ]
+
+        return ClinicalScore(
+            systemName: "Malnutrition Universal Screening Tool",
+            abbreviation: "MUST \(total)",
+            score: Double(total), maxScore: 6,
+            risk: risk,
+            interpretation: "MUST \(total) — \(abbrev)",
+            items: items,
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Stratton RJ et al. Clin Nutr 2004;23:1060–1066. BAPEN MUST toolkit. Validated across hospital, community, and care-home settings."
+        )
+    }
+
     // MARK: - EuroSCORE II (Cardiac Surgery Operative Mortality)
 
     static func euroScoreII(_ i: EuroScoreIIInput) -> ClinicalScore {

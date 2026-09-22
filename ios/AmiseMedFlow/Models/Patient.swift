@@ -141,6 +141,8 @@ final class Patient {
     var nihssScore: Int?
     // modified Rankin Scale 0–6; 0=no symptoms, 3=moderate disability, 5=severe dependency, 6=dead
     var mrsScore: Int?
+    // MUST malnutrition risk 0–6; 0=low, 1=medium, ≥2=high
+    var mustScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

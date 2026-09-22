@@ -2394,4 +2394,58 @@ enum PatientScoreAutoPopulator {
 
         return (i, f)
     }
+
+    // MARK: - MUST (Malnutrition Universal Screening Tool)
+
+    static func must(patient: Patient) -> (ClinicalScoringEngine.MUSTInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.MUSTInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        // BMI score: derive from latest weight + stored height if available
+        // Patient stores BMI indirectly via vitals weight; height not a dedicated field, so
+        // we leave bmiScore as pending unless explicitly stored
+        let latestWeight = patient.vitalsEntries
+            .sorted { ($0.recordedAt) > ($1.recordedAt) }
+            .compactMap { $0.weightKg }
+            .first
+
+        if let wt = latestWeight {
+            // Without height we cannot compute BMI — surface weight as context but mark pending
+            _ = wt
+        }
+        f.addPending(key: "bmiScore", label: "1. BMI category (>20 / 18.5–20 / <18.5 kg/m²) — weigh and measure height", source: "Measure at bedside")
+
+        // Weight loss score: detect keywords in PMH / HPI / assessment text
+        let text = ([patient.hpi, patient.pmhNotes, patient.chiefComplaint,
+                     patient.assessmentText, patient.workingDiagnosis]
+                    .compactMap { $0 } + patient.pmhEntries.map(\.condition))
+                   .joined(separator: " ").lowercased()
+
+        if text.contains("weight loss") || text.contains("losing weight") || text.contains("unintentional weight") {
+            if text.contains(">10%") || text.contains("significant weight loss") || text.contains("severe weight loss") || text.contains("cachex") {
+                i.weightLossScore = 2; f.addAutoFilled(key: "weightLossScore", label: "Weight loss >10% from clinical text", source: "PMH / clinical text")
+            } else if text.contains("5%") || text.contains("10%") || text.contains("moderate weight loss") {
+                i.weightLossScore = 1; f.addAutoFilled(key: "weightLossScore", label: "Weight loss 5–10% from clinical text", source: "PMH / clinical text")
+            } else {
+                // Unspecified weight loss — flag as pending for clinician to quantify
+                f.addPending(key: "weightLossScore", label: "2. Weight loss magnitude (unspecified in notes) — quantify % over 3–6 months", source: "PMH / clinical text mentions weight loss")
+            }
+        } else {
+            f.addPending(key: "weightLossScore", label: "2. Unintentional weight loss percentage over past 3–6 months", source: "Review patient history")
+        }
+
+        // Acute disease effect: acutely ill with likely nil/negligible oral intake >5 days
+        let acuteIllKeywords = ["npo", "nil by mouth", "bowel obstruction", "ileus",
+                                "icu", "critical care", "intensive care", "ventilat",
+                                "unable to eat", "unable to swallow", "dysphagia",
+                                "post-operative day", "post op day", "intubat"]
+        if acuteIllKeywords.contains(where: { text.contains($0) }) {
+            i.acuteDiseaseScore = 2
+            f.addAutoFilled(key: "acuteDiseaseScore", label: "Acute disease effect (+2) — nil/negligible intake likely >5 days detected from clinical text", source: "HPI / clinical text")
+        } else {
+            f.addPending(key: "acuteDiseaseScore", label: "3. Acute disease effect — is patient acutely ill with no nutrition for >5 days?", source: "Clinical assessment")
+        }
+
+        return (i, f)
+    }
 }

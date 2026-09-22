@@ -126,6 +126,7 @@ enum BayesianDiagnosisEngine {
         euroScoreII: Int? = nil,      // EuroSCORE II predicted mortality ×10 (e.g. 35 = 3.5%); ≥50 = high risk
         nihssScore: Int? = nil,       // NIHSS (0–42); ≥16 = moderate-severe/severe stroke
         mrsScore: Int? = nil,         // mRS (0–6); ≥3 = moderate-severe disability
+        mustScore: Int? = nil,        // MUST (0–6); ≥2 = high malnutrition risk
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3001,6 +3002,34 @@ enum BayesianDiagnosisEngine {
                 case 4...: (10, "mRS ≥4 — severe pre-existing neurological disability; major neurological disease burden")
                 case 3: (6, "mRS 3 — moderate disability requiring some help; significant neurological disease")
                 case 2: (3, "mRS 2 — slight disability; some neurological disease likely")
+                default: (0, "")
+                }
+                guard adj > 0 else { continue }
+                scored[i].logPosterior += adj
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // MUST: high malnutrition risk boosts malnutrition, cachexia, GI malabsorption,
+        // and chronic-disease candidates where nutritional depletion is a key feature
+        if let must = mustScore, must >= 1 {
+            let mustTargets = ["malnutrition", "cachexia", "anorexia nervosa", "bulimia",
+                               "crohn", "ulcerative colitis", "coeliac", "short bowel",
+                               "pancreatic exocrine insufficiency",
+                               "gastric cancer", "oesophageal cancer", "colorectal cancer",
+                               "liver failure", "chronic liver disease", "cirrhosis",
+                               "chronic kidney disease", "end-stage renal disease",
+                               "congestive heart failure", "copd", "chronic obstructive",
+                               "inflammatory bowel", "protein-energy malnutrition",
+                               "dysphagia", "swallowing difficulty",
+                               "frailty syndrome", "sarcopaenia"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard mustTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch must {
+                case 2...: (9, "MUST ≥2 — high malnutrition risk; supports diagnoses with nutritional depletion as a key feature")
+                case 1: (4, "MUST 1 — medium malnutrition risk; nutritional status warrants monitoring")
                 default: (0, "")
                 }
                 guard adj > 0 else { continue }

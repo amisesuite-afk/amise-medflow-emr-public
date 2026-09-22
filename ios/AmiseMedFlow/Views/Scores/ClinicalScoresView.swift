@@ -69,6 +69,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case euroScoreII      = "EuroSCORE II (Cardiac Surgery)"
     case nihss            = "NIHSS (Stroke Severity)"
     case mrs              = "modified Rankin Scale (Disability)"
+    case must             = "MUST (Malnutrition Risk)"
 
     var category: ScoreCategory {
         switch self {
@@ -84,6 +85,8 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .preop
         case .abcd2, .lrinec, .gcs, .nihss, .mrs:
             return .neuro
+        case .must:
+            return .preop
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
         case .mews, .news2, .waterlow, .surgicalApgar:
@@ -138,6 +141,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .euroScoreII:    return "heart.text.clipboard.fill"
         case .nihss:          return "brain"
         case .mrs:            return "figure.roll"
+        case .must:           return "fork.knife.circle"
         }
     }
 }
@@ -252,6 +256,8 @@ struct ClinicalScoresView: View {
     @State private var nihssI = NIHSSInput()
     // mRS
     @State private var mrsI = MRSInput()
+    // MUST
+    @State private var mustI = ClinicalScoringEngine.MUSTInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -665,6 +671,9 @@ struct ClinicalScoresView: View {
         case .nihss:
             let (input, fill) = PatientScoreAutoPopulator.nihss(patient: patient)
             nihssI = input; autoFill = fill
+        case .must:
+            let (input, fill) = PatientScoreAutoPopulator.must(patient: patient)
+            mustI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -771,6 +780,7 @@ struct ClinicalScoresView: View {
         case .euroScoreII:   ClinicalScoringEngine.euroScoreII(euroScI)
         case .nihss:         ClinicalScoringEngine.nihss(nihssI)
         case .mrs:           ClinicalScoringEngine.mRS(mrsI)
+        case .must:          ClinicalScoringEngine.must(mustI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -817,6 +827,7 @@ struct ClinicalScoresView: View {
         case .euroScoreII:   patient.euroScoreII = Int((r.score * 10).rounded())
         case .nihss:         patient.nihssScore = intScore
         case .mrs:           patient.mrsScore = intScore
+        case .must:          patient.mustScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -901,6 +912,7 @@ struct ClinicalScoresView: View {
         case .euroScoreII:   euroScoreIIForm
         case .nihss:         nihssForm
         case .mrs:           mrsForm
+        case .must:          mustForm
         }
     }
 
@@ -2032,6 +2044,9 @@ struct ClinicalScoresView: View {
             }
         case .nihss:
             // NIHSS fields are numeric pickers — auto-fill applies only consciousness level from text
+            break
+        case .must:
+            // MUST fields are categorical pickers confirmed directly in the form
             break
         default: break
         }
@@ -3182,5 +3197,30 @@ struct ClinicalScoresView: View {
                 ])
         }
         .onChange(of: mrsI) { _, _ in recalculate() }
+    }
+
+    // MARK: - MUST (Malnutrition Universal Screening Tool)
+
+    private var mustForm: some View {
+        Group {
+            apacheSegment("1. BMI Score", selection: $mustI.bmiScore,
+                options: [
+                    (0, "0 — BMI >20 kg/m²"),
+                    (1, "1 — BMI 18.5–20 kg/m²"),
+                    (2, "2 — BMI <18.5 kg/m²")
+                ])
+            apacheSegment("2. Unintentional Weight Loss (past 3–6 months)", selection: $mustI.weightLossScore,
+                options: [
+                    (0, "0 — Weight loss <5%"),
+                    (1, "1 — Weight loss 5–10%"),
+                    (2, "2 — Weight loss >10%")
+                ])
+            apacheSegment("3. Acute Disease Effect", selection: $mustI.acuteDiseaseScore,
+                options: [
+                    (0, "0 — No acute disease effect (or not applicable)"),
+                    (2, "2 — Acutely ill and no nutritional intake likely for >5 days")
+                ])
+        }
+        .onChange(of: mustI) { _, _ in recalculate() }
     }
 }
