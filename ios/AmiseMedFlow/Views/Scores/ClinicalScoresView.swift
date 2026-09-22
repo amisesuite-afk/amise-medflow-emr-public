@@ -82,7 +82,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .sepsis
         case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4, .ppossum, .nrs2002, .mallampati, .cfs, .dasi, .barthel, .euroScoreII:
             return .preop
-        case .abcd2, .lrinec, .gcs, .nihss:
+        case .abcd2, .lrinec, .gcs, .nihss, .mrs:
             return .neuro
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
@@ -137,6 +137,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .barthel:        return "figure.roll"
         case .euroScoreII:    return "heart.text.clipboard.fill"
         case .nihss:          return "brain"
+        case .mrs:            return "figure.roll"
         }
     }
 }
@@ -249,6 +250,8 @@ struct ClinicalScoresView: View {
     @State private var euroScI = EuroScoreIIInput()
     // NIHSS
     @State private var nihssI = NIHSSInput()
+    // mRS
+    @State private var mrsI = MRSInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -767,6 +770,7 @@ struct ClinicalScoresView: View {
         case .barthel:       ClinicalScoringEngine.barthel(barthelI)
         case .euroScoreII:   ClinicalScoringEngine.euroScoreII(euroScI)
         case .nihss:         ClinicalScoringEngine.nihss(nihssI)
+        case .mrs:           ClinicalScoringEngine.mRS(mrsI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -812,6 +816,7 @@ struct ClinicalScoresView: View {
         case .barthel:       patient.barthelScore = intScore
         case .euroScoreII:   patient.euroScoreII = Int((r.score * 10).rounded())
         case .nihss:         patient.nihssScore = intScore
+        case .mrs:           patient.mrsScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -895,6 +900,7 @@ struct ClinicalScoresView: View {
         case .barthel:       barthelForm
         case .euroScoreII:   euroScoreIIForm
         case .nihss:         nihssForm
+        case .mrs:           mrsForm
         }
     }
 
@@ -3158,5 +3164,23 @@ struct ClinicalScoresView: View {
             }
             .onChange(of: nihssI) { _, _ in recalculate() }
         }
+    }
+
+    // MARK: - modified Rankin Scale (mRS)
+
+    private var mrsForm: some View {
+        Group {
+            apacheSegment("Disability Level", selection: $mrsI.level,
+                options: [
+                    (0, "0 — No symptoms"),
+                    (1, "1 — No significant disability; performs all usual activities despite symptoms"),
+                    (2, "2 — Slight disability; unable to perform all previous activities, independent"),
+                    (3, "3 — Moderate disability; requires some help, walks without assistance"),
+                    (4, "4 — Moderately severe disability; unable to walk or attend to bodily needs without assistance"),
+                    (5, "5 — Severe disability; bedridden, incontinent, requires constant nursing care"),
+                    (6, "6 — Dead")
+                ])
+        }
+        .onChange(of: mrsI) { _, _ in recalculate() }
     }
 }

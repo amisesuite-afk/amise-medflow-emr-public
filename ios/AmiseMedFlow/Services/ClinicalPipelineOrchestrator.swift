@@ -283,7 +283,6 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
         // Build a lab-observation snapshot so DBN trajectory models can factor
         // in investigation results (lactate, WBC, CRP, imaging) alongside vitals.
         var labObs = DBNObservation(vitals: nil)
-        let lab = psv.labs
         labObs.lactateElevated  = lab.lactateElevated
         labObs.wbcAbnormal      = lab.wbcElevated
         labObs.crpElevated      = lab.crpElevated || lab.crpHigh
