@@ -476,6 +476,17 @@ struct ForrestInput: Equatable {
     var grade: Int = 1
 }
 
+struct HEARTInput: Equatable {
+    // HEART Score (Backus et al, Neth Heart J 2010; Six et al, AHJ 2008)
+    // Chest pain risk stratification: History, ECG, Age, Risk factors, Troponin
+    // Each domain scored 0–2; total 0–10; ≤3=low risk, 4–6=moderate, ≥7=high
+    var history: Int = 0        // 0=slightly suspicious, 1=moderately suspicious, 2=highly suspicious
+    var ecg: Int = 0            // 0=normal, 1=non-specific repolarisation, 2=significant ST deviation
+    var ageScore: Int = 0       // 0=<45, 1=45–64, 2=≥65
+    var riskFactors: Int = 0    // 0=no known risk, 1=1–2 risk factors / obesity / atherosclerosis, 2=≥3 risk factors / known atherosclerotic disease
+    var troponin: Int = 0       // 0=≤normal limit, 1=1–3× normal, 2=>3× normal
+}
+
 struct NRS2002Input: Equatable {
     // Nutritional Risk Screening 2002 (Kondrup et al, Clin Nutr 2003)
     // Total score = nutritionalStatus (0–3) + diseaseSeverity (0–3) + ageAdj (0–1). ≥3 = at risk.
@@ -2802,6 +2813,61 @@ enum ClinicalScoringEngine {
             redFlags: data.flags,
             evidenceNote: "Forrest JAH et al. Lancet 1974; 2:394–397. Laine L & Peterson WL. N Engl J Med 1994; 331:717–727."
         )
+    }
+
+    // MARK: - HEART Score (chest pain risk stratification)
+
+    static func heart(_ i: HEARTInput) -> ClinicalScore {
+        let total = i.history + i.ecg + i.ageScore + i.riskFactors + i.troponin
+        let (risk, interp, recs, flags) = heartRisk(total)
+        let items: [ScoreItem] = [
+            ScoreItem(label: "History",      points: Double(i.history),     present: i.history > 0),
+            ScoreItem(label: "ECG",          points: Double(i.ecg),         present: i.ecg > 0),
+            ScoreItem(label: "Age",          points: Double(i.ageScore),    present: i.ageScore > 0),
+            ScoreItem(label: "Risk factors", points: Double(i.riskFactors), present: i.riskFactors > 0),
+            ScoreItem(label: "Troponin",     points: Double(i.troponin),    present: i.troponin > 0)
+        ]
+        return ClinicalScore(
+            systemName: "HEART Score",
+            abbreviation: "HEART",
+            score: Double(total), maxScore: 10,
+            risk: risk,
+            interpretation: "HEART \(total)/10 — \(interp)",
+            items: items,
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Backus BE et al. Neth Heart J 2010;18:422–428. Six AJ et al. Heart 2008;94:1509–1513. Mahler SA et al. Crit Pathw Cardiol 2015;14:1–8."
+        )
+    }
+
+    private static func heartRisk(_ score: Int) -> (ScoreRisk, String, [String], [String]) {
+        switch score {
+        case 0...3:
+            return (.low,
+                    "Low risk — MACE probability <2% at 6 weeks",
+                    ["Discharge from ED with outpatient follow-up if clinically stable",
+                     "Serial troponins (0 h and 3 h) to confirm negative before discharge",
+                     "Aspirin and early outpatient cardiology review",
+                     "Discharge instructions: return if symptoms recur"],
+                    [])
+        case 4...6:
+            return (.moderate,
+                    "Moderate risk — MACE probability ~12–25% at 6 weeks",
+                    ["Hospital observation with serial troponins (0, 3, 6 h)",
+                     "Non-invasive stress testing (exercise ECG or stress echo)",
+                     "Cardiology review before discharge",
+                     "Antiplatelet therapy; consider anticoagulation if ACS confirmed"],
+                    [])
+        default:
+            return (.high,
+                    "High risk — MACE probability ~50–65% at 6 weeks",
+                    ["Urgent cardiology review and inpatient monitoring",
+                     "Early invasive strategy (coronary angiography within 24–48 h)",
+                     "Dual antiplatelet therapy (aspirin + P2Y12 inhibitor)",
+                     "Anticoagulation (LMWH or fondaparinux) unless contraindicated",
+                     "Continuous cardiac monitoring; prepare for intervention"],
+                    ["High HEART score — early invasive strategy strongly recommended"])
+        }
     }
 
     // MARK: - NRS-2002 (Nutritional Risk Screening 2002)

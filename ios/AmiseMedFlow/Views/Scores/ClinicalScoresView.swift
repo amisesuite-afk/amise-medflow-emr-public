@@ -57,6 +57,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case ctsi             = "CT Severity Index (Pancreatitis)"
     case nrs2002          = "NRS-2002 (Nutritional Risk)"
     case forrest          = "Forrest Classification"
+    case heart            = "HEART Score (Chest Pain)"
 
     var category: ScoreCategory {
         switch self {
@@ -72,7 +73,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .preop
         case .abcd2, .lrinec, .gcs:
             return .neuro
-        case .cha2ds2vasc, .hasBled:
+        case .cha2ds2vasc, .hasBled, .heart:
             return .cardiac
         case .mews, .news2:
             return .monitoring
@@ -114,6 +115,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .ctsi:           return "photo.on.rectangle"
         case .nrs2002:        return "fork.knife"
         case .forrest:        return "eye.circle"
+        case .heart:          return "heart.text.clipboard"
         }
     }
 }
@@ -204,6 +206,8 @@ struct ClinicalScoresView: View {
     @State private var nrsI = NRS2002Input()
     // Forrest Classification
     @State private var forrestI = ForrestInput()
+    // HEART Score
+    @State private var heartI = HEARTInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -584,6 +588,9 @@ struct ClinicalScoresView: View {
         case .forrest:
             let (input, fill) = PatientScoreAutoPopulator.forrest(patient: patient)
             forrestI = input; autoFill = fill
+        case .heart:
+            let (input, fill) = PatientScoreAutoPopulator.heart(patient: patient)
+            heartI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -678,6 +685,7 @@ struct ClinicalScoresView: View {
         case .ctsi:         ClinicalScoringEngine.ctsi(ctsiI)
         case .nrs2002:      ClinicalScoringEngine.nrs2002(nrsI)
         case .forrest:      ClinicalScoringEngine.forrest(forrestI)
+        case .heart:        ClinicalScoringEngine.heart(heartI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -712,6 +720,7 @@ struct ClinicalScoresView: View {
         case .ctsi:         patient.ctsiScore = intScore
         case .nrs2002:      patient.nrs2002Score = intScore
         case .forrest:      patient.forrestGrade = intScore
+        case .heart:        patient.heartScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -784,6 +793,7 @@ struct ClinicalScoresView: View {
         case .ctsi:         ctsiForm
         case .nrs2002:      nrs2002Form
         case .forrest:      forrestForm
+        case .heart:        heartForm
         }
     }
 
@@ -1832,6 +1842,9 @@ struct ClinicalScoresView: View {
         case .forrest:
             // Forrest grade is a single numeric picker — no boolean toggle confirm
             break
+        case .heart:
+            // HEART domain scores are numeric pickers — no boolean toggle confirm
+            break
         default: break
         }
 
@@ -2304,6 +2317,53 @@ struct ClinicalScoresView: View {
                 scoreToggle("Age ≥70 years", binding: $nrsI.ageOver70, points: "+1", autoKey: "ageOver70")
             }
             .onChange(of: nrsI) { _, _ in recalculate() }
+        }
+    }
+
+    // MARK: - HEART Score
+
+    private var heartForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("HEART Score for chest pain triage (Backus et al, Neth Heart J 2010). Five domains 0–2 each; total 0–10. ≤3=low risk (<2% MACE), 4–6=moderate (~12–25%), ≥7=high (~50–65%).")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
+            Group {
+                sectionHeader("History (clinical suspicion)")
+                apacheSegment("History", selection: $heartI.history,
+                    options: [
+                        (0, "0 — Slightly suspicious (history mostly non-cardiac)"),
+                        (1, "1 — Moderately suspicious (mixed cardiac and non-cardiac features)"),
+                        (2, "2 — Highly suspicious (history predominantly cardiac)")
+                    ])
+                sectionHeader("ECG")
+                apacheSegment("ECG", selection: $heartI.ecg,
+                    options: [
+                        (0, "0 — Normal ECG"),
+                        (1, "1 — Non-specific repolarisation disturbance (LBBB, LVH, early repol, digoxin changes)"),
+                        (2, "2 — Significant ST deviation (new ST depression/elevation ≥2 mm, TWI)")
+                    ])
+                sectionHeader("Age")
+                apacheSegment("Age", selection: $heartI.ageScore,
+                    options: [
+                        (0, "0 — Age <45"),
+                        (1, "1 — Age 45–64"),
+                        (2, "2 — Age ≥65")
+                    ])
+                sectionHeader("Risk Factors")
+                apacheSegment("Risk Factors", selection: $heartI.riskFactors,
+                    options: [
+                        (0, "0 — No known risk factors"),
+                        (1, "1 — 1–2 risk factors (HTN, hypercholesterolaemia, DM, obesity BMI>30, smoking, +FH) OR atherosclerosis without disease"),
+                        (2, "2 — ≥3 risk factors OR known atherosclerotic disease (prior MI, PCI, CABG, stroke, PAD)")
+                    ])
+                sectionHeader("Troponin")
+                apacheSegment("Troponin", selection: $heartI.troponin,
+                    options: [
+                        (0, "0 — ≤ normal limit"),
+                        (1, "1 — 1–3× normal limit"),
+                        (2, "2 — >3× normal limit")
+                    ])
+            }
+            .onChange(of: heartI) { _, _ in recalculate() }
         }
     }
 

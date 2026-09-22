@@ -244,6 +244,7 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
             ctsiScore:                   patient.ctsiScore,
             nrs2002Score:                patient.nrs2002Score,
             forrestGrade:                patient.forrestGrade,
+            heartScore:                  patient.heartScore,
             latestHR:    latestV?.heartRate,
             latestSBP:   latestV?.bpSystolic,
             latestTemp:  latestV?.temperatureCelsius,

@@ -1704,6 +1704,57 @@ enum PatientScoreAutoPopulator {
         return (i, f)
     }
 
+    // MARK: - HEART Score
+
+    static func heart(patient: Patient) -> (HEARTInput, ScoreAutoFill) {
+        var i = HEARTInput()
+        var f = ScoreAutoFill()
+        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                       patient.workingDiagnosis, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Age score
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 0
+            if age >= 65 {
+                i.ageScore = 2
+                f.addAutoFilled(key: "ageScore", label: "Age ≥65 (score 2)", source: "Date of birth")
+            } else if age >= 45 {
+                i.ageScore = 1
+                f.addAutoFilled(key: "ageScore", label: "Age 45–64 (score 1)", source: "Date of birth")
+            } else {
+                i.ageScore = 0
+                f.addAutoFilled(key: "ageScore", label: "Age <45 (score 0)", source: "Date of birth")
+            }
+        } else {
+            f.addPending(key: "ageScore", label: "Age — required for HEART score", source: "Date of birth")
+        }
+
+        // Risk factors from PMH / clinical text
+        let riskKeywords = ["hypertension", "hypercholesterol", "hyperlipid", "diabetes", "diabet",
+                             "smoker", "smoking", "obesity", "obese", "bmi", "family history",
+                             "coronary artery disease", "cad", "atheroscler", "myocardial infarction",
+                             "mi", "pci", "cabg", "stent", "stroke", "peripheral arterial", "pad"]
+        let riskCount = riskKeywords.filter { allText.contains($0) }.count
+        if allText.contains("known atheroscler") || allText.contains("prior mi") ||
+           allText.contains("previous mi") || allText.contains("cabg") ||
+           allText.contains("prior pci") || riskCount >= 3 {
+            i.riskFactors = 2
+            f.addAutoFilled(key: "riskFactors", label: "Known atherosclerosis or ≥3 risk factors (score 2) — verify", source: "PMH / clinical text")
+        } else if riskCount >= 1 {
+            i.riskFactors = 1
+            f.addAutoFilled(key: "riskFactors", label: "1–2 risk factors detected (score 1) — verify", source: "PMH / clinical text")
+        }
+
+        // History — clinician must assess; mark as pending
+        f.addPending(key: "history", label: "History score (0–2) — clinician assessment of cardiac suspicion", source: "Clinical assessment")
+        // ECG — requires ECG trace
+        f.addPending(key: "ecg", label: "ECG findings (0–2) — requires current ECG review", source: "ECG report")
+        // Troponin — requires lab result
+        f.addPending(key: "troponin", label: "Troponin result (0–2) — requires laboratory result", source: "Laboratory")
+        return (i, f)
+    }
+
     // MARK: - Forrest Classification
 
     static func forrest(patient: Patient) -> (ForrestInput, ScoreAutoFill) {

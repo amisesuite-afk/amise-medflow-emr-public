@@ -114,6 +114,7 @@ enum BayesianDiagnosisEngine {
         ctsiScore: Int? = nil,        // CTSI (0–10); ≥4 = moderate, ≥7 = severe pancreatitis
         nrs2002Score: Int? = nil,     // NRS-2002 (0–7); ≥3 = nutritional risk — malnutrition boosts
         forrestGrade: Int? = nil,     // Forrest grade (1–6); 1–2=active bleed, 3=visible vessel (high rebleed)
+        heartScore: Int? = nil,       // HEART Score (0–10); ≥4 = moderate/high MACE risk
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2746,6 +2747,26 @@ enum BayesianDiagnosisEngine {
                 case 4:    (7,  "Forrest IIb — adherent clot; rebleed risk 22%; high-risk stigmata")
                 case 5:    (3,  "Forrest IIc — flat spot; rebleed risk 10%; lower-risk stigmata")
                 default:   (0,  "")
+                }
+                guard adj > 0 else { continue }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // HEART: boosts ACS/cardiac chest pain candidates based on risk stratification
+        if let hs = heartScore, hs >= 4 {
+            let acstargets = ["acute coronary syndrome", "unstable angina", "myocardial infarction",
+                               "nstemi", "stemi", "angina", "aortic dissection",
+                               "pulmonary embolism", "myocarditis", "cardiac chest pain"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard acstargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch hs {
+                case 7...: (14, "HEART ≥7 — high MACE risk (~50–65%); early invasive strategy recommended")
+                case 4..<7: (7, "HEART 4–6 — moderate MACE risk (~12–25%); observation and serial troponins")
+                default:   (0, "")
                 }
                 guard adj > 0 else { continue }
                 scored[i].logPosterior += Double(adj)

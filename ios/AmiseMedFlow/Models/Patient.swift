@@ -117,6 +117,8 @@ final class Patient {
     var nrs2002Score: Int?
     // Forrest Classification grade (1–6); 1=Ia spurting, 2=Ib oozing, 3=IIa visible vessel, 4=IIb clot, 5=IIc flat spot, 6=III clean
     var forrestGrade: Int?
+    // HEART Score (0–10); ≤3=low MACE risk, 4–6=moderate, ≥7=high; chest pain triage
+    var heartScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?
