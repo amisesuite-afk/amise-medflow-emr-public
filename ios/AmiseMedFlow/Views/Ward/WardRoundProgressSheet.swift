@@ -307,7 +307,7 @@ struct WardRoundProgressSheet: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 6)
-        .background(Color.secondary.opacity(0.08))
+        .background(.secondary.opacity(0.08))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 

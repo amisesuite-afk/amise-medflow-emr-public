@@ -339,7 +339,7 @@ private struct RedFlagBanner: View {
             }
         }
         .padding(10)
-        .background(Color.red.opacity(0.06))
+        .background(.red.opacity(0.06))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
@@ -609,7 +609,7 @@ private struct PostOpTab: View {
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(.red)
                         .padding(8)
-                        .background(Color.red.opacity(0.08))
+                        .background(.red.opacity(0.08))
                         .clipShape(RoundedRectangle(cornerRadius: 6))
                 }
                 CardSection(title: "Post-operative Protocol") {
