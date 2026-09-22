@@ -114,6 +114,10 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case ckdEpi           = "CKD-EPI eGFR (Renal Staging)"
     case ariscat          = "ARISCAT (Pulmonary Complication Risk)"
     case fongCrs          = "Fong CRS (Colorectal Liver Mets)"
+    case berlinARDS       = "Berlin Definition (ARDS)"
+    case cage             = "CAGE Questionnaire (Alcohol Use Disorder)"
+    case dukeIE           = "Duke Criteria (Infective Endocarditis)"
+    case mmrc             = "mMRC Dyspnoea Scale"
 
     var category: ScoreCategory {
         switch self {
@@ -213,6 +217,14 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .preop
         case .fongCrs:
             return .gi
+        case .berlinARDS:
+            return .sepsis
+        case .cage:
+            return .monitoring
+        case .dukeIE:
+            return .sepsis
+        case .mmrc:
+            return .monitoring
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
         case .mews, .news2, .waterlow, .surgicalApgar:
@@ -312,6 +324,10 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .ckdEpi:         return "kidney"
         case .ariscat:        return "lungs"
         case .fongCrs:        return "cross.case"
+        case .berlinARDS:     return "lungs.fill"
+        case .cage:           return "wineglass.fill"
+        case .dukeIE:         return "stethoscope"
+        case .mmrc:           return "figure.walk.motion"
         }
     }
 }
@@ -493,6 +509,10 @@ struct ClinicalScoresView: View {
     @State private var ckdEpiI       = ClinicalScoringEngine.CKDEPIInput(serumCreatinineMgDL: 0.9, ageYears: 50, sex: "male", raceAA: false)
     @State private var ariscatI      = ClinicalScoringEngine.ARISCATInput(age: 50, spo2Preop: 98, respiratoryInfection: false, preOpHaemoglobin: 13.5, surgicalIncision: 0, surgicalDurationHrs: 1.0, emergencyProcedure: false)
     @State private var fongI         = ClinicalScoringEngine.FongCRSInput(nodePosivePrimaryTumour: false, diseaseFreeIntervalLess12Mo: false, moreThanOneHepaticTumour: false, largestTumourOver5cm: false, ceaOver200: false)
+    @State private var berlinI       = ClinicalScoringEngine.BerlinARDSInput(pao2FiO2Ratio: 300.0, peepOrCPAP: 5, acuteOnsetWithin1Week: true, bilateralOpacitiesOnImaging: false, notExplainedByCardiacFailure: false)
+    @State private var cageI         = ClinicalScoringEngine.CAGEInput(feltCutDown: false, annoyedByCriticism: false, feltGuilty: false, eyeOpener: false)
+    @State private var dukeI         = ClinicalScoringEngine.DukeInput(positiveBloodCultures: 0, endocardialInvolvement: 0, fever: false, vascularPhenomena: false, immunologicalPhenomena: false, microbiologicalEvidence: false, predisposingHeartCondition: false, injectionDrugUse: false, newRegurgitationMurmur: false)
+    @State private var mmrcI         = ClinicalScoringEngine.MMRCInput(grade: 0)
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -1042,6 +1062,18 @@ struct ClinicalScoresView: View {
         case .fongCrs:
             let (input, fill) = PatientScoreAutoPopulator.fongCrs(patient: patient)
             fongI = input; autoFill = fill
+        case .berlinARDS:
+            let (input, fill) = PatientScoreAutoPopulator.berlinARDS(patient: patient)
+            berlinI = input; autoFill = fill
+        case .cage:
+            let (input, fill) = PatientScoreAutoPopulator.cage(patient: patient)
+            cageI = input; autoFill = fill
+        case .dukeIE:
+            let (input, fill) = PatientScoreAutoPopulator.dukeIE(patient: patient)
+            dukeI = input; autoFill = fill
+        case .mmrc:
+            let (input, fill) = PatientScoreAutoPopulator.mmrc(patient: patient)
+            mmrcI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -1194,6 +1226,10 @@ struct ClinicalScoresView: View {
         case .ckdEpi:        ClinicalScoringEngine.ckdEpi(ckdEpiI)
         case .ariscat:       ClinicalScoringEngine.ariscat(ariscatI)
         case .fongCrs:       ClinicalScoringEngine.fongCRS(fongI)
+        case .berlinARDS:    ClinicalScoringEngine.berlinARDS(berlinI)
+        case .cage:          ClinicalScoringEngine.cage(cageI)
+        case .dukeIE:        ClinicalScoringEngine.dukeIE(dukeI)
+        case .mmrc:          ClinicalScoringEngine.mmrc(mmrcI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -1289,6 +1325,10 @@ struct ClinicalScoresView: View {
         case .ckdEpi:        patient.ckdEpiEgfr    = r.score     // continuous Double
         case .ariscat:       patient.ariscatScore  = intScore
         case .fongCrs:       patient.fongCrsScore  = intScore
+        case .berlinARDS:    patient.berlinPFRatio  = r.score   // continuous Double (PF ratio)
+        case .cage:          patient.cageScore      = intScore
+        case .dukeIE:        patient.dukeIEScore    = r.score   // continuous Double (majorCount×2 + minorCount)
+        case .mmrc:          patient.mmrcGrade      = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -1418,6 +1458,10 @@ struct ClinicalScoresView: View {
         case .ckdEpi:        ckdEpiForm
         case .ariscat:       ariscatForm
         case .fongCrs:       fongCrsForm
+        case .berlinARDS:    berlinARDSForm
+        case .cage:          cageForm
+        case .dukeIE:        dukeIEForm
+        case .mmrc:          mmrcForm
         }
     }
 
@@ -5169,6 +5213,121 @@ struct ClinicalScoresView: View {
                         binding: $fongI.ceaOver200, points: "+1")
         }
         .onChange(of: fongI) { _, _ in recalculate() }
+    }
+
+    // MARK: - Berlin ARDS
+
+    private var berlinARDSForm: some View {
+        Group {
+            Text("Berlin Definition (2012). Requires: acute onset ≤1 week, bilateral opacities not explained by effusions/lobar collapse/nodules, respiratory failure not fully explained by cardiac failure. PF ratio measured with PEEP/CPAP ≥5 cmH₂O.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
+            HStack {
+                Text("PaO₂/FiO₂ ratio (mmHg)")
+                Spacer()
+                Stepper(String(format: "%.0f", berlinI.pao2FiO2Ratio),
+                        onIncrement: { berlinI.pao2FiO2Ratio = min(600, berlinI.pao2FiO2Ratio + 10) },
+                        onDecrement: { berlinI.pao2FiO2Ratio = max(0, berlinI.pao2FiO2Ratio - 10) })
+                    .fixedSize()
+            }
+            HStack {
+                Text("PEEP/CPAP (cmH₂O)")
+                Spacer()
+                Stepper("\(berlinI.peepOrCPAP)", value: $berlinI.peepOrCPAP, in: 0...30)
+                    .fixedSize()
+            }
+            scoreToggle("Acute onset within 1 week of clinical insult or new/worsening symptoms",
+                        binding: $berlinI.acuteOnsetWithin1Week, points: "Required")
+            scoreToggle("Bilateral opacities on CXR/CT not fully explained by effusions, lobar/lung collapse, or nodules",
+                        binding: $berlinI.bilateralOpacitiesOnImaging, points: "Required")
+            scoreToggle("Respiratory failure not fully explained by cardiac failure or fluid overload",
+                        binding: $berlinI.notExplainedByCardiacFailure, points: "Required")
+        }
+        .onChange(of: berlinI) { _, _ in recalculate() }
+    }
+
+    // MARK: - CAGE
+
+    private var cageForm: some View {
+        Group {
+            Text("CAGE questionnaire: 2 or more positive responses = probable alcohol use disorder (sensitivity ~74%, specificity ~91% for AUD in primary care).")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
+            scoreToggle("C — Have you felt you should Cut down on your drinking?",
+                        binding: $cageI.feltCutDown, points: "+1")
+            scoreToggle("A — Have people Annoyed you by criticising your drinking?",
+                        binding: $cageI.annoyedByCriticism, points: "+1")
+            scoreToggle("G — Have you ever felt bad or Guilty about your drinking?",
+                        binding: $cageI.feltGuilty, points: "+1")
+            scoreToggle("E — Have you ever had a drink first thing in the morning to steady your nerves or get rid of a hangover (Eye-opener)?",
+                        binding: $cageI.eyeOpener, points: "+1")
+        }
+        .onChange(of: cageI) { _, _ in recalculate() }
+    }
+
+    // MARK: - Duke Criteria (IE)
+
+    private var dukeIEForm: some View {
+        Group {
+            Text("Modified Duke Criteria (Li 2000). Definite IE: 2 major, OR 1 major + 3 minor, OR 5 minor. Possible IE: 1 major + 1 minor, OR 3 minor. Rejected: firm alternative diagnosis, resolution with ≤4 days antibiotics, or pathological criteria not met.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
+            Text("Major criteria").font(.caption).bold().foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Positive blood cultures (0 = none, 1 = one set, 2 = ≥2 sets typical organism / persistent)")
+                Picker("Blood cultures", selection: $dukeI.positiveBloodCultures) {
+                    Text("0 — No typical organism").tag(0)
+                    Text("1 — Single culture").tag(1)
+                    Text("2 — ≥2 sets typical organism or persistent bacteraemia").tag(2)
+                }
+                .pickerStyle(.segmented)
+                .onChange(of: dukeI.positiveBloodCultures) { _, _ in recalculate() }
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Endocardial involvement (echo/new valve regurgitation)")
+                Picker("Endocardial", selection: $dukeI.endocardialInvolvement) {
+                    Text("0 — None").tag(0)
+                    Text("1 — Suggestive").tag(1)
+                    Text("2 — Definite oscillating mass / abscess / dehiscence / new regurgitation").tag(2)
+                }
+                .pickerStyle(.segmented)
+                .onChange(of: dukeI.endocardialInvolvement) { _, _ in recalculate() }
+            }
+            Text("Minor criteria").font(.caption).bold().foregroundStyle(.secondary)
+            scoreToggle("Predisposing heart condition or injection drug use",
+                        binding: $dukeI.predisposingHeartCondition, points: "Minor")
+            scoreToggle("Fever ≥38°C",
+                        binding: $dukeI.fever, points: "Minor")
+            scoreToggle("Vascular phenomena (major arterial emboli, septic pulmonary infarcts, mycotic aneurysm, intracranial haemorrhage, conjunctival haemorrhage, Janeway lesions)",
+                        binding: $dukeI.vascularPhenomena, points: "Minor")
+            scoreToggle("Immunological phenomena (glomerulonephritis, Osler nodes, Roth spots, positive rheumatoid factor)",
+                        binding: $dukeI.immunologicalPhenomena, points: "Minor")
+            scoreToggle("Microbiological evidence (positive blood culture not meeting major criterion or serological evidence of active infection)",
+                        binding: $dukeI.microbiologicalEvidence, points: "Minor")
+            scoreToggle("New regurgitation murmur on auscultation (not previously documented)",
+                        binding: $dukeI.newRegurgitationMurmur, points: "Minor")
+            scoreToggle("Injection drug use",
+                        binding: $dukeI.injectionDrugUse, points: "Minor")
+        }
+        .onChange(of: dukeI) { _, _ in recalculate() }
+    }
+
+    // MARK: - mMRC Dyspnoea Scale
+
+    private var mmrcForm: some View {
+        Group {
+            Text("Modified Medical Research Council dyspnoea scale. Grade ≥2 is used in GOLD COPD classification. Grade ≥2 correlates with significant functional impairment and is used in perioperative risk assessment (functional capacity < 4 METs).")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Dyspnoea grade")
+                Picker("mMRC grade", selection: $mmrcI.grade) {
+                    Text("0 — Only with strenuous exercise").tag(0)
+                    Text("1 — Hurrying on level or walking up a slight hill").tag(1)
+                    Text("2 — Walks slower than peers, or stops after ≤15 min on level").tag(2)
+                    Text("3 — Stops for breath after ~100 m or few minutes on level ground").tag(3)
+                    Text("4 — Too breathless to leave house, or when dressing/undressing").tag(4)
+                }
+                .pickerStyle(.inline)
+                .onChange(of: mmrcI.grade) { _, _ in recalculate() }
+            }
+        }
     }
 
 

@@ -4091,4 +4091,176 @@ enum PatientScoreAutoPopulator {
         f.addPending(key: "cea",        label: "Preoperative CEA level (> 200 ng/mL?) — tumour markers", source: "Labs")
         return (i, f)
     }
+
+    // MARK: - #101 Berlin ARDS Definition
+
+    static func berlinARDS(patient: Patient) -> (ClinicalScoringEngine.BerlinARDSInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.BerlinARDSInput(
+            pao2FiO2Ratio: 300.0, peepOrCPAP: 5,
+            acuteOnsetWithin1Week: true,
+            bilateralOpacitiesOnImaging: false,
+            notExplainedByCardiacFailure: false
+        )
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Stored PF ratio if previously computed
+        if let pf = patient.berlinPFRatio {
+            i.pao2FiO2Ratio = pf
+            f.addAutoFilled(key: "pfRatio", label: String(format: "PaO₂/FiO₂ ratio %.0f from stored score", pf), source: "Stored Score")
+        } else {
+            f.addPending(key: "pfRatio", label: "PaO₂/FiO₂ ratio — ABG and FiO₂ required", source: "Labs/Ventilator")
+        }
+
+        // Acute onset
+        if text.contains("acute") || text.contains("sudden onset") || text.contains("rapid onset") {
+            i.acuteOnsetWithin1Week = true
+            f.addAutoFilled(key: "acuteOnset", label: "Acute onset documented in history", source: "History")
+        }
+
+        // Bilateral opacities
+        if text.contains("bilateral opacit") || text.contains("bilateral infiltrat") || text.contains("bilateral chest") {
+            i.bilateralOpacitiesOnImaging = true
+            f.addAutoFilled(key: "bilateralOpacities", label: "Bilateral opacities noted in clinical notes", source: "Notes")
+        } else {
+            f.addPending(key: "bilateralOpacities", label: "Bilateral opacities on CXR/CT? — radiology report", source: "Imaging")
+        }
+
+        // Not cardiac failure
+        if text.contains("no heart failure") || text.contains("no cardiac failure") || text.contains("non-cardiogenic") {
+            i.notExplainedByCardiacFailure = true
+            f.addAutoFilled(key: "nonCardiac", label: "Non-cardiogenic aetiology documented", source: "Notes")
+        } else {
+            f.addPending(key: "nonCardiac", label: "Exclude cardiac failure / fluid overload as primary cause", source: "Clinical")
+        }
+
+        f.addPending(key: "peep", label: "PEEP/CPAP setting (cmH₂O) — ventilator/oxygen delivery device", source: "Ventilator")
+        return (i, f)
+    }
+
+    // MARK: - #102 CAGE Questionnaire
+
+    static func cage(patient: Patient) -> (ClinicalScoringEngine.CAGEInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.CAGEInput(
+            feltCutDown: false, annoyedByCriticism: false,
+            feltGuilty: false, eyeOpener: false
+        )
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes, patient.socialHistory]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Existing AUDIT-C or alcohol history suggests pre-fill context
+        if let auditC = patient.auditCScore, auditC >= 4 {
+            f.addAutoFilled(key: "context", label: "AUDIT-C \(auditC) — high-risk drinking pattern noted; CAGE criteria require patient interview", source: "AUDIT-C Score")
+        }
+
+        // Text clues
+        let alcoholTerms = ["alcohol", "drinking", "drank", "ethanol", "aud ", "alcohol use disorder", "alcoholic"]
+        let hasAlcoholContext = alcoholTerms.contains(where: { text.contains($0) })
+        if hasAlcoholContext {
+            f.addPending(key: "cage", label: "Alcohol use context detected — CAGE criteria require direct patient questionnaire", source: "History")
+        } else {
+            f.addPending(key: "cage", label: "CAGE questionnaire requires direct patient interview", source: "Patient Interview")
+        }
+        return (i, f)
+    }
+
+    // MARK: - #103 Duke Criteria (IE)
+
+    static func dukeIE(patient: Patient) -> (ClinicalScoringEngine.DukeInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.DukeInput(
+            positiveBloodCultures: 0, endocardialInvolvement: 0,
+            fever: false, vascularPhenomena: false, immunologicalPhenomena: false,
+            microbiologicalEvidence: false, predisposingHeartCondition: false,
+            injectionDrugUse: false, newRegurgitationMurmur: false
+        )
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes,
+                    patient.examCVS, patient.examGeneral]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Fever from vitals
+        let latestV = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first
+        if let temp = latestV?.temperatureCelsius, temp >= 38.0 {
+            i.fever = true
+            f.addAutoFilled(key: "fever", label: String(format: "Temperature %.1f°C ≥38°C", temp), source: "Vitals")
+        } else {
+            f.addPending(key: "fever", label: "Fever ≥38°C — check vital signs", source: "Vitals")
+        }
+
+        // Injection drug use
+        if text.contains("ivdu") || text.contains("injection drug") || text.contains("intravenous drug") ||
+           text.contains("iv drug") || text.contains("injecting drug") {
+            i.injectionDrugUse = true
+            i.predisposingHeartCondition = true
+            f.addAutoFilled(key: "ivdu", label: "Injection drug use documented", source: "History")
+        }
+
+        // Predisposing heart condition
+        if text.contains("prosthetic valve") || text.contains("congenital heart") || text.contains("structural heart") ||
+           text.contains("bicuspid") || text.contains("mitral valve") || text.contains("previous endocarditis") {
+            i.predisposingHeartCondition = true
+            f.addAutoFilled(key: "predisposing", label: "Predisposing cardiac condition noted in history", source: "PMH")
+        } else if !i.injectionDrugUse {
+            f.addPending(key: "predisposing", label: "Predisposing heart condition? (prosthetic valve, CHD, prior IE)", source: "History")
+        }
+
+        // New murmur
+        let cvsText = (patient.examCVS ?? "").lowercased()
+        if cvsText.contains("new murmur") || cvsText.contains("new regurgitation") || cvsText.contains("aortic regurgitation") ||
+           cvsText.contains("mitral regurgitation") || cvsText.contains("new diastolic") {
+            i.newRegurgitationMurmur = true
+            f.addAutoFilled(key: "murmur", label: "New regurgitation murmur documented on CVS exam", source: "Examination")
+        } else {
+            f.addPending(key: "murmur", label: "New valve regurgitation murmur on auscultation?", source: "Examination")
+        }
+
+        // Embolic/vascular phenomena
+        if text.contains("janeway") || text.contains("emboli") || text.contains("septic embolus") ||
+           text.contains("mycotic aneurysm") || text.contains("conjunctival haemorrhage") {
+            i.vascularPhenomena = true
+            f.addAutoFilled(key: "vascular", label: "Vascular phenomena noted in clinical documentation", source: "Examination/Notes")
+        } else {
+            f.addPending(key: "vascular", label: "Vascular phenomena? (emboli, Janeway lesions, mycotic aneurysm)", source: "Examination")
+        }
+
+        // Blood cultures and echo — always pending (results required)
+        f.addPending(key: "bloodCultures", label: "Blood culture results (typical organism × ≥2 sets?)", source: "Microbiology")
+        f.addPending(key: "echo", label: "Echocardiography (vegetation, abscess, new regurgitation?)", source: "Cardiology")
+        return (i, f)
+    }
+
+    // MARK: - #104 mMRC Dyspnoea Scale
+
+    static func mmrc(patient: Patient) -> (ClinicalScoringEngine.MMRCInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.MMRCInput(grade: 0)
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Restore previously stored grade
+        if let stored = patient.mmrcGrade {
+            i.grade = stored
+            f.addAutoFilled(key: "grade", label: "mMRC grade \(stored) from stored score", source: "Stored Score")
+            return (i, f)
+        }
+
+        // Infer from text descriptors
+        if text.contains("too breathless to leave") || text.contains("breathless when dress") || text.contains("grade 4") {
+            i.grade = 4
+            f.addAutoFilled(key: "grade", label: "Severe dyspnoea (Grade 4) inferred from history", source: "History")
+        } else if text.contains("stop for breath") || text.contains("stops after 100m") || text.contains("grade 3") {
+            i.grade = 3
+            f.addAutoFilled(key: "grade", label: "Severe dyspnoea (Grade 3) inferred from history", source: "History")
+        } else if text.contains("walks slower") || text.contains("stops after 15 min") || text.contains("grade 2") {
+            i.grade = 2
+            f.addAutoFilled(key: "grade", label: "Moderate dyspnoea (Grade 2) inferred from history", source: "History")
+        } else if text.contains("breathless") || text.contains("dyspnoea") || text.contains("shortness of breath") || text.contains("sob ") {
+            f.addPending(key: "grade", label: "Breathlessness noted — grade dyspnoea from patient interview", source: "Patient Interview")
+        } else {
+            f.addPending(key: "grade", label: "mMRC grade requires direct patient assessment (0–4)", source: "Patient Interview")
+        }
+        return (i, f)
+    }
 }

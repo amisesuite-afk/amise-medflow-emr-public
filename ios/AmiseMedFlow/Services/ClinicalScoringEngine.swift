@@ -7357,5 +7357,312 @@ enum ClinicalScoringEngine {
         )
     }
 
+    // MARK: - #101 Berlin Criteria for ARDS
+
+    struct BerlinARDSInput: Equatable {
+        var pao2FiO2Ratio: Double          // PaO₂ / FiO₂ ratio (mmHg)
+        var peepOrCPAP: Int                // PEEP/CPAP applied (cmH₂O)
+        var acuteOnsetWithin1Week: Bool    // onset within 1 week of clinical insult
+        var bilateralOpacitiesOnImaging: Bool // not explained by effusions/collapse/nodules
+        var notExplainedByCardiacFailure: Bool // not fully explained by cardiac failure/fluid overload
+    }
+
+    func berlinARDS(_ i: BerlinARDSInput) -> ClinicalScore {
+        // Berlin 2012: requires all 3 non-severity criteria first
+        var qualifies = i.acuteOnsetWithin1Week && i.bilateralOpacitiesOnImaging && i.notExplainedByCardiacFailure
+
+        let risk: ScoreRisk
+        let interp: String
+        var recs: [String]
+        var flags: [String] = []
+
+        // Minimum PEEP ≥5 cmH₂O required for classification
+        let peepMet = i.peepOrCPAP >= 5
+
+        if !qualifies || !peepMet {
+            risk  = .low
+            interp = "Berlin criteria not fully met — ARDS not confirmed. Review onset, imaging, and cardiac/fluid status."
+            recs  = [
+                "Confirm acute onset within 7 days of clinical insult",
+                "Ensure bilateral opacities on chest X-ray/CT (not explained by effusions, collapse or nodules)",
+                "Exclude cardiac failure / fluid overload as primary cause (echocardiography if uncertain)",
+                "PEEP ≥5 cmH₂O required for Berlin classification"
+            ]
+            return ClinicalScore(
+                name:          "Berlin ARDS Criteria",
+                score:         i.pao2FiO2Ratio,
+                maxScore:      nil,
+                risk:          risk,
+                interpretation: interp,
+                recommendations: recs,
+                evidenceNote:  "ARDS Definition Task Force. JAMA 2012;307:2526. Berlin definition replaced the 1994 AECC criteria. Three severity categories based on PaO₂/FiO₂ with PEEP ≥5 cmH₂O: mild 200–300 mmHg (27% mortality), moderate 100–200 mmHg (32%), severe <100 mmHg (45%)."
+            )
+        }
+
+        let ratio = i.pao2FiO2Ratio
+        if ratio > 300 {
+            risk  = .low
+            interp = "PaO₂/FiO₂ \(String(format: "%.0f", ratio)) mmHg — Berlin criteria met but PF ratio >300: not ARDS. Monitor."
+            recs  = ["Continue monitoring; repeat ABG if condition deteriorates"]
+        } else if ratio >= 200 {
+            risk  = .moderate
+            interp = "Mild ARDS — PaO₂/FiO₂ \(String(format: "%.0f", ratio)) mmHg (200–300). 27% mortality."
+            recs  = [
+                "Lung-protective ventilation: tidal volume 6 mL/kg PBW, plateau pressure <30 cmH₂O",
+                "Treat underlying cause (pneumonia, sepsis, aspiration, trauma)",
+                "Daily spontaneous breathing trial when appropriate",
+                "Fluid-conservative strategy after resuscitation phase",
+                "Early prone positioning if condition deteriorates to moderate/severe"
+            ]
+        } else if ratio >= 100 {
+            risk  = .high
+            interp = "Moderate ARDS — PaO₂/FiO₂ \(String(format: "%.0f", ratio)) mmHg (100–200). 32% mortality."
+            recs  = [
+                "Lung-protective ventilation mandatory: tidal volume 4–6 mL/kg PBW",
+                "PEEP optimisation — consider PEEP-FiO₂ table or oesophageal pressure monitoring",
+                "Prone positioning ≥16 hours/day — mortality benefit demonstrated",
+                "Neuromuscular blockade for 48 hours if persistent dyssynchrony",
+                "Consider recruiting manoeuvres cautiously",
+                "Treat underlying cause aggressively"
+            ]
+            flags = ["Moderate ARDS PF <200 — prone positioning indicated; consider NMB"]
+        } else {
+            risk  = .critical
+            interp = "Severe ARDS — PaO₂/FiO₂ \(String(format: "%.0f", ratio)) mmHg (<100). 45% mortality."
+            recs  = [
+                "Mandatory lung-protective ventilation: tidal volume 4–6 mL/kg PBW",
+                "Prone positioning ≥16 hours/day — mandatory for PF <150",
+                "Neuromuscular blockade early (cisatracurium 48 hours)",
+                "High PEEP strategy",
+                "ECMO referral if PaO₂/FiO₂ <80 despite prone ventilation — consult ECMO centre",
+                "Early multidisciplinary ICU review",
+                "Family meeting regarding prognosis"
+            ]
+            flags = ["Severe ARDS PF <100 — ECMO referral threshold; mortality 45%"]
+        }
+
+        return ClinicalScore(
+            name:          "Berlin ARDS Criteria",
+            score:         ratio,
+            maxScore:      nil,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            redFlags:      flags,
+            evidenceNote:  "ARDS Definition Task Force. JAMA 2012;307:2526. Berlin definition: acute onset <7 days, bilateral opacities not explained by effusions/collapse/nodules, respiratory failure not explained by cardiac failure/fluid overload, PEEP/CPAP ≥5 cmH₂O. Mild: PaO₂/FiO₂ 200–300 (27% mortality); Moderate 100–200 (32%); Severe <100 (45%). Replaces 1994 AECC criteria; validated in 4,188 patients from 3 multicentre cohorts."
+        )
+    }
+
+    // MARK: - #102 CAGE Questionnaire (Alcohol Use Disorder Screen)
+
+    struct CAGEInput: Equatable {
+        var feltCutDown: Bool         // Ever felt you should Cut down drinking?
+        var annoyedByCriticism: Bool  // People Annoyed you by criticising drinking?
+        var feltGuilty: Bool          // Ever felt Guilty about drinking?
+        var eyeOpener: Bool           // Ever had a drink first thing in morning (Eye-opener)?
+    }
+
+    func cage(_ i: CAGEInput) -> ClinicalScore {
+        let score = [i.feltCutDown, i.annoyedByCriticism, i.feltGuilty, i.eyeOpener].filter { $0 }.count
+
+        let risk: ScoreRisk
+        let interp: String
+        var recs: [String]
+        var flags: [String] = []
+
+        switch score {
+        case 0:
+            risk  = .low
+            interp = "CAGE \(score)/4 — Alcohol use disorder unlikely."
+            recs  = ["Advise safe drinking limits: ≤14 units/week (spread over ≥3 days)"]
+        case 1:
+            risk  = .moderate
+            interp = "CAGE \(score)/4 — Possible alcohol use disorder. Proceed to full AUDIT questionnaire."
+            recs  = [
+                "Complete AUDIT questionnaire for full assessment",
+                "Brief motivational counselling regarding alcohol intake",
+                "Recheck at next appointment"
+            ]
+        default:
+            risk  = .high
+            interp = "CAGE \(score)/4 — Probable alcohol use disorder (≥2 positive responses; sensitivity 71–84%, specificity 76–96%)."
+            recs  = [
+                "Formal alcohol use disorder assessment (AUDIT, DSM-5 criteria)",
+                "Addiction medicine / alcohol liaison nurse referral",
+                "Assess for alcohol dependence — withdrawal risk if admitted (use CIWA-Ar)",
+                "Prescribe thiamine (vitamin B₁) before any glucose in dependent patients",
+                "Consider naltrexone or acamprosate for pharmacological support",
+                "Brief intervention and motivational interviewing"
+            ]
+            if score >= 3 {
+                flags = ["CAGE ≥3 — high probability of dependence; assess withdrawal risk before any surgical admission"]
+            }
+        }
+
+        return ClinicalScore(
+            name:          "CAGE Questionnaire",
+            score:         Double(score),
+            maxScore:      4,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            redFlags:      flags,
+            evidenceNote:  "Ewing JA. JAMA 1984;252:1905. Four-item alcohol use disorder screening tool (Cut down, Annoyed, Guilty, Eye-opener). Score ≥2 = significant sensitivity for AUD (71–84%) and dependence (77–91%). Positive CAGE should prompt AUDIT questionnaire for full characterisation. In surgical patients, alcohol dependence markedly increases complications — thiamine, CIWA-Ar monitoring, and addiction referral before elective procedures."
+        )
+    }
+
+    // MARK: - #103 Duke Criteria for Infective Endocarditis
+
+    struct DukeInput: Equatable {
+        // Major criteria
+        var positiveBloodCultures: Int      // 0 = none, 1 = single typical organism, 2 = ≥2 cultures or persistent bacteraemia
+        var endocardialInvolvement: Int     // 0 = none, 1 = vegetation/abscess on echo, 2 = new valve regurgitation
+        // Minor criteria (each Boolean = 1 point)
+        var predisposedHeartCondition: Bool // known valve disease, prosthetic valve, prior IE
+        var ivDrugUse: Bool
+        var feverGe38: Bool
+        var vascularPhenomena: Bool         // emboli, Janeway lesions, mycotic aneurysm
+        var immunologicPhenomena: Bool      // Osler nodes, Roth spots, RF positive, glomerulonephritis
+        var positiveBloodCultureMinor: Bool // blood culture positive but not meeting major criteria
+        var echoMinor: Bool                 // echo findings consistent with IE but not meeting major
+    }
+
+    func dukeIE(_ i: DukeInput) -> ClinicalScore {
+        let majorCount = (i.positiveBloodCultures >= 1 ? 1 : 0) + (i.endocardialInvolvement >= 1 ? 1 : 0)
+        let minorCount = [i.predisposedHeartCondition, i.ivDrugUse, i.feverGe38,
+                          i.vascularPhenomena, i.immunologicPhenomena,
+                          i.positiveBloodCultureMinor, i.echoMinor].filter { $0 }.count
+
+        let classification: String
+        let risk: ScoreRisk
+        var recs: [String]
+        var flags: [String] = []
+
+        // Duke classification rules
+        if majorCount == 2 ||
+           (majorCount == 1 && minorCount >= 3) ||
+           minorCount >= 5 {
+            classification = "DEFINITE IE"
+            risk  = .critical
+            recs  = [
+                "Cardiology and infectious diseases urgent co-management",
+                "Transoesophageal echocardiography (TOE) if TTE non-diagnostic",
+                "Blood cultures × 3 sets before antibiotics if not yet collected",
+                "Empirical antibiotics per local guidelines (typically vancomycin ± gentamicin)",
+                "Target antibiotic therapy to blood culture organisms when available",
+                "Assess for surgical indications: haemodynamic compromise, uncontrolled infection, prevention of embolism",
+                "Dental focus treatment after initial antibiotic stabilisation"
+            ]
+            flags = ["Definite IE — urgent cardiology + ID review; assess surgical threshold"]
+        } else if majorCount == 1 && minorCount == 1 {
+            classification = "POSSIBLE IE"
+            risk  = .high
+            recs  = [
+                "Repeat blood cultures × 3 sets (ideally before antibiotics if clinically stable)",
+                "Transthoracic echocardiography urgently; TOE if TTE non-diagnostic",
+                "Cardiology review",
+                "Do not delay empirical antibiotics if patient haemodynamically unstable",
+                "FDG-PET/CT or SPECT/CT if echocardiography inconclusive and prosthetic valve"
+            ]
+            flags = ["Possible IE — blood cultures and echo urgently required"]
+        } else if majorCount == 0 && minorCount >= 1 {
+            classification = "POSSIBLE IE"
+            risk  = .moderate
+            recs  = [
+                "Blood cultures × 3 sets",
+                "Transthoracic echocardiography",
+                "Fever workup: urine, CXR, wound sites",
+                "Cardiology review if clinical suspicion remains"
+            ]
+        } else {
+            classification = "REJECTED (IE unlikely)"
+            risk  = .low
+            recs  = [
+                "Seek alternative diagnosis for fever and symptoms",
+                "If resolution within 4 days of antibiotics, rejection is supported",
+                "Monitor clinical course — reconsider if new criteria develop"
+            ]
+        }
+
+        let score = Double(majorCount * 2 + minorCount)
+        return ClinicalScore(
+            name:          "Duke Criteria for IE",
+            score:         score,
+            maxScore:      nil,
+            risk:          risk,
+            interpretation: "\(classification) — \(majorCount) major, \(minorCount) minor criteria met.",
+            recommendations: recs,
+            redFlags:      flags,
+            evidenceNote:  "Durack DT et al. Am J Med 1994;96:200. Modified Duke Criteria (Li 2000): 2 major OR 1 major+3 minor OR 5 minor = definite IE; 1 major+1 minor OR 3 minor = possible. Major criteria: (1) typical organisms in ≥2 blood cultures / persistent bacteraemia, (2) endocardial involvement on echo / new valve regurgitation. Sensitivity ~80% for native-valve IE; lower for prosthetic or pacemaker infection — FDG-PET/CT and WBC-SPECT/CT added in 2015 ESC modification. Pathological criteria (operative/histological) provide definitive diagnosis."
+        )
+    }
+
+    // MARK: - #104 mMRC Dyspnoea Scale
+
+    struct MMRCInput: Equatable {
+        var grade: Int   // 0 = no dyspnoea on strenuous exercise; to 4 = too breathless to leave house
+    }
+
+    func mmrc(_ i: MMRCInput) -> ClinicalScore {
+        let grade = max(0, min(4, i.grade))
+        let risk: ScoreRisk
+        let interp: String
+        var recs: [String]
+
+        switch grade {
+        case 0:
+            risk  = .low
+            interp = "mMRC Grade 0 — Breathlessness only with strenuous exercise. No functional impairment."
+            recs  = ["Maintain exercise capacity; reassess if symptoms develop"]
+        case 1:
+            risk  = .low
+            interp = "mMRC Grade 1 — Breathless when hurrying on level ground or walking up a slight hill."
+            recs  = [
+                "Optimise any underlying respiratory or cardiac disease",
+                "Pulmonary function tests if not done",
+                "Smoking cessation counselling if smoker"
+            ]
+        case 2:
+            risk  = .moderate
+            interp = "mMRC Grade 2 — Walks slower than peers on level ground due to breathlessness, or stops after ≤15 min walking."
+            recs  = [
+                "Spirometry and respiratory review",
+                "Consider COPD assessment (GOLD staging) if applicable",
+                "Structured exercise rehabilitation programme",
+                "Optimise COPD/cardiac medications"
+            ]
+        case 3:
+            risk  = .high
+            interp = "mMRC Grade 3 — Stops for breath after walking about 100 m or after a few minutes on level ground."
+            recs  = [
+                "Urgent respiratory / cardiology review",
+                "Pulmonary rehabilitation programme (strong evidence in COPD)",
+                "Home nebuliser and oxygen assessment if indicated",
+                "Review all optimisable causes: bronchodilators, diuretics, anaemia correction",
+                "Assess perioperative risk if surgery planned (functional capacity <4 METs)"
+            ]
+        default:
+            risk  = .critical
+            interp = "mMRC Grade 4 — Too breathless to leave house, or breathless when dressing/undressing."
+            recs  = [
+                "Urgent assessment of all reversible causes",
+                "Home oxygen assessment (ambulatory and nocturnal oximetry)",
+                "Palliative care referral for refractory breathlessness if appropriate",
+                "Consider pulmonary rehabilitation even at this grade — evidence supports benefit",
+                "Preoperative risk stratification: functional capacity <4 METs significantly increases perioperative cardiac risk"
+            ]
+        }
+
+        return ClinicalScore(
+            name:          "mMRC Dyspnoea Scale",
+            score:         Double(grade),
+            maxScore:      4,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            evidenceNote:  "Fletcher CM et al. BMJ 1959;1:257. Modified Medical Research Council scale for breathlessness: 0 (strenuous exercise only) to 4 (too breathless to leave house). Grade ≥2 used in GOLD COPD classification; grade ≥2 with CAT <10 = mMRC primary metric. Widely used in perioperative assessment to grade functional capacity. Correlates with 6-minute walk test (r = −0.65) and health-related quality of life measures."
+        )
+    }
+
 
 }

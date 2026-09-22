@@ -213,6 +213,10 @@ final class Patient {
     var ckdEpiEgfr: Double?       // CKD-EPI eGFR (mL/min/1.73m²; continuous; G1≥90 … G5<15)
     var ariscatScore: Int?        // ARISCAT postop pulmonary complication risk (0–123; ≥26 = intermediate)
     var fongCrsScore: Int?        // Fong Clinical Risk Score colorectal liver mets (0–5; ≥3 = poor prognosis)
+    var berlinPFRatio: Double?    // Berlin ARDS PaO₂/FiO₂ ratio (continuous; <100=severe, <200=moderate, <300=mild)
+    var cageScore: Int?           // CAGE alcohol use disorder screen (0–4; ≥2 = probable AUD)
+    var dukeIEScore: Double?      // Duke IE criteria classification score (no fixed max; classification-based)
+    var mmrcGrade: Int?           // mMRC Dyspnoea Scale (0–4; ≥2 = significant functional impairment)
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

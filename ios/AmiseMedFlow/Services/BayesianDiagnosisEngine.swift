@@ -175,6 +175,10 @@ enum BayesianDiagnosisEngine {
         ckdEpiEgfr: Double? = nil,      // CKD-EPI eGFR mL/min/1.73m²; <60 = CKD
         ariscatScore: Int? = nil,       // ARISCAT 0–123; ≥26 = intermediate/high PPC risk
         fongCrsScore: Int? = nil,       // Fong CRS 0–5; ≥3 = poor prognosis for CLM resection
+        berlinPFRatio: Double? = nil,   // Berlin ARDS PaO₂/FiO₂ ratio; <300 = ARDS
+        cageScore: Int? = nil,          // CAGE 0–4; ≥2 = probable alcohol use disorder
+        dukeIEScore: Double? = nil,     // Duke IE classification score (majorCount×2 + minorCount)
+        mmrcGrade: Int? = nil,          // mMRC dyspnoea grade 0–4; ≥3 = severe impairment
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3795,6 +3799,65 @@ enum BayesianDiagnosisEngine {
                 let nameLow = scored[i].candidate.name.lowercased()
                 guard fongTargets.contains(where: { nameLow.contains($0) }) else { continue }
                 let label = "Fong CRS \(fong)/5 — poor prognosis colorectal liver metastases"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // Berlin ARDS boost: low PF ratio boosts ARDS and acute respiratory failure candidates
+        if let pf = berlinPFRatio, pf < 300 {
+            let berlTargets = ["acute respiratory distress", "ards", "respiratory failure", "respiratory distress"]
+            let adj = pf < 100 ? 9 : (pf < 200 ? 7 : 5)
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard berlTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "Berlin ARDS PF ratio \(Int(pf)) — \(pf < 100 ? "severe" : pf < 200 ? "moderate" : "mild") ARDS"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // CAGE boost: probable AUD raises alcohol-related disorder candidates
+        if let cage = cageScore, cage >= 2 {
+            let cageTargets = ["alcohol use disorder", "alcoholic hepatitis", "alcoholic liver",
+                               "alcohol dependence", "alcohol withdrawal", "alcoholic cirrhosis"]
+            let adj = cage >= 3 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard cageTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "CAGE \(cage)/4 — probable alcohol use disorder"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // Duke IE boost: major criteria raise infective endocarditis candidates
+        if let duke = dukeIEScore, duke >= 2 {
+            let dukeTargets = ["infective endocarditis", "endocarditis", "cardiac vegetation",
+                               "bacteraemia", "bacteremia"]
+            let adj = duke >= 4 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard dukeTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "Duke IE score \(Int(duke)) — \(duke >= 4 ? "definite" : "possible") infective endocarditis"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // mMRC boost: severe dyspnoea raises COPD and chronic respiratory disease candidates
+        if let mmrc = mmrcGrade, mmrc >= 3 {
+            let mmrcTargets = ["copd", "chronic obstructive pulmonary", "emphysema",
+                               "respiratory failure", "pulmonary hypertension", "heart failure"]
+            let adj = mmrc >= 4 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard mmrcTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "mMRC grade \(mmrc) — severe dyspnoea"
                 scored[i].logPosterior += adj
                 scored[i].evidence.append(label)
                 scored[i].evidenceSources["score", default: []].append(label)
