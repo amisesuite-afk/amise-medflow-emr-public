@@ -123,6 +123,7 @@ enum BayesianDiagnosisEngine {
         graceScore: Int? = nil,       // GRACE (0–372); >140 = high in-hospital ACS mortality
         dasiScore: Int? = nil,        // DASI (0–58); <34 = poor functional capacity (<4 METs)
         barthelScore: Int? = nil,     // Barthel Index (0–100); ≤20 = severe ADL dependency
+        euroScoreII: Int? = nil,      // EuroSCORE II predicted mortality ×10 (e.g. 35 = 3.5%); ≥50 = high risk
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2928,6 +2929,28 @@ enum BayesianDiagnosisEngine {
                 let (adj, label): (Int, String) = switch bi {
                 case 0...20: (12, "Barthel ≤20 — severe ADL dependency; indicates major functional impairment")
                 case 21...60: (6, "Barthel 21–60 — moderate ADL dependency; significant functional limitation")
+                default: (0, "")
+                }
+                guard adj > 0 else { continue }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // EuroSCORE II: high predicted operative mortality boosts cardiac and perioperative risk candidates
+        if let es = euroScoreII, es >= 20 { // ≥2.0% predicted mortality
+            let esTargets = ["coronary artery disease", "aortic stenosis", "mitral regurgitation",
+                              "aortic regurgitation", "heart failure", "cardiomyopathy",
+                              "infective endocarditis", "aortic dissection", "thoracic aortic aneurysm",
+                              "post-operative complication", "cardiac tamponade"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard esTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let pctTenths = es
+                let (adj, label): (Int, String) = switch pctTenths {
+                case 50...: (14, "EuroSCORE II ≥5% — high predicted operative mortality; major cardiac disease burden")
+                case 20..<50: (8, "EuroSCORE II 2–5% — elevated operative mortality risk; significant cardiac pathology")
                 default: (0, "")
                 }
                 guard adj > 0 else { continue }

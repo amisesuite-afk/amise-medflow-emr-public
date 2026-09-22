@@ -2028,6 +2028,109 @@ enum PatientScoreAutoPopulator {
         return (i, f)
     }
 
+    // MARK: - EuroSCORE II (Cardiac Surgery Operative Mortality)
+
+    static func euroScoreII(patient: Patient) -> (EuroScoreIIInput, ScoreAutoFill) {
+        var i = EuroScoreIIInput()
+        var f = ScoreAutoFill()
+        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                       patient.pmhNotes, patient.notes, patient.workingDiagnosis, patient.managementPlan]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Age from DOB — snap to nearest 5-year band supported by the picker
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 60
+            let snapped: Int = switch age {
+            case 88...: 90
+            case 82..<88: 85
+            case 77..<82: 80
+            case 72..<77: 75
+            case 67..<72: 70
+            case 62..<67: 65
+            default: 60
+            }
+            i.age = snapped
+            f.addAutoFilled(key: "age", label: "Age \(age)y → picker band \(snapped) (from DOB)", source: "Date of birth")
+        } else {
+            f.addPending(key: "age", label: "Age — requires date of birth", source: "Demographics")
+        }
+
+        // Female sex
+        if patient.sex == .female {
+            i.female = true
+            f.addAutoFilled(key: "female", label: "Female sex (from patient record)", source: "Demographics")
+        }
+
+        // Previous cardiac surgery
+        if allText.contains("previous cardiac") || allText.contains("prior cardiac") ||
+           allText.contains("redo") || allText.contains("previous cabg") || allText.contains("prior bypass") ||
+           allText.contains("previous valve") || allText.contains("prior valve") {
+            i.previousCardiacSurgery = true
+            f.addAutoFilled(key: "previousCardiacSurgery", label: "Previous cardiac surgery detected — verify", source: "PMH / clinical text")
+        }
+
+        // Chronic lung disease
+        if allText.contains("copd") || allText.contains("chronic obstructive") ||
+           allText.contains("bronchodilator") || allText.contains("steroid inhaler") ||
+           allText.contains("chronic lung") || allText.contains("pulmonary fibrosis") {
+            i.chronicLungDisease = true
+            f.addAutoFilled(key: "chronicLungDisease", label: "Chronic lung disease detected — verify inhaler/steroid use", source: "Clinical text / PMH")
+        }
+
+        // Active endocarditis
+        if allText.contains("endocardit") || allText.contains("valve vegetation") ||
+           allText.contains("infective endocardit") {
+            i.activeEndocarditis = true
+            f.addAutoFilled(key: "activeEndocarditis", label: "Endocarditis detected — verify active antibiotic treatment", source: "Clinical text / diagnosis")
+        }
+
+        // Diabetes on insulin
+        if allText.contains("insulin") && (allText.contains("diabet") || allText.contains("t1dm") || allText.contains("t2dm")) {
+            i.diabetesOnInsulin = true
+            f.addAutoFilled(key: "diabetesOnInsulin", label: "Insulin-treated diabetes detected", source: "PMH / medication list")
+        }
+
+        // Recent MI (<90 days)
+        if allText.contains("recent mi") || allText.contains("recent myocardial") ||
+           allText.contains("recent stemi") || allText.contains("recent nstemi") ||
+           allText.contains("acute mi") || allText.contains("acute coronary") {
+            i.recentMI = true
+            f.addAutoFilled(key: "recentMI", label: "Recent MI detected — confirm within 90 days", source: "Clinical text / history")
+        }
+
+        // Extracardiac arteriopathy
+        if allText.contains("claudication") || allText.contains("carotid stenosis") ||
+           allText.contains("peripheral arterial") || allText.contains("aortic aneurysm") ||
+           allText.contains("peripheral vascular disease") {
+            i.extracardiacArteriopathy = true
+            f.addAutoFilled(key: "extracardiacArteriopathy", label: "Extracardiac arteriopathy detected — verify", source: "Clinical text / PMH")
+        }
+
+        // Surgery on thoracic aorta
+        if allText.contains("thoracic aorta") || allText.contains("aortic dissection") ||
+           allText.contains("aortic aneurysm repair") || allText.contains("bentall") ||
+           allText.contains("aortic root replacement") {
+            i.surgeryOnThoracicAorta = true
+            f.addAutoFilled(key: "surgeryOnThoracicAorta", label: "Thoracic aortic surgery detected — verify", source: "Clinical text / operative plan")
+        }
+
+        // Mark remaining quantitative fields as pending
+        let filledKeys = f.autoFieldKeys
+        let pendingFields: [(String, String)] = [
+            ("renalImpairment", "Renal function (creatinine) — requires laboratory result"),
+            ("nyhaClass", "NYHA class — requires clinical assessment"),
+            ("lvFunction", "LV ejection fraction — requires echocardiogram or cardiac imaging"),
+            ("pulmonaryHypertension", "Pulmonary artery systolic pressure — requires echo or RHC"),
+            ("urgency", "Urgency classification — requires surgical team decision"),
+            ("weightOfIntervention", "Planned procedure — requires surgical team input"),
+            ("poorMobility", "Mobility limitation — requires clinical assessment")
+        ]
+        for (key, label) in pendingFields where !filledKeys.contains(key) {
+            f.addPending(key: key, label: label, source: "Clinical/cardiac assessment")
+        }
+        return (i, f)
+    }
+
     // MARK: - Barthel Index (ADL Functional Independence)
 
     static func barthel(patient: Patient) -> (BarthelInput, ScoreAutoFill) {

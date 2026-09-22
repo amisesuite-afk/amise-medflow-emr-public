@@ -476,6 +476,33 @@ struct ForrestInput: Equatable {
     var grade: Int = 1
 }
 
+struct EuroScoreIIInput: Equatable {
+    // EuroSCORE II — European System for Cardiac Operative Risk Evaluation
+    // Nashef SAM et al. Eur J Cardiothorac Surg 2012;41:734–745.
+    // Logistic regression; β₀ = −5.324537; predicted mortality = eˣ/(1+eˣ)
+    var age: Int = 60                   // actual age in years (continuous variable from 60 up: +0.0285489/yr)
+    var female: Bool = false            // female sex: +0.2196434
+    var renalImpairment: Int = 0        // 0=none, 1=creatinine 151-176 μmol/L (+0.3541226),
+                                        // 2=>176 μmol/L on dialysis (+0.6521653)
+    var extracardiacArteriopathy: Bool = false  // claudication, carotid stenosis, prior/planned intervention on aorta etc: +0.5085682
+    var poorMobility: Bool = false      // musculoskeletal or neurological limitation: +0.2971552
+    var previousCardiacSurgery: Bool = false    // +1.0023510
+    var chronicLungDisease: Bool = false         // long-term bronchodilator/steroid use: +0.1886564
+    var activeEndocarditis: Bool = false         // on antibiotic therapy at time of surgery: +0.6194522
+    var criticalPreoperativeState: Bool = false  // VT/VF/aborted SCD, preop massage, vent before OR, acute renal failure, preop IABP/NO/LVAD: +1.0856296
+    var diabetesOnInsulin: Bool = false          // +0.3304052
+    var nyhaClass: Int = 0              // 0=I (+0), 1=II (+0.1070545), 2=III (+0.2338955), 3=IV (+0.5718132)
+    var ccsClass4Angina: Bool = false   // CCS class IV angina at rest: +0.2218732
+    var lvFunction: Int = 0             // 0=good >50% (+0), 1=moderate 31–50% (+0.3196276), 2=poor ≤30% (+1.5169013)
+    var recentMI: Bool = false          // within 90 days: +0.5460218
+    var pulmonaryHypertension: Int = 0  // 0=none, 1=moderate 31–55 mmHg (+0.6084972), 2=severe >55 mmHg (+1.3765812)
+    var urgency: Int = 0                // 0=elective (+0), 1=urgent (+0.4084417), 2=emergency (+0.9361202), 3=salvage (+1.8071808)
+    var weightOfIntervention: Int = 0   // 0=isolated CABG (+0), 1=single non-CABG (+0.5521478),
+                                        // 2=two procedures (+0.9724533), 3=three or more (+1.6151723)
+    var surgeryOnThoracicAorta: Bool = false     // +1.1745886
+    var postInfarctSeptalRupture: Bool = false   // +1.4630660
+}
+
 struct BarthelInput: Equatable {
     // Barthel Index of Activities of Daily Living (Mahoney & Barthel, Maryland State Med J 1965)
     // 10 items; total 0–100; higher = more independent
@@ -2921,6 +2948,134 @@ enum ClinicalScoringEngine {
             recommendations: data.recs,
             redFlags: data.flags,
             evidenceNote: "Forrest JAH et al. Lancet 1974; 2:394–397. Laine L & Peterson WL. N Engl J Med 1994; 331:717–727."
+        )
+    }
+
+    // MARK: - EuroSCORE II (Cardiac Surgery Operative Mortality)
+
+    static func euroScoreII(_ i: EuroScoreIIInput) -> ClinicalScore {
+        // Logistic EuroSCORE II — Nashef SAM et al. Eur J Cardiothorac Surg 2012;41:734–745.
+        // Predicted mortality % = 100 × eˣ / (1 + eˣ) where x = β₀ + Σ(βᵢ × factor)
+        var x = -5.324537
+
+        // Patient factors
+        let ageBoost = max(0.0, Double(i.age - 60)) * 0.0285489
+        x += ageBoost
+        if i.female                    { x += 0.2196434  }
+        switch i.renalImpairment {
+        case 1:                          x += 0.3541226
+        case 2:                          x += 0.6521653
+        default: break
+        }
+        if i.extracardiacArteriopathy  { x += 0.5085682  }
+        if i.poorMobility              { x += 0.2971552  }
+        if i.previousCardiacSurgery    { x += 1.0023510  }
+        if i.chronicLungDisease        { x += 0.1886564  }
+        if i.activeEndocarditis        { x += 0.6194522  }
+        if i.criticalPreoperativeState { x += 1.0856296  }
+        if i.diabetesOnInsulin         { x += 0.3304052  }
+        switch i.nyhaClass {
+        case 1:                          x += 0.1070545
+        case 2:                          x += 0.2338955
+        case 3:                          x += 0.5718132
+        default: break
+        }
+        if i.ccsClass4Angina           { x += 0.2218732  }
+        switch i.lvFunction {
+        case 1:                          x += 0.3196276
+        case 2:                          x += 1.5169013
+        default: break
+        }
+        if i.recentMI                  { x += 0.5460218  }
+        switch i.pulmonaryHypertension {
+        case 1:                          x += 0.6084972
+        case 2:                          x += 1.3765812
+        default: break
+        }
+        switch i.urgency {
+        case 1:                          x += 0.4084417
+        case 2:                          x += 0.9361202
+        case 3:                          x += 1.8071808
+        default: break
+        }
+        switch i.weightOfIntervention {
+        case 1:                          x += 0.5521478
+        case 2:                          x += 0.9724533
+        case 3:                          x += 1.6151723
+        default: break
+        }
+        if i.surgeryOnThoracicAorta    { x += 1.1745886  }
+        if i.postInfarctSeptalRupture  { x += 1.4630660  }
+
+        let pct = 100.0 * exp(x) / (1.0 + exp(x))
+        let pctRounded = (pct * 10).rounded() / 10
+
+        let (risk, interp, recs, flags): (ScoreRisk, String, [String], [String]) = switch pct {
+        case ..<2:
+            (.low, String(format: "Predicted operative mortality %.1f%% (low risk)", pct),
+             ["Proceed with standard cardiac surgical care",
+              "Routine anaesthetic and surgical team pre-operative assessment",
+              "ICU care post-operatively as per unit protocol",
+              "Document EuroSCORE II result in surgical consent discussion"],
+             [])
+        case 2..<5:
+            (.moderate, String(format: "Predicted operative mortality %.1f%% (moderate risk)", pct),
+             ["Senior anaesthetist and cardiac surgeon review pre-operatively",
+              "Detailed consent discussion including predicted mortality risk",
+              "Optimise modifiable risk factors before surgery",
+              "ICU/HDU post-operative care plan; perfusionist briefing",
+              "Consider cardiac catheterisation if not yet done"],
+             [])
+        default:
+            (.high, String(format: "Predicted operative mortality %.1f%% (high risk)", pct),
+             ["Multidisciplinary heart team (MDT) review mandatory before proceeding",
+              "Comprehensive risk-benefit discussion with patient and family",
+              "Explore alternatives: transcatheter procedures (TAVI, MICS) if applicable",
+              "Cardiology and anaesthetic co-management; optimise haemodynamics pre-operatively",
+              "ICU post-operative care; senior perfusionist and OR team briefing",
+              "Consider palliative or conservative pathway if risk exceeds benefit"],
+             [String(format: "EuroSCORE II %.1f%% — high operative mortality; MDT review and detailed consent required before proceeding", pct)])
+        }
+
+        let nyhaLabels = ["I", "II", "III", "IV"]
+        let renalLabels = ["None", "Creatinine 151–176 μmol/L", "Dialysis or >176 μmol/L"]
+        let lvLabels = ["Good >50%", "Moderate 31–50%", "Poor ≤30%"]
+        let urgencyLabels = ["Elective", "Urgent", "Emergency", "Salvage"]
+        let wLabels = ["Isolated CABG", "Single non-CABG procedure", "Two procedures", "Three or more procedures"]
+        let phLabels = ["None", "Moderate 31–55 mmHg", "Severe >55 mmHg"]
+
+        let items: [ScoreItem] = [
+            ScoreItem(label: "Age \(i.age) years (+\(String(format: "%.3f", ageBoost)) above 60)", points: ageBoost, present: i.age > 60),
+            ScoreItem(label: "Female sex +0.220", points: 0.2196434, present: i.female),
+            ScoreItem(label: "Renal impairment: \(renalLabels[min(i.renalImpairment, 2)])", points: i.renalImpairment == 1 ? 0.3541226 : 0.6521653, present: i.renalImpairment > 0),
+            ScoreItem(label: "Extracardiac arteriopathy +0.509", points: 0.5085682, present: i.extracardiacArteriopathy),
+            ScoreItem(label: "Poor mobility +0.297", points: 0.2971552, present: i.poorMobility),
+            ScoreItem(label: "Previous cardiac surgery +1.002", points: 1.0023510, present: i.previousCardiacSurgery),
+            ScoreItem(label: "Chronic lung disease +0.189", points: 0.1886564, present: i.chronicLungDisease),
+            ScoreItem(label: "Active endocarditis +0.619", points: 0.6194522, present: i.activeEndocarditis),
+            ScoreItem(label: "Critical preoperative state +1.086", points: 1.0856296, present: i.criticalPreoperativeState),
+            ScoreItem(label: "Diabetes on insulin +0.330", points: 0.3304052, present: i.diabetesOnInsulin),
+            ScoreItem(label: "NYHA class \(nyhaLabels[min(i.nyhaClass, 3)])", points: [0, 0.1070545, 0.2338955, 0.5718132][min(i.nyhaClass, 3)], present: i.nyhaClass > 0),
+            ScoreItem(label: "CCS Class 4 angina +0.222", points: 0.2218732, present: i.ccsClass4Angina),
+            ScoreItem(label: "LV function: \(lvLabels[min(i.lvFunction, 2)])", points: [0, 0.3196276, 1.5169013][min(i.lvFunction, 2)], present: i.lvFunction > 0),
+            ScoreItem(label: "Recent MI (<90 days) +0.546", points: 0.5460218, present: i.recentMI),
+            ScoreItem(label: "Pulmonary hypertension: \(phLabels[min(i.pulmonaryHypertension, 2)])", points: i.pulmonaryHypertension == 1 ? 0.6084972 : 1.3765812, present: i.pulmonaryHypertension > 0),
+            ScoreItem(label: "Urgency: \(urgencyLabels[min(i.urgency, 3)])", points: [0, 0.4084417, 0.9361202, 1.8071808][min(i.urgency, 3)], present: i.urgency > 0),
+            ScoreItem(label: "Weight of intervention: \(wLabels[min(i.weightOfIntervention, 3)])", points: [0, 0.5521478, 0.9724533, 1.6151723][min(i.weightOfIntervention, 3)], present: i.weightOfIntervention > 0),
+            ScoreItem(label: "Surgery on thoracic aorta +1.175", points: 1.1745886, present: i.surgeryOnThoracicAorta),
+            ScoreItem(label: "Post-infarct septal rupture +1.463", points: 1.4630660, present: i.postInfarctSeptalRupture)
+        ]
+
+        return ClinicalScore(
+            systemName: "EuroSCORE II",
+            abbreviation: "EuroSCORE",
+            score: pctRounded, maxScore: 100,
+            risk: risk,
+            interpretation: interp,
+            items: items,
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Nashef SAM et al. Eur J Cardiothorac Surg 2012;41:734–745. www.euroscore.org"
         )
     }
 

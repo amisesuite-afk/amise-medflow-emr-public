@@ -135,6 +135,8 @@ final class Patient {
     var dasiScore: Int?
     // Barthel Index (0–100); 0-20=severe dependency, 21-60=moderate, 61-90=mild, 91-100=independent
     var barthelScore: Int?
+    // EuroSCORE II predicted operative mortality (×10 as Int, e.g. 3.5% stored as 35)
+    var euroScoreII: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

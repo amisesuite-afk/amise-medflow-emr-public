@@ -66,6 +66,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case grace            = "GRACE Score (ACS)"
     case dasi             = "DASI (Functional Capacity)"
     case barthel          = "Barthel Index (ADL)"
+    case euroScoreII      = "EuroSCORE II (Cardiac Surgery)"
 
     var category: ScoreCategory {
         switch self {
@@ -77,7 +78,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .vascular
         case .sirs, .qsofa, .psiPort, .sofa, .curb65, .apacheII:
             return .sepsis
-        case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4, .ppossum, .nrs2002, .mallampati, .cfs, .dasi, .barthel:
+        case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4, .ppossum, .nrs2002, .mallampati, .cfs, .dasi, .barthel, .euroScoreII:
             return .preop
         case .abcd2, .lrinec, .gcs:
             return .neuro
@@ -132,6 +133,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .grace:          return "chart.line.uptrend.xyaxis"
         case .dasi:           return "figure.run"
         case .barthel:        return "figure.roll"
+        case .euroScoreII:    return "heart.text.clipboard.fill"
         }
     }
 }
@@ -240,6 +242,8 @@ struct ClinicalScoresView: View {
     @State private var dasiI = DASIInput()
     // Barthel Index
     @State private var barthelI = BarthelInput()
+    // EuroSCORE II
+    @State private var euroScI = EuroScoreIIInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -647,6 +651,9 @@ struct ClinicalScoresView: View {
         case .barthel:
             let (input, fill) = PatientScoreAutoPopulator.barthel(patient: patient)
             barthelI = input; autoFill = fill
+        case .euroScoreII:
+            let (input, fill) = PatientScoreAutoPopulator.euroScoreII(patient: patient)
+            euroScI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -750,6 +757,7 @@ struct ClinicalScoresView: View {
         case .grace:         ClinicalScoringEngine.grace(graceI)
         case .dasi:          ClinicalScoringEngine.dasi(dasiI)
         case .barthel:       ClinicalScoringEngine.barthel(barthelI)
+        case .euroScoreII:   ClinicalScoringEngine.euroScoreII(euroScI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -793,6 +801,7 @@ struct ClinicalScoresView: View {
         case .grace:         patient.graceScore = intScore
         case .dasi:          patient.dasiScore = intScore
         case .barthel:       patient.barthelScore = intScore
+        case .euroScoreII:   patient.euroScoreII = Int((r.score * 10).rounded())
         default: break
         }
         patient.updatedAt = .now
@@ -874,6 +883,7 @@ struct ClinicalScoresView: View {
         case .grace:         graceForm
         case .dasi:          dasiForm
         case .barthel:       barthelForm
+        case .euroScoreII:   euroScoreIIForm
         }
     }
 
@@ -1970,6 +1980,22 @@ struct ClinicalScoresView: View {
         case .barthel:
             // All fields are numeric pickers — no boolean toggle confirm
             break
+        case .euroScoreII:
+            switch field.id {
+            case "female":                    euroScI.female = true
+            case "extracardiacArteriopathy":  euroScI.extracardiacArteriopathy = true
+            case "poorMobility":              euroScI.poorMobility = true
+            case "previousCardiacSurgery":    euroScI.previousCardiacSurgery = true
+            case "chronicLungDisease":        euroScI.chronicLungDisease = true
+            case "activeEndocarditis":        euroScI.activeEndocarditis = true
+            case "criticalPreoperativeState": euroScI.criticalPreoperativeState = true
+            case "diabetesOnInsulin":         euroScI.diabetesOnInsulin = true
+            case "ccsClass4Angina":           euroScI.ccsClass4Angina = true
+            case "recentMI":                  euroScI.recentMI = true
+            case "surgeryOnThoracicAorta":    euroScI.surgeryOnThoracicAorta = true
+            case "postInfarctSeptalRupture":  euroScI.postInfarctSeptalRupture = true
+            default: break
+            }
         case .dasi:
             // All fields are boolean toggles; auto-confirmed from patient-reported keywords
             switch field.id {
@@ -2655,6 +2681,84 @@ struct ClinicalScoresView: View {
                 scoreToggle("Medication: cytotoxic agents / high-dose steroids", binding: $waterlowI.onCytotoxics, points: "+4", autoKey: "onCytotoxics")
             }
             .onChange(of: waterlowI) { _, _ in recalculate() }
+        }
+    }
+
+    // MARK: - EuroSCORE II
+
+    private var euroScoreIIForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("EuroSCORE II — European System for Cardiac Operative Risk Evaluation II (Nashef 2012). Logistic model predicting in-hospital operative mortality for cardiac surgery. Low <2%, Moderate 2–5%, High ≥5%.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
+            Group {
+                sectionHeader("Patient Demographics")
+                // Age is a continuous variable — use a Stepper-like apacheSegment with representative bands
+                apacheSegment("Age (years)", selection: $euroScI.age,
+                    options: [
+                        (60, "60 — reference (age ≤60 = 0 boost)"),
+                        (65, "65"),
+                        (70, "70"),
+                        (75, "75"),
+                        (80, "80"),
+                        (85, "85"),
+                        (90, "≥90")
+                    ])
+                scoreToggle("Female sex", binding: $euroScI.female, points: "+0.22", autoKey: "female")
+                sectionHeader("Co-Morbidities")
+                apacheSegment("Renal Impairment", selection: $euroScI.renalImpairment,
+                    options: [
+                        (0, "0 — None (creatinine ≤150 μmol/L)"),
+                        (1, "1 — Creatinine 151–176 μmol/L"),
+                        (2, "2 — Dialysis or creatinine >176 μmol/L")
+                    ])
+                scoreToggle("Extracardiac arteriopathy (claudication, carotid stenosis, aortic intervention)", binding: $euroScI.extracardiacArteriopathy, points: "+0.51", autoKey: "extracardiacArteriopathy")
+                scoreToggle("Poor mobility (musculoskeletal or neurological dysfunction)", binding: $euroScI.poorMobility, points: "+0.30", autoKey: "poorMobility")
+                scoreToggle("Previous cardiac surgery (redo procedure)", binding: $euroScI.previousCardiacSurgery, points: "+1.00", autoKey: "previousCardiacSurgery")
+                scoreToggle("Chronic lung disease (long-term bronchodilators or steroids)", binding: $euroScI.chronicLungDisease, points: "+0.19", autoKey: "chronicLungDisease")
+                scoreToggle("Active endocarditis (on antibiotics at time of surgery)", binding: $euroScI.activeEndocarditis, points: "+0.62", autoKey: "activeEndocarditis")
+                scoreToggle("Critical preoperative state (VT/VF, cardiac massage, ventilated, acute renal failure, IABP/LVAD)", binding: $euroScI.criticalPreoperativeState, points: "+1.09", autoKey: "criticalPreoperativeState")
+                scoreToggle("Diabetes mellitus on insulin", binding: $euroScI.diabetesOnInsulin, points: "+0.33", autoKey: "diabetesOnInsulin")
+                sectionHeader("Cardiac Status")
+                apacheSegment("NYHA Class", selection: $euroScI.nyhaClass,
+                    options: [
+                        (0, "I — No symptoms"),
+                        (1, "II — Symptoms on moderate exertion"),
+                        (2, "III — Symptoms on mild exertion"),
+                        (3, "IV — Symptoms at rest")
+                    ])
+                scoreToggle("CCS Class IV angina (symptoms at rest)", binding: $euroScI.ccsClass4Angina, points: "+0.22", autoKey: "ccsClass4Angina")
+                apacheSegment("LV Function (EF)", selection: $euroScI.lvFunction,
+                    options: [
+                        (0, "0 — Good: EF >50%"),
+                        (1, "1 — Moderate: EF 31–50%"),
+                        (2, "2 — Poor: EF ≤30%")
+                    ])
+                scoreToggle("Recent MI within 90 days", binding: $euroScI.recentMI, points: "+0.55", autoKey: "recentMI")
+                apacheSegment("Pulmonary Hypertension", selection: $euroScI.pulmonaryHypertension,
+                    options: [
+                        (0, "0 — None or trivial (PASP ≤30 mmHg)"),
+                        (1, "1 — Moderate (PASP 31–55 mmHg)"),
+                        (2, "2 — Severe (PASP >55 mmHg)")
+                    ])
+                sectionHeader("Operation Details")
+                apacheSegment("Urgency", selection: $euroScI.urgency,
+                    options: [
+                        (0, "0 — Elective"),
+                        (1, "1 — Urgent (not immediately life-threatening)"),
+                        (2, "2 — Emergency (before next working day)"),
+                        (3, "3 — Salvage (CPR en route to OR)")
+                    ])
+                apacheSegment("Weight of Procedure", selection: $euroScI.weightOfIntervention,
+                    options: [
+                        (0, "0 — Isolated CABG"),
+                        (1, "1 — Single non-CABG procedure"),
+                        (2, "2 — Two procedures"),
+                        (3, "3 — Three or more procedures")
+                    ])
+                scoreToggle("Surgery on thoracic aorta", binding: $euroScI.surgeryOnThoracicAorta, points: "+1.17", autoKey: "surgeryOnThoracicAorta")
+                scoreToggle("Post-infarct ventricular septal rupture", binding: $euroScI.postInfarctSeptalRupture, points: "+1.46", autoKey: "postInfarctSeptalRupture")
+            }
+            .onChange(of: euroScI) { _, _ in recalculate() }
         }
     }
 
