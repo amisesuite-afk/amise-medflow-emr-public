@@ -451,7 +451,7 @@ struct ClinicalScoresView: View {
     // NIHSS
     @State private var nihssI = NIHSSInput()
     // mRS
-    @State private var mrsI = MRSInput()
+    @State private var mrsI = ClinicalScoringEngine.MRSInput()
     // MUST
     @State private var mustI = ClinicalScoringEngine.MUSTInput()
     // Clavien-Dindo
@@ -818,6 +818,21 @@ struct ClinicalScoresView: View {
         case .blatchford:
             let (input, fill) = PatientScoreAutoPopulator.blatchford(patient: patient)
             blatchI = input; autoFill = fill
+        case .rockall:
+            let (input, fill) = PatientScoreAutoPopulator.rockall(patient: patient)
+            rock = input; autoFill = fill
+        case .asa:
+            let (input, fill) = PatientScoreAutoPopulator.asa(patient: patient)
+            asaI = input; autoFill = fill
+        case .mrs:
+            let (input, fill) = PatientScoreAutoPopulator.mRS(patient: patient)
+            mrsI = input; autoFill = fill
+        case .clavienDindo:
+            let (input, fill) = PatientScoreAutoPopulator.clavienDindo(patient: patient)
+            cdI = input; autoFill = fill
+        case .aldrete:
+            let (input, fill) = PatientScoreAutoPopulator.aldrete(patient: patient)
+            aldreteI = input; autoFill = fill
         case .news2:
             let (input, fill) = PatientScoreAutoPopulator.news2(patient: patient)
             news2I = input; autoFill = fill

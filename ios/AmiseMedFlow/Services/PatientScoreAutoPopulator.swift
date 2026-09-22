@@ -4589,6 +4589,153 @@ enum PatientScoreAutoPopulator {
         return (i, f)
     }
 
+    // MARK: - Rockall GI Bleed Score
+    static func rockall(patient: Patient) -> (RockallInput, ScoreAutoFill) {
+        var i = RockallInput()
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.assessmentText, patient.hpi]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+        // Age
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 0
+            if age >= 80 {
+                i.ageGroup = .over80
+                f.addAutoFilled(key: "age", label: "Age ≥80 years (from DOB)", source: "Demographics")
+            } else if age >= 60 {
+                i.ageGroup = .sixtyTo79
+                f.addAutoFilled(key: "age", label: "Age 60–79 years (from DOB)", source: "Demographics")
+            } else {
+                i.ageGroup = .under60
+                f.addAutoFilled(key: "age", label: "Age <60 years (from DOB)", source: "Demographics")
+            }
+        } else {
+            f.addPending(key: "age", label: "Age group — check DOB", source: "Demographics")
+        }
+        // Shock: latest vitals
+        let latestV = patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
+        if let v = latestV {
+            if let sbp = v.bpSystolic, let hr = v.heartRate {
+                if sbp < 100 {
+                    i.shock = .sbpBelow100
+                    f.addAutoFilled(key: "shock", label: "SBP <100 mmHg from vitals", source: "Vitals")
+                } else if hr > 100 {
+                    i.shock = .pulse100SBPOver100
+                    f.addAutoFilled(key: "shock", label: "Pulse >100 with SBP ≥100 from vitals", source: "Vitals")
+                }
+            }
+        } else {
+            f.addPending(key: "shock", label: "Haemodynamic status — vitals required", source: "Vitals")
+        }
+        // Diagnosis and major stigmata are endoscopic findings — always pending
+        f.addPending(key: "diagnosis",     label: "Endoscopic diagnosis — OGD result required", source: "Endoscopy")
+        f.addPending(key: "stigmata",      label: "Major stigmata of bleeding — OGD finding", source: "Endoscopy")
+        f.addPending(key: "comorbidity",   label: "Significant comorbidity (CCF/IHD/renal/liver/malignancy)", source: "PMH")
+        // Scan PMH for comorbidity hints
+        if text.contains("heart failure") || text.contains("ihd") || text.contains("ischaemic heart") {
+            i.comorbidity = .anyMajor
+            f.addAutoFilled(key: "comorbidity", label: "Cardiac comorbidity detected in history", source: "PMH text")
+        } else if text.contains("renal failure") || text.contains("liver cirrhosis") || text.contains("malignancy") || text.contains("cancer") {
+            i.comorbidity = .renalOrLiverOrMalignancy
+            f.addAutoFilled(key: "comorbidity", label: "Renal/liver/malignancy comorbidity detected", source: "PMH text")
+        }
+        return (i, f)
+    }
+
+    // MARK: - ASA Physical Status
+    static func asa(patient: Patient) -> (ASAInput, ScoreAutoFill) {
+        var i = ASAInput()
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.assessmentText, patient.pmhNotes, patient.hpi]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+        // Heuristic: scan for severe/critical/moribund indicators
+        if text.contains("moribund") || text.contains("not expected to survive") || text.contains("asa v") {
+            i.asaClass = .v
+            f.addAutoFilled(key: "asa", label: "Possible ASA V — moribund indicators in text", source: "Assessment text")
+        } else if text.contains("life-threatening") || text.contains("end-stage") || text.contains("asa iv") {
+            i.asaClass = .iv
+            f.addAutoFilled(key: "asa", label: "Possible ASA IV — life-threatening condition detected", source: "Assessment text")
+        } else if text.contains("poorly controlled") || text.contains("moderate") || text.contains("asa iii") {
+            i.asaClass = .iii
+            f.addAutoFilled(key: "asa", label: "Possible ASA III — poorly controlled/significant systemic disease", source: "Assessment text")
+        } else if text.contains("well controlled") || text.contains("mild") || text.contains("asa ii") || text.contains("hypertension") || text.contains("diabetes") {
+            i.asaClass = .ii
+            f.addAutoFilled(key: "asa", label: "Possible ASA II — mild systemic disease detected", source: "PMH text")
+        } else {
+            f.addPending(key: "asa", label: "ASA class — clinical assessment required", source: "Clinical")
+        }
+        return (i, f)
+    }
+
+    // MARK: - modified Rankin Scale
+    static func mRS(patient: Patient) -> (ClinicalScoringEngine.MRSInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.MRSInput()
+        var f = ScoreAutoFill()
+        let text = [patient.assessmentText, patient.hpi, patient.chiefComplaint]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+        // Scan for disability indicators
+        if text.contains("no disability") || text.contains("fully independent") {
+            i.level = 0
+            f.addAutoFilled(key: "mRS", label: "No disability detected in assessment text", source: "Assessment text")
+        } else if text.contains("hemiplegia") || text.contains("hemipleg") || text.contains("bedridden") {
+            i.level = 4
+            f.addAutoFilled(key: "mRS", label: "Severe disability indicators detected — verify mRS level", source: "Assessment text")
+        } else if text.contains("wheelchair") || text.contains("immobile") {
+            i.level = 5
+            f.addAutoFilled(key: "mRS", label: "Possible mRS 5 — immobility indicators in text", source: "Assessment text")
+        } else {
+            f.addPending(key: "mRS", label: "Disability level (0–6) — bedside assessment required", source: "Clinical")
+        }
+        return (i, f)
+    }
+
+    // MARK: - Clavien-Dindo Complication Grade
+    static func clavienDindo(patient: Patient) -> (ClinicalScoringEngine.ClavienDindoInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.ClavienDindoInput()
+        var f = ScoreAutoFill()
+        let text = [patient.assessmentText, patient.hpi, patient.chiefComplaint]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+        // Scan for complication severity
+        if text.contains("icu") || text.contains("intensive care") || text.contains("organ failure") {
+            i.grade = 5   // IVa (single organ) or IVb — set conservatively
+            f.addAutoFilled(key: "grade", label: "ICU/organ failure detected — possible Grade IVa/IVb", source: "Assessment text")
+        } else if text.contains("re-operation") || text.contains("reoperation") || text.contains("surgical intervention") {
+            i.grade = 4   // Grade IIIb
+            f.addAutoFilled(key: "grade", label: "Possible Grade IIIb — re-operation indicators detected", source: "Assessment text")
+        } else if text.contains("drug therapy") || text.contains("antibiotic") || text.contains("transfusion") {
+            i.grade = 2   // Grade II
+            f.addAutoFilled(key: "grade", label: "Possible Grade II — pharmacological treatment detected", source: "Assessment text")
+        } else {
+            f.addPending(key: "grade", label: "Complication grade (0–V) — classify postoperative complication", source: "Clinical")
+        }
+        return (i, f)
+    }
+
+    // MARK: - Modified Aldrete PACU Score
+    static func aldrete(patient: Patient) -> (ClinicalScoringEngine.AldreteInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.AldreteInput()
+        var f = ScoreAutoFill()
+        // Fill SpO2 from latest vitals
+        let latestV = patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
+        if let spo2 = latestV?.spo2 {
+            if spo2 >= 92 {
+                i.oxygenSat = 2
+            } else if spo2 >= 90 {
+                i.oxygenSat = 1
+            } else {
+                i.oxygenSat = 0
+            }
+            f.addAutoFilled(key: "spo2", label: "SpO₂ \(spo2)% from vitals", source: "Vitals")
+        } else {
+            f.addPending(key: "spo2", label: "SpO₂ — vitals required", source: "Vitals")
+        }
+        // All other parameters require bedside PACU assessment
+        f.addPending(key: "activity",       label: "Voluntary limb movement — PACU assessment", source: "Clinical")
+        f.addPending(key: "respiration",    label: "Respiration adequacy — PACU assessment", source: "Clinical")
+        f.addPending(key: "circulation",    label: "BP vs pre-operative baseline — PACU assessment", source: "Clinical")
+        f.addPending(key: "consciousness",  label: "Consciousness level — PACU assessment", source: "Clinical")
+        return (i, f)
+    }
+
     // MARK: - GCS
     static func gcs(patient: Patient) -> (GCSInput, ScoreAutoFill) {
         var i = GCSInput()
