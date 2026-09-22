@@ -2615,4 +2615,109 @@ enum PatientScoreAutoPopulator {
 
         return (i, f)
     }
+
+    // MARK: - ECOG Performance Status (#57)
+    static func ecog(patient: Patient) -> (ClinicalScoringEngine.ECOGInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.ECOGInput()
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Grade 4 keywords — bedbound
+        let g4Kw = ["bedbound", "bed-bound", "bed bound", "completely disabled", "fully dependent",
+                    "palliative", "terminally ill", "end of life", "end-of-life"]
+        // Grade 3 keywords — limited self-care
+        let g3Kw = ["limited self care", "confined to bed", "more than 50%", "housebound", "cannot walk"]
+        // Grade 2 keywords — ambulatory but no work
+        let g2Kw = ["ambulatory", "self-care", "cannot carry out work", "performance status 2",
+                    "ps 2", "ecog 2", "zubrod 2", "cannot work", "significant fatigue",
+                    "cancer", "malignancy", "carcinoma", "lymphoma", "sarcoma", "metastatic"]
+        // Grade 1 keywords — restricted but working
+        let g1Kw = ["restricted activity", "strenuous activity limited", "performance status 1",
+                    "ps 1", "ecog 1", "zubrod 1", "light work", "frailty", "sarcopenia",
+                    "deconditioning", "cachexia"]
+
+        if g4Kw.contains(where: { text.contains($0) }) {
+            i.grade = 4
+            f.addAutoFilled(key: "grade", label: "Grade 4 — bedbound indicators detected", source: "History/Diagnosis")
+        } else if g3Kw.contains(where: { text.contains($0) }) {
+            i.grade = 3
+            f.addAutoFilled(key: "grade", label: "Grade 3 — limited self-care indicators detected", source: "History")
+        } else if g2Kw.contains(where: { text.contains($0) }) {
+            i.grade = 2
+            f.addAutoFilled(key: "grade", label: "Grade 2 — ambulatory/cancer keywords detected; confirm with clinical assessment", source: "Diagnosis")
+        } else if g1Kw.contains(where: { text.contains($0) }) {
+            i.grade = 1
+            f.addAutoFilled(key: "grade", label: "Grade 1 — restricted activity keywords detected; confirm clinically", source: "History")
+        } else {
+            f.addPending(key: "grade", label: "ECOG grade requires direct clinical assessment", source: "Clinical examination")
+        }
+        return (i, f)
+    }
+
+    // MARK: - Revised Trauma Score (#58)
+    static func rts(patient: Patient) -> (ClinicalScoringEngine.RTSInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.RTSInput()
+        var f = ScoreAutoFill()
+
+        // Pull GCS from stored score
+        if let gcs = patient.gcsScore {
+            i.glasgowComaScore = gcs
+            f.addAutoFilled(key: "glasgowComaScore", label: "GCS \(gcs) from stored GCS score", source: "GCS score")
+        } else {
+            f.addPending(key: "glasgowComaScore", label: "Glasgow Coma Score — assess neurological status", source: "Neurological exam")
+        }
+
+        // Pull SBP and RR from latest vitals
+        if let latest = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
+            if let sbp = latest.bpSystolic {
+                i.systolicBP = sbp
+                f.addAutoFilled(key: "systolicBP", label: "Systolic BP \(sbp) mmHg from latest vitals", source: "Vitals")
+            } else {
+                f.addPending(key: "systolicBP", label: "Systolic blood pressure — measure manually", source: "Vitals")
+            }
+            if let rr = latest.respiratoryRate {
+                i.respiratoryRate = rr
+                f.addAutoFilled(key: "respiratoryRate", label: "Respiratory rate \(rr) from latest vitals", source: "Vitals")
+            } else {
+                f.addPending(key: "respiratoryRate", label: "Respiratory rate — count for 1 minute", source: "Vitals")
+            }
+        } else {
+            f.addPending(key: "systolicBP", label: "Systolic blood pressure — no vitals recorded", source: "Vitals")
+            f.addPending(key: "respiratoryRate", label: "Respiratory rate — no vitals recorded", source: "Vitals")
+        }
+        return (i, f)
+    }
+
+    // MARK: - KDIGO AKI Staging (#59)
+    static func kdigo(patient: Patient) -> (ClinicalScoringEngine.KDIGOInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.KDIGOInput()
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Check for RRT keywords
+        let rrtKw = ["renal replacement therapy", "haemodialysis", "hemodialysis", "haemofiltration",
+                     "hemofiltration", "crrt", "cvvh", "cvvhdf", "dialysis", "rrt", "prisma",
+                     "continuous renal replacement"]
+        if rrtKw.contains(where: { text.contains($0) }) {
+            i.requiresRRT = true
+            i.stage = 3
+            f.addAutoFilled(key: "requiresRRT", label: "Renal replacement therapy keyword detected — Stage 3", source: "History/Management")
+        } else {
+            // Detect AKI context
+            let akiKw = ["acute kidney injury", "aki", "acute renal failure", "arf",
+                         "oliguria", "anuria", "rising creatinine", "renal impairment",
+                         "nephrotoxic", "contrast nephropathy", "rhabdomyolysis",
+                         "acute tubular necrosis", "atn", "prerenal"]
+            if akiKw.contains(where: { text.contains($0) }) {
+                f.addAutoFilled(key: "stage", label: "AKI keyword detected — confirm creatinine and urine output staging", source: "History/Diagnosis")
+            }
+            f.addPending(key: "creatinineRise", label: "Creatinine rise (×baseline) — review U&E trend", source: "Biochemistry")
+            f.addPending(key: "urineOutput", label: "Urine output (mL/kg/h) — measure or review fluid balance chart", source: "Fluid balance")
+        }
+        return (i, f)
+    }
 }

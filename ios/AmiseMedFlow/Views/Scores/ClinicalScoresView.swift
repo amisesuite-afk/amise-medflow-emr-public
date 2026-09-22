@@ -75,6 +75,9 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case fourT            = "4T Score (HIT Probability)"
     case oakland          = "Oakland Score (LGIB Discharge)"
     case kingsCriteria    = "King's College Criteria (ALF)"
+    case ecog             = "ECOG Performance Status"
+    case rts              = "Revised Trauma Score"
+    case kdigo            = "KDIGO AKI Staging"
 
     var category: ScoreCategory {
         switch self {
@@ -100,6 +103,12 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .gi
         case .kingsCriteria:
             return .gi
+        case .ecog:
+            return .preop
+        case .rts:
+            return .acute
+        case .kdigo:
+            return .sepsis
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
         case .mews, .news2, .waterlow, .surgicalApgar:
@@ -160,6 +169,9 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .fourT:          return "syringe.fill"
         case .oakland:        return "drop.degreesign.fill"
         case .kingsCriteria:  return "staroflife.circle.fill"
+        case .ecog:           return "figure.stand"
+        case .rts:            return "cross.case.circle.fill"
+        case .kdigo:          return "drop.circle.fill"
         }
     }
 }
@@ -286,6 +298,12 @@ struct ClinicalScoresView: View {
     @State private var oaklandI = ClinicalScoringEngine.OaklandInput()
     // King's Criteria
     @State private var kingsI = ClinicalScoringEngine.KingsCriteriaInput()
+    // ECOG
+    @State private var ecogI = ClinicalScoringEngine.ECOGInput()
+    // RTS
+    @State private var rtsI = ClinicalScoringEngine.RTSInput()
+    // KDIGO AKI
+    @State private var kdigoI = ClinicalScoringEngine.KDIGOInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -717,6 +735,15 @@ struct ClinicalScoresView: View {
         case .kingsCriteria:
             let (input, fill) = PatientScoreAutoPopulator.kingsCriteria(patient: patient)
             kingsI = input; autoFill = fill
+        case .ecog:
+            let (input, fill) = PatientScoreAutoPopulator.ecog(patient: patient)
+            ecogI = input; autoFill = fill
+        case .rts:
+            let (input, fill) = PatientScoreAutoPopulator.rts(patient: patient)
+            rtsI = input; autoFill = fill
+        case .kdigo:
+            let (input, fill) = PatientScoreAutoPopulator.kdigo(patient: patient)
+            kdigoI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -829,6 +856,9 @@ struct ClinicalScoresView: View {
         case .fourT:         ClinicalScoringEngine.fourT(fourTI)
         case .oakland:       ClinicalScoringEngine.oakland(oaklandI)
         case .kingsCriteria: ClinicalScoringEngine.kingsCriteria(kingsI)
+        case .ecog:          ClinicalScoringEngine.ecog(ecogI)
+        case .rts:           ClinicalScoringEngine.rts(rtsI)
+        case .kdigo:         ClinicalScoringEngine.kdigo(kdigoI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -884,6 +914,9 @@ struct ClinicalScoresView: View {
         case .childPugh:     patient.childPughScore = intScore
         case .meld:          patient.meldScore = intScore
         case .asa:           patient.asaScore = intScore
+        case .ecog:          patient.ecogScore = intScore
+        case .rts:           patient.rtsScore = Int((r.score * 100).rounded())
+        case .kdigo:         patient.kdigoStage = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -974,6 +1007,9 @@ struct ClinicalScoresView: View {
         case .fourT:         fourTForm
         case .oakland:       oaklandForm
         case .kingsCriteria: kingsCriteriaForm
+        case .ecog:          ecogForm
+        case .rts:           rtsForm
+        case .kdigo:         kdigoForm
         }
     }
 
@@ -2120,6 +2156,8 @@ struct ClinicalScoresView: View {
         case .kingsCriteria:
             break
         case .childPugh, .meld, .asa:
+            break
+        case .ecog, .rts, .kdigo:
             break
         default: break
         }
@@ -3452,5 +3490,58 @@ struct ClinicalScoresView: View {
             }
         }
         .onChange(of: kingsI) { _, _ in recalculate() }
+    }
+
+    private var ecogForm: some View {
+        Group {
+            apacheSegment("Performance Status Grade", selection: $ecogI.grade,
+                options: [
+                    (0, "0 — Fully active, no restriction"),
+                    (1, "1 — Restricted strenuous activity"),
+                    (2, "2 — Ambulatory; unable to work"),
+                    (3, "3 — Limited self-care; >50% bedbound"),
+                    (4, "4 — Completely disabled; bedbound")
+                ])
+        }
+        .onChange(of: ecogI) { _, _ in recalculate() }
+    }
+
+    private var rtsForm: some View {
+        Group {
+            mewsSlider(label: "Glasgow Coma Scale", autoKey: "glasgowComaScore",
+                       value: Binding(get: { Double(rtsI.glasgowComaScore) },
+                                      set: { rtsI.glasgowComaScore = Int($0) }),
+                       in: 3...15, step: 1, display: "\(rtsI.glasgowComaScore)")
+            mewsSlider(label: "Systolic BP (mmHg)", autoKey: "systolicBP",
+                       value: Binding(get: { Double(rtsI.systolicBP) },
+                                      set: { rtsI.systolicBP = Int($0) }),
+                       in: 0...200, step: 1, display: "\(rtsI.systolicBP) mmHg")
+            mewsSlider(label: "Respiratory Rate (breaths/min)", autoKey: "respiratoryRate",
+                       value: Binding(get: { Double(rtsI.respiratoryRate) },
+                                      set: { rtsI.respiratoryRate = Int($0) }),
+                       in: 0...40, step: 1, display: "\(rtsI.respiratoryRate) bpm")
+        }
+        .onChange(of: rtsI) { _, _ in recalculate() }
+    }
+
+    private var kdigoForm: some View {
+        Group {
+            apacheSegment("Creatinine Rise from Baseline", selection: $kdigoI.creatinineRise,
+                options: [
+                    (0, "0 — <1.5× baseline"),
+                    (1, "1 — 1.5–1.9× baseline"),
+                    (2, "2 — 2.0–2.9× baseline"),
+                    (3, "3 — ≥3× or >354 µmol/L")
+                ])
+            apacheSegment("Urine Output", selection: $kdigoI.urineOutput,
+                options: [
+                    (0, "0 — Normal"),
+                    (1, "1 — <0.5 mL/kg/h ×6 h"),
+                    (2, "2 — <0.5 mL/kg/h ×12 h"),
+                    (3, "3 — <0.3 mL/kg/h ×24 h or anuria ×12 h")
+                ])
+            scoreToggle("Renal replacement therapy required", binding: $kdigoI.requiresRRT, points: "Stage 3")
+        }
+        .onChange(of: kdigoI) { _, _ in recalculate() }
     }
 }

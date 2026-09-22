@@ -159,6 +159,12 @@ final class Patient {
     var meldScore: Int?
     // ASA Physical Status 1–5
     var asaScore: Int?
+    // ECOG/WHO Performance Status 0–4
+    var ecogScore: Int?
+    // Revised Trauma Score 0–7.84 (stored ×100 as Int for precision, e.g. 784 = 7.84)
+    var rtsScore: Int?
+    // KDIGO AKI Stage 0–3
+    var kdigoStage: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

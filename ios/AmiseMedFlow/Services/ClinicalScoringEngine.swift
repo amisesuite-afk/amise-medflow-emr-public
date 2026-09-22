@@ -4441,4 +4441,165 @@ enum ClinicalScoringEngine {
             evidenceNote: "O'Grady JG et al. Gastroenterology 1989;97:439–445. Standard transplant referral criteria for acute liver failure used by British Society of Gastroenterology and AASLD. Paracetamol ALF: pH <7.30 alone sufficient."
         )
     }
+
+    // MARK: - ECOG / WHO Performance Status
+    struct ECOGInput: Equatable {
+        var grade: Int = 0   // 0=fully active; 1=restricted; 2=ambulatory/self-care; 3=limited; 4=bedbound
+    }
+
+    static func ecog(_ i: ECOGInput) -> ClinicalScore {
+        let g = min(max(i.grade, 0), 4)
+        let (risk, desc): (ScoreRisk, String)
+        switch g {
+        case 0: (risk, desc) = (.low,      "ECOG 0 — Fully active. No restriction on pre-illness activities. Fit for all treatment modalities.")
+        case 1: (risk, desc) = (.low,      "ECOG 1 — Restricted in strenuous activity; ambulatory and capable of light work. Fit for most therapies.")
+        case 2: (risk, desc) = (.moderate, "ECOG 2 — Ambulatory; capable of all self-care but unable to work. Up >50% of waking hours. Reduced tolerance for aggressive therapy.")
+        case 3: (risk, desc) = (.high,     "ECOG 3 — Limited self-care. Confined to bed or chair >50% of waking hours. Palliative intent typically favoured.")
+        default:(risk, desc) = (.high,     "ECOG 4 — Completely disabled. No self-care. Entirely confined to bed or chair. Surgery extremely high-risk.")
+        }
+        let flags: [String] = g >= 3 ? ["ECOG ≥3: major elective surgery carries prohibitive risk — multidisciplinary team discussion essential"] :
+                              g >= 2 ? ["ECOG 2: reduced surgical fitness — optimise before elective procedures"] : []
+        return ClinicalScore(
+            systemName: "ECOG Performance Status",
+            abbreviation: "ECOG \(g)",
+            score: Double(g),
+            maxScore: 4,
+            risk: risk,
+            interpretation: desc,
+            items: [ScoredItem(label: "Performance grade \(g)", points: g, present: true)],
+            recommendations: g >= 3 ? [
+                "Multidisciplinary team discussion before any elective surgery",
+                "Palliative intent should be considered as primary management approach",
+                "Nutritional support and rehabilitation assessment recommended"
+            ] : g >= 2 ? [
+                "Anaesthetic pre-assessment and cardiopulmonary exercise testing (CPET) if surgery planned",
+                "Pre-operative optimisation: nutrition, physiotherapy, anaemia treatment",
+                "Consider less invasive surgical approaches (laparoscopic, endoscopic)"
+            ] : [
+                "Standard pre-operative assessment",
+                "Document baseline functional status in surgical consent documentation"
+            ],
+            redFlags: flags,
+            evidenceNote: "Oken MM et al. Am J Clin Oncol 1982;5:649–655. WHO/Eastern Cooperative Oncology Group. Standard metric for functional reserve in oncology and surgical fitness."
+        )
+    }
+
+    // MARK: - Revised Trauma Score (RTS)
+    struct RTSInput: Equatable {
+        var glasgowComaScore: Int = 15    // 3–15
+        var systolicBP: Int = 120         // mmHg
+        var respiratoryRate: Int = 16     // breaths/min
+    }
+
+    static func rts(_ i: RTSInput) -> ClinicalScore {
+        func gcsCoded(_ v: Int) -> Int {
+            if v >= 13 { return 4 }; if v >= 9 { return 3 }; if v >= 6 { return 2 }
+            if v >= 4 { return 1 }; return 0
+        }
+        func sbpCoded(_ v: Int) -> Int {
+            if v > 89  { return 4 }; if v >= 76 { return 3 }; if v >= 50 { return 2 }
+            if v >  0  { return 1 }; return 0
+        }
+        func rrCoded(_ v: Int) -> Int {
+            if v >= 10 && v <= 29 { return 4 }; if v >= 6 { return 3 }
+            if v >= 1 { return 2 }; if v > 29 { return 4 }; return 0
+        }
+        let gcs = gcsCoded(max(3, min(15, i.glasgowComaScore)))
+        let sbp = sbpCoded(max(0, i.systolicBP))
+        let rr  = rrCoded(max(0, i.respiratoryRate))
+        // Weighted RTS (Triage Revised Trauma Score: 0–7.84)
+        let rtsScore = 0.9368 * Double(gcs) + 0.7326 * Double(sbp) + 0.2908 * Double(rr)
+        let (risk, interp): (ScoreRisk, String)
+        switch rtsScore {
+        case 7...:  (risk, interp) = (.low,      "RTS \(String(format: "%.2f", rtsScore)) — Minor injury. Predicted survival ~98%. Standard triage.")
+        case 4...:  (risk, interp) = (.moderate, "RTS \(String(format: "%.2f", rtsScore)) — Moderate-severe injury. Predicted survival ~60–75%. Priority triage.")
+        case 1...:  (risk, interp) = (.high,     "RTS \(String(format: "%.2f", rtsScore)) — Critical injury. Predicted survival ~25–50%. Immediate triage.")
+        default:    (risk, interp) = (.high,     "RTS \(String(format: "%.2f", rtsScore)) — Unsurvivable / expectant. Predicted survival <5%.")
+        }
+        let flags: [String] = rtsScore < 4 ? ["RTS <4: activate major trauma protocol; immediate senior trauma surgeon and anaesthesia"] : []
+        return ClinicalScore(
+            systemName: "Revised Trauma Score",
+            abbreviation: "RTS \(String(format: "%.2f", rtsScore))",
+            score: rtsScore,
+            maxScore: 7.84,
+            risk: risk,
+            interpretation: interp,
+            items: [
+                ScoredItem(label: "GCS coded (\(i.glasgowComaScore) → \(gcs))", points: gcs, present: true),
+                ScoredItem(label: "SBP coded (\(i.systolicBP) mmHg → \(sbp))",  points: sbp, present: true),
+                ScoredItem(label: "RR coded (\(i.respiratoryRate) bpm → \(rr))",  points: rr,  present: true)
+            ],
+            recommendations: rtsScore < 4 ? [
+                "Activate major trauma protocol immediately",
+                "Airway management priority — consider early intubation",
+                "Haemorrhage control — transfusion protocol activation",
+                "Immediate CT trauma survey if patient stable for transport",
+                "Notify operating theatre for emergency damage-control surgery"
+            ] : rtsScore < 7 ? [
+                "Priority assessment — full trauma workup",
+                "Repeat vitals and GCS every 15 minutes",
+                "IV access ×2, analgesia, splintage of long-bone fractures"
+            ] : [
+                "Standard trauma assessment",
+                "Analgesia and appropriate wound management"
+            ],
+            redFlags: flags,
+            evidenceNote: "Champion HR et al. J Trauma 1989;29:623–629. Weighted RTS; ISS complement for TRISS survival probability. Coded GCS + SBP + RR."
+        )
+    }
+
+    // MARK: - KDIGO AKI Staging (Acute Kidney Injury)
+    struct KDIGOInput: Equatable {
+        var stage: Int = 0           // 0=No AKI; 1=Stage1; 2=Stage2; 3=Stage3
+        var creatinineRise: Int = 0  // 0=<1.5×base; 1=1.5–1.9×; 2=2.0–2.9×; 3=≥3× or >354µmol/L
+        var urineOutput: Int = 0     // 0=normal; 1=<0.5mL/kg/h ×6h; 2=<0.5mL/kg/h ×12h; 3=<0.3mL/kg/h ×24h or anuria ×12h
+        var requiresRRT: Bool = false
+    }
+
+    static func kdigo(_ i: KDIGOInput) -> ClinicalScore {
+        let stage = i.requiresRRT ? 3 : max(i.creatinineRise, i.urineOutput)
+        let (risk, interp): (ScoreRisk, String)
+        switch stage {
+        case 0: (risk, interp) = (.low,      "No KDIGO AKI criteria met. Monitor renal function in high-risk perioperative patients.")
+        case 1: (risk, interp) = (.moderate, "KDIGO AKI Stage 1 — 1.5–1.9× creatinine rise OR UO <0.5 mL/kg/h for ≥6 h. Risk of progression to Stage 2–3 ~30%.")
+        case 2: (risk, interp) = (.high,     "KDIGO AKI Stage 2 — 2.0–2.9× creatinine rise OR UO <0.5 mL/kg/h for ≥12 h. CKD risk high; nephrology input recommended.")
+        default:(risk, interp) = (.high,     "KDIGO AKI Stage 3 — ≥3× creatinine rise or ≥354 µmol/L, OR UO <0.3 mL/kg/h ×24 h/anuria ×12 h, OR RRT required. Mortality ≥50% in ICU context.")
+        }
+        let flags: [String] = stage >= 3 ? ["KDIGO Stage 3 / RRT required — urgent nephrology referral; ICU-level monitoring essential"] :
+                              stage >= 2 ? ["KDIGO Stage 2 — nephrology input; avoid nephrotoxins; optimise haemodynamics"] : []
+        return ClinicalScore(
+            systemName: "KDIGO AKI Staging",
+            abbreviation: "KDIGO AKI Stage \(stage)",
+            score: Double(stage),
+            maxScore: 3,
+            risk: risk,
+            interpretation: interp,
+            items: [
+                ScoredItem(label: "Creatinine rise (\(["<1.5×", "1.5–1.9×", "2.0–2.9×", "≥3×/354+"][min(i.creatinineRise,3)])", points: i.creatinineRise, present: i.creatinineRise > 0),
+                ScoredItem(label: "Urine output criterion (\(["normal", "<0.5 ×6h", "<0.5 ×12h", "<0.3 ×24h"][min(i.urineOutput,3)])", points: i.urineOutput, present: i.urineOutput > 0),
+                ScoredItem(label: "Renal replacement therapy required", points: i.requiresRRT ? 3 : 0, present: i.requiresRRT)
+            ],
+            recommendations: stage >= 3 ? [
+                "Urgent nephrology referral for RRT assessment",
+                "Strict fluid balance and daily weights",
+                "Avoid all nephrotoxins (NSAIDs, aminoglycosides, contrast)",
+                "Review and renally-adjust all drug dosages",
+                "Plan for renal recovery — consider renal biopsy if diagnosis unclear"
+            ] : stage >= 2 ? [
+                "Nephrology review within 24 hours",
+                "Optimise cardiac output and renal perfusion pressure",
+                "Bladder catheterisation for accurate urine output monitoring",
+                "Avoid nephrotoxins; adjust drug doses for eGFR"
+            ] : stage == 1 ? [
+                "Monitor creatinine and urine output closely (4-hourly)",
+                "Identify and treat reversible causes: hypovolaemia, obstruction, nephrotoxins",
+                "Optimise fluid status — target euvolaemia"
+            ] : [
+                "Monitor renal function in high-risk patients (major surgery, sepsis, contrast exposure)",
+                "Baseline creatinine documented for perioperative comparison"
+            ],
+            redFlags: flags,
+            evidenceNote: "KDIGO AKI Work Group. Kidney Int Suppl 2012;2:1–138. Stage based on highest criterion met (creatinine rise or urine output). RRT requirement automatically stage 3."
+        )
+    }
 }

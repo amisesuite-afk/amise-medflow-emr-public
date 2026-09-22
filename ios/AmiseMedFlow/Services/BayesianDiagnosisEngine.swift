@@ -135,6 +135,9 @@ enum BayesianDiagnosisEngine {
         childPughScore: Int? = nil,   // Child-Pugh 5–15; class A≤6, B7–9, C≥10
         meldScore: Int? = nil,        // MELD 6–40; ≥15 = transplant listing threshold
         asaScore: Int? = nil,         // ASA Physical Status 1–6
+        ecogScore: Int? = nil,        // ECOG 0–4; ≥2 = reduced fitness
+        rtsScore: Int? = nil,         // RTS ×100 as Int; <400 = critical trauma
+        kdigoStage: Int? = nil,       // KDIGO AKI 0–3
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3210,6 +3213,61 @@ enum BayesianDiagnosisEngine {
                 let nameLow = scored[i].candidate.name.lowercased()
                 guard meldTargets.contains(where: { nameLow.contains($0) }) else { continue }
                 let label = "MELD \(meld) — end-stage liver disease probability significantly elevated"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // ECOG: poor performance status boosts cancer, frailty, and neurodegenerative diagnoses
+        if let ecog = ecogScore, ecog >= 2 {
+            let ecogTargets = ["cancer", "carcinoma", "metastasis", "lymphoma", "sarcoma",
+                               "frailty", "sarcopenia", "malnutrition", "cachexia",
+                               "dementia", "parkinson", "motor neurone", "cerebral palsy",
+                               "heart failure", "chronic respiratory failure"]
+            let adj = ecog >= 3 ? 8 : 5
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard ecogTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "ECOG \(ecog) — reduced performance status supports diagnosis of debilitating or advanced disease"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // RTS: low score boosts trauma-related diagnoses
+        if let rts = rtsScore, rts < 700 {  // RTS <7.00 (stored ×100)
+            let traumaTargets = ["trauma", "injury", "fracture", "haemorrhage", "haematoma",
+                                 "splenic rupture", "hepatic laceration", "rib fracture",
+                                 "pneumothorax", "haemothorax", "traumatic brain", "subdural",
+                                 "extradural", "aortic injury", "mesenteric injury",
+                                 "bladder rupture", "pelvic fracture"]
+            let adj = rts < 400 ? 12 : rts < 600 ? 7 : 4
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard traumaTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "RTS \(String(format: "%.2f", Double(rts)/100)) — trauma severity score supports traumatic aetiology"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // KDIGO AKI: boosts renal and sepsis diagnoses
+        if let ak = kdigoStage, ak >= 1 {
+            let akiTargets = ["acute kidney injury", "aki", "acute renal failure",
+                              "acute tubular necrosis", "renal papillary necrosis",
+                              "hepatorenal syndrome", "sepsis", "septic shock",
+                              "rhabdomyolysis", "contrast nephropathy",
+                              "prerenal azotaemia", "hypovolaemia",
+                              "obstructive uropathy", "urinary obstruction",
+                              "myeloma", "amyloid", "glomerulonephritis"]
+            let adj = ak >= 3 ? 12 : ak == 2 ? 8 : 5
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard akiTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "KDIGO AKI Stage \(ak) — acute kidney injury severity supports renal/precipitating diagnosis"
                 scored[i].logPosterior += adj
                 scored[i].evidence.append(label)
                 scored[i].evidenceSources["score", default: []].append(label)
