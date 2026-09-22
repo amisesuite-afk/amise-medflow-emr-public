@@ -1704,6 +1704,38 @@ enum PatientScoreAutoPopulator {
         return (i, f)
     }
 
+    // MARK: - Clinical Frailty Scale
+
+    static func cfs(patient: Patient) -> (ClinicalFrailtyInput, ScoreAutoFill) {
+        var i = ClinicalFrailtyInput()
+        var f = ScoreAutoFill()
+        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                       patient.examGeneral, patient.pmhNotes, patient.notes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Try to infer frailty level from clinical text keywords
+        if allText.contains("terminally ill") || allText.contains("terminal") ||
+           allText.contains("end of life") || allText.contains("prognosis <6") {
+            i.level = 9
+            f.addAutoFilled(key: "level", label: "Terminal illness suspected from clinical text (CFS 9) — verify", source: "Clinical text")
+        } else if allText.contains("very severely frail") || allText.contains("completely dependent") {
+            i.level = 8
+            f.addAutoFilled(key: "level", label: "Very severe frailty suggested from clinical text (CFS 8) — verify", source: "Clinical text")
+        } else if allText.contains("severely frail") || allText.contains("severe frail") {
+            i.level = 7
+            f.addAutoFilled(key: "level", label: "Severe frailty suggested from clinical text (CFS 7) — verify", source: "Clinical text")
+        } else if allText.contains("moderately frail") || allText.contains("moderate frail") {
+            i.level = 6
+            f.addAutoFilled(key: "level", label: "Moderate frailty suggested from clinical text (CFS 6) — verify", source: "Clinical text")
+        } else if allText.contains("mildly frail") || allText.contains("mild frail") || allText.contains("frail") {
+            i.level = 5
+            f.addAutoFilled(key: "level", label: "Mild frailty suggested from clinical text (CFS 5) — verify", source: "Clinical text")
+        } else {
+            f.addPending(key: "level", label: "CFS level (1–9) — requires direct functional assessment; assess ADLs, mobility, energy", source: "Clinical assessment")
+        }
+        return (i, f)
+    }
+
     // MARK: - Mallampati Airway Classification
 
     static func mallampati(patient: Patient) -> (MallampatiInput, ScoreAutoFill) {

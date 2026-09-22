@@ -59,6 +59,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case forrest          = "Forrest Classification"
     case heart            = "HEART Score (Chest Pain)"
     case mallampati       = "Mallampati Airway Class"
+    case cfs              = "Clinical Frailty Scale"
 
     var category: ScoreCategory {
         switch self {
@@ -70,7 +71,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .vascular
         case .sirs, .qsofa, .psiPort, .sofa, .curb65, .apacheII:
             return .sepsis
-        case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4, .ppossum, .nrs2002, .mallampati:
+        case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4, .ppossum, .nrs2002, .mallampati, .cfs:
             return .preop
         case .abcd2, .lrinec, .gcs:
             return .neuro
@@ -118,6 +119,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .forrest:        return "eye.circle"
         case .heart:          return "heart.text.clipboard"
         case .mallampati:     return "mouth"
+        case .cfs:            return "figure.walk.circle"
         }
     }
 }
@@ -212,6 +214,8 @@ struct ClinicalScoresView: View {
     @State private var heartI = HEARTInput()
     // Mallampati Airway
     @State private var mallampatiI = MallampatiInput()
+    // Clinical Frailty Scale
+    @State private var cfsI = ClinicalFrailtyInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -598,6 +602,9 @@ struct ClinicalScoresView: View {
         case .mallampati:
             let (input, fill) = PatientScoreAutoPopulator.mallampati(patient: patient)
             mallampatiI = input; autoFill = fill
+        case .cfs:
+            let (input, fill) = PatientScoreAutoPopulator.cfs(patient: patient)
+            cfsI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -694,6 +701,7 @@ struct ClinicalScoresView: View {
         case .forrest:      ClinicalScoringEngine.forrest(forrestI)
         case .heart:        ClinicalScoringEngine.heart(heartI)
         case .mallampati:   ClinicalScoringEngine.mallampati(mallampatiI)
+        case .cfs:          ClinicalScoringEngine.clinicalFrailty(cfsI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -730,6 +738,7 @@ struct ClinicalScoresView: View {
         case .forrest:      patient.forrestGrade = intScore
         case .heart:        patient.heartScore = intScore
         case .mallampati:   patient.mallampatiScore = intScore
+        case .cfs:          patient.cfsScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -804,6 +813,7 @@ struct ClinicalScoresView: View {
         case .forrest:      forrestForm
         case .heart:        heartForm
         case .mallampati:   mallampatiForm
+        case .cfs:          cfsForm
         }
     }
 
@@ -1855,6 +1865,9 @@ struct ClinicalScoresView: View {
         case .heart:
             // HEART domain scores are numeric pickers — no boolean toggle confirm
             break
+        case .cfs:
+            // CFS is a single ordinal picker — no boolean toggle confirm
+            break
         case .mallampati:
             switch field.id {
             case "mouthOpening":   mallampatiI.mouthOpening   = true
@@ -2337,6 +2350,31 @@ struct ClinicalScoresView: View {
                 scoreToggle("Age ≥70 years", binding: $nrsI.ageOver70, points: "+1", autoKey: "ageOver70")
             }
             .onChange(of: nrsI) { _, _ in recalculate() }
+        }
+    }
+
+    // MARK: - Clinical Frailty Scale
+
+    private var cfsForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Clinical Frailty Scale (Rockwood et al, CMAJ 2005). 9-level ordinal scale for adults ≥65. Levels 1–3 = non-frail; 4 = vulnerable; 5–6 = frail (mild–moderate); 7–8 = severe; 9 = terminal illness. Each level ≥5 increases perioperative mortality and morbidity.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
+            Group {
+                sectionHeader("Frailty Level")
+                apacheSegment("CFS Level", selection: $cfsI.level,
+                    options: [
+                        (1, "1 — Very Fit: robust, active, energetic; exercises regularly; among fittest for age"),
+                        (2, "2 — Fit: no active disease symptoms; exercises or very active occasionally"),
+                        (3, "3 — Managing Well: medical problems well controlled; not regularly active beyond routine walking"),
+                        (4, "4 — Vulnerable: not dependent; but symptoms limit activities; often tired/slowed down"),
+                        (5, "5 — Mildly Frail: evident slowing; dependent on others for heavy housework, finances, medications"),
+                        (6, "6 — Moderately Frail: needs help with all outside activities; bathing or dressing indoors"),
+                        (7, "7 — Severely Frail: completely dependent for personal care; stable, not at high risk of dying <6 months"),
+                        (8, "8 — Very Severely Frail: completely dependent; approaching end of life; minor illness could be fatal"),
+                        (9, "9 — Terminally Ill: life expectancy <6 months; not otherwise evidently frail")
+                    ])
+            }
+            .onChange(of: cfsI) { _, _ in recalculate() }
         }
     }
 

@@ -116,6 +116,7 @@ enum BayesianDiagnosisEngine {
         forrestGrade: Int? = nil,     // Forrest grade (1–6); 1–2=active bleed, 3=visible vessel (high rebleed)
         heartScore: Int? = nil,       // HEART Score (0–10); ≥4 = moderate/high MACE risk
         mallampatiClass: Int? = nil,  // Mallampati class (1–4); ≥3 = potentially difficult airway
+        cfsScore: Int? = nil,         // CFS (1–9); ≥5 = mild frailty — boosts frailty-related candidates
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2748,6 +2749,26 @@ enum BayesianDiagnosisEngine {
                 case 4:    (7,  "Forrest IIb — adherent clot; rebleed risk 22%; high-risk stigmata")
                 case 5:    (3,  "Forrest IIc — flat spot; rebleed risk 10%; lower-risk stigmata")
                 default:   (0,  "")
+                }
+                guard adj > 0 else { continue }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // CFS: frailty ≥5 boosts sarcopenia, malnutrition, delirium, deconditioning candidates
+        if let cfs = cfsScore, cfs >= 5 {
+            let frailtyTargets = ["sarcopenia", "frailty", "malnutrition", "protein-energy malnutrition",
+                                   "delirium", "deconditioning", "falls", "dementia", "cognitive impairment",
+                                   "pressure ulcer", "functional decline", "cachexia"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard frailtyTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch cfs {
+                case 7...: (12, "CFS ≥7 — severe frailty; very high risk of functional decline and perioperative complications")
+                case 5..<7: (6, "CFS 5–6 — frailty; elevated perioperative risk; geriatric review recommended")
+                default:   (0, "")
                 }
                 guard adj > 0 else { continue }
                 scored[i].logPosterior += Double(adj)

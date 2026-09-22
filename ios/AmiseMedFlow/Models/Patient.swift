@@ -121,6 +121,8 @@ final class Patient {
     var heartScore: Int?
     // Mallampati class (1–4) + additional predictors; stored as composite Int for display
     var mallampatiScore: Int?
+    // Clinical Frailty Scale (1–9); ≥5=mild frailty increases perioperative risk
+    var cfsScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

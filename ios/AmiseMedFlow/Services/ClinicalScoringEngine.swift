@@ -476,6 +476,14 @@ struct ForrestInput: Equatable {
     var grade: Int = 1
 }
 
+struct ClinicalFrailtyInput: Equatable {
+    // Clinical Frailty Scale (Rockwood et al, CMAJ 2005; Rockwood et al, Lancet 2019)
+    // 9-level ordinal scale assessing functional capacity and frailty in adults ≥65
+    // level: 1=very fit, 2=fit, 3=managing well, 4=vulnerable, 5=mildly frail,
+    //        6=moderately frail, 7=severely frail, 8=very severely frail, 9=terminally ill
+    var level: Int = 1
+}
+
 struct MallampatiInput: Equatable {
     // Mallampati Classification (Mallampati et al, Can Anaesth Soc J 1985; Samsoon & Young, Anaesthesia 1987)
     // Airway classification for anticipated difficulty of laryngoscopy / intubation (modified Mallampati)
@@ -2826,6 +2834,84 @@ enum ClinicalScoringEngine {
             recommendations: data.recs,
             redFlags: data.flags,
             evidenceNote: "Forrest JAH et al. Lancet 1974; 2:394–397. Laine L & Peterson WL. N Engl J Med 1994; 331:717–727."
+        )
+    }
+
+    // MARK: - Clinical Frailty Scale
+
+    static func clinicalFrailty(_ i: ClinicalFrailtyInput) -> ClinicalScore {
+        struct CFSData {
+            let label: String; let risk: ScoreRisk
+            let interp: String; let recs: [String]; let flags: [String]
+        }
+        let table: [Int: CFSData] = [
+            1: CFSData(label: "1 — Very Fit", risk: .low,
+                interp: "Robust, active, energetic, well-motivated; regular exercise; among the fittest for age",
+                recs: ["Standard surgical risk; no frailty-related pre-operative optimisation required"],
+                flags: []),
+            2: CFSData(label: "2 — Fit", risk: .low,
+                interp: "No active disease symptoms; less fit than CFS 1; exercises or is very active occasionally",
+                recs: ["Standard surgical risk; encourage pre-operative exercise optimisation"],
+                flags: []),
+            3: CFSData(label: "3 — Managing Well", risk: .low,
+                interp: "Medical problems well controlled but not regularly active beyond routine walking",
+                recs: ["Low frailty surgical risk; encourage pre-operative physical activity",
+                       "Ensure chronic conditions optimised before elective surgery"],
+                flags: []),
+            4: CFSData(label: "4 — Vulnerable", risk: .moderate,
+                interp: "Not dependent on others for daily activities but symptoms limit activity; often complains of being slowed down or tired",
+                recs: ["Frailty increases perioperative risk — consider comprehensive pre-operative assessment",
+                       "Geriatric medicine input for elective surgery",
+                       "Optimise nutrition, anaemia, and functional capacity before operation"],
+                flags: []),
+            5: CFSData(label: "5 — Mildly Frail", risk: .moderate,
+                interp: "Evident slowing; depends on others for high-order IADLs (finances, transport, heavy housework, medications)",
+                recs: ["Mildly frail — geriatric medicine review recommended",
+                       "Shared decision-making discussion: risks vs benefits of surgery",
+                       "Prehabilitation programme if time allows",
+                       "Enhanced recovery pathway with early physio and dietitian input"],
+                flags: ["Mild frailty — perioperative complication and mortality risk elevated"]),
+            6: CFSData(label: "6 — Moderately Frail", risk: .high,
+                interp: "Help needed with all outside activities and housekeeping; indoors assistance with bathing or dressing",
+                recs: ["Moderately frail — senior surgical and geriatric medicine joint review required",
+                       "Careful shared decision-making; consider non-operative management where feasible",
+                       "If proceeding: enhanced perioperative care, delirium prevention bundle, early HDU",
+                       "Involve family/carers in consent process and post-discharge planning",
+                       "Nutritional support and prehabilitation"],
+                flags: ["Moderate frailty — significantly increased perioperative mortality and morbidity",
+                        "Discuss goals of care and ceiling of treatment before proceeding"]),
+            7: CFSData(label: "7 — Severely Frail", risk: .critical,
+                interp: "Completely dependent for personal care from whatever cause (physical or cognitive); stable, not at high risk of dying within 6 months",
+                recs: ["Severely frail — surgery carries very high risk; consider conservative management",
+                       "Multidisciplinary review including geriatrics, palliative care if appropriate",
+                       "Goals-of-care discussion mandatory before any intervention",
+                       "If surgery unavoidable: single-stage minimal-access approach preferred"],
+                flags: ["Severe frailty — very high perioperative mortality risk",
+                        "Goals-of-care and ceiling-of-treatment discussion mandatory"]),
+            8: CFSData(label: "8 — Very Severely Frail", risk: .critical,
+                interp: "Completely dependent, approaching end of life; could not recover even from a minor illness",
+                recs: ["Surgery very unlikely to confer benefit; palliative/comfort care discussion",
+                       "Palliative care team involvement recommended"],
+                flags: ["Very severe frailty — surgery unlikely to be appropriate; palliative care review"]),
+            9: CFSData(label: "9 — Terminally Ill", risk: .critical,
+                interp: "Life expectancy <6 months; not otherwise evidently frail",
+                recs: ["Palliative and end-of-life care; surgical intervention not appropriate except for symptom control"],
+                flags: ["Terminal illness — surgical intervention not appropriate except for palliative symptom relief"])
+        ]
+        let data = table[i.level] ?? table[1]!
+        let items: [ScoreItem] = [
+            ScoreItem(label: data.label, points: Double(i.level), present: true)
+        ]
+        return ClinicalScore(
+            systemName: "Clinical Frailty Scale",
+            abbreviation: "CFS \(i.level)",
+            score: Double(i.level), maxScore: 9,
+            risk: data.risk,
+            interpretation: "\(data.label) — \(data.interp)",
+            items: items,
+            recommendations: data.recs,
+            redFlags: data.flags,
+            evidenceNote: "Rockwood K et al. CMAJ 2005;173:489–495. Rockwood K & Theou O. Lancet 2019;394:1651–1652."
         )
     }
 
