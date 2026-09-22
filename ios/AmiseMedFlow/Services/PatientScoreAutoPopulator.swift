@@ -1128,10 +1128,10 @@ enum PatientScoreAutoPopulator {
         // CNS: AVPU → GCS proxy
         if let v = vitals {
             switch v.avpu {
-            case .alert:    i.cns = 0; f.autoFieldKeys.insert("cnsGCS")
-            case .voice:    i.cns = 1; f.autoFieldKeys.insert("cnsGCS")
-            case .pain:     i.cns = 3; f.autoFieldKeys.insert("cnsGCS")
-            case .unresponsive: i.cns = 4; f.autoFieldKeys.insert("cnsGCS")
+            case .alert:            i.cns = 0; f.autoFieldKeys.insert("cnsGCS")
+            case .confused, .voice: i.cns = 1; f.autoFieldKeys.insert("cnsGCS")
+            case .pain:             i.cns = 3; f.autoFieldKeys.insert("cnsGCS")
+            case .unresponsive:     i.cns = 4; f.autoFieldKeys.insert("cnsGCS")
             }
         }
 
