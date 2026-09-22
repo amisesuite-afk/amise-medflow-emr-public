@@ -1456,4 +1456,159 @@ enum PatientScoreAutoPopulator {
 
         return (i, f)
     }
+
+    // MARK: P-POSSUM
+
+    static func ppossum(patient: Patient) -> (PPOSSUMInput, ScoreAutoFill) {
+        var i = PPOSSUMInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+
+        // Age (physiological score)
+        let age = patient.ageYears
+        switch age {
+        case ..<61:  i.agePhys = 1
+        case 61..<71: i.agePhys = 2
+        case 71..<81: i.agePhys = 4
+        default:     i.agePhys = 8
+        }
+        f.autoFieldKeys.insert("agePhys")
+
+        // SBP and HR from latest vitals
+        if let v = patient.latestVitals {
+            if let sbp = v.bpSystolic {
+                let pts: Int
+                switch sbp {
+                case ..<90:    pts = 8
+                case 90..<100: pts = 4
+                case 100..<110: pts = 2
+                case 110...130: pts = 1
+                case 131...170: pts = 2
+                default:       pts = 4  // ≥171
+                }
+                i.sbpPhys = pts; f.autoFieldKeys.insert("sbpPhys")
+            }
+            if let hr = v.heartRate {
+                let pts: Int
+                switch hr {
+                case ..<51:    pts = 2
+                case 51..<81:  pts = 1
+                case 81..<101: pts = 2
+                case 101..<121: pts = 4
+                default:       pts = 8  // ≥121
+                }
+                i.hrPhys = pts; f.autoFieldKeys.insert("hrPhys")
+            }
+        }
+
+        // Cardiac signs from PMH/medications
+        let raisedJvpKw = ["raised jvp", "raised jugular", "cardiomegaly", "jvp raised", "elevated jvp"]
+        let oedemaDioxinKw = ["peripheral oedema", "ankle oedema", "warfarin", "digoxin"]
+        let medicatedCardiacKw = ["antihypertensive", "beta blocker", "ace inhibitor", "arb ",
+                                  "calcium channel", "amlodipine", "lisinopril", "atenolol",
+                                  "ramipril", "bisoprolol", "carvedilol"]
+        if patient.clinicalTextContains(raisedJvpKw) {
+            i.cardiacSigns = 8; f.autoFieldKeys.insert("cardiacSigns")
+        } else if patient.clinicalTextContains(oedemaDioxinKw) {
+            i.cardiacSigns = 4; f.autoFieldKeys.insert("cardiacSigns")
+        } else if patient.clinicalTextContains(medicatedCardiacKw)
+                    || patient.prescriptionsContain(medicatedCardiacKw) {
+            i.cardiacSigns = 2; f.autoFieldKeys.insert("cardiacSigns")
+        }
+
+        // Respiratory history from PMH
+        let breathlessAtRestKw = ["breathless at rest", "orthopnoea", "paroxysmal nocturnal dyspnoea"]
+        let limitingDyspnoeaKw = ["copd", "chronic obstructive", "limiting dyspnoea",
+                                  "dyspnoea on minimal", "emphysema", "cor pulmonale"]
+        let exertionalDyspnoeaKw = ["exertional dyspnoea", "dyspnoea on exertion",
+                                    "shortness of breath on exercise", "sob on exertion"]
+        if patient.clinicalTextContains(breathlessAtRestKw) {
+            i.respiratoryHx = 8; f.autoFieldKeys.insert("respiratoryHx")
+        } else if patient.clinicalTextContains(limitingDyspnoeaKw) {
+            i.respiratoryHx = 4; f.autoFieldKeys.insert("respiratoryHx")
+        } else if patient.clinicalTextContains(exertionalDyspnoeaKw) {
+            i.respiratoryHx = 2; f.autoFieldKeys.insert("respiratoryHx")
+        }
+
+        // Malignancy from PMH
+        let metastaticKw = ["metastas", "metastatic", "stage iv", "stage 4", "m1", "distant spread"]
+        let nodalKw = ["nodal", "node positive", "n1", "n2", "n3", "lymph node metastas"]
+        let cancerKw = ["cancer", "carcinoma", "malignancy", "malignant", "lymphoma", "leukemia",
+                        "leukaemia", "sarcoma", "melanoma", "adenocarcinoma", "neoplasm", "tumour", "tumor"]
+        if patient.clinicalTextContains(metastaticKw) {
+            i.malignancy = 8; f.autoFieldKeys.insert("malignancy")
+        } else if patient.clinicalTextContains(nodalKw) {
+            i.malignancy = 4; f.autoFieldKeys.insert("malignancy")
+        } else if patient.clinicalTextContains(cancerKw) {
+            i.malignancy = 2; f.autoFieldKeys.insert("malignancy")
+        }
+
+        // Operative magnitude and urgency from surgical visit data
+        if patient.isSurgicalVisit {
+            let procName = patient.surgeryData.procedureName.lowercased()
+            let majorPlusKw = ["whipple", "pancreatectomy", "hepatectomy", "pneumonectomy",
+                               "oesophagectomy", "esophagectomy", "gastrectomy", "colectomy",
+                               "proctocolectomy", "aortic"]
+            let majorKw = ["laparotomy", "bowel resection", "colorectal", "hemicolectomy",
+                           "anterior resection", "hartmann", "low anterior", "splenectomy",
+                           "fundoplication"]
+            let moderateKw = ["cholecystectomy", "hernia", "appendicectomy", "appendectomy",
+                              "haemorrhoidectomy", "hemorrhoidectomy", "fistulectomy",
+                              "pilonidal", "incisional"]
+            if majorPlusKw.contains(where: { procName.contains($0) }) {
+                i.operativeMagnitude = 8; f.autoFieldKeys.insert("operativeMagnitude")
+            } else if majorKw.contains(where: { procName.contains($0) }) {
+                i.operativeMagnitude = 4; f.autoFieldKeys.insert("operativeMagnitude")
+            } else if moderateKw.contains(where: { procName.contains($0) }) {
+                i.operativeMagnitude = 2; f.autoFieldKeys.insert("operativeMagnitude")
+            }
+
+            // Urgency — emergency setting with acute presentation suggests ≤2h window
+            if patient.setting == .emergency {
+                let acuteKw = ["perforated", "perforation", "ischaemia", "strangulated", "volvulus"]
+                if patient.clinicalTextContains(acuteKw) {
+                    i.urgency = 8; f.autoFieldKeys.insert("urgency")
+                } else {
+                    i.urgency = 4; f.autoFieldKeys.insert("urgency")
+                }
+            }
+        }
+
+        // Pending: labs and operative findings require intraoperative/lab data
+        f.addPending(key: "haemoglobin",
+            label: "Haemoglobin (g/dL) — check latest FBC",
+            source: "Laboratory results")
+        f.addPending(key: "wbcPhys",
+            label: "WBC (×10³/μL) — check latest FBC",
+            source: "Laboratory results")
+        f.addPending(key: "urea",
+            label: "Serum urea (mmol/L) — check latest U&E",
+            source: "Laboratory results")
+        f.addPending(key: "sodiumPhys",
+            label: "Serum sodium (mmol/L) — check latest U&E",
+            source: "Laboratory results")
+        f.addPending(key: "potassiumPhys",
+            label: "Serum potassium (mmol/L) — check latest U&E",
+            source: "Laboratory results")
+        f.addPending(key: "ecg",
+            label: "ECG findings — review latest ECG trace",
+            source: "ECG / chart review")
+        if !f.isAuto("operativeMagnitude") {
+            f.addPending(key: "operativeMagnitude",
+                label: "Operative magnitude — confirm planned procedure",
+                source: "Operative plan")
+        }
+        f.addPending(key: "bloodLoss",
+            label: "Estimated blood loss — operative field measurement",
+            source: "Operative note")
+        f.addPending(key: "peritonealSoiling",
+            label: "Peritoneal soiling — operative findings",
+            source: "Operative note")
+        if !f.isAuto("urgency") {
+            f.addPending(key: "urgency",
+                label: "Urgency — elective or emergency surgery",
+                source: "Confirm with consultant")
+        }
+
+        return (i, f)
+    }
 }

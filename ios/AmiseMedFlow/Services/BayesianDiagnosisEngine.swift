@@ -109,6 +109,7 @@ enum BayesianDiagnosisEngine {
         curb65Score: Int? = nil,      // CURB-65 (0–5); ≥3 = hospital admission for CAP
         paduaScore: Int? = nil,       // Padua (0–20); ≥4 = high VTE risk in medical patients
         apacheIIScore: Int? = nil,    // APACHE II (0–71); ≥20 = high ICU mortality risk
+        ppossumMortPct10: Int? = nil, // P-POSSUM predicted mortality ×10 (e.g. 85 = 8.5%)
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2639,6 +2640,26 @@ enum BayesianDiagnosisEngine {
                 case 20...24: (14, "APACHE II \(apache) — very high severity: ~40% predicted mortality")
                 case 15...19: (10, "APACHE II \(apache) — high severity: ~25% predicted mortality")
                 default:      (5,  "APACHE II \(apache) — moderate severity: ~15% predicted mortality")
+                }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // P-POSSUM: boosts surgical complication and sepsis candidates when operative mortality is high
+        if let ppmx10 = ppossumMortPct10, ppmx10 >= 50 { // ≥5% predicted mortality
+            let mortPct = Double(ppmx10) / 10.0
+            let surgicalTargets = ["post-operative complication", "anastomotic leak", "surgical site infection",
+                                    "wound dehiscence", "pulmonary embolism", "sepsis", "septic shock",
+                                    "acute kidney injury", "myocardial infarction", "pneumonia", "ileus"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard surgicalTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch mortPct {
+                case 30...: (12, String(format: "P-POSSUM predicted mortality %.1f%% — critical operative risk", mortPct))
+                case 15..<30: (8, String(format: "P-POSSUM predicted mortality %.1f%% — high operative risk", mortPct))
+                default:    (4, String(format: "P-POSSUM predicted mortality %.1f%% — moderate operative risk", mortPct))
                 }
                 scored[i].logPosterior += Double(adj)
                 scored[i].evidence.insert(label, at: 0)

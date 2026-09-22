@@ -421,6 +421,33 @@ struct PaduaInput: Equatable {
     var ongoingHormonalTreatment: Bool = false   // +1 (OCP, HRT)
 }
 
+struct PPOSSUMInput: Equatable {
+    // P-POSSUM — Portsmouth POSSUM (Whiteley et al, Br J Surg 1996)
+    // Each variable stores actual point value (1, 2, 4, or 8).
+    // Predicted mortality: ln(R/(1−R)) = −9.065 + 0.1692×PS + 0.1550×OS
+    // Predicted morbidity: ln(R/(1−R)) = −5.91 + 0.16×PS + 0.19×OS
+    // MARK: Physiological Score (PS) — 12 variables
+    var agePhys: Int = 1             // 1=≤60, 2=61–70, 4=71–80, 8=≥81
+    var cardiacSigns: Int = 1        // 1=none, 2=Rx only, 4=oedema/warfarin, 8=raised JVP/cardiomegaly
+    var respiratoryHx: Int = 1       // 1=none, 2=exertional dyspnoea, 4=limiting dyspnoea/COPD, 8=breathless at rest
+    var sbpPhys: Int = 1             // 1=110–130, 2=131–170 or 100–109, 4=≥171 or 90–99, 8=≤89
+    var hrPhys: Int = 1              // 1=51–80, 2=81–100 or ≤50, 4=101–120, 8=≥121
+    var gcsPhys: Int = 1             // 1=15, 2=12–14, 4=9–11, 8=≤8
+    var haemoglobin: Int = 1         // 1=13–16 g/dL, 2=11.5–12.9 or 16.1–17.0, 4=10.0–11.4 or 17.1–18.0, 8=≤9.9 or ≥18.1
+    var wbcPhys: Int = 1             // 1=4–10×10³, 2=10.1–20 or 3.1–3.9, 4=≥20.1 or ≤3.0
+    var urea: Int = 1                // 1=<7.5 mmol/L, 2=7.5–10.0, 4=10.1–15.0, 8=≥15.1
+    var sodiumPhys: Int = 1          // 1=136–145, 2=131–135 or 146–150, 4=126–130, 8=≤125
+    var potassiumPhys: Int = 1       // 1=3.5–5.0, 2=3.2–3.4 or 5.1–5.3, 4=2.9–3.1 or 5.4–5.9, 8=≤2.8 or ≥6.0
+    var ecg: Int = 1                 // 1=normal, 2=AF rate 60–90, 4=AF other rate or >5 ectopics, 8=Q waves/ST/BBB
+    // MARK: Operative Score (OS) — 6 variables
+    var operativeMagnitude: Int = 1  // 1=minor, 2=moderate, 4=major, 8=major+
+    var numProcedures: Int = 1       // 1=1, 2=2, 4=≥3
+    var bloodLoss: Int = 1           // 1=<100 mL, 2=101–500, 4=501–999, 8=≥1000
+    var peritonealSoiling: Int = 1   // 1=none, 2=minor serosal/haematoma, 4=local pus, 8=free bowel content/pus/blood
+    var malignancy: Int = 1          // 1=none, 2=primary only, 4=nodal disease, 8=distant metastases
+    var urgency: Int = 1             // 1=elective, 4=emergency (>2h resuscitated), 8=emergency (<2h not resuscitated)
+}
+
 struct APACHEIIInput: Equatable {
     // APACHE II — Knaus WA et al, Crit Care Med 1985
     // Each field stores the actual APACHE II point contribution for that variable.
@@ -2385,6 +2412,108 @@ enum ClinicalScoringEngine {
             recommendations: recs, items: items, redFlags: redFlags,
             evidenceNote: "Barbar S et al, J Thromb Haemost 2010. Validated in 1180 medical inpatients. Score ≥4 = high risk (11% VTE without prophylaxis vs 2.2% with LMWH). Complements Caprini for surgical patients."
         )
+    }
+
+    // MARK: - P-POSSUM
+
+    static func ppossum(_ i: PPOSSUMInput) -> ClinicalScore {
+        let ps = i.agePhys + i.cardiacSigns + i.respiratoryHx + i.sbpPhys +
+                 i.hrPhys + i.gcsPhys + i.haemoglobin + i.wbcPhys +
+                 i.urea + i.sodiumPhys + i.potassiumPhys + i.ecg
+        let os = i.operativeMagnitude + i.numProcedures + i.bloodLoss +
+                 i.peritonealSoiling + i.malignancy + i.urgency
+
+        // P-POSSUM logistic regression (Whiteley et al, Br J Surg 1996)
+        let lnOddsMort = -9.065 + (0.1692 * Double(ps)) + (0.1550 * Double(os))
+        let predictedMortality = exp(lnOddsMort) / (1.0 + exp(lnOddsMort))
+        let mortPct = predictedMortality * 100.0
+
+        // Morbidity estimate (original POSSUM equation)
+        let lnOddsMorb = -5.91 + (0.16 * Double(ps)) + (0.19 * Double(os))
+        let predictedMorbidity = exp(lnOddsMorb) / (1.0 + exp(lnOddsMorb))
+        let morbPct = predictedMorbidity * 100.0
+
+        func si(_ label: String, _ pts: Int) -> ScoredItem {
+            ScoredItem(label: label, points: Double(pts), present: pts > 1)
+        }
+        let items: [ScoredItem] = [
+            si("Age", i.agePhys),
+            si("Cardiac signs", i.cardiacSigns),
+            si("Respiratory history", i.respiratoryHx),
+            si("Systolic BP", i.sbpPhys),
+            si("Heart rate", i.hrPhys),
+            si("GCS", i.gcsPhys),
+            si("Haemoglobin", i.haemoglobin),
+            si("WBC", i.wbcPhys),
+            si("Urea", i.urea),
+            si("Sodium", i.sodiumPhys),
+            si("Potassium", i.potassiumPhys),
+            si("ECG", i.ecg),
+            si("Operative magnitude", i.operativeMagnitude),
+            si("No. of procedures", i.numProcedures),
+            si("Blood loss", i.bloodLoss),
+            si("Peritoneal soiling", i.peritonealSoiling),
+            si("Malignancy", i.malignancy),
+            si("Urgency", i.urgency),
+        ]
+        let (risk, interpretation, recs, redFlags) = ppossumRisk(mortPct: mortPct, morbPct: morbPct, ps: ps, os: os)
+        return ClinicalScore(
+            systemName: "P-POSSUM",
+            abbreviation: String(format: "Mort %.1f%%", mortPct),
+            score: mortPct,
+            maxScore: 100,
+            risk: risk, interpretation: interpretation,
+            recommendations: recs, items: items, redFlags: redFlags,
+            evidenceNote: "Whiteley MS et al, Br J Surg 1996. P-POSSUM corrects original POSSUM over-prediction in low-risk patients. Physiological score \(ps), Operative score \(os). Predicted morbidity \(String(format: "%.1f", morbPct))%. Validated across general, vascular, and colorectal surgery."
+        )
+    }
+
+    private static func ppossumRisk(mortPct: Double, morbPct: Double, ps: Int, os: Int) -> (ScoreRisk, String, [String], [String]) {
+        let mortStr = String(format: "%.1f", mortPct)
+        let morbStr = String(format: "%.1f", morbPct)
+        switch mortPct {
+        case ..<2:
+            return (.low,
+                    "P-POSSUM predicted mortality \(mortStr)% — low surgical risk (PS \(ps), OS \(os))",
+                    ["Standard perioperative monitoring",
+                     "Document score in operative plan for audit",
+                     "Predicted morbidity: \(morbStr)%"],
+                    [])
+        case 2..<5:
+            return (.low,
+                    "P-POSSUM predicted mortality \(mortStr)% — low-moderate risk (PS \(ps), OS \(os))",
+                    ["Ensure adequate preoperative optimisation",
+                     "Discuss risk with patient during consent",
+                     "Predicted morbidity: \(morbStr)%"],
+                    [])
+        case 5..<15:
+            return (.moderate,
+                    "P-POSSUM predicted mortality \(mortStr)% — moderate risk (PS \(ps), OS \(os))",
+                    ["Senior surgeon and anaesthetist involvement",
+                     "HDU/critical care bed should be arranged",
+                     "Explicit discussion of risk in consent process",
+                     "Predicted morbidity: \(morbStr)%"],
+                    [])
+        case 15..<30:
+            return (.high,
+                    "P-POSSUM predicted mortality \(mortStr)% — high risk (PS \(ps), OS \(os))",
+                    ["Consultant-level surgeon required",
+                     "ICU bed must be arranged preoperatively",
+                     "Consider further optimisation before elective surgery",
+                     "Detailed goals-of-care discussion with patient and family",
+                     "Predicted morbidity: \(morbStr)%"],
+                    ["P-POSSUM mortality ≥15% — high operative risk: ICU bed required"])
+        default: // ≥30%
+            return (.critical,
+                    "P-POSSUM predicted mortality \(mortStr)% — very high risk (PS \(ps), OS \(os))",
+                    ["Multi-disciplinary team review before proceeding",
+                     "Weigh operative benefit against predicted mortality",
+                     "Formal goals-of-care and advance directive discussion",
+                     "ICU care essential",
+                     "Consider non-operative management if appropriate",
+                     "Predicted morbidity: \(morbStr)%"],
+                    ["P-POSSUM mortality ≥30% — critical operative risk: MDT review required"])
+        }
     }
 
     // MARK: - APACHE II

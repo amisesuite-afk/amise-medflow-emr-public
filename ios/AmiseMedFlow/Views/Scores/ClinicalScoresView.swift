@@ -52,6 +52,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case curb65           = "CURB-65 (CAP Severity)"
     case padua            = "Padua (Medical VTE Risk)"
     case apacheII         = "APACHE II (ICU Severity)"
+    case ppossum          = "P-POSSUM (Surgical Risk)"
 
     var category: ScoreCategory {
         switch self {
@@ -63,7 +64,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .vascular
         case .sirs, .qsofa, .psiPort, .sofa, .curb65, .apacheII:
             return .sepsis
-        case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4:
+        case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4, .ppossum:
             return .preop
         case .abcd2, .lrinec, .gcs:
             return .neuro
@@ -104,6 +105,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .curb65:         return "lungs.fill"
         case .padua:          return "figure.walk"
         case .apacheII:       return "cross.circle.fill"
+        case .ppossum:        return "scissors"
         }
     }
 }
@@ -184,6 +186,8 @@ struct ClinicalScoresView: View {
     @State private var paduaI = PaduaInput()
     // APACHE II
     @State private var apacheIII = APACHEIIInput()
+    // P-POSSUM
+    @State private var ppossumI = PPOSSUMInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -549,6 +553,9 @@ struct ClinicalScoresView: View {
         case .apacheII:
             let (input, fill) = PatientScoreAutoPopulator.apacheII(patient: patient)
             apacheIII = input; autoFill = fill
+        case .ppossum:
+            let (input, fill) = PatientScoreAutoPopulator.ppossum(patient: patient)
+            ppossumI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -638,6 +645,7 @@ struct ClinicalScoresView: View {
         case .curb65:       ClinicalScoringEngine.curb65(curb65I)
         case .padua:        ClinicalScoringEngine.padua(paduaI)
         case .apacheII:     ClinicalScoringEngine.apacheII(apacheIII)
+        case .ppossum:      ClinicalScoringEngine.ppossum(ppossumI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -666,7 +674,8 @@ struct ClinicalScoresView: View {
         case .fib4:         patient.fib4Score   = r.score
         case .curb65:       patient.curb65Score   = intScore
         case .padua:        patient.paduaScore    = intScore
-        case .apacheII:     patient.apacheIIScore = intScore
+        case .apacheII:     patient.apacheIIScore    = intScore
+        case .ppossum:      patient.ppossumMortPct10 = Int(r.score * 10)
         default: break
         }
         patient.updatedAt = .now
@@ -734,6 +743,7 @@ struct ClinicalScoresView: View {
         case .curb65:       curb65Form
         case .padua:        paduaForm
         case .apacheII:     apacheIIForm
+        case .ppossum:      ppossumForm
         }
     }
 
@@ -1757,6 +1767,9 @@ struct ClinicalScoresView: View {
         case .apacheII:
             // APACHE II fields are numeric selectors, not toggles — no pending-confirm action
             break
+        case .ppossum:
+            // P-POSSUM fields are numeric selectors — no boolean toggle confirm
+            break
         default: break
         }
 
@@ -2137,6 +2150,70 @@ struct ClinicalScoresView: View {
                     .padding(.top, 1)
             }
         }
+    }
+
+    // MARK: - P-POSSUM
+
+    private var ppossumForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Portsmouth POSSUM surgical mortality/morbidity predictor. Logistic regression: ln(R/1−R) = −9.065 + 0.1692×PS + 0.1550×OS. Score both pre-operatively for consent and retrospectively for audit.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
+            ppossumPhysiologicalSection
+            ppossumOperativeSection
+        }
+    }
+
+    @ViewBuilder private var ppossumPhysiologicalSection: some View {
+        Group {
+            sectionHeader("Physiological Score (PS)")
+            apacheSegment("Age", selection: $ppossumI.agePhys,
+                options: [(1, "≤60 years"), (2, "61–70"), (4, "71–80"), (8, "≥81")])
+            apacheSegment("Cardiac Signs", selection: $ppossumI.cardiacSigns,
+                options: [(1, "No failure"), (2, "Medication only"), (4, "Peripheral oedema / warfarin / digoxin"), (8, "Raised JVP or cardiomegaly")])
+            apacheSegment("Respiratory History", selection: $ppossumI.respiratoryHx,
+                options: [(1, "No dyspnoea"), (2, "Exertional dyspnoea"), (4, "Limiting dyspnoea / COPD"), (8, "Breathless at rest")])
+            apacheSegment("Systolic BP (mmHg)", selection: $ppossumI.sbpPhys,
+                options: [(1, "110–130"), (2, "131–170 or 100–109"), (4, "≥171 or 90–99"), (8, "≤89")])
+            apacheSegment("Heart Rate (bpm)", selection: $ppossumI.hrPhys,
+                options: [(1, "51–80"), (2, "81–100 or ≤50"), (4, "101–120"), (8, "≥121")])
+            apacheSegment("GCS", selection: $ppossumI.gcsPhys,
+                options: [(1, "15 — alert"), (2, "12–14"), (4, "9–11"), (8, "≤8")])
+        }
+        .onChange(of: ppossumI) { _, _ in recalculate() }
+        Group {
+            apacheSegment("Haemoglobin (g/dL)", selection: $ppossumI.haemoglobin,
+                options: [(1, "13.0–16.0"), (2, "11.5–12.9 or 16.1–17.0"), (4, "10.0–11.4 or 17.1–18.0"), (8, "≤9.9 or ≥18.1")])
+            apacheSegment("WBC (×10³/μL)", selection: $ppossumI.wbcPhys,
+                options: [(1, "4–10"), (2, "10.1–20.0 or 3.1–3.9"), (4, "≥20.1 or ≤3.0")])
+            apacheSegment("Urea (mmol/L)", selection: $ppossumI.urea,
+                options: [(1, "<7.5"), (2, "7.5–10.0"), (4, "10.1–15.0"), (8, "≥15.1")])
+            apacheSegment("Serum Sodium (mmol/L)", selection: $ppossumI.sodiumPhys,
+                options: [(1, "136–145"), (2, "131–135 or 146–150"), (4, "126–130"), (8, "≤125")])
+            apacheSegment("Serum Potassium (mmol/L)", selection: $ppossumI.potassiumPhys,
+                options: [(1, "3.5–5.0"), (2, "3.2–3.4 or 5.1–5.3"), (4, "2.9–3.1 or 5.4–5.9"), (8, "≤2.8 or ≥6.0")])
+            apacheSegment("ECG", selection: $ppossumI.ecg,
+                options: [(1, "Normal"), (2, "AF 60–90 bpm"), (4, "AF other rate or >5 ectopics"), (8, "Q waves / ST changes / BBB")])
+        }
+        .onChange(of: ppossumI) { _, _ in recalculate() }
+    }
+
+    @ViewBuilder private var ppossumOperativeSection: some View {
+        Group {
+            sectionHeader("Operative Score (OS)")
+            apacheSegment("Operative Magnitude", selection: $ppossumI.operativeMagnitude,
+                options: [(1, "Minor"), (2, "Moderate"), (4, "Major"), (8, "Major+")])
+            apacheSegment("Number of Procedures", selection: $ppossumI.numProcedures,
+                options: [(1, "1"), (2, "2"), (4, "≥3")])
+            apacheSegment("Blood Loss (mL)", selection: $ppossumI.bloodLoss,
+                options: [(1, "<100"), (2, "101–500"), (4, "501–999"), (8, "≥1000")])
+            apacheSegment("Peritoneal Soiling", selection: $ppossumI.peritonealSoiling,
+                options: [(1, "None"), (2, "Minor serosal / haematoma"), (4, "Local pus"), (8, "Free bowel content / pus / blood")])
+            apacheSegment("Malignancy", selection: $ppossumI.malignancy,
+                options: [(1, "None"), (2, "Primary only"), (4, "Nodal disease"), (8, "Distant metastases")])
+            apacheSegment("Urgency", selection: $ppossumI.urgency,
+                options: [(1, "Elective"), (4, "Emergency >2 h (resuscitated)"), (8, "Emergency <2 h (not resuscitated)")])
+        }
+        .onChange(of: ppossumI) { _, _ in recalculate() }
     }
 
     private func scoreHistoryColor(_ riskRaw: String) -> Color {

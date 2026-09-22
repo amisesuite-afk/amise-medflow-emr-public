@@ -239,6 +239,7 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
             curb65Score:                 patient.curb65Score,
             paduaScore:                  patient.paduaScore,
             apacheIIScore:               patient.apacheIIScore,
+            ppossumMortPct10:            patient.ppossumMortPct10,
             latestHR:    latestV?.heartRate,
             latestSBP:   latestV?.bpSystolic,
             latestTemp:  latestV?.temperatureCelsius,

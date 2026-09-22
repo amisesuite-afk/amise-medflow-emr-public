@@ -107,6 +107,8 @@ final class Patient {
     var paduaScore: Int?
     // APACHE II Score (0–71) for ICU/critical illness severity; ≥25 = predicted mortality >55%
     var apacheIIScore: Int?
+    // P-POSSUM predicted mortality (× 10 for Int storage, e.g. 85 = 8.5%); Portsmouth surgical risk
+    var ppossumMortPct10: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?
