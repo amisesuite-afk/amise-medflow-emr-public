@@ -100,6 +100,12 @@ enum BayesianDiagnosisEngine {
         abcd2Score: Int? = nil,
         lrinecScore: Int? = nil,
         qsofaScore: Int? = nil,
+        latestHR: Int? = nil,         // measured heart rate (bpm)
+        latestSBP: Int? = nil,        // systolic BP (mmHg)
+        latestTemp: Double? = nil,    // temperature (°C)
+        latestSpO2: Int? = nil,       // oxygen saturation (%)
+        latestRR: Int? = nil,         // respiratory rate (breaths/min)
+        news2Score: Int? = nil,       // computed NEWS2 score (0–20)
         specialtyHint: String? = nil  // e.g. "cardiology" — narrows matrix cross-query to that specialty
     ) -> [DiagnosisResult] {
         // Build a synthetic CC string from investigation names + results so that
@@ -2157,12 +2163,28 @@ enum BayesianDiagnosisEngine {
                 if isLow { labAssocChips.insert("Anaemia symptoms") }
             }
         }
-        // Merge lab chips into socratesSelections["associations"] so that every
-        // DiagnosticDatabase.json "associations" feature fires from lab results.
+        // Measured vital signs → association chips so that BDE features keyed to
+        // "associations" fire from objective observations, not only manual SOCRATES entry.
+        var vitalsChips: Set<String> = []
+        if let hr = latestHR {
+            if hr > 100 { vitalsChips.insert("tachycardia") }
+            if hr < 50  { vitalsChips.insert("bradycardia") }
+        }
+        if let sbp = latestSBP, sbp < 100 { vitalsChips.insert("hypotension") }
+        if let temp = latestTemp {
+            if temp >= 38.0 { vitalsChips.insert("fever") }
+            if temp < 36.0  { vitalsChips.insert("hypothermia") }
+        }
+        if let spo2 = latestSpO2, spo2 < 94 { vitalsChips.insert("oxygen desaturation") }
+        if let rr = latestRR, rr > 20        { vitalsChips.insert("tachypnoea") }
+
+        // Merge lab chips + vitals chips into socratesSelections["associations"] so that every
+        // DiagnosticDatabase.json "associations" feature fires from objective measurements.
+        let allAssocChips = labAssocChips.union(vitalsChips)
         var enrichedSocrates = socratesSelections
-        if !labAssocChips.isEmpty {
+        if !allAssocChips.isEmpty {
             var assocSet = enrichedSocrates["associations"] ?? Set<String>()
-            assocSet.formUnion(labAssocChips)
+            assocSet.formUnion(allAssocChips)
             enrichedSocrates["associations"] = assocSet
         }
 
@@ -2411,6 +2433,23 @@ enum BayesianDiagnosisEngine {
             }
         }
 
+        // NEWS2 → acuity-sensitive candidates (sepsis, PE, pneumonia, MI, cardiac failure)
+        // Fires when NEWS2 ≥ 5 (medium risk) or ≥ 7 (high risk).
+        if let news2 = news2Score, news2 >= 5 {
+            let (adj, label): (Int, String) = news2 >= 7
+                ? (12, "NEWS2 \(news2) — high risk, consider critical care escalation")
+                : (6,  "NEWS2 \(news2) — medium risk")
+            let news2Targets = ["sepsis", "pulmonary embol", "pneumonia", "myocardial infarct",
+                                "acute coronary", "cardiac failure", "heart failure", "bacteraemia"]
+            for i in scored.indices where news2Targets.contains(where: {
+                scored[i].candidate.name.lowercased().contains($0)
+            }) {
+                scored[i].logPosterior += adj
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
         // Surgical exclusion: if PSHx documents organ removal, that candidate
         // is set to log-posterior −9999 (≈0 after softmax) so it does not appear.
         let pshxCheckL = mergedPSHx.lowercased()
@@ -2589,14 +2628,15 @@ enum BayesianDiagnosisEngine {
                 if triggered {
                     // Apply CPT-based discounting when a correlated parent feature has
                     // already been observed — avoids double-counting co-occurring findings.
-                    let effectiveLR: Double
+                    let effectiveLR: Int
                     if let nid = Self.featureNetworkID(key: f.key, value: f.value) {
-                        effectiveLR = BayesianFeatureNetwork.adjustedLogLR(
+                        let adj = BayesianFeatureNetwork.adjustedLogLR(
                             featureID: nid,
                             featurePresent: true,
                             observedIDs: observedNetworkIDs,
-                            baseLogLR: f.logLR
+                            baseLogLR: Double(f.logLR)
                         )
+                        effectiveLR = Int(adj.rounded())
                     } else {
                         effectiveLR = f.logLR
                     }
