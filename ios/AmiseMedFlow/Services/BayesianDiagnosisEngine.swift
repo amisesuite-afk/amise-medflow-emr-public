@@ -129,6 +129,8 @@ enum BayesianDiagnosisEngine {
         mustScore: Int? = nil,        // MUST (0–6); ≥2 = high malnutrition risk
         clavienDindoScore: Int? = nil, // Clavien-Dindo grade 0–7; ≥3 = procedural/surgical intervention required
         aldreteScore: Int? = nil,     // Modified Aldrete 0–10; <9 = not fit for PACU discharge
+        fourTScore: Int? = nil,       // 4T Score 0–8; ≥4 = intermediate/high HIT probability
+        oaklandScore: Int? = nil,     // Oakland Score 0–29; ≤8=low risk, ≥15=high risk LGIB
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3097,6 +3099,54 @@ enum BayesianDiagnosisEngine {
                 case ..<4: adj = 10; label = "Aldrete <4/10 — severely impaired PACU recovery; immediate anaesthetic review required"
                 case 4..<7: adj = 6; label = "Aldrete <7/10 — impaired PACU recovery; consider anaesthetic/systemic cause"
                 default:    adj = 3; label = "Aldrete borderline — monitor for evolving complication in PACU"
+                }
+                scored[i].logPosterior += adj
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // 4T Score: intermediate/high HIT probability boosts HIT and related thrombotic candidates
+        if let ft = fourTScore, ft >= 4 {
+            let hitTargets = ["heparin-induced thrombocytopenia", "hit ",
+                              "thrombocytopenia", "immune thrombocytopenia",
+                              "deep vein thrombosis", "pulmonary embolism",
+                              "arterial thrombosis", "limb ischaemia", "limb ischemia",
+                              "cerebral venous thrombosis", "adrenal haemorrhage"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard hitTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let adj: Int
+                let label: String
+                switch ft {
+                case 6...: adj = 14; label = "4T Score ≥6 — high HIT probability; strongly supports thrombocytopaenic/thrombotic aetiology"
+                case 4:    adj = 8;  label = "4T Score 4–5 — intermediate HIT probability; consider HIT in differential"
+                default:   adj = 8;  label = "4T Score 4–5 — intermediate HIT probability; consider HIT in differential"
+                }
+                scored[i].logPosterior += adj
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // Oakland Score: high score boosts significant LGIB candidates
+        if let oak = oaklandScore, oak >= 9 {
+            let oakTargets = ["lower gastrointestinal bleed", "lower gi bleed",
+                              "lower gastrointestinal haemorrhage",
+                              "diverticular bleed", "diverticular haemorrhage",
+                              "angiodysplasia", "haemorrhoid", "anal fissure",
+                              "colorectal cancer", "rectal cancer", "colon cancer",
+                              "ischaemic colitis", "ischemic colitis",
+                              "inflammatory bowel", "crohn", "ulcerative colitis",
+                              "rectal polyp", "mesenteric ischaemia"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard oakTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let adj: Int
+                let label: String
+                switch oak {
+                case 15...: adj = 9; label = "Oakland ≥15 — high-risk LGIB; haemodynamically significant lower GI haemorrhage"
+                default:    adj = 5; label = "Oakland 9–14 — intermediate-risk LGIB; significant lower GI bleeding requiring inpatient workup"
                 }
                 scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)

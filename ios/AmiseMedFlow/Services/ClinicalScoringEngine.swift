@@ -4207,4 +4207,141 @@ enum ClinicalScoringEngine {
             evidenceNote: "Aldrete JA, Kroulik D. Anesth Analg 1970;49:924–934. Aldrete JA. J Clin Anesth 1995;7:89–91 (modified). Score ≥9/10 = fit for PACU discharge."
         )
     }
+
+    // MARK: - 4T Score (Heparin-Induced Thrombocytopenia)
+
+    struct FourTInput: Equatable {
+        // Each domain 0–2
+        var thrombocytopenia: Int = 0   // 0=<30% fall or nadir<10; 1=30–50% or nadir 10–19; 2=≥50% fall and nadir≥20
+        var timing: Int = 0             // 0=<4 days without recent heparin; 1=consistent but not clear; 2=5–10 days or ≤1 day if prior heparin within 30 days
+        var thrombosis: Int = 0         // 0=none; 1=progressive/recurrent or erythematous skin lesions; 2=new thrombosis, skin necrosis, or acute systemic reaction after IV heparin bolus
+        var otherCause: Int = 0         // 0=definite other cause; 1=possible other cause; 2=no other cause evident
+    }
+
+    static func fourT(_ i: FourTInput) -> ClinicalScore {
+        let total = i.thrombocytopenia + i.timing + i.thrombosis + i.otherCause
+        let risk: ScoreRisk
+        let interpretation: String
+        var recs: [String]
+        var flags: [String]
+
+        switch total {
+        case 0...3:
+            risk = .low
+            interpretation = "4T Score \(total) — Low probability of HIT (<5%)"
+            recs = ["HIT unlikely; continue heparin if clinically indicated",
+                    "No need for HIT-specific antibody testing based on score alone",
+                    "Monitor platelet count per clinical indication"]
+            flags = []
+        case 4...5:
+            risk = .moderate
+            interpretation = "4T Score \(total) — Intermediate probability of HIT (~10–30%)"
+            recs = ["Discontinue all heparin products (including flushes and LMWH) pending investigation",
+                    "Send anti-PF4/heparin ELISA antibody assay urgently",
+                    "Switch to alternative non-heparin anticoagulant (argatroban, fondaparinux, or danaparoid) if anticoagulation required",
+                    "Haematology review",
+                    "Do NOT give warfarin until platelet count has recovered to ≥150 × 10⁹/L"]
+            flags = ["Intermediate HIT probability — stop heparin and test anti-PF4 antibodies",
+                     "Risk of venous and arterial limb-threatening thrombosis"]
+        default:
+            risk = .critical
+            interpretation = "4T Score \(total) — High probability of HIT (>80%)"
+            recs = ["Immediately discontinue ALL heparin-containing products",
+                    "Initiate non-heparin anticoagulation urgently (argatroban or bivalirudin for HIT with thrombosis)",
+                    "Send anti-PF4/heparin ELISA and serotonin release assay (SRA)",
+                    "Urgent haematology consult",
+                    "Doppler ultrasound to exclude DVT/thrombosis",
+                    "Do NOT give warfarin, platelet transfusions, or LMWH",
+                    "Anticoagulate for minimum 4 weeks after platelet recovery"]
+            flags = ["HIGH probability HIT — immediate heparin cessation mandatory",
+                     "Life-threatening thrombotic complication risk",
+                     "Urgent haematology review required"]
+        }
+
+        return ClinicalScore(
+            systemName: "4T Score",
+            abbreviation: "4T \(total)/8",
+            score: Double(total), maxScore: 8,
+            risk: risk,
+            interpretation: interpretation,
+            items: [
+                ScoredItem(label: "Thrombocytopenia",     points: Double(i.thrombocytopenia), present: i.thrombocytopenia > 0),
+                ScoredItem(label: "Timing of platelet fall", points: Double(i.timing),        present: i.timing > 0),
+                ScoredItem(label: "Thrombosis / skin necrosis", points: Double(i.thrombosis), present: i.thrombosis > 0),
+                ScoredItem(label: "Other cause",           points: Double(i.otherCause),       present: i.otherCause > 0)
+            ],
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Warkentin TE et al. Thromb Haemost 2003;90:759–765. Lo GK et al. J Thromb Haemost 2006;4:759–765. Validated pre-test probability tool for HIT diagnosis; positive predictive value ~50–80% at high scores."
+        )
+    }
+
+    // MARK: - Oakland Score (Lower GI Bleed — Safe Discharge)
+
+    struct OaklandInput: Equatable {
+        var ageScore: Int = 0        // 0=<40; 1=40–69; 2=≥70
+        var sexMale: Bool = false    // male = +1
+        var previousLGIB: Bool = false  // previous hospital admission for LGIB = +1
+        var dre: Int = 0             // 0=no blood on DRE; 1=blood on DRE
+        var heartRate: Int = 0       // 0=<70; 1=70–89; 2=≥90 bpm
+        var sbp: Int = 0             // 0=≥160 mmHg; 1=130–159; 2=100–129; 3=<100 mmHg
+        var hbScore: Int = 0         // 0=Hb≥16 g/dL(M)/≥13(F); scale to 6 = Hb<7 g/dL
+    }
+
+    static func oakland(_ i: OaklandInput) -> ClinicalScore {
+        let total = i.ageScore + (i.sexMale ? 1 : 0) + (i.previousLGIB ? 1 : 0)
+                  + i.dre + i.heartRate + i.sbp + i.hbScore
+        let risk: ScoreRisk
+        let interpretation: String
+        var recs: [String]
+        var flags: [String]
+
+        switch total {
+        case 0...8:
+            risk = .low
+            interpretation = "Oakland \(total) — Low risk; safe discharge appropriate (rebleed <5%)"
+            recs = ["Outpatient colonoscopy within 2 weeks",
+                    "Written discharge advice; return if haematochezia recurs",
+                    "GP follow-up and full blood count in 2–3 days"]
+            flags = []
+        case 9...14:
+            risk = .moderate
+            interpretation = "Oakland \(total) — Intermediate risk; inpatient observation recommended"
+            recs = ["Admit for inpatient colonoscopy within 24 h of bowel preparation",
+                    "IV access and fluid resuscitation as required",
+                    "Serial haematocrit monitoring every 6 h",
+                    "Gastroenterology or colorectal surgery review"]
+            flags = ["Intermediate-risk LGIB — inpatient workup required"]
+        default:
+            risk = .high
+            interpretation = "Oakland \(total) — High risk; urgent inpatient management required"
+            recs = ["Resuscitate with IV crystalloid; crossmatch and group-and-save",
+                    "Urgent colonoscopy after rapid bowel preparation (≤24 h)",
+                    "CT angiography if haemodynamically unstable or colonoscopy not feasible",
+                    "Interventional radiology and colorectal surgery on standby",
+                    "HDU/ICU admission if haemodynamic compromise"]
+            flags = ["High-risk LGIB — haemodynamic instability likely",
+                     "Urgent endoscopic or radiological haemostasis may be required"]
+        }
+
+        return ClinicalScore(
+            systemName: "Oakland Score (LGIB)",
+            abbreviation: "Oakland \(total)",
+            score: Double(total), maxScore: 29,
+            risk: risk,
+            interpretation: interpretation,
+            items: [
+                ScoredItem(label: "Age",             points: Double(i.ageScore),         present: i.ageScore > 0),
+                ScoredItem(label: "Male sex",        points: i.sexMale ? 1 : 0,          present: i.sexMale),
+                ScoredItem(label: "Previous LGIB",   points: i.previousLGIB ? 1 : 0,     present: i.previousLGIB),
+                ScoredItem(label: "Blood on DRE",    points: Double(i.dre),              present: i.dre > 0),
+                ScoredItem(label: "Heart rate",      points: Double(i.heartRate),        present: i.heartRate > 0),
+                ScoredItem(label: "Systolic BP",     points: Double(i.sbp),              present: i.sbp > 0),
+                ScoredItem(label: "Haemoglobin",     points: Double(i.hbScore),          present: i.hbScore > 0)
+            ],
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Oakland K et al. BMJ 2017;356:i6432. Validated for safe-discharge decision in acute LGIB presenting to ED. Score ≤8 = 95% probability of safe discharge without adverse outcome."
+        )
+    }
 }

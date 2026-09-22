@@ -72,6 +72,8 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case must             = "MUST (Malnutrition Risk)"
     case clavienDindo     = "Clavien-Dindo (Complication Grade)"
     case aldrete          = "Modified Aldrete (PACU Recovery)"
+    case fourT            = "4T Score (HIT Probability)"
+    case oakland          = "Oakland Score (LGIB Discharge)"
 
     var category: ScoreCategory {
         switch self {
@@ -91,6 +93,10 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .preop
         case .clavienDindo, .aldrete:
             return .monitoring
+        case .fourT:
+            return .vascular
+        case .oakland:
+            return .gi
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
         case .mews, .news2, .waterlow, .surgicalApgar:
@@ -148,6 +154,8 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .must:           return "fork.knife.circle"
         case .clavienDindo:   return "bandage.fill"
         case .aldrete:        return "bed.double.fill"
+        case .fourT:          return "syringe.fill"
+        case .oakland:        return "drop.degreesign.fill"
         }
     }
 }
@@ -268,6 +276,10 @@ struct ClinicalScoresView: View {
     @State private var cdI = ClinicalScoringEngine.ClavienDindoInput()
     // Aldrete
     @State private var aldreteI = ClinicalScoringEngine.AldreteInput()
+    // 4T
+    @State private var fourTI = ClinicalScoringEngine.FourTInput()
+    // Oakland
+    @State private var oaklandI = ClinicalScoringEngine.OaklandInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -690,6 +702,12 @@ struct ClinicalScoresView: View {
         case .aldrete:
             // Aldrete is a bedside recovery assessment — no clinical-text auto-populate
             autoFill = ScoreAutoFill()
+        case .fourT:
+            let (input, fill) = PatientScoreAutoPopulator.fourT(patient: patient)
+            fourTI = input; autoFill = fill
+        case .oakland:
+            let (input, fill) = PatientScoreAutoPopulator.oakland(patient: patient)
+            oaklandI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -799,6 +817,8 @@ struct ClinicalScoresView: View {
         case .must:          ClinicalScoringEngine.must(mustI)
         case .clavienDindo:  ClinicalScoringEngine.clavienDindo(cdI)
         case .aldrete:       ClinicalScoringEngine.aldrete(aldreteI)
+        case .fourT:         ClinicalScoringEngine.fourT(fourTI)
+        case .oakland:       ClinicalScoringEngine.oakland(oaklandI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -848,6 +868,8 @@ struct ClinicalScoresView: View {
         case .must:          patient.mustScore = intScore
         case .clavienDindo:  patient.clavienDindoScore = intScore
         case .aldrete:       patient.aldreteScore = intScore
+        case .fourT:         patient.fourTScore = intScore
+        case .oakland:       patient.oaklandScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -935,6 +957,8 @@ struct ClinicalScoresView: View {
         case .must:          mustForm
         case .clavienDindo:  clavienDindoForm
         case .aldrete:       aldreteForm
+        case .fourT:         fourTForm
+        case .oakland:       oaklandForm
         }
     }
 
@@ -2073,6 +2097,10 @@ struct ClinicalScoresView: View {
         case .clavienDindo:
             break
         case .aldrete:
+            break
+        case .fourT:
+            break
+        case .oakland:
             break
         default: break
         }
@@ -3305,5 +3333,80 @@ struct ClinicalScoresView: View {
                 ])
         }
         .onChange(of: aldreteI) { _, _ in recalculate() }
+    }
+
+    // MARK: - 4T Score (HIT)
+
+    private var fourTForm: some View {
+        Group {
+            apacheSegment("1. Thrombocytopenia", selection: $fourTI.thrombocytopenia,
+                options: [
+                    (0, "0 — Platelet fall <30%, or nadir <10 × 10⁹/L"),
+                    (1, "1 — Platelet fall 30–50%, or nadir 10–19 × 10⁹/L"),
+                    (2, "2 — Platelet fall >50% AND nadir ≥20 × 10⁹/L")
+                ])
+            apacheSegment("2. Timing of platelet fall", selection: $fourTI.timing,
+                options: [
+                    (0, "0 — Platelet fall <4 days, no recent heparin exposure"),
+                    (1, "1 — Consistent with days 5–10 but not clear; or fall after day 10"),
+                    (2, "2 — Onset days 5–10, or ≤1 day if heparin exposure in past 30 days")
+                ])
+            apacheSegment("3. Thrombosis or other sequelae", selection: $fourTI.thrombosis,
+                options: [
+                    (0, "0 — None"),
+                    (1, "1 — Progressive or recurrent thrombosis; non-necrotising skin lesions"),
+                    (2, "2 — New proven thrombosis, skin necrosis, or acute systemic reaction after IV heparin bolus")
+                ])
+            apacheSegment("4. Other cause for thrombocytopenia", selection: $fourTI.otherCause,
+                options: [
+                    (0, "0 — Definite other cause present"),
+                    (1, "1 — Possible other cause"),
+                    (2, "2 — No other cause evident")
+                ])
+        }
+        .onChange(of: fourTI) { _, _ in recalculate() }
+    }
+
+    // MARK: - Oakland Score (LGIB)
+
+    private var oaklandForm: some View {
+        Group {
+            apacheSegment("Age", selection: $oaklandI.ageScore,
+                options: [
+                    (0, "0 — Age <40 years"),
+                    (1, "1 — Age 40–69 years"),
+                    (2, "2 — Age ≥70 years")
+                ])
+            scoreToggle("Male sex", binding: $oaklandI.sexMale, points: "+1")
+            scoreToggle("Previous hospital admission for LGIB", binding: $oaklandI.previousLGIB, points: "+1")
+            apacheSegment("Digital rectal examination (DRE)", selection: $oaklandI.dre,
+                options: [
+                    (0, "0 — No blood on DRE"),
+                    (1, "1 — Blood on DRE")
+                ])
+            apacheSegment("Heart rate (bpm)", selection: $oaklandI.heartRate,
+                options: [
+                    (0, "0 — Heart rate <70 bpm"),
+                    (1, "1 — Heart rate 70–89 bpm"),
+                    (2, "2 — Heart rate ≥90 bpm")
+                ])
+            apacheSegment("Systolic blood pressure (mmHg)", selection: $oaklandI.sbp,
+                options: [
+                    (0, "0 — SBP ≥160 mmHg"),
+                    (1, "1 — SBP 130–159 mmHg"),
+                    (2, "2 — SBP 100–129 mmHg"),
+                    (3, "3 — SBP <100 mmHg")
+                ])
+            apacheSegment("Haemoglobin (g/dL)", selection: $oaklandI.hbScore,
+                options: [
+                    (0, "0 — Hb ≥16.0 (M) / ≥13.0 (F) g/dL"),
+                    (1, "1 — Hb 13.0–15.9 (M) / 11.0–12.9 (F) g/dL"),
+                    (2, "2 — Hb 11.0–12.9 (M) / 9.0–10.9 (F) g/dL"),
+                    (3, "3 — Hb 9.0–10.9 (M) / 7.0–8.9 (F) g/dL"),
+                    (4, "4 — Hb 7.0–8.9 g/dL"),
+                    (5, "5 — Hb <7.0 g/dL")
+                ])
+        }
+        .onChange(of: oaklandI) { _, _ in recalculate() }
     }
 }

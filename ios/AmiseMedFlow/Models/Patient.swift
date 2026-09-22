@@ -147,6 +147,10 @@ final class Patient {
     var clavienDindoScore: Int?
     // Modified Aldrete PACU recovery score 0–10; ≥9 = fit for discharge
     var aldreteScore: Int?
+    // 4T Score (HIT probability) 0–8; 0–3=low, 4–5=intermediate, 6–8=high
+    var fourTScore: Int?
+    // Oakland Score (lower GI bleed) 0–29; ≤8=safe discharge, ≥15=high risk
+    var oaklandScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

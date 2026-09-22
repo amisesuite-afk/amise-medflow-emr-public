@@ -2448,4 +2448,117 @@ enum PatientScoreAutoPopulator {
 
         return (i, f)
     }
+
+    // MARK: - 4T Score (HIT)
+    static func fourT(patient: Patient) -> (ClinicalScoringEngine.FourTInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.FourTInput()
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.hpi, patient.pmhNotes,
+                    patient.managementPlan, patient.assessmentText]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Thrombocytopenia: detect platelet-related keywords
+        if text.contains("thrombocytopen") || text.contains("platelet") {
+            // Can't quantify platelet fall without lab values — flag as pending
+            f.addPending(key: "thrombocytopenia", label: "1. Degree of thrombocytopenia (platelet fall % and nadir)", source: "FBC result needed")
+        } else {
+            f.addPending(key: "thrombocytopenia", label: "1. Thrombocytopenia — check platelet count and fall from baseline", source: "Review FBC")
+        }
+
+        // Timing: detect recent heparin exposure
+        if text.contains("heparin") || text.contains("lmwh") || text.contains("enoxaparin")
+            || text.contains("tinzaparin") || text.contains("dalteparin") || text.contains("fondaparinux") {
+            f.addAutoFilled(key: "timing", label: "Heparin exposure detected in clinical text", source: "HPI/medications")
+        } else {
+            f.addPending(key: "timing", label: "2. Timing of platelet fall relative to heparin start", source: "Verify heparin start date vs platelet trend")
+        }
+
+        // Thrombosis: detect new thromboembolic event keywords
+        let thrombosisKeywords = ["deep vein thrombosis", "dvt", "pulmonary embolism",
+                                   "thrombosis", "thromboembol", "skin necrosis", "limb ischaemia",
+                                   "limb ischemia", "clot"]
+        if thrombosisKeywords.contains(where: { text.contains($0) }) {
+            i.thrombosis = 2
+            f.addAutoFilled(key: "thrombosis", label: "Thrombotic event detected in clinical text (+2)", source: "HPI/assessment")
+        }
+
+        // Other cause: detect sepsis, DIC, or other causes of thrombocytopenia
+        let otherCauseKeywords = ["sepsis", "septic", "dic ", "disseminated intravascular",
+                                   "liver failure", "bone marrow", "chemotherapy", "itu", "icu"]
+        if otherCauseKeywords.contains(where: { text.contains($0) }) {
+            i.otherCause = 1   // Possible other cause
+            f.addAutoFilled(key: "otherCause", label: "Possible other cause for thrombocytopaenia detected (1 pt)", source: "Clinical context")
+        } else {
+            f.addPending(key: "otherCause", label: "4. Other cause for thrombocytopenia — review clinical context", source: "Clinical assessment")
+        }
+
+        return (i, f)
+    }
+
+    // MARK: - Oakland Score (LGIB)
+    static func oakland(patient: Patient) -> (ClinicalScoringEngine.OaklandInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.OaklandInput()
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.hpi, patient.pmhNotes,
+                    patient.assessmentText]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Age
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 0
+            if age >= 70 {
+                i.ageScore = 2
+                f.addAutoFilled(key: "ageScore", label: "Age ≥70 (+2)", source: "Date of birth")
+            } else if age >= 40 {
+                i.ageScore = 1
+                f.addAutoFilled(key: "ageScore", label: "Age 40–69 (+1)", source: "Date of birth")
+            } else {
+                i.ageScore = 0
+                f.addAutoFilled(key: "ageScore", label: "Age <40 (+0)", source: "Date of birth")
+            }
+        } else {
+            f.addPending(key: "ageScore", label: "Age — enter date of birth", source: "Demographics")
+        }
+
+        // Sex
+        if patient.sex == .male {
+            i.sexMale = true
+            f.addAutoFilled(key: "sexMale", label: "Male sex (+1)", source: "Demographics")
+        } else {
+            f.addAutoFilled(key: "sexMale", label: "Female sex (+0)", source: "Demographics")
+        }
+
+        // Previous LGIB
+        let prevLGIBKeywords = ["previous lower gi bleed", "previous lgib", "previous rectal bleed",
+                                 "previous pr bleed", "previous haematochezia", "prior lower gi"]
+        if prevLGIBKeywords.contains(where: { text.contains($0) }) {
+            i.previousLGIB = true
+            f.addAutoFilled(key: "previousLGIB", label: "Previous LGIB detected (+1)", source: "PMH")
+        }
+
+        // Haemochezia / PR bleed keywords
+        let lgibKeywords = ["lower gi bleed", "lgib", "rectal bleed", "pr bleed",
+                            "haematochezia", "bright red blood per rectum", "brbpr",
+                            "melaena", "per rectum", "rectal haemorrhage"]
+        if !lgibKeywords.contains(where: { text.contains($0) }) {
+            f.addPending(key: "dre", label: "Digital rectal examination — document findings", source: "Clinical examination")
+        } else {
+            f.addPending(key: "dre", label: "DRE result — blood present on examination?", source: "Physical examination")
+        }
+
+        // Vitals
+        if let vitals = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
+            if let hr = vitals.heartRate {
+                if hr >= 90 { i.heartRate = 2 } else if hr >= 70 { i.heartRate = 1 }
+                f.addAutoFilled(key: "heartRate", label: "Heart rate \(hr) bpm from latest vitals", source: "Vitals")
+            }
+            if let sbp = vitals.bpSystolic {
+                if sbp < 100 { i.sbp = 3 } else if sbp < 130 { i.sbp = 2 } else if sbp < 160 { i.sbp = 1 }
+                f.addAutoFilled(key: "sbp", label: "SBP \(sbp) mmHg from latest vitals", source: "Vitals")
+            }
+        }
+
+        f.addPending(key: "hbScore", label: "Haemoglobin (g/dL) — enter FBC result", source: "Laboratory")
+        return (i, f)
+    }
 }
