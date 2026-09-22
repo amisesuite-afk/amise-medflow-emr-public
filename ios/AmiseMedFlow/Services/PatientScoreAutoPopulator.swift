@@ -1112,4 +1112,76 @@ enum PatientScoreAutoPopulator {
 
         return (i, f)
     }
+
+    // MARK: - SOFA
+
+    static func sofa(patient: Patient) -> (SOFAInput, ScoreAutoFill) {
+        var i = SOFAInput()
+        var f = ScoreAutoFill()
+
+        let vitals = patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
+
+        // CNS: AVPU → GCS proxy
+        if let v = vitals {
+            switch v.avpu {
+            case .alert:    i.cns = 0; f.autoFieldKeys.insert("cnsGCS")
+            case .voice:    i.cns = 1; f.autoFieldKeys.insert("cnsGCS")
+            case .pain:     i.cns = 3; f.autoFieldKeys.insert("cnsGCS")
+            case .unresponsive: i.cns = 4; f.autoFieldKeys.insert("cnsGCS")
+            }
+        }
+
+        // Cardiovascular: MAP from BP
+        if let v = vitals, let sbp = v.bpSystolic, let dbp = v.bpDiastolic {
+            let map = Double(dbp) + Double(sbp - dbp) / 3.0
+            if map < 70 {
+                i.cardiovascular = 1
+                f.autoFieldKeys.insert("cardiovascular")
+            } else {
+                i.cardiovascular = 0
+                f.autoFieldKeys.insert("cardiovascular")
+            }
+        }
+
+        // Respiratory: SpO₂ proxy for oxygenation impairment
+        if let v = vitals, let spo2 = v.spo2 {
+            if spo2 < 90 && v.onSupplementalO2 {
+                i.respiration = 3
+                f.autoFieldKeys.insert("respiration")
+            } else if spo2 < 94 && v.onSupplementalO2 {
+                i.respiration = 2
+                f.autoFieldKeys.insert("respiration")
+            }
+        }
+
+        // All lab-based domains queued as pending
+        f.addPending(key: "respirationElevated",  label: "Respiratory compromise (P:F <300 or O₂ requirement)", source: "ABG / oximetry")
+        f.addPending(key: "coagulationElevated",  label: "Platelets <150 ×10³/µL",                             source: "FBC")
+        f.addPending(key: "liverElevated",         label: "Bilirubin >20 µmol/L",                               source: "LFTs")
+        f.addPending(key: "cnsElevated",           label: "GCS <15 (not explained by sedation)",                source: "Neurological assessment")
+        f.addPending(key: "renalElevated",         label: "Creatinine >110 µmol/L or oliguria",                 source: "U&E / urine output")
+
+        return (i, f)
+    }
+
+    // MARK: - FIB-4
+
+    static func fib4(patient: Patient) -> (FIB4Input, ScoreAutoFill) {
+        var i = FIB4Input()
+        var f = ScoreAutoFill()
+
+        // Age from DOB
+        if let dob = patient.dateOfBirth {
+            let years = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 40
+            i.age = max(18, min(100, years))
+            f.autoFieldKeys.insert("age")
+        }
+
+        // All lab values require manual entry
+        f.addPending(key: "astIUL",        label: "AST (IU/L)",           source: "LFTs")
+        f.addPending(key: "platelet10_9L", label: "Platelets (×10⁹/L)",   source: "FBC")
+        f.addPending(key: "altIUL",        label: "ALT (IU/L)",           source: "LFTs")
+
+        return (i, f)
+    }
 }

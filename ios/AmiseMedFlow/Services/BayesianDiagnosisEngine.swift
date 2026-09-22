@@ -104,6 +104,8 @@ enum BayesianDiagnosisEngine {
         capriniScore: Int? = nil,     // Caprini VTE risk total score
         bisapScore: Int? = nil,       // BISAP (0–5) for acute pancreatitis severity; ≥3 = severe
         aims65Score: Int? = nil,      // AIMS65 (0–5) for upper GI bleed in-hospital mortality
+        sofaScore: Int? = nil,        // SOFA (0–24); ≥2 with infection = sepsis (Sepsis-3)
+        fib4Score: Double? = nil,     // FIB-4 (continuous); >2.67 = significant fibrosis
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2537,6 +2539,47 @@ enum BayesianDiagnosisEngine {
                 default:   (4,  "AIMS65 1 — low UGIB risk, mortality ~1.2%")
                 }
                 scored[i].logPosterior += adj
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // SOFA: boosts sepsis/organ-failure candidates; severity-graded adjustment
+        if let sofa = sofaScore {
+            let sepsisTargets  = ["sepsis", "bacteraemia", "septicaemia", "shock", "mods", "multi-organ",
+                                   "toxic shock", "candidaemia", "fungal sepsis"]
+            let criticalTargets = ["mods", "multi-organ", "ards", "organ dysfunction"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                let isSepsis   = sepsisTargets.contains(where:  { nameLow.contains($0) })
+                let isCritical = criticalTargets.contains(where: { nameLow.contains($0) })
+                guard isSepsis || isCritical else { continue }
+                let (adj, label): (Int, String) = switch sofa {
+                case 13...: (isCritical ? 22 : 16, "SOFA \(sofa) — critical organ failure, mortality >50%")
+                case 10...12: (isCritical ? 18 : 12, "SOFA \(sofa) — severe organ failure, ~40–50% mortality")
+                case 7...9:  (isCritical ? 12 : 8,  "SOFA \(sofa) — significant organ dysfunction, ~20% mortality")
+                case 2...6:  (isCritical ? 6 : 4,   "SOFA \(sofa) — organ dysfunction; sepsis criteria met if infected")
+                default:     (isCritical ? -4 : -2,  "SOFA \(sofa) — no significant organ dysfunction")
+                }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // FIB-4: boosts liver fibrosis / cirrhosis candidates
+        if let fib4 = fib4Score, fib4 > 0 {
+            let liverTargets = ["cirrhosis", "fibrosis", "hepatitis", "nafld", "nash", "alcoholic hepat",
+                                 "liver disease", "chronic liver", "fatty liver"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard liverTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch fib4 {
+                case 2.67...: (14, String(format: "FIB-4 %.2f — significant fibrosis (F2–F4) likely", fib4))
+                case 1.30...: (6,  String(format: "FIB-4 %.2f — indeterminate; fibrosis cannot be excluded", fib4))
+                default:      (-4, String(format: "FIB-4 %.2f — low fibrosis risk (F0–F1)", fib4))
+                }
+                scored[i].logPosterior += Double(adj)
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }

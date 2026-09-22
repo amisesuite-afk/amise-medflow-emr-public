@@ -397,6 +397,26 @@ struct STOPBANGInput: Equatable {
     var male: Bool = false              // G — gender male
 }
 
+struct SOFAInput: Equatable {
+    // Sequential Organ Failure Assessment (Sepsis-3, JAMA 2016)
+    // Each domain scored 0–4; total 0–24
+    var respiration: Int = 0    // PaO₂/FiO₂ mmHg: 0=≥400, 1=300-399, 2=200-299+resp, 3=100-199+resp, 4=<100+resp
+    var coagulation: Int = 0    // Platelets ×10³/µL: 0=≥150, 1=100-149, 2=50-99, 3=20-49, 4=<20
+    var liver: Int = 0          // Bilirubin µmol/L: 0=<20, 1=20-32, 2=33-101, 3=102-204, 4=>204
+    var cardiovascular: Int = 0 // MAP/vasopressors: 0=MAP≥70, 1=MAP<70, 2=dopa≤5/dobu, 3=dopa5-15/NA≤0.1, 4=dopa>15/NA>0.1
+    var cns: Int = 0            // GCS: 0=15, 1=13-14, 2=10-12, 3=6-9, 4=<6
+    var renal: Int = 0          // Creatinine µmol/L: 0=<110, 1=110-170, 2=171-299, 3=300-440/UO<500, 4=>440/UO<200
+}
+
+struct FIB4Input: Equatable {
+    // FIB-4 Liver Fibrosis Index (Sterling et al, Hepatology 2006)
+    // Formula: (age × AST) ÷ (platelets × √ALT)
+    var age: Int = 40
+    var astIUL: Double = 30.0           // AST in IU/L
+    var platelet10_9L: Double = 200.0   // Platelets in 10⁹/L (e.g. 200 = 200,000/µL)
+    var altIUL: Double = 30.0           // ALT in IU/L
+}
+
 struct PSIPortInput: Equatable {
     // PSI/PORT — Community-Acquired Pneumonia severity (Fine et al, NEJM 1997)
     // Demographic
@@ -2092,5 +2112,127 @@ enum ClinicalScoringEngine {
             recommendations: recs, items: items, redFlags: redFlags,
             evidenceNote: "Fine et al, NEJM 1997. Validated in 52,000+ patients. Class I–II: outpatient. Class III: short stay. IV–V: admit/ICU. 30-day mortality 0.1%→29%."
         )
+    }
+
+    // MARK: - SOFA (Sequential Organ Failure Assessment)
+
+    static func sofa(_ i: SOFAInput) -> ClinicalScore {
+        let total = i.respiration + i.coagulation + i.liver + i.cardiovascular + i.cns + i.renal
+        let items: [(String, Int)] = [
+            ("Respiratory — PaO₂/FiO₂", i.respiration),
+            ("Coagulation — Platelets", i.coagulation),
+            ("Liver — Bilirubin", i.liver),
+            ("Cardiovascular — MAP/vasopressors", i.cardiovascular),
+            ("CNS — GCS", i.cns),
+            ("Renal — Creatinine/UO", i.renal)
+        ]
+        let (risk, interpretation, recs, redFlags) = sofaRisk(total)
+        return ClinicalScore(
+            systemName: "Sequential Organ Failure Assessment",
+            abbreviation: "SOFA \(total)",
+            score: Double(total), maxScore: 24,
+            risk: risk, interpretation: interpretation,
+            recommendations: recs, items: items, redFlags: redFlags,
+            evidenceNote: "Singer M et al, JAMA 2016 (Sepsis-3). Vincent JL et al, ICM 1996. SOFA ≥2 with suspected infection = sepsis. 0–6: <10% mortality, 7–9: ~20%, 10–12: ~45%, ≥13: >50%."
+        )
+    }
+
+    private static func sofaRisk(_ s: Int) -> (ScoreRisk, String, [String], [String]) {
+        switch s {
+        case 0...1:
+            return (.low,
+                    "SOFA \(s) — no significant organ dysfunction",
+                    ["Standard monitoring", "Reassess if clinical deterioration"],
+                    [])
+        case 2...6:
+            return (.low,
+                    "SOFA \(s) — organ dysfunction; Sepsis-3 criteria met if infection suspected",
+                    ["Blood cultures × 2 and serum lactate", "IV antibiotics within 1h if sepsis",
+                     "IV fluid 30 mL/kg crystalloid if lactate ≥4 mmol/L or hypoperfused",
+                     "Repeat SOFA in 24h to track trajectory"],
+                    ["SOFA ≥2: organ dysfunction — Sepsis-3 criteria met if infection suspected"])
+        case 7...9:
+            return (.moderate,
+                    "SOFA \(s) — significant multi-organ dysfunction; ~15–20% in-hospital mortality",
+                    ["Urgent senior/ICU review", "Source control if septic focus identified",
+                     "Vasopressors if MAP <65 mmHg after 30 mL/kg crystalloid",
+                     "Hourly urine output monitoring", "Repeat SOFA in 12–24h"],
+                    ["SOFA 7–9: significant organ failure — ICU assessment urgently"])
+        case 10...12:
+            return (.high,
+                    "SOFA \(s) — severe multi-organ failure; ~40–50% in-hospital mortality",
+                    ["ICU admission required", "Vasopressor titration to MAP ≥65 mmHg",
+                     "Renal replacement therapy if AKI KDIGO stage 3",
+                     "Mechanical ventilation if P:F <200 with respiratory failure",
+                     "Surviving Sepsis Campaign 1h bundle"],
+                    ["SOFA 10–12: severe organ failure — ICU admission required"])
+        default:
+            return (.critical,
+                    "SOFA \(s) — critical multi-organ failure; >50% in-hospital mortality",
+                    ["Emergency ICU admission", "Full organ support: vasopressors, RRT, mechanical ventilation",
+                     "Immediate intensivist review", "Goals-of-care discussion with family",
+                     "Surviving Sepsis Campaign — all bundle elements within 1h"],
+                    ["SOFA ≥13: critical — mortality >50%; emergency ICU escalation"])
+        }
+    }
+
+    // MARK: - FIB-4 (Liver Fibrosis Index)
+
+    static func fib4(_ i: FIB4Input) -> ClinicalScore {
+        guard i.platelet10_9L > 0, i.altIUL > 0 else {
+            return ClinicalScore(
+                systemName: "FIB-4 Liver Fibrosis Index", abbreviation: "FIB-4 —",
+                score: 0, maxScore: 10, risk: .low,
+                interpretation: "Incomplete — platelet count and ALT required",
+                recommendations: ["Enter platelet count (×10⁹/L) and ALT (IU/L) to calculate"],
+                items: [], redFlags: [],
+                evidenceNote: "Sterling RK et al, Hepatology 2006."
+            )
+        }
+        let fib4Val = Double(i.age) * i.astIUL / (i.platelet10_9L * sqrt(i.altIUL))
+        let items: [(String, Int)] = [
+            ("Age (years)", i.age),
+            ("AST (IU/L)", Int(i.astIUL)),
+            ("Platelets (×10⁹/L)", Int(i.platelet10_9L)),
+            ("ALT (IU/L)", Int(i.altIUL))
+        ]
+        let (risk, interpretation, recs, redFlags) = fib4Risk(fib4Val)
+        return ClinicalScore(
+            systemName: "FIB-4 Liver Fibrosis Index",
+            abbreviation: String(format: "FIB-4 %.2f", fib4Val),
+            score: fib4Val, maxScore: 10,
+            risk: risk, interpretation: interpretation,
+            recommendations: recs, items: items, redFlags: redFlags,
+            evidenceNote: "Sterling RK et al, Hepatology 2006; EASL 2021. (Age × AST) ÷ (Platelets × √ALT). <1.30: F0–F1, 90% NPV; 1.30–2.67: indeterminate; >2.67: F2–F4, 80% PPV."
+        )
+    }
+
+    private static func fib4Risk(_ f: Double) -> (ScoreRisk, String, [String], [String]) {
+        switch f {
+        case ..<1.30:
+            return (.low,
+                    String(format: "FIB-4 %.2f — low fibrosis risk; F0–F1 likely (NPV ~90%%)", f),
+                    ["No advanced fibrosis expected — routine follow-up",
+                     "Repeat FIB-4 annually if metabolic risk factors present",
+                     "Lifestyle: reduce alcohol, achieve target weight, treat metabolic syndrome"],
+                    [])
+        case 1.30...2.67:
+            return (.moderate,
+                    String(format: "FIB-4 %.2f — indeterminate; further assessment recommended", f),
+                    ["Liver elastography (FibroScan) for definitive staging",
+                     "Hepatology referral if viral hepatitis, alcohol, or metabolic liver disease",
+                     "Repeat FIB-4 in 6–12 months if elastography deferred",
+                     "Review hepatotoxic medications"],
+                    ["FIB-4 indeterminate: FibroScan or hepatology review recommended"])
+        default:
+            return (.critical,
+                    String(format: "FIB-4 %.2f — high fibrosis risk; significant fibrosis (F2–F4) likely", f),
+                    ["Urgent hepatology referral",
+                     "FibroScan or liver biopsy for staging",
+                     "Endoscopy for variceal surveillance if F3–F4 suspected",
+                     "HCC surveillance: 6-monthly ultrasound + AFP if cirrhosis confirmed",
+                     "Cease alcohol; optimise weight, diabetes, lipids"],
+                    ["FIB-4 >2.67: significant liver fibrosis likely — urgent hepatology referral"])
+        }
     }
 }

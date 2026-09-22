@@ -97,6 +97,10 @@ final class Patient {
     var bisapScore: Int?
     // AIMS65 Score (0–5) for upper GI bleed in-hospital mortality
     var aims65Score: Int?
+    // SOFA Score (0–24); ≥2 with suspected infection = sepsis (Sepsis-3)
+    var sofaScore: Int?
+    // FIB-4 Index (continuous); <1.30=low, 1.30-2.67=indeterminate, >2.67=high fibrosis risk
+    var fib4Score: Double?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

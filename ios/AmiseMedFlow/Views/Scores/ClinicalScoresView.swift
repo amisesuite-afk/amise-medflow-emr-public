@@ -47,6 +47,8 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case psiPort          = "PSI/PORT (Pneumonia Severity)"
     case bisap            = "BISAP (Pancreatitis Severity)"
     case aims65           = "AIMS65 (UGI Bleed Mortality)"
+    case sofa             = "SOFA (Organ Failure)"
+    case fib4             = "FIB-4 (Liver Fibrosis)"
 
     var category: ScoreCategory {
         switch self {
@@ -56,9 +58,9 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .gi
         case .wellsDVT, .wellsPE, .caprini:
             return .vascular
-        case .sirs, .qsofa, .psiPort:
+        case .sirs, .qsofa, .psiPort, .sofa:
             return .sepsis
-        case .rcri, .asa, .childPugh, .meld, .stopBang:
+        case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4:
             return .preop
         case .abcd2, .lrinec, .gcs:
             return .neuro
@@ -94,6 +96,8 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .psiPort:        return "lungs"
         case .bisap:          return "flame.fill"
         case .aims65:         return "drop.triangle.fill"
+        case .sofa:           return "bolt.heart.fill"
+        case .fib4:           return "liver"
         }
     }
 }
@@ -164,6 +168,10 @@ struct ClinicalScoresView: View {
     @State private var bisapI = ClinicalScoringEngine.BISAPInput()
     // AIMS65
     @State private var aims65I = ClinicalScoringEngine.AIMS65Input()
+    // SOFA
+    @State private var sofaI = SOFAInput()
+    // FIB-4
+    @State private var fib4I = FIB4Input()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -481,6 +489,12 @@ struct ClinicalScoresView: View {
         case .aims65:
             let (input, fill) = PatientScoreAutoPopulator.aims65(patient: patient)
             aims65I = input; autoFill = fill
+        case .sofa:
+            let (input, fill) = PatientScoreAutoPopulator.sofa(patient: patient)
+            sofaI = input; autoFill = fill
+        case .fib4:
+            let (input, fill) = PatientScoreAutoPopulator.fib4(patient: patient)
+            fib4I = input; autoFill = fill
         case .cha2ds2vasc:
             let (input, fill) = PatientScoreAutoPopulator.cha2ds2vasc(patient: patient)
             cha2I = input; autoFill = fill
@@ -598,6 +612,8 @@ struct ClinicalScoresView: View {
         case .psiPort:      ClinicalScoringEngine.psiPort(psiI)
         case .bisap:        ClinicalScoringEngine.bisap(bisapI)
         case .aims65:       ClinicalScoringEngine.aims65(aims65I)
+        case .sofa:         ClinicalScoringEngine.sofa(sofaI)
+        case .fib4:         ClinicalScoringEngine.fib4(fib4I)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -622,6 +638,8 @@ struct ClinicalScoresView: View {
             patient.psiScore = Int(r.abbreviation.components(separatedBy: "Class ").last ?? "") ?? 0
         case .bisap:        patient.bisapScore  = intScore
         case .aims65:       patient.aims65Score = intScore
+        case .sofa:         patient.sofaScore   = intScore
+        case .fib4:         patient.fib4Score   = r.score
         default: break
         }
         patient.updatedAt = .now
@@ -684,6 +702,8 @@ struct ClinicalScoresView: View {
         case .psiPort:      psiPortForm
         case .bisap:        bisapForm
         case .aims65:       aims65Form
+        case .sofa:         sofaForm
+        case .fib4:         fib4Form
         }
     }
 
@@ -1667,6 +1687,19 @@ struct ClinicalScoresView: View {
             case "nursingHomeResident":      psiI.nursingHomeResident      = true
             default: break
             }
+        case .sofa:
+            // SOFA domain levels are adjusted via pickers; pending fields flag component elevations
+            switch field.id {
+            case "respirationElevated":   if sofaI.respiration < 1 { sofaI.respiration = 1 }
+            case "coagulationElevated":   if sofaI.coagulation < 1 { sofaI.coagulation = 1 }
+            case "liverElevated":         if sofaI.liver < 1       { sofaI.liver = 1 }
+            case "cnsElevated":           if sofaI.cns < 1         { sofaI.cns = 1 }
+            case "renalElevated":         if sofaI.renal < 1       { sofaI.renal = 1 }
+            default: break
+            }
+        case .fib4:
+            // FIB-4 inputs are continuous sliders; no boolean pending fields
+            break
         default: break
         }
 
@@ -1805,6 +1838,93 @@ struct ClinicalScoresView: View {
             scoreToggle("P — Pleural effusion on imaging",            binding: $bisapI.pleuralEffusion,        points: "+1", autoKey: "pleuralEffusion")
         }
         .onChange(of: bisapI) { _, _ in recalculate() }
+    }
+
+    // MARK: - SOFA
+
+    private var sofaForm: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            sofaDomainSection(
+                "Respiratory — PaO₂/FiO₂ (mmHg)",
+                selection: $sofaI.respiration,
+                labels: ["≥400 mmHg", "300–399", "200–299 (+resp support)", "100–199 (+resp support)", "<100 (+resp support)"]
+            )
+            sofaDomainSection(
+                "Coagulation — Platelets (×10³/µL)",
+                selection: $sofaI.coagulation,
+                labels: ["≥150", "100–149", "50–99", "20–49", "<20"]
+            )
+            sofaDomainSection(
+                "Liver — Bilirubin (µmol/L)",
+                selection: $sofaI.liver,
+                labels: ["<20", "20–32", "33–101", "102–204", ">204"]
+            )
+            sofaDomainSection(
+                "Cardiovascular — MAP/Vasopressors",
+                selection: $sofaI.cardiovascular,
+                labels: ["MAP ≥70 mmHg", "MAP <70 mmHg", "Dopamine ≤5 or any dobutamine",
+                         "Dopamine 5–15 or noradrenaline ≤0.1 µg/kg/min",
+                         "Dopamine >15 or noradrenaline >0.1 µg/kg/min"]
+            )
+            sofaDomainSection(
+                "CNS — Glasgow Coma Scale",
+                selection: $sofaI.cns,
+                labels: ["GCS 15", "GCS 13–14", "GCS 10–12", "GCS 6–9", "GCS <6"]
+            )
+            sofaDomainSection(
+                "Renal — Creatinine (µmol/L) / Urine Output",
+                selection: $sofaI.renal,
+                labels: ["<110 µmol/L", "110–170", "171–299", "300–440 or UO <0.5 mL/kg/h", ">440 or UO <200 mL/day"]
+            )
+        }
+        .onChange(of: sofaI) { _, _ in recalculate() }
+    }
+
+    private func sofaDomainSection(_ title: String, selection: Binding<Int>, labels: [String]) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .textCase(.uppercase)
+            Picker("", selection: selection) {
+                Text("0").tag(0)
+                Text("1").tag(1)
+                Text("2").tag(2)
+                Text("3").tag(3)
+                Text("4").tag(4)
+            }
+            .pickerStyle(.segmented)
+            if selection.wrappedValue < labels.count {
+                Text(labels[selection.wrappedValue])
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 1)
+            }
+        }
+    }
+
+    // MARK: - FIB-4
+
+    private var fib4Form: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Formula: (Age × AST) ÷ (Platelets × √ALT)")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .padding(.bottom, 2)
+            mewsSlider(label: "Age (years)", autoKey: "age",
+                       value: Binding(get: { Double(fib4I.age) }, set: { fib4I.age = Int($0) }),
+                       in: 18...100, step: 1, display: "\(fib4I.age) yr")
+            mewsSlider(label: "AST (IU/L)", autoKey: "astIUL",
+                       value: $fib4I.astIUL, in: 5...500, step: 1,
+                       display: "\(Int(fib4I.astIUL)) IU/L")
+            mewsSlider(label: "Platelets (×10⁹/L)", autoKey: "platelet10_9L",
+                       value: $fib4I.platelet10_9L, in: 10...600, step: 5,
+                       display: "\(Int(fib4I.platelet10_9L))")
+            mewsSlider(label: "ALT (IU/L)", autoKey: "altIUL",
+                       value: $fib4I.altIUL, in: 5...500, step: 1,
+                       display: "\(Int(fib4I.altIUL)) IU/L")
+        }
+        .onChange(of: fib4I) { _, _ in recalculate() }
     }
 
     private func scoreHistoryColor(_ riskRaw: String) -> Color {
