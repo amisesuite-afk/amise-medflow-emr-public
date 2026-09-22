@@ -276,8 +276,12 @@ extension PatientStateVector {
         // Matches by test name keyword; takes the most recent resulted entry per field.
         psv.labs = LabPanel.parse(from: patient.investigations)
 
-        // Exam flags from free text
-        psv.exam = ExamFindings.parse(from: [patient.examAbdo, patient.examGeneral].compactMap { $0 }.joined(separator: " "))
+        // Exam flags from all exam fields — CVS/Resp/Neuro/MSK/Skin add to abdo/general
+        let allExamText = [patient.examAbdo, patient.examGeneral, patient.examCVS,
+                           patient.examResp, patient.examNeuro, patient.examMSK,
+                           patient.examSkin, patient.examOther]
+            .compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " ")
+        psv.exam = ExamFindings.parse(from: allExamText)
 
         psv.inputSources = [.typed]
         psv.assembledAt = .now

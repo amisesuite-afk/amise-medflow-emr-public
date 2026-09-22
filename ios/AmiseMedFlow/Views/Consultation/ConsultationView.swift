@@ -4507,11 +4507,14 @@ struct ConsultationView: View {
             .filter { $0.status == .resulted && !$0.result.isEmpty }
             .map { "\($0.name): \($0.result)" }
             .joined(separator: ". ")
+        let examOtherText = [patient.examCVS, patient.examResp, patient.examNeuro,
+                             patient.examMSK, patient.examSkin, patient.examOther]
+            .compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " ")
         let parsed = ClinicalTextParser.parse(
             hpi: patient.hpi,
             examGeneral: patient.examGeneral,
             examAbdo: patient.examAbdo,
-            examOther: nil,
+            examOther: examOtherText.isEmpty ? nil : examOtherText,
             notes: invResultsText.isEmpty ? nil : invResultsText
         )
 
