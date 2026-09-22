@@ -49,13 +49,40 @@ struct ClinicalScore: Identifiable {
     let systemName: String       // e.g. "Alvarado Score"
     let abbreviation: String     // e.g. "MANTRELS"
     let score: Double
-    let maxScore: Double
+    let maxScore: Double         // 0 = no fixed maximum (continuous / unbounded scores)
     let risk: ScoreRisk
     let interpretation: String   // concise clinical meaning of this score
     let recommendations: [String]
     let items: [ScoredItem]
     let redFlags: [String]
     let evidenceNote: String?    // guideline reference
+}
+
+extension ClinicalScore {
+    // Convenience initialiser for scores that do not require abbreviation,
+    // items, or redFlags, and where maxScore may be absent (continuous scales).
+    init(
+        name: String,
+        score: Double,
+        maxScore: Double? = nil,
+        risk: ScoreRisk,
+        interpretation: String,
+        recommendations: [String] = [],
+        items: [ScoredItem] = [],
+        redFlags: [String] = [],
+        evidenceNote: String? = nil
+    ) {
+        self.systemName     = name
+        self.abbreviation   = ""
+        self.score          = score
+        self.maxScore       = maxScore ?? 0     // 0 signals "no fixed max" to display logic
+        self.risk           = risk
+        self.interpretation = interpretation
+        self.recommendations = recommendations
+        self.items          = items
+        self.redFlags       = redFlags
+        self.evidenceNote   = evidenceNote
+    }
 }
 
 // MARK: - Input structs

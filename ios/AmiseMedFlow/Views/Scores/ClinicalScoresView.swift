@@ -709,10 +709,11 @@ struct ClinicalScoresView: View {
         case .high:     Color(red: 0.9, green: 0.4, blue: 0.1)
         case .critical: .red
         }
-        let scoreStr = score == Double(Int(score)) ? "\(Int(score))" : String(format: "%.1f", score)
-        let maxStr   = max == Double(Int(max))   ? "\(Int(max))"   : String(format: "%.0f", max)
+        let scoreStr  = score == Double(Int(score)) ? "\(Int(score))" : String(format: "%.1f", score)
+        let maxStr    = max == Double(Int(max))   ? "\(Int(max))"   : String(format: "%.0f", max)
+        let scoreLabel = max > 0 ? "\(scoreStr)/\(maxStr)" : scoreStr
         return VStack(spacing: 2) {
-            Text("\(scoreStr)/\(maxStr)")
+            Text(scoreLabel)
                 .font(.title3.weight(.bold).monospacedDigit())
                 .foregroundStyle(color)
             Text(risk.rawValue)
@@ -1007,9 +1008,10 @@ struct ClinicalScoresView: View {
         let fmt = DateFormatter()
         fmt.dateStyle = .medium
         fmt.timeStyle = .short
-        let scoreStr = r.score == Double(Int(r.score)) ? "\(Int(r.score))" : String(format: "%.1f", r.score)
-        let maxStr   = r.maxScore == Double(Int(r.maxScore)) ? "\(Int(r.maxScore))" : String(format: "%.1f", r.maxScore)
-        let line = "[\(fmt.string(from: .now))] \(r.systemName): \(scoreStr)/\(maxStr) — \(r.risk.rawValue) Risk. \(r.interpretation)"
+        let scoreStr   = r.score == Double(Int(r.score)) ? "\(Int(r.score))" : String(format: "%.1f", r.score)
+        let maxStr     = r.maxScore == Double(Int(r.maxScore)) ? "\(Int(r.maxScore))" : String(format: "%.1f", r.maxScore)
+        let scoreDisplay = r.maxScore > 0 ? "\(scoreStr)/\(maxStr)" : scoreStr
+        let line = "[\(fmt.string(from: .now))] \(r.systemName): \(scoreDisplay) — \(r.risk.rawValue) Risk. \(r.interpretation)"
         if let existing = patient.assessmentText, !existing.isEmpty {
             patient.assessmentText = existing + "\n" + line
         } else {
