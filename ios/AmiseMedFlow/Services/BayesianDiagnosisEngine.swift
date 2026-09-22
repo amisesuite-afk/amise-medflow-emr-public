@@ -2491,6 +2491,26 @@ enum BayesianDiagnosisEngine {
             var evidenceSources: [String: [String]] = [:]
             var pathognomicFindings: [String] = []
 
+            // Pre-pass: collect DAG node IDs for features that have already fired,
+            // so downstream correlated features receive CPT-based discounting.
+            var observedNetworkIDs = Set<String>()
+            for f in c.features {
+                guard let nid = Self.featureNetworkID(key: f.key, value: f.value) else { continue }
+                let fired: Bool
+                switch f.key {
+                case "associations", "onset", "character", "radiation",
+                     "timing", "exacerbating", "relieving", "severity", "site":
+                    let sel = socrates[f.key] ?? []
+                    fired = sel.contains(where: { $0.lowercased().contains(f.value.lowercased()) })
+                case "exam":
+                    let words = f.value.lowercased().split(separator: " ").map(String.init)
+                    fired = words.allSatisfy { examL.contains($0) }
+                default:
+                    fired = false
+                }
+                if fired { observedNetworkIDs.insert(nid) }
+            }
+
             for f in c.features {
                 var triggered = false
                 var sourceKey = "other"
@@ -2567,8 +2587,21 @@ enum BayesianDiagnosisEngine {
                 }
 
                 if triggered {
-                    logP += f.logLR
-                    if f.logLR > 0 && !f.evidenceLabel.isEmpty {
+                    // Apply CPT-based discounting when a correlated parent feature has
+                    // already been observed — avoids double-counting co-occurring findings.
+                    let effectiveLR: Double
+                    if let nid = Self.featureNetworkID(key: f.key, value: f.value) {
+                        effectiveLR = BayesianFeatureNetwork.adjustedLogLR(
+                            featureID: nid,
+                            featurePresent: true,
+                            observedIDs: observedNetworkIDs,
+                            baseLogLR: f.logLR
+                        )
+                    } else {
+                        effectiveLR = f.logLR
+                    }
+                    logP += effectiveLR
+                    if effectiveLR > 0 && !f.evidenceLabel.isEmpty {
                         evidence.append(f.evidenceLabel)
                         // Suppress demographics from the evidence panel (age/sex are context, not findings)
                         if sourceKey != "demographics" && sourceKey != "other" {
@@ -2585,6 +2618,47 @@ enum BayesianDiagnosisEngine {
             return ScoredCandidate(candidate: c, logPosterior: logP, evidence: evidence,
                                    evidenceSources: evidenceSources, pathognomicFindings: pathognomicFindings)
         }
+    }
+
+    // MARK: - Feature → DAG node ID mapping
+    // Maps (feature key, value) pairs to BayesianFeatureNetwork node IDs so CPT-based
+    // discounting fires when correlated features co-occur in the same candidate scoring pass.
+
+    private static func featureNetworkID(key: String, value: String) -> String? {
+        let v = value.lowercased()
+        switch key {
+        case "associations":
+            if v.contains("raised wbc") || v.contains("elevated wbc") || v.contains("leukocytosis") { return "wbc_elevated" }
+            if v.contains("elevated crp") || v.contains("raised crp") { return "crp_elevated" }
+            if v.contains("elevated lactate") || v.contains("raised lactate") { return "lactate_raised" }
+            if v.contains("fever") || v.contains("pyrexia") { return "fever" }
+            if v.contains("tachycardia") { return "tachycardia" }
+            if v.contains("hypotension") { return "hypotension" }
+            if v.contains("haemoptysis") || v.contains("hemoptysis") { return "haemoptysis" }
+            if v.contains("dyspnoea") || v.contains("dyspnea") || v.contains("shortness of breath") { return "dyspnoea" }
+            if v.contains("pleuritic") { return "pleuritic_pain" }
+            if v.contains("dark urine") { return "dark_urine" }
+            if v.contains("pale stool") || v.contains("clay stool") { return "pale_stool" }
+            if v.contains("jaundice") { return "jaundice" }
+            if v.contains("paraesthesia") || v.contains("paresthesia") || v.contains("numbness") { return "paresthesia" }
+        case "exam":
+            if v.contains("guarding") { return "guarding" }
+            if v.contains("rebound") { return "rebound" }
+            if v.contains("rigidity") { return "rigidity" }
+            if v.contains("pallor") && !v.contains("limb") && !v.contains("leg") && !v.contains("arm") { return "pallor" }
+            if v.contains("cold") && (v.contains("limb") || v.contains("extremit") || v.contains("foot") || v.contains("leg")) { return "cold_limb" }
+            if v.contains("absent pulse") || v.contains("pulse absent") || v.contains("pulseless") { return "pulselessness" }
+            if v.contains("murphy") { return "murphy_sign" }
+            if v.contains("jaundice") { return "jaundice" }
+        case "onset", "character":
+            if v.contains("pleuritic") { return "pleuritic_pain" }
+            if v.contains("dyspnoea") || v.contains("dyspnea") { return "dyspnoea" }
+        case "site":
+            if v.contains("right upper") || v.contains("ruq") { return "ruq_pain" }
+        default:
+            break
+        }
+        return nil
     }
 
     // MARK: - Log-gap normalisation → top 5 results
