@@ -376,20 +376,9 @@ struct ContentView: View {
     @EnvironmentObject private var peerSync: PeerSyncService
     @Environment(\.modelContext) private var modelContext
 
-    private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
-
     var body: some View {
         Group {
-            if isPad {
-                switch sync.currentUserRole {
-                case .frontDesk:
-                    FrontDeskPadView()
-                default:
-                    RegularRootView()
-                }
-            } else {
-                CompactRootView()
-            }
+            CompactRootView()
         }
         .onAppear {
             // Inject context so cloud sync works even if Settings is never opened
