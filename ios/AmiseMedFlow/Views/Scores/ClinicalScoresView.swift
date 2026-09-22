@@ -881,6 +881,9 @@ struct ClinicalScoresView: View {
         case .fourT:         patient.fourTScore = intScore
         case .oakland:       patient.oaklandScore = intScore
         case .kingsCriteria: patient.kingsCriteriaScore = intScore
+        case .childPugh:     patient.childPughScore = intScore
+        case .meld:          patient.meldScore = intScore
+        case .asa:           patient.asaScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -2115,6 +2118,8 @@ struct ClinicalScoresView: View {
         case .oakland:
             break
         case .kingsCriteria:
+            break
+        case .childPugh, .meld, .asa:
             break
         default: break
         }

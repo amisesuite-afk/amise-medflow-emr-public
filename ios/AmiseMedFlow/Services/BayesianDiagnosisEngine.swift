@@ -132,6 +132,9 @@ enum BayesianDiagnosisEngine {
         fourTScore: Int? = nil,       // 4T Score 0–8; ≥4 = intermediate/high HIT probability
         oaklandScore: Int? = nil,     // Oakland Score 0–29; ≤8=low risk, ≥15=high risk LGIB
         kingsCriteriaScore: Int? = nil, // King's College Criteria 0=not met, 1=met (transplant referral)
+        childPughScore: Int? = nil,   // Child-Pugh 5–15; class A≤6, B7–9, C≥10
+        meldScore: Int? = nil,        // MELD 6–40; ≥15 = transplant listing threshold
+        asaScore: Int? = nil,         // ASA Physical Status 1–6
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3172,6 +3175,44 @@ enum BayesianDiagnosisEngine {
                 scored[i].logPosterior += 15
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // Child-Pugh score: boosts cirrhosis and its complications by class
+        if let cp = childPughScore {
+            let cpTargets: [(fragment: String, threshold: Int, adj: Int)] = [
+                ("cirrhosis", 7, 12), ("portal hypertension", 7, 10), ("hepatic encephalopathy", 7, 9),
+                ("variceal", 7, 9), ("oesophageal varic", 7, 8), ("ascites", 7, 8),
+                ("spontaneous bacterial peritonitis", 10, 7), ("hepatorenal", 10, 8),
+                ("hepatocellular carcinoma", 5, 4), ("hepatitis", 5, 3), ("liver failure", 10, 10)
+            ]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                for rule in cpTargets {
+                    guard cp >= rule.threshold, nameLow.contains(rule.fragment) else { continue }
+                    let label = "Child-Pugh \(cp) — cirrhotic liver disease severity supports hepatic aetiology"
+                    scored[i].logPosterior += rule.adj
+                    scored[i].evidence.append(label)
+                    scored[i].evidenceSources["score", default: []].append(label)
+                    break
+                }
+            }
+        }
+
+        // MELD score: boosts end-stage liver disease spectrum
+        if let meld = meldScore, meld >= 10 {
+            let meldTargets = ["cirrhosis", "portal hypertension", "hepatic encephalopathy",
+                               "variceal haemorrhage", "hepatorenal syndrome", "ascites",
+                               "spontaneous bacterial peritonitis", "liver failure",
+                               "hepatocellular carcinoma"]
+            let adj = meld >= 25 ? 12 : meld >= 15 ? 8 : 4
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard meldTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "MELD \(meld) — end-stage liver disease probability significantly elevated"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
             }
         }
 

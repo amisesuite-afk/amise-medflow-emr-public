@@ -153,6 +153,12 @@ final class Patient {
     var oaklandScore: Int?
     // King's College Criteria met (1) or not met (0) for acute liver failure transplant referral
     var kingsCriteriaScore: Int?
+    // Child-Pugh score 5–15 (class A=5-6, B=7-9, C=10-15); surrogate for hepatic reserve
+    var childPughScore: Int?
+    // MELD score 6–40 (Model for End-stage Liver Disease); also encoded as MELD×10 for precision
+    var meldScore: Int?
+    // ASA Physical Status 1–5
+    var asaScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?
