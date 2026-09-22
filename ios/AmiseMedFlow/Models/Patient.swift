@@ -105,6 +105,8 @@ final class Patient {
     var curb65Score: Int?
     // Padua Prediction Score (0–20) for VTE risk in medical inpatients; ≥4 = high risk
     var paduaScore: Int?
+    // APACHE II Score (0–71) for ICU/critical illness severity; ≥25 = predicted mortality >55%
+    var apacheIIScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

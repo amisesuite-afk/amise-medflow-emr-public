@@ -51,6 +51,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case fib4             = "FIB-4 (Liver Fibrosis)"
     case curb65           = "CURB-65 (CAP Severity)"
     case padua            = "Padua (Medical VTE Risk)"
+    case apacheII         = "APACHE II (ICU Severity)"
 
     var category: ScoreCategory {
         switch self {
@@ -60,7 +61,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .gi
         case .wellsDVT, .wellsPE, .caprini, .padua:
             return .vascular
-        case .sirs, .qsofa, .psiPort, .sofa, .curb65:
+        case .sirs, .qsofa, .psiPort, .sofa, .curb65, .apacheII:
             return .sepsis
         case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4:
             return .preop
@@ -102,6 +103,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .fib4:           return "liver"
         case .curb65:         return "lungs.fill"
         case .padua:          return "figure.walk"
+        case .apacheII:       return "cross.circle.fill"
         }
     }
 }
@@ -180,6 +182,8 @@ struct ClinicalScoresView: View {
     @State private var curb65I = CURB65Input()
     // Padua
     @State private var paduaI = PaduaInput()
+    // APACHE II
+    @State private var apacheIII = APACHEIIInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -542,6 +546,9 @@ struct ClinicalScoresView: View {
         case .padua:
             let (input, fill) = PatientScoreAutoPopulator.padua(patient: patient)
             paduaI = input; autoFill = fill
+        case .apacheII:
+            let (input, fill) = PatientScoreAutoPopulator.apacheII(patient: patient)
+            apacheIII = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -630,6 +637,7 @@ struct ClinicalScoresView: View {
         case .fib4:         ClinicalScoringEngine.fib4(fib4I)
         case .curb65:       ClinicalScoringEngine.curb65(curb65I)
         case .padua:        ClinicalScoringEngine.padua(paduaI)
+        case .apacheII:     ClinicalScoringEngine.apacheII(apacheIII)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -656,8 +664,9 @@ struct ClinicalScoresView: View {
         case .aims65:       patient.aims65Score = intScore
         case .sofa:         patient.sofaScore   = intScore
         case .fib4:         patient.fib4Score   = r.score
-        case .curb65:       patient.curb65Score = intScore
-        case .padua:        patient.paduaScore  = intScore
+        case .curb65:       patient.curb65Score   = intScore
+        case .padua:        patient.paduaScore    = intScore
+        case .apacheII:     patient.apacheIIScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -724,6 +733,7 @@ struct ClinicalScoresView: View {
         case .fib4:         fib4Form
         case .curb65:       curb65Form
         case .padua:        paduaForm
+        case .apacheII:     apacheIIForm
         }
     }
 
@@ -1744,6 +1754,9 @@ struct ClinicalScoresView: View {
             case "ongoingHormonalTreatment":     paduaI.ongoingHormonalTreatment     = true
             default: break
             }
+        case .apacheII:
+            // APACHE II fields are numeric selectors, not toggles — no pending-confirm action
+            break
         default: break
         }
 
@@ -2024,6 +2037,106 @@ struct ClinicalScoresView: View {
             scoreToggle("Ongoing hormonal treatment",          binding: $paduaI.ongoingHormonalTreatment,    points: "+1", autoKey: "ongoingHormonalTreatment")
         }
         .onChange(of: paduaI) { _, _ in recalculate() }
+    }
+
+    // MARK: - APACHE II
+
+    private var apacheIIForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("ICU severity scoring. APS + Age + Chronic Health. Score ≥20 → high ICU mortality.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
+            apacheIIVitalsSection
+            apacheIILabsSection
+            apacheIIContextSection
+        }
+    }
+
+    @ViewBuilder private var apacheIIVitalsSection: some View {
+        Group {
+            sectionHeader("Acute Physiology — Vitals")
+            sofaDomainSection("Temperature (°C)", selection: $apacheIII.tempPoints,
+                labels: ["36.0–38.4 (0)", "38.5–38.9 (1)", "32.0–33.9 (2)",
+                         "30.0–31.9 or 39.0–40.9 (3)", "≥41.0 or ≤29.9 (4)"])
+            apacheSegment("Mean Arterial Pressure (mmHg)", selection: $apacheIII.mapPoints,
+                options: [(0, "70–109 mmHg"), (2, "110–129 or 50–69"), (3, "130–159"), (4, "≥160 or ≤49")])
+            apacheSegment("Heart Rate (bpm)", selection: $apacheIII.hrPoints,
+                options: [(0, "70–109"), (2, "110–139 or 55–69"), (3, "140–179 or 40–54"), (4, "≥180 or ≤39")])
+            sofaDomainSection("Respiratory Rate (br/min)", selection: $apacheIII.rrPoints,
+                labels: ["12–24 (0)", "10–11 or 25–34 (1)", "6–9 (2)", "35–49 (3)", "≥50 or ≤5 (4)"])
+            sofaDomainSection("Oxygenation (A-aDO₂ or PaO₂ mmHg)", selection: $apacheIII.oxyPoints,
+                labels: ["No deficit / PaO₂ >70 (0)", "PaO₂ 61–70 (1)",
+                         "A-a 200–349 or PaO₂ 55–60 (2)", "A-a 350–499 (3)", "A-a ≥500 or PaO₂ <55 (4)"])
+        }
+        .onChange(of: apacheIII) { _, _ in recalculate() }
+    }
+
+    @ViewBuilder private var apacheIILabsSection: some View {
+        Group {
+            sectionHeader("Acute Physiology — Labs")
+            sofaDomainSection("Arterial pH", selection: $apacheIII.pHPoints,
+                labels: ["7.33–7.49 (0)", "7.50–7.59 (1)", "7.25–7.32 or 7.60–7.69 (2)",
+                         "7.15–7.24 or ≥7.70 (3)", "<7.15 (4)"])
+            sofaDomainSection("Serum Sodium (mmol/L)", selection: $apacheIII.sodiumPoints,
+                labels: ["130–149 (0)", "150–154 (1)", "155–159 or 120–129 (2)",
+                         "160–179 or 111–119 (3)", "≥180 or ≤110 (4)"])
+            apacheSegment("Serum Potassium (mmol/L)", selection: $apacheIII.potassiumPoints,
+                options: [(0, "3.5–5.4"), (1, "5.5–5.9 or 3.0–3.4"),
+                          (2, "6.0–6.9 or 2.5–2.9"), (4, "≥7.0 or <2.5")])
+            apacheSegment("Creatinine (µmol/L)", selection: $apacheIII.creatininePoints,
+                options: [(0, "53–123 µmol/L"), (2, "124–176 or 44–52"),
+                          (3, "177–309"), (4, "≥310 or <44 (double if ARF)")])
+            apacheSegment("Haematocrit (%)", selection: $apacheIII.haematocritPoints,
+                options: [(0, "30–45.9%"), (1, "46–49.9% or 20–29.9%"),
+                          (2, "50–59.9%"), (4, "≥60% or <20%")])
+            apacheSegment("WBC (×10³/mm³)", selection: $apacheIII.wbcPoints,
+                options: [(0, "3–14.9"), (1, "15–19.9 or 1–2.9"),
+                          (2, "20–39.9"), (4, "≥40 or <1")])
+        }
+        .onChange(of: apacheIII) { _, _ in recalculate() }
+    }
+
+    @ViewBuilder private var apacheIIContextSection: some View {
+        Group {
+            sectionHeader("GCS")
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Glasgow Coma Scale (3–15). APACHE II points = 15 − GCS.")
+                    .font(.caption).foregroundStyle(.secondary)
+                Stepper("GCS: \(apacheIII.gcs)", value: $apacheIII.gcs, in: 3...15)
+                    .font(.subheadline)
+            }
+            sectionHeader("Age")
+            apacheSegment("Age Points", selection: $apacheIII.agePoints,
+                options: [(0, "≤44 years"), (2, "45–54"), (3, "55–64"), (5, "65–74"), (6, "≥75")])
+            sectionHeader("Chronic Health")
+            apacheSegment("Chronic Health Points", selection: $apacheIII.chronicHealthPoints,
+                options: [(0, "None / no severe organ insufficiency"),
+                          (2, "Elective postoperative patient"),
+                          (5, "Non-operative or emergency postop — severe organ insufficiency or immunocompromised")])
+        }
+        .onChange(of: apacheIII) { _, _ in recalculate() }
+    }
+
+    // Generic helper for APACHE II parameters with non-contiguous point values
+    private func apacheSegment(_ title: String, selection: Binding<Int>,
+                                options: [(Int, String)]) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .textCase(.uppercase)
+            Picker("", selection: selection) {
+                ForEach(0..<options.count, id: \.self) { idx in
+                    Text("\(options[idx].0)").tag(options[idx].0)
+                }
+            }
+            .pickerStyle(.segmented)
+            if let match = options.first(where: { $0.0 == selection.wrappedValue }) {
+                Text(match.1)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 1)
+            }
+        }
     }
 
     private func scoreHistoryColor(_ riskRaw: String) -> Color {

@@ -108,6 +108,7 @@ enum BayesianDiagnosisEngine {
         fib4Score: Double? = nil,     // FIB-4 (continuous); >2.67 = significant fibrosis
         curb65Score: Int? = nil,      // CURB-65 (0–5); ≥3 = hospital admission for CAP
         paduaScore: Int? = nil,       // Padua (0–20); ≥4 = high VTE risk in medical patients
+        apacheIIScore: Int? = nil,    // APACHE II (0–71); ≥20 = high ICU mortality risk
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2618,6 +2619,26 @@ enum BayesianDiagnosisEngine {
                 case 6...: (14, "Padua \(pad) — very high VTE risk (multiple major risk factors)")
                 case 4...5: (10, "Padua \(pad) — high VTE risk; LMWH prophylaxis indicated")
                 default:    (4,  "Padua \(pad) — intermediate VTE risk; reassess daily")
+                }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // APACHE II: boosts sepsis, critical illness, and pancreatitis when severity is high
+        if let apache = apacheIIScore, apache >= 10 {
+            let sepsisTargets = ["sepsis", "septic shock", "bacteraemia", "systemic infection",
+                                  "pancreatitis", "peritonitis", "organ failure", "critical illness",
+                                  "pneumonia", "pulmonary", "ards", "mesenteric ischaemia"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard sepsisTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch apache {
+                case 25...: (18, "APACHE II \(apache) — critical: predicted mortality >55%")
+                case 20...24: (14, "APACHE II \(apache) — very high severity: ~40% predicted mortality")
+                case 15...19: (10, "APACHE II \(apache) — high severity: ~25% predicted mortality")
+                default:      (5,  "APACHE II \(apache) — moderate severity: ~15% predicted mortality")
                 }
                 scored[i].logPosterior += Double(adj)
                 scored[i].evidence.insert(label, at: 0)

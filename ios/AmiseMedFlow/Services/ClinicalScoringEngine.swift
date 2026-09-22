@@ -421,6 +421,27 @@ struct PaduaInput: Equatable {
     var ongoingHormonalTreatment: Bool = false   // +1 (OCP, HRT)
 }
 
+struct APACHEIIInput: Equatable {
+    // APACHE II — Knaus WA et al, Crit Care Med 1985
+    // Each field stores the actual APACHE II point contribution for that variable.
+    // APS (Acute Physiology Score) = sum of 12 physiological variables.
+    // Total APACHE II = APS + age points + chronic health points.
+    var tempPoints: Int = 0          // 0=36–38.4°C, 1=38.5–38.9, 2=32–33.9, 3=30–31.9 or 39–40.9, 4=≥41 or ≤29.9
+    var mapPoints: Int = 0           // MAP(mmHg): 0=70–109, 2=110–129 or 50–69, 3=130–159, 4=≥160 or ≤49
+    var hrPoints: Int = 0            // HR(bpm): 0=70–109, 2=110–139 or 55–69, 3=140–179 or 40–54, 4=≥180 or ≤39
+    var rrPoints: Int = 0            // RR(br/min): 0=12–24, 1=10–11 or 25–34, 2=6–9, 3=35–49, 4=≥50 or ≤5
+    var oxyPoints: Int = 0           // A-aDO2 or PaO2: 0=none/PaO2>70, 1=PaO2 61–70, 2=A-a 200–349 or PaO2 55–60, 3=A-a 350–499, 4=A-a≥500 or PaO2<55
+    var pHPoints: Int = 0            // Art. pH: 0=7.33–7.49, 1=7.50–7.59, 2=7.25–7.32 or 7.60–7.69, 3=7.15–7.24 or ≥7.70, 4=<7.15
+    var sodiumPoints: Int = 0        // Na(mmol/L): 0=130–149, 1=150–154, 2=155–159 or 120–129, 3=160–179 or 111–119, 4=≥180 or ≤110
+    var potassiumPoints: Int = 0     // K(mmol/L): 0=3.5–5.4, 1=5.5–5.9 or 3.0–3.4, 2=6.0–6.9 or 2.5–2.9, 4=≥7.0 or <2.5
+    var creatininePoints: Int = 0    // Creatinine: 0=53–123µmol/L, 2=124–176 or 44–52, 3=177–309, 4=≥310 or <44 (double if ARF)
+    var haematocritPoints: Int = 0   // Hct(%): 0=30–45.9, 1=46–49.9 or 20–29.9, 2=50–59.9, 4=≥60 or <20
+    var wbcPoints: Int = 0           // WBC(×10³/mm³): 0=3–14.9, 1=15–19.9 or 1–2.9, 2=20–39.9, 4=≥40 or <1
+    var gcs: Int = 15                // Actual GCS 3–15; APACHE II contribution = 15 – gcs
+    var agePoints: Int = 0           // 0=≤44yrs, 2=45–54, 3=55–64, 5=65–74, 6=≥75
+    var chronicHealthPoints: Int = 0 // 0=none, 2=elective postop, 5=nonop or emergency postop with severe organ insufficiency/immunocompromised
+}
+
 struct SOFAInput: Equatable {
     // Sequential Organ Failure Assessment (Sepsis-3, JAMA 2016)
     // Each domain scored 0–4; total 0–24
@@ -2364,5 +2385,92 @@ enum ClinicalScoringEngine {
             recommendations: recs, items: items, redFlags: redFlags,
             evidenceNote: "Barbar S et al, J Thromb Haemost 2010. Validated in 1180 medical inpatients. Score ≥4 = high risk (11% VTE without prophylaxis vs 2.2% with LMWH). Complements Caprini for surgical patients."
         )
+    }
+
+    // MARK: - APACHE II
+
+    static func apacheII(_ i: APACHEIIInput) -> ClinicalScore {
+        let gcsPts = 15 - max(3, min(15, i.gcs))
+        let aps = i.tempPoints + i.mapPoints + i.hrPoints + i.rrPoints +
+                  i.oxyPoints + i.pHPoints + i.sodiumPoints + i.potassiumPoints +
+                  i.creatininePoints + i.haematocritPoints + i.wbcPoints + gcsPts
+        let total = aps + i.agePoints + i.chronicHealthPoints
+
+        func si(_ label: String, _ pts: Int) -> ScoredItem {
+            ScoredItem(label: label, points: Double(pts), present: pts > 0)
+        }
+        let items: [ScoredItem] = [
+            si("Temperature",        i.tempPoints),
+            si("Mean Arterial Pressure", i.mapPoints),
+            si("Heart Rate",         i.hrPoints),
+            si("Respiratory Rate",   i.rrPoints),
+            si("Oxygenation",        i.oxyPoints),
+            si("Arterial pH",        i.pHPoints),
+            si("Serum Sodium",       i.sodiumPoints),
+            si("Serum Potassium",    i.potassiumPoints),
+            si("Creatinine",         i.creatininePoints),
+            si("Haematocrit",        i.haematocritPoints),
+            si("White Cell Count",   i.wbcPoints),
+            si("GCS (15 − \(i.gcs))", gcsPts),
+            si("Age",                i.agePoints),
+            si("Chronic Health",     i.chronicHealthPoints),
+        ]
+        let (risk, interpretation, recs, redFlags) = apacheIIRisk(total)
+        return ClinicalScore(
+            systemName: "APACHE II Score",
+            abbreviation: "APACHE II \(total)",
+            score: Double(total), maxScore: 71,
+            risk: risk, interpretation: interpretation,
+            recommendations: recs, items: items, redFlags: redFlags,
+            evidenceNote: "Knaus WA et al, Crit Care Med 1985. Validated in 5030 ICU admissions. Predicted ICU mortality: <5=~4%, 10–14=~15%, 15–19=~25%, 20–24=~40%, 25–29=~55%, ≥30=~85%. Widely used for pancreatitis (Imrie criteria augment) and post-op ICU prognostication."
+        )
+    }
+
+    private static func apacheIIRisk(_ s: Int) -> (ScoreRisk, String, [String], [String]) {
+        switch s {
+        case 0...4:
+            return (.low,
+                    "APACHE II \(s) — low severity; predicted ICU mortality ~4%",
+                    ["Standard monitoring; reassess if clinical course deteriorates",
+                     "Serial APACHE II at 24 h improves prognostic accuracy"],
+                    [])
+        case 5...9:
+            return (.low,
+                    "APACHE II \(s) — mild severity; predicted ICU mortality ~8%",
+                    ["Close monitoring of vital signs and organ function",
+                     "Daily APACHE II re-scoring recommended"],
+                    [])
+        case 10...14:
+            return (.moderate,
+                    "APACHE II \(s) — moderate severity; predicted ICU mortality ~15%",
+                    ["Consider ICU admission if not already in place",
+                     "Optimise fluid resuscitation, oxygenation, and antimicrobials",
+                     "Identify and reverse underlying cause"],
+                    [])
+        case 15...19:
+            return (.high,
+                    "APACHE II \(s) — high severity; predicted ICU mortality ~25%",
+                    ["ICU care indicated",
+                     "Senior clinician review urgently",
+                     "Discuss goals of care with patient and family",
+                     "Organ support (vasopressors, ventilation) as clinically indicated"],
+                    ["APACHE II ≥15: ~25% predicted mortality — escalate care now"])
+        case 20...24:
+            return (.high,
+                    "APACHE II \(s) — very high severity; predicted ICU mortality ~40%",
+                    ["Full ICU support — vasopressors, mechanical ventilation if required",
+                     "Urgent senior specialist review",
+                     "Early goals-of-care discussion",
+                     "Surgical/source control for sepsis"],
+                    ["APACHE II ≥20: ~40% predicted mortality — urgent escalation required"])
+        default: // ≥25
+            return (.critical,
+                    "APACHE II \(s) — critical severity; predicted ICU mortality ≥55%",
+                    ["Maximal ICU support with close re-evaluation",
+                     "Immediate senior and specialist review",
+                     "Formal goals-of-care discussion with family",
+                     "Consider palliative pathway if refractory to maximal treatment"],
+                    ["APACHE II ≥25: predicted mortality >55% — critical — immediate review"])
+        }
     }
 }

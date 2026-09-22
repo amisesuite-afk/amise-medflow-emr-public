@@ -1312,4 +1312,148 @@ enum PatientScoreAutoPopulator {
 
         return (i, f)
     }
+
+    // MARK: - APACHE II
+
+    static func apacheII(patient: Patient) -> (APACHEIIInput, ScoreAutoFill) {
+        var i = APACHEIIInput()
+        var f = ScoreAutoFill()
+
+        // Age points
+        let age = patient.ageYears
+        let agePts: Int
+        switch age {
+        case ..<45:  agePts = 0
+        case 45..<55: agePts = 2
+        case 55..<65: agePts = 3
+        case 65..<75: agePts = 5
+        default:     agePts = 6
+        }
+        if agePts > 0 {
+            i.agePoints = agePts
+            f.autoFieldKeys.insert("agePoints")
+        }
+        i.gcs = 15  // default to fully alert; user adjusts if impaired
+
+        // Vitals from latest entry
+        if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
+            // Temperature
+            if let tempC = v.temperatureCelsius {
+                let pts: Int
+                switch tempC {
+                case ..<30.0:  pts = 4
+                case 30.0..<32.0: pts = 3
+                case 32.0..<34.0: pts = 2
+                case 34.0..<36.0: pts = 1
+                case 36.0..<38.5: pts = 0
+                case 38.5..<39.0: pts = 1
+                case 39.0..<41.0: pts = 3
+                default:       pts = 4  // ≥41°C
+                }
+                if pts > 0 {
+                    i.tempPoints = pts; f.autoFieldKeys.insert("tempPoints")
+                }
+            }
+
+            // Heart rate
+            if let hr = v.heartRate {
+                let pts: Int
+                switch hr {
+                case ..<40:    pts = 4
+                case 40..<55:  pts = 3
+                case 55..<70:  pts = 2
+                case 70..<110: pts = 0
+                case 110..<140: pts = 2
+                case 140..<180: pts = 3
+                default:       pts = 4  // ≥180
+                }
+                if pts > 0 {
+                    i.hrPoints = pts; f.autoFieldKeys.insert("hrPoints")
+                }
+            }
+
+            // Respiratory rate
+            if let rr = v.respiratoryRate {
+                let pts: Int
+                switch rr {
+                case ..<6:    pts = 4
+                case 6..<10:  pts = 2
+                case 10..<12: pts = 1
+                case 12..<25: pts = 0
+                case 25..<35: pts = 1
+                case 35..<50: pts = 3
+                default:      pts = 4  // ≥50
+                }
+                if pts > 0 {
+                    i.rrPoints = pts; f.autoFieldKeys.insert("rrPoints")
+                }
+            }
+
+            // MAP approximation from BP: MAP ≈ DBP + (SBP - DBP)/3
+            if let sbp = v.bpSystolic, let dbp = v.bpDiastolic {
+                let map = dbp + (sbp - dbp) / 3
+                let pts: Int
+                switch map {
+                case ..<50:    pts = 4
+                case 50..<70:  pts = 2
+                case 70..<110: pts = 0
+                case 110..<130: pts = 2
+                case 130..<160: pts = 3
+                default:       pts = 4  // ≥160
+                }
+                if pts > 0 {
+                    i.mapPoints = pts; f.autoFieldKeys.insert("mapPoints")
+                }
+            }
+
+            // SpO2-based oxygenation estimate (conservative — PaO2/A-a gradient preferred)
+            if let spo2 = v.spo2 {
+                let pts: Int
+                switch spo2 {
+                case ..<88:  pts = 4   // severe hypoxaemia (approximate PaO2 <55)
+                case 88..<92: pts = 2  // moderate hypoxaemia
+                case 92..<95: pts = 1  // mild hypoxaemia
+                default:     pts = 0
+                }
+                if pts > 0 {
+                    i.oxyPoints = pts; f.autoFieldKeys.insert("oxyPoints")
+                }
+            }
+        }
+
+        // Chronic health — severe organ system insufficiency from PMH
+        let chronicKw = ["cirrhosis", "portal hypertension", "liver failure", "hepatic failure",
+                         "chronic heart failure", "new york heart association class iv",
+                         "nyha iv", "chronic respiratory failure", "hypercapnia",
+                         "chronic renal failure", "chronic kidney disease stage 5", "dialysis",
+                         "immunocompromised", "immunosuppressed", "chemotherapy",
+                         "transplant", "hiv", "aids", "aplastic anaemia"]
+        if patient.clinicalTextContains(chronicKw) {
+            // Assume non-operative by default (higher penalty); elective postop = 2
+            i.chronicHealthPoints = 5
+            f.autoFieldKeys.insert("chronicHealthPoints")
+        }
+
+        // Pending: lab values require results
+        f.addPending(key: "pHPoints",
+            label: "Arterial pH (ABG required)",
+            source: "Arterial blood gas")
+        f.addPending(key: "sodiumPoints",
+            label: "Serum sodium — check latest U&E",
+            source: "Laboratory results")
+        f.addPending(key: "potassiumPoints",
+            label: "Serum potassium — check latest U&E",
+            source: "Laboratory results")
+        f.addPending(key: "creatininePoints",
+            label: "Serum creatinine — check latest U&E (double if ARF)",
+            source: "Laboratory results")
+        f.addPending(key: "haematocritPoints",
+            label: "Haematocrit — check latest FBC",
+            source: "Laboratory results")
+        f.addPending(key: "wbcPoints",
+            label: "WBC — check latest FBC",
+            source: "Laboratory results")
+
+        return (i, f)
+    }
 }
