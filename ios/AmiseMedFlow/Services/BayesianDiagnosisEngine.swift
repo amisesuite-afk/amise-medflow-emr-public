@@ -159,6 +159,10 @@ enum BayesianDiagnosisEngine {
         auditCScore: Int? = nil,        // AUDIT-C 0–12; ≥4(M)/≥3(F) = hazardous drinking
         phq9Score: Int? = nil,          // PHQ-9 0–27; ≥10 = moderate depression
         sapsIIScore: Int? = nil,        // SAPS II 0–163; ≥40 = >30% predicted mortality
+        stoneScore: Int? = nil,         // STONE 0–5; ≥4 = high probability ureteric colic
+        losAngelesGrade: Int? = nil,    // LA Class 0–4; ≥3 = severe oesophagitis
+        meld3Score: Double? = nil,      // MELD 3.0 continuous; ≥15 = transplant threshold
+        bradenScore: Int? = nil,        // Braden 6–23; ≤12 = high/very-high pressure injury risk
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -3602,6 +3606,36 @@ enum BayesianDiagnosisEngine {
                 let nameLow = scored[i].candidate.name.lowercased()
                 guard sapsTargets.contains(where: { nameLow.contains($0) }) else { continue }
                 let label = "SAPS II \(saps) — high ICU severity (predicted mortality ≥30%)"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // STONE boost: high score elevates renal/ureteric colic candidates
+        if let st = stoneScore, st >= 4 {
+            let stTargets = ["nephrolithiasis", "ureteric colic", "renal colic", "kidney stone",
+                             "urolithiasis", "hydronephrosis", "obstructive uropathy"]
+            let adj = st == 5 ? 9 : 7
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard stTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "STONE \(st)/5 — high probability ureteric colic"
+                scored[i].logPosterior += adj
+                scored[i].evidence.append(label)
+                scored[i].evidenceSources["score", default: []].append(label)
+            }
+        }
+
+        // MELD 3.0 boost: severe hepatic dysfunction elevates liver/cirrhosis candidates
+        if let m3 = meld3Score, m3 >= 15 {
+            let meldTargets = ["cirrhosis", "hepatic", "liver failure", "portal hypertension",
+                               "varices", "ascites", "encephalopathy", "hepatocellular"]
+            let adj = m3 >= 25 ? 9 : 6
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard meldTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let label = "MELD 3.0 \(String(format: "%.1f", m3)) — significant/severe hepatic dysfunction"
                 scored[i].logPosterior += adj
                 scored[i].evidence.append(label)
                 scored[i].evidenceSources["score", default: []].append(label)

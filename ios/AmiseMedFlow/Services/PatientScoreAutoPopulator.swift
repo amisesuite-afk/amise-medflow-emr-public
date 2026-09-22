@@ -3543,4 +3543,79 @@ enum PatientScoreAutoPopulator {
         f.addPending(key: "gcs",             label: "GCS (3–15) — clinical assessment",                  source: "Neuro exam")
         return (i, f)
     }
+
+    // MARK: - STONE Score
+    static func stone(patient: Patient) -> (ClinicalScoringEngine.STONEInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.STONEInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                    patient.workingDiagnosis]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+        // Nausea keyword
+        let nauseaKw = ["nausea", "vomiting", "nauseous", "vomit"]
+        if nauseaKw.contains(where: { text.contains($0) }) {
+            i.nausea = true
+            f.addAutoFilled(key: "nausea", label: "Nausea/vomiting documented", source: "History/Notes")
+        }
+        // Haematuria keyword
+        let hemKw = ["haematuria", "hematuria", "blood in urine", "frank haematuria"]
+        if hemKw.contains(where: { text.contains($0) }) {
+            i.erythrocytes = true
+            f.addAutoFilled(key: "erythrocytes", label: "Haematuria documented", source: "History/Notes")
+        }
+        // Stone size and obstruction require CT — mark as pending
+        f.addPending(key: "stoneSizeCT", label: "Stone size (mm) on CT KUB — check report",             source: "CT KUB")
+        f.addPending(key: "obstruction", label: "Hydronephrosis / ureteric obstruction — check CT KUB", source: "CT KUB")
+        return (i, f)
+    }
+
+    // MARK: - Los Angeles Classification
+    static func losAngeles(patient: Patient) -> (ClinicalScoringEngine.LosAngelesInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.LosAngelesInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+        // Grade must be assigned from OGD report — no auto-fill possible
+        f.addPending(key: "laGrade", label: "LA Grade (A–D) — record from OGD report", source: "Endoscopy")
+        return (i, f)
+    }
+
+    // MARK: - MELD 3.0
+    static func meld3(patient: Patient) -> (ClinicalScoringEngine.MELD3Input, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.MELD3Input()
+        var f = ScoreAutoFill(); f.isAttempted = true
+        // Sex from patient model
+        if patient.sex == .female { i.isFemale = true; f.addAutoFilled(key: "sex", label: "Female sex (from patient record)", source: "Demographics") }
+        // All lab values require current results
+        f.addPending(key: "creatinine",  label: "Creatinine (μmol/L) — check U&E",    source: "Bloods")
+        f.addPending(key: "bilirubin",   label: "Bilirubin (μmol/L) — check LFTs",    source: "LFTs")
+        f.addPending(key: "inr",         label: "INR — check clotting screen",         source: "Bloods")
+        f.addPending(key: "sodium",      label: "Sodium (mmol/L) — check U&E",         source: "Bloods")
+        f.addPending(key: "albumin",     label: "Albumin (g/L) — check LFTs",          source: "LFTs")
+        return (i, f)
+    }
+
+    // MARK: - Braden Scale
+    static func braden(patient: Patient) -> (ClinicalScoringEngine.BradenInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.BradenInput()
+        var f = ScoreAutoFill(); f.isAttempted = true
+        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+        // Bedfast keyword
+        let bedfastKw = ["bedbound", "bed-bound", "bedfast", "immobile", "paralysis", "paraplegia", "quadriplegia"]
+        if bedfastKw.contains(where: { text.contains($0) }) {
+            i.activity = 1
+            f.addAutoFilled(key: "activity", label: "Bedfast/immobile documented — Activity set to 1", source: "History/Notes")
+        }
+        // Nutritional risk keyword
+        let malnutKw = ["malnourished", "malnutrition", "nutritional deficit", "cachexia", "nil by mouth", "npo"]
+        if malnutKw.contains(where: { text.contains($0) }) {
+            i.nutrition = 2
+            f.addAutoFilled(key: "nutrition", label: "Malnutrition/NBM documented — Nutrition set to 2", source: "History/Notes")
+        }
+        // Braden requires bedside assessment for most subscales
+        f.addPending(key: "sensoryPerception", label: "Sensory Perception — bedside assessment required", source: "Clinical")
+        f.addPending(key: "moisture",          label: "Moisture level — bedside assessment required",      source: "Clinical")
+        f.addPending(key: "mobility",          label: "Mobility — bedside assessment required",            source: "Clinical")
+        f.addPending(key: "frictionShear",     label: "Friction/Shear — bedside assessment required",      source: "Clinical")
+        return (i, f)
+    }
 }

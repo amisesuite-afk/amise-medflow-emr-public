@@ -6205,5 +6205,244 @@ enum ClinicalScoringEngine {
         )
     }
 
+    // MARK: - STONE Score (Nephrolithiasis Risk)
+    struct STONEInput: Equatable {
+        var sizeMm: Int = 0          // Stone size on CT (mm): 1–5mm=2, 6–10mm=1, >10mm=0
+        var toUreters: Int = 0       // Tightness at ureter/UVJ: yes=1, no=0
+        var obstruction: Bool = false // Hydronephrosis/ureteric dilation: yes=1
+        var nausea: Bool = false      // Nausea/vomiting: yes=1
+        var erythrocytes: Bool = false // Haematuria: yes=1
+    }
+    static func stone(_ i: STONEInput) -> ClinicalScore {
+        // Size: >10mm=0, 6–10mm=1, 1–5mm=2, <1mm=0
+        let sizeScore: Int
+        switch i.sizeMm {
+        case 1...5:    sizeScore = 2
+        case 6...10:   sizeScore = 1
+        default:       sizeScore = 0
+        }
+        let total = sizeScore + i.toUreters + (i.obstruction ? 1 : 0) +
+                    (i.nausea ? 1 : 0) + (i.erythrocytes ? 1 : 0)
+        let (interp, risk, recs): (String, ScoreRisk, [String])
+        switch total {
+        case 0...1:
+            interp = "Low probability of ureteric colic"
+            risk   = .low
+            recs   = ["Consider alternative diagnoses (MSK, GI)",
+                      "CT KUB if clinical suspicion persists despite low score",
+                      "Urine dipstick and urinalysis; analgesia"]
+        case 2...3:
+            interp = "Intermediate probability of ureteric colic"
+            risk   = .moderate
+            recs   = ["CT KUB (unenhanced) recommended to confirm stone and size",
+                      "Urinalysis, FBC, U&E, CRP",
+                      "Analgesia (NSAIDs first-line unless contraindicated)",
+                      "Alpha-blocker (tamsulosin) for distal ureteric stones ≤10 mm",
+                      "Urology review if stone ≥6 mm, obstruction, or infection"]
+        default:
+            interp = "High probability of ureteric colic"
+            risk   = .high
+            recs   = ["CT KUB urgent to characterise stone; check for infection or solitary kidney",
+                      "If infected obstructed system: urgent urology — percutaneous nephrostomy or ureteric stent",
+                      "Analgesia: diclofenac 75 mg IM or rectal + IV morphine if required",
+                      "U&E, FBC, CRP, urine MC&S",
+                      "Admit if: stone ≥10 mm, obstruction, infection, uncontrolled pain, solitary kidney"]
+        }
+        return ClinicalScore(
+            name:          "STONE Score",
+            score:         Double(total),
+            maxScore:      5,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            evidenceNote:  "Moore CL et al. Ann Emerg Med 2014;64:239–247. 5-variable pre-imaging score: Size (<1/1–5/6–10/>10 mm = 0/2/1/0), Tightness (UVJ narrowing = +1), Obstruction (hydronephrosis = +1), Nausea (+1), Erythrocytes (+1). Score 0–5; ≥4 = high probability. Validated to triage CT KUB use in suspected ureteric colic."
+        )
+    }
+
+    // MARK: - Los Angeles Classification (GERD / Oesophagitis)
+    struct LosAngelesInput: Equatable {
+        var grade: Int = 0  // 0=None, 1=Grade A, 2=Grade B, 3=Grade C, 4=Grade D
+    }
+    static func losAngeles(_ i: LosAngelesInput) -> ClinicalScore {
+        let (interp, risk, recs): (String, ScoreRisk, [String])
+        switch i.grade {
+        case 0:
+            interp = "No endoscopic oesophagitis"
+            risk   = .low
+            recs   = ["Non-erosive reflux disease (NERD) if symptoms present",
+                      "Empirical PPI trial 4–8 weeks; lifestyle advice (weight loss, head-of-bed elevation)",
+                      "Consider 24-h pH/impedance if atypical symptoms or PPI failure"]
+        case 1:
+            interp = "Grade A — ≥1 mucosal break ≤5 mm, not extending between folds"
+            risk   = .low
+            recs   = ["PPI once daily (standard dose) for 4–8 weeks",
+                      "Lifestyle modifications (avoid late meals, alcohol, tobacco)",
+                      "Repeat OGD only if symptoms persist or alarm features develop"]
+        case 2:
+            interp = "Grade B — ≥1 mucosal break >5 mm, not extending between folds"
+            risk   = .moderate
+            recs   = ["PPI standard dose twice daily for 8 weeks",
+                      "Confirm healing at 8 weeks: repeat OGD to exclude Barrett's",
+                      "Consider H. pylori testing and eradication",
+                      "Anti-reflux surgery (fundoplication) discussion if PPI-dependent"]
+        case 3:
+            interp = "Grade C — Mucosal breaks extending between ≥2 folds, <75% circumference"
+            risk   = .moderate
+            recs   = ["High-dose PPI twice daily for 8 weeks minimum",
+                      "Repeat OGD to confirm healing and exclude Barrett's oesophagus",
+                      "H. pylori testing mandatory",
+                      "Refer for anti-reflux surgery evaluation if PPI refractory",
+                      "Biopsy for Barrett's surveillance protocol if columnar metaplasia seen"]
+        default:
+            interp = "Grade D — Mucosal breaks extending ≥75% of oesophageal circumference"
+            risk   = .high
+            recs   = ["High-dose PPI twice daily for 8–12 weeks; IV PPI if unable to swallow",
+                      "Urgent repeat OGD at 8 weeks — high risk of Barrett's and stricture",
+                      "Biopsy from all four quadrants every 2 cm if columnar segment present",
+                      "Oesophageal dilation if peptic stricture develops",
+                      "Multidisciplinary discussion for anti-reflux surgery or endoscopic therapy"]
+        }
+        let gradeLabel = ["None","A","B","C","D"][min(i.grade, 4)]
+        return ClinicalScore(
+            name:          "LA Classification",
+            score:         Double(i.grade),
+            maxScore:      4,
+            risk:          risk,
+            interpretation: "Grade \(gradeLabel): \(interp)",
+            recommendations: recs,
+            evidenceNote:  "Lundell LR et al. Gut 1999;45:172–180. Los Angeles Classification of oesophagitis: Grade A–D based on extent and continuity of mucosal breaks at OGD. Internationally adopted standard; grade predicts PPI response rate (A/B >90%, C/D ~70%) and Barrett's risk (D ~30%)."
+        )
+    }
+
+    // MARK: - MELD 3.0 (Model for End-stage Liver Disease — 2022 update)
+    struct MELD3Input: Equatable {
+        var isFemale: Bool = false
+        var creatinineMmolL: Double = 70.0   // μmol/L
+        var bilirubinMmolL: Double = 17.0    // μmol/L
+        var inr: Double = 1.0
+        var sodiumMmolL: Int = 138            // mmol/L
+        var albuminGperL: Double = 40.0      // g/L
+    }
+    static func meld3(_ i: MELD3Input) -> ClinicalScore {
+        // MELD 3.0 = 4.56 × ln(bilirubin_mg/dL) + 0.82×(137−sodium) − 0.24×(137−sodium)×ln(creatinine_mg/dL)
+        //            + 9.09×ln(INR) + 11.14×ln(creatinine_mg/dL) + 1.85 + (female: +1.33) + (albumin: −(4.92×albumin/35))
+        // Convert SI units to mg/dL equivalents used in the formula:
+        let bilMgDL  = max(1.0, i.bilirubinMmolL / 17.1)
+        let creatMgDL = min(4.0, max(1.0, i.creatinineMmolL / 88.4)) // capped at 4 per UNOS
+        let na = Double(min(max(i.sodiumMmolL, 125), 137)) // clamp 125–137
+        let alb = i.albuminGperL / 10.0  // g/L → g/dL
+        var score = 4.56 * log(bilMgDL)
+                  + 0.82 * (137 - na)
+                  - 0.24 * (137 - na) * log(creatMgDL)
+                  + 9.09 * log(i.inr)
+                  + 11.14 * log(creatMgDL)
+                  + 1.85
+        if i.isFemale { score += 1.33 }
+        score -= (4.92 * alb / 3.5)
+        score = max(6, score)
+        let rounded = (score * 10).rounded() / 10
+        let (interp, risk, recs): (String, ScoreRisk, [String])
+        switch Int(rounded) {
+        case 6...9:
+            interp = "Low severity — 90-day mortality ~2%"
+            risk   = .low
+            recs   = ["Optimise hepatic risk factors (abstinence, nutrition, infection control)",
+                      "Semi-annual surveillance (LFTs, US abdomen, AFP if cirrhotic)",
+                      "Reassess MELD 3.0 at each visit"]
+        case 10...14:
+            interp = "Moderate severity — 90-day mortality ~6%"
+            risk   = .moderate
+            recs   = ["Hepatology review — quarterly monitoring",
+                      "Manage complications: diuretics for ascites, beta-blocker for varices",
+                      "Nutritional optimisation; referral to dietitian",
+                      "Discuss liver transplant evaluation if aetiology is reversible or stable"]
+        case 15...19:
+            interp = "Significant — 90-day mortality ~20%"
+            risk   = .moderate
+            recs   = ["Transplant list assessment — most centres list at MELD ≥15",
+                      "Hospitalise for management of hepatic decompensation if present",
+                      "TIPS assessment if recurrent variceal bleed or refractory ascites"]
+        default:
+            interp = "Severe — 90-day mortality >50%"
+            risk   = .high
+            recs   = ["Urgent transplant listing — MELD ≥25 = active waitlist priority at most centres",
+                      "ICU-level monitoring for ACLF / multiorgan dysfunction",
+                      "Discuss goals of care if transplant not feasible"]
+        }
+        return ClinicalScore(
+            name:          "MELD 3.0",
+            score:         rounded,
+            maxScore:      nil,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            evidenceNote:  "Kim WR et al. Hepatology 2021;74:1913–1922. MELD 3.0 adds sex (+1.33 for female), albumin term, and recalibrates coefficients on 280 000+ UNOS patients. Reduces sex disparity in waitlist outcomes vs MELD-Na. Adopted by UNOS/OPTN 2022 for organ allocation. Score ≥15 = transplant listing threshold at most centres."
+        )
+    }
+
+    // MARK: - Braden Scale (Pressure Injury Risk)
+    struct BradenInput: Equatable {
+        var sensoryPerception: Int = 4  // 1=Complete, 2=Very, 3=Slightly, 4=No impairment
+        var moisture: Int = 4           // 1=Constantly, 2=Very, 3=Occasionally, 4=Rarely moist
+        var activity: Int = 4           // 1=Bedfast, 2=Chairfast, 3=Walks occasionally, 4=Walks frequently
+        var mobility: Int = 4           // 1=Completely limited, 2=Very, 3=Slightly, 4=No limitation
+        var nutrition: Int = 4          // 1=Very poor, 2=Probably inadequate, 3=Adequate, 4=Excellent
+        var frictionShear: Int = 3      // 1=Problem, 2=Potential problem, 3=No apparent problem (max 3)
+    }
+    static func braden(_ i: BradenInput) -> ClinicalScore {
+        let total = i.sensoryPerception + i.moisture + i.activity +
+                    i.mobility + i.nutrition + i.frictionShear
+        let (interp, risk, recs): (String, ScoreRisk, [String])
+        switch total {
+        case 19...23:
+            interp = "No risk or low risk of pressure injury"
+            risk   = .low
+            recs   = ["Routine preventive care",
+                      "Moisturise skin; reposition every 2–4 hours",
+                      "Reassess if clinical condition deteriorates"]
+        case 15...18:
+            interp = "Low risk — pressure injury possible"
+            risk   = .low
+            recs   = ["Pressure-redistributing mattress (foam or alternating air)",
+                      "Reposition every 2 hours; document position changes",
+                      "Nutritional optimisation: dietitian review",
+                      "Skin inspection twice daily"]
+        case 13...14:
+            interp = "Moderate risk — pressure injury likely without intervention"
+            risk   = .moderate
+            recs   = ["Active pressure-relieving mattress mandatory",
+                      "Heel protectors; no dragging in bed",
+                      "Physiotherapy for mobility promotion",
+                      "Nutritional support (high-protein diet / supplement)",
+                      "Formal wound care plan if any skin break detected"]
+        case 10...12:
+            interp = "High risk — pressure injury expected without intensive prevention"
+            risk   = .high
+            recs   = ["Dynamic (alternating pressure) mattress and cushion",
+                      "Reposition every 2 hours; consider tilt-and-space seating",
+                      "Dietitian — nutritional support or enteral feeds",
+                      "Wound/tissue viability specialist review",
+                      "Document skin assessment and interventions daily"]
+        default:
+            interp = "Very high risk — pressure injury imminent"
+            risk   = .high
+            recs   = ["Urgent tissue viability nurse assessment",
+                      "High-specification low-air-loss or lateral rotation mattress",
+                      "Maximum repositioning: every 1–2 hours or continuous lateral rotation",
+                      "Skin barrier products; transparent film over bony prominences",
+                      "Urgent nutritional support — IV if enteral not possible",
+                      "Photograph and document all existing skin changes immediately"]
+        }
+        return ClinicalScore(
+            name:          "Braden Scale",
+            score:         Double(total),
+            maxScore:      23,
+            risk:          risk,
+            interpretation: interp,
+            recommendations: recs,
+            evidenceNote:  "Bergstrom N et al. Nurs Res 1987;36:205–210. 6-subscale scale (Sensory Perception, Moisture, Activity, Mobility, Nutrition, Friction/Shear); total 6–23 — lower score = higher risk. Threshold ≤18 = at risk in most guidelines. Endorsed by NICE (CG179) and AHRQ; widely used alongside Waterlow Scale."
+        )
+    }
+
 
 }

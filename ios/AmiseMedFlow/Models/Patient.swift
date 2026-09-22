@@ -197,6 +197,10 @@ final class Patient {
     var auditCScore: Int?         // AUDIT-C Alcohol Screening (0–12)
     var phq9Score: Int?           // PHQ-9 Depression Score (0–27)
     var sapsIIScore: Int?         // SAPS II ICU Severity Score (0–163)
+    var stoneScore: Int?          // STONE Score for nephrolithiasis (0–5)
+    var losAngelesGrade: Int?     // LA Classification for GERD/oesophagitis (0–4; 0=none, 4=Grade D)
+    var meld3Score: Double?       // MELD 3.0 liver severity score (continuous; ≥15 = transplant threshold)
+    var bradenScore: Int?         // Braden Scale pressure injury risk (6–23; ≤18 = at risk)
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

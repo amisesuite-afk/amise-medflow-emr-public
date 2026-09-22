@@ -98,6 +98,10 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case auditC           = "AUDIT-C (Alcohol Screen)"
     case phq9             = "PHQ-9 (Depression)"
     case sapsII           = "SAPS II (ICU Severity)"
+    case stone            = "STONE Score (Nephrolithiasis)"
+    case losAngeles       = "LA Classification (GERD)"
+    case meld3            = "MELD 3.0 (Liver Severity)"
+    case braden           = "Braden Scale (Pressure Injury)"
 
     var category: ScoreCategory {
         switch self {
@@ -164,6 +168,14 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .phq9:
             return .monitoring
         case .sapsII:
+            return .monitoring
+        case .stone:
+            return .acute
+        case .losAngeles:
+            return .gi
+        case .meld3:
+            return .gi
+        case .braden:
             return .monitoring
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
@@ -248,6 +260,10 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .auditC:         return "wineglass"
         case .phq9:           return "brain.head.profile"
         case .sapsII:         return "waveform.path.ecg.rectangle"
+        case .stone:          return "diamond"
+        case .losAngeles:     return "esophagus"
+        case .meld3:          return "liver"
+        case .braden:         return "bed.double"
         }
     }
 }
@@ -413,6 +429,10 @@ struct ClinicalScoresView: View {
     @State private var auditCI       = ClinicalScoringEngine.AUDITCInput()
     @State private var phq9I         = ClinicalScoringEngine.PHQ9Input()
     @State private var sapsIII       = ClinicalScoringEngine.SAPSIIInput()
+    @State private var stoneI        = ClinicalScoringEngine.STONEInput()
+    @State private var losAngelesI   = ClinicalScoringEngine.LosAngelesInput()
+    @State private var meld3I        = ClinicalScoringEngine.MELD3Input()
+    @State private var bradenI       = ClinicalScoringEngine.BradenInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -913,6 +933,18 @@ struct ClinicalScoresView: View {
         case .sapsII:
             let (input, fill) = PatientScoreAutoPopulator.sapsII(patient: patient)
             sapsIII = input; autoFill = fill
+        case .stone:
+            let (input, fill) = PatientScoreAutoPopulator.stone(patient: patient)
+            stoneI = input; autoFill = fill
+        case .losAngeles:
+            let (input, fill) = PatientScoreAutoPopulator.losAngeles(patient: patient)
+            losAngelesI = input; autoFill = fill
+        case .meld3:
+            let (input, fill) = PatientScoreAutoPopulator.meld3(patient: patient)
+            meld3I = input; autoFill = fill
+        case .braden:
+            let (input, fill) = PatientScoreAutoPopulator.braden(patient: patient)
+            bradenI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -1048,6 +1080,10 @@ struct ClinicalScoresView: View {
         case .auditC:        ClinicalScoringEngine.auditC(auditCI)
         case .phq9:          ClinicalScoringEngine.phq9(phq9I)
         case .sapsII:        ClinicalScoringEngine.sapsII(sapsIII)
+        case .stone:         ClinicalScoringEngine.stone(stoneI)
+        case .losAngeles:    ClinicalScoringEngine.losAngeles(losAngelesI)
+        case .meld3:         ClinicalScoringEngine.meld3(meld3I)
+        case .braden:        ClinicalScoringEngine.braden(bradenI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -1126,7 +1162,11 @@ struct ClinicalScoresView: View {
         case .albi:          patient.albiScore    = r.score     // continuous Double
         case .auditC:        patient.auditCScore  = intScore
         case .phq9:          patient.phq9Score    = intScore
-        case .sapsII:        patient.sapsIIScore  = intScore
+        case .sapsII:        patient.sapsIIScore    = intScore
+        case .stone:         patient.stoneScore     = intScore
+        case .losAngeles:    patient.losAngelesGrade = intScore
+        case .meld3:         patient.meld3Score     = r.score   // continuous Double
+        case .braden:        patient.bradenScore    = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -1240,6 +1280,10 @@ struct ClinicalScoresView: View {
         case .auditC:        auditCForm
         case .phq9:          phq9Form
         case .sapsII:        sapsIIForm
+        case .stone:         stoneForm
+        case .losAngeles:    losAngelesForm
+        case .meld3:         meld3Form
+        case .braden:        bradenForm
         }
     }
 
@@ -2531,6 +2575,14 @@ struct ClinicalScoresView: View {
         case .phq9:
             break
         case .sapsII:
+            break
+        case .stone:
+            break
+        case .losAngeles:
+            break
+        case .meld3:
+            break
+        case .braden:
             break
         default: break
         }
@@ -4404,6 +4456,134 @@ struct ClinicalScoresView: View {
             Spacer()
             Stepper("\(value.wrappedValue)", value: value, in: range, step: step)
                 .fixedSize()
+        }
+    }
+
+    // MARK: - STONE Score
+    private var stoneForm: some View {
+        Group {
+            Text("Based on unenhanced CT findings. Score ≥4 = high probability of ureteric colic.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Stone size on CT")
+                Picker("Stone size", selection: $stoneI.sizeMm) {
+                    Text("Not seen / > 10 mm (0 pts)").tag(0)
+                    Text("1–5 mm (2 pts)").tag(3)
+                    Text("6–10 mm (1 pt)").tag(7)
+                }
+                .pickerStyle(.menu)
+            }
+            Toggle("Tightness at ureter/UVJ (hydronephrosis expected)", isOn: Binding(
+                get: { stoneI.toUreters > 0 },
+                set: { stoneI.toUreters = $0 ? 1 : 0 }
+            ))
+            scoreToggle("Obstruction (hydronephrosis or ureteric dilation)", binding: $stoneI.obstruction, points: "+1")
+            scoreToggle("Nausea / vomiting", binding: $stoneI.nausea, points: "+1")
+            scoreToggle("Erythrocytes in urine (haematuria)", binding: $stoneI.erythrocytes, points: "+1")
+        }
+        .onChange(of: stoneI) { _, _ in recalculate() }
+    }
+
+    // MARK: - Los Angeles Classification
+    private var losAngelesForm: some View {
+        Group {
+            Text("Endoscopic grading of oesophagitis at OGD. Select the grade that best matches the observed mucosal breaks.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
+            Picker("LA Grade", selection: $losAngelesI.grade) {
+                Text("None — No erosive oesophagitis").tag(0)
+                Text("Grade A — Mucosal break ≤5 mm").tag(1)
+                Text("Grade B — Mucosal break >5 mm, not between folds").tag(2)
+                Text("Grade C — Breaks between folds, <75% circumference").tag(3)
+                Text("Grade D — Breaks ≥75% of oesophageal circumference").tag(4)
+            }
+            .pickerStyle(.inline)
+        }
+        .onChange(of: losAngelesI) { _, _ in recalculate() }
+    }
+
+    // MARK: - MELD 3.0
+    private var meld3Form: some View {
+        Group {
+            Text("Enter most recent laboratory values. Use current INR, not on anticoagulation adjustment.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
+            Toggle("Female sex (+1.33 to score)", isOn: $meld3I.isFemale)
+            HStack {
+                Text("Creatinine (μmol/L)")
+                Spacer()
+                Stepper(String(format: "%.0f μmol/L", meld3I.creatinineMmolL),
+                        value: $meld3I.creatinineMmolL, in: 10...700, step: 5)
+                    .fixedSize()
+            }
+            HStack {
+                Text("Bilirubin (μmol/L)")
+                Spacer()
+                Stepper(String(format: "%.0f μmol/L", meld3I.bilirubinMmolL),
+                        value: $meld3I.bilirubinMmolL, in: 1...500, step: 2)
+                    .fixedSize()
+            }
+            HStack {
+                Text("INR")
+                Spacer()
+                Stepper(String(format: "%.1f", meld3I.inr),
+                        value: $meld3I.inr, in: 0.8...12.0, step: 0.1)
+                    .fixedSize()
+            }
+            HStack {
+                Text("Sodium (mmol/L)")
+                Spacer()
+                Stepper("\(meld3I.sodiumMmolL) mmol/L",
+                        value: $meld3I.sodiumMmolL, in: 120...145, step: 1)
+                    .fixedSize()
+            }
+            HStack {
+                Text("Albumin (g/L)")
+                Spacer()
+                Stepper(String(format: "%.0f g/L", meld3I.albuminGperL),
+                        value: $meld3I.albuminGperL, in: 10...60, step: 1)
+                    .fixedSize()
+            }
+            Text("Score ≥15 = transplant listing threshold. ≥25 = active waitlist priority.")
+                .font(.caption2).foregroundStyle(.secondary).padding(.top, 4)
+        }
+        .onChange(of: meld3I) { _, _ in recalculate() }
+    }
+
+    // MARK: - Braden Scale
+    private var bradenForm: some View {
+        Group {
+            Text("Each subscale scored 1 (worst) to 3 or 4 (best). Total 6–23; ≤18 = at risk.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
+            bradenPicker("Sensory Perception",
+                         labels: ["1 — Completely limited","2 — Very limited","3 — Slightly limited","4 — No impairment"],
+                         value: $bradenI.sensoryPerception)
+            bradenPicker("Moisture",
+                         labels: ["1 — Constantly moist","2 — Very moist","3 — Occasionally moist","4 — Rarely moist"],
+                         value: $bradenI.moisture)
+            bradenPicker("Activity",
+                         labels: ["1 — Bedfast","2 — Chairfast","3 — Walks occasionally","4 — Walks frequently"],
+                         value: $bradenI.activity)
+            bradenPicker("Mobility",
+                         labels: ["1 — Completely limited","2 — Very limited","3 — Slightly limited","4 — No limitation"],
+                         value: $bradenI.mobility)
+            bradenPicker("Nutrition",
+                         labels: ["1 — Very poor","2 — Probably inadequate","3 — Adequate","4 — Excellent"],
+                         value: $bradenI.nutrition)
+            bradenPicker("Friction and Shear",
+                         labels: ["1 — Problem","2 — Potential problem","3 — No apparent problem"],
+                         value: $bradenI.frictionShear)
+        }
+        .onChange(of: bradenI) { _, _ in recalculate() }
+    }
+
+    private func bradenPicker(_ label: String, labels: [String], value: Binding<Int>) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label).font(.subheadline)
+            Picker("", selection: value) {
+                ForEach(1...labels.count, id: \.self) { idx in
+                    Text(labels[idx - 1]).tag(idx)
+                }
+            }
+            .pickerStyle(.menu)
         }
     }
 
