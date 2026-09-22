@@ -2420,13 +2420,13 @@ enum ClinicalScoringEngine {
 
     static func sofa(_ i: SOFAInput) -> ClinicalScore {
         let total = i.respiration + i.coagulation + i.liver + i.cardiovascular + i.cns + i.renal
-        let items: [(String, Int)] = [
-            ("Respiratory — PaO₂/FiO₂", i.respiration),
-            ("Coagulation — Platelets", i.coagulation),
-            ("Liver — Bilirubin", i.liver),
-            ("Cardiovascular — MAP/vasopressors", i.cardiovascular),
-            ("CNS — GCS", i.cns),
-            ("Renal — Creatinine/UO", i.renal)
+        let items: [ScoredItem] = [
+            ScoredItem(label: "Respiratory — PaO₂/FiO₂", points: Double(i.respiration), present: i.respiration > 0),
+            ScoredItem(label: "Coagulation — Platelets", points: Double(i.coagulation), present: i.coagulation > 0),
+            ScoredItem(label: "Liver — Bilirubin", points: Double(i.liver), present: i.liver > 0),
+            ScoredItem(label: "Cardiovascular — MAP/vasopressors", points: Double(i.cardiovascular), present: i.cardiovascular > 0),
+            ScoredItem(label: "CNS — GCS", points: Double(i.cns), present: i.cns > 0),
+            ScoredItem(label: "Renal — Creatinine/UO", points: Double(i.renal), present: i.renal > 0)
         ]
         let (risk, interpretation, recs, redFlags) = sofaRisk(total)
         return ClinicalScore(
@@ -2492,11 +2492,11 @@ enum ClinicalScoringEngine {
             )
         }
         let fib4Val = Double(i.age) * i.astIUL / (i.platelet10_9L * sqrt(i.altIUL))
-        let items: [(String, Int)] = [
-            ("Age (years)", i.age),
-            ("AST (IU/L)", Int(i.astIUL)),
-            ("Platelets (×10⁹/L)", Int(i.platelet10_9L)),
-            ("ALT (IU/L)", Int(i.altIUL))
+        let items: [ScoredItem] = [
+            ScoredItem(label: "Age (years)", points: Double(i.age), present: true),
+            ScoredItem(label: "AST (IU/L)", points: i.astIUL, present: true),
+            ScoredItem(label: "Platelets (×10⁹/L)", points: i.platelet10_9L, present: true),
+            ScoredItem(label: "ALT (IU/L)", points: i.altIUL, present: true)
         ]
         let (risk, interpretation, recs, redFlags) = fib4Risk(fib4Val)
         return ClinicalScore(
@@ -2542,10 +2542,10 @@ enum ClinicalScoringEngine {
 
     static func curb65(_ i: CURB65Input) -> ClinicalScore {
         var score = 0
-        var items: [(String, Int)] = []
+        var items: [ScoredItem] = []
         func add(_ label: String, _ flag: Bool) {
             if flag { score += 1 }
-            items.append((label, flag ? 1 : 0))
+            items.append(ScoredItem(label: label, points: flag ? 1 : 0, present: flag))
         }
         add("C — Confusion (new onset, AMT ≤8)", i.confusion)
         add("U — Urea >7 mmol/L", i.ureaDOver7)
@@ -2598,10 +2598,10 @@ enum ClinicalScoringEngine {
 
     static func padua(_ i: PaduaInput) -> ClinicalScore {
         var score = 0
-        var items: [(String, Int)] = []
+        var items: [ScoredItem] = []
         func add(_ label: String, _ flag: Bool, pts: Int) {
             if flag { score += pts }
-            items.append((label, flag ? pts : 0))
+            items.append(ScoredItem(label: label, points: Double(flag ? pts : 0), present: flag))
         }
         add("Active/recent cancer (≤6 months or metastatic)", i.activeOrRecentCancer, pts: 3)
         add("Previous VTE (excl. superficial thrombosis)", i.previousVTE, pts: 3)
