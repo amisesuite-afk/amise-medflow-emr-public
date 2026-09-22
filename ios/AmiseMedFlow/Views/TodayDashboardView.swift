@@ -143,7 +143,7 @@ struct TodayDashboardView: View {
                                 }
                                 .listRowBackground(Color.clear)
                             } else {
-                                Section("Results for "\(searchQuery.trimmingCharacters(in: .whitespaces))"") {
+                                Section("Results for \"\(searchQuery.trimmingCharacters(in: .whitespaces))\"") {
                                     ForEach(searchResults) { patient in
                                         Button { selectedPatient = patient } label: {
                                             TodayPatientRow(patient: patient, style: rowStyle(for: patient))

@@ -488,7 +488,7 @@ struct SurgeryNoteView: View {
                             .font(.system(size: 14))
                             .foregroundStyle(AMColor.accent)
                         VStack(alignment: .leading, spacing: 1) {
-                            Text("Apply "\(t.name)" template")
+                            Text("Apply \"\(t.name)\" template")
                                 .font(.system(size: 13, weight: .semibold))
                                 .foregroundStyle(AMColor.accent)
                             Text("Pre-fills anaesthesia · position · incision · technique · closure")

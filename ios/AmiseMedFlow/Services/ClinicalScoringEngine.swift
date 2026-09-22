@@ -3546,7 +3546,7 @@ enum ClinicalScoringEngine {
              [])
         }
 
-        let eblLabels = ["">1000 mL (+0)", "601–1000 mL (+1)", "101–600 mL (+2)", "≤100 mL (+3)"]
+        let eblLabels = [">1000 mL (+0)", "601-1000 mL (+1)", "101-600 mL (+2)", "≤100 mL (+3)"]
         let mapLabels = ["<40 mmHg (+0)", "40–54 mmHg (+1)", "55–69 mmHg (+2)", "≥70 mmHg (+3)"]
         let hrLabels  = ["≥120 bpm (+0)", "101–119 bpm (+0)", "86–100 bpm (+1)", "56–85 bpm (+3)", "41–55 bpm (+2)", "≤40 bpm (+0)"]
         let items: [ScoreItem] = [
