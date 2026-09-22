@@ -241,6 +241,7 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
             apacheIIScore:               patient.apacheIIScore,
             ppossumMortPct10:            patient.ppossumMortPct10,
             mpiScore:                    patient.mpiScore,
+            ctsiScore:                   patient.ctsiScore,
             latestHR:    latestV?.heartRate,
             latestSBP:   latestV?.bpSystolic,
             latestTemp:  latestV?.temperatureCelsius,

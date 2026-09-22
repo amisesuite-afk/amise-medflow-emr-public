@@ -111,6 +111,7 @@ enum BayesianDiagnosisEngine {
         apacheIIScore: Int? = nil,    // APACHE II (0–71); ≥20 = high ICU mortality risk
         ppossumMortPct10: Int? = nil, // P-POSSUM predicted mortality ×10 (e.g. 85 = 8.5%)
         mpiScore: Int? = nil,         // MPI (0–47); ≥21 = significant mortality; ≥30 = critical
+        ctsiScore: Int? = nil,        // CTSI (0–10); ≥4 = moderate, ≥7 = severe pancreatitis
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2679,6 +2680,25 @@ enum BayesianDiagnosisEngine {
                 let (adj, label): (Int, String) = switch mpi {
                 case 30...: (14, "MPI ≥30 — high peritonitis severity (predicted mortality >60%)")
                 case 21..<30: (8, "MPI 21–29 — intermediate peritonitis severity (~29% mortality)")
+                default:    (0, "")
+                }
+                guard adj > 0 else { continue }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // CTSI: boosts pancreatitis and pancreatic necrosis candidates based on CT severity
+        if let ctsi = ctsiScore, ctsi >= 4 {
+            let pancreatitisTargets = ["pancreatitis", "pancreatic necrosis", "pancreatic abscess",
+                                        "pseudocyst", "walled-off necrosis", "splenic vein thrombosis"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard pancreatitisTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch ctsi {
+                case 7...: (14, "CTSI ≥7 — severe pancreatitis (mortality 17%+, complication rate >50%)")
+                case 4..<7: (8, "CTSI 4–6 — moderate pancreatitis (~30–50% complication rate)")
                 default:    (0, "")
                 }
                 guard adj > 0 else { continue }

@@ -111,6 +111,8 @@ final class Patient {
     var ppossumMortPct10: Int?
     // Mannheim Peritonitis Index (0–47); ≥30 = predicted mortality >60%
     var mpiScore: Int?
+    // CT Severity Index / Balthazar (0–10); ≥7 = severe pancreatitis
+    var ctsiScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

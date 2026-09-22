@@ -469,6 +469,13 @@ struct APACHEIIInput: Equatable {
     var chronicHealthPoints: Int = 0 // 0=none, 2=elective postop, 5=nonop or emergency postop with severe organ insufficiency/immunocompromised
 }
 
+struct CTSIInput: Equatable {
+    // Balthazar CT Severity Index (Balthazar et al, Radiology 1990)
+    // Balthazar grade (A=0, B=1, C=2, D=3, E=4) + necrosis score (0/2/4/6). Total 0–10.
+    var balthazarGrade: Int = 0  // 0=A(normal), 1=B(oedema), 2=C(fat stranding), 3=D(single collection), 4=E(≥2 or gas)
+    var necrosisScore: Int = 0   // 0=none, 2=<33%, 4=33-50%, 6=>50%
+}
+
 struct MPIInput: Equatable {
     // Mannheim Peritonitis Index (Wacha & Linder, Theor Surg 1983)
     // 8 variables; score 0–47. <21=low, 21–29=intermediate, ≥30=high mortality.
@@ -2682,6 +2689,64 @@ enum ClinicalScoringEngine {
                      "Mandatory ICU admission",
                      "Early goals-of-care discussion with patient and family"],
                     ["MPI ≥30: predicted mortality >60% — urgent multi-disciplinary decision required"])
+        }
+    }
+
+    // MARK: - CTSI (Balthazar CT Severity Index)
+
+    static func ctsi(_ i: CTSIInput) -> ClinicalScore {
+        let total = i.balthazarGrade + i.necrosisScore
+        let (risk, interp, recs, flags) = ctsiRisk(total)
+        var items: [ScoreItem] = []
+        let gradeLabels = ["A — Normal pancreas", "B — Oedematous pancreas",
+                           "C — Peripancreatic fat stranding",
+                           "D — Single peripancreatic fluid collection",
+                           "E — ≥2 fluid collections or gas in/around pancreas"]
+        let gradeLabel = i.balthazarGrade < gradeLabels.count
+            ? gradeLabels[i.balthazarGrade] : "Grade \(i.balthazarGrade)"
+        items.append(ScoreItem(label: "Balthazar grade — \(gradeLabel)",
+                               points: Double(i.balthazarGrade),
+                               present: i.balthazarGrade > 0))
+        let necLabels = [0: "None", 2: "Necrosis <33%", 4: "Necrosis 33–50%", 6: "Necrosis >50%"]
+        items.append(ScoreItem(label: necLabels[i.necrosisScore] ?? "Necrosis",
+                               points: Double(i.necrosisScore),
+                               present: i.necrosisScore > 0))
+        return ClinicalScore(
+            systemName: "CT Severity Index",
+            abbreviation: "CTSI \(total)/10",
+            score: Double(total), maxScore: 10,
+            risk: risk,
+            interpretation: interp,
+            items: items,
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Balthazar EA et al. Radiology 1990; 174:331–336."
+        )
+    }
+
+    private static func ctsiRisk(_ s: Int) -> (ScoreRisk, String, [String], [String]) {
+        switch s {
+        case ..<4:
+            return (.low, "Mild — CTSI \(s): low complication risk",
+                    ["Supportive management; CT surveillance not routinely required",
+                     "Oral nutrition as tolerated",
+                     "Monitor for clinical deterioration"],
+                    [])
+        case 4..<7:
+            return (.moderate, "Moderate — CTSI \(s): ~30–50% complication rate",
+                    ["HDU monitoring; NPO + IV fluids",
+                     "Repeat CT at 48–72 h if not improving clinically",
+                     "Surgical / HPB team review",
+                     "Consider percutaneous drainage if fluid collection enlarges"],
+                    [])
+        default:
+            return (.critical, "Severe — CTSI \(s): ~50–90% complication rate",
+                    ["ICU-level care",
+                     "Multi-disciplinary HPB / intensive-care team",
+                     "Percutaneous or endoscopic drainage of necrotic collections",
+                     "Delayed surgical debridement (step-up approach preferred)",
+                     "Parenteral or jejunal nutrition support"],
+                    ["CTSI ≥7 — predicted mortality 17%+ and complication rate >50%"])
         }
     }
 }

@@ -54,10 +54,11 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case apacheII         = "APACHE II (ICU Severity)"
     case ppossum          = "P-POSSUM (Surgical Risk)"
     case mpi              = "Mannheim Peritonitis Index"
+    case ctsi             = "CT Severity Index (Pancreatitis)"
 
     var category: ScoreCategory {
         switch self {
-        case .alvarado, .tokyoChole, .tokyoCholang, .ranson, .glasgow, .bisap, .mpi:
+        case .alvarado, .tokyoChole, .tokyoCholang, .ranson, .glasgow, .bisap, .mpi, .ctsi:
             return .acute
         case .rockall, .blatchford, .aims65:
             return .gi
@@ -108,6 +109,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .apacheII:       return "cross.circle.fill"
         case .ppossum:        return "scissors"
         case .mpi:            return "cross.circle"
+        case .ctsi:           return "photo.on.rectangle"
         }
     }
 }
@@ -192,6 +194,8 @@ struct ClinicalScoresView: View {
     @State private var ppossumI = PPOSSUMInput()
     // MPI
     @State private var mpiI = MPIInput()
+    // CTSI
+    @State private var ctsiI = CTSIInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -563,6 +567,9 @@ struct ClinicalScoresView: View {
         case .mpi:
             let (input, fill) = PatientScoreAutoPopulator.mpi(patient: patient)
             mpiI = input; autoFill = fill
+        case .ctsi:
+            let (input, fill) = PatientScoreAutoPopulator.ctsi(patient: patient)
+            ctsiI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -654,6 +661,7 @@ struct ClinicalScoresView: View {
         case .apacheII:     ClinicalScoringEngine.apacheII(apacheIII)
         case .ppossum:      ClinicalScoringEngine.ppossum(ppossumI)
         case .mpi:          ClinicalScoringEngine.mpi(mpiI)
+        case .ctsi:         ClinicalScoringEngine.ctsi(ctsiI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -685,6 +693,7 @@ struct ClinicalScoresView: View {
         case .apacheII:     patient.apacheIIScore    = intScore
         case .ppossum:      patient.ppossumMortPct10 = Int(r.score * 10)
         case .mpi:          patient.mpiScore = intScore
+        case .ctsi:         patient.ctsiScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -754,6 +763,7 @@ struct ClinicalScoresView: View {
         case .apacheII:     apacheIIForm
         case .ppossum:      ppossumForm
         case .mpi:          mpiForm
+        case .ctsi:         ctsiForm
         }
     }
 
@@ -1791,6 +1801,9 @@ struct ClinicalScoresView: View {
             case "generalizedPeritonitis": mpiI.generalizedPeritonitis = true
             default: break
             }
+        case .ctsi:
+            // CTSI fields are numeric selectors — no boolean toggle confirm
+            break
         default: break
         }
 
@@ -2235,6 +2248,35 @@ struct ClinicalScoresView: View {
                 options: [(1, "Elective"), (4, "Emergency >2 h (resuscitated)"), (8, "Emergency <2 h (not resuscitated)")])
         }
         .onChange(of: ppossumI) { _, _ in recalculate() }
+    }
+
+    // MARK: - CTSI (Balthazar CT Severity Index)
+
+    private var ctsiForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Balthazar CT Severity Index (Balthazar et al, Radiology 1990). Requires CT abdomen with IV contrast. Score = Balthazar grade (0–4) + necrosis extent (0/2/4/6). Total 0–10.")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
+            Group {
+                sectionHeader("Balthazar Grade")
+                apacheSegment("Pancreatic Appearance on CT", selection: $ctsiI.balthazarGrade,
+                    options: [
+                        (0, "A — Normal pancreas"),
+                        (1, "B — Oedematous pancreas, no peripancreatic inflammation"),
+                        (2, "C — Peripancreatic fat stranding"),
+                        (3, "D — Single poorly-defined peripancreatic fluid collection"),
+                        (4, "E — ≥2 fluid collections or gas in/around pancreas")
+                    ])
+                sectionHeader("Necrosis Score")
+                apacheSegment("Pancreatic Necrosis (IV contrast CT)", selection: $ctsiI.necrosisScore,
+                    options: [
+                        (0, "None"),
+                        (2, "<33% of pancreatic parenchyma"),
+                        (4, "33–50% necrosis"),
+                        (6, ">50% necrosis")
+                    ])
+            }
+            .onChange(of: ctsiI) { _, _ in recalculate() }
+        }
     }
 
     // MARK: - MPI

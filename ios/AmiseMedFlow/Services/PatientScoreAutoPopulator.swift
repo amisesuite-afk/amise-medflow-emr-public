@@ -1653,4 +1653,19 @@ enum PatientScoreAutoPopulator {
 
         return (i, f)
     }
+
+    // MARK: - CTSI (Balthazar CT Severity Index)
+
+    static func ctsi(patient: Patient) -> (CTSIInput, ScoreAutoFill) {
+        let i = CTSIInput()
+        var f = ScoreAutoFill()
+        // All CTSI inputs require CT abdomen with IV contrast — no auto-fill possible
+        f.addPending(key: "balthazarGrade",
+            label: "Balthazar grade (A–E) — requires CT abdomen review",
+            source: "CT report")
+        f.addPending(key: "necrosisScore",
+            label: "Pancreatic necrosis extent — requires CT with IV contrast",
+            source: "CT report")
+        return (i, f)
+    }
 }
