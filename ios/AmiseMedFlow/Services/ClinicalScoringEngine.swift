@@ -2545,7 +2545,7 @@ enum ClinicalScoringEngine {
         var items: [ScoredItem] = []
         func add(_ label: String, _ flag: Bool) {
             if flag { score += 1 }
-            items.append(ScoredItem(label: label, points: flag ? 1 : 0, present: flag))
+            items.append(ScoredItem(label: label, points: flag ? 1.0 : 0.0, present: flag))
         }
         add("C — Confusion (new onset, AMT ≤8)", i.confusion)
         add("U — Urea >7 mmol/L", i.ureaDOver7)
@@ -4830,9 +4830,9 @@ enum ClinicalScoringEngine {
                 "Reassess NUTRIC if clinical status changes"
             ],
             items: [
-                ScoredItem(label: "Age \(i.age) yrs", points: i.age >= 75 ? 2 : i.age >= 50 ? 1 : 0, present: i.age >= 50),
-                ScoredItem(label: "APACHE II \(i.apacheII)", points: i.apacheII >= 28 ? 3 : i.apacheII >= 20 ? 2 : i.apacheII >= 15 ? 1 : 0, present: i.apacheII >= 15),
-                ScoredItem(label: "SOFA \(i.sofa)", points: i.sofa >= 10 ? 2 : i.sofa >= 6 ? 1 : 0, present: i.sofa >= 6),
+                ScoredItem(label: "Age \(i.age) yrs", points: i.age >= 75 ? 2.0 : i.age >= 50 ? 1.0 : 0.0, present: i.age >= 50),
+                ScoredItem(label: "APACHE II \(i.apacheII)", points: i.apacheII >= 28 ? 3.0 : i.apacheII >= 20 ? 2.0 : i.apacheII >= 15 ? 1.0 : 0.0, present: i.apacheII >= 15),
+                ScoredItem(label: "SOFA \(i.sofa)", points: i.sofa >= 10 ? 2.0 : i.sofa >= 6 ? 1.0 : 0.0, present: i.sofa >= 6),
                 ScoredItem(label: "Comorbidities (\(i.comorbidities))", points: Double(min(2, i.comorbidities)), present: i.comorbidities > 0),
                 ScoredItem(label: "Days hospital→ICU (\(i.daysHospitalToICU))", points: min(2, Double(i.daysHospitalToICU)), present: i.daysHospitalToICU > 0)
             ],
@@ -4918,9 +4918,9 @@ enum ClinicalScoringEngine {
         var items: [ScoredItem] = []
 
         // Dyspnoea MRC ≥4 or ≥5
-        let dyspPts: Double = i.dyspnoeaMRC >= 5 ? 2 : (i.dyspnoeaMRC >= 4 ? 1 : 0)
+        let dyspPts = i.dyspnoeaMRC >= 5 ? 2 : (i.dyspnoeaMRC >= 4 ? 1 : 0)
         pts += dyspPts
-        items.append(ScoredItem(label: "MRC dyspnoea grade \(i.dyspnoeaMRC) (MRC 3=0, MRC 4=1, MRC 5a/5b=2)", points: dyspPts, present: i.dyspnoeaMRC >= 4))
+        items.append(ScoredItem(label: "MRC dyspnoea grade \(i.dyspnoeaMRC) (MRC 3=0, MRC 4=1, MRC 5a/5b=2)", points: Double(dyspPts), present: i.dyspnoeaMRC >= 4))
         items.append(ScoredItem(label: "Eosinopenia (eosinophils <0.05×10⁹/L)", points: 1, present: i.eosinopenia))
         if i.eosinopenia { pts += 1 }
         items.append(ScoredItem(label: "Consolidation on CXR", points: 1, present: i.consolidation))
