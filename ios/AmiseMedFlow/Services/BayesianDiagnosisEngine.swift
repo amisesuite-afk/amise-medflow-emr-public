@@ -120,6 +120,7 @@ enum BayesianDiagnosisEngine {
         timiScore: Int? = nil,        // TIMI (0–7); ≥3 = intermediate, ≥5 = high ACS risk
         waterlowScore: Int? = nil,    // Waterlow (0–64); ≥15 = high, ≥20 = very high pressure ulcer risk
         surgicalApgarScore: Int? = nil, // Surgical Apgar (0–10); ≤4 = high risk of major surgical complication
+        graceScore: Int? = nil,       // GRACE (0–372); >140 = high in-hospital ACS mortality
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2846,6 +2847,26 @@ enum BayesianDiagnosisEngine {
                 let (adj, label): (Int, String) = switch wl {
                 case 20...: (12, "Waterlow ≥20 — very high pressure ulcer risk; dynamic mattress + immediate TVN referral")
                 case 15..<20: (7, "Waterlow 15–19 — high pressure ulcer risk; active prevention protocol + TVN review")
+                default:   (0, "")
+                }
+                guard adj > 0 else { continue }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // GRACE: boosts ACS and cardiac-related candidates based on mortality risk score
+        if let grace = graceScore, grace >= 109 {
+            let graceTargets = ["acute coronary syndrome", "myocardial infarction", "nstemi", "stemi",
+                                 "unstable angina", "cardiac chest pain", "aortic dissection",
+                                 "pulmonary embolism", "cardiogenic shock", "heart failure"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard graceTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch grace {
+                case 141...: (14, "GRACE >140 — high in-hospital ACS mortality; urgent cardiology involvement")
+                case 109...140: (8, "GRACE 109–140 — moderate in-hospital ACS mortality (~1–3%); cardiac monitoring")
                 default:   (0, "")
                 }
                 guard adj > 0 else { continue }

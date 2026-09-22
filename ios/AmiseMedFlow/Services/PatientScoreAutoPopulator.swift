@@ -1882,6 +1882,63 @@ enum PatientScoreAutoPopulator {
         return (i, f)
     }
 
+    // MARK: - GRACE Score (ACS Mortality)
+
+    static func grace(patient: Patient) -> (GRACEInput, ScoreAutoFill) {
+        var i = GRACEInput()
+        var f = ScoreAutoFill()
+        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                       patient.pmhNotes, patient.workingDiagnosis, patient.notes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+
+        // Age category from DOB
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 0
+            let cat: Int = switch age {
+            case 80...: 5
+            case 70..<80: 4
+            case 60..<70: 3
+            case 50..<60: 2
+            case 40..<50: 1
+            default: 0
+            }
+            i.ageCategory = cat
+            f.addAutoFilled(key: "ageCategory", label: "Age category \(cat) (from DOB)", source: "Date of birth")
+        } else {
+            f.addPending(key: "ageCategory", label: "Age category — requires DOB", source: "Demographics")
+        }
+
+        // Cardiac arrest from text
+        if allText.contains("cardiac arrest") || allText.contains("vf arrest") ||
+           allText.contains("vt arrest") || allText.contains("resuscit") ||
+           allText.contains("cpr") || allText.contains("rosc") {
+            i.cardiacArrest = true
+            f.addAutoFilled(key: "cardiacArrest", label: "Cardiac arrest mentioned in clinical text — verify at admission", source: "Clinical text")
+        }
+
+        // Elevated cardiac markers from text
+        if allText.contains("troponin") || allText.contains("ck-mb") || allText.contains("elevated marker") ||
+           allText.contains("positive trop") || allText.contains("high troponin") {
+            i.elevatedMarkers = true
+            f.addAutoFilled(key: "elevatedMarkers", label: "Elevated cardiac markers detected in clinical text — verify result", source: "Clinical text")
+        }
+
+        // ST deviation from text
+        if allText.contains("st depression") || allText.contains("st elevation") ||
+           allText.contains("st segment") || allText.contains("stemi") || allText.contains("nstemi") ||
+           allText.contains("st change") || allText.contains("ischaemic ecg") {
+            i.stDeviation = true
+            f.addAutoFilled(key: "stDeviation", label: "ST-segment deviation mentioned in clinical text — verify on ECG", source: "Clinical text / ECG")
+        }
+
+        // HR, SBP, creatinine, Killip require measurements — mark pending
+        f.addPending(key: "heartRate", label: "Heart rate (bpm) — requires current vital signs", source: "Vital signs")
+        f.addPending(key: "systolicBP", label: "Systolic BP (mmHg) — requires current vital signs", source: "Vital signs")
+        f.addPending(key: "creatinine", label: "Serum creatinine (mg/dL) — requires laboratory result", source: "Laboratory")
+        f.addPending(key: "killipClass", label: "Killip class (I–IV) — clinical assessment of heart failure signs", source: "Clinical assessment")
+        return (i, f)
+    }
+
     // MARK: - Surgical Apgar Score
 
     static func surgicalApgar(patient: Patient) -> (SurgicalApgarInput, ScoreAutoFill) {

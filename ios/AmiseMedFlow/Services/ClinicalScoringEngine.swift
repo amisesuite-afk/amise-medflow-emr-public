@@ -476,6 +476,22 @@ struct ForrestInput: Equatable {
     var grade: Int = 1
 }
 
+struct GRACEInput: Equatable {
+    // GRACE Score (Granger CB et al, Lancet 2003; Fox KA et al, Eur Heart J 2006)
+    // Predicts in-hospital and 6-month mortality after ACS (NSTEMI/STEMI/UA)
+    // Uses 8 variables; total score 0–372; categorical thresholds guide risk
+    // In-hospital mortality: Low <109 (<1%), Moderate 109-140 (1–3%), High >140 (>3%)
+    // 6-month mortality: Low <88 (<3%), Moderate 88-118 (3–8%), High >118 (>8%)
+    var ageCategory: Int = 0    // 0=<40 (0), 1=40-49 (18), 2=50-59 (36), 3=60-69 (55), 4=70-79 (73), 5=≥80 (91)
+    var heartRate: Int = 0      // 0=<70 (0), 1=70-89 (7), 2=90-109 (13), 3=110-149 (23), 4=150-199 (36), 5=≥200 (46)
+    var systolicBP: Int = 0     // 0=<80 (63), 1=80-99 (58), 2=100-119 (47), 3=120-139 (37), 4=140-159 (26), 5=160-199 (11), 6=≥200 (0)
+    var creatinine: Int = 0     // 0=0-0.39 (2), 1=0.4-0.79 (5), 2=0.8-1.19 (8), 3=1.2-1.59 (11), 4=1.6-1.99 (14), 5=2.0-3.99 (23), 6=≥4.0 (31)
+    var killipClass: Int = 0    // 0=I no CHF (0), 1=II rales/JVD (21), 2=III pulm oedema (43), 3=IV cardiogenic shock (64)
+    var cardiacArrest: Bool = false  // at admission (+43)
+    var elevatedMarkers: Bool = false // elevated cardiac enzymes/markers (+15)
+    var stDeviation: Bool = false     // ST-segment deviation (+30)
+}
+
 struct SurgicalApgarInput: Equatable {
     // Surgical Apgar Score (Gawande et al, J Am Coll Surg 2007; Regenbogen et al, Ann Surg 2010)
     // Three intraoperative parameters; score 0–10; higher = lower risk
@@ -2872,6 +2888,70 @@ enum ClinicalScoringEngine {
             recommendations: data.recs,
             redFlags: data.flags,
             evidenceNote: "Forrest JAH et al. Lancet 1974; 2:394–397. Laine L & Peterson WL. N Engl J Med 1994; 331:717–727."
+        )
+    }
+
+    // MARK: - GRACE Score (ACS Mortality)
+
+    static func grace(_ i: GRACEInput) -> ClinicalScore {
+        let agePts   = [0, 18, 36, 55, 73, 91][min(i.ageCategory, 5)]
+        let hrPts    = [0,  7, 13, 23, 36, 46][min(i.heartRate, 5)]
+        let sbpPts   = [63, 58, 47, 37, 26, 11, 0][min(i.systolicBP, 6)]
+        let creatPts = [2,  5,  8, 11, 14, 23, 31][min(i.creatinine, 6)]
+        let killipPts = [0, 21, 43, 64][min(i.killipClass, 3)]
+        var total = agePts + hrPts + sbpPts + creatPts + killipPts
+        if i.cardiacArrest { total += 43 }
+        if i.elevatedMarkers { total += 15 }
+        if i.stDeviation { total += 30 }
+
+        // In-hospital mortality thresholds (Granger 2003)
+        let (risk, interp, recs, flags): (ScoreRisk, String, [String], [String]) = switch total {
+        case 0..<109:
+            (.low, "Low risk — in-hospital mortality <1%",
+             ["Evaluate for early discharge with outpatient cardiology follow-up",
+              "Antiplatelet therapy (aspirin + P2Y12 inhibitor); statin; beta-blocker",
+              "Non-invasive stress test or elective coronary angiography within 72 h",
+              "Cardiac rehab referral post-discharge"],
+             [])
+        case 109...140:
+            (.moderate, "Moderate risk — in-hospital mortality 1–3%",
+             ["Admission to monitored cardiac care unit or HDU",
+              "Serial ECG and troponin at 3–6 h",
+              "Dual antiplatelet therapy + anticoagulation per ACS protocol",
+              "Coronary angiography within 24 h (intermediate/high-risk NSTEMI pathway)",
+              "Cardiology review within 12 h"],
+             [])
+        default:
+            (.high, "High risk — in-hospital mortality >3% (score >140 = high risk)",
+             ["Immediate cardiology consult; consider cardiac catheterisation lab activation",
+              "Urgent coronary angiography (≤24 h); prepare for PCI or CABG if indicated",
+              "Continuous ECG monitoring; IV access; anticoagulation + dual antiplatelet",
+              "ICU or CCU level care; haemodynamic monitoring",
+              "Serial troponin, ECG; watch for cardiogenic shock and mechanical complications"],
+             ["GRACE >140 — high in-hospital mortality; urgent cardiologist involvement required"])
+        }
+
+        let items: [ScoreItem] = [
+            ScoreItem(label: "Age category (\(["<40","40–49","50–59","60–69","70–79","≥80"][min(i.ageCategory,5)])) +\(agePts)", points: Double(agePts), present: true),
+            ScoreItem(label: "Heart rate (\(["<70","70–89","90–109","110–149","150–199","≥200"][min(i.heartRate,5)]) bpm) +\(hrPts)", points: Double(hrPts), present: true),
+            ScoreItem(label: "Systolic BP (\(["<80","80–99","100–119","120–139","140–159","160–199","≥200"][min(i.systolicBP,6)]) mmHg) +\(sbpPts)", points: Double(sbpPts), present: true),
+            ScoreItem(label: "Creatinine (\(["0–0.39","0.4–0.79","0.8–1.19","1.2–1.59","1.6–1.99","2.0–3.99","≥4.0"][min(i.creatinine,6)]) mg/dL) +\(creatPts)", points: Double(creatPts), present: true),
+            ScoreItem(label: "Killip class \(i.killipClass + 1) +\(killipPts)", points: Double(killipPts), present: true),
+            ScoreItem(label: "Cardiac arrest at admission +43", points: 43, present: i.cardiacArrest),
+            ScoreItem(label: "Elevated cardiac markers +15", points: 15, present: i.elevatedMarkers),
+            ScoreItem(label: "ST-segment deviation +30", points: 30, present: i.stDeviation)
+        ]
+
+        return ClinicalScore(
+            systemName: "GRACE Score",
+            abbreviation: "GRACE",
+            score: Double(total), maxScore: 372,
+            risk: risk,
+            interpretation: "GRACE \(total) — \(interp)",
+            items: items,
+            recommendations: recs,
+            redFlags: flags,
+            evidenceNote: "Granger CB et al. Lancet 2003;362:777–781. Fox KA et al. Eur Heart J 2006;27:2755–2764."
         )
     }
 

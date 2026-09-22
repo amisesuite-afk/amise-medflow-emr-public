@@ -63,6 +63,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case timi             = "TIMI (UA/NSTEMI Risk)"
     case waterlow         = "Waterlow Pressure Ulcer Risk"
     case surgicalApgar    = "Surgical Apgar Score"
+    case grace            = "GRACE Score (ACS)"
 
     var category: ScoreCategory {
         switch self {
@@ -78,7 +79,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .preop
         case .abcd2, .lrinec, .gcs:
             return .neuro
-        case .cha2ds2vasc, .hasBled, .heart, .timi:
+        case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
             return .cardiac
         case .mews, .news2, .waterlow, .surgicalApgar:
             return .monitoring
@@ -126,6 +127,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .timi:           return "waveform.path.ecg.rectangle"
         case .waterlow:       return "bed.double"
         case .surgicalApgar:  return "cross.case"
+        case .grace:          return "chart.line.uptrend.xyaxis"
         }
     }
 }
@@ -228,6 +230,8 @@ struct ClinicalScoresView: View {
     @State private var waterlowI = WaterlowInput()
     // Surgical Apgar Score
     @State private var surgApgarI = SurgicalApgarInput()
+    // GRACE Score
+    @State private var graceI = GRACEInput()
 
     // Auto-population tracking
     @State private var autoFill = ScoreAutoFill()
@@ -626,6 +630,9 @@ struct ClinicalScoresView: View {
         case .surgicalApgar:
             let (input, fill) = PatientScoreAutoPopulator.surgicalApgar(patient: patient)
             surgApgarI = input; autoFill = fill
+        case .grace:
+            let (input, fill) = PatientScoreAutoPopulator.grace(patient: patient)
+            graceI = input; autoFill = fill
         default:
             autoFill = ScoreAutoFill()
         }
@@ -726,6 +733,7 @@ struct ClinicalScoresView: View {
         case .timi:         ClinicalScoringEngine.timi(timiI)
         case .waterlow:     ClinicalScoringEngine.waterlow(waterlowI)
         case .surgicalApgar: ClinicalScoringEngine.surgicalApgar(surgApgarI)
+        case .grace:         ClinicalScoringEngine.grace(graceI)
         }
         // Feed score results back to Bayesian engine via patient model fields.
         // Each score is stored once computed so the pipeline can apply post-hoc
@@ -766,6 +774,7 @@ struct ClinicalScoresView: View {
         case .timi:         patient.timiScore = intScore
         case .waterlow:     patient.waterlowScore = intScore
         case .surgicalApgar: patient.surgicalApgarScore = intScore
+        case .grace:         patient.graceScore = intScore
         default: break
         }
         patient.updatedAt = .now
@@ -844,6 +853,7 @@ struct ClinicalScoresView: View {
         case .timi:         timiForm
         case .waterlow:     waterlowForm
         case .surgicalApgar: surgicalApgarForm
+        case .grace:         graceForm
         }
     }
 
@@ -1930,6 +1940,13 @@ struct ClinicalScoresView: View {
         case .surgicalApgar:
             // All fields are numeric pickers — no boolean toggle confirm
             break
+        case .grace:
+            switch field.id {
+            case "cardiacArrest":    graceI.cardiacArrest = true
+            case "elevatedMarkers":  graceI.elevatedMarkers = true
+            case "stDeviation":      graceI.stDeviation = true
+            default: break
+            }
         default: break
         }
 
@@ -2422,6 +2439,72 @@ struct ClinicalScoresView: View {
                 scoreToggle("Elevated serum cardiac markers (troponin or CK-MB)", binding: $timiI.elevatedCardiacMarkers, points: "+1", autoKey: "elevatedCardiacMarkers")
             }
             .onChange(of: timiI) { _, _ in recalculate() }
+        }
+    }
+
+    // MARK: - GRACE Score (ACS Mortality)
+
+    private var graceForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("GRACE Score (Granger CB et al, Lancet 2003; Fox KA et al, Eur Heart J 2006). Predicts in-hospital and 6-month mortality after ACS. Score 0–372. In-hospital mortality: Low <109 (<1%), Moderate 109–140 (1–3%), High >140 (>3%).")
+                .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
+            Group {
+                sectionHeader("Age")
+                apacheSegment("Age Category", selection: $graceI.ageCategory,
+                    options: [
+                        (0, "<40 years (+0)"),
+                        (1, "40–49 years (+18)"),
+                        (2, "50–59 years (+36)"),
+                        (3, "60–69 years (+55)"),
+                        (4, "70–79 years (+73)"),
+                        (5, "≥80 years (+91)")
+                    ])
+                sectionHeader("Heart Rate (bpm)")
+                apacheSegment("Heart Rate", selection: $graceI.heartRate,
+                    options: [
+                        (0, "<70 bpm (+0)"),
+                        (1, "70–89 bpm (+7)"),
+                        (2, "90–109 bpm (+13)"),
+                        (3, "110–149 bpm (+23)"),
+                        (4, "150–199 bpm (+36)"),
+                        (5, "≥200 bpm (+46)")
+                    ])
+                sectionHeader("Systolic Blood Pressure (mmHg)")
+                apacheSegment("Systolic BP", selection: $graceI.systolicBP,
+                    options: [
+                        (0, "<80 mmHg (+63)"),
+                        (1, "80–99 mmHg (+58)"),
+                        (2, "100–119 mmHg (+47)"),
+                        (3, "120–139 mmHg (+37)"),
+                        (4, "140–159 mmHg (+26)"),
+                        (5, "160–199 mmHg (+11)"),
+                        (6, "≥200 mmHg (+0)")
+                    ])
+                sectionHeader("Serum Creatinine (mg/dL)")
+                apacheSegment("Creatinine", selection: $graceI.creatinine,
+                    options: [
+                        (0, "0–0.39 mg/dL (+2)"),
+                        (1, "0.4–0.79 mg/dL (+5)"),
+                        (2, "0.8–1.19 mg/dL (+8)"),
+                        (3, "1.2–1.59 mg/dL (+11)"),
+                        (4, "1.6–1.99 mg/dL (+14)"),
+                        (5, "2.0–3.99 mg/dL (+23)"),
+                        (6, "≥4.0 mg/dL (+31)")
+                    ])
+                sectionHeader("Killip Class (Heart Failure Status)")
+                apacheSegment("Killip Class", selection: $graceI.killipClass,
+                    options: [
+                        (0, "Class I — No CHF signs (+0)"),
+                        (1, "Class II — Mild CHF (rales / elevated JVP) (+21)"),
+                        (2, "Class III — Acute pulmonary oedema (+43)"),
+                        (3, "Class IV — Cardiogenic shock (+64)")
+                    ])
+                sectionHeader("Additional Risk Factors")
+                scoreToggle("Cardiac arrest at admission", binding: $graceI.cardiacArrest, points: "+43", autoKey: "cardiacArrest")
+                scoreToggle("Elevated cardiac biomarkers (troponin or CK-MB above ULN)", binding: $graceI.elevatedMarkers, points: "+15", autoKey: "elevatedMarkers")
+                scoreToggle("ST-segment deviation on ECG (depression or transient elevation)", binding: $graceI.stDeviation, points: "+30", autoKey: "stDeviation")
+            }
+            .onChange(of: graceI) { _, _ in recalculate() }
         }
     }
 

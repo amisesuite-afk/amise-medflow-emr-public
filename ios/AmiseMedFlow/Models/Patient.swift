@@ -129,6 +129,8 @@ final class Patient {
     var waterlowScore: Int?
     // Surgical Apgar Score (0–10); ≤2=very high risk, 3–4=high, 5–6=moderate, 7–8=low, 9–10=very low
     var surgicalApgarScore: Int?
+    // GRACE Score (0–372); <109=low in-hospital mortality, 109-140=moderate, >140=high
+    var graceScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?
