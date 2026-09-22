@@ -4222,6 +4222,7 @@ enum ClinicalScoringEngine {
             score: Double(total), maxScore: 10,
             risk: risk,
             interpretation: interpretation,
+            recommendations: recs,
             items: [
                 ScoredItem(label: "Activity",          points: Double(i.activity),      present: i.activity > 0),
                 ScoredItem(label: "Respiration",       points: Double(i.respiration),   present: i.respiration > 0),
@@ -4229,7 +4230,6 @@ enum ClinicalScoringEngine {
                 ScoredItem(label: "Consciousness",     points: Double(i.consciousness), present: i.consciousness > 0),
                 ScoredItem(label: "Oxygen saturation", points: Double(i.oxygenSat),     present: i.oxygenSat > 0)
             ],
-            recommendations: recs,
             redFlags: flags,
             evidenceNote: "Aldrete JA, Kroulik D. Anesth Analg 1970;49:924–934. Aldrete JA. J Clin Anesth 1995;7:89–91 (modified). Score ≥9/10 = fit for PACU discharge."
         )
@@ -4291,13 +4291,13 @@ enum ClinicalScoringEngine {
             score: Double(total), maxScore: 8,
             risk: risk,
             interpretation: interpretation,
+            recommendations: recs,
             items: [
                 ScoredItem(label: "Thrombocytopenia",     points: Double(i.thrombocytopenia), present: i.thrombocytopenia > 0),
                 ScoredItem(label: "Timing of platelet fall", points: Double(i.timing),        present: i.timing > 0),
                 ScoredItem(label: "Thrombosis / skin necrosis", points: Double(i.thrombosis), present: i.thrombosis > 0),
                 ScoredItem(label: "Other cause",           points: Double(i.otherCause),       present: i.otherCause > 0)
             ],
-            recommendations: recs,
             redFlags: flags,
             evidenceNote: "Warkentin TE et al. Thromb Haemost 2003;90:759–765. Lo GK et al. J Thromb Haemost 2006;4:759–765. Validated pre-test probability tool for HIT diagnosis; positive predictive value ~50–80% at high scores."
         )
@@ -4357,16 +4357,16 @@ enum ClinicalScoringEngine {
             score: Double(total), maxScore: 29,
             risk: risk,
             interpretation: interpretation,
+            recommendations: recs,
             items: [
                 ScoredItem(label: "Age",             points: Double(i.ageScore),         present: i.ageScore > 0),
-                ScoredItem(label: "Male sex",        points: i.sexMale ? 1 : 0,          present: i.sexMale),
-                ScoredItem(label: "Previous LGIB",   points: i.previousLGIB ? 1 : 0,     present: i.previousLGIB),
+                ScoredItem(label: "Male sex",        points: i.sexMale ? 1.0 : 0.0,      present: i.sexMale),
+                ScoredItem(label: "Previous LGIB",   points: i.previousLGIB ? 1.0 : 0.0, present: i.previousLGIB),
                 ScoredItem(label: "Blood on DRE",    points: Double(i.dre),              present: i.dre > 0),
                 ScoredItem(label: "Heart rate",      points: Double(i.heartRate),        present: i.heartRate > 0),
                 ScoredItem(label: "Systolic BP",     points: Double(i.sbp),              present: i.sbp > 0),
                 ScoredItem(label: "Haemoglobin",     points: Double(i.hbScore),          present: i.hbScore > 0)
             ],
-            recommendations: recs,
             redFlags: flags,
             evidenceNote: "Oakland K et al. BMJ 2017;356:i6432. Validated for safe-discharge decision in acute LGIB presenting to ED. Score ≤8 = 95% probability of safe discharge without adverse outcome."
         )
@@ -4450,20 +4450,20 @@ enum ClinicalScoringEngine {
             score: score, maxScore: 1,
             risk: met ? .critical : .moderate,
             interpretation: interpretation,
-            items: i.isParacetamol ? [
-                ScoredItem(label: "Arterial pH <7.30",                           points: i.acidosisPhBelow730 ? 1 : 0,   present: i.acidosisPhBelow730),
-                ScoredItem(label: "PT >100 s",                                   points: i.ptAbove100 ? 1 : 0,           present: i.ptAbove100),
-                ScoredItem(label: "Creatinine >300 µmol/L",                     points: i.creatinineAbove300 ? 1 : 0,   present: i.creatinineAbove300),
-                ScoredItem(label: "Grade III/IV encephalopathy",                 points: i.encephalopathyGrade34 ? 1 : 0, present: i.encephalopathyGrade34)
-            ] : [
-                ScoredItem(label: "PT >100 s (single criterion)",               points: i.ptAbove100 ? 2 : 0,            present: i.ptAbove100),
-                ScoredItem(label: "Age <10 or >40 years",                       points: i.ageUnder10OrAbove40 ? 1 : 0,  present: i.ageUnder10OrAbove40),
-                ScoredItem(label: "Jaundice-to-encephalopathy >7 days",         points: i.jaundiceToDays ? 1 : 0,       present: i.jaundiceToDays),
-                ScoredItem(label: "PT >50 s",                                   points: i.ptAbove50 ? 1 : 0,            present: i.ptAbove50),
-                ScoredItem(label: "Bilirubin >300 µmol/L",                     points: i.bilirubinAbove300 ? 1 : 0,    present: i.bilirubinAbove300),
-                ScoredItem(label: "Unfavourable aetiology (drug/Wilson's/indeterminate)", points: i.unfavourableAetiology ? 1 : 0, present: i.unfavourableAetiology)
-            ],
             recommendations: recs,
+            items: i.isParacetamol ? [
+                ScoredItem(label: "Arterial pH <7.30",                           points: i.acidosisPhBelow730 ? 1.0 : 0.0,   present: i.acidosisPhBelow730),
+                ScoredItem(label: "PT >100 s",                                   points: i.ptAbove100 ? 1.0 : 0.0,           present: i.ptAbove100),
+                ScoredItem(label: "Creatinine >300 µmol/L",                     points: i.creatinineAbove300 ? 1.0 : 0.0,   present: i.creatinineAbove300),
+                ScoredItem(label: "Grade III/IV encephalopathy",                 points: i.encephalopathyGrade34 ? 1.0 : 0.0, present: i.encephalopathyGrade34)
+            ] : [
+                ScoredItem(label: "PT >100 s (single criterion)",               points: i.ptAbove100 ? 2.0 : 0.0,            present: i.ptAbove100),
+                ScoredItem(label: "Age <10 or >40 years",                       points: i.ageUnder10OrAbove40 ? 1.0 : 0.0,  present: i.ageUnder10OrAbove40),
+                ScoredItem(label: "Jaundice-to-encephalopathy >7 days",         points: i.jaundiceToDays ? 1.0 : 0.0,       present: i.jaundiceToDays),
+                ScoredItem(label: "PT >50 s",                                   points: i.ptAbove50 ? 1.0 : 0.0,            present: i.ptAbove50),
+                ScoredItem(label: "Bilirubin >300 µmol/L",                     points: i.bilirubinAbove300 ? 1.0 : 0.0,    present: i.bilirubinAbove300),
+                ScoredItem(label: "Unfavourable aetiology (drug/Wilson's/indeterminate)", points: i.unfavourableAetiology ? 1.0 : 0.0, present: i.unfavourableAetiology)
+            ],
             redFlags: flags,
             evidenceNote: "O'Grady JG et al. Gastroenterology 1989;97:439–445. Standard transplant referral criteria for acute liver failure used by British Society of Gastroenterology and AASLD. Paracetamol ALF: pH <7.30 alone sufficient."
         )
@@ -4505,7 +4505,7 @@ enum ClinicalScoringEngine {
                 "Standard pre-operative assessment",
                 "Document baseline functional status in surgical consent documentation"
             ],
-            items: [ScoredItem(label: "Performance grade \(g)", points: g, present: true)],
+            items: [ScoredItem(label: "Performance grade \(g)", points: Double(g), present: true)],
             redFlags: flags,
             evidenceNote: "Oken MM et al. Am J Clin Oncol 1982;5:649–655. WHO/Eastern Cooperative Oncology Group. Standard metric for functional reserve in oncology and surgical fitness."
         )
@@ -4551,11 +4551,6 @@ enum ClinicalScoringEngine {
             maxScore: 7.84,
             risk: risk,
             interpretation: interp,
-            items: [
-                ScoredItem(label: "GCS coded (\(i.glasgowComaScore) → \(gcs))", points: gcs, present: true),
-                ScoredItem(label: "SBP coded (\(i.systolicBP) mmHg → \(sbp))",  points: sbp, present: true),
-                ScoredItem(label: "RR coded (\(i.respiratoryRate) bpm → \(rr))",  points: rr,  present: true)
-            ],
             recommendations: rtsScore < 4 ? [
                 "Activate major trauma protocol immediately",
                 "Airway management priority — consider early intubation",
@@ -4569,6 +4564,11 @@ enum ClinicalScoringEngine {
             ] : [
                 "Standard trauma assessment",
                 "Analgesia and appropriate wound management"
+            ],
+            items: [
+                ScoredItem(label: "GCS coded (\(i.glasgowComaScore) → \(gcs))", points: Double(gcs), present: true),
+                ScoredItem(label: "SBP coded (\(i.systolicBP) mmHg → \(sbp))",  points: Double(sbp), present: true),
+                ScoredItem(label: "RR coded (\(i.respiratoryRate) bpm → \(rr))",  points: Double(rr),  present: true)
             ],
             redFlags: flags,
             evidenceNote: "Champion HR et al. J Trauma 1989;29:623–629. Weighted RTS; ISS complement for TRISS survival probability. Coded GCS + SBP + RR."
@@ -4601,11 +4601,6 @@ enum ClinicalScoringEngine {
             maxScore: 3,
             risk: risk,
             interpretation: interp,
-            items: [
-                ScoredItem(label: "Creatinine rise (\(["<1.5×", "1.5–1.9×", "2.0–2.9×", "≥3×/354+"][min(i.creatinineRise,3)])", points: i.creatinineRise, present: i.creatinineRise > 0),
-                ScoredItem(label: "Urine output criterion (\(["normal", "<0.5 ×6h", "<0.5 ×12h", "<0.3 ×24h"][min(i.urineOutput,3)])", points: i.urineOutput, present: i.urineOutput > 0),
-                ScoredItem(label: "Renal replacement therapy required", points: i.requiresRRT ? 3 : 0, present: i.requiresRRT)
-            ],
             recommendations: stage >= 3 ? [
                 "Urgent nephrology referral for RRT assessment",
                 "Strict fluid balance and daily weights",
@@ -4624,6 +4619,11 @@ enum ClinicalScoringEngine {
             ] : [
                 "Monitor renal function in high-risk patients (major surgery, sepsis, contrast exposure)",
                 "Baseline creatinine documented for perioperative comparison"
+            ],
+            items: [
+                ScoredItem(label: "Creatinine rise (\(["<1.5×", "1.5–1.9×", "2.0–2.9×", "≥3×/354+"][min(i.creatinineRise,3)])", points: Double(i.creatinineRise), present: i.creatinineRise > 0),
+                ScoredItem(label: "Urine output criterion (\(["normal", "<0.5 ×6h", "<0.5 ×12h", "<0.3 ×24h"][min(i.urineOutput,3)])", points: Double(i.urineOutput), present: i.urineOutput > 0),
+                ScoredItem(label: "Renal replacement therapy required", points: i.requiresRRT ? 3.0 : 0.0, present: i.requiresRRT)
             ],
             redFlags: flags,
             evidenceNote: "KDIGO AKI Work Group. Kidney Int Suppl 2012;2:1–138. Stage based on highest criterion met (creatinine rise or urine output). RRT requirement automatically stage 3."
@@ -4657,11 +4657,6 @@ enum ClinicalScoringEngine {
             maxScore: 200,
             risk: risk,
             interpretation: interp,
-            items: [
-                ScoredItem(label: "Age (\(i.age) years)", points: Double(i.age), present: true),
-                ScoredItem(label: "% TBSA burned (\(i.tbsa)%)", points: Double(i.tbsa), present: true),
-                ScoredItem(label: "Inhalation injury (+17)", points: 17, present: i.hasInhalationInjury)
-            ],
             recommendations: score >= 80 ? [
                 "Immediate transfer to specialist burns unit / ICU",
                 "Early intubation if inhalation injury — don't delay for oedema progression",
@@ -4680,6 +4675,11 @@ enum ClinicalScoringEngine {
                 "Tetanus prophylaxis",
                 "Analgesia",
                 "Outpatient burns review if <15% TBSA, no face/hand/genitalia involvement"
+            ],
+            items: [
+                ScoredItem(label: "Age (\(i.age) years)", points: Double(i.age), present: true),
+                ScoredItem(label: "% TBSA burned (\(i.tbsa)%)", points: Double(i.tbsa), present: true),
+                ScoredItem(label: "Inhalation injury (+17)", points: 17.0, present: i.hasInhalationInjury)
             ],
             redFlags: flags,
             evidenceNote: "Baux AC. Rev Chir 1961;10:3–10. Revised Baux adds 17 for inhalation injury (Ryan CM et al. J Burn Care Rehabil 1998). Correlates with la Lund–Browder chart TBSA estimate."
@@ -4816,13 +4816,6 @@ enum ClinicalScoringEngine {
             maxScore: 9,
             risk: risk,
             interpretation: interp,
-            items: [
-                ScoredItem(label: "Age \(i.age) yrs", points: i.age >= 75 ? 2 : i.age >= 50 ? 1 : 0, present: i.age >= 50),
-                ScoredItem(label: "APACHE II \(i.apacheII)", points: i.apacheII >= 28 ? 3 : i.apacheII >= 20 ? 2 : i.apacheII >= 15 ? 1 : 0, present: i.apacheII >= 15),
-                ScoredItem(label: "SOFA \(i.sofa)", points: i.sofa >= 10 ? 2 : i.sofa >= 6 ? 1 : 0, present: i.sofa >= 6),
-                ScoredItem(label: "Comorbidities (\(i.comorbidities))", points: Double(min(2, i.comorbidities)), present: i.comorbidities > 0),
-                ScoredItem(label: "Days hospital→ICU (\(i.daysHospitalToICU))", points: min(2, Double(i.daysHospitalToICU)), present: i.daysHospitalToICU > 0)
-            ],
             recommendations: score >= 6 ? [
                 "Dietitian review within 24 hours of ICU admission",
                 "High-protein target: 1.5–2.0 g/kg/day actual body weight",
@@ -4835,6 +4828,13 @@ enum ClinicalScoringEngine {
                 "Enteral nutrition preferred route; start within 24–48 h",
                 "Monitor nutritional adequacy daily",
                 "Reassess NUTRIC if clinical status changes"
+            ],
+            items: [
+                ScoredItem(label: "Age \(i.age) yrs", points: i.age >= 75 ? 2 : i.age >= 50 ? 1 : 0, present: i.age >= 50),
+                ScoredItem(label: "APACHE II \(i.apacheII)", points: i.apacheII >= 28 ? 3 : i.apacheII >= 20 ? 2 : i.apacheII >= 15 ? 1 : 0, present: i.apacheII >= 15),
+                ScoredItem(label: "SOFA \(i.sofa)", points: i.sofa >= 10 ? 2 : i.sofa >= 6 ? 1 : 0, present: i.sofa >= 6),
+                ScoredItem(label: "Comorbidities (\(i.comorbidities))", points: Double(min(2, i.comorbidities)), present: i.comorbidities > 0),
+                ScoredItem(label: "Days hospital→ICU (\(i.daysHospitalToICU))", points: min(2, Double(i.daysHospitalToICU)), present: i.daysHospitalToICU > 0)
             ],
             redFlags: flags,
             evidenceNote: "Heyland DK et al. JPEN 2011;35:596–605. NUTRIC ≥6 (without IL-6) predicts benefit from high-protein enteral nutrition. Validated in mechanically ventilated ICU patients."
@@ -4918,7 +4918,7 @@ enum ClinicalScoringEngine {
         var items: [ScoredItem] = []
 
         // Dyspnoea MRC ≥4 or ≥5
-        let dyspPts = i.dyspnoeaMRC >= 5 ? 2 : (i.dyspnoeaMRC >= 4 ? 1 : 0)
+        let dyspPts: Double = i.dyspnoeaMRC >= 5 ? 2 : (i.dyspnoeaMRC >= 4 ? 1 : 0)
         pts += dyspPts
         items.append(ScoredItem(label: "MRC dyspnoea grade \(i.dyspnoeaMRC) (MRC 3=0, MRC 4=1, MRC 5a/5b=2)", points: dyspPts, present: i.dyspnoeaMRC >= 4))
         items.append(ScoredItem(label: "Eosinopenia (eosinophils <0.05×10⁹/L)", points: 1, present: i.eosinopenia))
@@ -5048,13 +5048,13 @@ enum ClinicalScoringEngine {
             maxScore: 4,
             risk: risk,
             interpretation: interp,
+            recommendations: recs,
             items: [
                 ScoredItem(label: "Grade Ia — pericolic abscess", points: 0, present: i.grade == 1),
                 ScoredItem(label: "Grade II — pelvic/distant abscess", points: 0, present: i.grade == 2),
                 ScoredItem(label: "Grade III — purulent peritonitis", points: 0, present: i.grade == 3),
                 ScoredItem(label: "Grade IV — faecal peritonitis", points: 0, present: i.grade == 4)
             ],
-            recommendations: recs,
             redFlags: flags,
             evidenceNote: "Hinchey EJ et al. Adv Surg 1978;12:85–109. Modified by Wasvary (1999) to include Grade Ia/Ib. LADIES trial (Br J Surg 2019) supports laparoscopic lavage for Hinchey III in stable patients. Faecal peritonitis (IV) remains a surgical emergency with high mortality."
         )
@@ -5130,6 +5130,7 @@ enum ClinicalScoringEngine {
             maxScore: 12,
             risk: risk,
             interpretation: interp,
+            recommendations: recs,
             items: [
                 ScoredItem(label: "Vomiting", points: 1, present: i.vomiting),
                 ScoredItem(label: "Pain in right iliac fossa", points: 1, present: i.painRIF),
@@ -5144,7 +5145,6 @@ enum ClinicalScoringEngine {
                 ScoredItem(label: "CRP 10–49 mg/L", points: 1, present: i.crp == 1),
                 ScoredItem(label: "CRP ≥ 50 mg/L", points: 2, present: i.crp == 2)
             ],
-            recommendations: recs,
             redFlags: flags,
             evidenceNote: "Andersson M, Andersson RE. World J Surg 2008;32:1843–1849. AIR score validated across adult acute surgical populations. Sensitivity 96%, specificity 87% for scores ≥9. Superior to Alvarado in inflammatory marker specificity; requires FBC and CRP. Validated in Swedish and international cohorts."
         )
@@ -5209,6 +5209,7 @@ enum ClinicalScoringEngine {
             maxScore: 8,
             risk: risk,
             interpretation: interp,
+            recommendations: recs,
             items: [
                 ScoredItem(label: "Age ≥ 50 years", points: 1, present: i.age >= 50),
                 ScoredItem(label: "Heart rate ≥ 100 bpm", points: 1, present: i.hrAbove99),
@@ -5219,7 +5220,6 @@ enum ClinicalScoringEngine {
                 ScoredItem(label: "Prior DVT or PE", points: 1, present: i.priorDVTorPE),
                 ScoredItem(label: "Recent surgery or trauma requiring hospitalisation (≤4 weeks)", points: 1, present: i.recentSurgeryOrTrauma)
             ],
-            recommendations: recs,
             redFlags: flags,
             evidenceNote: "Kline JA et al. J Thromb Haemost 2004;2:1247–1255. PERC validated in ED cohorts; reduces CTPA use by ~20% in low-pretest-probability patients. Must be applied only when physician-assessed pre-test probability is <15%. Not a standalone rule — requires gestalt clinical probability estimate first."
         )
@@ -5305,12 +5305,12 @@ enum ClinicalScoringEngine {
             maxScore: 3,
             risk: risk,
             interpretation: interp,
+            recommendations: recs,
             items: [
                 ScoredItem(label: "Heart rate (bpm)", points: i.heartRate, present: true),
                 ScoredItem(label: "Systolic BP (mmHg)", points: i.systolicBP, present: true),
                 ScoredItem(label: "Shock Index (HR ÷ SBP)", points: Int(siRounded * 100), present: true)
             ],
-            recommendations: recs,
             redFlags: flags,
             evidenceNote: "Allgöwer M, Burri C. Dtsch Med Wochenschr 1967;92:1947–1950. Shock Index validated in trauma (Mutschler 2013) and obstetric haemorrhage (Bhatt 2018). SI ≥ 1.0 predicts need for massive transfusion (sensitivity 87%). Limitations: less reliable in patients on beta-blockers or with pre-existing hypertension/bradycardia."
         )
@@ -5361,14 +5361,6 @@ enum ClinicalScoringEngine {
             maxScore: 4 * 100 * 100,
             risk: risk,
             interpretation: interp + inhalationNote,
-            items: [
-                ScoredItem(label: "Weight (\(Int(i.weightKg)) kg)", points: Int(i.weightKg), present: true),
-                ScoredItem(label: "TBSA burned (\(Int(i.tbsaPercent))%)", points: Int(i.tbsaPercent), present: true),
-                ScoredItem(label: "Total 24 h volume: \(Int(totalVol)) mL Hartmann's", points: Int(totalVol), present: true),
-                ScoredItem(label: "First 8 h: \(Int(firstHalf)) mL at \(Int(rateFirst8h)) mL/h", points: Int(firstHalf), present: true),
-                ScoredItem(label: "Next 16 h: \(Int(secondHalf)) mL at \(Int(rateNext16h)) mL/h", points: Int(secondHalf), present: true),
-                ScoredItem(label: "Inhalation injury (+additional airway management)", points: 0, present: i.hasInhalationInjury)
-            ],
             recommendations: [
                 "Parkland formula: 4 mL × \(Int(i.weightKg)) kg × \(Int(i.tbsaPercent))% TBSA = \(Int(totalVol)) mL Hartmann's/Ringer's lactate over 24 h",
                 "First half (\(Int(firstHalf)) mL) in first 8 h from TIME OF BURN (not from arrival) — at \(Int(rateFirst8h)) mL/h",
@@ -5380,6 +5372,14 @@ enum ClinicalScoringEngine {
                 i.hasInhalationInjury ? "INHALATION INJURY: early anaesthetic/ICU review for intubation before oedema develops" : "Analgesia: IV morphine + anti-emetic; oral if minor burn",
                 "Wound care: cool running water for 20 min if <3 h post-burn; non-adherent dressings",
                 "Transfer to regional burns unit if: TBSA >15% adult, full-thickness, face/hands/perineum/circumferential"
+            ],
+            items: [
+                ScoredItem(label: "Weight (\(Int(i.weightKg)) kg)", points: Int(i.weightKg), present: true),
+                ScoredItem(label: "TBSA burned (\(Int(i.tbsaPercent))%)", points: Int(i.tbsaPercent), present: true),
+                ScoredItem(label: "Total 24 h volume: \(Int(totalVol)) mL Hartmann's", points: Int(totalVol), present: true),
+                ScoredItem(label: "First 8 h: \(Int(firstHalf)) mL at \(Int(rateFirst8h)) mL/h", points: Int(firstHalf), present: true),
+                ScoredItem(label: "Next 16 h: \(Int(secondHalf)) mL at \(Int(rateNext16h)) mL/h", points: Int(secondHalf), present: true),
+                ScoredItem(label: "Inhalation injury (+additional airway management)", points: 0, present: i.hasInhalationInjury)
             ],
             redFlags: flags,
             evidenceNote: "Baxter CR, Shires T. Ann N Y Acad Sci 1968;150:874–894. Parkland formula: 4 mL/kg/%TBSA Hartmann's in 24 h. Standard in UK (ISBI, NICE). The formula is a guide — adjust rate to urine output 0.5–1 mL/kg/h. Over-resuscitation causes abdominal compartment syndrome and pulmonary oedema; under-resuscitation causes burn shock. Reassess fluid rate hourly."
@@ -5456,6 +5456,7 @@ enum ClinicalScoringEngine {
             maxScore: 10,
             risk: risk,
             interpretation: interp,
+            recommendations: recs,
             items: [
                 ScoredItem(label: "Anorexia", points: 1, present: i.anorexia),
                 ScoredItem(label: "Nausea / vomiting", points: 1, present: i.nausea),
@@ -5466,7 +5467,6 @@ enum ClinicalScoringEngine {
                 ScoredItem(label: "Leukocytosis (WBC > 10 × 10⁹/L)", points: 2, present: i.leukocytosis),
                 ScoredItem(label: "Polymorphonuclear shift (PMN > 7.5 × 10⁹/L)", points: 1, present: i.polymorphonuclearShift)
             ],
-            recommendations: recs,
             redFlags: flags,
             evidenceNote: "Samuel M. J Pediatr Surg 2002;37:877–881. PAS validated in children aged 2–18. Sensitivity 83%, specificity 80% for scores ≥7. Less specific than AIR for adults; use PAS in paediatric populations (<16 yrs). USS first-line imaging in children — CT reserved for diagnostic uncertainty only."
         )
@@ -5546,6 +5546,7 @@ enum ClinicalScoringEngine {
             maxScore: 22,
             risk: risk,
             interpretation: interp,
+            recommendations: recs,
             items: [
                 ScoredItem(label: "Age ≥ 65 years", points: 1, present: i.age >= 65),
                 ScoredItem(label: "Prior DVT or PE", points: 3, present: i.priorDVTorPE),
@@ -5557,7 +5558,6 @@ enum ClinicalScoringEngine {
                 ScoredItem(label: "Heart rate ≥ 95 bpm", points: 5, present: i.heartRateAbove94),
                 ScoredItem(label: "Pain on deep palpation of lower limb AND oedema", points: 4, present: i.painOnPalpationLimbAndEdema)
             ],
-            recommendations: recs,
             redFlags: flags,
             evidenceNote: "Le Gal G et al. Ann Intern Med 2006;144:165–171. Revised Geneva Score validated in 965 consecutive patients; AUC 0.74. Low risk: 7% PE prevalence; Moderate: 29%; High: 64%. Does not require physician gestalt — all items are objective. Equivalent performance to Wells PE in meta-analyses."
         )
@@ -5677,6 +5677,7 @@ enum ClinicalScoringEngine {
             maxScore: 37,
             risk: risk,
             interpretation: interp,
+            recommendations: recs,
             items: [
                 ScoredItem(label: "Myocardial infarction (history)", points: 1, present: i.myocardialInfarction),
                 ScoredItem(label: "Congestive heart failure", points: 1, present: i.congestiveHeartFailure),
@@ -5697,9 +5698,8 @@ enum ClinicalScoringEngine {
                 ScoredItem(label: "Moderate/severe liver disease (portal hypertension, varices, ascites)", points: 3, present: i.moderateOrSevereLiverDisease),
                 ScoredItem(label: "Metastatic solid tumour", points: 6, present: i.metastaticSolidTumour),
                 ScoredItem(label: "AIDS (not just HIV+)", points: 6, present: i.aids),
-                ScoredItem(label: "Age \(i.age) years — \(agePoints) age-adjustment point(s)", points: agePoints, present: agePoints > 0)
+                ScoredItem(label: "Age \(i.age) years — \(agePoints) age-adjustment point(s)", points: Double(agePoints), present: agePoints > 0)
             ],
-            recommendations: recs,
             redFlags: flags,
             evidenceNote: "Charlson ME et al. J Chronic Dis 1987;40:373–383. Validated for 10-year mortality prediction. Age-adjusted CCI widely used in surgical outcomes research (NSQIP, ERAS protocols). CCI ≥ 3 independently predicts post-operative complications; CCI ≥ 5 is associated with 30-day surgical mortality in major abdominal surgery."
         )
@@ -5766,6 +5766,7 @@ enum ClinicalScoringEngine {
             maxScore: 5,
             risk: risk,
             interpretation: interp,
+            recommendations: recs,
             items: [
                 ScoredItem(label: "Diabetes mellitus (requiring medication)", points: 1, present: i.diabetes),
                 ScoredItem(label: "Functional dependence (partial or total — ADL)", points: 1, present: i.functionalDependence),
@@ -5773,7 +5774,6 @@ enum ClinicalScoringEngine {
                 ScoredItem(label: "Congestive heart failure", points: 1, present: i.congestiveHeartFailure),
                 ScoredItem(label: "Hypertension requiring medication", points: 1, present: i.hypertension)
             ],
-            recommendations: recs,
             redFlags: flags,
             evidenceNote: "Subramaniam S et al. J Am Coll Surg 2018;226:173–181. mFI-5 derived from 11-item mFI. Validated in NSQIP database (n > 1.4 million). Each point increment independently predicts 30-day mortality, serious complications, and non-home discharge. Comparable predictive performance to full 11-item index in major abdominal and vascular surgery."
         )
@@ -5826,12 +5826,12 @@ enum ClinicalScoringEngine {
             maxScore: 3,
             risk: risk,
             interpretation: interp,
+            recommendations: recs,
             items: [
                 ScoredItem(label: "No peritoneal irritation on abdominal examination", points: 1, present: i.peritonismAbsent),
                 ScoredItem(label: "Serum creatinine ≤ 177 µmol/L (< 2 mg/dL)", points: 1, present: i.creatinineNormal),
                 ScoredItem(label: "Haematocrit ≤ 43% (male) / ≤ 39.6% (female)", points: 1, present: i.haematocritNormal)
             ],
-            recommendations: recs,
             redFlags: flags,
             evidenceNote: "Lankisch PG et al. Am J Gastroenterol 2009;104:2943–2949. HAPS validated in 397 patients (prospective) and 1444 (validation cohort). All 3 criteria met on admission: PPV 98% for mild AP, NPV 99% for exclusion of severe AP. Simple bedside score requiring no imaging. Does not replace CT for complications. Comparable to APACHE II for early risk stratification."
         )
@@ -5897,6 +5897,7 @@ enum ClinicalScoringEngine {
             maxScore: 8,
             risk: risk,
             interpretation: interp,
+            recommendations: recs,
             items: [
                 ScoredItem(label: "PaO₂ < 59.2 mmHg (< 7.9 kPa)", points: 1, present: i.pao2Below59),
                 ScoredItem(label: "Age > 55 years", points: 1, present: i.ageAbove55),
@@ -5907,7 +5908,6 @@ enum ClinicalScoringEngine {
                 ScoredItem(label: "AST/ALT > 200 IU/L", points: 1, present: i.ast100),
                 ScoredItem(label: "Serum glucose > 10 mmol/L (non-diabetic)", points: 1, present: i.glucoseAbove10)
             ],
-            recommendations: recs,
             redFlags: flags,
             evidenceNote: "Imrie CW et al. Br J Surg 1978;65:478–480. Modified by Blamey SL et al. Gut 1984;25:1340–1346. Eight variables, assessed at 48 h from admission. Score ≥ 3 predicts severe acute pancreatitis with sensitivity ~70%, specificity ~85%. Widely used in UK/Commonwealth clinical practice. Variables must be based on worst values within first 48 h — not all may be available at admission. Compare with BISAP (admission-only) and APACHE II (daily, more complex)."
         )
@@ -6539,7 +6539,7 @@ enum ClinicalScoringEngine {
     // MARK: - IPSS (International Prostate Symptom Score)
     struct IPSSInput: Equatable {
         // 7 items 0–5 each + QoL 0–6
-        var incompletEmptying: Int = 0  // Q1
+        var incompleteEmptying: Int = 0  // Q1
         var frequency: Int = 0          // Q2
         var intermittency: Int = 0      // Q3
         var urgency: Int = 0            // Q4
@@ -6549,7 +6549,7 @@ enum ClinicalScoringEngine {
         var qualityOfLife: Int = 0      // QoL 0=delighted, 6=terrible
     }
     static func ipss(_ i: IPSSInput) -> ClinicalScore {
-        let symptomTotal = i.incompletEmptying + i.frequency + i.intermittency + i.urgency +
+        let symptomTotal = i.incompleteEmptying + i.frequency + i.intermittency + i.urgency +
                            i.weakStream + i.straining + i.nocturia
         let (interp, risk, recs): (String, ScoreRisk, [String])
         switch symptomTotal {
@@ -7182,7 +7182,7 @@ enum ClinicalScoringEngine {
         )
     }
 
-    private func ckdStage(_ egfr: Double) -> (Int, String) {
+    private static func ckdStage(_ egfr: Double) -> (Int, String) {
         if egfr >= 90      { return (1, "normal or high") }
         else if egfr >= 60 { return (2, "mildly decreased") }
         else if egfr >= 45 { return (3, "mildly–moderately decreased") }
