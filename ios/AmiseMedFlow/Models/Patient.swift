@@ -101,6 +101,10 @@ final class Patient {
     var sofaScore: Int?
     // FIB-4 Index (continuous); <1.30=low, 1.30-2.67=indeterminate, >2.67=high fibrosis risk
     var fib4Score: Double?
+    // CURB-65 Score (0–5) for community-acquired pneumonia; ≥3 = hospital admission
+    var curb65Score: Int?
+    // Padua Prediction Score (0–20) for VTE risk in medical inpatients; ≥4 = high risk
+    var paduaScore: Int?
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

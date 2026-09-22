@@ -106,6 +106,8 @@ enum BayesianDiagnosisEngine {
         aims65Score: Int? = nil,      // AIMS65 (0–5) for upper GI bleed in-hospital mortality
         sofaScore: Int? = nil,        // SOFA (0–24); ≥2 with infection = sepsis (Sepsis-3)
         fib4Score: Double? = nil,     // FIB-4 (continuous); >2.67 = significant fibrosis
+        curb65Score: Int? = nil,      // CURB-65 (0–5); ≥3 = hospital admission for CAP
+        paduaScore: Int? = nil,       // Padua (0–20); ≥4 = high VTE risk in medical patients
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2578,6 +2580,44 @@ enum BayesianDiagnosisEngine {
                 case 2.67...: (14, String(format: "FIB-4 %.2f — significant fibrosis (F2–F4) likely", fib4))
                 case 1.30...: (6,  String(format: "FIB-4 %.2f — indeterminate; fibrosis cannot be excluded", fib4))
                 default:      (-4, String(format: "FIB-4 %.2f — low fibrosis risk (F0–F1)", fib4))
+                }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // CURB-65: boosts pneumonia/pulmonary sepsis candidates; severity-graded
+        if let curb = curb65Score {
+            let pneumoniaTargets = ["pneumonia", "pulmonary sepsis", "pulmonary infection",
+                                     "community-acquired", "atypical pneumonia", "legionella"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard pneumoniaTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch curb {
+                case 4...: (16, "CURB-65 \(curb) — high severity CAP, ~27–29% 30-day mortality")
+                case 3:    (12, "CURB-65 3 — high severity CAP, ~22% 30-day mortality; admit")
+                case 2:    (8,  "CURB-65 2 — moderate CAP, ~9% mortality; consider admit")
+                case 1:    (4,  "CURB-65 1 — low-moderate CAP, outpatient with monitoring")
+                default:   (-2, "CURB-65 0 — low severity CAP, <3% mortality; outpatient")
+                }
+                scored[i].logPosterior += Double(adj)
+                scored[i].evidence.insert(label, at: 0)
+                scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // Padua: boosts VTE candidates when medical inpatient risk is high
+        if let pad = paduaScore, pad >= 2 {
+            let vteTargets = ["deep vein thrombosis", "pulmonary embolism", "dvt", "vte",
+                               "venous thromboembolism", "thrombosis"]
+            for i in scored.indices {
+                let nameLow = scored[i].candidate.name.lowercased()
+                guard vteTargets.contains(where: { nameLow.contains($0) }) else { continue }
+                let (adj, label): (Int, String) = switch pad {
+                case 6...: (14, "Padua \(pad) — very high VTE risk (multiple major risk factors)")
+                case 4...5: (10, "Padua \(pad) — high VTE risk; LMWH prophylaxis indicated")
+                default:    (4,  "Padua \(pad) — intermediate VTE risk; reassess daily")
                 }
                 scored[i].logPosterior += Double(adj)
                 scored[i].evidence.insert(label, at: 0)

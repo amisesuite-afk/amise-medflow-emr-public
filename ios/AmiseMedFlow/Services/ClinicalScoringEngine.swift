@@ -397,6 +397,30 @@ struct STOPBANGInput: Equatable {
     var male: Bool = false              // G — gender male
 }
 
+struct CURB65Input: Equatable {
+    // CURB-65 — Community-Acquired Pneumonia severity (Lim et al, Thorax 2003)
+    var confusion: Bool = false          // New confusion (AMT ≤8 or new disorientation)
+    var ureaDOver7: Bool = false         // BUN >7 mmol/L (>19 mg/dL)
+    var respiratoryRateOver30: Bool = false  // RR ≥30 breaths/min
+    var lowBP: Bool = false              // SBP <90 mmHg or DBP ≤60 mmHg
+    var ageOver65: Bool = false          // Age ≥65 years
+}
+
+struct PaduaInput: Equatable {
+    // Padua Prediction Score — VTE risk in acutely ill medical patients (Barbar et al, J Thromb 2010)
+    var activeOrRecentCancer: Bool = false       // +3 (prior <6 months or mets)
+    var previousVTE: Bool = false                // +3 (exclude superficial vein thrombosis)
+    var reducedMobility: Bool = false            // +3 (anticipated ≥3 days bed rest)
+    var thrombophilia: Bool = false              // +3 (inherited or acquired)
+    var recentTraumaOrSurgery: Bool = false      // +2 (≤1 month)
+    var ageOver70: Bool = false                  // +1
+    var heartOrRespiratoryFailure: Bool = false  // +1
+    var acuteMIOrIschaemicStroke: Bool = false   // +1
+    var acuteInfectionOrInflammatory: Bool = false // +1
+    var obese: Bool = false                      // +1 (BMI ≥30)
+    var ongoingHormonalTreatment: Bool = false   // +1 (OCP, HRT)
+}
+
 struct SOFAInput: Equatable {
     // Sequential Organ Failure Assessment (Sepsis-3, JAMA 2016)
     // Each domain scored 0–4; total 0–24
@@ -2234,5 +2258,111 @@ enum ClinicalScoringEngine {
                      "Cease alcohol; optimise weight, diabetes, lipids"],
                     ["FIB-4 >2.67: significant liver fibrosis likely — urgent hepatology referral"])
         }
+    }
+
+    // MARK: - CURB-65 (Community-Acquired Pneumonia)
+
+    static func curb65(_ i: CURB65Input) -> ClinicalScore {
+        var score = 0
+        var items: [(String, Int)] = []
+        func add(_ label: String, _ flag: Bool) {
+            if flag { score += 1 }
+            items.append((label, flag ? 1 : 0))
+        }
+        add("C — Confusion (new onset, AMT ≤8)", i.confusion)
+        add("U — Urea >7 mmol/L", i.ureaDOver7)
+        add("R — Respiratory rate ≥30 /min", i.respiratoryRateOver30)
+        add("B — BP: SBP <90 or DBP ≤60 mmHg", i.lowBP)
+        add("65 — Age ≥65 years", i.ageOver65)
+
+        let (risk, interpretation, recs, redFlags) = curb65Risk(score)
+        return ClinicalScore(
+            systemName: "CURB-65",
+            abbreviation: "CURB-65 \(score)/5",
+            score: Double(score), maxScore: 5,
+            risk: risk, interpretation: interpretation,
+            recommendations: recs, items: items, redFlags: redFlags,
+            evidenceNote: "Lim WS et al, Thorax 2003. 30-day mortality: score 0–1 <3%, score 2 ~9%, score 3–5 ~22%. Validated in 1068 patients. Use alongside clinical judgement."
+        )
+    }
+
+    private static func curb65Risk(_ s: Int) -> (ScoreRisk, String, [String], [String]) {
+        switch s {
+        case 0...1:
+            return (.low,
+                    "CURB-65 \(s)/5 — low severity; 30-day mortality <3%",
+                    ["Outpatient treatment appropriate in most cases",
+                     "Amoxicillin 500 mg TDS × 5 days (first-line, uncomplicated)",
+                     "Or doxycycline 200 mg stat then 100 mg OD if penicillin allergy",
+                     "Review at 48h if not improving; return if symptoms worsen"],
+                    [])
+        case 2:
+            return (.moderate,
+                    "CURB-65 2/5 — moderate severity; 30-day mortality ~9%",
+                    ["Consider short inpatient stay or supervised outpatient therapy",
+                     "Amoxicillin-clavulanate 625 mg TDS ± clarithromycin 500 mg BD",
+                     "SpO₂ monitoring; supplemental O₂ if <94%",
+                     "CXR, FBC, CRP, U&E, blood cultures × 2"],
+                    ["CURB-65 2: consider inpatient assessment"])
+        default:
+            return (.high,
+                    "CURB-65 \(s)/5 — high severity; 30-day mortality ~\(s >= 4 ? "27–29" : "22")%",
+                    ["Hospital admission required (score 3) or urgent ICU assessment (score 4–5)",
+                     "Co-amoxiclav + clarithromycin IV or piperacillin-tazobactam + azithromycin",
+                     "Continuous SpO₂; escalate O₂ therapy as needed",
+                     "Blood cultures × 2 and urine pneumococcal/legionella antigen",
+                     "CXR, ABG if SpO₂ <92% or RR >30"],
+                    ["CURB-65 ≥3: hospital admission required; score ≥4 consider ICU"])
+        }
+    }
+
+    // MARK: - Padua Prediction Score (Medical VTE Risk)
+
+    static func padua(_ i: PaduaInput) -> ClinicalScore {
+        var score = 0
+        var items: [(String, Int)] = []
+        func add(_ label: String, _ flag: Bool, pts: Int) {
+            if flag { score += pts }
+            items.append((label, flag ? pts : 0))
+        }
+        add("Active/recent cancer (≤6 months or metastatic)", i.activeOrRecentCancer, pts: 3)
+        add("Previous VTE (excl. superficial thrombosis)", i.previousVTE, pts: 3)
+        add("Reduced mobility ≥3 days (anticipated bed rest)", i.reducedMobility, pts: 3)
+        add("Known thrombophilia (inherited or acquired)", i.thrombophilia, pts: 3)
+        add("Recent trauma or surgery (≤1 month)", i.recentTraumaOrSurgery, pts: 2)
+        add("Age ≥70 years", i.ageOver70, pts: 1)
+        add("Heart failure or respiratory failure", i.heartOrRespiratoryFailure, pts: 1)
+        add("Acute MI or ischaemic stroke", i.acuteMIOrIschaemicStroke, pts: 1)
+        add("Acute infection or inflammatory condition", i.acuteInfectionOrInflammatory, pts: 1)
+        add("BMI ≥30 (obese)", i.obese, pts: 1)
+        add("Ongoing hormonal treatment (OCP, HRT)", i.ongoingHormonalTreatment, pts: 1)
+
+        let isHighRisk = score >= 4
+        let risk: ScoreRisk = isHighRisk ? .high : .low
+        let interpretation = isHighRisk
+            ? "Padua \(score) — HIGH VTE risk; pharmacological prophylaxis recommended"
+            : "Padua \(score) — LOW VTE risk; mechanical prophylaxis sufficient"
+        let recs: [String] = isHighRisk
+            ? ["Low molecular weight heparin (LMWH) prophylaxis — start immediately",
+               "Enoxaparin 40 mg SC OD (CrCl ≥30 mL/min) or fondaparinux 2.5 mg SC OD",
+               "Continue until patient is fully mobile (minimum 14 days in high-risk)",
+               "Renal dose-adjust if CrCl <30 mL/min",
+               "Combine with compression stockings or IPC device",
+               "Review and restart prophylaxis if surgery is planned"]
+            : ["Graduated compression stockings (class 2)",
+               "Intermittent pneumatic compression (IPC) if stockings contraindicated",
+               "Early mobilisation — key non-pharmacological intervention",
+               "Reassess daily; escalate if score increases to ≥4"]
+        let redFlags: [String] = isHighRisk
+            ? ["Padua ≥4: high VTE risk — LMWH prophylaxis required unless contraindicated"]
+            : []
+        return ClinicalScore(
+            systemName: "Padua Prediction Score",
+            abbreviation: "Padua \(score)",
+            score: Double(score), maxScore: 20,
+            risk: risk, interpretation: interpretation,
+            recommendations: recs, items: items, redFlags: redFlags,
+            evidenceNote: "Barbar S et al, J Thromb Haemost 2010. Validated in 1180 medical inpatients. Score ≥4 = high risk (11% VTE without prophylaxis vs 2.2% with LMWH). Complements Caprini for surgical patients."
+        )
     }
 }
