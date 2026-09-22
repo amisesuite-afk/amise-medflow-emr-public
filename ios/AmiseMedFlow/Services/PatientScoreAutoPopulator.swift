@@ -2547,7 +2547,7 @@ enum PatientScoreAutoPopulator {
         }
 
         // Vitals
-        if let vitals = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
+        if let vitals = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
             if let hr = vitals.heartRate {
                 if hr >= 90 { i.heartRate = 2 } else if hr >= 70 { i.heartRate = 1 }
                 f.addAutoFilled(key: "heartRate", label: "Heart rate \(hr) bpm from latest vitals", source: "Vitals")
@@ -2670,7 +2670,7 @@ enum PatientScoreAutoPopulator {
         }
 
         // Pull SBP and RR from latest vitals
-        if let latest = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
+        if let latest = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
             if let sbp = latest.bpSystolic {
                 i.systolicBP = sbp
                 f.addAutoFilled(key: "systolicBP", label: "Systolic BP \(sbp) mmHg from latest vitals", source: "Vitals")
@@ -2829,7 +2829,7 @@ enum PatientScoreAutoPopulator {
         }
 
         // Vitals auto-fill
-        if let v = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
+        if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
             if let hr = v.heartRate, hr >= 110 {
                 i.heartRateAbove109 = true
                 f.addAutoFilled(key: "heartRateAbove109", label: "HR \(hr) ≥ 110 bpm from latest vitals", source: "Vitals")
@@ -2940,7 +2940,7 @@ enum PatientScoreAutoPopulator {
         }
 
         // Temperature
-        if let v = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+        if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
            let temp = v.temperatureCelsius, temp >= 38.5 {
             i.tempAbove38point5 = true
             f.addAutoFilled(key: "tempAbove38point5", label: "Temperature \(temp)°C ≥ 38.5°C from latest vitals", source: "Vitals")
@@ -2971,7 +2971,7 @@ enum PatientScoreAutoPopulator {
         }
 
         // Vitals auto-fill
-        if let v = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
+        if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
             if let hr = v.heartRate, hr >= 100 {
                 i.hrAbove99 = true
                 f.addAutoFilled(key: "hrAbove99", label: "HR \(hr) ≥ 100 bpm from latest vitals", source: "Vitals")
@@ -3041,7 +3041,7 @@ enum PatientScoreAutoPopulator {
         var i = ClinicalScoringEngine.ShockIndexInput()
         var f = ScoreAutoFill()
 
-        if let v = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
+        if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
             if let hr = v.heartRate {
                 i.heartRate = hr
                 f.addAutoFilled(key: "heartRate", label: "Heart rate \(hr) bpm from latest vitals", source: "Vitals")
@@ -3109,7 +3109,7 @@ enum PatientScoreAutoPopulator {
             .compactMap { $0 }.joined(separator: " ").lowercased()
 
         // Weight from latest vitals
-        if let v = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+        if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
            let wt = v.weightKg {
             i.weightKg = wt
             f.addAutoFilled(key: "weightKg", label: "Weight \(Int(wt)) kg from latest vitals", source: "Vitals")
@@ -3177,7 +3177,7 @@ enum PatientScoreAutoPopulator {
         } else { f.addPending(key: "coughPercussionHop", label: "Pain with cough, percussion, or hopping — confirm on examination", source: "Examination") }
 
         // Pyrexia
-        if let v = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+        if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
            let temp = v.temperatureCelsius, temp >= 38.0 {
             i.pyrexia = true
             f.addAutoFilled(key: "pyrexia", label: "Temperature \(String(format: "%.1f", temp))°C ≥ 38°C from vitals", source: "Vitals")
@@ -3259,7 +3259,7 @@ enum PatientScoreAutoPopulator {
         } else { f.addPending(key: "haemoptysis", label: "Haemoptysis — confirm from history", source: "History") }
 
         // Heart rate from vitals
-        if let v = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+        if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
            let hr = v.heartRate {
             if hr >= 95 {
                 i.heartRateAbove94 = true
@@ -3525,7 +3525,8 @@ enum PatientScoreAutoPopulator {
             f.addAutoFilled(key: "age", label: "Age \(ageYears) years (from date of birth)", source: "Demographics")
         }
         // Admission type: surgical if patient has operative plans
-        if let plans = patient.operativePlans, !plans.isEmpty {
+        let plans = patient.operativePlans
+        if !plans.isEmpty {
             i.scheduledSurgical = true
             f.addAutoFilled(key: "admissionType", label: "Operative plan found — pre-set as scheduled surgical", source: "Operative Plans")
         }
@@ -3641,7 +3642,7 @@ enum PatientScoreAutoPopulator {
             f.addPending(key: "tenderAnteriorCervical", label: "Tender anterior cervical nodes — examination required", source: "Examination")
         }
         // Fever
-        if let v = patient.vitalsEntries?.max(by: { ($0.recordedAt) < ($1.recordedAt) }),
+        if let v = patient.vitalsEntries.max(by: { ($0.recordedAt) < ($1.recordedAt) }),
            let t = v.temperatureCelsius, t >= 38.0 {
             i.feverHistory = true
             f.addAutoFilled(key: "feverHistory", label: "Fever ≥38°C from vitals", source: "Vitals")
@@ -3709,7 +3710,7 @@ enum PatientScoreAutoPopulator {
             f.addPending(key: "macroscopicBlood", label: "Macroscopic blood in stool — confirm", source: "Examination")
         }
         // HR from vitals
-        if let v = patient.vitalsEntries?.max(by: { $0.recordedAt < $1.recordedAt }),
+        if let v = patient.vitalsEntries.max(by: { $0.recordedAt < $1.recordedAt }),
            let hr = v.heartRate, hr > 90 {
             i.hrAbove90 = true
             f.addAutoFilled(key: "hrAbove90", label: "HR \(hr) bpm > 90 — from vitals", source: "Vitals")
@@ -3717,7 +3718,7 @@ enum PatientScoreAutoPopulator {
             f.addPending(key: "hrAbove90", label: "Heart rate > 90 bpm — confirm from vitals", source: "Vitals")
         }
         // Temperature from vitals
-        if let v = patient.vitalsEntries?.max(by: { $0.recordedAt < $1.recordedAt }),
+        if let v = patient.vitalsEntries.max(by: { $0.recordedAt < $1.recordedAt }),
            let t = v.temperatureCelsius, t > 37.5 {
             i.tempAbove375 = true
             f.addAutoFilled(key: "tempAbove375", label: "Temp \(String(format: "%.1f", t))°C > 37.5 — from vitals", source: "Vitals")
@@ -3902,7 +3903,7 @@ enum PatientScoreAutoPopulator {
         }
 
         // BMI from latest vitals
-        let latestVitals = patient.vitalsEntries?.sorted { $0.recordedAt > $1.recordedAt }.first
+        let latestVitals = patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
         if let wt = latestVitals?.weightKg, let ht = patient.heightCm, ht > 0 {
             let bmi = wt / pow(ht / 100, 2)
             i.bmi = bmi
@@ -4034,7 +4035,7 @@ enum PatientScoreAutoPopulator {
         }
 
         // SpO₂ from latest vitals
-        let latestVitals = patient.vitalsEntries?.sorted { $0.recordedAt > $1.recordedAt }.first
+        let latestVitals = patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
         if let spo2 = latestVitals?.spo2 {
             i.spo2Preop = spo2
             f.addAutoFilled(key: "spo2", label: "SpO₂ \(spo2)% from latest vitals", source: "Vitals")
