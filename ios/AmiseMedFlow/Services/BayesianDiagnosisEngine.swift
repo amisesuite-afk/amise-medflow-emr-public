@@ -2614,6 +2614,70 @@ enum BayesianDiagnosisEngine {
                 case "bmi_under":
                     if let threshold = Double(f.value), let bmiVal = bmi { triggered = bmiVal > 0 && bmiVal < threshold }
                     sourceKey = "demographics"
+
+                // Non-standard DB key synonyms — aliases used in specialist pools that
+                // are semantically equivalent to standard keys but named differently.
+                case "associated":
+                    // Free-text association phrases; match against all clinical text.
+                    let broadText = ([examAbdo, examGeneral, examCVS, examResp, examNeuro,
+                                      examMSK, examSkin, examOther, pmh] +
+                                     socrates.values.flatMap { Array($0) })
+                        .joined(separator: " ").lowercased()
+                    let words = f.value.lowercased().split(separator: " ").map(String.init)
+                        .filter { $0.count >= 4 }
+                    triggered = words.isEmpty ? broadText.contains(f.value.lowercased())
+                               : words.allSatisfy { broadText.contains($0) }
+                    sourceKey = "symptoms"
+
+                case "investigations":
+                    // Synonym for "inv" — matches against investigation names + results.
+                    let fv = f.value.lowercased()
+                    let stop2: Set<String> = ["with","and","the","for","that","this","from","into","positive","negative","confirmed","elevated","raised","normal","abnormal","level","result"]
+                    let fTok = fv.split(separator: " ").map(String.init).filter { $0.count >= 4 && !stop2.contains($0) }
+                    let thr = max(1, Int((Double(fTok.count) * 0.6).rounded(.up)))
+                    func invMatch(_ src: String) -> Bool {
+                        src.contains(fv) || (fTok.count >= 2 && fTok.filter { src.contains($0) }.count >= thr)
+                    }
+                    triggered = invNames.contains(where: { invMatch($0) }) ||
+                                invResults.contains(where: { invMatch($0) })
+                    sourceKey = "investigation"
+
+                case "exam_general":
+                    // Matches against examGeneral text specifically, then broad exam.
+                    let egL = examGeneral.lowercased()
+                    let words2 = f.value.lowercased().split(separator: " ").map(String.init)
+                    triggered = words2.allSatisfy { egL.contains($0) } ||
+                                words2.allSatisfy { examL.contains($0) }
+                    sourceKey = "exam"
+
+                case "exam_abdo":
+                    // Matches against examAbdo text specifically, then broad exam.
+                    let eaL = examAbdo.lowercased()
+                    let words3 = f.value.lowercased().split(separator: " ").map(String.init)
+                    triggered = words3.allSatisfy { eaL.contains($0) } ||
+                                words3.allSatisfy { examL.contains($0) }
+                    sourceKey = "exam"
+
+                case "exam_cvs":
+                    let eCVS = examCVS.lowercased()
+                    let words4 = f.value.lowercased().split(separator: " ").map(String.init)
+                    triggered = words4.allSatisfy { eCVS.contains($0) } ||
+                                words4.allSatisfy { examL.contains($0) }
+                    sourceKey = "exam"
+
+                case "socrates_character":
+                    // DB stores character chips under this key; match against character SOCRATES.
+                    let charSel = socrates["character"] ?? []
+                    let fvLow = f.value.lowercased()
+                    triggered = charSel.contains(where: { $0.lowercased().contains(fvLow) })
+                    sourceKey = "symptoms"
+
+                case "history", "risk_factors", "risk":
+                    // Broad historical risk factor — match against PMH + medications + social.
+                    let histText = ([pmh] + medsL + [socialText]).joined(separator: " ").lowercased()
+                    triggered = histText.contains(f.value.lowercased())
+                    sourceKey = "history"
+
                 default:
                     // Extended match: specialty early-form chips may store any custom DB key
                     // (e.g. lucid_interval, ecg, triad_nph) into socratesSelections.
