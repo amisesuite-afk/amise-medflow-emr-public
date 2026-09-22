@@ -2690,6 +2690,130 @@ enum PatientScoreAutoPopulator {
         return (i, f)
     }
 
+    // MARK: - NUTRIC Score (#64)
+    static func nutric(patient: Patient) -> (ClinicalScoringEngine.NUTRICInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.NUTRICInput()
+        var f = ScoreAutoFill()
+        // Auto-fill age
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 50
+            i.age = max(0, min(100, age))
+            f.addAutoFilled(key: "age", label: "Age \(i.age) years from date of birth", source: "DOB")
+        } else {
+            f.addPending(key: "age", label: "Patient age required", source: "Demographics")
+        }
+        // Auto-fill APACHE II from stored score
+        if let ap = patient.apacheIIScore {
+            i.apacheII = ap
+            f.addAutoFilled(key: "apacheII", label: "APACHE II \(ap) from stored score", source: "APACHE II score")
+        } else {
+            f.addPending(key: "apacheII", label: "APACHE II score required — calculate from ICU admission parameters", source: "APACHE II score")
+        }
+        // Auto-fill SOFA from stored score
+        if let sf = patient.sofaScore {
+            i.sofa = sf
+            f.addAutoFilled(key: "sofa", label: "SOFA \(sf) from stored score", source: "SOFA score")
+        } else {
+            f.addPending(key: "sofa", label: "SOFA score required — calculate from organ function parameters", source: "SOFA score")
+        }
+        f.addPending(key: "comorbidities", label: "Number of comorbidities — review PMH", source: "Past medical history")
+        f.addPending(key: "daysHospitalToICU", label: "Days from hospital admission to ICU — review admission notes", source: "Admission history")
+        return (i, f)
+    }
+
+    // MARK: - Caprini Score (#65)
+    static func caprini(patient: Patient) -> (ClinicalScoringEngine.CapriniInput, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.CapriniInput()
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+        // Age from DOB
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 40
+            i.age = max(0, min(100, age))
+            f.addAutoFilled(key: "age", label: "Age \(i.age) years from date of birth", source: "DOB")
+        } else {
+            f.addPending(key: "age", label: "Patient age required for Caprini score", source: "Demographics")
+        }
+        // Detect prior DVT/PE
+        let vteKw = ["deep vein thrombosis", "dvt", "pulmonary embolism", "pe", "prior vte",
+                     "previous dvt", "previous pe", "history of dvt", "history of pe"]
+        if vteKw.contains(where: { text.contains($0) }) {
+            i.priorDVTPE = true
+            f.addAutoFilled(key: "priorDVTPE", label: "Prior DVT/PE detected in history", source: "PMH")
+        }
+        // Detect stroke
+        if text.contains("stroke") || text.contains("cva") || text.contains("cerebrovascular accident") {
+            i.strokeLast30d = true
+            f.addAutoFilled(key: "strokeLast30d", label: "Stroke keyword detected — verify if within 30 days", source: "PMH")
+        }
+        // Detect thrombophilia
+        let thromboKw = ["factor v leiden", "prothrombin mutation", "lupus anticoagulant",
+                         "antiphospholipid", "thrombophilia", "hypercoagulable", "hit",
+                         "heparin-induced thrombocytopenia"]
+        if thromboKw.contains(where: { text.contains($0) }) {
+            i.factor5LeidenOrProthrombin = true
+            f.addAutoFilled(key: "thrombophilia", label: "Thrombophilia keyword detected — review haematology notes", source: "PMH")
+        }
+        // Detect bedridden
+        if text.contains("bedbound") || text.contains("bed bound") || text.contains("immobile") {
+            i.bedridden = true
+            f.addAutoFilled(key: "bedridden", label: "Immobility keyword detected", source: "History")
+        }
+        f.addPending(key: "surgery", label: "Surgery type — confirm planned or recent procedure", source: "Operative plan")
+        f.addPending(key: "bmi", label: "BMI — calculate from height and weight", source: "Examination")
+        return (i, f)
+    }
+
+    // MARK: - CURB-65 (#66)
+    static func curb65(patient: Patient) -> (ClinicalScoringEngine.CURB65Input, ScoreAutoFill) {
+        var i = ClinicalScoringEngine.CURB65Input()
+        var f = ScoreAutoFill()
+        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.pmhNotes]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
+        // Age from DOB
+        if let dob = patient.dateOfBirth {
+            let age = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 0
+            if age >= 65 {
+                i.age65orOver = true
+                f.addAutoFilled(key: "age65orOver", label: "Age \(age) — criterion met (≥65)", source: "DOB")
+            } else {
+                f.addAutoFilled(key: "age65orOver", label: "Age \(age) — criterion not met (<65)", source: "DOB")
+            }
+        } else {
+            f.addPending(key: "age65orOver", label: "Patient age required — enter DOB", source: "Demographics")
+        }
+        // Detect confusion
+        let confKw = ["confused", "confusion", "disoriented", "delirium", "encephalopathy", "altered mental status"]
+        if confKw.contains(where: { text.contains($0) }) {
+            i.confusion = true
+            f.addAutoFilled(key: "confusion", label: "Confusion keyword detected — verify with bedside AMT ≤8", source: "History")
+        }
+        // Detect hypotension (low BP)
+        let bpKw = ["hypotension", "low blood pressure", "bp <90", "systolic 90", "shocked"]
+        if bpKw.contains(where: { text.contains($0) }) {
+            i.lowBP = true
+            f.addAutoFilled(key: "lowBP", label: "Hypotension keyword detected — verify BP measurement", source: "History")
+        } else if let latest = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
+            if let sbp = latest.bpSystolic, let dbp = latest.bpDiastolic, (sbp < 90 || dbp <= 60) {
+                i.lowBP = true
+                f.addAutoFilled(key: "lowBP", label: "BP \(sbp)/\(dbp) meets criterion (SBP<90 or DBP≤60)", source: "Vitals")
+            }
+        }
+        // Detect high RR from vitals
+        if let latest = patient.vitalsEntries?.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+           let rr = latest.respiratoryRate, rr >= 30 {
+            i.respiratoryRateAbove30 = true
+            f.addAutoFilled(key: "respiratoryRateAbove30", label: "RR \(rr)/min ≥30 from latest vitals", source: "Vitals")
+        } else {
+            f.addPending(key: "respiratoryRateAbove30", label: "Respiratory rate — count for 1 minute", source: "Vitals")
+        }
+        f.addPending(key: "uraeaAbove7", label: "Urea >7 mmol/L — review U&E result", source: "Biochemistry")
+        return (i, f)
+    }
+
     // MARK: - Baux Score (#60)
     static func baux(patient: Patient) -> (ClinicalScoringEngine.BauxInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.BauxInput()

@@ -5061,4 +5061,251 @@ enum ClinicalScoringEngine {
             evidenceNote: "Vincent JL et al. Intensive Care Med 1996;22:707–710. Used in Sepsis-3 definition (Singer M et al. JAMA 2016). SOFA ≥2 from baseline = organ dysfunction in sepsis. Trend more prognostic than single measurement."
         )
     }
+
+    // MARK: - NUTRIC Score (Nutritional Risk in Critically Ill)
+    struct NUTRICInput: Equatable {
+        var age: Int = 50              // years
+        var apacheII: Int = 10         // APACHE II score at ICU admission
+        var sofa: Int = 4              // SOFA score at ICU admission
+        var comorbidities: Int = 0     // number of comorbidities (0, 1, ≥2)
+        var daysHospitalToICU: Int = 0 // days from hospital admission to ICU (0=same day; 1=1 day; 2=≥2 days)
+        // IL-6 excluded (high-NUTRIC version not widely used)
+    }
+
+    static func nutric(_ i: NUTRICInput) -> ClinicalScore {
+        var pts = 0
+        // Age
+        switch i.age {
+        case ..<50: pts += 0
+        case 50..<75: pts += 1
+        case 75...: pts += 2
+        default: break
+        }
+        // APACHE II
+        switch i.apacheII {
+        case ..<15: pts += 0
+        case 15..<20: pts += 1
+        case 20..<28: pts += 2
+        case 28...: pts += 3
+        default: break
+        }
+        // SOFA
+        switch i.sofa {
+        case ..<6: pts += 0
+        case 6..<10: pts += 1
+        case 10...: pts += 2
+        default: break
+        }
+        // Comorbidities
+        pts += min(2, i.comorbidities)
+        // Days hospital → ICU
+        switch i.daysHospitalToICU {
+        case 0: pts += 0
+        case 1: pts += 1
+        case 2...: pts += 2
+        default: break
+        }
+        let score = Double(pts)
+        let (risk, interp): (ScoreRisk, String)
+        switch score {
+        case ..<5:  (risk, interp) = (.low,      "NUTRIC \(pts): Low nutritional risk. Standard nutritional targets. Monitor for change.")
+        case 5..<6: (risk, interp) = (.moderate, "NUTRIC \(pts): Moderate nutritional risk. Consider enhanced protein delivery and close dietitian review.")
+        default:    (risk, interp) = (.high,     "NUTRIC \(pts): High nutritional risk (≥6). Aggressive nutritional support associated with improved outcomes. Dietitian-led plan essential.")
+        }
+        let flags = score >= 6 ? ["NUTRIC ≥6 — high risk; early dietitian involvement and enhanced protein targets (1.5–2 g/kg/day) recommended"] : []
+        return ClinicalScore(
+            systemName: "NUTRIC Score",
+            abbreviation: "NUTRIC \(pts)",
+            score: score,
+            maxScore: 9,
+            risk: risk,
+            interpretation: interp,
+            items: [
+                ScoredItem(label: "Age \(i.age) yrs", points: i.age >= 75 ? 2 : i.age >= 50 ? 1 : 0, present: i.age >= 50),
+                ScoredItem(label: "APACHE II \(i.apacheII)", points: i.apacheII >= 28 ? 3 : i.apacheII >= 20 ? 2 : i.apacheII >= 15 ? 1 : 0, present: i.apacheII >= 15),
+                ScoredItem(label: "SOFA \(i.sofa)", points: i.sofa >= 10 ? 2 : i.sofa >= 6 ? 1 : 0, present: i.sofa >= 6),
+                ScoredItem(label: "Comorbidities (\(i.comorbidities))", points: Double(min(2, i.comorbidities)), present: i.comorbidities > 0),
+                ScoredItem(label: "Days hospital→ICU (\(i.daysHospitalToICU))", points: min(2, Double(i.daysHospitalToICU)), present: i.daysHospitalToICU > 0)
+            ],
+            recommendations: score >= 6 ? [
+                "Dietitian review within 24 hours of ICU admission",
+                "High-protein target: 1.5–2.0 g/kg/day actual body weight",
+                "Early enteral nutrition within 24–48 h if haemodynamically stable",
+                "Monitor tolerance: gastric residual volumes, abdominal distension",
+                "Consider supplemental parenteral nutrition if enteral target not met by day 3–7",
+                "Daily reassessment of nutritional adequacy"
+            ] : [
+                "Standard protein target: 1.2–1.5 g/kg/day",
+                "Enteral nutrition preferred route; start within 24–48 h",
+                "Monitor nutritional adequacy daily",
+                "Reassess NUTRIC if clinical status changes"
+            ],
+            redFlags: flags,
+            evidenceNote: "Heyland DK et al. JPEN 2011;35:596–605. NUTRIC ≥6 (without IL-6) predicts benefit from high-protein enteral nutrition. Validated in mechanically ventilated ICU patients."
+        )
+    }
+
+    // MARK: - Caprini Score (Surgical VTE Risk)
+    struct CapriniInput: Equatable {
+        var age: Int = 40                    // years
+        var surgery: Int = 1                 // 0=none; 1=minor (<45min); 2=major; 3=major+high-risk
+        var varicoseVeins: Bool = false
+        var currentSwelling: Bool = false
+        var bmiBeyond25: Bool = false
+        var smallSurgery: Bool = false        // ≥1 prior surgery
+        var sepsis90d: Bool = false
+        var seriousLungDisease: Bool = false
+        var oralContraceptivesOrHRT: Bool = false
+        var pregnantOrPostpartum: Bool = false
+        var historySpontaneousAbortion: Bool = false
+        var bedridden: Bool = false           // confined to bed >72h
+        var centralLine: Bool = false
+        var immobilisingCast: Bool = false
+        var priorDVTPE: Bool = false
+        var familyHistoryVTE: Bool = false
+        var factor5LeidenOrProthrombin: Bool = false
+        var lupusAnticoagulant: Bool = false
+        var heparin5HITS: Bool = false       // heparin-induced thrombocytopenia
+        var elevatedHomocysteine: Bool = false
+        var antiphospholipidAbs: Bool = false
+        var strokeLast30d: Bool = false
+        var electiveLowerExtremityArthroplasty: Bool = false
+        var hip_pelvis_leg_fracture: Bool = false
+        var spinalCordInjury: Bool = false
+        var multipleTrauma: Bool = false
+    }
+
+    static func caprini(_ i: CapriniInput) -> ClinicalScore {
+        var pts = 0
+        // Age
+        switch i.age {
+        case ..<41: pts += 0
+        case 41..<61: pts += 1
+        case 61..<75: pts += 2
+        case 75...: pts += 3
+        default: break
+        }
+        // Surgery
+        pts += i.surgery      // 0=0, 1=1, 2=2, 3=3
+        if i.varicoseVeins { pts += 1 }
+        if i.currentSwelling { pts += 1 }
+        if i.bmiBeyond25 { pts += 1 }
+        if i.smallSurgery { pts += 1 }
+        if i.sepsis90d { pts += 1 }
+        if i.seriousLungDisease { pts += 1 }
+        if i.oralContraceptivesOrHRT { pts += 1 }
+        if i.pregnantOrPostpartum { pts += 1 }
+        if i.historySpontaneousAbortion { pts += 1 }
+        if i.bedridden { pts += 2 }
+        if i.centralLine { pts += 2 }
+        if i.immobilisingCast { pts += 2 }
+        if i.priorDVTPE { pts += 3 }
+        if i.familyHistoryVTE { pts += 3 }
+        if i.factor5LeidenOrProthrombin { pts += 3 }
+        if i.lupusAnticoagulant { pts += 3 }
+        if i.heparin5HITS { pts += 3 }
+        if i.elevatedHomocysteine { pts += 3 }
+        if i.antiphospholipidAbs { pts += 3 }
+        if i.strokeLast30d { pts += 5 }
+        if i.electiveLowerExtremityArthroplasty { pts += 5 }
+        if i.hip_pelvis_leg_fracture { pts += 5 }
+        if i.spinalCordInjury { pts += 5 }
+        if i.multipleTrauma { pts += 5 }
+        let score = Double(pts)
+        let (risk, interp): (ScoreRisk, String)
+        switch score {
+        case ..<2:  (risk, interp) = (.low,      "Caprini \(pts): Very low VTE risk (<0.5%). Early ambulation; no pharmacological prophylaxis required.")
+        case 2..<3: (risk, interp) = (.low,      "Caprini \(pts): Low VTE risk (~1.5%). Mechanical prophylaxis (compression stockings or IPC) recommended.")
+        case 3..<5: (risk, interp) = (.moderate, "Caprini \(pts): Moderate VTE risk (~3%). Pharmacological or mechanical prophylaxis indicated.")
+        default:    (risk, interp) = (.high,     "Caprini \(pts): High VTE risk (≥6%). LMWH + mechanical prophylaxis for 7–10 days (extended prophylaxis if score ≥8).")
+        }
+        let flags = score >= 8 ? ["Caprini ≥8 — very high VTE risk; extended prophylaxis ×28 days recommended if bleeding risk acceptable"] :
+                    score >= 5 ? ["Caprini ≥5 — high risk; consider LMWH ×7–10 days post-discharge"] : []
+        return ClinicalScore(
+            systemName: "Caprini Score (Surgical VTE Risk)",
+            abbreviation: "Caprini \(pts)",
+            score: score,
+            maxScore: 40,
+            risk: risk,
+            interpretation: interp,
+            items: [
+                ScoredItem(label: "Age (\(i.age) yrs)", points: i.age >= 75 ? 3 : i.age >= 61 ? 2 : i.age >= 41 ? 1 : 0, present: i.age >= 41),
+                ScoredItem(label: "Prior DVT/PE (+3)", points: 3, present: i.priorDVTPE),
+                ScoredItem(label: "Stroke <30 days (+5)", points: 5, present: i.strokeLast30d),
+                ScoredItem(label: "Lower extremity arthroplasty (+5)", points: 5, present: i.electiveLowerExtremityArthroplasty),
+                ScoredItem(label: "Fracture hip/pelvis/leg (+5)", points: 5, present: i.hip_pelvis_leg_fracture)
+            ],
+            recommendations: score >= 5 ? [
+                "LMWH (e.g. enoxaparin 40 mg SC daily) + bilateral IPC/compression stockings",
+                "Consider spinal/epidural anaesthesia over GA where feasible",
+                "Extended prophylaxis ×28 days post-op if score ≥8 and bleeding risk acceptable",
+                "Balance with bleeding risk — review haemostatic status before prescribing"
+            ] : score >= 3 ? [
+                "Pharmacological prophylaxis if bleeding risk acceptable",
+                "Graduated compression stockings + IPC intraoperatively",
+                "Early mobilisation"
+            ] : [
+                "Mechanical prophylaxis: compression stockings and/or IPC",
+                "Early ambulation within 6 hours post-surgery"
+            ],
+            redFlags: flags,
+            evidenceNote: "Caprini JA. Semin Thromb Hemost 2010;36:62–70. Validated in surgical patients. Balance against HAS-BLED if patient on anticoagulation for AF."
+        )
+    }
+
+    // MARK: - CURB-65 (CAP Severity)
+    struct CURB65Input: Equatable {
+        var confusion: Bool = false          // new mental confusion (abbreviated mental test ≤8)
+        var uraeaAbove7: Bool = false        // blood urea >7 mmol/L
+        var respiratoryRateAbove30: Bool = false  // RR ≥30 breaths/min
+        var lowBP: Bool = false              // SBP <90 or DBP ≤60 mmHg
+        var age65orOver: Bool = false        // age ≥65 years
+    }
+
+    static func curb65(_ i: CURB65Input) -> ClinicalScore {
+        let pts = [i.confusion, i.uraeaAbove7, i.respiratoryRateAbove30, i.lowBP, i.age65orOver]
+            .filter { $0 }.count
+        let score = Double(pts)
+        let (risk, interp): (ScoreRisk, String)
+        switch score {
+        case 0...1: (risk, interp) = (.low,      "CURB-65 \(pts)/5: Low severity CAP. Outpatient oral antibiotics appropriate in most cases.")
+        case 2:     (risk, interp) = (.moderate, "CURB-65 \(pts)/5: Moderate severity. Admission and IV antibiotics recommended.")
+        default:    (risk, interp) = (.critical, "CURB-65 \(pts)/5: Severe CAP — 30-day mortality 17–57%. ICU consideration mandatory.")
+        }
+        let flags = score >= 3 ? ["CURB-65 ≥3 — consider ICU referral; mortality risk >17%"] : []
+        return ClinicalScore(
+            systemName: "CURB-65 Score",
+            abbreviation: "CURB-65 \(pts)/5",
+            score: score,
+            maxScore: 5,
+            risk: risk,
+            interpretation: interp,
+            items: [
+                ScoredItem(label: "C — Confusion (AMT ≤8 or new)", points: 1, present: i.confusion),
+                ScoredItem(label: "U — Urea >7 mmol/L", points: 1, present: i.uraeaAbove7),
+                ScoredItem(label: "R — RR ≥30 /min", points: 1, present: i.respiratoryRateAbove30),
+                ScoredItem(label: "B — BP <90/60 mmHg", points: 1, present: i.lowBP),
+                ScoredItem(label: "65 — Age ≥65 years", points: 1, present: i.age65orOver)
+            ],
+            recommendations: score >= 3 ? [
+                "Senior review and ICU referral assessment",
+                "IV broad-spectrum antibiotics (e.g. co-amoxiclav + clarithromycin or ceftriaxone + azithromycin)",
+                "Blood cultures ×2, pneumococcal and legionella urinary antigens",
+                "Oxygen to maintain SpO2 ≥94%",
+                "Consider vasopressors if septic shock (start noradrenaline)",
+                "Chest X-ray and consider CT if clinical uncertainty or poor response"
+            ] : score == 2 ? [
+                "Hospital admission; consider short-stay unit",
+                "IV antibiotics until clinical improvement, then step down to oral",
+                "Blood cultures before first antibiotic dose",
+                "Monitor for deterioration — repeat CURB-65 at 24–48 h"
+            ] : [
+                "Oral antibiotics as outpatient (amoxicillin 500 mg TDS or doxycycline 200 mg loading then 100 mg daily)",
+                "Arrange GP/clinic review in 48–72 h",
+                "Return to ED if worsening or not improving in 48 h"
+            ],
+            redFlags: flags,
+            evidenceNote: "Lim WS et al. Thorax 2003;58:377–382. BTS CAP guidelines. CURB-65 ≥3 warrants ICU consideration. PSI/PORT score is more complex but equally validated."
+        )
+    }
 }
