@@ -100,6 +100,8 @@ enum BayesianDiagnosisEngine {
         abcd2Score: Int? = nil,
         lrinecScore: Int? = nil,
         qsofaScore: Int? = nil,
+        psiScore: Int? = nil,         // PSI/PORT class (1–5) for pneumonia severity
+        capriniScore: Int? = nil,     // Caprini VTE risk total score
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2433,20 +2435,64 @@ enum BayesianDiagnosisEngine {
             }
         }
 
-        // NEWS2 → acuity-sensitive candidates (sepsis, PE, pneumonia, MI, cardiac failure)
+        // NEWS2 → acuity-sensitive candidates (sepsis, PE, pneumonia, MI, cardiac failure, ARDS)
         // Fires when NEWS2 ≥ 5 (medium risk) or ≥ 7 (high risk).
         if let news2 = news2Score, news2 >= 5 {
             let (adj, label): (Int, String) = news2 >= 7
                 ? (12, "NEWS2 \(news2) — high risk, consider critical care escalation")
                 : (6,  "NEWS2 \(news2) — medium risk")
             let news2Targets = ["sepsis", "pulmonary embol", "pneumonia", "myocardial infarct",
-                                "acute coronary", "cardiac failure", "heart failure", "bacteraemia"]
+                                "acute coronary", "cardiac failure", "heart failure", "bacteraemia",
+                                "ards", "respiratory distress", "septic shock", "cardiac tamponade",
+                                "aortic dissect"]
             for i in scored.indices where news2Targets.contains(where: {
                 scored[i].candidate.name.lowercased().contains($0)
             }) {
                 scored[i].logPosterior += adj
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+            }
+        }
+
+        // PSI/PORT Class → pneumonia and aspiration severity
+        // Class I/II (low) → outpatient; Class III (moderate) → short stay; IV–V (severe) → admit/ICU.
+        if let psi = psiScore {
+            let (adj, label): (Int, String) = switch psi {
+            case 5:  (18, "PSI Class V — very severe pneumonia, ICU level care")
+            case 4:  (12, "PSI Class IV — severe pneumonia, hospitalisation required")
+            case 3:  (6,  "PSI Class III — moderate risk, consider short admission")
+            default: (-4, "PSI Class I/II — low risk, outpatient management possible")
+            }
+            let pneumoniaTargets = ["pneumonia", "aspiration", "pleuritis", "empyema"]
+            for i in scored.indices where pneumoniaTargets.contains(where: {
+                scored[i].candidate.name.lowercased().contains($0)
+            }) {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
+            }
+        }
+
+        // Caprini VTE Risk Score → DVT and PE candidates
+        // 0–1: Low; 2: Moderate; 3–4: High; ≥5: Very high (extended prophylaxis indicated).
+        if let cap = capriniScore {
+            let (adj, label): (Int, String) = switch cap {
+            case 5...: (14, "Caprini \(cap) — very high VTE risk, extended prophylaxis indicated")
+            case 3...: (10, "Caprini \(cap) — high VTE risk")
+            case 2:    (6,  "Caprini \(cap) — moderate VTE risk")
+            default:   (-4, "Caprini \(cap) — low VTE risk")
+            }
+            let vteTargets = ["deep vein", "dvt", "pulmonary embol", "venous thrombo"]
+            for i in scored.indices where vteTargets.contains(where: {
+                scored[i].candidate.name.lowercased().contains($0)
+            }) {
+                scored[i].logPosterior += adj
+                if adj > 0 {
+                    scored[i].evidence.insert(label, at: 0)
+                    scored[i].evidenceSources["score", default: []].insert(label, at: 0)
+                }
             }
         }
 
@@ -2458,6 +2504,10 @@ enum BayesianDiagnosisEngine {
             (["cholecystect"], ["cholecystitis", "biliary colic", "cholelithiasis", "gallstone"]),
             (["gastrectomy", "total gastrect"], ["gastric cancer", "gastric ulcer"]),
             (["colectomy", "hemicolectomy", "proctocolect"], ["colorectal cancer", "diverticular"]),
+            (["thyroidect"], ["thyroid cancer", "thyroid nodule", "goitre", "hyperthyroidism", "thyrotoxicosis"]),
+            (["splenect"], ["splenic rupture", "splenic trauma", "spleen"]),
+            (["oophorect", "salpingo-oophorect"], ["ovarian torsion", "ovarian cyst", "ovarian cancer"]),
+            (["hysterect"], ["uterine cancer", "endometrial cancer", "uterine fibroid", "fibroid uterus"]),
         ]
         for rule in exclusions {
             guard rule.keywords.contains(where: { pshxCheckL.contains($0) }) else { continue }
@@ -2532,6 +2582,8 @@ enum BayesianDiagnosisEngine {
 
             // Pre-pass: collect DAG node IDs for features that have already fired,
             // so downstream correlated features receive CPT-based discounting.
+            // Covers both canonical keys AND synonym keys so discounting fires for
+            // specialist-pool features that use non-standard key names.
             var observedNetworkIDs = Set<String>()
             for f in c.features {
                 guard let nid = Self.featureNetworkID(key: f.key, value: f.value) else { continue }
@@ -2541,9 +2593,28 @@ enum BayesianDiagnosisEngine {
                      "timing", "exacerbating", "relieving", "severity", "site":
                     let sel = socrates[f.key] ?? []
                     fired = sel.contains(where: { $0.lowercased().contains(f.value.lowercased()) })
+                case "associated":
+                    // Synonym for "associations" — check against canonical associations set.
+                    let sel = socrates["associations"] ?? []
+                    let words = f.value.lowercased().split(separator: " ").map(String.init).filter { $0.count >= 4 }
+                    fired = words.isEmpty
+                        ? sel.contains(where: { $0.lowercased().contains(f.value.lowercased()) })
+                        : words.allSatisfy { w in sel.contains(where: { $0.lowercased().contains(w) }) }
                 case "exam":
                     let words = f.value.lowercased().split(separator: " ").map(String.init)
                     fired = words.allSatisfy { examL.contains($0) }
+                case "exam_general":
+                    let words = f.value.lowercased().split(separator: " ").map(String.init)
+                    fired = words.allSatisfy { examGeneral.lowercased().contains($0) } ||
+                            words.allSatisfy { examL.contains($0) }
+                case "exam_abdo":
+                    let words = f.value.lowercased().split(separator: " ").map(String.init)
+                    fired = words.allSatisfy { examAbdo.lowercased().contains($0) } ||
+                            words.allSatisfy { examL.contains($0) }
+                case "exam_cvs":
+                    let words = f.value.lowercased().split(separator: " ").map(String.init)
+                    fired = words.allSatisfy { examCVS.lowercased().contains($0) } ||
+                            words.allSatisfy { examL.contains($0) }
                 default:
                     fired = false
                 }
@@ -3097,7 +3168,8 @@ enum BayesianDiagnosisEngine {
     private static func featureNetworkID(key: String, value: String) -> String? {
         let v = value.lowercased()
         switch key {
-        case "associations":
+        case "associations",
+             "associated":  // synonym — same DAG mapping
             if v.contains("raised wbc") || v.contains("elevated wbc") || v.contains("leukocytosis") { return "wbc_elevated" }
             if v.contains("elevated crp") || v.contains("raised crp") { return "crp_elevated" }
             if v.contains("elevated lactate") || v.contains("raised lactate") { return "lactate_raised" }
@@ -3111,7 +3183,10 @@ enum BayesianDiagnosisEngine {
             if v.contains("pale stool") || v.contains("clay stool") { return "pale_stool" }
             if v.contains("jaundice") { return "jaundice" }
             if v.contains("paraesthesia") || v.contains("paresthesia") || v.contains("numbness") { return "paresthesia" }
-        case "exam":
+        case "exam",
+             "exam_general",  // synonym keys — same physical-exam DAG mapping
+             "exam_abdo",
+             "exam_cvs":
             if v.contains("guarding") { return "guarding" }
             if v.contains("rebound") { return "rebound" }
             if v.contains("rigidity") { return "rigidity" }
@@ -3120,10 +3195,12 @@ enum BayesianDiagnosisEngine {
             if v.contains("absent pulse") || v.contains("pulse absent") || v.contains("pulseless") { return "pulselessness" }
             if v.contains("murphy") { return "murphy_sign" }
             if v.contains("jaundice") { return "jaundice" }
-        case "onset", "character":
+        case "onset", "character",
+             "socrates_character":  // synonym — same onset/character mapping
             if v.contains("pleuritic") { return "pleuritic_pain" }
             if v.contains("dyspnoea") || v.contains("dyspnea") { return "dyspnoea" }
-        case "site":
+        case "site",
+             "socrates_site":  // synonym
             if v.contains("right upper") || v.contains("ruq") { return "ruq_pain" }
         default:
             break
@@ -3176,8 +3253,8 @@ enum BayesianDiagnosisEngine {
                 name: s.candidate.name,
                 icdCode: s.candidate.icd,
                 probability: prob,
-                evidence: Array(s.evidence.prefix(4)),
-                evidenceSources: s.evidenceSources.mapValues { Array($0.prefix(3)) },
+                evidence: Array(s.evidence.prefix(6)),
+                evidenceSources: s.evidenceSources.mapValues { Array($0.prefix(4)) },
                 confidence: conf,
                 rawLogPosterior: s.logPosterior,
                 logGap: gap,
