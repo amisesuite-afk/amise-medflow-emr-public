@@ -16,22 +16,27 @@ extension SyncService {
 
         let iso = ISO8601DateFormatter()
 
+        struct RxRow: Encodable {
+            let patient_id: String
+            let prescriber_id: String
+            let drug_name: String
+            let dose: String?
+            let route: String?
+            let frequency: String?
+            let duration: String?
+            let indication: String?
+            let instructions: String?
+            let prescribed_at: String
+        }
+        struct RxResponse: Decodable { let id: String }
+
         for rx in pending {
             guard let patientId = rx.patient?.remoteId else { continue }
+            guard let prescriberId = currentUserId else { continue }
 
-            struct RxRow: Encodable {
-                let patient_id: String
-                let drug_name: String   // Supabase column is drug_name not drug
-                let dose: String?
-                let route: String?
-                let frequency: String?
-                let duration: String?
-                let indication: String?
-                let instructions: String?
-                let prescribed_at: String
-            }
             let row = RxRow(
                 patient_id: patientId,
+                prescriber_id: prescriberId,
                 drug_name: rx.drug,
                 dose: rx.dose.isEmpty ? nil : rx.dose,
                 route: rx.route.isEmpty ? nil : rx.route,
@@ -41,17 +46,22 @@ extension SyncService {
                 instructions: rx.instructions,
                 prescribed_at: iso.string(from: rx.prescribedAt)
             )
-            struct RxResponse: Decodable { let id: String }
-            let response: [RxResponse] = try await SupabaseConfig.client
-                .from("prescriptions")
-                .insert(row)
-                .select("id")
-                .execute()
-                .value
-            if let first = response.first {
-                rx.remoteId = first.id
-                rx.pendingSync = false
-                rx.syncedAt = .now
+            // Per-record try/catch so one bad row doesn't abort the whole sync.
+            do {
+                let response: [RxResponse] = try await SupabaseConfig.client
+                    .from("prescriptions")
+                    .insert(row)
+                    .select("id")
+                    .execute()
+                    .value
+                if let first = response.first {
+                    rx.remoteId = first.id
+                    rx.pendingSync = false
+                    rx.syncedAt = .now
+                }
+            } catch {
+                // Leave pendingSync = true so it retries next cycle.
+                continue
             }
         }
         try context.save()

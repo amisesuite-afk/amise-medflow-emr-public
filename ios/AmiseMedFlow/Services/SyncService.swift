@@ -11,6 +11,7 @@ final class SyncService: ObservableObject {
     @Published var pendingCount: Int = 0
     @Published var lastSyncedAt: Date?
     @Published var currentUserEmail: String?
+    @Published var currentUserId: String?
     @Published var currentUserRole: UserRole = .frontDesk
     @Published var isSyncing: Bool = false
     @Published var syncError: String?
@@ -84,6 +85,7 @@ final class SyncService: ObservableObject {
         do {
             let session = try await SupabaseConfig.client.auth.session
             currentUserEmail = session.user.email
+            currentUserId = session.user.id.uuidString
             await fetchUserRole(userId: session.user.id)
             startRealtime()
             // Race-condition fix: setModelContext() may have run before restoreSession()
@@ -98,6 +100,7 @@ final class SyncService: ObservableObject {
     func signIn(email: String, password: String) async throws {
         let session = try await SupabaseConfig.client.auth.signIn(email: email, password: password)
         currentUserEmail = session.user.email
+        currentUserId = session.user.id.uuidString
         await fetchUserRole(userId: session.user.id)
         await syncIfAuthenticated()
         startRealtime()
@@ -106,6 +109,7 @@ final class SyncService: ObservableObject {
     func signOut() async throws {
         try await SupabaseConfig.client.auth.signOut()
         currentUserEmail = nil
+        currentUserId = nil
         currentUserRole = .frontDesk
     }
 
