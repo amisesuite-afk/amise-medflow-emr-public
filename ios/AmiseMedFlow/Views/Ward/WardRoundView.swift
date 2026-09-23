@@ -356,9 +356,49 @@ struct WardRoundView: View {
             procedureLine = "\nProcedure: \(proc)"
         }
 
+        // PMH — prefer structured entries
         var pmhLine = ""
-        if let pmh = patient.pmhNotes, !pmh.isEmpty {
+        let pmhEntries = patient.pmhEntries
+        if !pmhEntries.isEmpty {
+            let pmhText = pmhEntries.map { e in
+                e.yearText.isEmpty ? "• \(e.condition)" : "• \(e.condition) (\(e.yearText))"
+            }.joined(separator: "\n  ")
+            pmhLine = "\nPMH:\n  \(pmhText)"
+        } else if let pmh = patient.pmhNotes, !pmh.isEmpty {
             pmhLine = "\nPMH: \(pmh)"
+        }
+
+        // PSHx — prefer structured entries
+        var pshxLine = ""
+        let pshxEntries = patient.pshxEntries
+        if !pshxEntries.isEmpty {
+            let pshxText = pshxEntries.map { e in
+                var s = "• \(e.procedure)"
+                if !e.yearText.isEmpty { s += " (\(e.yearText))" }
+                if !e.anaesthetic.isEmpty { s += " — \(e.anaesthetic)" }
+                return s
+            }.joined(separator: "\n  ")
+            pshxLine = "\nSurgical history:\n  \(pshxText)"
+        } else if let pshx = patient.surgicalHistory, !pshx.isEmpty {
+            pshxLine = "\nSurgical history: \(pshx)"
+        }
+
+        // Hospital course from completed encounters
+        let completedEncounters = patient.encounters
+            .filter { $0.isComplete }
+            .sorted { $0.encounterDate < $1.encounterDate }
+        let df2 = DateFormatter(); df2.dateStyle = .medium; df2.timeStyle = .none
+        let hospitalCourse: String
+        if completedEncounters.isEmpty {
+            hospitalCourse = ""
+        } else {
+            let lines = completedEncounters.compactMap { enc -> String? in
+                var parts = ["\(df2.string(from: enc.encounterDate)) — \(enc.visitType.rawValue)"]
+                if let dx2 = enc.workingDiagnosis, !dx2.isEmpty { parts.append(dx2) }
+                if let plan = enc.managementPlan, !plan.isEmpty { parts.append(plan) }
+                return "  " + parts.joined(separator: ": ")
+            }.joined(separator: "\n")
+            hospitalCourse = "\n\(lines)"
         }
 
         let mrnLine = patient.mrn.map { "MRN: \($0)  " } ?? ""
@@ -366,7 +406,8 @@ struct WardRoundView: View {
         var gpLine = ""
         if let dr = patient.referringDoctor, !dr.isEmpty {
             let practice = patient.referringPractice.map { " (\($0))" } ?? ""
-            gpLine = "\nGP / Referring: Dr \(dr)\(practice)"
+            let drPrefix = dr.lowercased().hasPrefix("dr") ? "" : "Dr "
+            gpLine = "\nGP / Referring: \(drPrefix)\(dr)\(practice)"
         }
 
         return """
@@ -381,9 +422,9 @@ struct WardRoundView: View {
         \(losLine)\(procedureLine)
 
         DIAGNOSIS
-        \(dx)\(pmhLine)
+        \(dx)\(pmhLine)\(pshxLine)
 
-        HOSPITAL COURSE
+        HOSPITAL COURSE\(hospitalCourse)
 
 
         CONDITION AT DISCHARGE
