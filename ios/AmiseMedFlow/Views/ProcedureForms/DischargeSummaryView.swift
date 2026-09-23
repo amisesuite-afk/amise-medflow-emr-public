@@ -137,6 +137,43 @@ struct DischargeSummaryView: View {
                 if data.drainType.isEmpty { data.drainType = sx.drainType }
             }
 
+            // Pre-fill admission diagnosis from chief complaint when blank
+            if data.admissionDiagnosis.isEmpty, let cc = patient.chiefComplaint, !cc.isEmpty {
+                data.admissionDiagnosis = cc
+            }
+
+            // Pre-fill ICD code from working diagnosis when blank
+            if data.icdCode.isEmpty, let icd = patient.workingDiagnosisICD, !icd.isEmpty {
+                data.icdCode = icd
+            }
+
+            // Build in-hospital course narrative from completed encounters
+            if data.inHospitalCourse.isEmpty {
+                let closedEncounters = patient.encounters
+                    .filter { $0.isComplete }
+                    .sorted { $0.encounterDate < $1.encounterDate }
+                if !closedEncounters.isEmpty {
+                    let df2 = DateFormatter(); df2.dateStyle = .medium; df2.timeStyle = .none
+                    let courseLines = closedEncounters.compactMap { enc -> String? in
+                        var parts: [String] = ["\(df2.string(from: enc.encounterDate)) — \(enc.visitType.rawValue)"]
+                        if let dx = enc.workingDiagnosis, !dx.isEmpty { parts.append(dx) }
+                        if let plan = enc.managementPlan, !plan.isEmpty { parts.append(plan) }
+                        return parts.joined(separator: ": ")
+                    }
+                    if !courseLines.isEmpty {
+                        data.inHospitalCourse = courseLines.joined(separator: "\n")
+                    }
+                }
+            }
+
+            // Pre-fill discharge medications from active prescriptions when blank
+            if data.dischargeMedications.isEmpty {
+                let rxLines = patient.prescriptions.map { $0.displayLine }
+                if !rxLines.isEmpty {
+                    data.dischargeMedications = rxLines.joined(separator: "\n")
+                }
+            }
+
             // Auto-populate results fields from resulted investigations
             let pathInvs = patient.investigations
                 .filter { $0.status == .resulted && !$0.result.isEmpty &&
@@ -152,13 +189,18 @@ struct DischargeSummaryView: View {
                 data.imagingResults = imagingInvs.map { "\($0.name): \($0.result)" }.joined(separator: "\n")
             }
 
-            if data.procedurePerformed  != patient.dischargeSummaryData.procedurePerformed  ||
-               data.anaesthetistName    != patient.dischargeSummaryData.anaesthetistName    ||
-               data.admittingDoctor     != patient.dischargeSummaryData.admittingDoctor     ||
-               data.followUpAppointment != patient.dischargeSummaryData.followUpAppointment ||
-               data.drainInSitu         != patient.dischargeSummaryData.drainInSitu         ||
-               data.pathologyResults    != patient.dischargeSummaryData.pathologyResults    ||
-               data.imagingResults      != patient.dischargeSummaryData.imagingResults {
+            let stored = patient.dischargeSummaryData
+            if data.procedurePerformed    != stored.procedurePerformed    ||
+               data.anaesthetistName      != stored.anaesthetistName      ||
+               data.admittingDoctor       != stored.admittingDoctor       ||
+               data.followUpAppointment   != stored.followUpAppointment   ||
+               data.drainInSitu           != stored.drainInSitu           ||
+               data.pathologyResults      != stored.pathologyResults      ||
+               data.imagingResults        != stored.imagingResults        ||
+               data.admissionDiagnosis    != stored.admissionDiagnosis    ||
+               data.icdCode               != stored.icdCode               ||
+               data.inHospitalCourse      != stored.inHospitalCourse      ||
+               data.dischargeMedications  != stored.dischargeMedications {
                 save()
             }
         }

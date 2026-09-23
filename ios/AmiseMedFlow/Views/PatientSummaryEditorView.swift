@@ -163,9 +163,8 @@ struct PatientSummaryEditorView: View {
             noteText = try await ai.generateClinicalSummary(patient: patient)
             save()
         } catch is AIError {
-            // AI is disabled pending HIPAA BAA — fall back to SOAPDraftEngine local draft
-            let draft = SOAPDraftEngine.draft(patient: patient)
-            noteText = draft.fullNote
+            // AI is disabled pending HIPAA BAA — fall back to narrative summary local draft
+            noteText = SOAPDraftEngine.narrativeSummary(patient: patient)
             save()
         } catch {
             ai.error = error.localizedDescription
