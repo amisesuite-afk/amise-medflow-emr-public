@@ -7,7 +7,7 @@ import SwiftUI
 
 extension ClinicalScoresView {
 
-    func vascularFormBody(_ score: ActiveScore) -> some View {
+    @ViewBuilder func vascularFormBody(_ score: ActiveScore) -> some View {
         switch score {
         case .wellsDVT:      wellsDVTForm
         case .wellsPE:       wellsPEForm

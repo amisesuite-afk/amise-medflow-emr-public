@@ -7,7 +7,7 @@ import SwiftUI
 
 extension ClinicalScoresView {
 
-    func giFormBody(_ score: ActiveScore) -> some View {
+    @ViewBuilder func giFormBody(_ score: ActiveScore) -> some View {
         switch score {
         case .rockall:        rockallForm
         case .blatchford:     blatchfordForm
@@ -22,7 +22,7 @@ extension ClinicalScoresView {
         }
     }
 
-    func giFormBodyB(_ score: ActiveScore) -> some View {
+    @ViewBuilder func giFormBodyB(_ score: ActiveScore) -> some View {
         switch score {
         case .kingsCriteria:  kingsCriteriaForm
         case .losAngeles:     losAngelesForm

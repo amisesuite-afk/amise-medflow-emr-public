@@ -15,13 +15,8 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if isPad {
-                switch sync.currentUserRole {
-                case .frontDesk:
-                    FrontDeskPadView()
-                default:
-                    RegularRootView()
-                }
+            if isPad && sync.currentUserRole == .frontDesk {
+                FrontDeskPadView()
             } else {
                 CompactRootView()
             }

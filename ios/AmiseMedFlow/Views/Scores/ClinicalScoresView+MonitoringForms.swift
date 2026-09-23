@@ -7,7 +7,7 @@ import SwiftUI
 
 extension ClinicalScoresView {
 
-    func monitoringFormBody(_ score: ActiveScore) -> some View {
+    @ViewBuilder func monitoringFormBody(_ score: ActiveScore) -> some View {
         switch score {
         case .mews:          mewsForm
         case .news2:         news2Form

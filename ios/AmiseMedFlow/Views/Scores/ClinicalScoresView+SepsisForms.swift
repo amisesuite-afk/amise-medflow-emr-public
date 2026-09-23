@@ -7,7 +7,7 @@ import SwiftUI
 
 extension ClinicalScoresView {
 
-    func sepsisFormBody(_ score: ActiveScore) -> some View {
+    @ViewBuilder func sepsisFormBody(_ score: ActiveScore) -> some View {
         switch score {
         case .sirs:       sirsForm
         case .qsofa:      qsofaForm
@@ -21,7 +21,7 @@ extension ClinicalScoresView {
         }
     }
 
-    func sepsisFormBodyB(_ score: ActiveScore) -> some View {
+    @ViewBuilder func sepsisFormBodyB(_ score: ActiveScore) -> some View {
         switch score {
         case .decaf:      decafForm
         case .centor:     centorForm

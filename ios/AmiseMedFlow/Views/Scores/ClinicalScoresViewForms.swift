@@ -33,7 +33,7 @@ extension ClinicalScoresView {
         formBodyByCategory(score)
     }
 
-    private func formBodyByCategory(_ score: ActiveScore) -> some View {
+    @ViewBuilder private func formBodyByCategory(_ score: ActiveScore) -> some View {
         switch score.category {
         case .all:        EmptyView()
         case .acute:      acuteFormBody(score)

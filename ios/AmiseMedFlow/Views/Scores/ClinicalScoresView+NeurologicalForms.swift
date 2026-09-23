@@ -7,7 +7,7 @@ import SwiftUI
 
 extension ClinicalScoresView {
 
-    func neuroFormBody(_ score: ActiveScore) -> some View {
+    @ViewBuilder func neuroFormBody(_ score: ActiveScore) -> some View {
         switch score {
         case .abcd2:  abcd2Form
         case .lrinec: lrinecForm
