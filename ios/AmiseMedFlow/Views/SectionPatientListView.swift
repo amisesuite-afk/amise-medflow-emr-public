@@ -122,7 +122,7 @@ struct SectionPatientListView: View {
             }
         }
         .sheet(isPresented: $showAdd) {
-            AddPatientView(initialSetting: section.defaultSetting)
+            QuickAddSheet(section: section)
         }
     }
 

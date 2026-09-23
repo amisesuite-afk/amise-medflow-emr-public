@@ -36,6 +36,73 @@ enum AppSection: String, CaseIterable, Hashable, Identifiable {
         }
     }
 
+    var defaultVisitType: VisitType {
+        switch self {
+        case .wardRounds:  .urgentReview
+        case .theatre:     .surgeryElective
+        case .endoscopy:   .ogd
+        case .outpatients: .newConsult
+        case .schedule:    .newConsult
+        }
+    }
+
+    var defaultLocation: ClinicalLocation {
+        switch self {
+        case .theatre, .endoscopy: return .tapion
+        case .wardRounds:          return .okeu
+        case .outpatients:         return .rodney_bay
+        case .schedule:            return .rodney_bay
+        }
+    }
+
+    // Visit types that make sense for this section
+    var relevantVisitTypes: [VisitType] {
+        switch self {
+        case .theatre:
+            return [.surgeryElective, .surgeryEmergency, .dayOfSurgery]
+        case .endoscopy:
+            return [.ogd, .colonoscopy, .ercp, .bronchoscopy]
+        case .wardRounds:
+            return [.urgentReview, .surgeryEmergency, .trauma, .postOp]
+        case .outpatients:
+            return [.newConsult, .followUp, .postOp, .urgentReview, .telephone]
+        case .schedule:
+            return [.newConsult, .followUp, .postOp]
+        }
+    }
+
+    var keyFieldLabel: String {
+        switch self {
+        case .theatre:     return "Procedure"
+        case .endoscopy:   return "Scope type"
+        case .wardRounds:  return "Ward"
+        case .outpatients: return "Chief complaint"
+        case .schedule:    return "Reason for visit"
+        }
+    }
+
+    var keyFieldQuickPicks: [String] {
+        switch self {
+        case .theatre:
+            return ["Laparoscopic cholecystectomy", "Laparoscopic appendicectomy",
+                    "Inguinal hernia repair", "Umbilical hernia repair", "Incisional hernia repair",
+                    "Haemorrhoidectomy", "Colectomy", "Thyroidectomy",
+                    "Mastectomy", "Breast lumpectomy", "I&D abscess",
+                    "Pilonidal sinus excision", "Laparotomy", "Anal fissure surgery"]
+        case .endoscopy:
+            return ["OGD / Gastroscopy", "Colonoscopy", "ERCP",
+                    "Flexible sigmoidoscopy", "OGD + Colonoscopy", "Bronchoscopy"]
+        case .wardRounds:
+            return ["Surgical Ward A", "Surgical Ward B", "ICU", "HDU", "Private Room"]
+        case .outpatients:
+            return ["Abdominal pain", "RUQ pain", "RLQ pain", "Rectal bleeding",
+                    "Dysphagia", "Hernia (inguinal)", "Hernia (umbilical)",
+                    "Breast lump", "Neck lump", "Follow-up", "Post-op review", "Screening"]
+        case .schedule:
+            return ["Consultation", "Follow-up", "Procedure review"]
+        }
+    }
+
     var emptyTitle: String {
         switch self {
         case .wardRounds:  "No inpatients"
