@@ -8,6 +8,18 @@ extension ClinicalScoresView {
 
     // MARK: - MEWS write-back
 
+    func saveNEWS2ToVitals() {
+        let entry = VitalsEntry(patient: patient)
+        entry.respiratoryRate    = news2I.respiratoryRate
+        entry.spo2               = news2I.spo2
+        entry.bpSystolic         = news2I.systolicBP
+        entry.heartRate          = news2I.heartRate
+        entry.temperatureCelsius = news2I.temperatureCelsius
+        entry.avpu               = news2I.avpu
+        modelContext.insert(entry)
+        news2Saved = true
+    }
+
     func saveMEWSToVitals() {
         let entry = VitalsEntry(patient: patient)
         entry.respiratoryRate    = mewsI.respiratoryRate

@@ -5,7 +5,7 @@ import SwiftData
 
 struct ClinicalScoresView: View {
     @Bindable var patient: Patient
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.modelContext) var modelContext
 
     @State var selectedCategory: ScoreCategory = .all
     @State var selectedScore: ActiveScore? = nil

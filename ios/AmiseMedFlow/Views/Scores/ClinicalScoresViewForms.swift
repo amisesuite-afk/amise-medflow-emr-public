@@ -28,7 +28,7 @@ extension ClinicalScoresView {
         .shadow(color: .black.opacity(0.06), radius: 4, y: 2)
     }
 
-    private func formBody(for score: ActiveScore) -> some View {
+    @ViewBuilder private func formBody(for score: ActiveScore) -> some View {
         pendingVariablesPanel
         formBodyByCategory(score)
     }
