@@ -9,42 +9,42 @@ struct AddPatientView: View {
 
     var initialSetting: ClinicalSetting
 
-    @State private var showDuplicateAlert = false
+    @State var showDuplicateAlert = false
 
     // Identity
-    @State private var fullName = ""
-    @State private var sex: Sex = .unspecified
-    @State private var hasDOB = false
-    @State private var dateOfBirth = Date()
-    @State private var phone = ""
-    @State private var email = ""
-    @State private var mrn = ""
+    @State var fullName = ""
+    @State var sex: Sex = .unspecified
+    @State var hasDOB = false
+    @State var dateOfBirth = Date()
+    @State var phone = ""
+    @State var email = ""
+    @State var mrn = ""
 
     // Clinical
-    @State private var setting: ClinicalSetting
-    @State private var location: ClinicalLocation = .rodney_bay
-    @State private var acuity: Acuity = .routine
-    @State private var visitType: VisitType = .newConsult
-    @State private var chiefComplaint = ""
-    @State private var appointmentType = ""
+    @State var setting: ClinicalSetting
+    @State var location: ClinicalLocation = .rodney_bay
+    @State var acuity: Acuity = .routine
+    @State var visitType: VisitType = .newConsult
+    @State var chiefComplaint = ""
+    @State var appointmentType = ""
 
     // Admission
-    @State private var ward = ""
-    @State private var bedNumber = ""
-    @State private var hasExpectedDischarge = false
-    @State private var expectedDischarge = Date(timeIntervalSinceNow: 3 * 86400)
+    @State var ward = ""
+    @State var bedNumber = ""
+    @State var hasExpectedDischarge = false
+    @State var expectedDischarge = Date(timeIntervalSinceNow: 3 * 86400)
 
     // Procedure (theatre / endoscopy)
-    @State private var hasOperationDate = false
-    @State private var operationDate = Date()
+    @State var hasOperationDate = false
+    @State var operationDate = Date()
 
     // Extended
-    @State private var nokName = ""
-    @State private var nokRelation = ""
-    @State private var nokPhone = ""
-    @State private var pmhNotes = ""
-    @State private var surgicalHistory = ""
-    @State private var familyHistoryNotes = ""
+    @State var nokName = ""
+    @State var nokRelation = ""
+    @State var nokPhone = ""
+    @State var pmhNotes = ""
+    @State var surgicalHistory = ""
+    @State var familyHistoryNotes = ""
 
     init(initialSetting: ClinicalSetting = .outpatient,
          initialName: String = "",
@@ -267,166 +267,5 @@ struct AddPatientView: View {
     }
 
     @ViewBuilder
-    private var admissionSection: some View {
-        Section("Admission") {
-            TextField("Ward", text: $ward)
-            TextField("Bed number", text: $bedNumber)
-            Toggle("Expected discharge date", isOn: $hasExpectedDischarge)
-            if hasExpectedDischarge {
-                DatePicker("", selection: $expectedDischarge, displayedComponents: .date)
-                    .labelsHidden()
-            }
-        }
-    }
 
-    @ViewBuilder
-    private var procedureSection: some View {
-        Section(setting == .endoscopy ? "Endoscopy" : "Procedure") {
-            TextField(
-                setting == .endoscopy ? "Scope type (e.g. OGD, Colonoscopy, ERCP)" : "Procedure name",
-                text: $appointmentType
-            )
-
-            let quickProcs: [String] = setting == .endoscopy
-                ? ["OGD / Gastroscopy", "Colonoscopy", "ERCP", "Flexible sigmoidoscopy", "Bronchoscopy", "OGD + Colonoscopy"]
-                : ["Laparoscopic cholecystectomy", "Laparoscopic appendicectomy", "Inguinal hernia repair",
-                   "Umbilical hernia repair", "Incisional hernia repair", "Haemorrhoidectomy",
-                   "Colectomy", "Laparotomy", "Thyroidectomy", "Mastectomy", "Breast lumpectomy",
-                   "Pilonidal sinus excision", "Anal fissure surgery", "I&D abscess"]
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 6) {
-                    ForEach(quickProcs, id: \.self) { proc in
-                        let selected = appointmentType == proc
-                        Button(proc) { appointmentType = selected ? "" : proc }
-                            .font(.system(size: 11, weight: selected ? .semibold : .regular))
-                            .padding(.horizontal, 8).padding(.vertical, 4)
-                            .background(selected ? Color.purple : Color.purple.opacity(0.1), in: Capsule())
-                            .foregroundStyle(selected ? Color.white : Color.purple)
-                            .buttonStyle(.plain)
-                            .animation(.easeInOut(duration: 0.12), value: selected)
-                    }
-                }
-                .padding(.vertical, 4)
-            }
-
-            Toggle("Set date/time", isOn: $hasOperationDate)
-            if hasOperationDate {
-                DatePicker(
-                    "Date & time",
-                    selection: $operationDate,
-                    displayedComponents: [.date, .hourAndMinute]
-                )
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var nokSection: some View {
-        Section("Next of Kin") {
-            TextField("Name", text: $nokName)
-            TextField("Relationship", text: $nokRelation)
-            TextField("Phone", text: $nokPhone).keyboardType(.phonePad)
-        }
-    }
-
-    @ViewBuilder
-    private var historySection: some View {
-        Section("Medical History") {
-            TextEditor(text: $pmhNotes)
-                .frame(minHeight: 60)
-                .overlay(alignment: .topLeading) {
-                    if pmhNotes.isEmpty {
-                        Text("Past medical history")
-                            .foregroundStyle(.tertiary)
-                            .padding(.top, 8)
-                            .padding(.leading, 4)
-                            .allowsHitTesting(false)
-                    }
-                }
-            TextEditor(text: $surgicalHistory)
-                .frame(minHeight: 40)
-                .overlay(alignment: .topLeading) {
-                    if surgicalHistory.isEmpty {
-                        Text("Surgical history")
-                            .foregroundStyle(.tertiary)
-                            .padding(.top, 8)
-                            .padding(.leading, 4)
-                            .allowsHitTesting(false)
-                    }
-                }
-            TextEditor(text: $familyHistoryNotes)
-                .frame(minHeight: 40)
-                .overlay(alignment: .topLeading) {
-                    if familyHistoryNotes.isEmpty {
-                        Text("Family history")
-                            .foregroundStyle(.tertiary)
-                            .padding(.top, 8)
-                            .padding(.leading, 4)
-                            .allowsHitTesting(false)
-                    }
-                }
-        }
-    }
-
-    private func save() {
-        let trimmed = fullName.trimmingCharacters(in: .whitespaces)
-        let conflicts = existingPatients.filter {
-            $0.fullName.trimmingCharacters(in: .whitespaces).lowercased() == trimmed.lowercased()
-        }
-        if !conflicts.isEmpty {
-            showDuplicateAlert = true
-            return
-        }
-        commitSave()
-    }
-
-    private func commitSave() {
-        let p = Patient(
-            fullName: fullName.trimmingCharacters(in: .whitespaces),
-            sex: sex,
-            setting: setting,
-            location: location,
-            acuity: acuity
-        )
-        if hasDOB               { p.dateOfBirth = dateOfBirth }
-        if !phone.isEmpty       { p.phone = phone }
-        if !email.isEmpty       { p.email = email }
-        p.mrn = mrn.isEmpty ? MRNGenerator.next() : mrn
-        p.visitType = visitType
-        if !chiefComplaint.isEmpty   { p.chiefComplaint = chiefComplaint }
-        if !appointmentType.isEmpty  { p.appointmentType = appointmentType }
-        if !nokName.isEmpty     { p.nokName = nokName }
-        if !nokRelation.isEmpty { p.nokRelation = nokRelation }
-        if !nokPhone.isEmpty    { p.nokPhone = nokPhone }
-        if !pmhNotes.isEmpty    { p.pmhNotes = pmhNotes }
-        if !surgicalHistory.isEmpty    { p.surgicalHistory = surgicalHistory }
-        if !familyHistoryNotes.isEmpty { p.familyHistoryNotes = familyHistoryNotes }
-        if showAdmission {
-            if !ward.isEmpty      { p.ward = ward }
-            if !bedNumber.isEmpty { p.bedNumber = bedNumber }
-            p.admittedAt = .now
-            if hasExpectedDischarge { p.expectedDischarge = expectedDischarge }
-        }
-        if showProcedure && hasOperationDate {
-            p.operationDate = operationDate
-        }
-        context.insert(p)
-        try? context.save()
-
-        // Mirror to iOS Calendar (syncs to Google Calendar via account settings)
-        if showProcedure && hasOperationDate {
-            let procedure = appointmentType.isEmpty ? chiefComplaint : appointmentType
-            Task {
-                try? await calSvc.createTheatreBooking(
-                    procedure: procedure,
-                    patientName: p.fullName,
-                    date: operationDate,
-                    duration: 5400, // 90 min default
-                    notes: chiefComplaint.isEmpty ? "" : "Complaint: \(chiefComplaint)"
-                )
-            }
-        }
-
-        dismiss()
-    }
 }
