@@ -155,8 +155,12 @@ final class CalendarService: ObservableObject {
         let start = Calendar.ect.date(byAdding: .month, value: -1, to: .now) ?? .now
         let end   = Calendar.ect.date(byAdding: .month, value: 3,  to: .now) ?? .now
         let pred  = store.predicateForEvents(withStart: start, end: end, calendars: nil)
-        events = store.events(matching: pred).filter { !$0.isAllDay || $0.startDate != nil }
-            .sorted { ($0.startDate ?? .distantFuture) < ($1.startDate ?? .distantFuture) }
+        events = store.events(matching: pred).filter { event in
+            // Only show events created by the current user (Dr Kabiye).
+            // Shared theatre calendars from other doctors have organizer.isCurrentUser == false.
+            if let org = event.organizer, !org.isCurrentUser { return false }
+            return !event.isAllDay || event.startDate != nil
+        }.sorted { ($0.startDate ?? .distantFuture) < ($1.startDate ?? .distantFuture) }
     }
 }
 
