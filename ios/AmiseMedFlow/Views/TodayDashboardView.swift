@@ -5,7 +5,7 @@ import EventKit
 struct TodayDashboardView: View {
     @Query private var allPatients: [Patient]
     @Environment(\.modelContext) private var context
-    @StateObject private var calSvc = CalendarService()
+    @EnvironmentObject private var calSvc: CalendarService
 
     @State private var selectedPatient: Patient?
     @State private var showAdd = false

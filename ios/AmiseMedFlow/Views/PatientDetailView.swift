@@ -42,6 +42,14 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     case history        = "Visit History"
     case scores         = "Clinical Scores"
     case journey        = "Patient Journey"
+    // Procedure forms (iPad-accessible — iPhone uses ClinicalHubView)
+    case colonoscopy       = "Colonoscopy Report"
+    case discharge         = "Discharge Summary"
+    case postOp            = "Post-op Review"
+    case consent           = "Surgical Consent"
+    case preOpChecklist    = "Pre-op Checklist"
+    case referral          = "Referral Letter"
+    case patientInstructions = "Patient Instructions"
 
     var id: String { rawValue }
 
@@ -74,6 +82,13 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .history:        "clock.badge.checkmark"
         case .scores:         "chart.bar.doc.horizontal"
         case .journey:        "arrow.triangle.branch"
+        case .colonoscopy:       "circle.dotted.and.circle"
+        case .discharge:         "rectangle.portrait.and.arrow.right"
+        case .postOp:            "bandage"
+        case .consent:           "signature"
+        case .preOpChecklist:    "checklist"
+        case .referral:          "envelope.open"
+        case .patientInstructions: "doc.text.fill"
         }
     }
 
@@ -106,6 +121,13 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .history:        "History"
         case .scores:         "Scores"
         case .journey:        "Journey"
+        case .colonoscopy:       "Scope"
+        case .discharge:         "Discharge"
+        case .postOp:            "Post-op"
+        case .consent:           "Consent"
+        case .preOpChecklist:    "Pre-op Cx"
+        case .referral:          "Referral"
+        case .patientInstructions: "Pt Instr"
         }
     }
 
@@ -147,10 +169,17 @@ struct PatientDetailPadView: View {
             guard allowed.contains(section) else { return false }
             switch section {
             case .trauma:  return patient.visitType == .trauma
-            case .ogd:     return patient.visitType == .ogd || patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery
+            case .ogd:     return patient.visitType == .ogd || patient.visitType == .dayOfSurgery
             case .surgery: return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
             case .ercp:         return patient.visitType == .ercp || patient.visitType == .dayOfSurgery
             case .bronchoscopy: return patient.visitType == .bronchoscopy || patient.visitType == .dayOfSurgery
+            case .colonoscopy:  return patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery
+            case .discharge:    return patient.visitType == .postOp || patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
+            case .postOp:       return patient.visitType == .postOp
+            case .consent:      return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
+            case .preOpChecklist: return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
+            case .referral:     return patient.visitType == .newConsult || patient.visitType == .followUp || patient.visitType == .urgentReview || patient.visitType == .postOp
+            case .patientInstructions: return true
             case .history: return !patient.encounters.filter(\.isComplete).isEmpty
             default:       return true
             }
@@ -373,7 +402,7 @@ struct PatientDetailPadView: View {
         }
     }
 
-    // specialtyContent: history, trauma, and procedure forms — 6 cases, always safe.
+    // specialtyContent: history, trauma, all procedure forms — 13 cases, under 15-case safe limit.
     @ViewBuilder
     private func specialtyContent(_ section: PatientDetailSection) -> some View {
         switch section {
@@ -389,6 +418,20 @@ struct PatientDetailPadView: View {
             ERCPFormView(patient: patient)
         case .bronchoscopy:
             BronchoscopyFormView(patient: patient)
+        case .colonoscopy:
+            ColonoscopyFormView(patient: patient)
+        case .discharge:
+            DischargeSummaryView(patient: patient)
+        case .postOp:
+            PostOpReviewView(patient: patient)
+        case .consent:
+            ConsentFormView(patient: patient)
+        case .preOpChecklist:
+            PreOpChecklistView(patient: patient)
+        case .referral:
+            ReferralLetterView(patient: patient)
+        case .patientInstructions:
+            PatientInstructionsView(patient: patient)
         default:
             EmptyView()
         }

@@ -11,7 +11,6 @@ struct DiagnosisHubView: View {
     @Bindable var patient: Patient
     var onNavigate: ((PatientDetailSection) -> Void)?
 
-    @StateObject private var ai = AIService()
     @Environment(\.modelContext) private var context
 
     // Photo / camera state
@@ -109,10 +108,10 @@ struct DiagnosisHubView: View {
                 }
             }
         }
-        .alert("AI Unavailable", isPresented: $showAIError) {
+        .alert("Cannot Generate Draft", isPresented: $showAIError) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text(aiErrorMessage.isEmpty ? "AI features are not available in this build." : aiErrorMessage)
+            Text(aiErrorMessage.isEmpty ? "Insufficient clinical data to generate a draft." : aiErrorMessage)
         }
     }
 
@@ -488,52 +487,17 @@ struct DiagnosisHubView: View {
     private func parseImageData(_ data: Data) async {
         isParsingImage = true
         defer { isParsingImage = false }
-        do {
-            let raw = try await ai.analyseResultImage(data, patient: patient)
-            // Try to parse JSON response
-            if let start = raw.firstIndex(of: "{"), let end = raw.lastIndex(of: "}") {
-                let jsonStr = String(raw[start...end])
-                if let jsonData = jsonStr.data(using: .utf8),
-                   let obj = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any] {
-                    let parsed = ParsedResult(
-                        testName:  (obj["testName"] as? String)  ?? "Lab Result",
-                        category:  (obj["category"] as? String)  ?? "Other",
-                        results:   (obj["results"] as? String)   ?? raw,
-                        abnormal:  (obj["abnormal"] as? [String]) ?? [],
-                        urgent:    (obj["urgent"] as? Bool)       ?? false,
-                        summary:   (obj["summary"] as? String)   ?? ""
-                    )
-                    parsedResult = parsed
-                    showResultConfirm = true
-                    return
-                }
-            }
-            // Fallback — show raw text as result
-            parsedResult = ParsedResult(
-                testName: "Result",
-                category: "Other",
-                results: raw,
-                abnormal: [],
-                urgent: false,
-                summary: ""
-            )
-            showResultConfirm = true
-        } catch is AIError {
-            // AIService disabled pending HIPAA BAA — image OCR unavailable.
-            // Present a blank editable result so the clinician can enter values manually.
-            parsedResult = ParsedResult(
-                testName: "Lab / Imaging Result",
-                category: "Other",
-                results: "(Image captured — please enter result values below)",
-                abnormal: [],
-                urgent: false,
-                summary: "AI image analysis is unavailable. Please enter the result details manually."
-            )
-            showResultConfirm = true
-        } catch {
-            aiErrorMessage = error.localizedDescription
-            showAIError = true
-        }
+        // AIService disabled pending HIPAA BAA. Present a blank editable result
+        // so the clinician can enter values manually after capturing the image.
+        parsedResult = ParsedResult(
+            testName: "Lab / Imaging Result",
+            category: "Other",
+            results: "(Image captured — please enter result values below)",
+            abnormal: [],
+            urgent: false,
+            summary: "AI image analysis is unavailable. Please enter the result details manually."
+        )
+        showResultConfirm = true
     }
 
     private func addParsedResult(_ parsed: ParsedResult) {
