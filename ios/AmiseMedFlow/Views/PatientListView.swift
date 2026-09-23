@@ -188,7 +188,7 @@ struct PatientRow: View {
                     }
                 }
 
-                // Row 2: demographics · location pill · time
+                // Row 2: demographics · MRN · location pill · time
                 HStack(spacing: 4) {
                     if let age = patient.ageDisplay {
                         Text("\(patient.sex.rawValue.prefix(1).uppercased()), \(age)")
@@ -196,6 +196,12 @@ struct PatientRow: View {
                     } else {
                         Text(patient.sex.rawValue.prefix(1).uppercased())
                             .font(.caption2).foregroundStyle(.secondary)
+                    }
+                    if let mrn = patient.mrn, !mrn.isEmpty {
+                        Text("·").font(.caption2).foregroundStyle(.tertiary)
+                        Text("#\(mrn)")
+                            .font(.system(size: 9).monospacedDigit())
+                            .foregroundStyle(.secondary)
                     }
                     Text("·").font(.caption2).foregroundStyle(.tertiary)
                     Text(patient.setting.rawValue)
