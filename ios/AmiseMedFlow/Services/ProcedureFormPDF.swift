@@ -305,6 +305,7 @@ enum ProcedureFormPDF {
             if !data.ward.isEmpty           { admit.append(("Ward",       data.ward)) }
             if !data.admittingDoctor.isEmpty{ admit.append(("Admitting doctor", data.admittingDoctor)) }
             if !data.surgeonName.isEmpty    { admit.append(("Surgeon",    data.surgeonName)) }
+            if !data.anaesthetistName.isEmpty { admit.append(("Anaesthetist", data.anaesthetistName)) }
             y = drawRowSection(ctx: ctx, title: "Admission Details", rows: admit, y: y)
 
             y = drawRowSection(ctx: ctx, title: "Diagnosis", rows: [
@@ -359,6 +360,9 @@ enum ProcedureFormPDF {
             }
             if !data.activityRestrictions.isEmpty {
                 y = drawTextSection(ctx: ctx, title: "Activity Restrictions", body: data.activityRestrictions, y: y)
+            }
+            if !data.dietaryAdvice.isEmpty {
+                y = drawTextSection(ctx: ctx, title: "Dietary Advice", body: data.dietaryAdvice, y: y)
             }
             if !data.returnPrecautions.isEmpty {
                 let prec = (data.returnPrecautions + (data.returnPrecautionsOther.isEmpty ? [] : [data.returnPrecautionsOther])).joined(separator: "\n• ")
@@ -770,6 +774,195 @@ enum ProcedureFormPDF {
         var parts: [String] = findings.isEmpty ? [] : [findings.joined(separator: ", ")]
         if !notes.isEmpty { parts.append(notes) }
         return parts.isEmpty ? "Abnormal (no details)" : parts.joined(separator: " — ")
+    }
+
+    // MARK: - Patient Journey Timeline PDF
+
+    static func journeyTimeline(patient: Patient) -> Data {
+        UIGraphicsPDFRenderer(bounds: page).pdfData { ctx in
+            ctx.beginPage()
+            var y = drawHeader(type: "PATIENT JOURNEY TIMELINE")
+            y = drawPatientStrip(patient: patient, y: y)
+            y = drawMeta(date: .now, y: y)
+
+            let df = DateFormatter()
+            df.locale = Locale(identifier: "en_LC")
+            df.timeZone = TimeZone(identifier: "America/St_Lucia") ?? .current
+            df.dateFormat = "dd MMM yyyy  HH:mm"
+
+            // Build timeline events inline (mirrors PatientJourneyView.allEvents)
+            struct TimelineEntry {
+                let date: Date
+                let category: String
+                let title: String
+                let detail: String
+            }
+            var events: [TimelineEntry] = []
+
+            let regDate = patient.admittedAt ?? patient.createdAt
+            events.append(TimelineEntry(date: regDate, category: "Registration",
+                title: "Patient Registered",
+                detail: "\(patient.setting.rawValue) · \(patient.location.rawValue)\(patient.mrn.map { " · MRN \($0)" } ?? "")"))
+
+            if let cc = patient.chiefComplaint, !cc.isEmpty {
+                events.append(TimelineEntry(date: regDate.addingTimeInterval(60), category: "Registration",
+                    title: "Chief Complaint", detail: String(cc.prefix(150))))
+            }
+
+            for v in patient.vitalsEntries where v.hasAnyValue {
+                var parts: [String] = []
+                if let bp = v.bpString          { parts.append("BP \(bp) mmHg") }
+                if let hr = v.heartRate         { parts.append("HR \(hr) bpm") }
+                if let t  = v.temperatureCelsius { parts.append(String(format: "Temp %.1f°C", t)) }
+                if let sp = v.spo2              { parts.append("SpO₂ \(sp)%") }
+                let detail = parts.isEmpty ? "NEWS2 \(v.news2Score) (\(v.news2Risk))"
+                    : parts.joined(separator: "  ·  ") + "  —  NEWS2 \(v.news2Score)"
+                events.append(TimelineEntry(date: v.recordedAt, category: "Vitals",
+                    title: "Observations — NEWS2 \(v.news2Score) (\(v.news2Risk))", detail: detail))
+            }
+
+            for note in patient.clinicalNotes {
+                let status = note.status == .signed ? "Signed" : "Draft"
+                let preview: String = {
+                    if note.noteType.isStructured {
+                        return [note.assessment, note.plan, note.subjective]
+                            .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+                            .first(where: { !$0.isEmpty })
+                            .map { String($0.prefix(160)) } ?? ""
+                    }
+                    return (note.freeText ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                        .components(separatedBy: "\n").first(where: { !$0.isEmpty }).map { String($0.prefix(160)) } ?? ""
+                }()
+                events.append(TimelineEntry(date: note.createdAt, category: "Note",
+                    title: "\(note.noteType.label) [\(status)]", detail: preview))
+            }
+
+            for rx in patient.prescriptions {
+                events.append(TimelineEntry(date: rx.prescribedAt, category: "Prescription",
+                    title: "Prescribed: \(rx.drug)",
+                    detail: "\(rx.dose)  \(rx.route)  \(rx.frequency)" + (rx.indication.isEmpty ? "" : " — \(rx.indication)")))
+            }
+
+            for inv in patient.investigations {
+                let dateUsed = inv.resultedAt ?? inv.orderedAt
+                let statusLabel = inv.status.rawValue
+                events.append(TimelineEntry(date: dateUsed, category: "Investigation",
+                    title: "\(inv.name) [\(statusLabel)]",
+                    detail: inv.result.isEmpty ? statusLabel : "\(statusLabel): \(inv.result)"))
+            }
+
+            for op in patient.operativePlans {
+                let procName = op.consentProcedure.isEmpty ? "Operative Plan" : op.consentProcedure
+                events.append(TimelineEntry(date: op.updatedAt, category: "Procedure",
+                    title: procName,
+                    detail: "Anaesthesia: \(op.anaesthesiaType)  ·  WHO \(op.whoCompletedCount)/\(op.whoTotalCount)"))
+            }
+
+            let surgery = patient.surgeryData
+            if !surgery.procedureName.isEmpty, let opDate = surgery.dateOfSurgery {
+                events.append(TimelineEntry(date: opDate, category: "Procedure",
+                    title: "Operative Note: \(surgery.procedureName)",
+                    detail: [surgery.surgeon, surgery.anaesthetist].filter { !$0.isEmpty }.joined(separator: " · ")))
+            }
+
+            for enc in patient.encounters where enc.isComplete {
+                events.append(TimelineEntry(date: enc.createdAt, category: "Visit",
+                    title: "Visit Saved: \(enc.visitType.rawValue)",
+                    detail: enc.workingDiagnosis ?? enc.visitType.rawValue))
+            }
+
+            let discharge = patient.dischargeSummaryData
+            if let dd = discharge.dischargeDate {
+                events.append(TimelineEntry(date: dd, category: "Discharge",
+                    title: "Discharged",
+                    detail: [discharge.dischargeDestination, discharge.dischargeDiagnosis].filter { !$0.isEmpty }.joined(separator: " · ")))
+            }
+
+            let sorted = events.sorted { $0.date < $1.date }
+
+            // Summary stats header
+            let noteCount    = sorted.filter { $0.category == "Note" }.count
+            let rxCount      = sorted.filter { $0.category == "Prescription" }.count
+            let vitalCount   = sorted.filter { $0.category == "Vitals" }.count
+            let invCount     = sorted.filter { $0.category == "Investigation" }.count
+            let statsLine = "Notes: \(noteCount)  ·  Prescriptions: \(rxCount)  ·  Observations: \(vitalCount)  ·  Investigations: \(invCount)  ·  Events: \(sorted.count)"
+            let statsAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 8.5, weight: .semibold),
+                .foregroundColor: teal,
+            ]
+            statsLine.draw(in: CGRect(x: lm, y: y, width: bodyW, height: 14), withAttributes: statsAttrs)
+            y += 18
+
+            // Timeline rows
+            let categoryAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 7.5, weight: .bold),
+                .foregroundColor: teal,
+            ]
+            let dateAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.monospacedSystemFont(ofSize: 7.5, weight: .regular),
+                .foregroundColor: UIColor.secondaryLabel,
+            ]
+            let titleAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 8.5, weight: .semibold),
+                .foregroundColor: UIColor.label,
+            ]
+            let detailAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 8),
+                .foregroundColor: UIColor.secondaryLabel,
+            ]
+
+            let dotX: CGFloat = lm
+            let textX: CGFloat = lm + 16
+            let textW: CGFloat = bodyW - 16
+            let lineX: CGFloat = lm + 4.5
+
+            for (idx, event) in sorted.enumerated() {
+                y = maybeNewPage(ctx: ctx, y: y, minSpace: 44)
+
+                // Vertical spine line (above dot)
+                if idx > 0 {
+                    teal.withAlphaComponent(0.25).setFill()
+                    UIRectFill(CGRect(x: lineX, y: y - 10, width: 1.5, height: 10))
+                }
+
+                // Category dot
+                teal.withAlphaComponent(0.8).setFill()
+                let dotRect = CGRect(x: dotX + 0.5, y: y + 2, width: 9, height: 9)
+                UIBezierPath(ovalIn: dotRect).fill()
+
+                // Category label + date
+                event.category.uppercased().draw(at: CGPoint(x: textX, y: y), withAttributes: categoryAttrs)
+                let dateStr = df.string(from: event.date)
+                let dateW = dateStr.size(withAttributes: dateAttrs).width
+                dateStr.draw(at: CGPoint(x: page.width - lm - dateW, y: y), withAttributes: dateAttrs)
+                y += 12
+
+                // Title
+                let titleH = ceil(event.title.boundingRect(with: CGSize(width: textW, height: 100),
+                    options: .usesLineFragmentOrigin, attributes: titleAttrs, context: nil).height)
+                event.title.draw(in: CGRect(x: textX, y: y, width: textW, height: titleH + 2), withAttributes: titleAttrs)
+                y += titleH + 3
+
+                // Detail
+                if !event.detail.isEmpty {
+                    let detailH = ceil(event.detail.boundingRect(with: CGSize(width: textW, height: 100),
+                        options: .usesLineFragmentOrigin, attributes: detailAttrs, context: nil).height)
+                    event.detail.draw(in: CGRect(x: textX, y: y, width: textW, height: detailH + 2), withAttributes: detailAttrs)
+                    y += detailH + 4
+                }
+
+                y += 6
+            }
+
+            if sorted.isEmpty {
+                "No timeline events recorded.".draw(
+                    in: CGRect(x: lm, y: y, width: bodyW, height: 14),
+                    withAttributes: detailAttrs)
+                y += 18
+            }
+
+            drawFooter()
+        }
     }
 
     // MARK: - Pre-operative Checklist

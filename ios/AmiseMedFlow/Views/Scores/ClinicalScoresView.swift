@@ -1940,6 +1940,13 @@ struct ClinicalScoresView: View {
         case .mpi:          mpiForm
         case .ctsi:         ctsiForm
         case .rts:          rtsForm
+        default:            acuteFormBodyB(score)
+        }
+    }
+
+    @ViewBuilder
+    private func acuteFormBodyB(_ score: ActiveScore) -> some View {
+        switch score {
         case .baux:         bauxForm
         case .iss:          issForm
         case .hinchey:      hincheyForm
@@ -1965,6 +1972,13 @@ struct ClinicalScoresView: View {
         case .albi:           albiForm
         case .auditC:         auditCForm
         case .oakland:        oaklandForm
+        default:              giFormBodyB(score)
+        }
+    }
+
+    @ViewBuilder
+    private func giFormBodyB(_ score: ActiveScore) -> some View {
+        switch score {
         case .kingsCriteria:  kingsCriteriaForm
         case .losAngeles:     losAngelesForm
         case .meld3:          meld3Form
@@ -2003,6 +2017,13 @@ struct ClinicalScoresView: View {
         case .apacheII:   apacheIIForm
         case .kdigo:      kdigoForm
         case .nutric:     nutricForm
+        default:          sepsisFormBodyB(score)
+        }
+    }
+
+    @ViewBuilder
+    private func sepsisFormBodyB(_ score: ActiveScore) -> some View {
+        switch score {
         case .decaf:      decafForm
         case .centor:     centorForm
         case .berlinARDS: berlinARDSForm

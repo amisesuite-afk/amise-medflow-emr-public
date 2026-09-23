@@ -49,6 +49,7 @@ struct PatientJourneyView: View {
 
     @State private var selectedCategory: JourneyEvent.EventCategory? = nil
     @State private var expandedEventId: UUID? = nil
+    @State private var pdfWrapper: PDFDataWrapper? = nil
 
     private var allEvents: [JourneyEvent] {
         var events: [JourneyEvent] = []
@@ -225,6 +226,20 @@ struct PatientJourneyView: View {
         .background(AMColor.bg)
         .navigationTitle("Patient Journey")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    let pdf = ProcedureFormPDF.journeyTimeline(patient: patient)
+                    pdfWrapper = PDFDataWrapper(data: pdf)
+                } label: {
+                    Label("Export PDF", systemImage: "arrow.up.doc.fill")
+                }
+            }
+        }
+        .sheet(item: $pdfWrapper) { wrapper in
+            ShareSheet(items: [wrapper.data as Any])
+                .ignoresSafeArea()
+        }
     }
 
     // MARK: - Filter chips
