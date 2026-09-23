@@ -67,13 +67,29 @@ struct SOAPDraftEngine {
             parts.append("Associated symptoms: \(sx).")
         }
 
-        // PMH
-        if let pmh = p.pmhNotes, !pmh.isEmpty {
+        // PMH — prefer structured entries, fall back to free text
+        let pmhEntries = p.pmhEntries
+        if !pmhEntries.isEmpty {
+            let pmhText = pmhEntries.map { e -> String in
+                let yr = e.yearText.isEmpty ? "" : " (\(e.yearText))"
+                return "\(e.condition)\(yr)"
+            }.joined(separator: "; ")
+            parts.append("PMH: \(pmhText).")
+        } else if let pmh = p.pmhNotes, !pmh.isEmpty {
             parts.append("PMH: \(pmh).")
         }
 
-        // Surgical history
-        if let pshx = p.surgicalHistory, !pshx.isEmpty {
+        // Surgical history — prefer structured entries, fall back to free text
+        let pshxEntries = p.pshxEntries
+        if !pshxEntries.isEmpty {
+            let pshxText = pshxEntries.map { e -> String in
+                var line = e.procedure
+                if !e.yearText.isEmpty { line += " (\(e.yearText))" }
+                if !e.anaesthetic.isEmpty { line += " [\(e.anaesthetic)]" }
+                return line
+            }.joined(separator: "; ")
+            parts.append("Surgical history: \(pshxText).")
+        } else if let pshx = p.surgicalHistory, !pshx.isEmpty {
             parts.append("Surgical history: \(pshx).")
         }
 
@@ -88,8 +104,23 @@ struct SOAPDraftEngine {
         if allergyList.isEmpty {
             parts.append("NKDA.")
         } else {
-            let allergyText = allergyList.map { "\($0.name) (\($0.reaction))" }.joined(separator: ", ")
+            let allergyText = allergyList.map { a -> String in
+                var line = a.name
+                if !a.reaction.isEmpty { line += " (\(a.reaction))" }
+                if !a.severity.isEmpty && a.severity != "Mild" { line += " — \(a.severity)" }
+                return line
+            }.joined(separator: ", ")
             parts.append("Allergies: \(allergyText).")
+        }
+
+        // Family history
+        if let fhx = p.familyHistoryNotes, !fhx.isEmpty {
+            parts.append("Family history: \(fhx).")
+        }
+
+        // Social history
+        if let soc = p.socialHistory, !soc.isEmpty {
+            parts.append("Social: \(soc).")
         }
 
         return parts.joined(separator: " ").ifEmpty("No subjective data recorded.")

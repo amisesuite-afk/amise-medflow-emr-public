@@ -31,7 +31,35 @@ extension Patient {
                 var d = ReferralLetterData()
                 d.diagnosis           = workingDiagnosis ?? ""
                 d.presentingComplaint = chiefComplaint ?? ""
-                d.patientBackground   = [pmhNotes, familyHistoryNotes].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: "\n")
+
+                // patientBackground — prefer structured entries for completeness
+                var bgParts: [String] = []
+                let pmh = pmhEntries
+                if !pmh.isEmpty {
+                    let pmhText = pmh.map { e in
+                        let yr = e.yearText.isEmpty ? "" : " (\(e.yearText))"
+                        return "• \(e.condition)\(yr)"
+                    }.joined(separator: "\n")
+                    bgParts.append("PMH:\n\(pmhText)")
+                } else if let pmhFree = pmhNotes, !pmhFree.isEmpty {
+                    bgParts.append("PMH: \(pmhFree)")
+                }
+                let pshx = pshxEntries
+                if !pshx.isEmpty {
+                    let pshxText = pshx.map { e in
+                        var line = "• \(e.procedure)"
+                        if !e.yearText.isEmpty { line += " (\(e.yearText))" }
+                        if !e.anaesthetic.isEmpty { line += " [\(e.anaesthetic)]" }
+                        return line
+                    }.joined(separator: "\n")
+                    bgParts.append("Surgical history:\n\(pshxText)")
+                } else if let pshxFree = surgicalHistory, !pshxFree.isEmpty {
+                    bgParts.append("Surgical history: \(pshxFree)")
+                }
+                if let fhx = familyHistoryNotes, !fhx.isEmpty { bgParts.append("Family history: \(fhx)") }
+                if let soc = socialHistory, !soc.isEmpty { bgParts.append("Social history: \(soc)") }
+                d.patientBackground = bgParts.joined(separator: "\n\n")
+
                 let proc = surgeryData.procedureName
                 if !proc.isEmpty { d.managementToDate = "Patient underwent \(proc)." }
                 return d
@@ -81,6 +109,39 @@ struct ReferralLetterView: View {
         .onAppear {
             data = patient.referralLetterData
 
+            var needsSave = false
+
+            // Clinical findings: examination + latest vitals
+            if data.clinicalFindings.isEmpty {
+                var findingParts: [String] = []
+                let examPairs: [(String, String?)] = [
+                    ("General",      patient.examGeneral),
+                    ("CVS",          patient.examCVS),
+                    ("Respiratory",  patient.examResp),
+                    ("Abdomen",      patient.examAbdo),
+                    ("Neurological", patient.examNeuro),
+                    ("MSK",          patient.examMSK),
+                    ("Skin",         patient.examSkin),
+                    ("Other",        patient.examOther),
+                ]
+                for (label, val) in examPairs {
+                    if let v = val, !v.isEmpty { findingParts.append("\(label): \(v)") }
+                }
+                if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+                   v.hasAnyValue {
+                    var vParts: [String] = ["NEWS2 \(v.news2Score) (\(v.news2Risk))"]
+                    if let bp = v.bpString  { vParts.append("BP \(bp)") }
+                    if let hr = v.heartRate { vParts.append("HR \(hr)") }
+                    if let t  = v.temperatureCelsius { vParts.append(String(format: "Temp %.1f°C", t)) }
+                    if let s  = v.spo2 { vParts.append("SpO₂ \(s)%") }
+                    findingParts.append("Vitals: " + vParts.joined(separator: ", "))
+                }
+                if !findingParts.isEmpty {
+                    data.clinicalFindings = findingParts.joined(separator: "\n")
+                    needsSave = true
+                }
+            }
+
             // Pre-fill investigations/results from resulted entries when not yet entered
             if data.investigationsOrdered.isEmpty {
                 let resulted = patient.investigations.filter { $0.status == .resulted }
@@ -88,7 +149,7 @@ struct ReferralLetterView: View {
                     data.investigationsOrdered = resulted
                         .map { $0.result.isEmpty ? $0.name : "\($0.name): \($0.result)" }
                         .joined(separator: "\n")
-                    save()
+                    needsSave = true
                 }
             }
 
@@ -97,9 +158,11 @@ struct ReferralLetterView: View {
                 let proc = patient.surgeryData.procedureName
                 if !proc.isEmpty {
                     data.managementToDate = "Patient underwent \(proc)."
-                    save()
+                    needsSave = true
                 }
             }
+
+            if needsSave { save() }
         }
     }
 
