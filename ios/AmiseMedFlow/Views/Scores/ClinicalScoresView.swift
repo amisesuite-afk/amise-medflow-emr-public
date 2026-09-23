@@ -351,6 +351,9 @@ struct ClinicalScoresView: View {
     @State private var selectedCategory: ScoreCategory = .all
     @State private var selectedScore: ActiveScore? = nil
     @State private var result: ClinicalScore? = nil
+    @State private var isExportingScoresPDF = false
+    @State private var scoresShareURL: URL? = nil
+    @State private var showScoresShareSheet = false
 
     // Alvarado
     @State private var alv = AlvaradoInput()
@@ -560,6 +563,53 @@ struct ClinicalScoresView: View {
             if let score = newScore { autoPopulate(for: score) } else { autoFill = ScoreAutoFill() }
             recalculate()
         }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    Task { await exportScoresPDF() }
+                } label: {
+                    if isExportingScoresPDF {
+                        ProgressView().controlSize(.small)
+                    } else {
+                        Label("Export PDF", systemImage: "square.and.arrow.up")
+                    }
+                }
+                .disabled(isExportingScoresPDF || patient.scoreHistory.isEmpty)
+            }
+        }
+        .sheet(isPresented: $showScoresShareSheet) {
+            if let url = scoresShareURL {
+                ShareSheet(items: [url])
+            }
+        }
+    }
+
+    private func exportScoresPDF() async {
+        isExportingScoresPDF = true
+        defer { isExportingScoresPDF = false }
+
+        let data = ClinicalScoresPDF.generate(patient: patient)
+
+        let df = DateFormatter()
+        df.dateFormat = "yyyy-MM-dd_HHmm"
+        let stamp    = df.string(from: Date())
+        let safeName = patient.fullName
+            .components(separatedBy: .whitespacesAndNewlines)
+            .joined(separator: "_")
+        let fileName = "ClinicalScores_\(safeName)_\(stamp).pdf"
+
+        // Save to Documents tab
+        let doc = PatientDocument(fileName: fileName, mimeType: "application/pdf", category: "Clinical Scores")
+        doc.localData = data
+        doc.patient   = patient
+        modelContext.insert(doc)
+        patient.updatedAt  = .now
+        patient.pendingSync = true
+
+        let tmp = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+        try? data.write(to: tmp)
+        scoresShareURL      = tmp
+        showScoresShareSheet = true
     }
 
     // MARK: - Category filter bar
