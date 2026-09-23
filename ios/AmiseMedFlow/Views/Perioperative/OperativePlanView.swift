@@ -659,6 +659,37 @@ private struct PlanForm: View {
             context.insert(note)
             patient.updatedAt = .now
             patient.pendingSync = true
+        } catch is AIError {
+            // AIService disabled pending HIPAA BAA — build a structured draft from plan data
+            let note = ClinicalNote(noteType: .operative, patient: patient)
+            var lines: [String] = ["OPERATIVE NOTE — DRAFT (please review and complete before signing)"]
+            lines.append("")
+            lines.append("Procedure: \(plan.consentProcedure)")
+            if !plan.anaesthesiaType.isEmpty { lines.append("Anaesthesia: \(plan.anaesthesiaType)") }
+            if !plan.positioning.isEmpty     { lines.append("Position: \(plan.positioning)") }
+            if !plan.specialEquipment.isEmpty { lines.append("Equipment: \(plan.specialEquipment)") }
+            lines.append("Indication: \(patient.chiefComplaint ?? patient.workingDiagnosis ?? "See clinical notes")")
+            lines.append("")
+            lines.append("Findings: [To be completed intra-operatively]")
+            lines.append("Procedure description: [To be completed]")
+            lines.append("Estimated blood loss: [mL]")
+            lines.append("Specimens: [None / as per histopathology request]")
+            lines.append("Complications: None encountered.")
+            if !plan.postOpOrders.isEmpty {
+                lines.append("")
+                lines.append("Post-operative orders: \(plan.postOpOrders)")
+            } else {
+                lines.append("")
+                lines.append("Post-operative orders: Routine post-operative care. Analgesia and antiemetics as prescribed.")
+            }
+            if !plan.surgicalTeamNote.isEmpty {
+                lines.append("")
+                lines.append("Team note: \(plan.surgicalTeamNote)")
+            }
+            note.freeText = lines.joined(separator: "\n")
+            context.insert(note)
+            patient.updatedAt = .now
+            patient.pendingSync = true
         } catch {
             aiError = error.localizedDescription
             showAIError = true

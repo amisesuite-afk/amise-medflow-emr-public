@@ -419,6 +419,40 @@ struct DocumentsView: View {
             selectedDocForSummary = doc
             summaryText = summary
             showSummarySheet = true
+        } catch is AIError {
+            // AIService disabled pending HIPAA BAA — build a local summary from available metadata
+            let name = doc.fileName
+            let category = doc.category.rawValue
+            let textSnippet: String
+            if let ext = doc.extractedText, !ext.isEmpty {
+                let trimmed = ext.trimmingCharacters(in: .whitespacesAndNewlines)
+                textSnippet = trimmed.count > 400 ? String(trimmed.prefix(400)) + "…" : trimmed
+            } else {
+                textSnippet = ""
+            }
+            var parts: [String] = []
+            parts.append("Document: \(name)")
+            parts.append("Category: \(category)")
+            if let uploaded = doc.uploadedAt {
+                let df = DateFormatter()
+                df.dateStyle = .medium; df.timeStyle = .none
+                df.timeZone = TimeZone(identifier: "America/St_Lucia")
+                parts.append("Uploaded: \(df.string(from: uploaded))")
+            }
+            if !textSnippet.isEmpty {
+                parts.append("")
+                parts.append("Extracted content preview:")
+                parts.append(textSnippet)
+            } else {
+                parts.append("No text extracted from this document. Please review the original file.")
+            }
+            let summary = parts.joined(separator: "\n")
+            doc.aiSummary = summary
+            patient.updatedAt = .now
+            patient.pendingSync = true
+            selectedDocForSummary = doc
+            summaryText = summary
+            showSummarySheet = true
         } catch {
             aiError = error.localizedDescription
             showError = true

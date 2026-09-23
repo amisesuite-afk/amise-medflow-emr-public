@@ -3,7 +3,7 @@ import SwiftData
 
 struct ClinicalReasoningView: View {
     @Bindable var patient: Patient
-    @StateObject private var ai = AIService()
+    @State private var isDrafting = false
     @State private var aiError: String?
     @State private var showError = false
 
@@ -281,18 +281,17 @@ struct ClinicalReasoningView: View {
                 Task { await generateReasoning() }
             } label: {
                 HStack(spacing: 8) {
-                    if ai.isGenerating { ProgressView().scaleEffect(0.8) }
-                    Label(patient.aiClinicalReasoning == nil ? "Generate AI Clinical Summary" : "Regenerate Summary",
-                          systemImage: "sparkles")
-                        .foregroundStyle(.purple)
+                    if isDrafting { ProgressView().scaleEffect(0.8) }
+                    Label(patient.aiClinicalReasoning == nil ? "Generate Clinical Summary" : "Regenerate Summary",
+                          systemImage: "doc.text.magnifyingglass")
+                        .foregroundStyle(.teal)
                 }
             }
-            .disabled(ai.isGenerating)
+            .disabled(isDrafting)
         } header: {
-            Label("AI Clinical Reasoning", systemImage: "sparkles")
-                .foregroundStyle(.purple)
+            Label("Clinical Reasoning", systemImage: "stethoscope")
         } footer: {
-            Text("AI summaries are drafts for clinician review. The surgeon retains full clinical responsibility.")
+            Text("Auto-generated from the patient's chart data. The surgeon retains full clinical responsibility.")
                 .font(.caption2).foregroundStyle(.tertiary)
         }
     }
@@ -300,15 +299,17 @@ struct ClinicalReasoningView: View {
     // MARK: - AI generation
 
     private func generateReasoning() async {
-        do {
-            let text = try await ai.generateClinicalReasoning(patient: patient)
-            patient.aiClinicalReasoning = text
-            patient.updatedAt = .now
-            patient.pendingSync = true
-        } catch {
-            aiError = error.localizedDescription
+        isDrafting = true
+        defer { isDrafting = false }
+        let text = SOAPDraftEngine.narrativeSummary(patient: patient)
+        guard !text.isEmpty, text != "Clinical summary to be completed." else {
+            aiError = "Insufficient clinical data to generate a summary. Please complete the consultation first."
             showError = true
+            return
         }
+        patient.aiClinicalReasoning = text
+        patient.updatedAt = .now
+        patient.pendingSync = true
     }
 
     // MARK: - Supporting types

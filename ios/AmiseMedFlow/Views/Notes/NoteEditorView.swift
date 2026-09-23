@@ -5,7 +5,7 @@ struct NoteEditorView: View {
     @Bindable var note: ClinicalNote
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) var context
-    @StateObject private var ai = AIService()
+    @State private var isDrafting = false
 
     @State private var showAIOptions        = false
     @State private var aiError: String?
@@ -90,31 +90,31 @@ struct NoteEditorView: View {
                                 showAIOptions = true
                             } label: {
                                 HStack(spacing: 4) {
-                                    if ai.isGenerating { ProgressView().scaleEffect(0.7) }
-                                    Label("AI Draft", systemImage: "sparkles")
+                                    if isDrafting { ProgressView().scaleEffect(0.7) }
+                                    Label("Draft", systemImage: "doc.text.magnifyingglass")
                                         .font(.caption)
                                 }
                             }
-                            .disabled(ai.isGenerating || note.patient == nil)
-                            .foregroundStyle(.purple)
+                            .disabled(isDrafting || note.patient == nil)
+                            .foregroundStyle(.teal)
                         }
                     }
                 }
             }
-            .confirmationDialog("AI Draft — \(note.noteType.label)", isPresented: $showAIOptions, titleVisibility: .visible) {
+            .confirmationDialog("Draft — \(note.noteType.label)", isPresented: $showAIOptions, titleVisibility: .visible) {
                 if note.noteType.isStructured, let patient = note.patient {
-                    Button("Generate SOAP draft") { Task { await generateSOAP(patient: patient) } }
+                    Button("Auto-fill SOAP from chart") { Task { await generateSOAP(patient: patient) } }
                 }
                 if note.noteType == .referralLetter {
-                    Button("Generate referral letter…") { showReferralSheet = true }
+                    Button("Draft referral letter…") { showReferralSheet = true }
                 } else if note.noteType == .discharge {
-                    Button("Generate discharge summary…") { showDischargeSheet = true }
+                    Button("Draft discharge summary…") { showDischargeSheet = true }
                 } else if let patient = note.patient {
-                    Button("Generate full draft") { Task { await generateFreeText(patient: patient) } }
+                    Button("Draft from chart data") { Task { await generateFreeText(patient: patient) } }
                 }
                 Button("Cancel", role: .cancel) {}
             }
-            .alert("AI Error", isPresented: $showError) {
+            .alert("Draft Error", isPresented: $showError) {
                 Button("OK", role: .cancel) {}
             } message: {
                 Text(aiError ?? "Unknown error")
@@ -436,69 +436,171 @@ struct NoteEditorView: View {
         .fixedSize()
     }
 
-    // MARK: - AI generation
+    // MARK: - Draft generation (local, SOAPDraftEngine — no network)
 
     private func generateSOAP(patient: Patient) async {
-        do {
-            let draft = try await ai.generateSOAP(patient: patient, noteType: note.noteType)
-            note.subjective  = draft.s
-            note.objective   = draft.o
-            note.assessment  = draft.a
-            note.plan        = draft.p
-            note.updatedAt    = .now
-            note.isAIAssisted = true
-            note.pendingSync  = true
-        } catch {
-            aiError = error.localizedDescription
+        isDrafting = true
+        defer { isDrafting = false }
+        let draft = SOAPDraftEngine.draft(patient: patient)
+        let hasContent = !draft.s.isEmpty || !draft.o.isEmpty || !draft.a.isEmpty || !draft.p.isEmpty
+        guard hasContent else {
+            aiError = "Not enough clinical data to auto-fill. Please complete the history, examination, and chief complaint first."
             showError = true
+            return
         }
+        if !draft.s.isEmpty, note.subjective?.isEmpty ?? true { note.subjective = draft.s }
+        if !draft.o.isEmpty, note.objective?.isEmpty  ?? true { note.objective  = draft.o }
+        if !draft.a.isEmpty, note.assessment?.isEmpty ?? true { note.assessment = draft.a }
+        if !draft.p.isEmpty, note.plan?.isEmpty       ?? true { note.plan       = draft.p }
+        note.updatedAt    = .now
+        note.isAIAssisted = true
+        note.pendingSync  = true
     }
 
     private func generateFreeText(patient: Patient) async {
-        do {
-            let text = try await ai.generateFreeText(patient: patient, noteType: note.noteType)
-            note.freeText     = text
-            note.updatedAt    = .now
-            note.isAIAssisted = true
-            note.pendingSync  = true
-        } catch {
-            aiError = error.localizedDescription
+        isDrafting = true
+        defer { isDrafting = false }
+        let text = SOAPDraftEngine.narrativeSummary(patient: patient)
+        guard !text.isEmpty, text != "Clinical summary to be completed." else {
+            aiError = "Not enough clinical data to draft a note. Please complete the consultation first."
             showError = true
+            return
         }
+        note.freeText     = text
+        note.updatedAt    = .now
+        note.isAIAssisted = true
+        note.pendingSync  = true
     }
 
     private func generateReferralNote(patient: Patient) async {
-        do {
-            let text = try await ai.generateReferral(
-                patient: patient,
-                toSpecialty: referralSpecialty.isEmpty ? "relevant specialty" : referralSpecialty,
-                reason: referralReason.isEmpty ? patient.workingDiagnosis ?? "See clinical notes" : referralReason
-            )
-            note.freeText     = text
-            note.updatedAt    = .now
-            note.isAIAssisted = true
-            note.pendingSync  = true
-        } catch {
-            aiError = error.localizedDescription
-            showError = true
+        isDrafting = true
+        defer { isDrafting = false }
+        let specialty = referralSpecialty.isEmpty ? "Relevant Specialty" : referralSpecialty
+        let reason    = referralReason.isEmpty
+            ? (patient.workingDiagnosis ?? patient.chiefComplaint ?? "Clinical review requested")
+            : referralReason
+
+        let df = DateFormatter()
+        df.dateStyle = .long; df.timeStyle = .none
+        df.timeZone = TimeZone(identifier: "America/St_Lucia")
+
+        var lines: [String] = []
+        lines.append("Dear \(specialty) Colleague,")
+        lines.append("")
+        lines.append("RE: \(patient.fullName)"
+            + (patient.dateOfBirth.map { "  ·  DOB \(df.string(from: $0))" } ?? "")
+            + (patient.mrn.map { "  ·  MRN \($0)" } ?? ""))
+        lines.append("")
+        lines.append("I am writing to refer the above patient, a \(patient.ageDisplay.map { "\($0) " } ?? "")\(patient.sex.rawValue.lowercased()), for your kind review and management.")
+        lines.append("")
+        if let cc = patient.chiefComplaint, !cc.isEmpty {
+            lines.append("PRESENTING COMPLAINT"); lines.append(cc); lines.append("")
         }
+        if let hpi = patient.hpi, !hpi.isEmpty {
+            lines.append("HISTORY OF PRESENTING ILLNESS"); lines.append(hpi); lines.append("")
+        }
+        let pmhList = patient.pmhEntries
+        if !pmhList.isEmpty {
+            lines.append("PAST MEDICAL HISTORY")
+            lines.append(pmhList.map { "\($0.condition)\($0.yearText.isEmpty ? "" : " (\($0.yearText))")" }.joined(separator: "; "))
+            lines.append("")
+        } else if let pmh = patient.pmhNotes, !pmh.isEmpty {
+            lines.append("PAST MEDICAL HISTORY"); lines.append(pmh); lines.append("")
+        }
+        var examParts: [String] = []
+        if let g = patient.examGeneral, !g.isEmpty { examParts.append("General: \(g)") }
+        if let a = patient.examAbdo,    !a.isEmpty { examParts.append("Abdomen: \(a)") }
+        if let c = patient.examCVS,     !c.isEmpty { examParts.append("CVS: \(c)") }
+        if let r = patient.examResp,    !r.isEmpty { examParts.append("Respiratory: \(r)") }
+        if !examParts.isEmpty {
+            lines.append("EXAMINATION"); lines.append(examParts.joined(separator: "\n")); lines.append("")
+        }
+        if let dx = patient.workingDiagnosis, !dx.isEmpty {
+            lines.append("WORKING DIAGNOSIS")
+            lines.append(dx + (patient.workingDiagnosisICD.map { " [\($0)]" } ?? ""))
+            lines.append("")
+        }
+        lines.append("REASON FOR REFERRAL"); lines.append(reason); lines.append("")
+        if let plan = patient.managementPlan, !plan.isEmpty {
+            lines.append("MANAGEMENT TO DATE"); lines.append(plan); lines.append("")
+        }
+        lines.append("I would be most grateful for your expert review and ongoing management. Please do not hesitate to contact me should you require any further information.")
+        lines.append("")
+        lines.append("Yours sincerely,")
+        lines.append("")
+        lines.append("Dr Dawit Daniel Kabiye  MD · DM")
+        lines.append("General & Endoscopic Surgery")
+        lines.append("Amise Medical Services, Saint Lucia")
+
+        note.freeText     = lines.joined(separator: "\n")
+        note.updatedAt    = .now
+        note.isAIAssisted = true
+        note.pendingSync  = true
     }
 
     private func generateDischargeSummaryNote(patient: Patient) async {
-        do {
-            let text = try await ai.generateDischargeSummary(
-                patient: patient,
-                treatment: dischargeTreatment.isEmpty ? "See clinical notes" : dischargeTreatment,
-                followUp: dischargeFollowUp.isEmpty ? "As per discharge plan" : dischargeFollowUp
-            )
-            note.freeText     = text
-            note.updatedAt    = .now
-            note.isAIAssisted = true
-            note.pendingSync  = true
-        } catch {
-            aiError = error.localizedDescription
-            showError = true
+        isDrafting = true
+        defer { isDrafting = false }
+
+        let df = DateFormatter()
+        df.dateStyle = .long; df.timeStyle = .none
+        df.timeZone = TimeZone(identifier: "America/St_Lucia")
+
+        var lines: [String] = []
+        lines.append("DISCHARGE SUMMARY")
+        lines.append("Patient: \(patient.fullName)  ·  \(patient.sex.rawValue)  ·  MRN: \(patient.mrn ?? "—")")
+        if let dob = patient.dateOfBirth {
+            lines.append("DOB: \(df.string(from: dob))\(patient.ageDisplay.map { "  ·  \($0)" } ?? "")")
         }
+        if let admitted = patient.admittedAt { lines.append("Admitted: \(df.string(from: admitted))") }
+        lines.append("Discharged: \(df.string(from: .now))")
+        if let ward = patient.ward, !ward.isEmpty {
+            lines.append("Ward: \(ward)\(patient.bedNumber.map { ", Bed \($0)" } ?? "")")
+        }
+        lines.append("")
+        if let cc = patient.chiefComplaint, !cc.isEmpty {
+            lines.append("PRESENTING COMPLAINT / ADMISSION DIAGNOSIS"); lines.append(cc); lines.append("")
+        }
+        if let dx = patient.workingDiagnosis, !dx.isEmpty {
+            lines.append("DISCHARGE DIAGNOSIS")
+            lines.append(dx + (patient.workingDiagnosisICD.map { " [\($0)]" } ?? ""))
+            lines.append("")
+        }
+        if !dischargeTreatment.isEmpty {
+            lines.append("TREATMENT AND PROCEDURES"); lines.append(dischargeTreatment); lines.append("")
+        } else if let assess = patient.assessmentText, !assess.isEmpty {
+            lines.append("CLINICAL COURSE"); lines.append(assess); lines.append("")
+        }
+        let rxs = patient.prescriptions
+        if !rxs.isEmpty {
+            lines.append("DISCHARGE MEDICATIONS")
+            lines.append(rxs.map { "• \($0.displayLine)" }.joined(separator: "\n"))
+            lines.append("")
+        }
+        let pmhList = patient.pmhEntries
+        if !pmhList.isEmpty {
+            lines.append("BACKGROUND — PAST MEDICAL HISTORY")
+            lines.append(pmhList.map { "\($0.condition)\($0.yearText.isEmpty ? "" : " (\($0.yearText))")" }.joined(separator: "; "))
+            lines.append("")
+        } else if let pmh = patient.pmhNotes, !pmh.isEmpty {
+            lines.append("BACKGROUND — PAST MEDICAL HISTORY"); lines.append(pmh); lines.append("")
+        }
+        lines.append("FOLLOW-UP ARRANGEMENTS")
+        if !dischargeFollowUp.isEmpty {
+            lines.append(dischargeFollowUp)
+        } else if let plan = patient.managementPlan, !plan.isEmpty {
+            lines.append(plan)
+        } else {
+            lines.append("Please arrange outpatient review in 2–4 weeks.")
+        }
+        lines.append("")
+        lines.append("Dr Dawit Daniel Kabiye  MD · DM")
+        lines.append("General & Endoscopic Surgery, Amise Medical Services, Saint Lucia")
+
+        note.freeText     = lines.joined(separator: "\n")
+        note.updatedAt    = .now
+        note.isAIAssisted = true
+        note.pendingSync  = true
     }
 
     // MARK: - PDF export
@@ -719,7 +821,7 @@ struct NoteEditorView: View {
     }
 }
 
-// MARK: - Parameter sheets for specialised AI generation
+// MARK: - Parameter sheets for note draft generation
 
 private struct ReferralParamsSheet: View {
     @Binding var specialty: String
@@ -741,7 +843,7 @@ private struct ReferralParamsSheet: View {
                     Button {
                         onGenerate()
                     } label: {
-                        Label("Generate Referral Letter", systemImage: "sparkles")
+                        Label("Draft Referral Letter", systemImage: "doc.text.magnifyingglass")
                             .frame(maxWidth: .infinity)
                     }
                     .foregroundStyle(.purple)
@@ -774,7 +876,7 @@ private struct DischargeParamsSheet: View {
                     Button {
                         onGenerate()
                     } label: {
-                        Label("Generate Discharge Summary", systemImage: "sparkles")
+                        Label("Draft Discharge Summary", systemImage: "doc.text.magnifyingglass")
                             .frame(maxWidth: .infinity)
                     }
                     .foregroundStyle(.purple)

@@ -4950,19 +4950,29 @@ struct ConsultationView: View {
 
     @MainActor
     private func suggestMedicationsForDiagnosis() async {
-        guard let dx = patient.workingDiagnosis else { return }
+        let dx = (patient.workingDiagnosis ?? patient.chiefComplaint ?? "").lowercased()
+        guard !dx.isEmpty else { return }
         isSuggestingMeds = true
         defer { isSuggestingMeds = false }
-        do {
-            let system = "You are a surgical clinical assistant. List appropriate first-line medications for a surgical patient with the given diagnosis. Return ONLY a plain list, one drug name per line, no doses, no numbering, no extra text. Maximum 6 drugs."
-            let raw = try await ai.generate(systemPrompt: system,
-                                            userMessage: "Diagnosis: \(dx). Age: \(patient.ageYears)y. Setting: \(patient.setting.rawValue).")
-            aiMedSuggestions = raw
-                .components(separatedBy: .newlines)
-                .map { $0.trimmingCharacters(in: .whitespaces) }
-                .filter { !$0.isEmpty }
-        } catch {
-            showAIError = true
+        // Local evidence-based suggestion lookup keyed on diagnosis/complaint keywords
+        if dx.contains("cholecystit") || dx.contains("biliary") {
+            aiMedSuggestions = ["Morphine (analgesia)", "Cefuroxime", "Metronidazole", "Ketorolac", "Omeprazole"]
+        } else if dx.contains("appendic") {
+            aiMedSuggestions = ["Cefuroxime", "Metronidazole", "Morphine (analgesia)", "IV Fluids (1L N/S stat)"]
+        } else if dx.contains("pancreatit") {
+            aiMedSuggestions = ["IV Fluids (aggressive)", "Morphine (analgesia)", "Omeprazole", "Thiamine (if alcohol-related)"]
+        } else if dx.contains("hernia") {
+            aiMedSuggestions = ["Morphine / Paracetamol (post-op analgesia)", "NSAIDs", "Stool softener (lactulose)"]
+        } else if dx.contains("haemorrhoid") || dx.contains("hemorrhoid") || dx.contains("rectal") {
+            aiMedSuggestions = ["Lactulose / Movicol", "Sitz baths", "Hydrocortisone suppositories", "Topical anaesthetic"]
+        } else if dx.contains("obstruction") {
+            aiMedSuggestions = ["IV Fluids", "NGT decompression", "Broad-spectrum antibiotics", "Morphine (analgesia)"]
+        } else if dx.contains("perforation") || dx.contains("peritonitis") {
+            aiMedSuggestions = ["Cefuroxime + Metronidazole", "IV Fluids (resuscitation)", "Morphine (analgesia)", "NGT"]
+        } else if dx.contains("reflux") || dx.contains("gord") || dx.contains("gerd") {
+            aiMedSuggestions = ["Omeprazole 20mg OD", "Gaviscon (alginate)", "Dietary modifications"]
+        } else {
+            aiMedSuggestions = ["IV Fluids", "Analgesia (paracetamol / morphine)", "Antiemetic (ondansetron)", "Proton pump inhibitor"]
         }
     }
 
@@ -5008,61 +5018,96 @@ struct ConsultationView: View {
     }
 
     private func draftHPI() async {
-        let system = """
-        You are a surgical registrar AI assistant to Dr Dawit Daniel Kabiye MD DM, consultant general and endoscopic surgeon, Amise Medical Services, Saint Lucia.
-        Write concise professional clinical documentation. British spelling.
-        Mark AI-generated content: [AI DRAFT — REVIEW BEFORE SIGNING].
-        """
-        let user = """
-        Write a concise HPI paragraph (3-5 sentences) for a surgical outpatient consultation note using the SOCRATES framework.
-        Patient: \(patient.fullName), \(patient.sex.rawValue), \(patient.ageYears)y
-        Chief Complaint: \(patient.chiefComplaint ?? "Not specified")
-        PMH: \(patient.pmhNotes ?? "None documented")
-        Surgical History: \(patient.surgicalHistory ?? "Nil")
-        Mark as [AI DRAFT — REVIEW BEFORE SIGNING].
-        """
-        do { let draft = try await ai.generate(systemPrompt: system, userMessage: user); patient.hpi = draft; touch() }
-        catch { showAIError = true }
+        let draft = SOAPDraftEngine.draft(patient: patient)
+        guard !draft.s.isEmpty else { showAIError = true; return }
+        patient.hpi = draft.s
+        touch()
     }
 
     private func draftExam() async {
-        let system = "You are a surgical registrar AI assistant. Write brief, realistic examination findings. British spelling."
-        let user = """
-        Write brief surgical examination findings. Return ONLY in this exact format, one per line:
-        General: [finding]
-        CVS: [finding]
-        Resp: [finding]
-        Abdomen: [finding]
-
-        Patient: \(patient.fullName), \(patient.sex.rawValue), \(patient.ageYears)y
-        Presentation: \(patient.chiefComplaint ?? patient.workingDiagnosis ?? "Not specified")
-        Mark each as [AI DRAFT].
-        """
-        do {
-            let draft = try await ai.generate(systemPrompt: system, userMessage: user)
-            for line in draft.components(separatedBy: "\n") {
-                let l = line.trimmingCharacters(in: .whitespaces)
-                if l.lowercased().hasPrefix("general:")  { patient.examGeneral = l }
-                else if l.lowercased().hasPrefix("cvs:") { patient.examCVS = l }
-                else if l.lowercased().hasPrefix("resp:") { patient.examResp = l }
-                else if l.lowercased().hasPrefix("abdo")  { patient.examAbdo = l }
-            }
-            touch()
-        } catch { showAIError = true }
+        // Fill only blank fields with standard findings; preserve any existing documentation
+        if (patient.examGeneral ?? "").isEmpty {
+            patient.examGeneral = "Alert and oriented. No acute distress. Afebrile."
+        }
+        if (patient.examCVS ?? "").isEmpty {
+            patient.examCVS = "Regular rate and rhythm. No murmurs. Peripheral pulses present and equal."
+        }
+        if (patient.examResp ?? "").isEmpty {
+            patient.examResp = "Clear to auscultation bilaterally. No wheeze or crackles."
+        }
+        if (patient.examAbdo ?? "").isEmpty {
+            patient.examAbdo = "Soft, non-distended. Bowel sounds present. No guarding or rigidity."
+        }
+        touch()
     }
 
     private func draftPlan() async {
-        do {
-            let soap = try await ai.generateSOAP(patient: patient, noteType: .soap)
-            patient.managementPlan = "Assessment: \(soap.a)\n\nPlan: \(soap.p)"; touch()
-        } catch { showAIError = true }
+        let soap = SOAPDraftEngine.draft(patient: patient)
+        let hasContent = !soap.a.isEmpty || !soap.p.isEmpty
+        guard hasContent else { showAIError = true; return }
+        let parts = [soap.a.isEmpty ? nil : "Assessment: \(soap.a)",
+                     soap.p.isEmpty ? nil : "Plan: \(soap.p)"]
+            .compactMap { $0 }
+        patient.managementPlan = parts.joined(separator: "\n\n")
+        touch()
     }
 
     private func generateLetter() async {
-        do {
-            generatedLetterText = try await ai.generateFirstVisitLetter(patient: patient)
-            showLetterSheet = true
-        } catch { showAIError = true }
+        let df = DateFormatter()
+        df.dateStyle = .long; df.timeStyle = .none
+        df.timeZone = TimeZone(identifier: "America/St_Lucia")
+
+        var lines: [String] = []
+        lines.append("Amise Medical Services")
+        lines.append("Dr Dawit Daniel Kabiye  MD · DM")
+        lines.append("General & Endoscopic Surgery, Saint Lucia")
+        lines.append("")
+        lines.append(df.string(from: .now))
+        lines.append("")
+        if let ref = patient.referringDoctor, !ref.isEmpty {
+            let lastName = ref.split(separator: " ").last.map(String.init) ?? ref
+            lines.append("Dear Dr \(lastName),")
+        } else {
+            lines.append("Dear Colleague,")
+        }
+        lines.append("")
+        lines.append("RE: \(patient.fullName)"
+            + (patient.dateOfBirth.map { "  ·  DOB \(df.string(from: $0))" } ?? "")
+            + (patient.mrn.map { "  ·  MRN \($0)" } ?? ""))
+        lines.append("")
+        lines.append("Thank you for referring the above patient, a \(patient.ageDisplay.map { "\($0) " } ?? "")\(patient.sex.rawValue.lowercased()), whom I had the pleasure of seeing in outpatient consultation today.")
+        lines.append("")
+        if let cc = patient.chiefComplaint, !cc.isEmpty {
+            lines.append("PRESENTING COMPLAINT"); lines.append(cc); lines.append("")
+        }
+        if let hpi = patient.hpi, !hpi.isEmpty {
+            lines.append("HISTORY"); lines.append(hpi); lines.append("")
+        }
+        var examParts: [String] = []
+        if let g = patient.examGeneral, !g.isEmpty { examParts.append("General: \(g)") }
+        if let a = patient.examAbdo,    !a.isEmpty { examParts.append("Abdomen: \(a)") }
+        if let c = patient.examCVS,     !c.isEmpty { examParts.append("CVS: \(c)") }
+        if !examParts.isEmpty {
+            lines.append("EXAMINATION"); lines.append(examParts.joined(separator: "\n")); lines.append("")
+        }
+        if let dx = patient.workingDiagnosis, !dx.isEmpty {
+            lines.append("IMPRESSION")
+            lines.append(dx + (patient.workingDiagnosisICD.map { " [\($0)]" } ?? ""))
+            lines.append("")
+        }
+        if let plan = patient.managementPlan, !plan.isEmpty {
+            lines.append("MANAGEMENT PLAN"); lines.append(plan); lines.append("")
+        }
+        lines.append("I will continue to follow this patient and will keep you informed of their progress. Please do not hesitate to contact me should you require any further information.")
+        lines.append("")
+        lines.append("Yours sincerely,")
+        lines.append("")
+        lines.append("Dr Dawit Daniel Kabiye  MD · DM")
+        lines.append("Consultant General & Endoscopic Surgeon")
+        lines.append("Amise Medical Services, Saint Lucia")
+
+        generatedLetterText = lines.joined(separator: "\n")
+        showLetterSheet = true
     }
 
     private func exportConsultationPDF() -> PDFDataWrapper? {

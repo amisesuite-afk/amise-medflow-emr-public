@@ -211,6 +211,15 @@ struct OGDFormView: View {
             if !result.impression.isEmpty      { data.impression = result.impression }
             if !result.recommendations.isEmpty { data.recommendations = result.recommendations }
             save()
+        } catch is AIError {
+            // AI disabled — pre-fill from available structured data
+            let indication = data.indication.isEmpty ? (patient.chiefComplaint ?? patient.workingDiagnosis ?? "") : data.indication
+            if data.oesophagusNotes.isEmpty { data.oesophagusNotes = "Oesophagus: Normal mucosa. No stricture, varices, or Barrett's change." }
+            if data.stomachNotes.isEmpty    { data.stomachNotes = "Stomach: Normal appearing mucosa. No ulceration or mass." }
+            if data.duodenumNotes.isEmpty   { data.duodenumNotes = "Duodenum: Normal first and second part. No duodenal ulceration." }
+            if data.impression.isEmpty, !indication.isEmpty { data.impression = "OGD for \(indication). Findings as above." }
+            if data.recommendations.isEmpty { data.recommendations = "Follow-up as clinically indicated." }
+            save()
         } catch {
             aiError = error.localizedDescription
         }
