@@ -340,6 +340,7 @@ struct PatientDetailPadView: View {
         }
     }
 
+    // nonConsultationContent: 11 cases — safe under the 12-case @ViewBuilder limit.
     @ViewBuilder
     private func nonConsultationContent(_ section: PatientDetailSection) -> some View {
         switch section {
@@ -357,28 +358,33 @@ struct PatientDetailPadView: View {
             OperativePlanView(patient: patient)
         case .documents:
             DocumentsView(patient: patient)
-        case .demographics:
-            PatientDemographicsForm(patient: patient)
-        case .trauma:
-            TraumaAssessmentView(patient: patient)
-        case .history:
-            ConsultationView(patient: patient, startingTab: .history, embeddedInNav: true)
         case .scores:
             ClinicalScoresView(patient: patient)
         case .journey:
             PatientJourneyView(patient: patient)
+        case .demographics:
+            PatientDemographicsForm(patient: patient)
         default:
-            procedureSectionContent(section)
+            specialtyContent(section)
         }
     }
 
+    // specialtyContent: history, trauma, and procedure forms — 6 cases, always safe.
     @ViewBuilder
-    private func procedureSectionContent(_ section: PatientDetailSection) -> some View {
+    private func specialtyContent(_ section: PatientDetailSection) -> some View {
         switch section {
-        case .ogd:     OGDFormView(patient: patient)
-        case .surgery: SurgeryNoteView(patient: patient)
-        case .ercp:    ERCPFormView(patient: patient)
-        default:       EmptyView()
+        case .history:
+            ConsultationView(patient: patient, startingTab: .history, embeddedInNav: true)
+        case .trauma:
+            TraumaAssessmentView(patient: patient)
+        case .ogd:
+            OGDFormView(patient: patient)
+        case .surgery:
+            SurgeryNoteView(patient: patient)
+        case .ercp:
+            ERCPFormView(patient: patient)
+        default:
+            EmptyView()
         }
     }
 
