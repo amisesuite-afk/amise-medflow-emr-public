@@ -22,6 +22,7 @@ struct DiagnosisHubView: View {
     @State private var parsedResult: ParsedResult?
     @State private var showResultConfirm = false
     @State private var showAIError = false
+    @State private var aiErrorMessage: String = ""
 
     // Plan draft
     @State private var isDraftingPlan = false
@@ -108,10 +109,10 @@ struct DiagnosisHubView: View {
                 }
             }
         }
-        .alert("AI Error", isPresented: $showAIError) {
+        .alert("AI Unavailable", isPresented: $showAIError) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text(ai.error ?? "Unknown error")
+            Text(aiErrorMessage.isEmpty ? "AI features are not available in this build." : aiErrorMessage)
         }
     }
 
@@ -452,6 +453,7 @@ struct DiagnosisHubView: View {
             patient.pendingSync = true
             planDrafted = true
         } catch {
+            aiErrorMessage = error.localizedDescription
             showAIError = true
         }
     }
@@ -464,6 +466,7 @@ struct DiagnosisHubView: View {
             clinicalReasoning = text
             showReasoning = true
         } catch {
+            aiErrorMessage = error.localizedDescription
             showAIError = true
         }
     }
@@ -515,6 +518,7 @@ struct DiagnosisHubView: View {
             )
             showResultConfirm = true
         } catch {
+            aiErrorMessage = error.localizedDescription
             showAIError = true
         }
     }

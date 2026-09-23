@@ -305,17 +305,57 @@ enum PatientSummaryPDF {
             y = drawRows(ctx: ctx, rows: opRows, y: y)
         }
 
-        // Signed clinical notes (most recent 3)
+        // Signed clinical notes — all signed notes with any content (structured or free-text)
         let signedNotes = patient.clinicalNotes
-            .filter { $0.status == .signed && !($0.freeText ?? "").isEmpty }
+            .filter { $0.status == .signed && !$0.isEmpty }
             .sorted { $0.createdAt > $1.createdAt }
-            .prefix(3)
         for note in signedNotes {
-            guard let text = note.freeText, !text.isEmpty else { continue }
             y = maybeNewPage(ctx: ctx, y: y)
-            let label = "\(note.noteType.rawValue.capitalized) Note  ·  \(DateFormatter.ectShort.string(from: note.createdAt)) ECT"
+            let dateStr = DateFormatter.ectShort.string(from: note.createdAt)
+            let label = "\(note.noteType.label)  ·  \(dateStr) ECT"
             y = sectionTitle(label, y: y)
-            y = drawText(ctx: ctx, text: text, y: y)
+            // Structured SOAP notes: render each field with a sub-label
+            if note.noteType.isStructured {
+                var noteRows: [(String, String)] = []
+                if let s = note.subjective,   !s.isEmpty { noteRows.append(("Subjective",   s)) }
+                if let o = note.objective,    !o.isEmpty { noteRows.append(("Objective",    o)) }
+                if let a = note.assessment,   !a.isEmpty { noteRows.append(("Assessment",   a)) }
+                if let p = note.plan,         !p.isEmpty { noteRows.append(("Plan",         p)) }
+                if !noteRows.isEmpty {
+                    y = drawRows(ctx: ctx, rows: noteRows, y: y)
+                }
+            }
+            // Free-text (or additional free-text on a structured note)
+            if let text = note.freeText, !text.isEmpty {
+                y = drawText(ctx: ctx, text: text, y: y)
+            }
+        }
+
+        // Score history summary (if any)
+        let recentScores = patient.scoreHistory
+            .sorted { $0.recordedAt > $1.recordedAt }
+            .prefix(10)
+        if !recentScores.isEmpty {
+            y = maybeNewPage(ctx: ctx, y: y)
+            y = sectionTitle("Clinical Scores", y: y)
+            y = drawRows(ctx: ctx, rows: recentScores.map {
+                ("\($0.scoreName)  ·  \(DateFormatter.ectShort.string(from: $0.recordedAt))",
+                 "\($0.abbreviation)  —  \($0.riskRaw)")
+            }, y: y)
+        }
+
+        // Visit history (completed encounters)
+        let completedEncounters = patient.encounters
+            .filter { $0.isComplete }
+            .sorted { $0.createdAt > $1.createdAt }
+        if !completedEncounters.isEmpty {
+            y = maybeNewPage(ctx: ctx, y: y)
+            y = sectionTitle("Visit History (\(completedEncounters.count))", y: y)
+            y = drawRows(ctx: ctx, rows: completedEncounters.map { enc in
+                let dateStr = DateFormatter.ectShort.string(from: enc.createdAt)
+                let dx = enc.workingDiagnosis ?? "—"
+                return ("\(enc.visitType.rawValue)  ·  \(dateStr)", dx)
+            }, y: y)
         }
 
         return y

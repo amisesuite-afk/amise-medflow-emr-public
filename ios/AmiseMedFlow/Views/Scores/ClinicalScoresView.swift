@@ -2026,6 +2026,13 @@ struct ClinicalScoresView: View {
         case .nrs2002:     nrs2002Form
         case .mallampati:  mallampatiForm
         case .cfs:         cfsForm
+        default:           preopFormBodyB(score)
+        }
+    }
+
+    @ViewBuilder
+    private func preopFormBodyB(_ score: ActiveScore) -> some View {
+        switch score {
         case .dasi:        dasiForm
         case .barthel:     barthelForm
         case .euroScoreII: euroScoreIIForm
