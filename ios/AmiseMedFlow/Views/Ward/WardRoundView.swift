@@ -485,7 +485,7 @@ private struct DischargeFlowSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Skip") {
+                    Button("Save Draft") {
                         // Save draft note, discharge patient
                         note.freeText = text
                         note.updatedAt = .now

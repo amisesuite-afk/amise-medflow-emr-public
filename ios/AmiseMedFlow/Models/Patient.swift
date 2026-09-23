@@ -622,6 +622,28 @@ extension Patient {
             lines.append("")
         }
 
+        // PMH
+        let pmhList = pmhEntries
+        if !pmhList.isEmpty {
+            lines.append("PMH: " + pmhList.map { e in
+                e.yearText.isEmpty ? e.condition : "\(e.condition) (\(e.yearText))"
+            }.joined(separator: "; "))
+        } else if let pmh = pmhNotes, !pmh.isEmpty {
+            lines.append("PMH: \(pmh)")
+        }
+
+        // PSHx
+        let pshxList = pshxEntries
+        if !pshxList.isEmpty {
+            lines.append("PSHx: " + pshxList.map { e in
+                var s = e.procedure
+                if !e.yearText.isEmpty { s += " (\(e.yearText))" }
+                return s
+            }.joined(separator: "; "))
+        } else if let pshx = surgicalHistory, !pshx.isEmpty {
+            lines.append("PSHx: \(pshx)")
+        }
+
         // Allergies
         let allergyList = allergies
         if allergyList.isEmpty {
@@ -645,6 +667,13 @@ extension Patient {
             lines.append("INVESTIGATIONS:")
             pending.forEach { lines.append("  ⏳ \($0.name) (awaiting)") }
             resulted.forEach { lines.append("  ✓ \($0.name)\($0.result.isEmpty ? "" : ": \($0.result)")") }
+        }
+
+        // Assessment
+        if let assess = assessmentText, !assess.isEmpty {
+            lines.append("")
+            lines.append("ASSESSMENT:")
+            lines.append(assess)
         }
 
         // Management plan

@@ -39,7 +39,7 @@ struct PatientSummaryEditorView: View {
                         Text("No summary yet")
                             .font(.title3.weight(.semibold))
                             .foregroundStyle(.secondary)
-                        Text("Start typing, or let AI draft one from the patient's chart.")
+                        Text("Start typing, or auto-generate a draft from the patient's chart.")
                             .font(.subheadline)
                             .foregroundStyle(.tertiary)
                             .multilineTextAlignment(.center)
@@ -47,7 +47,7 @@ struct PatientSummaryEditorView: View {
                         Button {
                             Task { await runAIAssist() }
                         } label: {
-                            Label("Generate with AI", systemImage: "sparkles")
+                            Label("Generate Draft", systemImage: "doc.text.magnifyingglass")
                                 .font(.body.weight(.semibold))
                                 .padding(.horizontal, 20)
                                 .padding(.vertical, 10)
@@ -64,7 +64,7 @@ struct PatientSummaryEditorView: View {
                         VStack(spacing: 14) {
                             ProgressView()
                                 .scaleEffect(1.3)
-                            Text("AI is drafting your summary…")
+                            Text("Generating summary from patient data…")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                         }
@@ -91,7 +91,7 @@ struct PatientSummaryEditorView: View {
                             Image(systemName: "sparkles")
                         }
                         .disabled(ai.isGenerating)
-                        .help("Regenerate with AI")
+                        .help("Regenerate summary from chart data")
 
                         // Export PDF
                         Button {
@@ -113,12 +113,12 @@ struct PatientSummaryEditorView: View {
                 isPresented: $showAIConfirm,
                 titleVisibility: .visible
             ) {
-                Button("Replace with AI draft", role: .destructive) {
+                Button("Replace with new draft", role: .destructive) {
                     Task { await runAIAssist() }
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("This will replace your current text with a new AI-generated draft.")
+                Text("This will replace your current text with a new generated draft.")
             }
             .alert("AI Error", isPresented: $showError) {
                 Button("OK", role: .cancel) {}
