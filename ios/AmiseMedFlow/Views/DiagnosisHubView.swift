@@ -239,7 +239,9 @@ struct DiagnosisHubView: View {
         .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
     }
 
-    // MARK: - 2x2 domain grid
+    // MARK: - domain grid
+
+    private var scoreCount: Int { patient.scoreHistory.count }
 
     private var domainGrid: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
@@ -278,6 +280,15 @@ struct DiagnosisHubView: View {
                 line2: patient.clinicalNotes.isEmpty ? nil : "\(patient.clinicalNotes.count) total",
                 dot: signedNotes > 0 ? .green : .secondary,
                 destination: .notes
+            )
+            domainCard(
+                title: "Clinical Scores",
+                icon: "chart.bar.doc.horizontal",
+                color: AMColor.accent,
+                line1: scoreCount > 0 ? "\(scoreCount) saved" : "101 scales available",
+                line2: scoreCount > 0 ? "101 scales available" : nil,
+                dot: scoreCount > 0 ? AMColor.accent : .secondary,
+                destination: .scores
             )
         }
     }
