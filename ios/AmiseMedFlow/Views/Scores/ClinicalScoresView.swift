@@ -1985,7 +1985,6 @@ struct ClinicalScoresView: View {
     }
 
     @ViewBuilder
-    @ViewBuilder
     private func cardiacFormBody(_ score: ActiveScore) -> some View {
         switch score {
         case .cha2ds2vasc: cha2ds2vascForm
@@ -2010,17 +2009,12 @@ struct ClinicalScoresView: View {
         case .waterlow:      waterlowForm
         case .surgicalApgar: surgicalApgarForm
         case .phq9:          phq9Form
-        case .sapsII:        sapsIIForm
         case .braden:        bradenForm
         case .ipss:          ipssForm
         case .lace:          laceForm
         case .findRisc:      findRiscForm
         case .ckdEpi:        ckdEpiForm
         case .cage:          cageForm
-        case .mmrc:          mmrcForm
-        case .shockIndex:    shockIndexForm
-        case .clavienDindo:  clavienDindoForm
-        case .aldrete:       aldreteForm
         default:             EmptyView()
         }
     }
