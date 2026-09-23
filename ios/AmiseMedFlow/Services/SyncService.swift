@@ -85,6 +85,11 @@ final class SyncService: ObservableObject {
             let session = try await SupabaseConfig.client.auth.session
             currentUserEmail = session.user.email
             await fetchUserRole(userId: session.user.id)
+            startRealtime()
+            // Race-condition fix: setModelContext() may have run before restoreSession()
+            // completed (isSignedIn was false at that point), so sync was silently skipped.
+            // Trigger it here so a restored session always produces an initial sync.
+            await syncIfAuthenticated()
         } catch {
             currentUserEmail = nil
         }
