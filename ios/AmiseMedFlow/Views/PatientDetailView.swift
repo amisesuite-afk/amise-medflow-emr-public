@@ -39,6 +39,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     case surgery        = "Operative Note"
     case ercp           = "ERCP Report"
     case history        = "Visit History"
+    case scores         = "Clinical Scores"
 
     var id: String { rawValue }
 
@@ -68,6 +69,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .surgery:        "scissors"
         case .ercp:           "waveform.and.magnifyingglass"
         case .history:        "clock.badge.checkmark"
+        case .scores:         "chart.bar.doc.horizontal"
         }
     }
 
@@ -97,6 +99,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .surgery:        "Op Note"
         case .ercp:           "ERCP"
         case .history:        "History"
+        case .scores:         "Scores"
         }
     }
 
@@ -373,6 +376,8 @@ struct PatientDetailPadView: View {
             ERCPFormView(patient: patient)
         case .history:
             ConsultationView(patient: patient, startingTab: .history, embeddedInNav: true)
+        case .scores:
+            ClinicalScoresView(patient: patient)
         }
     }
 
