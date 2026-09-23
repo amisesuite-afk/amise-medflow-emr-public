@@ -518,6 +518,18 @@ struct DiagnosisHubView: View {
                 summary: ""
             )
             showResultConfirm = true
+        } catch is AIError {
+            // AIService disabled pending HIPAA BAA — image OCR unavailable.
+            // Present a blank editable result so the clinician can enter values manually.
+            parsedResult = ParsedResult(
+                testName: "Lab / Imaging Result",
+                category: "Other",
+                results: "(Image captured — please enter result values below)",
+                abnormal: [],
+                urgent: false,
+                summary: "AI image analysis is unavailable. Please enter the result details manually."
+            )
+            showResultConfirm = true
         } catch {
             aiErrorMessage = error.localizedDescription
             showAIError = true
