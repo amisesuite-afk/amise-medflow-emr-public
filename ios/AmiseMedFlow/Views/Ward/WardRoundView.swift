@@ -20,6 +20,7 @@ struct WardRoundView: View {
     @State private var dischargeTarget: Patient? = nil
     @State private var dischargeContext: DischargeContext? = nil
     @State private var showTriage = false
+    @State private var handoverPDF: PDFDataWrapper? = nil
 
     private var inpatients: [Patient] {
         var results = allPatients.filter {
@@ -169,8 +170,10 @@ struct WardRoundView: View {
                             Image(systemName: "chart.bar.xaxis.ascending")
                         }
                         if !inpatients.isEmpty {
-                            ShareLink(item: wardHandoverText,
-                                      subject: Text("Ward Handover")) {
+                            Button {
+                                let pdf = ProcedureFormPDF.wardHandover(grouped: grouped, reviewedIDs: reviewedIDs)
+                                handoverPDF = PDFDataWrapper(data: pdf)
+                            } label: {
                                 Image(systemName: "square.and.arrow.up")
                             }
                         }
@@ -212,10 +215,13 @@ struct WardRoundView: View {
             .sheet(isPresented: $showTriage) {
                 TriageDashboardView()
             }
+            .sheet(item: $handoverPDF) { wrapper in
+                ShareSheet(items: [wrapper.data as Any]).ignoresSafeArea()
+            }
         }
     }
 
-    // MARK: - Ward handover export
+    // MARK: - Ward handover export (plain-text fallback — retained for clipboard use)
 
     private var wardHandoverText: String {
         let today = Date.now.formatted(date: .abbreviated, time: .shortened)

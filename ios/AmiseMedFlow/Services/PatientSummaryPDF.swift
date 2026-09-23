@@ -149,6 +149,33 @@ enum PatientSummaryPDF {
         if let ward = patient.ward    { rows.append(("Ward", ward + (patient.bedNumber.map { ", Bed \($0)" } ?? ""))) }
         if let nok = patient.nokName  { rows.append(("Next of kin", nok + (patient.nokRelation.map { " (\($0))" } ?? "") + (patient.nokPhone.map { " · \($0)" } ?? ""))) }
 
+        // Admission / discharge dates (inpatients)
+        if let admitted = patient.admittedAt {
+            rows.append(("Admitted", DateFormatter.ectLong.string(from: admitted)))
+        }
+        if let expected = patient.expectedDischarge {
+            rows.append(("Expected discharge", DateFormatter.ectDate.string(from: expected)))
+        }
+
+        // Referral information
+        if let src = patient.referralSource { rows.append(("Referral source", src.rawValue)) }
+        if let rd = patient.referringDoctor, !rd.isEmpty { rows.append(("Referring doctor", rd)) }
+        if let rp = patient.referringPractice, !rp.isEmpty { rows.append(("Referring practice", rp)) }
+
+        // ASA class
+        if let asa = patient.asaClass { rows.append(("ASA class", "ASA \(asa)")) }
+
+        // Height / BMI
+        if let h = patient.heightCm, h > 0 {
+            var hRow = String(format: "%.0f cm", h)
+            if let wt = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first?.weightKg, wt > 0 {
+                let bmi = wt / ((h / 100) * (h / 100))
+                hRow += String(format: "  ·  BMI %.1f", bmi)
+                if let cat = patient.bmiCategory { hRow += " (\(cat))" }
+            }
+            rows.append(("Height / BMI", hRow))
+        }
+
         y = drawRows(ctx: ctx, rows: rows, y: y)
         return y + 6
     }
@@ -189,15 +216,35 @@ enum PatientSummaryPDF {
             y = drawRows(ctx: ctx, rows: [("Allergies", "NKDA — no known drug allergies")], y: y)
         }
 
-        // PMH
-        if let pmh = patient.pmhNotes, !pmh.isEmpty {
+        // PMH — prefer structured entries; fall back to free-text
+        let pmhEntries = patient.pmhEntries
+        if !pmhEntries.isEmpty {
+            y = maybeNewPage(ctx: ctx, y: y)
+            y = sectionTitle("Past Medical History", y: y)
+            let pmhRows = pmhEntries.map { e -> (String, String) in
+                let yr = e.yearText.isEmpty ? "" : " (\(e.yearText))"
+                return ("•", "\(e.condition)\(yr)")
+            }
+            y = drawRows(ctx: ctx, rows: pmhRows, y: y)
+        } else if let pmh = patient.pmhNotes, !pmh.isEmpty {
             y = maybeNewPage(ctx: ctx, y: y)
             y = sectionTitle("Past Medical History", y: y)
             y = drawText(ctx: ctx, text: pmh, y: y)
         }
 
-        // Surgical history
-        if let pshx = patient.surgicalHistory, !pshx.isEmpty {
+        // Surgical history — prefer structured entries; fall back to free-text
+        let pshxEntries = patient.pshxEntries
+        if !pshxEntries.isEmpty {
+            y = maybeNewPage(ctx: ctx, y: y)
+            y = sectionTitle("Surgical History", y: y)
+            let pshxRows = pshxEntries.map { e -> (String, String) in
+                var detail = e.procedure
+                if !e.yearText.isEmpty { detail += " (\(e.yearText))" }
+                if !e.anaesthetic.isEmpty { detail += " — \(e.anaesthetic)" }
+                return ("•", detail)
+            }
+            y = drawRows(ctx: ctx, rows: pshxRows, y: y)
+        } else if let pshx = patient.surgicalHistory, !pshx.isEmpty {
             y = maybeNewPage(ctx: ctx, y: y)
             y = sectionTitle("Surgical History", y: y)
             y = drawText(ctx: ctx, text: pshx, y: y)
