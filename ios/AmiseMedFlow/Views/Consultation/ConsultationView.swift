@@ -5132,7 +5132,7 @@ struct ConsultationView: View {
             // Investigations
             let invs = patient.investigations.filter { $0.status != .suggested }
             if !invs.isEmpty {
-                section("Investigations", body: invs.map { "• \($0.name): \($0.result ?? "Pending")" }.joined(separator: "\n"), y: &y)
+                section("Investigations", body: invs.map { "• \($0.name): \($0.result.isEmpty ? "Pending" : $0.result)" }.joined(separator: "\n"), y: &y)
             }
 
             // Diagnosis
