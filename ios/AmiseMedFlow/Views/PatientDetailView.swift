@@ -1277,6 +1277,8 @@ struct PatientDetailView: View {
                     quickAction("ERCP Report", icon: "waveform.and.magnifyingglass", color: .blue,
                                 destination: AnyView(ERCPFormView(patient: patient)))
                 }
+                quickAction("Scores", icon: "chart.bar.doc.horizontal", color: .teal,
+                            destination: AnyView(ClinicalScoresView(patient: patient)))
                 quickAction("Prescriptions", icon: "pills.fill", color: .purple,
                             destination: AnyView(PrescriptionView(patient: patient)))
                 quickAction("Documents", icon: "doc.badge.plus", color: .blue,
