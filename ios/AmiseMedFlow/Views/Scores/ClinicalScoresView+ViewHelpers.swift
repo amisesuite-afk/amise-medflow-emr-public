@@ -86,6 +86,25 @@ extension ClinicalScoresView {
                     contextBlock(title: "RECORDED SCORES", icon: "clock.arrow.circlepath") {
                         scoreHistoryList
                     }
+                    Button {
+                        Task { await exportScoresPDF() }
+                    } label: {
+                        HStack(spacing: 6) {
+                            if isExportingScoresPDF {
+                                ProgressView().controlSize(.small)
+                            } else {
+                                Image(systemName: "square.and.arrow.up")
+                            }
+                            Text("Export Scores PDF")
+                        }
+                        .font(.subheadline)
+                        .foregroundStyle(AMColor.accent)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal)
+                    .disabled(isExportingScoresPDF)
                 }
 
                 // ── Secondary: browse full catalogue ─────────────────────────

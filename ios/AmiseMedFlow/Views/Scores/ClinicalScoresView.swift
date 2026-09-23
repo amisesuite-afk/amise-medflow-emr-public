@@ -269,20 +269,6 @@ struct ClinicalScoresView: View {
             if let score = newScore { autoPopulate(for: score) } else { autoFill = ScoreAutoFill() }
             recalculate()
         }
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    Task { await exportScoresPDF() }
-                } label: {
-                    if isExportingScoresPDF {
-                        ProgressView().controlSize(.small)
-                    } else {
-                        Label("Export PDF", systemImage: "square.and.arrow.up")
-                    }
-                }
-                .disabled(isExportingScoresPDF || patient.scoreHistory.isEmpty)
-            }
-        }
         .sheet(isPresented: $showScoresShareSheet) {
             if let url = scoresShareURL {
                 ShareSheet(items: [url])
