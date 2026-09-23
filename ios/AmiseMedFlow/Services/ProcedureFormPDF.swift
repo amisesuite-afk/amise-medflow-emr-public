@@ -1241,9 +1241,9 @@ enum ProcedureFormPDF {
             }
 
             for enc in patient.encounters where enc.isComplete {
-                events.append(TimelineEntry(date: enc.createdAt, category: "Visit",
-                    title: "Visit Saved: \(enc.visitType.rawValue)",
-                    detail: enc.workingDiagnosis ?? enc.visitType.rawValue))
+                events.append(TimelineEntry(date: enc.encounterDate, category: "Visit",
+                    title: "Visit: \(enc.visitType.rawValue)",
+                    detail: enc.workingDiagnosis ?? enc.chiefComplaint ?? enc.visitType.rawValue))
             }
 
             let discharge = patient.dischargeSummaryData

@@ -175,10 +175,10 @@ struct PatientJourneyView: View {
         for enc in patient.encounters where enc.isComplete {
             events.append(JourneyEvent(
                 id: enc.id,
-                date: enc.createdAt,
+                date: enc.encounterDate,
                 icon: "clock.badge.checkmark.fill",
-                title: "Visit Saved: \(enc.visitType.rawValue)",
-                subtitle: enc.workingDiagnosis ?? enc.visitType.rawValue,
+                title: "Visit: \(enc.visitType.rawValue)",
+                subtitle: enc.workingDiagnosis ?? enc.chiefComplaint ?? enc.visitType.rawValue,
                 category: .encounter
             ))
         }
