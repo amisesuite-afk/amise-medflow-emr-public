@@ -159,6 +159,17 @@ struct OGDFormView: View {
                 let matched = indications.filter { combined.contains($0.lowercased()) }
                 if !matched.isEmpty { data.indication = matched }
             }
+            // Pre-fill normal impression when all segments are normal and form is fresh
+            if data.impression.isEmpty && data.oesophagusNormal && data.stomachNormal && data.duodenumNormal {
+                let op = data.operator_.isEmpty ? "the endoscopist" : data.operator_
+                data.impression = "OGD performed by \(op). " +
+                    "The oesophagus was normal with no mucosal lesion, Barrett's change, or hiatus hernia identified. " +
+                    "The gastro-oesophageal junction was well defined. " +
+                    "Retroflexion in the fundus showed a normal cardia. " +
+                    "The stomach — body, antrum, and pylorus — was normal with no ulceration, mass, or haemorrhage. " +
+                    "The duodenum to D2 was normal. " +
+                    "No biopsies taken. Procedure completed without complication."
+            }
             save()
         }
         .alert("AI Error", isPresented: Binding(

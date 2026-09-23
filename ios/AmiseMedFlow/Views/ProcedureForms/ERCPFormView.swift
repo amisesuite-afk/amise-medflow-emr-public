@@ -196,6 +196,20 @@ struct ERCPFormView: View {
                 if !matched.isEmpty { data.indication = matched }
             }
 
+            // Pre-fill standard normal impression template when form is freshly opened
+            if data.impression.isEmpty {
+                let op = data.operator_.isEmpty ? "the endoscopist" : data.operator_
+                data.impression = "ERCP performed by \(op). " +
+                    "The major papilla was identified in the second part of the duodenum. " +
+                    "Selective deep cannulation of the common bile duct was achieved. " +
+                    "Cholangiogram performed: the common bile duct was of normal calibre with no filling defect, stricture, or extrinsic compression identified. " +
+                    "The intrahepatic ducts were normal. " +
+                    "Biliary sphincterotomy performed. " +
+                    "Post-sphincterotomy appearance satisfactory with adequate drainage confirmed. " +
+                    "PR indomethacin 100 mg administered at end of procedure for post-ERCP pancreatitis prophylaxis. " +
+                    "Procedure completed without immediate complication."
+            }
+
             save()
         }
         .alert("AI Error", isPresented: Binding(

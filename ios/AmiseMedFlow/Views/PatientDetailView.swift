@@ -38,6 +38,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     case ogd            = "OGD Report"
     case surgery        = "Operative Note"
     case ercp           = "ERCP Report"
+    case bronchoscopy   = "Bronchoscopy Report"
     case history        = "Visit History"
     case scores         = "Clinical Scores"
     case journey        = "Patient Journey"
@@ -69,6 +70,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .ogd:            "scope"
         case .surgery:        "scissors"
         case .ercp:           "waveform.and.magnifyingglass"
+        case .bronchoscopy:   "lungs"
         case .history:        "clock.badge.checkmark"
         case .scores:         "chart.bar.doc.horizontal"
         case .journey:        "arrow.triangle.branch"
@@ -100,6 +102,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .ogd:            "OGD"
         case .surgery:        "Op Note"
         case .ercp:           "ERCP"
+        case .bronchoscopy:   "Bronch"
         case .history:        "History"
         case .scores:         "Scores"
         case .journey:        "Journey"
@@ -146,7 +149,8 @@ struct PatientDetailPadView: View {
             case .trauma:  return patient.visitType == .trauma
             case .ogd:     return patient.visitType == .ogd || patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery
             case .surgery: return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
-            case .ercp:    return patient.visitType == .ercp || patient.visitType == .dayOfSurgery
+            case .ercp:         return patient.visitType == .ercp || patient.visitType == .dayOfSurgery
+            case .bronchoscopy: return patient.visitType == .bronchoscopy || patient.visitType == .dayOfSurgery
             case .history: return !patient.encounters.filter(\.isComplete).isEmpty
             default:       return true
             }
@@ -383,6 +387,8 @@ struct PatientDetailPadView: View {
             SurgeryNoteView(patient: patient)
         case .ercp:
             ERCPFormView(patient: patient)
+        case .bronchoscopy:
+            BronchoscopyFormView(patient: patient)
         default:
             EmptyView()
         }
@@ -1283,6 +1289,10 @@ struct PatientDetailView: View {
                 if patient.visitType == .ercp || patient.visitType == .dayOfSurgery {
                     quickAction("ERCP Report", icon: "waveform.and.magnifyingglass", color: .blue,
                                 destination: AnyView(ERCPFormView(patient: patient)))
+                }
+                if patient.visitType == .bronchoscopy || patient.visitType == .dayOfSurgery {
+                    quickAction("Bronchoscopy", icon: "lungs", color: .teal,
+                                destination: AnyView(BronchoscopyFormView(patient: patient)))
                 }
                 quickAction("Scores", icon: "chart.bar.doc.horizontal", color: .teal,
                             destination: AnyView(ClinicalScoresView(patient: patient)))

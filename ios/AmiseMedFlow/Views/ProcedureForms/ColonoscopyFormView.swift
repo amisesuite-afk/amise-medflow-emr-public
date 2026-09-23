@@ -205,6 +205,22 @@ struct ColonoscopyFormView: View {
                 if !matched.isEmpty { data.indication = matched }
             }
 
+            // Pre-fill normal impression on first load
+            let allNormal = data.rectumNormal && data.sigmoidNormal && data.descendingNormal &&
+                            data.splenicNormal && data.transverseNormal && data.hepaticNormal &&
+                            data.ascendingNormal && data.cecumNormal
+            if data.impression.isEmpty && allNormal {
+                let op = data.operator_.isEmpty ? "the endoscopist" : data.operator_
+                let ileum = data.ilealIntubation ? " The terminal ileum was intubated and normal." : ""
+                data.impression = "Colonoscopy performed by \(op). " +
+                    "Caecal intubation was achieved and confirmed by identification of the appendix orifice and ileocaecal valve.\(ileum) " +
+                    "Boston Bowel Preparation Scale: right \(data.bostonRight)/3, transverse \(data.bostonTransverse)/3, left \(data.bostonLeft)/3. " +
+                    "Systematic examination of all colonic segments on withdrawal was normal. " +
+                    "The rectum was inspected in retroflexion and was normal. " +
+                    "No polyps, diverticular disease, mucosal abnormality, or lesions identified. " +
+                    "No biopsies taken. Procedure completed without complication."
+            }
+
             save()
         }
     }

@@ -268,6 +268,7 @@ final class Patient {
     var colonoscopyDataJson: String?      // ColonoscopyData
     var surgeryDataJson: String?          // SurgeryNoteData
     var ercpDataJson: String?             // ERCPData
+    var bronchoscopyDataJson: String?     // BronchoscopyData
     var dischargeSummaryDataJson: String? // DischargeSummaryData
     var postOpReviewDataJson: String?     // PostOpReviewData
     var referralLetterDataJson: String?   // ReferralLetterData
@@ -486,6 +487,7 @@ enum VisitType: String, Codable, CaseIterable {
     case trauma        = "Trauma / Burns"
     case surgeryElective  = "Elective Surgery"
     case surgeryEmergency = "Emergency Surgery"
+    case bronchoscopy     = "Bronchoscopy"
 
     var icon: String {
         switch self {
@@ -501,6 +503,7 @@ enum VisitType: String, Codable, CaseIterable {
         case .trauma:           return "cross.case.fill"
         case .surgeryElective:  return "scissors"
         case .surgeryEmergency: return "bolt.heart.fill"
+        case .bronchoscopy:     return "lungs"
         }
     }
 
@@ -518,6 +521,7 @@ enum VisitType: String, Codable, CaseIterable {
         case .trauma:           return "Trauma"
         case .surgeryElective:  return "Elective Sx"
         case .surgeryEmergency: return "Emerg Sx"
+        case .bronchoscopy:     return "Bronch"
         }
     }
 
@@ -535,6 +539,7 @@ enum VisitType: String, Codable, CaseIterable {
         case .trauma:           return "#DC2626"
         case .surgeryElective:  return "#7C3AED"
         case .surgeryEmergency: return "#DC2626"
+        case .bronchoscopy:     return "#0891B2"
         }
     }
 }

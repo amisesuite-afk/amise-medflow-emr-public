@@ -188,13 +188,14 @@ struct ClinicalHubView: View {
                 let showColonoscopy  = vt == .colonoscopy || vt == .dayOfSurgery
                 let showSurgery      = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
                 let showERCP         = vt == .ercp || vt == .dayOfSurgery
+                let showBronchoscopy = vt == .bronchoscopy || vt == .dayOfSurgery
                 let showPostOp       = vt == .postOp
                 let showDischarge    = vt == .postOp || vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
                 let showReferral     = vt == .newConsult || vt == .followUp || vt == .urgentReview || vt == .postOp
                 let showConsent      = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
                 let showPreOpChecklist = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
 
-                if showTrauma || showOGD || showColonoscopy || showSurgery || showERCP || showPostOp || showDischarge || showReferral || showConsent || showPreOpChecklist {
+                if showTrauma || showOGD || showColonoscopy || showSurgery || showERCP || showBronchoscopy || showPostOp || showDischarge || showReferral || showConsent || showPreOpChecklist {
                     Section("Procedure Forms") {
                         if showTrauma {
                             NavigationLink { TraumaAssessmentView(patient: patient) } label: {
@@ -230,6 +231,11 @@ struct ClinicalHubView: View {
                         if showERCP {
                             NavigationLink { ERCPFormView(patient: patient) } label: {
                                 Label("ERCP Report", systemImage: "waveform.and.magnifyingglass")
+                            }
+                        }
+                        if showBronchoscopy {
+                            NavigationLink { BronchoscopyFormView(patient: patient) } label: {
+                                Label("Bronchoscopy Report", systemImage: "lungs")
                             }
                         }
                         if showPostOp {
