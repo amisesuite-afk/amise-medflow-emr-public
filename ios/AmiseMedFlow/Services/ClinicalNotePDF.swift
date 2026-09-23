@@ -210,10 +210,29 @@ enum ClinicalNotePDF {
         if let hpi = patient.hpi, !hpi.isEmpty {
             blocks.append(("HISTORY OF PRESENTING ILLNESS", hpi))
         }
-        if let pmh = patient.pmhNotes, !pmh.isEmpty {
+        // PMH — structured entries take priority over free-text
+        let pmhEntries = patient.pmhEntries
+        if !pmhEntries.isEmpty {
+            let pmhText = pmhEntries.map { e -> String in
+                let yr = e.yearText.isEmpty ? "" : " (\(e.yearText))"
+                return "• \(e.condition)\(yr)"
+            }.joined(separator: "\n")
+            blocks.append(("PAST MEDICAL HISTORY", pmhText))
+        } else if let pmh = patient.pmhNotes, !pmh.isEmpty {
             blocks.append(("PAST MEDICAL HISTORY", pmh))
         }
-        if let pshx = patient.surgicalHistory, !pshx.isEmpty {
+
+        // PSHx — structured entries take priority over free-text
+        let pshxEntries = patient.pshxEntries
+        if !pshxEntries.isEmpty {
+            let pshxText = pshxEntries.map { e -> String in
+                var line = "• \(e.procedure)"
+                if !e.yearText.isEmpty { line += " (\(e.yearText))" }
+                if !e.anaesthetic.isEmpty { line += " — \(e.anaesthetic)" }
+                return line
+            }.joined(separator: "\n")
+            blocks.append(("PAST SURGICAL HISTORY", pshxText))
+        } else if let pshx = patient.surgicalHistory, !pshx.isEmpty {
             blocks.append(("PAST SURGICAL HISTORY", pshx))
         }
 
