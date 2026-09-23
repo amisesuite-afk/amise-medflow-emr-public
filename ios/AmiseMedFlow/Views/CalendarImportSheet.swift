@@ -104,7 +104,7 @@ struct CalendarImportSheet: View {
                             Text("NEW")
                                 .font(.system(size: 10, weight: .bold))
                                 .padding(.horizontal, 5).padding(.vertical, 1)
-                                .background(AMColor.accent.opacity(0.15))
+                                .background { AMColor.accent.opacity(0.15) }
                                 .foregroundStyle(AMColor.accent)
                                 .clipShape(RoundedRectangle(cornerRadius: 3))
                         }

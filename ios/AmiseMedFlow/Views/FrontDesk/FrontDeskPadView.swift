@@ -231,7 +231,7 @@ private struct FDCheckInView: View {
                     VStack(spacing: 16) {
                         Image(systemName: "hand.tap")
                             .font(.system(size: 48))
-                            .foregroundStyle(AMColor.accent.opacity(0.45))
+                            .foregroundStyle(.teal.opacity(0.45))
                         Text("Select a Patient")
                             .font(.title3.weight(.semibold))
                             .foregroundStyle(.secondary)
