@@ -7100,6 +7100,16 @@ enum ClinicalScoringEngine {
     static func ckdEpi(_ i: CKDEPIInput) -> ClinicalScore {
         // CKD-EPI 2021 (race-free) Cr equation
         // eGFR = 142 × min(Scr/κ, 1)^α × max(Scr/κ, 1)^(-1.200) × 0.9938^Age [× 1.012 if female]
+        // Guard: scr ≤ 0 → pow(0, negative alpha) = +infinity which crashes Int()
+        guard i.serumCreatinineMgDL > 0 else {
+            return ClinicalScore(
+                systemName: "CKD-EPI (2021)", abbreviation: "CKD-EPI",
+                score: 0, maxScore: 0, risk: .low,
+                interpretation: "Enter serum creatinine > 0 mg/dL to calculate eGFR.",
+                recommendations: [], items: [], redFlags: [],
+                evidenceNote: "CKD-EPI 2021 (Inker et al, NEJM 2021). Race-free equation."
+            )
+        }
         let kappa: Double = i.sex.lowercased() == "female" ? 0.7 : 0.9
         let alpha: Double = i.sex.lowercased() == "female" ? -0.241 : -0.302
         let scr = i.serumCreatinineMgDL

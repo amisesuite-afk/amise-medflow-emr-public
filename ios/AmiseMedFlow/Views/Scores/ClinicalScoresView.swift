@@ -1583,11 +1583,12 @@ struct ClinicalScoresView: View {
     // MARK: - Score write-back
 
     private func saveScoreToAssessment(_ r: ClinicalScore) {
+        guard r.score.isFinite else { return }
         let fmt = DateFormatter()
         fmt.dateStyle = .medium
         fmt.timeStyle = .short
         let scoreStr     = r.score == Double(Int(r.score)) ? "\(Int(r.score))" : String(format: "%.1f", r.score)
-        let maxStr       = r.maxScore == Double(Int(r.maxScore)) ? "\(Int(r.maxScore))" : String(format: "%.1f", r.maxScore)
+        let maxStr       = r.maxScore.isFinite && r.maxScore == Double(Int(r.maxScore)) ? "\(Int(r.maxScore))" : String(format: "%.1f", r.maxScore)
         let scoreDisplay = r.maxScore > 0 ? "\(scoreStr)/\(maxStr)" : scoreStr
         var line = "[\(fmt.string(from: .now))] \(r.systemName): \(scoreDisplay) — \(r.risk.rawValue) Risk. \(r.interpretation)"
 
@@ -1779,6 +1780,7 @@ struct ClinicalScoresView: View {
     // MARK: - Persist computed score to patient Bayesian fields (called only on explicit save)
 
     private func persistScoreToPatient(_ score: ActiveScore, _ r: ClinicalScore) {
+        guard r.score.isFinite else { return }
         let intScore = Int(r.score)
         switch score {
         case .alvarado:     patient.alvaradoScore            = intScore
