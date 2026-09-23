@@ -279,6 +279,11 @@ enum ClinicalNotePDF {
             blocks.append(("ASSESSMENT", assessment))
         }
 
+        // Plan (from this specific note)
+        if let plan = note.plan, !plan.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            blocks.append(("PLAN", plan))
+        }
+
         // Medications
         if !patient.prescriptions.isEmpty {
             let rxText = patient.prescriptions.map { "• \($0.displayLine)" }.joined(separator: "\n")

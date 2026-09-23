@@ -414,15 +414,62 @@ enum ProcedureFormPDF {
                 if !data.woundNotes.isEmpty    { wound.append(("Notes", data.woundNotes)) }
                 y = drawRowSection(ctx: ctx, title: "Wound Assessment", rows: wound, y: y)
             }
+            if data.drainPresent {
+                var drain: [(String, String)] = [("Output", data.drainOutput.isEmpty ? "—" : data.drainOutput),
+                                                  ("Fluid character", data.drainFluid)]
+                if data.drainRemoved { drain.append(("Status", "Removed today")) }
+                y = drawRowSection(ctx: ctx, title: "Drain", rows: drain, y: y)
+            }
+
             let gi: [(String, String)] = [
                 ("Flatus", data.flatus ? "Yes" : "No"),
                 ("Bowels open", data.bowelsOpen ? "Yes" : "No"),
                 ("Diet tolerance", data.toleratingDiet ? data.dietType : "Nil/Not tolerating"),
+                ("Nausea/vomiting", data.nauseaVomiting ? "Present" : "Absent"),
             ]
             y = drawRowSection(ctx: ctx, title: "GI Recovery", rows: gi, y: y)
 
+            var urinary: [(String, String)] = []
+            if data.urinaryCatheter {
+                urinary.append(("Catheter", data.catheterRemoved ? "Removed today" : "In situ"))
+                if !data.urineOutput.isEmpty { urinary.append(("Urine output", data.urineOutput)) }
+            } else {
+                urinary.append(("Catheter", "Not in situ"))
+            }
+            y = drawRowSection(ctx: ctx, title: "Urinary", rows: urinary, y: y)
+
+            let mob: [(String, String)] = [
+                ("Mobilising", data.mobilising ? "Yes" : "No"),
+                ("Physiotherapy", data.physioSeen ? "Seen today" : "Not seen"),
+                ("DVT prophylaxis", data.dvtProphylaxisGiven ? "Given" : "Not given"),
+                ("TEDs", data.teds ? "Applied" : "Not applied"),
+            ]
+            y = drawRowSection(ctx: ctx, title: "Mobility & VTE", rows: mob, y: y)
+
+            let vitals: [(String, String)] = [
+                ("Temperature", data.tempNormal ? "Normal" : "Abnormal"),
+                ("Blood pressure", data.bpNormal ? "Normal" : "Abnormal"),
+                ("Heart rate", data.hrNormal ? "Normal" : "Abnormal"),
+                ("NEWS2 score", data.news2.isEmpty ? "Not recorded" : data.news2),
+            ]
+            y = drawRowSection(ctx: ctx, title: "Observations", rows: vitals, y: y)
+            if !data.vitalsNotes.isEmpty { y = drawTextSection(ctx: ctx, title: "Observations Notes", body: data.vitalsNotes, y: y) }
+
+            if !data.labsOrdered.isEmpty || !data.labNotes.isEmpty {
+                var labs: [(String, String)] = []
+                if !data.labsOrdered.isEmpty { labs.append(("Investigations ordered", data.labsOrdered.joined(separator: ", "))) }
+                if !data.labNotes.isEmpty    { labs.append(("Notes", data.labNotes)) }
+                y = drawRowSection(ctx: ctx, title: "Investigations", rows: labs, y: y)
+            }
+
             if !data.assessment.isEmpty { y = drawTextSection(ctx: ctx, title: "Assessment", body: data.assessment, y: y) }
             if !data.plan.isEmpty       { y = drawTextSection(ctx: ctx, title: "Plan", body: data.plan, y: y) }
+
+            var discharge: [(String, String)] = []
+            if let edd = data.expectedDischargeDate { discharge.append(("Expected discharge", df.string(from: edd))) }
+            if !data.dischargeBarriers.isEmpty { discharge.append(("Barriers to discharge", data.dischargeBarriers.joined(separator: ", "))) }
+            if !discharge.isEmpty { y = drawRowSection(ctx: ctx, title: "Discharge Planning", rows: discharge, y: y) }
+
             drawSignatureBlock(ctx: ctx, surgeon: data.reviewedBy, y: y)
             drawFooter()
         }
@@ -444,6 +491,16 @@ enum ProcedureFormPDF {
             else                         { header += "To Whom It May Concern" }
             if !data.salutation.isEmpty  { header += "\n\n\(data.salutation)" }
             y = drawTextSection(ctx: ctx, title: nil, body: header, y: y)
+
+            // Urgency stamp when not routine
+            if !data.urgency.isEmpty && data.urgency.lowercased() != "routine" {
+                let urgencyAttr: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.systemFont(ofSize: 9, weight: .bold),
+                    .foregroundColor: UIColor.systemOrange,
+                ]
+                "URGENCY: \(data.urgency.uppercased())".draw(at: CGPoint(x: lm, y: y), withAttributes: urgencyAttr)
+                y += 14
+            }
 
             let dob = patient.dateOfBirth.map { DateFormatter.ectDate.string(from: $0) } ?? ""
             let ptLine = "Re: \(patient.fullName), \(patient.sex.rawValue), \(dob)\(patient.mrn.map { " (MRN: \($0))" } ?? "")"
