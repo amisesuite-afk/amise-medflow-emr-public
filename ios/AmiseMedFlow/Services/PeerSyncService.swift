@@ -33,6 +33,7 @@ final class PeerSyncService: NSObject, ObservableObject {
 
     @Published var nearbyCount    = 0   // devices found (may not be connected)
     @Published var connectedCount = 0   // devices actively exchanging data
+    @Published var isRunning      = false  // true while advertiser+browser are active
     @Published var lastPeerSyncAt: Date?
     @Published var peerSyncStatus: String = ""
     @Published var syncHistory: [PeerSyncEvent] = []   // last 20 sync events
@@ -80,6 +81,7 @@ final class PeerSyncService: NSObject, ObservableObject {
         browser?.delegate = self
         browser?.startBrowsingForPeers()
 
+        isRunning      = true
         peerSyncStatus = "Looking for nearby devices…"
     }
 
@@ -95,6 +97,7 @@ final class PeerSyncService: NSObject, ObservableObject {
         sentCount.removeAll()
         nearbyCount    = 0
         connectedCount = 0
+        isRunning      = false
         peerSyncStatus = ""
     }
 

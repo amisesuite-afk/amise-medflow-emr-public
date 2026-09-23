@@ -24,6 +24,7 @@ struct SyncStatusBar: View {
     private var peerColor: Color {
         if peerSync.connectedCount > 0 { return .green }
         if peerSync.nearbyCount > 0    { return .orange }
+        if peerSync.isRunning          { return AMColor.accent }  // scanning, no peers yet
         return .secondary
     }
 
@@ -356,6 +357,7 @@ private struct SyncStatusPopover: View {
     private var peerStatusColor: Color {
         if peerSync.connectedCount > 0 { return .green }
         if peerSync.nearbyCount > 0    { return .orange }
+        if peerSync.isRunning          { return AMColor.accent }
         return .secondary
     }
 

@@ -24,6 +24,7 @@ extension PeerSyncService: MCNearbyServiceAdvertiserDelegate {
     nonisolated func advertiser(_ advertiser: MCNearbyServiceAdvertiser,
                                  didNotStartAdvertisingPeer error: Error) {
         Task { @MainActor in
+            self.isRunning      = false
             self.peerSyncStatus = "Proximity sync unavailable"
         }
     }
@@ -59,7 +60,10 @@ extension PeerSyncService: MCNearbyServiceBrowserDelegate {
 
     nonisolated func browser(_ browser: MCNearbyServiceBrowser,
                               didNotStartBrowsingForPeers error: Error) {
-        Task { @MainActor in self.peerSyncStatus = "Proximity sync unavailable" }
+        Task { @MainActor in
+            self.isRunning      = false
+            self.peerSyncStatus = "Proximity sync unavailable"
+        }
     }
 }
 

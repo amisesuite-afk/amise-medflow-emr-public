@@ -293,13 +293,16 @@ struct DashboardView: View {
 
                 HStack {
                     Image(systemName: "antenna.radiowaves.left.and.right")
-                        .foregroundStyle(peerSync.connectedCount > 0 ? .green : .secondary)
+                        .foregroundStyle(peerSync.connectedCount > 0 ? Color.green
+                                         : peerSync.nearbyCount > 0  ? Color.orange
+                                         : peerSync.isRunning        ? AMColor.accent
+                                         : Color.secondary)
                         .frame(width: 20)
                     Text(peerSync.connectedCount > 0
                          ? "\(peerSync.connectedCount) device\(peerSync.connectedCount == 1 ? "" : "s") connected"
                          : peerSync.nearbyCount > 0
                          ? "\(peerSync.nearbyCount) nearby"
-                         : "No devices nearby")
+                         : peerSync.isRunning ? "Scanning…" : "No devices nearby")
                         .font(.system(size: 13))
                     Spacer()
                 }
