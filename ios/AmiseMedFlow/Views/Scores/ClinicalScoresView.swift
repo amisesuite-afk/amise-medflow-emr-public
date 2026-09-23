@@ -1459,108 +1459,180 @@ struct ClinicalScoresView: View {
     @ViewBuilder
     private func formBody(for score: ActiveScore) -> some View {
         pendingVariablesPanel
+        formBodyByCategory(score)
+    }
+
+    // Split by category to avoid a 101-case @ViewBuilder switch, which generates
+    // a deeply-nested _ConditionalContent type that overflows the stack at runtime.
+    @ViewBuilder
+    private func formBodyByCategory(_ score: ActiveScore) -> some View {
+        switch score.category {
+        case .all:        EmptyView()
+        case .acute:      acuteFormBody(score)
+        case .gi:         giFormBody(score)
+        case .vascular:   vascularFormBody(score)
+        case .sepsis:     sepsisFormBody(score)
+        case .preop:      preopFormBody(score)
+        case .neuro:      neuroFormBody(score)
+        case .cardiac:    cardiacFormBody(score)
+        case .monitoring: monitoringFormBody(score)
+        }
+    }
+
+    @ViewBuilder
+    private func acuteFormBody(_ score: ActiveScore) -> some View {
         switch score {
         case .alvarado:     alvaradoForm
         case .tokyoChole:   tokyoCholecystitisForm
         case .tokyoCholang: tokyoCholangitisForm
         case .ranson:       ransonForm
         case .glasgow:      glasgowForm
-        case .rockall:      rockallForm
-        case .blatchford:   blatchfordForm
-        case .sirs:         sirsForm
-        case .qsofa:        qsofaForm
-        case .mews:         mewsForm
-        case .wellsDVT:     wellsDVTForm
-        case .wellsPE:      wellsPEForm
-        case .abcd2:        abcd2Form
-        case .gcs:          gcsForm
-        case .lrinec:       lrinecForm
-        case .rcri:         rcriForm
-        case .asa:          asaForm
-        case .caprini:      capriniForm
-        case .childPugh:    childPughForm
-        case .meld:         meldForm
-        case .cha2ds2vasc:  cha2ds2vascForm
-        case .hasBled:      hasBledForm
-        case .stopBang:     stopBangForm
-        case .news2:        news2Form
-        case .psiPort:      psiPortForm
         case .bisap:        bisapForm
-        case .aims65:       aims65Form
-        case .sofa:         sofaForm
-        case .fib4:         fib4Form
-        case .curb65:       curb65Form
-        case .padua:        paduaForm
-        case .apacheII:     apacheIIForm
-        case .ppossum:      ppossumForm
         case .mpi:          mpiForm
         case .ctsi:         ctsiForm
-        case .nrs2002:      nrs2002Form
-        case .forrest:      forrestForm
-        case .heart:        heartForm
-        case .mallampati:   mallampatiForm
-        case .cfs:          cfsForm
-        case .timi:         timiForm
-        case .waterlow:     waterlowForm
-        case .surgicalApgar: surgicalApgarForm
-        case .grace:         graceForm
-        case .dasi:          dasiForm
-        case .barthel:       barthelForm
-        case .euroScoreII:   euroScoreIIForm
-        case .nihss:         nihssForm
-        case .mrs:           mrsForm
-        case .must:          mustForm
-        case .clavienDindo:  clavienDindoForm
-        case .aldrete:       aldreteForm
+        case .rts:          rtsForm
+        case .baux:         bauxForm
+        case .iss:          issForm
+        case .hinchey:      hincheyForm
+        case .airScore:     airScoreForm
+        case .parkland:     parklandForm
+        case .pas:          pasForm
+        case .stone:        stoneForm
+        case .pts:          ptsForm
+        case .ripasa:       ripasaForm
+        default:            EmptyView()
+        }
+    }
+
+    @ViewBuilder
+    private func giFormBody(_ score: ActiveScore) -> some View {
+        switch score {
+        case .rockall:        rockallForm
+        case .blatchford:     blatchfordForm
+        case .aims65:         aims65Form
+        case .forrest:        forrestForm
+        case .haps:           hapsForm
+        case .glasgowImrie:   glasgowImrieForm
+        case .albi:           albiForm
+        case .auditC:         auditCForm
+        case .oakland:        oaklandForm
+        case .kingsCriteria:  kingsCriteriaForm
+        case .losAngeles:     losAngelesForm
+        case .meld3:          meld3Form
+        case .trueloveWitts:  trueloveWittsForm
+        case .harveyBradshaw: harveyBradshawForm
+        case .maddrey:        maddreyForm
+        case .manning:        manningForm
+        case .fongCrs:        fongCrsForm
+        default:              EmptyView()
+        }
+    }
+
+    @ViewBuilder
+    private func vascularFormBody(_ score: ActiveScore) -> some View {
+        switch score {
+        case .wellsDVT:      wellsDVTForm
+        case .wellsPE:       wellsPEForm
+        case .caprini:       capriniForm
+        case .padua:         paduaForm
         case .fourT:         fourTForm
-        case .oakland:       oaklandForm
-        case .kingsCriteria: kingsCriteriaForm
-        case .ecog:          ecogForm
-        case .rts:           rtsForm
-        case .kdigo:         kdigoForm
-        case .baux:          bauxForm
-        case .iss:           issForm
-        case .nutric:        nutricForm
         case .spesi:         spesiForm
-        case .decaf:         decafForm
-        case .hinchey:       hincheyForm
-        case .airScore:      airScoreForm
         case .perc:          percForm
-        case .shockIndex:    shockIndexForm
-        case .parkland:      parklandForm
-        case .pas:           pasForm
         case .revisedGeneva: revisedGenevaForm
-        case .cci:           cciForm
-        case .mfi5:          mfi5Form
-        case .haps:          hapsForm
-        case .glasgowImrie:  glasgowImrieForm
-        case .albi:          albiForm
-        case .auditC:        auditCForm
+        default:             EmptyView()
+        }
+    }
+
+    @ViewBuilder
+    private func sepsisFormBody(_ score: ActiveScore) -> some View {
+        switch score {
+        case .sirs:       sirsForm
+        case .qsofa:      qsofaForm
+        case .psiPort:    psiPortForm
+        case .sofa:       sofaForm
+        case .curb65:     curb65Form
+        case .apacheII:   apacheIIForm
+        case .kdigo:      kdigoForm
+        case .nutric:     nutricForm
+        case .decaf:      decafForm
+        case .centor:     centorForm
+        case .berlinARDS: berlinARDSForm
+        case .dukeIE:     dukeIEForm
+        case .fgsi:       fgsiForm
+        default:          EmptyView()
+        }
+    }
+
+    @ViewBuilder
+    private func preopFormBody(_ score: ActiveScore) -> some View {
+        switch score {
+        case .rcri:        rcriForm
+        case .asa:         asaForm
+        case .childPugh:   childPughForm
+        case .meld:        meldForm
+        case .stopBang:    stopBangForm
+        case .fib4:        fib4Form
+        case .ppossum:     ppossumForm
+        case .nrs2002:     nrs2002Form
+        case .mallampati:  mallampatiForm
+        case .cfs:         cfsForm
+        case .dasi:        dasiForm
+        case .barthel:     barthelForm
+        case .euroScoreII: euroScoreIIForm
+        case .ecog:        ecogForm
+        case .cci:         cciForm
+        case .mfi5:        mfi5Form
+        case .must:        mustForm
+        case .mirels:      mirelsForm
+        case .ariscat:     ariscatForm
+        default:           EmptyView()
+        }
+    }
+
+    @ViewBuilder
+    private func neuroFormBody(_ score: ActiveScore) -> some View {
+        switch score {
+        case .abcd2:  abcd2Form
+        case .lrinec: lrinecForm
+        case .gcs:    gcsForm
+        case .nihss:  nihssForm
+        case .mrs:    mrsForm
+        default:      EmptyView()
+        }
+    }
+
+    @ViewBuilder
+    private func cardiacFormBody(_ score: ActiveScore) -> some View {
+        switch score {
+        case .cha2ds2vasc: cha2ds2vascForm
+        case .hasBled:     hasBledForm
+        case .heart:       heartForm
+        case .timi:        timiForm
+        case .grace:       graceForm
+        default:           EmptyView()
+        }
+    }
+
+    @ViewBuilder
+    private func monitoringFormBody(_ score: ActiveScore) -> some View {
+        switch score {
+        case .mews:          mewsForm
+        case .news2:         news2Form
+        case .waterlow:      waterlowForm
+        case .surgicalApgar: surgicalApgarForm
         case .phq9:          phq9Form
         case .sapsII:        sapsIIForm
-        case .stone:         stoneForm
-        case .losAngeles:    losAngelesForm
-        case .meld3:         meld3Form
         case .braden:        bradenForm
-        case .centor:        centorForm
         case .ipss:          ipssForm
-        case .trueloveWitts: trueloveWittsForm
-        case .harveyBradshaw:harveyBradshawForm
-        case .maddrey:       maddreyForm
-        case .manning:       manningForm
         case .lace:          laceForm
         case .findRisc:      findRiscForm
-        case .mirels:        mirelsForm
         case .ckdEpi:        ckdEpiForm
-        case .ariscat:       ariscatForm
-        case .fongCrs:       fongCrsForm
-        case .berlinARDS:    berlinARDSForm
         case .cage:          cageForm
-        case .dukeIE:        dukeIEForm
         case .mmrc:          mmrcForm
-        case .pts:           ptsForm
-        case .ripasa:        ripasaForm
-        case .fgsi:          fgsiForm
+        case .shockIndex:    shockIndexForm
+        case .clavienDindo:  clavienDindoForm
+        case .aldrete:       aldreteForm
+        default:             EmptyView()
         }
     }
 
