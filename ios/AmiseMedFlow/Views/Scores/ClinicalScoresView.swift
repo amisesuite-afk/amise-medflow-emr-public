@@ -354,6 +354,8 @@ struct ClinicalScoresView: View {
     @State private var isExportingScoresPDF = false
     @State private var scoresShareURL: URL? = nil
     @State private var showScoresShareSheet = false
+    /// When true the full 101-score browse catalogue is shown; default is patient-specific view.
+    @State private var showingAllScores = false
 
     // Alvarado
     @State private var alv = AlvaradoInput()
@@ -542,11 +544,19 @@ struct ClinicalScoresView: View {
         return ActiveScore.allCases.filter { $0.category == selectedCategory }
     }
 
-    /// Layer 2: ranked scores from working diagnosis + ICD + chief complaint
+    /// Layer 2: all ranked recommendations for this patient (uncapped — grid uses all of them).
     var recommendedScores: [DiagnosisScoreRecommendation] {
-        guard patient.workingDiagnosis != nil || patient.workingDiagnosisICD != nil ||
-              patient.chiefComplaint != nil else { return [] }
-        return Array(DiagnosisScoreMapper.recommendations(for: patient).prefix(6))
+        DiagnosisScoreMapper.recommendations(for: patient)
+    }
+
+    /// Top recommendations for the patient-contextualised default view (max 8 cards).
+    var featuredScores: [DiagnosisScoreRecommendation] {
+        Array(recommendedScores.prefix(8))
+    }
+
+    /// Universal fallback scores shown when no diagnosis context is available.
+    var universalScores: [ActiveScore] {
+        [.news2, .mews, .qsofa, .asa, .caprini, .gcs]
     }
 
     /// Layer 1: auto-focus category from chief complaint
@@ -556,8 +566,8 @@ struct ClinicalScoresView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            categoryBar
             if let score = selectedScore {
+                // Score form — shown over either mode
                 ScrollView {
                     VStack(spacing: 16) {
                         inputForm(for: score)
@@ -567,12 +577,16 @@ struct ClinicalScoresView: View {
                     }
                     .padding()
                 }
-            } else {
+            } else if showingAllScores {
+                // Browse mode: full catalogue with category filter
+                categoryBar
                 scoreGrid
+            } else {
+                // Default: patient-specific curated view
+                patientContextView
             }
         }
         .onAppear {
-            // Layer 1: pre-select category from chief complaint if user hasn't changed it
             if selectedCategory == .all, let cat = autoCategory {
                 selectedCategory = cat
             }
@@ -660,28 +674,257 @@ struct ClinicalScoresView: View {
         .background(Color(uiColor: .systemGroupedBackground))
     }
 
-    // MARK: - Score selection grid
+    // MARK: - Patient-contextualised default view
+
+    private var patientContextView: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+
+                // Diagnosis context header
+                if let dx = patient.workingDiagnosis, !dx.isEmpty {
+                    contextHeader(dx: dx)
+                        .padding(.bottom, 4)
+                }
+
+                // Featured recommended scores or universal fallback
+                if !featuredScores.isEmpty {
+                    contextSectionHeader("Recommended for this presentation", icon: "sparkles")
+                    LazyVGrid(
+                        columns: [GridItem(.adaptive(minimum: 155), spacing: 10)],
+                        spacing: 10
+                    ) {
+                        ForEach(featuredScores) { rec in
+                            Button {
+                                selectedScore = rec.score
+                                result = nil
+                            } label: {
+                                contextScoreCard(rec)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 16)
+                } else {
+                    contextSectionHeader("Essential monitoring", icon: "waveform.path.ecg")
+                    LazyVGrid(
+                        columns: [GridItem(.adaptive(minimum: 155), spacing: 10)],
+                        spacing: 10
+                    ) {
+                        ForEach(universalScores, id: \.self) { score in
+                            Button {
+                                selectedScore = score
+                                result = nil
+                            } label: {
+                                scoreCard(score)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 8)
+
+                    // Prompt to set a diagnosis
+                    HStack(spacing: 8) {
+                        Image(systemName: "info.circle")
+                            .foregroundStyle(AMColor.accent)
+                        Text("Set a working diagnosis to see scores tailored to this patient's presentation.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(12)
+                    .background(AMColor.accentLt.opacity(0.4), in: RoundedRectangle(cornerRadius: 10))
+                    .padding(.horizontal)
+                    .padding(.bottom, 16)
+                }
+
+                // Patient score history (Layer 7)
+                if !patient.scoreHistory.isEmpty {
+                    contextSectionHeader("Recorded scores", icon: "clock.arrow.circlepath")
+                    patientScoreHistorySection
+                        .padding(.bottom, 16)
+                }
+
+                // Browse all button
+                Button {
+                    showingAllScores = true
+                } label: {
+                    HStack {
+                        Image(systemName: "square.grid.2x2")
+                        Text("Browse all \(ActiveScore.allCases.count) scores")
+                            .fontWeight(.medium)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+                    }
+                    .font(.subheadline)
+                    .foregroundStyle(AMColor.accent)
+                    .padding(14)
+                    .background(Color(uiColor: .systemBackground), in: RoundedRectangle(cornerRadius: 12))
+                    .shadow(color: .black.opacity(0.05), radius: 3, y: 1)
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal)
+                .padding(.bottom, 20)
+            }
+            .padding(.top, 12)
+        }
+        .background(Color(uiColor: .systemGroupedBackground))
+    }
+
+    private func contextHeader(dx: String) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: "stethoscope")
+                .font(.callout)
+                .foregroundStyle(AMColor.accent)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(dx)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                if let icd = patient.workingDiagnosisICD, !icd.isEmpty {
+                    Text(icd)
+                        .font(.caption2.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                }
+            }
+            Spacer()
+            if let cc = patient.chiefComplaint, !cc.isEmpty {
+                Text(cc)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Color.secondary.opacity(0.1), in: Capsule())
+            }
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 10)
+        .background(AMColor.accentLt.opacity(0.3))
+    }
+
+    private func contextSectionHeader(_ title: String, icon: String) -> some View {
+        Label(title, systemImage: icon)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(AMColor.accent)
+            .padding(.horizontal)
+            .padding(.bottom, 8)
+    }
+
+    private func contextScoreCard(_ rec: DiagnosisScoreRecommendation) -> some View {
+        let lastEntry = patient.scoreHistory
+            .filter { $0.scoreName == rec.score.rawValue }
+            .sorted { $0.recordedAt > $1.recordedAt }
+            .first
+
+        return VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .top) {
+                Image(systemName: rec.score.icon)
+                    .font(.title3)
+                    .foregroundStyle(AMColor.accent)
+                Spacer()
+                if let entry = lastEntry {
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(entry.abbreviation)
+                            .font(.caption2.monospacedDigit().weight(.bold))
+                            .foregroundStyle(scoreHistoryColor(entry.riskRaw))
+                        Text("saved")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                    }
+                }
+            }
+            Text(rec.score.rawValue)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.primary)
+                .multilineTextAlignment(.leading)
+                .lineLimit(2)
+            Text(rec.rationale)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(uiColor: .systemBackground), in: RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(AMColor.accent.opacity(0.25), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.05), radius: 3, y: 1)
+    }
+
+    private var patientScoreHistorySection: some View {
+        let entries = patient.scoreHistory.sorted { $0.recordedAt > $1.recordedAt }
+        return VStack(spacing: 0) {
+            ForEach(entries) { entry in
+                HStack(spacing: 10) {
+                    Circle()
+                        .fill(scoreHistoryColor(entry.riskRaw))
+                        .frame(width: 8, height: 8)
+                    Text(entry.scoreName)
+                        .font(.caption.weight(.medium))
+                        .lineLimit(1)
+                    Spacer()
+                    Text(entry.abbreviation)
+                        .font(.caption.monospacedDigit().weight(.semibold))
+                        .foregroundStyle(scoreHistoryColor(entry.riskRaw))
+                    Text(entry.recordedAt, style: .relative)
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                    Button {
+                        // Tap history row to re-open that score
+                        if let match = ActiveScore.allCases.first(where: { $0.rawValue == entry.scoreName }) {
+                            selectedScore = match
+                            result = nil
+                        }
+                    } label: {
+                        Image(systemName: "arrow.right.circle")
+                            .font(.caption)
+                            .foregroundStyle(AMColor.accent)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 9)
+                .background(Color(uiColor: .systemBackground))
+
+                if entry.id != entries.last?.id {
+                    Divider().padding(.leading)
+                }
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal)
+    }
+
+    // MARK: - Score browse catalogue (shown when showingAllScores = true)
 
     private var scoreGrid: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                // Layer 2: Diagnosis-linked recommendations
-                if !recommendedScores.isEmpty && selectedCategory == .all {
-                    recommendedSection
+                // Back to patient view
+                Button {
+                    showingAllScores = false
+                } label: {
+                    Label("Back to patient view", systemImage: "chevron.left")
+                        .font(.subheadline)
+                        .foregroundStyle(AMColor.accent)
                 }
-                // Layer 7: Recent score history (last 5)
-                if !patient.scoreHistory.isEmpty && selectedCategory == .all {
-                    recentScoresSection
-                }
-                // All scores grid (filtered by category)
-                if !recommendedScores.isEmpty && selectedCategory == .all {
-                    Text("All Scores")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
+                .buttonStyle(.plain)
+                .padding(.horizontal)
+                .padding(.vertical, 10)
+
+                if !recommendedScores.isEmpty {
+                    Text("Recommended scores are marked ✦")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
                         .padding(.horizontal)
-                        .padding(.top, 8)
-                        .padding(.bottom, 4)
+                        .padding(.bottom, 6)
                 }
+
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 12)], spacing: 12) {
                     ForEach(filteredScores) { score in
                         Button {
@@ -695,148 +938,9 @@ struct ClinicalScoresView: View {
                 }
                 .padding(.horizontal)
                 .padding(.bottom)
-                .padding(.top, 8)
+                .padding(.top, 4)
             }
         }
-    }
-
-    // MARK: - Recommended scores section (Layer 2)
-
-    private var recommendedSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 6) {
-                Image(systemName: "sparkles")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(AMColor.accent)
-                VStack(alignment: .leading, spacing: 1) {
-                    Text("Recommended for this patient")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(AMColor.accent)
-                    if let dx = patient.workingDiagnosis, !dx.isEmpty {
-                        Text(dx)
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                    }
-                }
-                Spacer()
-                if let icd = patient.workingDiagnosisICD, !icd.isEmpty {
-                    Text(icd)
-                        .font(.caption2.monospacedDigit())
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(Color.secondary.opacity(0.1), in: Capsule())
-                }
-            }
-            .padding(.horizontal)
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 10) {
-                    ForEach(recommendedScores) { rec in
-                        Button {
-                            selectedScore = rec.score
-                            result = nil
-                        } label: {
-                            recommendedCard(rec)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .padding(.horizontal)
-                .padding(.vertical, 4)
-            }
-        }
-        .padding(.vertical, 10)
-        .background(AMColor.accentLt.opacity(0.35))
-    }
-
-    private func recommendedCard(_ rec: DiagnosisScoreRecommendation) -> some View {
-        let alreadyRun = patient.scoreHistory.contains(where: { $0.scoreName == rec.score.rawValue })
-        return VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 6) {
-                Image(systemName: rec.score.icon)
-                    .font(.callout)
-                    .foregroundStyle(alreadyRun ? .white : AMColor.accent)
-                Spacer()
-                if alreadyRun {
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.caption)
-                        .foregroundStyle(.white.opacity(0.85))
-                }
-            }
-            Text(rec.score.rawValue)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(alreadyRun ? .white : .primary)
-                .multilineTextAlignment(.leading)
-                .lineLimit(2)
-            Text(rec.rationale)
-                .font(.caption2)
-                .foregroundStyle(alreadyRun ? .white.opacity(0.8) : .secondary)
-                .lineLimit(2)
-        }
-        .padding(12)
-        .frame(width: 170, alignment: .leading)
-        .background(
-            alreadyRun
-                ? AMColor.accent
-                : Color(uiColor: .systemBackground),
-            in: RoundedRectangle(cornerRadius: 10)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(alreadyRun ? Color.clear : AMColor.accent.opacity(0.3), lineWidth: 1)
-        )
-        .shadow(color: .black.opacity(0.06), radius: 3, y: 2)
-    }
-
-    // MARK: - Recent score history section (Layer 7)
-
-    private var recentScoresSection: some View {
-        let recent = patient.scoreHistory
-            .sorted { $0.recordedAt > $1.recordedAt }
-            .prefix(5)
-
-        return VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text("Recent Scores")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                Spacer()
-                Text("\(patient.scoreHistory.count) total")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
-            }
-            .padding(.horizontal)
-
-            ForEach(Array(recent)) { entry in
-                HStack(spacing: 10) {
-                    Circle()
-                        .fill(riskColor(for: entry.riskRaw))
-                        .frame(width: 8, height: 8)
-                    Text(entry.scoreName)
-                        .font(.caption.weight(.medium))
-                        .lineLimit(1)
-                    Spacer()
-                    Text(entry.abbreviation)
-                        .font(.caption.monospacedDigit())
-                        .foregroundStyle(riskColor(for: entry.riskRaw))
-                        .fontWeight(.semibold)
-                    Text(entry.recordedAt, style: .relative)
-                        .font(.caption2)
-                        .foregroundStyle(.tertiary)
-                }
-                .padding(.horizontal)
-                .padding(.vertical, 4)
-                .background(Color(uiColor: .systemBackground))
-            }
-        }
-        .padding(.vertical, 10)
-        .background(Color.secondary.opacity(0.05))
-    }
-
-    private func riskColor(for riskRaw: String) -> Color {
-        scoreHistoryColor(riskRaw)
     }
 
     private func scoreCard(_ score: ActiveScore) -> some View {
@@ -855,10 +959,10 @@ struct ClinicalScoresView: View {
                 if let entry = lastEntry {
                     Text(entry.abbreviation)
                         .font(.caption2.monospacedDigit().weight(.semibold))
-                        .foregroundStyle(riskColor(for: entry.riskRaw))
+                        .foregroundStyle(scoreHistoryColor(entry.riskRaw))
                         .padding(.horizontal, 5)
                         .padding(.vertical, 2)
-                        .background(riskColor(for: entry.riskRaw).opacity(0.12), in: Capsule())
+                        .background(scoreHistoryColor(entry.riskRaw).opacity(0.12), in: Capsule())
                 } else {
                     Image(systemName: "chevron.right")
                         .font(.caption)
@@ -1704,7 +1808,7 @@ struct ClinicalScoresView: View {
                     selectedScore = nil
                     result = nil
                 } label: {
-                    Label("All Scores", systemImage: "chevron.left")
+                    Label(showingAllScores ? "All Scores" : "Patient Scores", systemImage: "chevron.left")
                         .font(.subheadline)
                 }
                 Spacer()
