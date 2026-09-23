@@ -326,35 +326,25 @@ struct PatientDetailPadView: View {
     }
 
     // MARK: Section content (right panel)
+    // Split into sub-functions to keep each @ViewBuilder switch ≤ 15 cases
+    // and avoid Swift type-checker stack overflow (>19 cases risks a crash).
 
     @ViewBuilder
     private var sectionContent: some View {
-        switch selectedSection ?? .overview {
+        let section = selectedSection ?? .overview
+        if let tab = section.consultTab {
+            // All consultation-tab sections resolve through consultTab — 11 cases collapsed to one.
+            ConsultationView(patient: patient, startingTab: tab, embeddedInNav: true)
+        } else {
+            nonConsultationContent(section)
+        }
+    }
+
+    @ViewBuilder
+    private func nonConsultationContent(_ section: PatientDetailSection) -> some View {
+        switch section {
         case .overview:
-            // Quick-action hub — left panel already shows the full summary
             DiagnosisHubView(patient: patient, onNavigate: { selectedSection = $0 })
-        case .cc:
-            ConsultationView(patient: patient, startingTab: .cc, embeddedInNav: true)
-        case .hpi:
-            ConsultationView(patient: patient, startingTab: .hpi, embeddedInNav: true)
-        case .pmh:
-            ConsultationView(patient: patient, startingTab: .pmh, embeddedInNav: true)
-        case .pshx:
-            ConsultationView(patient: patient, startingTab: .pshx, embeddedInNav: true)
-        case .medications:
-            ConsultationView(patient: patient, startingTab: .meds, embeddedInNav: true)
-        case .allergies:
-            ConsultationView(patient: patient, startingTab: .allergies, embeddedInNav: true)
-        case .social:
-            ConsultationView(patient: patient, startingTab: .social, embeddedInNav: true)
-        case .exam:
-            ConsultationView(patient: patient, startingTab: .exam, embeddedInNav: true)
-        case .investigations:
-            ConsultationView(patient: patient, startingTab: .investigations, embeddedInNav: true)
-        case .assessment:
-            ConsultationView(patient: patient, startingTab: .diagnosis, embeddedInNav: true)
-        case .plan:
-            ConsultationView(patient: patient, startingTab: .plan, embeddedInNav: true)
         case .notes:
             NoteListView(patient: patient)
         case .vitals:
@@ -371,18 +361,24 @@ struct PatientDetailPadView: View {
             PatientDemographicsForm(patient: patient)
         case .trauma:
             TraumaAssessmentView(patient: patient)
-        case .ogd:
-            OGDFormView(patient: patient)
-        case .surgery:
-            SurgeryNoteView(patient: patient)
-        case .ercp:
-            ERCPFormView(patient: patient)
         case .history:
             ConsultationView(patient: patient, startingTab: .history, embeddedInNav: true)
         case .scores:
             ClinicalScoresView(patient: patient)
         case .journey:
             PatientJourneyView(patient: patient)
+        default:
+            procedureSectionContent(section)
+        }
+    }
+
+    @ViewBuilder
+    private func procedureSectionContent(_ section: PatientDetailSection) -> some View {
+        switch section {
+        case .ogd:     OGDFormView(patient: patient)
+        case .surgery: SurgeryNoteView(patient: patient)
+        case .ercp:    ERCPFormView(patient: patient)
+        default:       EmptyView()
         }
     }
 
