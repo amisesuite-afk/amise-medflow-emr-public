@@ -14,30 +14,30 @@ struct ERCPFormView: View {
     @State private var showAIOverwriteConfirm = false
     @State private var pdfWrapper: PDFDataWrapper?
 
-    private let indications = [
+    let indications = [
         "Choledocholithiasis", "Cholangitis", "Biliary stricture (benign)",
         "Biliary stricture (malignant)", "Bile leak", "Jaundice",
         "Primary sclerosing cholangitis", "Choledochal cyst",
         "Pancreatitis (biliary)", "Chronic pancreatitis", "Pancreatic duct stricture",
         "Pancreatic pseudocyst drainage", "Sphincter of Oddi dysfunction", "Other"
     ]
-    private let ampullaOptions = [
+    let ampullaOptions = [
         "Periampullary diverticulum", "Ampullary adenoma", "Ampullary carcinoma",
         "Oedema", "Papillitis", "Stone impacted at papilla", "Prior sphincterotomy"
     ]
-    private let cbdFindingOptions = [
+    let cbdFindingOptions = [
         "Filling defect(s) — stones", "Stricture distal", "Stricture mid", "Stricture hilar",
         "Dilation", "Normal calibre", "Leak", "Pneumobilia", "Air bubble artefact"
     ]
-    private let pdFindingOptions = [
+    let pdFindingOptions = [
         "Stricture", "Dilation", "Stones/protein plugs", "Leak",
         "Duct disruption", "Dominant stricture", "Normal calibre"
     ]
-    private let extractionOptions = [
+    let extractionOptions = [
         "Balloon", "Dormia basket", "Mechanical lithotripsy",
         "EHL", "Laser lithotripsy", "Combination"
     ]
-    private let complicationOptions = [
+    let complicationOptions = [
         "None", "Pancreatitis", "Cholangitis", "Haemorrhage",
         "Perforation", "Contrast reaction", "Cholecystitis",
         "Aspiration", "Cardiorespiratory event", "Stent migration"
@@ -132,15 +132,15 @@ struct ERCPFormView: View {
         }
     }
 
-    private var canGenerateAI: Bool {
+    var canGenerateAI: Bool {
         !data.indication.isEmpty || patient.workingDiagnosis != nil
     }
 
-    private var hasExistingContent: Bool {
+    var hasExistingContent: Bool {
         !data.impression.isEmpty || !data.recommendations.isEmpty
     }
 
-    private func triggerAIGeneration() {
+    func triggerAIGeneration() {
         if hasExistingContent {
             showAIOverwriteConfirm = true
         } else {
@@ -182,7 +182,7 @@ struct ERCPFormView: View {
 
     // MARK: AI section
 
-    private var aiGenerateSection: some View {
+    var aiGenerateSection: some View {
         Section {
             let hasContext = canGenerateAI
             HStack(spacing: 10) {

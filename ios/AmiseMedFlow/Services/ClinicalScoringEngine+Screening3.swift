@@ -225,7 +225,7 @@ extension ClinicalScoringEngine {
         )
     }
 
-    private static func ckdStage(_ egfr: Double) -> (Int, String) {
+    static func ckdStage(_ egfr: Double) -> (Int, String) {
         if egfr >= 90      { return (1, "normal or high") }
         else if egfr >= 60 { return (2, "mildly decreased") }
         else if egfr >= 45 { return (3, "mildly–moderately decreased") }

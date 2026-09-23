@@ -8,7 +8,7 @@ extension ClinicalScoresView {
 
     // MARK: - Charlson Comorbidity Index (#76)
 
-    private var cciForm: some View {
+    var cciForm: some View {
         Group {
             mewsSlider("Age (years — for age-adjusted CCI)", value: Binding(get: { Double(cciI.age) }, set: { cciI.age = Int($0) }),
                        range: 18...110, step: 1, unit: "yrs")
@@ -41,7 +41,7 @@ extension ClinicalScoresView {
 
     // MARK: - Modified Frailty Index-5 (#77)
 
-    private var mfi5Form: some View {
+    var mfi5Form: some View {
         Group {
             scoreToggle("Diabetes mellitus (requiring medication)", binding: $mfi5I.diabetes, points: "+1", autoKey: "diabetes")
             scoreToggle("Functional dependence (partial or total — ADL)", binding: $mfi5I.functionalDependence, points: "+1", autoKey: "functionalDependence")
@@ -55,7 +55,7 @@ extension ClinicalScoresView {
 
     // MARK: - Mirels Criteria
 
-    private var mirelsForm: some View {
+    var mirelsForm: some View {
         Group {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Lesion site").font(.subheadline)
@@ -100,7 +100,7 @@ extension ClinicalScoresView {
 
     // MARK: - ARISCAT Score
 
-    private var ariscatForm: some View {
+    var ariscatForm: some View {
         Group {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Age (years)").font(.subheadline)

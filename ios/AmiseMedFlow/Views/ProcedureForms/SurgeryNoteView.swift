@@ -19,12 +19,12 @@ struct SurgeryNoteView: View {
     @State private var aiError: String?
     @State private var showAIOverwriteConfirm = false
 
-    private let positionOptions = ["Supine", "Lithotomy", "Lateral decubitus (R)", "Lateral decubitus (L)",
+    let positionOptions = ["Supine", "Lithotomy", "Lateral decubitus (R)", "Lateral decubitus (L)",
                                    "Prone", "Beach chair", "Lloyd-Davies", "Reverse Trendelenburg", "Trendelenburg"]
-    private let positioningExtras = ["Gel pads", "Bean bag", "Shoulder roll", "Arm board", "Leg stirrups",
+    let positioningExtras = ["Gel pads", "Bean bag", "Shoulder roll", "Arm board", "Leg stirrups",
                                      "Head ring", "Prone frame", "Axillary roll"]
-    private let airwayOptions = ["ETT", "LMA", "Spinal", "Epidural", "Regional block", "Local", "MAC", "Awake FOI"]
-    private let complicationOptions = ["Haemorrhage", "Visceral injury", "Vascular injury",
+    let airwayOptions = ["ETT", "LMA", "Spinal", "Epidural", "Regional block", "Local", "MAC", "Awake FOI"]
+    let complicationOptions = ["Haemorrhage", "Visceral injury", "Vascular injury",
                                        "Anaesthetic complication", "Cardiac event", "Equipment failure",
                                        "Conversion to open", "Inadvertent enterotomy", "None"]
 
@@ -106,15 +106,15 @@ struct SurgeryNoteView: View {
         }
     }
 
-    private var canGenerateAI: Bool {
+    var canGenerateAI: Bool {
         !data.procedureName.isEmpty || patient.workingDiagnosis != nil
     }
 
-    private var hasExistingTechniqueContent: Bool {
+    var hasExistingTechniqueContent: Bool {
         !data.indication.isEmpty || !data.procedureDescription.isEmpty || !data.findingsIntraoperative.isEmpty
     }
 
-    private func triggerAIGeneration() {
+    func triggerAIGeneration() {
         if hasExistingTechniqueContent {
             showAIOverwriteConfirm = true
         } else {

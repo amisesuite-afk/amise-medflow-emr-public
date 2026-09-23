@@ -11,15 +11,15 @@ struct AdaptiveQuestionnaireSheet: View {
     @Environment(\.modelContext) private var context
     @EnvironmentObject private var sync: SyncService
 
-    @State private var answers = EncounterAnswers()
-    @State private var currentStepIndex = 0
-    @State private var symptomFilter = ""
+    @State var answers = EncounterAnswers()
+    @State var currentStepIndex = 0
+    @State var symptomFilter = ""
     @State private var prescriptionPhotoItem: PhotosPickerItem?
     @State private var prescriptionImageData: Data?
 
     // Patient demographics used for gating — resolved once from the model
-    private var patientSex: Sex { patient?.sex ?? .unspecified }
-    private var patientAge: Int {
+    var patientSex: Sex { patient?.sex ?? .unspecified }
+    var patientAge: Int {
         guard let dob = patient?.dateOfBirth else { return 99 }
         return Calendar.ect.dateComponents([.year], from: dob, to: .now).year ?? 99
     }
@@ -50,7 +50,7 @@ struct AdaptiveQuestionnaireSheet: View {
         }
     }
 
-    private var phases: [QPhase] {
+    var phases: [QPhase] {
         var result: [QPhase] = [.cc]
         if let cc = answers.ccCategory {
             if cc.isPainType { result.append(.socrates) }
@@ -60,11 +60,11 @@ struct AdaptiveQuestionnaireSheet: View {
         return result
     }
 
-    private var safeIndex: Int { min(currentStepIndex, phases.count - 1) }
-    private var currentPhase: QPhase { phases[safeIndex] }
-    private var isLastStep: Bool { safeIndex >= phases.count - 1 }
+    var safeIndex: Int { min(currentStepIndex, phases.count - 1) }
+    var currentPhase: QPhase { phases[safeIndex] }
+    var isLastStep: Bool { safeIndex >= phases.count - 1 }
 
-    private var canAdvance: Bool {
+    var canAdvance: Bool {
         if currentPhase == .cc {
             return answers.ccCategory != nil ||
                    !answers.ccClarification.trimmingCharacters(in: .whitespaces).isEmpty

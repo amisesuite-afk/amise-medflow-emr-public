@@ -87,7 +87,7 @@ extension ClinicalScoresView {
 
     // MARK: - Barthel Index (ADL Functional Independence)
 
-    private var barthelForm: some View {
+    var barthelForm: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("Barthel Index of Activities of Daily Living (Mahoney & Barthel 1965). 10 items totalling 0–100. Higher score = greater independence. Severe dependency 0–20; Moderate 21–60; Mild 61–90; Independent ≥91.")
                 .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
@@ -162,7 +162,7 @@ extension ClinicalScoresView {
 
     // MARK: - Clinical Frailty Scale
 
-    private var cfsForm: some View {
+    var cfsForm: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("Clinical Frailty Scale (Rockwood et al, CMAJ 2005). 9-level ordinal scale for adults ≥65. Levels 1–3 = non-frail; 4 = vulnerable; 5–6 = frail (mild–moderate); 7–8 = severe; 9 = terminal illness. Each level ≥5 increases perioperative mortality and morbidity.")
                 .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
@@ -188,7 +188,7 @@ extension ClinicalScoresView {
 
     // MARK: - Mallampati Airway Classification
 
-    private var mallampatiForm: some View {
+    var mallampatiForm: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("Modified Mallampati Airway Classification (Mallampati et al, Can Anaesth Soc J 1985; Samsoon & Young, Anaesthesia 1987). Class I–IV based on oropharyngeal visibility. Additional predictors further increase difficult airway risk.")
                 .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
@@ -216,7 +216,7 @@ extension ClinicalScoresView {
 
     // MARK: - MUST (Malnutrition Universal Screening Tool)
 
-    private var mustForm: some View {
+    var mustForm: some View {
         Group {
             apacheSegment("1. BMI Score", selection: $mustI.bmiScore,
                 options: [
@@ -242,7 +242,7 @@ extension ClinicalScoresView {
 
     // MARK: - Clavien-Dindo
 
-    private var clavienDindoForm: some View {
+    var clavienDindoForm: some View {
         Group {
             apacheSegment("Complication Grade", selection: $cdI.grade,
                 options: [
@@ -262,7 +262,7 @@ extension ClinicalScoresView {
 
     // MARK: - Modified Aldrete
 
-    private var aldreteForm: some View {
+    var aldreteForm: some View {
         Group {
             apacheSegment("Activity — Voluntary limb movement", selection: $aldreteI.activity,
                 options: [
@@ -299,7 +299,7 @@ extension ClinicalScoresView {
     }
 
 
-    private var ecogForm: some View {
+    var ecogForm: some View {
         Group {
             apacheSegment("Performance Status Grade", selection: $ecogI.grade,
                 options: [

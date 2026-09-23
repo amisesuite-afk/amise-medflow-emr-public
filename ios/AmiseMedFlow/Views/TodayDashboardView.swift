@@ -22,35 +22,35 @@ struct TodayDashboardView: View {
 
     // MARK: - Patient groups (deduped via PatientDeduplication.swift)
 
-    private var wardPatients: [Patient] {
+    var wardPatients: [Patient] {
         allPatients
             .filter { $0.setting == .inpatient || $0.setting == .emergency }
             .sorted { $0.acuity < $1.acuity }
             .deduped()
     }
 
-    private var theatreToday: [Patient] {
+    var theatreToday: [Patient] {
         allPatients
             .filter { $0.setting == .theatre && isToday($0.operationDate) }
             .sorted { ($0.operationDate ?? .now) < ($1.operationDate ?? .now) }
             .deduped()
     }
 
-    private var endoscopyToday: [Patient] {
+    var endoscopyToday: [Patient] {
         allPatients
             .filter { $0.setting == .endoscopy && isToday($0.operationDate) }
             .sorted { ($0.operationDate ?? .now) < ($1.operationDate ?? .now) }
             .deduped()
     }
 
-    private var clinicToday: [Patient] {
+    var clinicToday: [Patient] {
         allPatients
             .filter { $0.setting == .outpatient && isToday($0.operationDate) }
             .sorted { ($0.operationDate ?? .now) < ($1.operationDate ?? .now) }
             .deduped()
     }
 
-    private var highAcuityWard: [Patient] {
+    var highAcuityWard: [Patient] {
         wardPatients.filter { p in
             guard let v = p.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first
             else { return p.setting == .emergency }
@@ -58,13 +58,13 @@ struct TodayDashboardView: View {
         }
     }
 
-    private var patientsWithNewResults: [Patient] {
+    var patientsWithNewResults: [Patient] {
         allPatients.deduped().filter { p in
             p.investigations.contains { $0.status == .resulted && !$0.result.isEmpty }
         }
     }
 
-    private var readyForDoctorPatients: [Patient] {
+    var readyForDoctorPatients: [Patient] {
         allPatients
             .filter { $0.encounterStatus == .waiting && isToday($0.checkInTime) }
             .sorted { ($0.checkInTime ?? .distantPast) < ($1.checkInTime ?? .distantPast) }
@@ -73,20 +73,20 @@ struct TodayDashboardView: View {
 
     // Calendar events from iOS EventKit (syncs with Google Calendar when
     // the user adds their Google account in iOS Settings → Calendar → Accounts)
-    private var todayCalEvents: [EKEvent] {
+    var todayCalEvents: [EKEvent] {
         calSvc.events
             .filter { isToday($0.startDate) && !$0.isAllDay }
             .sorted { ($0.startDate ?? .distantFuture) < ($1.startDate ?? .distantFuture) }
     }
 
-    private var isAnythingOn: Bool {
+    var isAnythingOn: Bool {
         !readyForDoctorPatients.isEmpty || !wardPatients.isEmpty ||
         !theatreToday.isEmpty || !endoscopyToday.isEmpty || !clinicToday.isEmpty ||
         !todayCalEvents.isEmpty
     }
 
     // Calendar events today that don't yet have a matching patient record
-    private var unimportedCalEventCount: Int {
+    var unimportedCalEventCount: Int {
         let existingNames = Set(allTodayPatients.map { $0.fullName.lowercased().trimmingCharacters(in: .whitespaces) })
         return todayCalEvents.filter { event in
             guard let title = event.title, !title.isEmpty else { return false }
@@ -96,7 +96,7 @@ struct TodayDashboardView: View {
     }
 
     // All today's patients in one flat list for search
-    private var allTodayPatients: [Patient] {
+    var allTodayPatients: [Patient] {
         (readyForDoctorPatients + highAcuityWard + wardPatients +
          theatreToday + endoscopyToday + clinicToday)
             .reduce(into: [Patient]()) { acc, p in
@@ -104,9 +104,9 @@ struct TodayDashboardView: View {
             }
     }
 
-    private var searchActive: Bool { !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty }
+    var searchActive: Bool { !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty }
 
-    private var searchResults: [Patient] {
+    var searchResults: [Patient] {
         let q = searchQuery.trimmingCharacters(in: .whitespaces).lowercased()
         return allTodayPatients.filter {
             $0.fullName.lowercased().contains(q) ||
@@ -117,7 +117,7 @@ struct TodayDashboardView: View {
     }
 
     // Total count for the day summary strip
-    private var totalCount: Int { allTodayPatients.count }
+    var totalCount: Int { allTodayPatients.count }
 
     // MARK: - Body
 
@@ -252,7 +252,7 @@ struct TodayDashboardView: View {
 
     // MARK: - Calendar import banner
 
-    private var calendarImportBanner: some View {
+    var calendarImportBanner: some View {
         Section {
             Button {
                 showCalendarImport = true
@@ -284,7 +284,7 @@ struct TodayDashboardView: View {
 
     // MARK: - Day summary strip
 
-    private var daySummaryStrip: some View {
+    var daySummaryStrip: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
                 if totalCount > 0 {
@@ -317,7 +317,7 @@ struct TodayDashboardView: View {
         }
     }
 
-    private func summaryTile(count: Int, label: String, icon: String, color: Color) -> some View {
+    func summaryTile(count: Int, label: String, icon: String, color: Color) -> some View {
         VStack(spacing: 4) {
             HStack(spacing: 4) {
                 Image(systemName: icon)
