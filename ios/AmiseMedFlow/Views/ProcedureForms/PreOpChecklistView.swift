@@ -424,7 +424,7 @@ struct PreOpChecklistView: View {
                 .foregroundStyle(.secondary)
             Spacer()
             Image(systemName: complete ? "checkmark.circle.fill" : "circle")
-                .foregroundStyle(complete ? .green : Color.secondary.opacity(0.4))
+                .foregroundStyle(complete ? .green : .secondary.opacity(0.4))
                 .font(.system(size: 14))
         }
     }

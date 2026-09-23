@@ -862,7 +862,7 @@ struct AdaptiveQuestionnaireSheet: View {
                             }
                             Text(phase.title)
                                 .font(.system(size: 8, weight: current ? .bold : .regular))
-                                .foregroundStyle(current ? AMColor.accent : (done ? AMColor.accent.opacity(0.6) : .secondary))
+                                .foregroundStyle(current ? AMColor.accent : (done ? .teal.opacity(0.6) : .secondary))
                                 .lineLimit(1)
                         }
                         .frame(minWidth: 64)

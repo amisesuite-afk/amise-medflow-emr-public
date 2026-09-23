@@ -134,7 +134,7 @@ private struct SystemChip: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 8)
-        .background(isSelected ? Color.teal.opacity(0.15) : Color(.secondarySystemGroupedBackground))
+        .background { isSelected ? Color.teal.opacity(0.15) : Color(.secondarySystemGroupedBackground) }
         .foregroundStyle(isSelected ? .teal : .secondary)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
@@ -339,7 +339,7 @@ private struct RedFlagBanner: View {
             }
         }
         .padding(10)
-        .background(.red.opacity(0.06))
+        .background { Color.red.opacity(0.06) }
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
@@ -609,7 +609,7 @@ private struct PostOpTab: View {
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(.red)
                         .padding(8)
-                        .background(.red.opacity(0.08))
+                        .background { Color.red.opacity(0.08) }
                         .clipShape(RoundedRectangle(cornerRadius: 6))
                 }
                 CardSection(title: "Post-operative Protocol") {
@@ -725,7 +725,7 @@ private struct UrgencyChip: View {
             .font(.system(size: 10, weight: .medium))
             .foregroundStyle(chipColor)
             .padding(.horizontal, 6).padding(.vertical, 2)
-            .background(chipColor.opacity(0.12))
+            .background { chipColor.opacity(0.12) }
             .clipShape(Capsule())
     }
     private var chipColor: Color {

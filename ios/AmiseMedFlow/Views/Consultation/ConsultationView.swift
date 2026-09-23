@@ -3972,7 +3972,7 @@ struct ConsultationView: View {
                             .padding(.horizontal, 10).padding(.vertical, 5)
                             .background(added ? Color.red.opacity(0.15) : Color.red.opacity(0.07),
                                         in: Capsule())
-                            .foregroundStyle(added ? Color.red : Color.red.opacity(0.75))
+                            .foregroundStyle(added ? .red : .red.opacity(0.75))
                             .overlay(Capsule()
                                 .stroke(added ? Color.red.opacity(0.35) : Color.clear, lineWidth: 1))
                         }
@@ -4168,7 +4168,7 @@ struct ConsultationView: View {
         HStack(spacing: 4) {
             Image(systemName: selected ? "checkmark.circle.fill" : "circle")
                 .font(.system(size: 11))
-                .foregroundStyle(selected ? .green : AMColor.accent.opacity(0.5))
+                .foregroundStyle(selected ? .green : .teal.opacity(0.5))
             Text(text)
                 .font(.system(size: 12))
         }

@@ -310,7 +310,7 @@ struct PatientDetailPadView: View {
                         .padding(.horizontal, 12)
                         .padding(.vertical, 9)
                         .frame(minWidth: 62)
-                        .background(sel ? AMColor.accent.opacity(0.18) : Color.clear)
+                        .background { sel ? AMColor.accent.opacity(0.18) : Color.clear }
                         .overlay(alignment: .bottom) {
                             if sel { Rectangle().fill(AMColor.accent).frame(height: 2) }
                         }
