@@ -1937,8 +1937,9 @@ struct ClinicalScoresView: View {
         case .decaf:      decafForm
         case .centor:     centorForm
         case .berlinARDS: berlinARDSForm
-        case .dukeIE:     dukeIEForm
         case .fgsi:       fgsiForm
+        case .sapsII:     sapsIIForm
+        case .mmrc:       mmrcForm
         default:          EmptyView()
         }
     }
@@ -1965,6 +1966,8 @@ struct ClinicalScoresView: View {
         case .must:        mustForm
         case .mirels:      mirelsForm
         case .ariscat:     ariscatForm
+        case .clavienDindo: clavienDindoForm
+        case .aldrete:     aldreteForm
         default:           EmptyView()
         }
     }
@@ -1982,6 +1985,7 @@ struct ClinicalScoresView: View {
     }
 
     @ViewBuilder
+    @ViewBuilder
     private func cardiacFormBody(_ score: ActiveScore) -> some View {
         switch score {
         case .cha2ds2vasc: cha2ds2vascForm
@@ -1989,6 +1993,11 @@ struct ClinicalScoresView: View {
         case .heart:       heartForm
         case .timi:        timiForm
         case .grace:       graceForm
+        case .rcri:        rcriForm
+        case .dasi:        dasiForm
+        case .euroScoreII: euroScoreIIForm
+        case .dukeIE:      dukeIEForm
+        case .shockIndex:  shockIndexForm
         default:           EmptyView()
         }
     }
