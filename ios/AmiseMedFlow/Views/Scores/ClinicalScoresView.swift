@@ -1616,6 +1616,10 @@ struct ClinicalScoresView: View {
         )
         entry.patient = patient
         modelContext.insert(entry)
+        // Persist computed score to patient Bayesian fields so the engine picks it up
+        if let score = selectedScore, let r = result {
+            persistScoreToPatient(score, r)
+        }
         patient.updatedAt   = .now
         patient.pendingSync = true
         scoreSaved = true
@@ -1766,10 +1770,15 @@ struct ClinicalScoresView: View {
         case .ripasa:        ClinicalScoringEngine.ripasa(ripasaI)
         case .fgsi:          ClinicalScoringEngine.fgsi(fgsiI)
         }
-        // Feed score results back to Bayesian engine via patient model fields.
-        // Each score is stored once computed so the pipeline can apply post-hoc
-        // adjustments on every subsequent infer() call without re-entering the score.
-        guard let r = result else { return }
+        // NOTE: patient fields are written only on explicit save (saveScoreToAssessment),
+        // NOT here, to prevent @Bindable mutation on every form input change which caused
+        // continuous re-renders, score value corruption (browsed-but-unsaved scores
+        // overwriting previously recorded scores with 0), and crash on navigation away.
+    }
+
+    // MARK: - Persist computed score to patient Bayesian fields (called only on explicit save)
+
+    private func persistScoreToPatient(_ score: ActiveScore, _ r: ClinicalScore) {
         let intScore = Int(r.score)
         switch score {
         case .alvarado:     patient.alvaradoScore            = intScore
@@ -1785,7 +1794,6 @@ struct ClinicalScoresView: View {
         case .lrinec:       patient.lrinecScore              = intScore
         case .qsofa:        patient.qsofaScore               = intScore
         case .psiPort:
-            // Store the PSI class (1–5) extracted from the abbreviation string
             patient.psiScore = Int(r.abbreviation.components(separatedBy: "Class ").last ?? "") ?? 0
         case .bisap:        patient.bisapScore  = intScore
         case .aims65:       patient.aims65Score = intScore
@@ -1840,32 +1848,32 @@ struct ClinicalScoresView: View {
         case .mfi5:          patient.mfi5Score = intScore
         case .haps:          patient.hapsScore = intScore
         case .glasgowImrie:  patient.glasgowImrieScore = intScore
-        case .albi:          patient.albiScore    = r.score     // continuous Double
+        case .albi:          patient.albiScore    = r.score
         case .auditC:        patient.auditCScore  = intScore
         case .phq9:          patient.phq9Score    = intScore
         case .sapsII:        patient.sapsIIScore    = intScore
         case .stone:         patient.stoneScore     = intScore
         case .losAngeles:    patient.losAngelesGrade = intScore
-        case .meld3:         patient.meld3Score     = r.score   // continuous Double
+        case .meld3:         patient.meld3Score     = r.score
         case .braden:        patient.bradenScore         = intScore
         case .centor:        patient.centorScore         = intScore
         case .ipss:          patient.ipssScore           = intScore
         case .trueloveWitts: patient.trueloveWittsScore  = intScore
         case .harveyBradshaw:patient.harveyBradshawScore = intScore
-        case .maddrey:       patient.maddreyScore  = r.score     // continuous Double
+        case .maddrey:       patient.maddreyScore  = r.score
         case .manning:       patient.manningScore  = intScore
         case .lace:          patient.laceScore     = intScore
         case .findRisc:      patient.findRiscScore = intScore
         case .mirels:        patient.mirelsScore   = intScore
-        case .ckdEpi:        patient.ckdEpiEgfr    = r.score     // continuous Double
+        case .ckdEpi:        patient.ckdEpiEgfr    = r.score
         case .ariscat:       patient.ariscatScore  = intScore
         case .fongCrs:       patient.fongCrsScore  = intScore
-        case .berlinARDS:    patient.berlinPFRatio  = r.score   // continuous Double (PF ratio)
+        case .berlinARDS:    patient.berlinPFRatio  = r.score
         case .cage:          patient.cageScore      = intScore
-        case .dukeIE:        patient.dukeIEScore    = r.score   // continuous Double (majorCount×2 + minorCount)
+        case .dukeIE:        patient.dukeIEScore    = r.score
         case .mmrc:          patient.mmrcGrade      = intScore
         case .pts:           patient.ptsScore       = intScore
-        case .ripasa:        patient.ripasaScore    = r.score   // continuous Double
+        case .ripasa:        patient.ripasaScore    = r.score
         case .fgsi:          patient.fgsiScore      = intScore
         case .sirs:          patient.sirsScore          = intScore
         case .mews:          patient.mewsScore          = intScore
@@ -1876,8 +1884,6 @@ struct ClinicalScoresView: View {
         case .cha2ds2vasc:   patient.cha2ds2vascScore   = intScore
         case .hasBled:       patient.hasBledScore       = intScore
         }
-        patient.updatedAt = .now
-        patient.pendingSync = true
     }
 
     // MARK: - Input forms
