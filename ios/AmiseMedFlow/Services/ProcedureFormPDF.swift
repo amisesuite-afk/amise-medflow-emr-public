@@ -833,6 +833,143 @@ enum ProcedureFormPDF {
         return parts.isEmpty ? "Abnormal (no details)" : parts.joined(separator: " — ")
     }
 
+    // MARK: - Encounter Visit Record PDF
+
+    /// Generates a full PDF record of one clinical encounter (visit snapshot).
+    static func encounterRecord(encounter: Encounter) -> Data {
+        UIGraphicsPDFRenderer(bounds: page).pdfData { ctx in
+            ctx.beginPage()
+            var y = drawHeader(type: "CLINICAL ENCOUNTER RECORD")
+            if let patient = encounter.patient {
+                y = drawPatientStrip(patient: patient, y: y)
+            }
+            y = drawMeta(date: encounter.encounterDate, y: y)
+
+            // Visit details
+            let df = DateFormatter()
+            df.dateStyle = .medium; df.timeStyle = .short
+            let visitRows: [(String, String)] = [
+                ("Visit type",   encounter.visitType.rawValue),
+                ("Setting",      encounter.setting.rawValue),
+                ("Location",     encounter.location.rawValue),
+                ("Acuity",       encounter.acuity.label),
+                ("Date / Time",  df.string(from: encounter.encounterDate) + " ECT"),
+                ("Status",       encounter.isComplete ? "Encounter closed" : "In progress"),
+            ].filter { !$0.1.isEmpty }
+            y = drawRowSection(ctx: ctx, title: "Visit Details", rows: visitRows, y: y)
+
+            // Presenting problem
+            if let cc = encounter.chiefComplaint, !cc.isEmpty {
+                y = drawRowSection(ctx: ctx, title: "Presenting Problem",
+                                   rows: [("Chief complaint", cc)], y: y)
+            }
+            if let hpi = encounter.hpi, !hpi.isEmpty {
+                y = drawTextSection(ctx: ctx, title: "History of Presenting Illness", body: hpi, y: y)
+            }
+
+            // SOCRATES
+            let socr = encounter.decodedSOCRATES
+            if !socr.isEmpty {
+                let order = ["Site","Onset","Character","Radiation",
+                             "Associated","Time","Exacerbating","Severity"]
+                let socrRows = order.compactMap { key -> (String, String)? in
+                    guard let chips = socr[key], !chips.isEmpty else { return nil }
+                    return (key, chips.joined(separator: " · "))
+                }
+                if !socrRows.isEmpty {
+                    y = drawRowSection(ctx: ctx, title: "SOCRATES", rows: socrRows, y: y)
+                }
+            }
+
+            // History at visit
+            var histRows: [(String, String)] = []
+            if let pmh = encounter.pmhNotes, !pmh.isEmpty {
+                histRows.append(("Past medical history", pmh))
+            }
+            if let pshx = encounter.surgicalHistory, !pshx.isEmpty {
+                histRows.append(("Surgical history", pshx))
+            }
+            if !histRows.isEmpty {
+                y = drawRowSection(ctx: ctx, title: "History at Visit", rows: histRows, y: y)
+            }
+
+            // Examination
+            let examPairs: [(String, String?)] = [
+                ("General",      encounter.examGeneral),
+                ("CVS",          encounter.examCVS),
+                ("Respiratory",  encounter.examResp),
+                ("Abdomen",      encounter.examAbdo),
+                ("Neurological", encounter.examNeuro),
+                ("MSK",          encounter.examMSK),
+                ("Skin",         encounter.examSkin),
+                ("Other",        encounter.examOther),
+            ]
+            let examRows = examPairs.compactMap { k, v -> (String, String)? in
+                guard let v = v, !v.isEmpty else { return nil }
+                return (k, v)
+            }
+            if !examRows.isEmpty {
+                y = drawRowSection(ctx: ctx, title: "Examination", rows: examRows, y: y)
+            }
+
+            // Investigations
+            let invs = encounter.decodedInvestigations
+            if !invs.isEmpty {
+                y = drawSectionHeader(title: "Investigations", y: y)
+                for inv in invs {
+                    y = maybeNewPage(ctx: ctx, y: y, minSpace: 20)
+                    var line = inv.name
+                    if !inv.result.isEmpty { line += " — " + inv.result }
+                    line += "  [\(inv.status.rawValue)]"
+                    line.draw(in: CGRect(x: lm, y: y, width: bodyW, height: 13),
+                              withAttributes: [.font: UIFont.systemFont(ofSize: 8.5),
+                                               .foregroundColor: UIColor.label])
+                    y += 14
+                }
+                y += 4
+            }
+
+            // Assessment & plan
+            var assessRows: [(String, String)] = []
+            if let dx = encounter.workingDiagnosis, !dx.isEmpty {
+                let dxLine = dx + (encounter.workingDiagnosisICD.map { "  [\($0)]" } ?? "")
+                assessRows.append(("Working diagnosis", dxLine))
+            }
+            if !assessRows.isEmpty {
+                y = drawRowSection(ctx: ctx, title: "Assessment & Plan", rows: assessRows, y: y)
+            }
+            if let assess = encounter.assessmentText, !assess.isEmpty {
+                y = drawTextSection(ctx: ctx, title: "Assessment", body: assess, y: y)
+            }
+            if let plan = encounter.managementPlan, !plan.isEmpty {
+                y = drawTextSection(ctx: ctx, title: "Management Plan", body: plan, y: y)
+            }
+
+            // Bayesian differential snapshot
+            let diff = encounter.decodedBayesianSnapshot
+            if !diff.isEmpty {
+                y = drawSectionHeader(title: "Differential Diagnosis (at Encounter Close)", y: y)
+                for entry in diff.prefix(8) {
+                    y = maybeNewPage(ctx: ctx, y: y, minSpace: 16)
+                    let line = "\(entry.name)  (\(entry.icdCode))  —  \(entry.probability)%  [\(entry.confidence)]"
+                    line.draw(in: CGRect(x: lm, y: y, width: bodyW, height: 13),
+                              withAttributes: [.font: UIFont.systemFont(ofSize: 8.5),
+                                               .foregroundColor: UIColor.label])
+                    y += 14
+                }
+                y += 4
+            }
+
+            // Clinician summary
+            if let summary = encounter.clinicianSummary, !summary.isEmpty {
+                y = drawTextSection(ctx: ctx, title: "Clinician Summary", body: summary, y: y)
+            }
+
+            drawSignatureBlock(ctx: ctx, surgeon: "Dr Dawit Daniel Kabiye  MD · DM", y: y)
+            drawFooter()
+        }
+    }
+
     // MARK: - Ward Round Handover PDF
 
     static func wardHandover(grouped: [(ClinicalLocation, [Patient])],

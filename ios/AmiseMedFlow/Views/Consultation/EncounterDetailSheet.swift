@@ -8,6 +8,7 @@ import SwiftUI
 struct EncounterDetailSheet: View {
     let encounter: Encounter
     @Environment(\.dismiss) private var dismiss
+    @State private var pdfWrapper: PDFDataWrapper?
 
     var body: some View {
         NavigationStack {
@@ -56,9 +57,21 @@ struct EncounterDetailSheet: View {
             .navigationTitle("Visit Record")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        let data = ProcedureFormPDF.encounterRecord(encounter: encounter)
+                        pdfWrapper = PDFDataWrapper(data: data)
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                    .help("Export as PDF")
+                }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }
                 }
+            }
+            .sheet(item: $pdfWrapper) { wrapper in
+                ShareSheet(items: [wrapper.data as Any]).ignoresSafeArea()
             }
         }
     }
