@@ -174,17 +174,19 @@ struct BronchoscopyFormView: View {
         }
         .navigationTitle("Bronchoscopy Report")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(item: $pdfWrapper) { wrapper in
+            ShareSheet(items: [wrapper.data])
+        }
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
-                    // PDF export — reuse ProcedureFormPDF generic text report
-                    let note = buildReportText()
+                    pdfWrapper = PDFDataWrapper(data: ProcedureFormPDF.bronchoscopyReport(patient: patient, data: data))
                     let noteObj = ClinicalNote(noteType: .endoscopy, patient: patient)
-                    noteObj.freeText = note
+                    noteObj.freeText = buildReportText()
                     context.insert(noteObj)
                     patient.updatedAt = .now; patient.pendingSync = true
                 } label: {
-                    Label("Save Note", systemImage: "arrow.up.doc.fill")
+                    Label("Export PDF", systemImage: "arrow.up.doc.fill")
                 }
             }
         }

@@ -289,6 +289,87 @@ enum ProcedureFormPDF {
         }
     }
 
+    // MARK: - Bronchoscopy Report
+
+    static func bronchoscopyReport(patient: Patient, data: BronchoscopyData) -> Data {
+        UIGraphicsPDFRenderer(bounds: page).pdfData { ctx in
+            ctx.beginPage()
+            var y = drawHeader(type: "FLEXIBLE BRONCHOSCOPY REPORT")
+            y = drawPatientStrip(patient: patient, y: y)
+            y = drawMeta(date: data.dateOfProcedure ?? .now, y: y)
+
+            let pre: [(String, String)] = [
+                ("Indication",  data.indication.isEmpty ? "—" : data.indication.joined(separator: ", ")),
+                ("Operator",    data.operator_),
+                ("Assistant",   data.assistant),
+                ("Consent",     data.consent ? "Obtained" : "Not recorded"),
+                ("Bronchoscope",data.bronchoscopeModel),
+                ("Approach",    data.approach),
+                ("Sedation",    data.sedationUsed),
+                ("O₂ support",  data.oxygenSupplementation),
+                ("Duration",    data.duration.isEmpty ? "—" : "\(data.duration) min"),
+                ("Quality",     data.quality),
+                ("Completion",  data.completionStatus),
+            ]
+            y = drawRowSection(ctx: ctx, title: "Procedure Details", rows: pre, y: y)
+
+            // Upper airway
+            var upper: [(String, String)] = []
+            upper.append(("Nasopharynx",  findingLine(normal: data.nasopharynxNormal,  findings: [], notes: data.nasopharynxNotes)))
+            upper.append(("Larynx",       findingLine(normal: data.larynxNormal,       findings: [], notes: data.larynxNotes)))
+            let vcFindings = data.vocalCordsFindings.isEmpty ? [] : data.vocalCordsFindings
+            upper.append(("Vocal cords",  findingLine(normal: data.vocalCordsNormal,   findings: vcFindings, notes: data.vocalCordsNotes)))
+            y = drawRowSection(ctx: ctx, title: "Upper Airway", rows: upper, y: y)
+
+            // Trachea & carina
+            let trFindings = data.tracheaFindings.isEmpty ? [] : data.tracheaFindings
+            let caFindings = data.carinaFindings.isEmpty  ? [] : data.carinaFindings
+            y = drawRowSection(ctx: ctx, title: "Trachea & Carina", rows: [
+                ("Trachea", findingLine(normal: data.tracheaNormal,  findings: trFindings, notes: data.tracheaNotes)),
+                ("Carina",  findingLine(normal: data.carinaNormal,   findings: caFindings, notes: data.carinaNotes)),
+            ], y: y)
+
+            // Right bronchial tree
+            let ruFindings = data.rightUpperLobeFindings.isEmpty ? [] : data.rightUpperLobeFindings
+            let rmFindings = data.rightMiddleLobeFindings.isEmpty ? [] : data.rightMiddleLobeFindings
+            let rlFindings = data.rightLowerLobeFindings.isEmpty ? [] : data.rightLowerLobeFindings
+            y = drawRowSection(ctx: ctx, title: "Right Bronchial Tree", rows: [
+                ("Right main",          findingLine(normal: data.rightMainNormal,       findings: [], notes: data.rightMainNotes)),
+                ("Right upper lobe",    findingLine(normal: data.rightUpperLobeNormal,  findings: ruFindings, notes: data.rightUpperLobeNotes)),
+                ("Right middle lobe",   findingLine(normal: data.rightMiddleLobeNormal, findings: rmFindings, notes: data.rightMiddleLobeNotes)),
+                ("Right lower lobe",    findingLine(normal: data.rightLowerLobeNormal,  findings: rlFindings, notes: data.rightLowerLobeNotes)),
+            ], y: y)
+
+            // Left bronchial tree
+            let luFindings = data.leftUpperLobeFindings.isEmpty ? [] : data.leftUpperLobeFindings
+            let llFindings = data.leftLowerLobeFindings.isEmpty ? [] : data.leftLowerLobeFindings
+            y = drawRowSection(ctx: ctx, title: "Left Bronchial Tree", rows: [
+                ("Left main",           findingLine(normal: data.leftMainNormal,        findings: [], notes: data.leftMainNotes)),
+                ("Left upper lobe",     findingLine(normal: data.leftUpperLobeNormal,   findings: luFindings, notes: data.leftUpperLobeNotes)),
+                ("Left lower lobe",     findingLine(normal: data.leftLowerLobeNormal,   findings: llFindings, notes: data.leftLowerLobeNotes)),
+            ], y: y)
+
+            // Specimens
+            var spec: [(String, String)] = []
+            if data.balPerformed  { spec.append(("BAL", "Performed — site: \(data.balSite.isEmpty ? "not specified" : data.balSite)")) }
+            if data.biopsyTaken   { spec.append(("Biopsy", data.biopsyNotes.isEmpty ? "Taken" : data.biopsyNotes)) }
+            if !spec.isEmpty { y = drawRowSection(ctx: ctx, title: "Specimens", rows: spec, y: y) }
+
+            if !data.interventionsDone.isEmpty {
+                y = drawTextSection(ctx: ctx, title: "Interventions",
+                    body: data.interventionsDone.joined(separator: ", "), y: y)
+            }
+            let comps = data.complications.isEmpty ? "None" : data.complications.joined(separator: ", ")
+            y = drawTextSection(ctx: ctx, title: "Complications", body: comps, y: y)
+            if !data.impression.isEmpty      { y = drawTextSection(ctx: ctx, title: "Impression",      body: data.impression,      y: y) }
+            if !data.recommendations.isEmpty { y = drawTextSection(ctx: ctx, title: "Recommendations", body: data.recommendations, y: y) }
+            if !data.followUpWeeks.isEmpty   { y = drawTextSection(ctx: ctx, title: "Follow-up",       body: "\(data.followUpWeeks) weeks", y: y) }
+            y = drawSignatureBlock(ctx: ctx, surgeon: data.operator_.isEmpty ? "Dr Dawit Daniel Kabiye" : data.operator_, y: y)
+            _ = y
+            drawFooter()
+        }
+    }
+
     // MARK: - Discharge Summary
 
     static func dischargeSummary(patient: Patient, data: DischargeSummaryData) -> Data {
