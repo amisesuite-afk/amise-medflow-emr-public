@@ -328,6 +328,17 @@ struct SOAPDraftEngine {
     private static func buildPlan(_ p: Patient, triageResult: TriageResult?) -> String {
         var lines: [String] = []
 
+        // Post-operative day context for inpatients
+        if p.setting == .inpatient {
+            let sx = p.surgeryData
+            if let opDate = sx.dateOfSurgery {
+                let days = max(0, Calendar.current.dateComponents([.day], from: opDate, to: Date()).day ?? 0)
+                let pod = days == 0 ? "Day of surgery" : "Post-operative day \(days)"
+                let proc = sx.procedureName.isEmpty ? "surgery" : sx.procedureName
+                lines.append("\(pod) following \(proc).")
+            }
+        }
+
         // Existing management plan
         if let plan = p.managementPlan, !plan.isEmpty {
             lines.append(plan)

@@ -171,6 +171,60 @@ struct PatientJourneyView: View {
             ))
         }
 
+        // Endoscopy procedures
+        let ogd = patient.ogdData
+        if !ogd.impression.isEmpty || ogd.dateOfProcedure != nil {
+            let ogdDate = ogd.dateOfProcedure ?? patient.updatedAt
+            let ogdInd = ogd.indication.prefix(2).joined(separator: ", ")
+            events.append(JourneyEvent(
+                id: UUID(),
+                date: ogdDate,
+                icon: "camera.metering.spot",
+                title: "OGD / Gastroscopy",
+                subtitle: ogd.impression.isEmpty ? (ogdInd.isEmpty ? "Gastroscopy" : ogdInd) : String(ogd.impression.prefix(100)),
+                category: .procedure
+            ))
+        }
+        let col = patient.colonoscopyData
+        if !col.impression.isEmpty || col.dateOfProcedure != nil {
+            let colDate = col.dateOfProcedure ?? patient.updatedAt
+            let colInd = col.indication.prefix(2).joined(separator: ", ")
+            events.append(JourneyEvent(
+                id: UUID(),
+                date: colDate,
+                icon: "waveform.path.ecg.rectangle",
+                title: "Colonoscopy",
+                subtitle: col.impression.isEmpty ? (colInd.isEmpty ? "Colonoscopy" : colInd) : String(col.impression.prefix(100)),
+                category: .procedure
+            ))
+        }
+        let ercp = patient.ercpData
+        if !ercp.impression.isEmpty || ercp.dateOfProcedure != nil {
+            let ercpDate = ercp.dateOfProcedure ?? patient.updatedAt
+            let ercpInd = ercp.indication.prefix(2).joined(separator: ", ")
+            events.append(JourneyEvent(
+                id: UUID(),
+                date: ercpDate,
+                icon: "arrow.triangle.branch",
+                title: "ERCP",
+                subtitle: ercp.impression.isEmpty ? (ercpInd.isEmpty ? "ERCP" : ercpInd) : String(ercp.impression.prefix(100)),
+                category: .procedure
+            ))
+        }
+        let bronch = patient.bronchoscopyData
+        if !bronch.impression.isEmpty || bronch.dateOfProcedure != nil {
+            let bronchDate = bronch.dateOfProcedure ?? patient.updatedAt
+            let bronchInd = bronch.indication.prefix(2).joined(separator: ", ")
+            events.append(JourneyEvent(
+                id: UUID(),
+                date: bronchDate,
+                icon: "lungs.fill",
+                title: "Bronchoscopy",
+                subtitle: bronch.impression.isEmpty ? (bronchInd.isEmpty ? "Bronchoscopy" : bronchInd) : String(bronch.impression.prefix(100)),
+                category: .procedure
+            ))
+        }
+
         // Completed encounters (previous visits)
         for enc in patient.encounters where enc.isComplete {
             events.append(JourneyEvent(

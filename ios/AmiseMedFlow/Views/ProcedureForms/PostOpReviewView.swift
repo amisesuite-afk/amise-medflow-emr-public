@@ -166,6 +166,22 @@ struct PostOpReviewView: View {
                 save()
             }
 
+            // Auto-populate vitals boolean flags on first open (before any edits saved)
+            if patient.postOpReviewDataJson == nil,
+               let latest = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+               latest.hasAnyValue {
+                if let temp = latest.temperatureCelsius {
+                    data.tempNormal = (temp >= 36.0 && temp <= 37.5)
+                }
+                if let sys = latest.bpSystolic {
+                    data.bpNormal = (sys >= 90 && sys <= 140)
+                }
+                if let hr = latest.heartRate {
+                    data.hrNormal = (hr >= 50 && hr <= 100)
+                }
+                save()
+            }
+
             // Pre-fill lab notes with resulted investigations if not yet recorded
             if data.labNotes.isEmpty {
                 let resulted = patient.investigations

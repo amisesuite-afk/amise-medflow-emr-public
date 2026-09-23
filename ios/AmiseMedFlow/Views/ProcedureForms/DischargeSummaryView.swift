@@ -189,6 +189,34 @@ struct DischargeSummaryView: View {
                 data.imagingResults = imagingInvs.map { "\($0.name): \($0.result)" }.joined(separator: "\n")
             }
 
+            // Auto-select return precautions based on procedure type
+            if data.returnPrecautions.isEmpty && !data.procedurePerformed.isEmpty {
+                let proc = data.procedurePerformed.lowercased()
+                var picks = Set<String>()
+                picks.insert("Fever > 38°C")
+                picks.insert("Worsening pain uncontrolled by analgesia")
+                let abdominalKW = ["laparoscop","laparotom","hernia","appendicect","cholecyst","colectom",
+                                   "sigmoid","rectal","bowel","gastric","oesophag","esophag","abdomin",
+                                   "pancreat","splenect","liver","hepat","biliar","whipple"]
+                if abdominalKW.contains(where: { proc.contains($0) }) {
+                    picks.formUnion(["Wound redness, swelling, or discharge",
+                                     "Increasing abdominal distension",
+                                     "Nausea / vomiting persisting > 24 h",
+                                     "Inability to pass urine"])
+                }
+                let endoscopicKW = ["gastroscop","ogd","endoscop","colonoscop","ercp","scope"]
+                if endoscopicKW.contains(where: { proc.contains($0) }) {
+                    picks.formUnion(["Nausea / vomiting persisting > 24 h",
+                                     "Difficulty swallowing",
+                                     "Bleeding from wound or rectum"])
+                }
+                if proc.contains("bronchoscop") || proc.contains("thorac") {
+                    picks.formUnion(["Shortness of breath or chest pain",
+                                     "Nausea / vomiting persisting > 24 h"])
+                }
+                data.returnPrecautions = returnPrecautionOptions.filter { picks.contains($0) }
+            }
+
             let stored = patient.dischargeSummaryData
             if data.procedurePerformed    != stored.procedurePerformed    ||
                data.anaesthetistName      != stored.anaesthetistName      ||
@@ -200,7 +228,8 @@ struct DischargeSummaryView: View {
                data.admissionDiagnosis    != stored.admissionDiagnosis    ||
                data.icdCode               != stored.icdCode               ||
                data.inHospitalCourse      != stored.inHospitalCourse      ||
-               data.dischargeMedications  != stored.dischargeMedications {
+               data.dischargeMedications  != stored.dischargeMedications  ||
+               data.returnPrecautions     != stored.returnPrecautions {
                 save()
             }
         }
