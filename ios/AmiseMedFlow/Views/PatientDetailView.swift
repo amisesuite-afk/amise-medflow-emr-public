@@ -29,7 +29,6 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     // Clinical
     case notes          = "Notes"
     case vitals         = "Vitals"
-    case scores         = "Clinical Scores"
     case prescriptions  = "Prescriptions"
     case billing        = "Billing"
     case operative      = "Operative Plan"
@@ -59,7 +58,6 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .plan:           "list.bullet.clipboard"
         case .notes:          "note.text"
         case .vitals:         "waveform.path.ecg"
-        case .scores:         "list.number"
         case .prescriptions:  "pills"
         case .billing:        "dollarsign.circle"
         case .operative:      "scissors"
@@ -89,7 +87,6 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .plan:           "Plan"
         case .notes:          "Notes"
         case .vitals:         "Vitals"
-        case .scores:         "Scores"
         case .prescriptions:  "Rx"
         case .billing:        "Billing"
         case .operative:      "Op Plan"
@@ -356,8 +353,6 @@ struct PatientDetailPadView: View {
             NoteListView(patient: patient)
         case .vitals:
             VitalsHistoryView(patient: patient)
-        case .scores:
-            ClinicalScoresView(patient: patient)
         case .prescriptions:
             PrescriptionView(patient: patient)
         case .billing:
