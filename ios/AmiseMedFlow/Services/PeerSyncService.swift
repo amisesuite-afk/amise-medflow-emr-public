@@ -54,8 +54,24 @@ final class PeerSyncService: NSObject, ObservableObject {
     private var sentCount:     [MCPeerID: Int] = [:]
 
     override init() {
-        myPeer = MCPeerID(displayName: UIDevice.current.name)
+        myPeer = Self.loadOrCreatePeerID()
         super.init()
+    }
+
+    // Persist the MCPeerID across launches — MPC uses the archived identity internally
+    // to track known peers. Recreating a new ID each launch looks like a different device
+    // to the framework and breaks discovery reliability.
+    private static func loadOrCreatePeerID() -> MCPeerID {
+        let key = "com.amise.medflow.mcPeerID"
+        if let data = UserDefaults.standard.data(forKey: key),
+           let peer = try? NSKeyedUnarchiver.unarchivedObject(ofClass: MCPeerID.self, from: data) {
+            return peer
+        }
+        let peer = MCPeerID(displayName: UIDevice.current.name)
+        if let data = try? NSKeyedArchiver.archivedData(withRootObject: peer, requiringSecureCoding: true) {
+            UserDefaults.standard.set(data, forKey: key)
+        }
+        return peer
     }
 
     // MARK: - Lifecycle
