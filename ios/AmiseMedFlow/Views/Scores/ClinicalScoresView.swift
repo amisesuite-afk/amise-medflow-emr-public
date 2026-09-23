@@ -542,6 +542,18 @@ struct ClinicalScoresView: View {
         return ActiveScore.allCases.filter { $0.category == selectedCategory }
     }
 
+    /// Layer 2: ranked scores from working diagnosis + ICD + chief complaint
+    var recommendedScores: [DiagnosisScoreRecommendation] {
+        guard patient.workingDiagnosis != nil || patient.workingDiagnosisICD != nil ||
+              patient.chiefComplaint != nil else { return [] }
+        return Array(DiagnosisScoreMapper.recommendations(for: patient).prefix(6))
+    }
+
+    /// Layer 1: auto-focus category from chief complaint
+    var autoCategory: ScoreCategory? {
+        DiagnosisScoreMapper.suggestedCategory(for: patient.chiefComplaint)
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             categoryBar
@@ -557,6 +569,12 @@ struct ClinicalScoresView: View {
                 }
             } else {
                 scoreGrid
+            }
+        }
+        .onAppear {
+            // Layer 1: pre-select category from chief complaint if user hasn't changed it
+            if selectedCategory == .all, let cat = autoCategory {
+                selectedCategory = cat
             }
         }
         .onChange(of: selectedScore) { _, newScore in
@@ -646,50 +664,242 @@ struct ClinicalScoresView: View {
 
     private var scoreGrid: some View {
         ScrollView {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 12)], spacing: 12) {
-                ForEach(filteredScores) { score in
-                    Button {
-                        selectedScore = score
-                        result = nil
-                    } label: {
-                        scoreCard(score)
-                    }
-                    .buttonStyle(.plain)
+            VStack(alignment: .leading, spacing: 0) {
+                // Layer 2: Diagnosis-linked recommendations
+                if !recommendedScores.isEmpty && selectedCategory == .all {
+                    recommendedSection
                 }
+                // Layer 7: Recent score history (last 5)
+                if !patient.scoreHistory.isEmpty && selectedCategory == .all {
+                    recentScoresSection
+                }
+                // All scores grid (filtered by category)
+                if !recommendedScores.isEmpty && selectedCategory == .all {
+                    Text("All Scores")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+                        .padding(.bottom, 4)
+                }
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 12)], spacing: 12) {
+                    ForEach(filteredScores) { score in
+                        Button {
+                            selectedScore = score
+                            result = nil
+                        } label: {
+                            scoreCard(score)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.bottom)
+                .padding(.top, 8)
             }
-            .padding()
         }
     }
 
+    // MARK: - Recommended scores section (Layer 2)
+
+    private var recommendedSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 6) {
+                Image(systemName: "sparkles")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(AMColor.accent)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Recommended for this patient")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(AMColor.accent)
+                    if let dx = patient.workingDiagnosis, !dx.isEmpty {
+                        Text(dx)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
+                }
+                Spacer()
+                if let icd = patient.workingDiagnosisICD, !icd.isEmpty {
+                    Text(icd)
+                        .font(.caption2.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color.secondary.opacity(0.1), in: Capsule())
+                }
+            }
+            .padding(.horizontal)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    ForEach(recommendedScores) { rec in
+                        Button {
+                            selectedScore = rec.score
+                            result = nil
+                        } label: {
+                            recommendedCard(rec)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 4)
+            }
+        }
+        .padding(.vertical, 10)
+        .background(AMColor.accentLt.opacity(0.35))
+    }
+
+    private func recommendedCard(_ rec: DiagnosisScoreRecommendation) -> some View {
+        let alreadyRun = patient.scoreHistory.contains(where: { $0.scoreName == rec.score.rawValue })
+        return VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                Image(systemName: rec.score.icon)
+                    .font(.callout)
+                    .foregroundStyle(alreadyRun ? .white : AMColor.accent)
+                Spacer()
+                if alreadyRun {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.caption)
+                        .foregroundStyle(.white.opacity(0.85))
+                }
+            }
+            Text(rec.score.rawValue)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(alreadyRun ? .white : .primary)
+                .multilineTextAlignment(.leading)
+                .lineLimit(2)
+            Text(rec.rationale)
+                .font(.caption2)
+                .foregroundStyle(alreadyRun ? .white.opacity(0.8) : .secondary)
+                .lineLimit(2)
+        }
+        .padding(12)
+        .frame(width: 170, alignment: .leading)
+        .background(
+            alreadyRun
+                ? AMColor.accent
+                : Color(uiColor: .systemBackground),
+            in: RoundedRectangle(cornerRadius: 10)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(alreadyRun ? Color.clear : AMColor.accent.opacity(0.3), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.06), radius: 3, y: 2)
+    }
+
+    // MARK: - Recent score history section (Layer 7)
+
+    private var recentScoresSection: some View {
+        let recent = patient.scoreHistory
+            .sorted { $0.recordedAt > $1.recordedAt }
+            .prefix(5)
+
+        return VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Recent Scores")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Text("\(patient.scoreHistory.count) total")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(.horizontal)
+
+            ForEach(Array(recent)) { entry in
+                HStack(spacing: 10) {
+                    Circle()
+                        .fill(riskColor(for: entry.riskRaw))
+                        .frame(width: 8, height: 8)
+                    Text(entry.scoreName)
+                        .font(.caption.weight(.medium))
+                        .lineLimit(1)
+                    Spacer()
+                    Text(entry.abbreviation)
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(riskColor(for: entry.riskRaw))
+                        .fontWeight(.semibold)
+                    Text(entry.recordedAt, style: .relative)
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 4)
+                .background(Color(uiColor: .systemBackground))
+            }
+        }
+        .padding(.vertical, 10)
+        .background(Color.secondary.opacity(0.05))
+    }
+
+    private func riskColor(for riskRaw: String) -> Color {
+        scoreHistoryColor(riskRaw)
+    }
+
     private func scoreCard(_ score: ActiveScore) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
+        let lastEntry = patient.scoreHistory
+            .filter { $0.scoreName == score.rawValue }
+            .sorted { $0.recordedAt > $1.recordedAt }
+            .first
+        let isRecommended = recommendedScores.contains(where: { $0.score == score })
+
+        return VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Image(systemName: score.icon)
                     .font(.title3)
-                    .foregroundStyle(AMColor.accent)
+                    .foregroundStyle(isRecommended ? AMColor.accent : .secondary)
                 Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
+                if let entry = lastEntry {
+                    Text(entry.abbreviation)
+                        .font(.caption2.monospacedDigit().weight(.semibold))
+                        .foregroundStyle(riskColor(for: entry.riskRaw))
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(riskColor(for: entry.riskRaw).opacity(0.12), in: Capsule())
+                } else {
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                }
             }
             Text(score.rawValue)
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(.primary)
                 .multilineTextAlignment(.leading)
-            Text(score.category.rawValue)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+            HStack(spacing: 4) {
+                if isRecommended {
+                    Image(systemName: "sparkle")
+                        .font(.caption2)
+                        .foregroundStyle(AMColor.accent)
+                }
+                Text(score.category.rawValue)
+                    .font(.caption2)
+                    .foregroundStyle(isRecommended ? AMColor.accent : .secondary)
+            }
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(.background, in: RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(isRecommended ? AMColor.accent.opacity(0.3) : Color.clear, lineWidth: 1)
+        )
         .shadow(color: .black.opacity(0.06), radius: 4, y: 2)
     }
 
     // MARK: - Result card
 
     private func resultCard(_ r: ClinicalScore) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
+        // Layer 5: check if score corroborates working diagnosis
+        let corroborates = bayesianCorroboration(
+            score: r,
+            workingDx: patient.workingDiagnosis?.lowercased() ?? ""
+        )
+
+        return VStack(alignment: .leading, spacing: 14) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(r.systemName)
@@ -700,6 +910,22 @@ struct ClinicalScoresView: View {
                 }
                 Spacer()
                 riskBadge(r.risk, score: r.score, max: r.maxScore)
+            }
+
+            // Layer 5: Bayesian corroboration banner
+            if corroborates, let dx = patient.workingDiagnosis, !dx.isEmpty {
+                HStack(spacing: 6) {
+                    Image(systemName: "brain.head.profile")
+                        .font(.caption)
+                        .foregroundStyle(AMColor.accent)
+                    Text("Score corroborates working diagnosis: \(dx)")
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(AMColor.accent)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 7)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(AMColor.accentLt.opacity(0.5), in: RoundedRectangle(cornerRadius: 8))
             }
 
             if !r.redFlags.isEmpty {
@@ -1187,16 +1413,27 @@ struct ClinicalScoresView: View {
         let fmt = DateFormatter()
         fmt.dateStyle = .medium
         fmt.timeStyle = .short
-        let scoreStr   = r.score == Double(Int(r.score)) ? "\(Int(r.score))" : String(format: "%.1f", r.score)
-        let maxStr     = r.maxScore == Double(Int(r.maxScore)) ? "\(Int(r.maxScore))" : String(format: "%.1f", r.maxScore)
+        let scoreStr     = r.score == Double(Int(r.score)) ? "\(Int(r.score))" : String(format: "%.1f", r.score)
+        let maxStr       = r.maxScore == Double(Int(r.maxScore)) ? "\(Int(r.maxScore))" : String(format: "%.1f", r.maxScore)
         let scoreDisplay = r.maxScore > 0 ? "\(scoreStr)/\(maxStr)" : scoreStr
-        let line = "[\(fmt.string(from: .now))] \(r.systemName): \(scoreDisplay) — \(r.risk.rawValue) Risk. \(r.interpretation)"
+        var line = "[\(fmt.string(from: .now))] \(r.systemName): \(scoreDisplay) — \(r.risk.rawValue) Risk. \(r.interpretation)"
+
+        // Layer 5: annotate when score strongly corroborates working diagnosis
+        if let dx = patient.workingDiagnosis, !dx.isEmpty {
+            let dxLower = dx.lowercased()
+            let isCorroborating: Bool = bayesianCorroboration(score: r, workingDx: dxLower)
+            if isCorroborating {
+                line += " [Corroborates working diagnosis: \(dx)]"
+            }
+        }
+
         if let existing = patient.assessmentText, !existing.isEmpty {
             patient.assessmentText = existing + "\n" + line
         } else {
             patient.assessmentText = line
         }
-        // Persist to score history
+
+        // Persist to score history (Layer 7)
         let entry = ScoreHistoryEntry(
             scoreName: r.systemName,
             abbreviation: r.abbreviation,
@@ -1206,7 +1443,33 @@ struct ClinicalScoresView: View {
         )
         entry.patient = patient
         modelContext.insert(entry)
+        patient.updatedAt   = .now
+        patient.pendingSync = true
         scoreSaved = true
+    }
+
+    /// Layer 5 — returns true when a score result strongly supports the current working diagnosis.
+    private func bayesianCorroboration(score: ClinicalScore, workingDx: String) -> Bool {
+        let name = score.systemName.lowercased()
+        guard score.risk == .high || score.risk == .critical else { return false }
+        if name.contains("alvarado")   && workingDx.contains("appendicit")       { return true }
+        if name.contains("air")        && workingDx.contains("appendicit")       { return true }
+        if name.contains("ripasa")     && workingDx.contains("appendicit")       { return true }
+        if name.contains("tokyo")      && (workingDx.contains("cholecystitis") ||
+                                           workingDx.contains("cholangitis"))    { return true }
+        if name.contains("ranson")     && workingDx.contains("pancreatitis")     { return true }
+        if name.contains("bisap")      && workingDx.contains("pancreatitis")     { return true }
+        if name.contains("blatchford") && workingDx.contains("bleed")            { return true }
+        if name.contains("rockall")    && workingDx.contains("bleed")            { return true }
+        if name.contains("wells")      && (workingDx.contains("dvt") ||
+                                           workingDx.contains("pulmonary embolism")) { return true }
+        if name.contains("qsofa")      && workingDx.contains("sepsis")           { return true }
+        if name.contains("lrinec")     && workingDx.contains("fasciitis")        { return true }
+        if name.contains("fgsi")       && workingDx.contains("fournier")         { return true }
+        if name.contains("abcd")       && (workingDx.contains("tia") ||
+                                           workingDx.contains("stroke"))         { return true }
+        if name.contains("cha2ds2")    && workingDx.contains("atrial")           { return true }
+        return false
     }
 
     // MARK: - Recalculate
