@@ -119,6 +119,7 @@ struct TraumaAssessmentView: View {
     @State private var data: TraumaData = TraumaData()
     @State private var hasTOI = false
     @State private var expandedSection: String? = "mist"
+    @State private var pdfWrapper: PDFDataWrapper?
 
     private let mechanismOptions = [
         "RTA", "Fall", "Assault", "Stab wound", "Gunshot wound",
@@ -264,6 +265,18 @@ struct TraumaAssessmentView: View {
         }
         .navigationTitle("Trauma Assessment")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    pdfWrapper = PDFDataWrapper(data: ProcedureFormPDF.traumaAssessment(patient: patient, data: data))
+                } label: {
+                    Label("Export PDF", systemImage: "arrow.up.doc.fill")
+                }
+            }
+        }
+        .sheet(item: $pdfWrapper) { wrapper in
+            ShareSheet(items: [wrapper.data])
+        }
         .onAppear { data = patient.traumaData; hasTOI = data.timeOfInjury != nil }
     }
 

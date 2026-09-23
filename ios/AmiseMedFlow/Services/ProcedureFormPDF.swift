@@ -1754,6 +1754,134 @@ enum ProcedureFormPDF {
         }
     }
 
+    // MARK: - Trauma Assessment
+
+    static func traumaAssessment(patient: Patient, data: TraumaData) -> Data {
+        UIGraphicsPDFRenderer(bounds: page).pdfData { ctx in
+            ctx.beginPage()
+            var y = drawHeader(type: "TRAUMA ASSESSMENT")
+            y = drawPatientStrip(patient: patient, y: y)
+
+            let df = DateFormatter(); df.dateStyle = .medium; df.timeStyle = .short
+
+            // MTP flag
+            if data.mtpTrigger {
+                let orange = UIColor(red: 0.95, green: 0.45, blue: 0.05, alpha: 1)
+                orange.withAlphaComponent(0.12).setFill()
+                UIRectFill(CGRect(x: lm - 4, y: y, width: bodyW + 8, height: 18))
+                "⚠ MTP TRIGGER: HR > 120 + SBP < 90 — consider massive transfusion protocol".draw(
+                    in: CGRect(x: lm, y: y + 3, width: bodyW, height: 13),
+                    withAttributes: [.font: UIFont.systemFont(ofSize: 7.5, weight: .bold),
+                                     .foregroundColor: orange])
+                y += 22
+            }
+
+            // ISS / NISS
+            if data.iss > 0 {
+                let rows: [(String, String)] = [
+                    ("ISS", "\(data.iss)"),
+                    ("NISS", "\(data.niss)"),
+                    ("Severity", {
+                        switch data.iss {
+                        case 1...8: return "Minor"
+                        case 9...15: return "Moderate"
+                        case 16...24: return "Serious"
+                        case 25...40: return "Severe"
+                        case 41...74: return "Critical"
+                        default: return data.iss == 0 ? "No injury" : "Unsurvivable"
+                        }
+                    }()),
+                ]
+                y = drawRowSection(ctx: ctx, title: "Injury Severity", rows: rows, y: y)
+            }
+
+            // MIST handover
+            var mistRows: [(String, String)] = []
+            if !data.mechanism.isEmpty { mistRows.append(("Mechanism", data.mechanism.joined(separator: ", "))) }
+            if let toi = data.timeOfInjury { mistRows.append(("Time of injury", df.string(from: toi))) }
+            if !data.injuriesSuspected.isEmpty { mistRows.append(("Injuries suspected", data.injuriesSuspected)) }
+            if !data.signsAtScene.isEmpty { mistRows.append(("Signs at scene", data.signsAtScene)) }
+            if !data.preHospitalInterventions.isEmpty { mistRows.append(("Pre-hospital Rx", data.preHospitalInterventions.joined(separator: ", "))) }
+            if !mistRows.isEmpty { y = drawRowSection(ctx: ctx, title: "MIST Handover", rows: mistRows, y: y) }
+
+            // Admission vitals
+            var vitalsRows: [(String, String)] = []
+            if !data.hr.isEmpty  { vitalsRows.append(("HR", "\(data.hr) bpm")) }
+            if !data.sbp.isEmpty { vitalsRows.append(("BP", "\(data.sbp)/\(data.dbp) mmHg")) }
+            if !data.rr.isEmpty  { vitalsRows.append(("RR", "\(data.rr) /min")) }
+            if !data.spo2.isEmpty { vitalsRows.append(("SpO₂", "\(data.spo2)%")) }
+            if !data.temp.isEmpty { vitalsRows.append(("Temp", "\(data.temp)°C")) }
+            let gcs = data.gcsTotalDisplay
+            if gcs > 0 { vitalsRows.append(("GCS", "\(gcs)/15 (E\(data.gcsE)+V\(data.gcsV)+M\(data.gcsM))")) }
+            if !data.glucose.isEmpty { vitalsRows.append(("Glucose", "\(data.glucose) mmol/L")) }
+            if !data.pupils.isEmpty  { vitalsRows.append(("Pupils", data.pupils)) }
+            if !data.ebl.isEmpty     { vitalsRows.append(("Est blood loss", "\(data.ebl) mL")) }
+            if !vitalsRows.isEmpty { y = drawRowSection(ctx: ctx, title: "Vitals on Admission", rows: vitalsRows, y: y) }
+
+            // ABCDE
+            let abcRows: [(String, String)] = [
+                ("A — Airway",    data.airway + (data.airwayNotes.isEmpty ? "" : " — \(data.airwayNotes)")),
+                ("B — Breathing", (data.breathingRate.isEmpty ? "" : "RR \(data.breathingRate), ") + data.breathingSounds + (data.breathingNotes.isEmpty ? "" : " — \(data.breathingNotes)")),
+                ("C — Circulation", (data.circulationHR.isEmpty ? "" : "HR \(data.circulationHR), ") + (data.circulationBP.isEmpty ? "" : "BP \(data.circulationBP)") + (data.circulationNotes.isEmpty ? "" : " — \(data.circulationNotes)")),
+                ("D — Disability", "GCS \(data.gcsTotalDisplay)/15" + (data.disabilityNotes.isEmpty ? "" : " — \(data.disabilityNotes)")),
+                ("E — Exposure",  data.exposureNotes),
+            ]
+            let abcFiltered = abcRows.filter { !$0.1.isEmpty }
+            if !abcFiltered.isEmpty { y = drawRowSection(ctx: ctx, title: "ABCDE Primary Survey", rows: abcFiltered, y: y) }
+
+            // ISS breakdown
+            let issRows: [(String, String)] = [
+                ("Head & Neck", data.aisHead > 0 ? "AIS \(data.aisHead)" : ""),
+                ("Face", data.aisFace > 0 ? "AIS \(data.aisFace)" : ""),
+                ("Chest", data.aisChest > 0 ? "AIS \(data.aisChest)" : ""),
+                ("Abdomen & Pelvis", data.aisAbdomen > 0 ? "AIS \(data.aisAbdomen)" : ""),
+                ("Extremities", data.aisExtremities > 0 ? "AIS \(data.aisExtremities)" : ""),
+                ("Skin / External", data.aisSkinSurface > 0 ? "AIS \(data.aisSkinSurface)" : ""),
+            ].filter { !$0.1.isEmpty }
+            if !issRows.isEmpty { y = drawRowSection(ctx: ctx, title: "AIS by Region", rows: issRows, y: y) }
+
+            // Secondary survey
+            let secNotes = secondaryRegions_pdf.compactMap { region -> String? in
+                guard let v = data.secondarySurveyNotes[region], !v.isEmpty else { return nil }
+                return "\(region): \(v)"
+            }
+            if !secNotes.isEmpty {
+                y = drawTextSection(ctx: ctx, title: "Secondary Survey", body: secNotes.joined(separator: "\n"), y: y)
+            }
+
+            // Burns
+            if data.tbsa > 0 {
+                var burnsRows: [(String, String)] = [("TBSA", String(format: "%.1f%%", data.tbsa))]
+                if let parkland = data.parklandVolume {
+                    burnsRows.append(("Parkland (24h)", String(format: "%.0f mL (first 8h: %.0f mL)", parkland, parkland / 2)))
+                }
+                if data.inhalationInjury { burnsRows.append(("Inhalation injury", "Yes")) }
+                if !data.weightKg.isEmpty { burnsRows.append(("Weight", "\(data.weightKg) kg")) }
+                y = drawRowSection(ctx: ctx, title: "Burns Assessment", rows: burnsRows, y: y)
+                if !data.burnsNotes.isEmpty {
+                    y = drawTextSection(ctx: ctx, title: nil, body: data.burnsNotes, y: y)
+                }
+            }
+
+            // Interventions
+            if !data.interventions.isEmpty {
+                y = drawTextSection(ctx: ctx, title: "Interventions", body: data.interventions.joined(separator: ", "), y: y)
+            }
+            if !data.notes.isEmpty {
+                y = drawTextSection(ctx: ctx, title: "Notes", body: data.notes, y: y)
+            }
+
+            drawSignatureBlock(ctx: ctx, surgeon: "Dr Dawit Daniel Kabiye, MD, DM", y: y)
+            drawFooter()
+        }
+    }
+
+    private static let secondaryRegions_pdf = [
+        "Head", "Face", "Neck", "Chest", "Abdomen",
+        "Pelvis", "Spine", "Left Upper Limb", "Right Upper Limb",
+        "Left Lower Limb", "Right Lower Limb", "Back", "Perineum", "Skin"
+    ]
+
     @discardableResult
     private static func patientSection(ctx: UIGraphicsPDFRendererContext,
                                        title: String, y: CGFloat) -> CGFloat {

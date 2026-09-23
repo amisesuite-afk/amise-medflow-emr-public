@@ -160,6 +160,21 @@ struct PreOpChecklistView: View {
                 }
                 save()
             }
+
+            // Auto-flag difficult airway from Mallampati ≥ 3
+            if !data.si_difficultAirway, let mallampati = patient.mallampatiScore, mallampati >= 3 {
+                data.si_difficultAirway = true
+                if data.si_airwayDetails.isEmpty {
+                    data.si_airwayDetails = "Mallampati class \(mallampati) — anticipate difficult intubation; senior anaesthetist and videolaryngoscope."
+                }
+                save()
+            }
+
+            // Auto-mark site marking N/A for endoscopy (no skin-site marking required)
+            if !data.si_siteMarked && !data.si_siteMarkingNA && patient.setting == .endoscopy {
+                data.si_siteMarkingNA = true
+                save()
+            }
         }
     }
 
