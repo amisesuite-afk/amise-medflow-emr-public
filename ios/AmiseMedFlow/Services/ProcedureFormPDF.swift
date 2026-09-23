@@ -85,6 +85,7 @@ enum ProcedureFormPDF {
             if !data.postOpOrders.isEmpty {
                 y = drawTextSection(ctx: ctx, title: "Post-operative Orders", body: data.postOpOrders, y: y)
             }
+            drawSignatureBlock(ctx: ctx, surgeon: data.surgeon, y: y)
             drawFooter()
         }
     }
@@ -321,6 +322,17 @@ enum ProcedureFormPDF {
             if !data.complicationsInHospital.isEmpty {
                 y = drawTextSection(ctx: ctx, title: "Complications", body: data.complicationsInHospital, y: y)
             }
+            // Blood products and critical care
+            var criticalCare: [(String, String)] = []
+            if data.bloodTransfusion {
+                criticalCare.append(("Blood transfusion", data.bloodUnits.isEmpty ? "Given" : "\(data.bloodUnits) unit(s)"))
+            }
+            if data.ituAdmission {
+                criticalCare.append(("ITU / HDU admission", data.ituDays.isEmpty ? "Yes" : "\(data.ituDays) day(s)"))
+            }
+            if !criticalCare.isEmpty {
+                y = drawRowSection(ctx: ctx, title: "Critical Care", rows: criticalCare, y: y)
+            }
             if !data.pathologyResults.isEmpty {
                 y = drawTextSection(ctx: ctx, title: "Pathology Results", body: data.pathologyResults, y: y)
             }
@@ -356,8 +368,12 @@ enum ProcedureFormPDF {
                 y = drawTextSection(ctx: ctx, title: "Follow-up", body: data.followUpAppointment, y: y)
             }
             if data.gpNotified && !data.gpName.isEmpty {
-                _ = drawTextSection(ctx: ctx, title: "GP Notification", body: "GP notified: \(data.gpName)", y: y)
+                y = drawTextSection(ctx: ctx, title: "GP Notification", body: "GP notified: \(data.gpName)", y: y)
             }
+            if !data.additionalNotes.isEmpty {
+                y = drawTextSection(ctx: ctx, title: "Additional Notes", body: data.additionalNotes, y: y)
+            }
+            drawSignatureBlock(ctx: ctx, surgeon: data.surgeonName, y: y)
             drawFooter()
         }
     }
@@ -402,7 +418,8 @@ enum ProcedureFormPDF {
             y = drawRowSection(ctx: ctx, title: "GI Recovery", rows: gi, y: y)
 
             if !data.assessment.isEmpty { y = drawTextSection(ctx: ctx, title: "Assessment", body: data.assessment, y: y) }
-            if !data.plan.isEmpty       { _ = drawTextSection(ctx: ctx, title: "Plan", body: data.plan, y: y) }
+            if !data.plan.isEmpty       { y = drawTextSection(ctx: ctx, title: "Plan", body: data.plan, y: y) }
+            drawSignatureBlock(ctx: ctx, surgeon: data.reviewedBy, y: y)
             drawFooter()
         }
     }
@@ -436,10 +453,38 @@ enum ProcedureFormPDF {
             if !data.diagnosis.isEmpty           { y = drawTextSection(ctx: ctx, title: "Diagnosis",               body: data.diagnosis, y: y) }
             if !data.requestedAction.isEmpty     { y = drawTextSection(ctx: ctx, title: "Request",                 body: data.requestedAction, y: y) }
 
-            let closing = (data.closingNote.isEmpty ? "Thank you for your kind review of this patient." : data.closingNote)
-                + "\n\nYours sincerely,\n\n\(data.fromDoctor)\n\(data.fromPractice)"
-            if !data.copyTo.isEmpty { _ = drawTextSection(ctx: ctx, title: nil, body: closing + "\n\ncc: \(data.copyTo)", y: y) }
-            else                     { _ = drawTextSection(ctx: ctx, title: nil, body: closing, y: y) }
+            let closingText = (data.closingNote.isEmpty ? "Thank you for your kind review of this patient." : data.closingNote)
+            y = drawTextSection(ctx: ctx, title: nil, body: closingText, y: y)
+
+            // Professional letter closing with signature line
+            y = maybeNewPage(ctx: ctx, y: y, minSpace: 80)
+            let closingLabel: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 8.5),
+                .foregroundColor: UIColor.label,
+            ]
+            "Yours sincerely,".draw(at: CGPoint(x: lm, y: y), withAttributes: closingLabel)
+            y += 20
+            // Blank signature line
+            teal.withAlphaComponent(0.4).setFill()
+            UIRectFill(CGRect(x: lm, y: y + 20, width: 220, height: 0.5))
+            y += 30
+            let sigName: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 9, weight: .semibold),
+                .foregroundColor: UIColor.label,
+            ]
+            let sigSub: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 8),
+                .foregroundColor: UIColor.secondaryLabel,
+            ]
+            data.fromDoctor.draw(at: CGPoint(x: lm, y: y), withAttributes: sigName)
+            y += 14
+            data.fromPractice.draw(at: CGPoint(x: lm, y: y), withAttributes: sigSub)
+            y += 12
+            if !data.copyTo.isEmpty {
+                y += 8
+                "cc: \(data.copyTo)".draw(in: CGRect(x: lm, y: y, width: bodyW, height: 12),
+                                          withAttributes: sigSub)
+            }
             drawFooter()
         }
     }
@@ -448,19 +493,108 @@ enum ProcedureFormPDF {
 
     @discardableResult
     private static func drawHeader(type: String) -> CGFloat {
-        let h: CGFloat = 56
+        let h: CGFloat = 88
+        // Full-width teal bar
         teal.setFill()
         UIRectFill(CGRect(x: 0, y: 0, width: page.width, height: h))
+
+        // LEFT — "AMISE" brand mark (large, bold, tracked)
+        let amiseAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 22, weight: .black),
+            .foregroundColor: UIColor.white,
+            .kern: 4,
+        ]
+        "AMISE".draw(at: CGPoint(x: lm, y: 8), withAttributes: amiseAttrs)
+
+        // LEFT — "Amise Medical Services" subtitle
         "Amise Medical Services".draw(
-            in: CGRect(x: lm, y: 10, width: page.width - lm - 120, height: 22),
-            withAttributes: [.font: UIFont.systemFont(ofSize: 16, weight: .bold), .foregroundColor: UIColor.white])
+            in: CGRect(x: lm, y: 34, width: 230, height: 14),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 9, weight: .semibold),
+                             .foregroundColor: UIColor.white.withAlphaComponent(0.92)])
+
+        // LEFT — surgeon + specialty
+        "Dr Dawit Daniel Kabiye  MD · DM  ·  General & Endoscopic Surgery".draw(
+            in: CGRect(x: lm, y: 50, width: 330, height: 12),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 7.5),
+                             .foregroundColor: UIColor.white.withAlphaComponent(0.78)])
+
+        // RIGHT — practice contact block
+        let rightX = page.width - lm - 160
+        "Amise Medical Services".draw(
+            in: CGRect(x: rightX, y: 18, width: 160, height: 12),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 7.5, weight: .semibold),
+                             .foregroundColor: UIColor.white.withAlphaComponent(0.90)])
+        "Saint Lucia, West Indies".draw(
+            in: CGRect(x: rightX, y: 31, width: 160, height: 11),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 7),
+                             .foregroundColor: UIColor.white.withAlphaComponent(0.72)])
+        "+1 758 284 0557  ·  amisemedical.com".draw(
+            in: CGRect(x: rightX, y: 43, width: 160, height: 11),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 7),
+                             .foregroundColor: UIColor.white.withAlphaComponent(0.72)])
+
+        // Separator line
+        UIColor.white.withAlphaComponent(0.25).setFill()
+        UIRectFill(CGRect(x: 0, y: h - 20, width: page.width, height: 0.5))
+
+        // Document type label on the separator baseline
         type.draw(
-            in: CGRect(x: lm, y: 32, width: page.width - lm - 120, height: 14),
-            withAttributes: [.font: UIFont.systemFont(ofSize: 9, weight: .medium), .foregroundColor: UIColor.white.withAlphaComponent(0.8)])
-        "Dr Dawit Daniel Kabiye MD DM".draw(
-            in: CGRect(x: page.width - 175, y: 20, width: 143, height: 16),
-            withAttributes: [.font: UIFont.systemFont(ofSize: 8), .foregroundColor: UIColor.white.withAlphaComponent(0.85)])
+            in: CGRect(x: lm, y: h - 17, width: page.width - lm * 2, height: 14),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 8.5, weight: .semibold),
+                             .foregroundColor: UIColor.white.withAlphaComponent(0.88),
+                             .kern: 1.5])
+
         return h
+    }
+
+    /// Draws a signature block for the authorising clinician.
+    /// Returns the Y position after the block.
+    @discardableResult
+    private static func drawSignatureBlock(ctx: UIGraphicsPDFRendererContext,
+                                           surgeon: String, y: CGFloat) -> CGFloat {
+        var y = maybeNewPage(ctx: ctx, y: y, minSpace: 110)
+        y += 8
+        y = drawSectionHeader(title: "Authorising Clinician", y: y)
+
+        let df = DateFormatter()
+        df.dateStyle = .long; df.timeStyle = .short
+
+        let labelAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 8, weight: .semibold),
+            .foregroundColor: UIColor.secondaryLabel,
+        ]
+        let nameAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 9),
+            .foregroundColor: UIColor.label,
+        ]
+        let disclaimerAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.italicSystemFont(ofSize: 6.5),
+            .foregroundColor: UIColor.tertiaryLabel,
+        ]
+
+        // Signature line
+        "Signature:".draw(at: CGPoint(x: lm, y: y), withAttributes: labelAttrs)
+        teal.withAlphaComponent(0.4).setFill()
+        UIRectFill(CGRect(x: lm + 62, y: y + 10, width: 220, height: 0.5))
+        y += 18
+
+        // Name printed
+        "Name:".draw(at: CGPoint(x: lm, y: y), withAttributes: labelAttrs)
+        surgeon.draw(in: CGRect(x: lm + 62, y: y, width: 280, height: 13), withAttributes: nameAttrs)
+        y += 16
+
+        // Date signed
+        "Date / Time:".draw(at: CGPoint(x: lm, y: y), withAttributes: labelAttrs)
+        teal.withAlphaComponent(0.4).setFill()
+        UIRectFill(CGRect(x: lm + 62, y: y + 10, width: 220, height: 0.5))
+        y += 18
+
+        // AI disclaimer
+        "This document was prepared with AI-assisted clinical software. The clinician's signature above confirms review and approval of the content.".draw(
+            in: CGRect(x: lm, y: y, width: bodyW, height: 20),
+            withAttributes: disclaimerAttrs)
+        y += 18
+        return y + 6
     }
 
     // MARK: - Surgical Consent Form

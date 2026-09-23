@@ -27,7 +27,11 @@ enum ClinicalNotePDF {
 
             y += 20
             if y > page.height - 180 { ctx.beginPage(); y = 40 }
-            drawVisitHistory(ctx: ctx, page: page, y: y, patient: patient, currentId: note.id, teal: teal)
+            y = drawVisitHistory(ctx: ctx, page: page, y: y, patient: patient, currentId: note.id, teal: teal)
+
+            if note.status == .signed {
+                drawSignatureBlock(ctx: ctx, page: page, y: y, teal: teal)
+            }
 
             drawFooter(page: page, note: note)
         }
@@ -37,29 +41,59 @@ enum ClinicalNotePDF {
 
     @discardableResult
     private static func drawHeader(page: CGRect, y: CGFloat, note: ClinicalNote, teal: UIColor) -> CGFloat {
-        let h: CGFloat = 56
+        let h: CGFloat = 88
         teal.setFill()
         UIRectFill(CGRect(x: 0, y: 0, width: page.width, height: h))
 
+        // "AMISE" brand mark
+        "AMISE".draw(at: CGPoint(x: 24, y: 8),
+                     withAttributes: [.font: UIFont.systemFont(ofSize: 22, weight: .black),
+                                      .foregroundColor: UIColor.white,
+                                      .kern: 4])
+
         "Amise Medical Services".draw(
-            in: CGRect(x: 24, y: 10, width: page.width - 160, height: 22),
-            withAttributes: [.font: UIFont.systemFont(ofSize: 16, weight: .bold),
-                             .foregroundColor: UIColor.white])
+            in: CGRect(x: 24, y: 34, width: 230, height: 14),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 9, weight: .semibold),
+                             .foregroundColor: UIColor.white.withAlphaComponent(0.92)])
 
+        "Dr Dawit Daniel Kabiye  MD · DM  ·  General & Endoscopic Surgery".draw(
+            in: CGRect(x: 24, y: 50, width: 330, height: 12),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 7.5),
+                             .foregroundColor: UIColor.white.withAlphaComponent(0.78)])
+
+        // Right contact block
+        let rightX = page.width - 24 - 160
+        "Amise Medical Services".draw(
+            in: CGRect(x: rightX, y: 18, width: 160, height: 12),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 7.5, weight: .semibold),
+                             .foregroundColor: UIColor.white.withAlphaComponent(0.90)])
+        "Saint Lucia, West Indies".draw(
+            in: CGRect(x: rightX, y: 31, width: 160, height: 11),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 7),
+                             .foregroundColor: UIColor.white.withAlphaComponent(0.72)])
+        "+1 758 284 0557  ·  amisemedical.com".draw(
+            in: CGRect(x: rightX, y: 43, width: 160, height: 11),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 7),
+                             .foregroundColor: UIColor.white.withAlphaComponent(0.72)])
+
+        // Separator
+        UIColor.white.withAlphaComponent(0.25).setFill()
+        UIRectFill(CGRect(x: 0, y: h - 20, width: page.width, height: 0.5))
+
+        // Document type + status badge on separator baseline
         note.noteType.label.uppercased().draw(
-            in: CGRect(x: 24, y: 32, width: page.width - 160, height: 14),
-            withAttributes: [.font: UIFont.systemFont(ofSize: 9, weight: .medium),
-                             .foregroundColor: UIColor.white.withAlphaComponent(0.8)])
+            in: CGRect(x: 24, y: h - 17, width: page.width - 120, height: 14),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 8.5, weight: .semibold),
+                             .foregroundColor: UIColor.white.withAlphaComponent(0.88),
+                             .kern: 1.5])
 
-        // Status badge
         let isDraft   = note.status == .draft
         let badgeText = isDraft ? "DRAFT" : "SIGNED"
         let badgeBg   = isDraft ? UIColor.systemOrange : UIColor(red: 0.18, green: 0.70, blue: 0.40, alpha: 1)
-        let badgeRect = CGRect(x: page.width - 100, y: 18, width: 76, height: 20)
+        let badgeRect = CGRect(x: page.width - 76, y: h - 22, width: 52, height: 18)
         badgeBg.setFill()
-        UIBezierPath(roundedRect: badgeRect, cornerRadius: 4).fill()
-
-        let bAttrs: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 9, weight: .bold),
+        UIBezierPath(roundedRect: badgeRect, cornerRadius: 3).fill()
+        let bAttrs: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 8, weight: .bold),
                                                       .foregroundColor: UIColor.white]
         let bSize = (badgeText as NSString).size(withAttributes: bAttrs)
         badgeText.draw(at: CGPoint(x: badgeRect.midX - bSize.width / 2,
@@ -67,6 +101,53 @@ enum ClinicalNotePDF {
                        withAttributes: bAttrs)
 
         return h
+    }
+
+    // MARK: - Signature block (signed notes only)
+
+    private static func drawSignatureBlock(ctx: UIGraphicsPDFRendererContext,
+                                           page: CGRect, y: CGFloat, teal: UIColor) {
+        var y = y
+        if y > page.height - 110 { ctx.beginPage(); y = 40 }
+        y += 8
+
+        // Section heading
+        "AUTHORISING CLINICIAN".draw(
+            in: CGRect(x: 24, y: y, width: page.width - 48, height: 14),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 10, weight: .semibold),
+                             .foregroundColor: teal])
+        teal.withAlphaComponent(0.2).setFill()
+        UIRectFill(CGRect(x: 24, y: y + 15, width: page.width - 48, height: 0.5))
+        y += 22
+
+        let labelAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 8, weight: .semibold),
+            .foregroundColor: UIColor.secondaryLabel,
+        ]
+        let nameAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 9),
+            .foregroundColor: UIColor.label,
+        ]
+
+        "Signature:".draw(at: CGPoint(x: 24, y: y), withAttributes: labelAttrs)
+        teal.withAlphaComponent(0.4).setFill()
+        UIRectFill(CGRect(x: 86, y: y + 10, width: 220, height: 0.5))
+        y += 18
+
+        "Name:".draw(at: CGPoint(x: 24, y: y), withAttributes: labelAttrs)
+        "Dr Dawit Daniel Kabiye  MD · DM".draw(
+            in: CGRect(x: 86, y: y, width: 280, height: 13), withAttributes: nameAttrs)
+        y += 16
+
+        "Date / Time:".draw(at: CGPoint(x: 24, y: y), withAttributes: labelAttrs)
+        teal.withAlphaComponent(0.4).setFill()
+        UIRectFill(CGRect(x: 86, y: y + 10, width: 220, height: 0.5))
+        y += 18
+
+        "This document was prepared with AI-assisted clinical software. The clinician's signature confirms review and approval.".draw(
+            in: CGRect(x: 24, y: y, width: page.width - 48, height: 20),
+            withAttributes: [.font: UIFont.italicSystemFont(ofSize: 6.5),
+                             .foregroundColor: UIColor.tertiaryLabel])
     }
 
     // MARK: - Patient identity strip

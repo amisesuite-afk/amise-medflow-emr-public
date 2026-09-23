@@ -24,6 +24,7 @@ enum PatientSummaryPDF {
             y = drawDemographics(ctx: ctx, patient: patient, y: y)
             y = maybeNewPage(ctx: ctx, y: y)
             y = drawClinical(ctx: ctx, patient: patient, y: y)
+            drawSignatureBlock(ctx: ctx, y: y)
             drawFooter(pageRect: pageRect)
         }
     }
@@ -31,34 +32,98 @@ enum PatientSummaryPDF {
     // MARK: - Page sections
 
     private static func drawHeader(patient: Patient, y: CGFloat) -> CGFloat {
-        // Teal header bar
+        let h: CGFloat = 88
         teal.setFill()
-        UIRectFill(CGRect(x: 0, y: 0, width: pageW, height: 62))
+        UIRectFill(CGRect(x: 0, y: 0, width: pageW, height: h))
 
-        "Amise Medical Services".draw(in: CGRect(x: margin, y: 10, width: colW * 0.65, height: 22),
-            withAttributes: [.font: UIFont.systemFont(ofSize: 15, weight: .bold), .foregroundColor: UIColor.white])
+        // "AMISE" brand mark
+        "AMISE".draw(at: CGPoint(x: margin, y: 8),
+                     withAttributes: [.font: UIFont.systemFont(ofSize: 22, weight: .black),
+                                      .foregroundColor: UIColor.white,
+                                      .kern: 4])
 
-        "Dr Dawit Daniel Kabiye MD DM".draw(in: CGRect(x: margin, y: 33, width: colW * 0.65, height: 16),
-            withAttributes: [.font: UIFont.systemFont(ofSize: 9), .foregroundColor: UIColor.white.withAlphaComponent(0.85)])
+        "Amise Medical Services".draw(
+            in: CGRect(x: margin, y: 34, width: 230, height: 14),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 9, weight: .semibold),
+                             .foregroundColor: UIColor.white.withAlphaComponent(0.92)])
 
-        // Patient name right-aligned in header
-        let nameStr = "PATIENT SUMMARY\n\(patient.fullName)"
+        "Dr Dawit Daniel Kabiye  MD · DM  ·  General & Endoscopic Surgery".draw(
+            in: CGRect(x: margin, y: 50, width: 330, height: 12),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 7.5),
+                             .foregroundColor: UIColor.white.withAlphaComponent(0.78)])
+
+        // Right — patient name prominently in header
+        let rightX = pageW * 0.55
         let nameAttr = NSMutableAttributedString(
             string: "PATIENT SUMMARY\n",
-            attributes: [.font: UIFont.systemFont(ofSize: 8, weight: .semibold), .foregroundColor: UIColor.white.withAlphaComponent(0.7)])
+            attributes: [.font: UIFont.systemFont(ofSize: 7.5, weight: .semibold),
+                         .foregroundColor: UIColor.white.withAlphaComponent(0.70),
+                         .kern: 1.2])
         nameAttr.append(NSAttributedString(
             string: patient.fullName,
-            attributes: [.font: UIFont.systemFont(ofSize: 13, weight: .bold), .foregroundColor: UIColor.white]))
-        _ = nameStr  // suppress warning
-        let nameRect = CGRect(x: pageW * 0.55, y: 8, width: pageW * 0.42, height: 46)
-        nameAttr.draw(in: nameRect)
+            attributes: [.font: UIFont.systemFont(ofSize: 13, weight: .bold),
+                         .foregroundColor: UIColor.white]))
+        nameAttr.draw(in: CGRect(x: rightX, y: 10, width: pageW - rightX - margin, height: 44))
 
-        // Generated timestamp
+        // Separator
+        UIColor.white.withAlphaComponent(0.25).setFill()
+        UIRectFill(CGRect(x: 0, y: h - 20, width: pageW, height: 0.5))
+
+        "CLINICAL RECORD SUMMARY".draw(
+            in: CGRect(x: margin, y: h - 17, width: pageW - margin * 2, height: 14),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 8.5, weight: .semibold),
+                             .foregroundColor: UIColor.white.withAlphaComponent(0.88),
+                             .kern: 1.5])
+
+        // Generated timestamp below header bar
         let ts = "\(DateFormatter.ectDateTime.string(from: .now)) ECT"
-        ts.draw(in: CGRect(x: margin, y: 66, width: colW, height: 12),
+        ts.draw(in: CGRect(x: margin, y: h + 3, width: colW, height: 12),
             withAttributes: [.font: UIFont.systemFont(ofSize: 8), .foregroundColor: UIColor.secondaryLabel])
 
-        return 84
+        return h + 18
+    }
+
+    // MARK: - Signature block
+
+    private static func drawSignatureBlock(ctx: UIGraphicsPDFRendererContext, y: CGFloat) {
+        var y = maybeNewPage(ctx: ctx, y: y, minSpace: 110)
+        y += 8
+
+        "AUTHORISING CLINICIAN".draw(
+            in: CGRect(x: margin, y: y, width: colW, height: 14),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 9, weight: .bold), .foregroundColor: teal])
+        teal.withAlphaComponent(0.2).setFill()
+        UIRectFill(CGRect(x: margin, y: y + 15, width: colW, height: 0.5))
+        y += 22
+
+        let labelAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 8, weight: .semibold),
+            .foregroundColor: UIColor.secondaryLabel,
+        ]
+        let nameAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 9),
+            .foregroundColor: UIColor.label,
+        ]
+
+        "Signature:".draw(at: CGPoint(x: margin, y: y), withAttributes: labelAttrs)
+        teal.withAlphaComponent(0.4).setFill()
+        UIRectFill(CGRect(x: margin + 62, y: y + 10, width: 220, height: 0.5))
+        y += 18
+
+        "Name:".draw(at: CGPoint(x: margin, y: y), withAttributes: labelAttrs)
+        "Dr Dawit Daniel Kabiye  MD · DM".draw(
+            in: CGRect(x: margin + 62, y: y, width: 280, height: 13), withAttributes: nameAttrs)
+        y += 16
+
+        "Date / Time:".draw(at: CGPoint(x: margin, y: y), withAttributes: labelAttrs)
+        teal.withAlphaComponent(0.4).setFill()
+        UIRectFill(CGRect(x: margin + 62, y: y + 10, width: 220, height: 0.5))
+        y += 18
+
+        "This document was prepared with AI-assisted clinical software. The clinician's signature confirms review and approval.".draw(
+            in: CGRect(x: margin, y: y, width: colW, height: 20),
+            withAttributes: [.font: UIFont.italicSystemFont(ofSize: 6.5),
+                             .foregroundColor: UIColor.tertiaryLabel])
     }
 
     private static func drawDemographics(ctx: UIGraphicsPDFRendererContext, patient: Patient, y: CGFloat) -> CGFloat {
