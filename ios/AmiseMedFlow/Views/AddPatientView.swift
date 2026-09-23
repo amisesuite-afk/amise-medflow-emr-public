@@ -5,8 +5,11 @@ struct AddPatientView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var calSvc: CalendarService
+    @Query private var existingPatients: [Patient]
 
     var initialSetting: ClinicalSetting
+
+    @State private var showDuplicateAlert = false
 
     // Identity
     @State private var fullName = ""
@@ -80,6 +83,12 @@ struct AddPatientView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") { save() }.disabled(!nameValid)
                 }
+            }
+            .alert("Duplicate Name", isPresented: $showDuplicateAlert) {
+                Button("Add Anyway", role: .destructive) { commitSave() }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("A patient named \"\(fullName.trimmingCharacters(in: .whitespaces))\" already exists. Add a separate record?")
             }
         }
     }
@@ -360,6 +369,18 @@ struct AddPatientView: View {
     }
 
     private func save() {
+        let trimmed = fullName.trimmingCharacters(in: .whitespaces)
+        let conflicts = existingPatients.filter {
+            $0.fullName.trimmingCharacters(in: .whitespaces).lowercased() == trimmed.lowercased()
+        }
+        if !conflicts.isEmpty {
+            showDuplicateAlert = true
+            return
+        }
+        commitSave()
+    }
+
+    private func commitSave() {
         let p = Patient(
             fullName: fullName.trimmingCharacters(in: .whitespaces),
             sex: sex,

@@ -26,12 +26,15 @@ extension Array where Element == Patient {
 
 extension Patient {
 
-    /// Stable identity key: remoteId → mrn → fullName+DOB.
+    /// Stable identity key: remoteId → manually-entered MRN → fullName+DOB.
+    /// Auto-generated MRNs (AMF-YYYY-NNNNNN) are excluded from the key because
+    /// each "Add" tap increments the counter, so accidental duplicate creations
+    /// would otherwise appear as distinct patients.
     var dedupKey: String {
         if let rid = remoteId, !rid.isEmpty { return rid }
-        if let mrn = mrn, !mrn.isEmpty { return mrn }
+        if let m = mrn, !m.isEmpty, !m.hasPrefix("AMF-") { return m }
         let dob = dateOfBirth.map { Int($0.timeIntervalSinceReferenceDate) } ?? 0
-        return "\(fullName.lowercased())|\(dob)"
+        return "\(fullName.lowercased().trimmingCharacters(in: .whitespaces))|\(dob)"
     }
 
     fileprivate var dedupRichness: Int {
