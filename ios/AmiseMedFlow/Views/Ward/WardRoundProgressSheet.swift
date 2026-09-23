@@ -15,14 +15,14 @@ struct WardRoundProgressSheet: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
 
-    @State private var subjective: String = ""
-    @State private var objective: String = ""
-    @State private var assessment: String = ""
-    @State private var plan: String = ""
-    @State private var activeField: SOAPField? = .subjective
-    @State private var showFullRecord = false
-    @State private var showVitals = false
-    @State private var signed = false
+    @State var subjective: String = ""
+    @State var objective: String = ""
+    @State var assessment: String = ""
+    @State var plan: String = ""
+    @State var activeField: SOAPField? = .subjective
+    @State var showFullRecord = false
+    @State var showVitals = false
+    @State var signed = false
 
     enum SOAPField: String, CaseIterable {
         case subjective = "S"
@@ -377,77 +377,4 @@ struct WardRoundProgressSheet: View {
         }
     }
 
-    // MARK: - Actions
-
-    private var actionsSection: some View {
-        Section {
-            Button {
-                showFullRecord = true
-            } label: {
-                HStack {
-                    Image(systemName: "doc.richtext")
-                        .foregroundStyle(AMColor.accent)
-                    Text("Open Full Patient Record")
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-        }
-    }
-
-    // MARK: - Toolbar
-
-    @ToolbarContentBuilder
-    private var toolbarContent: some ToolbarContent {
-        ToolbarItem(placement: .cancellationAction) {
-            Button("Cancel") { dismiss() }
-                .foregroundStyle(.secondary)
-        }
-        ToolbarItem(placement: .confirmationAction) {
-            Button {
-                signAndReview()
-            } label: {
-                Label("Sign & Reviewed", systemImage: "signature")
-                    .font(.subheadline.weight(.semibold))
-            }
-            .foregroundStyle(AMColor.accent)
-            .disabled(isNoteEmpty)
-        }
-    }
-
-    // MARK: - Logic
-
-    private var isNoteEmpty: Bool {
-        [subjective, objective, assessment, plan].allSatisfy {
-            $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        }
-    }
-
-    private func prefillSOAP() {
-        let draft = SOAPDraftEngine.draft(patient: patient)
-        // Only pre-fill fields that are still empty (don't overwrite any edits)
-        if subjective.isEmpty { subjective = draft.s }
-        if objective.isEmpty  { objective  = draft.o }
-        if assessment.isEmpty { assessment = draft.a }
-        if plan.isEmpty       { plan       = draft.p }
-    }
-
-    private func signAndReview() {
-        let note = ClinicalNote(noteType: .progress, patient: patient)
-        note.subjective  = subjective.isEmpty ? nil : subjective
-        note.objective   = objective.isEmpty  ? nil : objective
-        note.assessment  = assessment.isEmpty ? nil : assessment
-        note.plan        = plan.isEmpty       ? nil : plan
-        note.status      = .signed
-        note.updatedAt   = .now
-        note.pendingSync = true
-        context.insert(note)
-        patient.updatedAt   = .now
-        patient.pendingSync = true
-        signed = true
-        onMarkReviewed(patient)
-        dismiss()
-    }
 }

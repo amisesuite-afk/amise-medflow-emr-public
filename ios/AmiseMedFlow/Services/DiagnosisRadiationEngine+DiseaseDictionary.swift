@@ -5,7 +5,7 @@
 extension DiagnosisRadiationEngine {
 
     // MARK: - Entry point (surgical + medical)
-    static let allEntries: [Entry] = _surgicalEntries + _surgicalEntries2 + _medicalEntries + _medicalEntries2 + _medicalEntries3
+    static let allEntries: [Entry] = _surgicalEntries + _surgicalEntries2 + _medicalEntries + _medicalEntriesB + _medicalEntries2 + _medicalEntries2B + _medicalEntries3 + _medicalEntries3B
 
     // MARK: - Surgical specialties
     // Hepatobiliary, Appendix/Acute Abdomen, Colorectal, Hernia,
