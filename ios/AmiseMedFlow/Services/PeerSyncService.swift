@@ -294,8 +294,39 @@ final class PeerSyncService: NSObject, ObservableObject {
             patient.pmhNotes           = peerMerge(patient.pmhNotes,           rec.pmhNotes)
             patient.familyHistoryNotes = peerMerge(patient.familyHistoryNotes, rec.familyHistoryNotes)
             patient.allergiesJson      = peerMerge(patient.allergiesJson,      rec.allergiesJson)
+            patient.investigationsJson = peerMerge(patient.investigationsJson, rec.investigationsJson)
+            patient.pmhEntriesJson     = peerMerge(patient.pmhEntriesJson,     rec.pmhEntriesJson)
+            patient.pshxEntriesJson    = peerMerge(patient.pshxEntriesJson,    rec.pshxEntriesJson)
             patient.socialHistory      = peerMerge(patient.socialHistory,      rec.socialHistory)
             patient.surgicalHistory    = peerMerge(patient.surgicalHistory,    rec.surgicalHistory)
+
+            // ── Visit metadata: nil on first fill; newer wins for updates ────────────
+            if let vt = rec.visitType, patient.visitType == nil || remoteIsNewer {
+                patient.visitType = VisitType(rawValue: vt)
+            }
+            if let ms = rec.mallampatiScore, (patient.mallampatiScore == nil || remoteIsNewer) {
+                patient.mallampatiScore = ms
+            }
+            if let od = rec.operationDate {
+                let iso = ISO8601DateFormatter()
+                if let d = iso.date(from: od), (patient.operationDate == nil || remoteIsNewer) {
+                    patient.operationDate = d
+                }
+            }
+
+            // ── Procedure form JSON blobs: longer value wins (richer data) ───────────
+            patient.traumaDataJson              = peerMerge(patient.traumaDataJson,              rec.traumaDataJson)
+            patient.ogdDataJson                 = peerMerge(patient.ogdDataJson,                 rec.ogdDataJson)
+            patient.colonoscopyDataJson         = peerMerge(patient.colonoscopyDataJson,         rec.colonoscopyDataJson)
+            patient.surgeryDataJson             = peerMerge(patient.surgeryDataJson,             rec.surgeryDataJson)
+            patient.ercpDataJson                = peerMerge(patient.ercpDataJson,                rec.ercpDataJson)
+            patient.bronchoscopyDataJson        = peerMerge(patient.bronchoscopyDataJson,        rec.bronchoscopyDataJson)
+            patient.dischargeSummaryDataJson    = peerMerge(patient.dischargeSummaryDataJson,    rec.dischargeSummaryDataJson)
+            patient.postOpReviewDataJson        = peerMerge(patient.postOpReviewDataJson,        rec.postOpReviewDataJson)
+            patient.referralLetterDataJson      = peerMerge(patient.referralLetterDataJson,      rec.referralLetterDataJson)
+            patient.consentFormDataJson         = peerMerge(patient.consentFormDataJson,         rec.consentFormDataJson)
+            patient.preOpChecklistDataJson      = peerMerge(patient.preOpChecklistDataJson,      rec.preOpChecklistDataJson)
+            patient.patientInstructionsDataJson = peerMerge(patient.patientInstructionsDataJson, rec.patientInstructionsDataJson)
 
             // ── Doctor-assessed fields: non-empty on first fill; newer wins for updates ──
             patient.assessmentText = mergeDoc(patient.assessmentText, rec.assessmentText, remoteIsNewer: remoteIsNewer)
@@ -659,14 +690,31 @@ private struct PeerPatient: Codable {
     let pmhNotes, familyHistoryNotes: String?
     let insuranceProvider, policyNumber: String?
     let setting, location, acuity: String?
+    let visitType: String?
+    let mallampatiScore: Int?
+    let operationDate: String?
     let chiefComplaint, hpi, assessmentText, managementPlan: String?
     let workingDiagnosis, workingDiagnosisICD: String?
-    let allergiesJson, socialHistory, surgicalHistory: String?
+    let allergiesJson, investigationsJson, pmhEntriesJson, pshxEntriesJson: String?
+    let socialHistory, surgicalHistory: String?
     let heightCm: Double?
     let ward, bedNumber: String?
     let examGeneral, examCVS, examResp, examAbdo: String?
     let examNeuro, examMSK, examSkin, examOther: String?
     let syncedAt: Double
+    // Procedure form JSON blobs
+    let traumaDataJson: String?
+    let ogdDataJson: String?
+    let colonoscopyDataJson: String?
+    let surgeryDataJson: String?
+    let ercpDataJson: String?
+    let bronchoscopyDataJson: String?
+    let dischargeSummaryDataJson: String?
+    let postOpReviewDataJson: String?
+    let referralLetterDataJson: String?
+    let consentFormDataJson: String?
+    let preOpChecklistDataJson: String?
+    let patientInstructionsDataJson: String?
 
     init(_ p: Patient) {
         let iso = ISO8601DateFormatter()
@@ -682,16 +730,32 @@ private struct PeerPatient: Codable {
         setting         = p.setting.rawValue.lowercased()
         location        = p.location.rawValue
         acuity          = p.acuity.label.lowercased()
+        visitType       = p.visitType?.rawValue
+        mallampatiScore = p.mallampatiScore
+        operationDate   = p.operationDate.map { iso.string(from: $0) }
         chiefComplaint  = p.chiefComplaint; hpi = p.hpi
         assessmentText  = p.assessmentText; managementPlan = p.managementPlan
         workingDiagnosis = p.workingDiagnosis; workingDiagnosisICD = p.workingDiagnosisICD
-        allergiesJson   = p.allergiesJson; socialHistory = p.socialHistory
-        surgicalHistory = p.surgicalHistory
+        allergiesJson   = p.allergiesJson; investigationsJson = p.investigationsJson
+        pmhEntriesJson  = p.pmhEntriesJson; pshxEntriesJson = p.pshxEntriesJson
+        socialHistory   = p.socialHistory; surgicalHistory = p.surgicalHistory
         heightCm        = p.heightCm; ward = p.ward; bedNumber = p.bedNumber
         examGeneral     = p.examGeneral; examCVS = p.examCVS; examResp = p.examResp
         examAbdo        = p.examAbdo; examNeuro = p.examNeuro; examMSK = p.examMSK
         examSkin        = p.examSkin; examOther = p.examOther
         syncedAt        = (p.syncedAt ?? .distantPast).timeIntervalSince1970
+        traumaDataJson              = p.traumaDataJson
+        ogdDataJson                 = p.ogdDataJson
+        colonoscopyDataJson         = p.colonoscopyDataJson
+        surgeryDataJson             = p.surgeryDataJson
+        ercpDataJson                = p.ercpDataJson
+        bronchoscopyDataJson        = p.bronchoscopyDataJson
+        dischargeSummaryDataJson    = p.dischargeSummaryDataJson
+        postOpReviewDataJson        = p.postOpReviewDataJson
+        referralLetterDataJson      = p.referralLetterDataJson
+        consentFormDataJson         = p.consentFormDataJson
+        preOpChecklistDataJson      = p.preOpChecklistDataJson
+        patientInstructionsDataJson = p.patientInstructionsDataJson
     }
 }
 
