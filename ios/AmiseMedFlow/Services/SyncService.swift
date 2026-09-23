@@ -184,6 +184,9 @@ final class SyncService: ObservableObject {
         let setting: String?
         let location: String?
         let acuity: String?
+        let visit_type: String?
+        let mallampati_score: Int?
+        let operation_date: String?
         let chief_complaint: String?
         let hpi: String?
         let assessment_text: String?
@@ -191,6 +194,9 @@ final class SyncService: ObservableObject {
         let working_diagnosis: String?
         let working_diagnosis_icd: String?
         let allergies_json: String?
+        let investigations_json: String?
+        let pmh_entries_json: String?
+        let pshx_entries_json: String?
         let social_history: String?
         let surgical_history: String?
         let height_cm: Double?
@@ -207,12 +213,25 @@ final class SyncService: ObservableObject {
         let encounter_status: String?
         let check_in_time: String?
         let created_at: String
+        // Procedure form JSON blobs
+        let trauma_data_json: String?
+        let ogd_data_json: String?
+        let colonoscopy_data_json: String?
+        let surgery_data_json: String?
+        let ercp_data_json: String?
+        let bronchoscopy_data_json: String?
+        let discharge_summary_data_json: String?
+        let post_op_review_data_json: String?
+        let referral_letter_data_json: String?
+        let consent_form_data_json: String?
+        let pre_op_checklist_data_json: String?
+        let patient_instructions_data_json: String?
     }
 
     private func pullPatients(context: ModelContext) async throws {
         let rows: [RemotePatient] = try await SupabaseConfig.client
             .from("patients")
-            .select("id, full_name, sex, date_of_birth, phone, email, address, mrn, nok_name, nok_relation, nok_phone, pmh_notes, family_history_notes, insurance_provider, policy_number, setting, location, acuity, chief_complaint, hpi, assessment_text, management_plan, working_diagnosis, working_diagnosis_icd, allergies_json, social_history, surgical_history, height_cm, ward, bed_number, exam_general, exam_cvs, exam_resp, exam_abdo, exam_neuro, exam_msk, exam_skin, exam_other, encounter_status, check_in_time, created_at")
+            .select("id, full_name, sex, date_of_birth, phone, email, address, mrn, nok_name, nok_relation, nok_phone, pmh_notes, family_history_notes, insurance_provider, policy_number, setting, location, acuity, visit_type, mallampati_score, operation_date, chief_complaint, hpi, assessment_text, management_plan, working_diagnosis, working_diagnosis_icd, allergies_json, investigations_json, pmh_entries_json, pshx_entries_json, social_history, surgical_history, height_cm, ward, bed_number, exam_general, exam_cvs, exam_resp, exam_abdo, exam_neuro, exam_msk, exam_skin, exam_other, encounter_status, check_in_time, created_at, trauma_data_json, ogd_data_json, colonoscopy_data_json, surgery_data_json, ercp_data_json, bronchoscopy_data_json, discharge_summary_data_json, post_op_review_data_json, referral_letter_data_json, consent_form_data_json, pre_op_checklist_data_json, patient_instructions_data_json")
             .order("created_at", ascending: false)
             .limit(500)
             .execute()
@@ -267,8 +286,26 @@ final class SyncService: ObservableObject {
                 patient.workingDiagnosis = wd
                 patient.workingDiagnosisICD = row.working_diagnosis_icd
             }
+            if let vt = row.visit_type, patient.visitType == nil {
+                patient.visitType = VisitType(rawValue: vt)
+            }
+            if let ms = row.mallampati_score, patient.mallampatiScore == nil {
+                patient.mallampatiScore = ms
+            }
+            if let od = row.operation_date, patient.operationDate == nil {
+                patient.operationDate = iso.date(from: od)
+            }
             if let aj = row.allergies_json, (patient.allergiesJson ?? "").isEmpty {
                 patient.allergiesJson = aj
+            }
+            if let ij = row.investigations_json, (patient.investigationsJson ?? "").isEmpty {
+                patient.investigationsJson = ij
+            }
+            if let pmh = row.pmh_entries_json, (patient.pmhEntriesJson ?? "").isEmpty {
+                patient.pmhEntriesJson = pmh
+            }
+            if let psx = row.pshx_entries_json, (patient.pshxEntriesJson ?? "").isEmpty {
+                patient.pshxEntriesJson = psx
             }
             if let sh = row.social_history, (patient.socialHistory ?? "").isEmpty {
                 patient.socialHistory = sh
@@ -287,6 +324,20 @@ final class SyncService: ObservableObject {
             if let em = row.exam_msk,    (patient.examMSK ?? "").isEmpty     { patient.examMSK     = em }
             if let es = row.exam_skin,   (patient.examSkin ?? "").isEmpty    { patient.examSkin    = es }
             if let eo = row.exam_other,  (patient.examOther ?? "").isEmpty   { patient.examOther   = eo }
+
+            // Procedure form JSON blobs — prefer local if non-empty
+            if let v = row.trauma_data_json,               (patient.traumaDataJson ?? "").isEmpty               { patient.traumaDataJson               = v }
+            if let v = row.ogd_data_json,                  (patient.ogdDataJson ?? "").isEmpty                  { patient.ogdDataJson                  = v }
+            if let v = row.colonoscopy_data_json,          (patient.colonoscopyDataJson ?? "").isEmpty          { patient.colonoscopyDataJson          = v }
+            if let v = row.surgery_data_json,              (patient.surgeryDataJson ?? "").isEmpty              { patient.surgeryDataJson              = v }
+            if let v = row.ercp_data_json,                 (patient.ercpDataJson ?? "").isEmpty                 { patient.ercpDataJson                 = v }
+            if let v = row.bronchoscopy_data_json,         (patient.bronchoscopyDataJson ?? "").isEmpty         { patient.bronchoscopyDataJson         = v }
+            if let v = row.discharge_summary_data_json,    (patient.dischargeSummaryDataJson ?? "").isEmpty     { patient.dischargeSummaryDataJson     = v }
+            if let v = row.post_op_review_data_json,       (patient.postOpReviewDataJson ?? "").isEmpty         { patient.postOpReviewDataJson         = v }
+            if let v = row.referral_letter_data_json,      (patient.referralLetterDataJson ?? "").isEmpty       { patient.referralLetterDataJson       = v }
+            if let v = row.consent_form_data_json,         (patient.consentFormDataJson ?? "").isEmpty          { patient.consentFormDataJson          = v }
+            if let v = row.pre_op_checklist_data_json,     (patient.preOpChecklistDataJson ?? "").isEmpty       { patient.preOpChecklistDataJson       = v }
+            if let v = row.patient_instructions_data_json, (patient.patientInstructionsDataJson ?? "").isEmpty  { patient.patientInstructionsDataJson  = v }
 
             if let es = row.encounter_status {
                 patient.encounterStatus = EncounterStatus(rawValue: es) ?? .notCheckedIn
@@ -364,6 +415,9 @@ final class SyncService: ObservableObject {
                 let assessment_text: String?
                 let management_plan: String?
                 let allergies_json: String?
+                let investigations_json: String?
+                let pmh_entries_json: String?
+                let pshx_entries_json: String?
                 let social_history: String?
                 let surgical_history: String?
                 let height_cm: Double?
@@ -379,6 +433,21 @@ final class SyncService: ObservableObject {
                 let exam_other: String?
                 let encounter_status: String
                 let check_in_time: String?
+                let visit_type: String?
+                let mallampati_score: Int?
+                let operation_date: String?
+                let trauma_data_json: String?
+                let ogd_data_json: String?
+                let colonoscopy_data_json: String?
+                let surgery_data_json: String?
+                let ercp_data_json: String?
+                let bronchoscopy_data_json: String?
+                let discharge_summary_data_json: String?
+                let post_op_review_data_json: String?
+                let referral_letter_data_json: String?
+                let consent_form_data_json: String?
+                let pre_op_checklist_data_json: String?
+                let patient_instructions_data_json: String?
             }
             let isoFmt = ISO8601DateFormatter()
             let row = InsertRow(
@@ -404,6 +473,9 @@ final class SyncService: ObservableObject {
                 assessment_text: patient.assessmentText,
                 management_plan: patient.managementPlan,
                 allergies_json: patient.allergiesJson,
+                investigations_json: patient.investigationsJson,
+                pmh_entries_json: patient.pmhEntriesJson,
+                pshx_entries_json: patient.pshxEntriesJson,
                 social_history: patient.socialHistory,
                 surgical_history: patient.surgicalHistory,
                 height_cm: patient.heightCm,
@@ -418,7 +490,22 @@ final class SyncService: ObservableObject {
                 exam_skin: patient.examSkin,
                 exam_other: patient.examOther,
                 encounter_status: patient.encounterStatus.rawValue,
-                check_in_time: patient.checkInTime.map { isoFmt.string(from: $0) }
+                check_in_time: patient.checkInTime.map { isoFmt.string(from: $0) },
+                visit_type: patient.visitType?.rawValue,
+                mallampati_score: patient.mallampatiScore,
+                operation_date: patient.operationDate.map { isoFmt.string(from: $0) },
+                trauma_data_json: patient.traumaDataJson,
+                ogd_data_json: patient.ogdDataJson,
+                colonoscopy_data_json: patient.colonoscopyDataJson,
+                surgery_data_json: patient.surgeryDataJson,
+                ercp_data_json: patient.ercpDataJson,
+                bronchoscopy_data_json: patient.bronchoscopyDataJson,
+                discharge_summary_data_json: patient.dischargeSummaryDataJson,
+                post_op_review_data_json: patient.postOpReviewDataJson,
+                referral_letter_data_json: patient.referralLetterDataJson,
+                consent_form_data_json: patient.consentFormDataJson,
+                pre_op_checklist_data_json: patient.preOpChecklistDataJson,
+                patient_instructions_data_json: patient.patientInstructionsDataJson
             )
             struct InsertResponse: Decodable { let id: String }
             let response: [InsertResponse] = try await SupabaseConfig.client
@@ -523,6 +610,9 @@ final class SyncService: ObservableObject {
                 let assessment_text: String?
                 let management_plan: String?
                 let allergies_json: String?
+                let investigations_json: String?
+                let pmh_entries_json: String?
+                let pshx_entries_json: String?
                 let social_history: String?
                 let surgical_history: String?
                 let height_cm: Double?
@@ -539,6 +629,21 @@ final class SyncService: ObservableObject {
                 let encounter_status: String
                 let check_in_time: String?
                 let updated_at: String
+                let visit_type: String?
+                let mallampati_score: Int?
+                let operation_date: String?
+                let trauma_data_json: String?
+                let ogd_data_json: String?
+                let colonoscopy_data_json: String?
+                let surgery_data_json: String?
+                let ercp_data_json: String?
+                let bronchoscopy_data_json: String?
+                let discharge_summary_data_json: String?
+                let post_op_review_data_json: String?
+                let referral_letter_data_json: String?
+                let consent_form_data_json: String?
+                let pre_op_checklist_data_json: String?
+                let patient_instructions_data_json: String?
             }
             let iso = ISO8601DateFormatter()
             let row = UpdateRow(
@@ -565,6 +670,9 @@ final class SyncService: ObservableObject {
                 assessment_text: patient.assessmentText,
                 management_plan: patient.managementPlan,
                 allergies_json: patient.allergiesJson,
+                investigations_json: patient.investigationsJson,
+                pmh_entries_json: patient.pmhEntriesJson,
+                pshx_entries_json: patient.pshxEntriesJson,
                 social_history: patient.socialHistory,
                 surgical_history: patient.surgicalHistory,
                 height_cm: patient.heightCm,
@@ -580,7 +688,22 @@ final class SyncService: ObservableObject {
                 exam_other: patient.examOther,
                 encounter_status: patient.encounterStatus.rawValue,
                 check_in_time: patient.checkInTime.map { iso.string(from: $0) },
-                updated_at: iso.string(from: patient.updatedAt)
+                updated_at: iso.string(from: patient.updatedAt),
+                visit_type: patient.visitType?.rawValue,
+                mallampati_score: patient.mallampatiScore,
+                operation_date: patient.operationDate.map { iso.string(from: $0) },
+                trauma_data_json: patient.traumaDataJson,
+                ogd_data_json: patient.ogdDataJson,
+                colonoscopy_data_json: patient.colonoscopyDataJson,
+                surgery_data_json: patient.surgeryDataJson,
+                ercp_data_json: patient.ercpDataJson,
+                bronchoscopy_data_json: patient.bronchoscopyDataJson,
+                discharge_summary_data_json: patient.dischargeSummaryDataJson,
+                post_op_review_data_json: patient.postOpReviewDataJson,
+                referral_letter_data_json: patient.referralLetterDataJson,
+                consent_form_data_json: patient.consentFormDataJson,
+                pre_op_checklist_data_json: patient.preOpChecklistDataJson,
+                patient_instructions_data_json: patient.patientInstructionsDataJson
             )
             try await SupabaseConfig.client
                 .from("patients")
