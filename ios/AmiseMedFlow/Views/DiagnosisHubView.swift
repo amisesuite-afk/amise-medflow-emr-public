@@ -99,7 +99,7 @@ struct DiagnosisHubView: View {
                             .font(.system(size: 14))
                             .padding(20)
                     }
-                    .navigationTitle("Clinical Reasoning")
+                    .navigationTitle("Clinical Narrative")
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
@@ -196,9 +196,9 @@ struct DiagnosisHubView: View {
                             if isGeneratingReasoning {
                                 ProgressView().scaleEffect(0.7)
                             } else {
-                                Image(systemName: "brain")
+                                Image(systemName: "doc.text.magnifyingglass")
                             }
-                            Text("Reasoning")
+                            Text("Narrative")
                                 .font(.system(size: 12, weight: .semibold))
                         }
                         .foregroundStyle(.teal)
@@ -269,7 +269,7 @@ struct DiagnosisHubView: View {
                 icon: "list.bullet.clipboard",
                 color: .purple,
                 line1: hasPlan ? "Plan recorded" : "Not drafted",
-                line2: hasPlan ? nil : "Tap to draft with AI",
+                line2: hasPlan ? nil : "Tap to draft plan",
                 dot: hasPlan ? .green : .orange,
                 destination: .plan
             )
@@ -418,7 +418,7 @@ struct DiagnosisHubView: View {
                 Image(systemName: "brain")
                     .font(.system(size: 13))
                     .foregroundStyle(.teal)
-                Text("Clinical Reasoning")
+                Text("Clinical Narrative")
                     .font(.system(size: 12, weight: .heavy))
                     .foregroundStyle(.secondary)
                     .tracking(0.5)
@@ -446,14 +446,15 @@ struct DiagnosisHubView: View {
         guard patient.workingDiagnosis != nil else { return }
         isDraftingPlan = true
         defer { isDraftingPlan = false }
-        do {
-            let plan = try await ai.draftDiagnosisPlan(patient: patient)
-            patient.managementPlan = plan
+        let draft = SOAPDraftEngine.draft(patient: patient)
+        let planText = draft.p.isEmpty ? draft.a : draft.p
+        if !planText.isEmpty {
+            patient.managementPlan = planText
             patient.updatedAt = .now
             patient.pendingSync = true
             planDrafted = true
-        } catch {
-            aiErrorMessage = error.localizedDescription
+        } else {
+            aiErrorMessage = "Insufficient clinical data to generate a plan. Please complete the examination and assessment first."
             showAIError = true
         }
     }
@@ -461,13 +462,13 @@ struct DiagnosisHubView: View {
     private func generateReasoning() async {
         isGeneratingReasoning = true
         defer { isGeneratingReasoning = false }
-        do {
-            let text = try await ai.generateClinicalReasoning(patient: patient)
+        let text = SOAPDraftEngine.narrativeSummary(patient: patient)
+        if text.isEmpty || text == "Clinical summary to be completed." {
+            aiErrorMessage = "Insufficient clinical data to generate a narrative. Please complete the consultation first."
+            showAIError = true
+        } else {
             clinicalReasoning = text
             showReasoning = true
-        } catch {
-            aiErrorMessage = error.localizedDescription
-            showAIError = true
         }
     }
 

@@ -101,15 +101,12 @@ struct AddPatientView: View {
                 .keyboardType(.emailAddress)
                 .autocapitalization(.none)
             HStack(spacing: 8) {
-                TextField("MRN (optional)", text: $mrn)
+                TextField("MRN (auto-generated on save)", text: $mrn)
                 if mrn.isEmpty {
-                    Button("Generate") {
-                        let digits = (0..<6).map { _ in String(Int.random(in: 0...9)) }.joined()
-                        mrn = "AMI-\(digits)"
-                    }
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(AMColor.accent)
-                    .buttonStyle(.bordered)
+                    Button("Generate") { mrn = MRNGenerator.next() }
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(AMColor.accent)
+                        .buttonStyle(.bordered)
                 }
             }
         }
@@ -373,7 +370,7 @@ struct AddPatientView: View {
         if hasDOB               { p.dateOfBirth = dateOfBirth }
         if !phone.isEmpty       { p.phone = phone }
         if !email.isEmpty       { p.email = email }
-        if !mrn.isEmpty         { p.mrn = mrn }
+        p.mrn = mrn.isEmpty ? MRNGenerator.next() : mrn
         p.visitType = visitType
         if !chiefComplaint.isEmpty   { p.chiefComplaint = chiefComplaint }
         if !appointmentType.isEmpty  { p.appointmentType = appointmentType }
@@ -404,7 +401,7 @@ struct AddPatientView: View {
                     patientName: p.fullName,
                     date: operationDate,
                     duration: 5400, // 90 min default
-                    notes: p.workingDiagnosis.map { "Indication: \($0)" } ?? ""
+                    notes: chiefComplaint.isEmpty ? "" : "Complaint: \(chiefComplaint)"
                 )
             }
         }
