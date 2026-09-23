@@ -132,7 +132,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .vascular
         case .sirs, .qsofa, .psiPort, .sofa, .curb65, .apacheII:
             return .sepsis
-        case .rcri, .asa, .childPugh, .meld, .stopBang, .fib4, .ppossum, .nrs2002, .mallampati, .cfs, .dasi, .barthel, .euroScoreII:
+        case .asa, .childPugh, .meld, .stopBang, .fib4, .ppossum, .nrs2002, .mallampati, .cfs, .barthel:
             return .preop
         case .abcd2, .lrinec, .gcs, .nihss, .mrs:
             return .neuro
@@ -225,14 +225,14 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .cage:
             return .monitoring
         case .dukeIE:
-            return .sepsis
+            return .cardiac
         case .mmrc:
             return .monitoring
         case .pts, .ripasa:
             return .acute
         case .fgsi:
             return .sepsis
-        case .cha2ds2vasc, .hasBled, .heart, .timi, .grace:
+        case .cha2ds2vasc, .hasBled, .heart, .timi, .grace, .rcri, .dasi, .euroScoreII:
             return .cardiac
         case .mews, .news2, .waterlow, .surgicalApgar:
             return .monitoring
@@ -1573,6 +1573,19 @@ struct ClinicalScoresView: View {
         if name.contains("abcd")       && (workingDx.contains("tia") ||
                                            workingDx.contains("stroke"))         { return true }
         if name.contains("cha2ds2")    && workingDx.contains("atrial")           { return true }
+        if name.contains("heart")      && (workingDx.contains("acute coronary") ||
+                                           workingDx.contains("acs") ||
+                                           workingDx.contains("angina"))         { return true }
+        if name.contains("timi")       && (workingDx.contains("nstemi") ||
+                                           workingDx.contains("unstable angina") ||
+                                           workingDx.contains("acs"))            { return true }
+        if name.contains("grace")      && (workingDx.contains("myocardial") ||
+                                           workingDx.contains("acs") ||
+                                           workingDx.contains("nstemi"))         { return true }
+        if name.contains("euroscore")  && (workingDx.contains("cardiac surgery") ||
+                                           workingDx.contains("valve") ||
+                                           workingDx.contains("cabg"))           { return true }
+        if name.contains("duke")       && workingDx.contains("endocarditis")     { return true }
         return false
     }
 

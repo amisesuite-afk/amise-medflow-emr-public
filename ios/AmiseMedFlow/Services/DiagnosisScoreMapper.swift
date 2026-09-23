@@ -76,7 +76,10 @@ enum DiagnosisScoreMapper {
             return .gi
         }
         if cc.contains("chest pain") || cc.contains("palpitation") ||
-           cc.contains("atrial") || cc.contains(" af") || cc.contains("cardiac") {
+           cc.contains("atrial") || cc.contains(" af") || cc.contains("cardiac") ||
+           cc.contains("heart failure") || cc.contains("ccf") || cc.contains("chf") ||
+           cc.contains("angina") || cc.contains("nstemi") || cc.contains("stemi") ||
+           cc.contains("arrhythmia") || cc.contains("tachycardia") || cc.contains("bradycardia") {
             return .cardiac
         }
         if cc.contains("dvt") || cc.contains("thrombos") || cc.contains("pulmonary embolism") ||
@@ -263,18 +266,49 @@ enum DiagnosisScoreMapper {
             add(.mrs,   "mRS — functional outcome and disability grading", 3)
         }
 
-        // ACS / Cardiac
+        // ACS / Cardiac — risk + monitoring
         if dx.contains("acute coronary") || dx.contains("acs") ||
-           dx.contains("nstemi") || dx.contains("stemi") || dx.contains("unstable angina") {
-            add(.heart, "HEART score — MACE risk stratification for chest pain", 1)
-            add(.timi,  "TIMI — UA/NSTEMI 14-day risk", 2)
-            add(.grace, "GRACE — ACS in-hospital and 6-month mortality", 3)
+           dx.contains("nstemi") || dx.contains("stemi") || dx.contains("unstable angina") ||
+           dx.contains("myocardial infarction") || dx.contains("angina") {
+            add(.heart,       "HEART score — MACE risk stratification for chest pain", 1)
+            add(.timi,        "TIMI — UA/NSTEMI 14-day risk", 2)
+            add(.grace,       "GRACE — ACS in-hospital and 6-month mortality", 3)
+            add(.news2,       "NEWS2 — continuous haemodynamic monitoring", 4)
+            add(.shockIndex,  "Shock Index — early cardiogenic shock flag", 5)
+            add(.mews,        "MEWS — early deterioration detection", 6)
         }
 
-        // AF
-        if dx.contains("atrial fibrillation") || dx.contains("atrial flutter") {
+        // Heart failure / cardiac failure
+        if dx.contains("heart failure") || dx.contains("cardiac failure") ||
+           dx.contains("lvf") || dx.contains("ccf") || dx.contains("chf") ||
+           dx.contains("left ventricular failure") || dx.contains("cardiomyopathy") {
+            add(.news2,      "NEWS2 — haemodynamic trend monitoring", 1)
+            add(.mews,       "MEWS — early warning for decompensation", 2)
+            add(.cci,        "Charlson Comorbidity Index — mortality risk adjustment", 3)
+            add(.ckdEpi,     "CKD-EPI — baseline eGFR (cardiorenal risk)", 4)
+            add(.shockIndex, "Shock Index — cardiogenic shock screening", 5)
+            add(.euroScoreII,"EuroSCORE II — cardiac surgical mortality if intervention planned", 6)
+        }
+
+        // AF — stroke + bleeding + monitoring
+        if dx.contains("atrial fibrillation") || dx.contains("atrial flutter") ||
+           dx.contains("arrhythmia") {
             add(.cha2ds2vasc, "CHA₂DS₂-VASc — AF stroke risk, guides anticoagulation", 1)
             add(.hasBled,     "HAS-BLED — bleeding risk score on anticoagulation", 2)
+            add(.dasi,        "DASI — functional capacity for cardioversion/ablation planning", 3)
+            add(.news2,       "NEWS2 — haemodynamic monitoring during rate control", 4)
+        }
+
+        // Cardiac surgery / pre-cardiac-op
+        if dx.contains("cardiac surgery") || dx.contains("cabg") ||
+           dx.contains("valve replacement") || dx.contains("valvuloplasty") ||
+           dx.contains("aortic valve") || dx.contains("mitral valve") ||
+           dx.contains("coronary artery bypass") {
+            add(.euroScoreII, "EuroSCORE II — operative mortality for cardiac surgery", 1)
+            add(.rcri,        "RCRI — revised cardiac risk index (pre-op)", 2)
+            add(.dasi,        "DASI — functional capacity assessment", 3)
+            add(.asa,         "ASA Physical Status — anaesthetic risk classification", 4)
+            add(.news2,       "NEWS2 — pre-op baseline physiological status", 5)
         }
 
         // Burns
@@ -398,10 +432,28 @@ enum DiagnosisScoreMapper {
         if code.hasPrefix("I82") || code.hasPrefix("I80") {
             add(.wellsDVT, "Wells DVT probability (ICD \(code))", 1)
         }
+        // I21/I22: Acute MI
+        if code.hasPrefix("I21") || code.hasPrefix("I22") {
+            add(.heart,      "HEART score — MACE risk stratification (ICD \(code))", 1)
+            add(.timi,       "TIMI — UA/NSTEMI risk (ICD \(code))", 2)
+            add(.grace,      "GRACE — ACS mortality prediction", 3)
+            add(.news2,      "NEWS2 — continuous monitoring post-MI", 4)
+            add(.shockIndex, "Shock Index — cardiogenic shock flag", 5)
+        }
         // I48: AF
         if code.hasPrefix("I48") {
             add(.cha2ds2vasc, "CHA₂DS₂-VASc stroke risk (ICD \(code))", 1)
             add(.hasBled,     "HAS-BLED bleeding risk", 2)
+            add(.dasi,        "DASI — functional capacity", 3)
+            add(.news2,       "NEWS2 — rate monitoring", 4)
+        }
+        // I50: Heart failure
+        if code.hasPrefix("I50") {
+            add(.news2,      "NEWS2 — decompensation monitoring (ICD \(code))", 1)
+            add(.mews,       "MEWS — early warning score", 2)
+            add(.cci,        "Charlson Comorbidity Index — mortality adjustment", 3)
+            add(.ckdEpi,     "CKD-EPI eGFR — cardiorenal syndrome screening", 4)
+            add(.shockIndex, "Shock Index — acute decompensation flag", 5)
         }
         // K70/K74/K72: Liver disease
         if code.hasPrefix("K70") || code.hasPrefix("K74") || code.hasPrefix("K72") {
