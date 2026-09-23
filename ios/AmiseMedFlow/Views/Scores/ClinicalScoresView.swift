@@ -139,7 +139,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .must:
             return .preop
         case .clavienDindo, .aldrete:
-            return .monitoring
+            return .preop
         case .fourT:
             return .vascular
         case .oakland:
@@ -169,7 +169,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .perc:
             return .vascular
         case .shockIndex:
-            return .monitoring
+            return .cardiac
         case .parkland:
             return .acute
         case .pas:
@@ -187,7 +187,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .phq9:
             return .monitoring
         case .sapsII:
-            return .monitoring
+            return .sepsis
         case .stone:
             return .acute
         case .losAngeles:
@@ -227,7 +227,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .dukeIE:
             return .cardiac
         case .mmrc:
-            return .monitoring
+            return .sepsis
         case .pts, .ripasa:
             return .acute
         case .fgsi:
