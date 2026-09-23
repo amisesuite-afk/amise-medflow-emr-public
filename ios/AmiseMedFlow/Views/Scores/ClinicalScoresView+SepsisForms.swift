@@ -75,6 +75,57 @@ extension ClinicalScoresView {
             psiPortExamSection
             psiPortLabSection
         }
+        .onChange(of: psiI) { _, _ in recalculate() }
+    }
+
+    // MARK: - PSI/PORT sub-sections
+
+    private var psiPortDemographicsSection: some View {
+        Group {
+            sectionHeader("Demographics")
+            mewsSlider(label: "Age — male (years)", autoKey: "ageMale",
+                       value: Binding(get: { Double(psiI.ageMale) }, set: { psiI.ageMale = Int($0) }),
+                       in: 0...120, step: 1, display: "\(psiI.ageMale) yr")
+            mewsSlider(label: "Age — female (enter age − 10)", autoKey: "ageFemale",
+                       value: Binding(get: { Double(psiI.ageFemale) }, set: { psiI.ageFemale = Int($0) }),
+                       in: 0...110, step: 1, display: "\(psiI.ageFemale) yr")
+            scoreToggle("Nursing home resident", binding: $psiI.nursingHomeResident, points: "+10")
+        }
+    }
+
+    private var psiPortComorbiditySection: some View {
+        Group {
+            sectionHeader("Comorbidities")
+            scoreToggle("Neoplastic disease",       binding: $psiI.neoplasticDisease,     points: "+30", autoKey: "neoplasticDisease")
+            scoreToggle("Liver disease",            binding: $psiI.liverDisease,           points: "+20", autoKey: "liverDisease")
+            scoreToggle("Congestive heart failure", binding: $psiI.congestiveHeartFailure, points: "+10", autoKey: "congestiveHeartFailure")
+            scoreToggle("Cerebrovascular disease",  binding: $psiI.cerebrovascularDisease, points: "+10", autoKey: "cerebrovascularDisease")
+            scoreToggle("Renal disease",            binding: $psiI.renalDisease,           points: "+10", autoKey: "renalDisease")
+        }
+    }
+
+    private var psiPortExamSection: some View {
+        Group {
+            sectionHeader("Physical Examination")
+            scoreToggle("Altered mental status",          binding: $psiI.alteredMentalStatus,    points: "+20", autoKey: "alteredMentalStatus")
+            scoreToggle("Respiratory rate > 30 / min",    binding: $psiI.respiratoryRateOver30,  points: "+20", autoKey: "respiratoryRateOver30")
+            scoreToggle("Systolic BP < 90 mmHg",          binding: $psiI.systolicBPUnder90,      points: "+20", autoKey: "systolicBPUnder90")
+            scoreToggle("Temperature < 35°C or ≥ 40°C",  binding: $psiI.tempUnder35orOver40,    points: "+15", autoKey: "tempUnder35orOver40")
+            scoreToggle("Heart rate > 125 bpm",           binding: $psiI.heartRateOver125,       points: "+10", autoKey: "heartRateOver125")
+        }
+    }
+
+    private var psiPortLabSection: some View {
+        Group {
+            sectionHeader("Laboratory & Imaging")
+            scoreToggle("Arterial pH < 7.35",              binding: $psiI.arterialPHUnder735,       points: "+30", autoKey: "arterialPHUnder735")
+            scoreToggle("BUN ≥ 11 mmol/L",                binding: $psiI.bunOver11mmoL,            points: "+20", autoKey: "bunOver11mmoL")
+            scoreToggle("Sodium < 130 mmol/L",             binding: $psiI.sodiumUnder130,           points: "+20", autoKey: "sodiumUnder130")
+            scoreToggle("Glucose > 14 mmol/L",             binding: $psiI.glucoseOver14,            points: "+10", autoKey: "glucoseOver14")
+            scoreToggle("Haematocrit < 30%",               binding: $psiI.haematocritUnder30,       points: "+10", autoKey: "haematocritUnder30")
+            scoreToggle("PaO₂ < 60 mmHg or SpO₂ < 90%",  binding: $psiI.pao2Under60orSpO2Under90, points: "+10", autoKey: "pao2Under60orSpO2Under90")
+            scoreToggle("Pleural effusion on X-ray",       binding: $psiI.pleuralEffusion,          points: "+10", autoKey: "pleuralEffusion")
+        }
     }
 
 

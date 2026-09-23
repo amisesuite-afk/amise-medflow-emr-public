@@ -217,6 +217,67 @@ extension ClinicalScoresView {
             ppossumPhysiologicalSection
             ppossumOperativeSection
         }
+        .onChange(of: ppossumI) { _, _ in recalculate() }
+    }
+
+    // MARK: - P-POSSUM sub-sections
+
+    private var ppossumPhysiologicalSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            sectionHeader("Physiological Score (12 variables)")
+            apacheSegment("Age", selection: $ppossumI.agePhys, options: [
+                (1, "≤60 yr (+1)"), (2, "61–70 yr (+2)"), (4, "71–80 yr (+4)"), (8, "≥81 yr (+8)")])
+            apacheSegment("Cardiac signs", selection: $ppossumI.cardiacSigns, options: [
+                (1, "None (+1)"), (2, "Diuretics / digoxin / antianginals / antihypertensives (+2)"),
+                (4, "Peripheral oedema / warfarin (+4)"), (8, "Raised JVP / cardiomegaly (+8)")])
+            apacheSegment("Respiratory history", selection: $ppossumI.respiratoryHx, options: [
+                (1, "None (+1)"), (2, "Exertional dyspnoea / mild COPD (+2)"),
+                (4, "Limiting dyspnoea / moderate COPD (+4)"), (8, "Breathless at rest / fibrosing alveolitis (+8)")])
+            apacheSegment("Systolic BP (mmHg)", selection: $ppossumI.sbpPhys, options: [
+                (1, "110–130 (+1)"), (2, "131–170 or 100–109 (+2)"),
+                (4, "≥171 or 90–99 (+4)"), (8, "≤89 (+8)")])
+            apacheSegment("Heart rate (bpm)", selection: $ppossumI.hrPhys, options: [
+                (1, "51–80 (+1)"), (2, "81–100 or ≤50 (+2)"),
+                (4, "101–120 (+4)"), (8, "≥121 (+8)")])
+            apacheSegment("GCS", selection: $ppossumI.gcsPhys, options: [
+                (1, "15 (+1)"), (2, "12–14 (+2)"), (4, "9–11 (+4)"), (8, "≤8 (+8)")])
+            apacheSegment("Haemoglobin (g/dL)", selection: $ppossumI.haemoglobin, options: [
+                (1, "13–16 (+1)"), (2, "11.5–12.9 or 16.1–17 (+2)"),
+                (4, "10–11.4 or 17.1–18 (+4)"), (8, "≤9.9 or ≥18.1 (+8)")])
+            apacheSegment("WBC (×10³/µL)", selection: $ppossumI.wbcPhys, options: [
+                (1, "4–10 (+1)"), (2, "10.1–20 or 3.1–3.9 (+2)"), (4, "≥20.1 or ≤3.0 (+4)")])
+            apacheSegment("Urea (mmol/L)", selection: $ppossumI.urea, options: [
+                (1, "<7.5 (+1)"), (2, "7.5–10.0 (+2)"), (4, "10.1–15.0 (+4)"), (8, "≥15.1 (+8)")])
+            apacheSegment("Sodium (mmol/L)", selection: $ppossumI.sodiumPhys, options: [
+                (1, "136–145 (+1)"), (2, "131–135 or 146–150 (+2)"),
+                (4, "126–130 (+4)"), (8, "≤125 (+8)")])
+            apacheSegment("Potassium (mmol/L)", selection: $ppossumI.potassiumPhys, options: [
+                (1, "3.5–5.0 (+1)"), (2, "3.2–3.4 or 5.1–5.3 (+2)"),
+                (4, "2.9–3.1 or 5.4–5.9 (+4)"), (8, "≤2.8 or ≥6.0 (+8)")])
+            apacheSegment("ECG", selection: $ppossumI.ecg, options: [
+                (1, "Normal (+1)"), (2, "AF rate 60–90 (+2)"),
+                (4, "AF other rate or >5 ectopics (+4)"), (8, "Q waves / ST changes / BBB (+8)")])
+        }
+    }
+
+    private var ppossumOperativeSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            sectionHeader("Operative Score (6 variables)")
+            apacheSegment("Operative magnitude", selection: $ppossumI.operativeMagnitude, options: [
+                (1, "Minor (+1)"), (2, "Moderate (+2)"), (4, "Major (+4)"), (8, "Major+ (+8)")])
+            apacheSegment("Number of procedures", selection: $ppossumI.numProcedures, options: [
+                (1, "1 (+1)"), (2, "2 (+2)"), (4, "≥3 (+4)")])
+            apacheSegment("Blood loss (mL)", selection: $ppossumI.bloodLoss, options: [
+                (1, "<100 (+1)"), (2, "101–500 (+2)"), (4, "501–999 (+4)"), (8, "≥1000 (+8)")])
+            apacheSegment("Peritoneal soiling", selection: $ppossumI.peritonealSoiling, options: [
+                (1, "None (+1)"), (2, "Minor serosal / haematoma (+2)"),
+                (4, "Local pus (+4)"), (8, "Free bowel content / pus / blood (+8)")])
+            apacheSegment("Malignancy", selection: $ppossumI.malignancy, options: [
+                (1, "None (+1)"), (2, "Primary only (+2)"), (4, "Nodal disease (+4)"), (8, "Distant metastases (+8)")])
+            apacheSegment("Urgency", selection: $ppossumI.urgency, options: [
+                (1, "Elective (+1)"), (4, "Emergency >2h — resuscitated (+4)"),
+                (8, "Emergency <2h — not resuscitated (+8)")])
+        }
     }
 
 
