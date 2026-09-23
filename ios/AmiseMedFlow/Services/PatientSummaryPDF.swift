@@ -163,6 +163,13 @@ enum PatientSummaryPDF {
             y = drawText(ctx: ctx, text: cc, y: y)
         }
 
+        // Associated symptoms
+        if let assoc = patient.associatedSymptoms, !assoc.isEmpty {
+            y = maybeNewPage(ctx: ctx, y: y)
+            y = sectionTitle("Associated Symptoms", y: y)
+            y = drawText(ctx: ctx, text: assoc, y: y)
+        }
+
         // HPI
         if let hpi = patient.hpi, !hpi.isEmpty {
             y = maybeNewPage(ctx: ctx, y: y)
