@@ -76,7 +76,7 @@ extension ClinicalScoringEngine {
 
     static func glasgowPancreatitis(_ i: GlasgowPancreatitisInput) -> ClinicalScore {
         let items: [ScoredItem] = [
-            .init(label: "PaO₂ <60 mmHg", points: 1, present: i.pao2Below60),
+            .init(label: "PaO₂ <8 kPa (60 mmHg)", points: 1, present: i.pao2Below60),
             .init(label: "Age >55 years", points: 1, present: i.ageOver55),
             .init(label: "Neutrophils (WBC) >15×10⁹/L", points: 1, present: i.wbcOver15k),
             .init(label: "Calcium <2 mmol/L", points: 1, present: i.calciumBelow2),
@@ -92,7 +92,7 @@ extension ClinicalScoringEngine {
             systemName: "Glasgow Pancreatitis Score",
             abbreviation: "PANCREAS",
             score: score, maxScore: 8,
-            risk: severe ? (score >= 5 ? .critical : .high) : .low,
+            risk: glasgowSeverityRisk(Int(score)),
             interpretation: severe
                 ? "Glasgow \(Int(score))/8 — Severe acute pancreatitis"
                 : "Glasgow \(Int(score))/8 — Predicted mild pancreatitis",
@@ -276,34 +276,52 @@ extension ClinicalScoringEngine {
 
 
     // MARK: – #80 Glasgow-Imrie
+    // Standard modified Glasgow (Imrie) criteria — PANCREAS, worst values in the first 48 h,
+    // one point each (Blamey 1984):
+    //   P  PaO₂ < 8 kPa (60 mmHg)       A  Age > 55 years
+    //   N  WCC > 15 × 10⁹/L             C  Calcium < 2 mmol/L
+    //   R  Urea > 16 mmol/L             E  LDH > 600 IU/L OR AST > 200 IU/L (ONE criterion)
+    //   A  Albumin < 32 g/L             S  Glucose > 10 mmol/L
+    // ≥ 3 = severe. Field names are kept for the existing Scores form bindings: `ldh180` and
+    // `ast100` are the two halves of the single enzyme criterion.
 
     struct GlasgowImrieInput: Equatable {
-        var pao2Below59: Bool = false         // PaO₂ < 59.2 mmHg (< 7.9 kPa)
+        var pao2Below59: Bool = false         // PaO₂ < 8 kPa (60 mmHg)
         var ageAbove55: Bool = false           // Age > 55 years
         var wbcAbove15: Bool = false           // WBC > 15 × 10⁹/L
         var calciumBelow2: Bool = false        // Serum calcium < 2.0 mmol/L
+        var ureaAbove16: Bool = false          // Serum urea > 16 mmol/L
         var albuminBelow32: Bool = false       // Serum albumin < 32 g/L
-        var ldh180: Bool = false              // LDH > 600 IU/L (original) or > 3× ULN (some versions)
-        var ast100: Bool = false              // AST / ALT > 200 IU/L
-        var glucoseAbove10: Bool = false       // Serum glucose > 10 mmol/L (non-diabetic)
+        var ldh180: Bool = false              // LDH > 600 IU/L   ┐ one criterion:
+        var ast100: Bool = false              // AST > 200 IU/L   ┘ either scores 1 point
+        var glucoseAbove10: Bool = false       // Serum glucose > 10 mmol/L
+
+        /// The single enzyme criterion (E): LDH > 600 IU/L or AST > 200 IU/L.
+        var enzymeCriterion: Bool { ldh180 || ast100 }
+
+        /// The eight PANCREAS criteria, in order.
+        var criteria: [Bool] {
+            [pao2Below59, ageAbove55, wbcAbove15, calciumBelow2,
+             ureaAbove16, enzymeCriterion, albuminBelow32, glucoseAbove10]
+        }
+    }
+
+    /// Shared Glasgow banding (both Glasgow implementations): 0–2 predicted mild; ≥3 severe
+    /// (.high); ≥5 shown as .critical to mark the heavier burden (local display convention, not
+    /// part of the published score).
+    static func glasgowSeverityRisk(_ points: Int) -> ScoreRisk {
+        points >= 5 ? .critical : (points >= 3 ? .high : .low)
     }
 
     static func glasgowImrie(_ i: GlasgowImrieInput) -> ClinicalScore {
-        let pts = [i.pao2Below59, i.ageAbove55, i.wbcAbove15, i.calciumBelow2,
-                   i.albuminBelow32, i.ldh180, i.ast100, i.glucoseAbove10].filter { $0 }.count
+        let pts = i.criteria.filter { $0 }.count
 
-        let risk: ScoreRisk
+        let risk = glasgowSeverityRisk(pts)
         let interp: String
-        switch pts {
-        case 0...2:
-            risk = .low
-            interp = "Glasgow-Imrie \(pts)/8 — Mild acute pancreatitis. Low predicted complication rate (< 5% mortality). Standard IV fluid resuscitation, analgesia, and supportive care. Reassess at 48 h. Note: score is calculated on first 48 h data and may not be complete at admission."
-        case 3:
-            risk = .moderate
-            interp = "Glasgow-Imrie 3/8 — Moderate-to-severe pancreatitis predicted. Mortality risk ~10–15%. Organ complications possible. IV fluid resuscitation, close monitoring, HDU/ICU consideration if any organ dysfunction present. CT at 48–72 h."
-        default:
-            risk = .high
-            interp = "Glasgow-Imrie \(pts)/8 — Severe acute pancreatitis. Mortality risk 30–50% (≥ 3 criteria historically associated with severe disease). Immediate HDU/ICU admission, aggressive resuscitation, CT imaging, and HPB/gastroenterology specialist review."
+        if pts < 3 {
+            interp = "Glasgow-Imrie \(pts)/8 — Predicted mild acute pancreatitis. Standard IV fluid resuscitation, analgesia and supportive care. Reassess at 48 h: the score uses the worst values in the first 48 h and may not be complete at admission."
+        } else {
+            interp = "Glasgow-Imrie \(pts)/8 — Severe acute pancreatitis predicted (≥ 3 criteria). HDU/ICU assessment, aggressive resuscitation, CT imaging if not improving, and HPB/gastroenterology specialist review."
         }
 
         let flags: [String] = pts >= 3 ? ["Glasgow-Imrie ≥ 3: severe acute pancreatitis predicted — HDU/ICU and specialist review required"] : []
@@ -336,14 +354,14 @@ extension ClinicalScoringEngine {
             interpretation: interp,
             recommendations: recs,
             items: [
-                ScoredItem(label: "PaO₂ < 59.2 mmHg (< 7.9 kPa)", points: 1, present: i.pao2Below59),
+                ScoredItem(label: "PaO₂ < 8 kPa (60 mmHg)", points: 1, present: i.pao2Below59),
                 ScoredItem(label: "Age > 55 years", points: 1, present: i.ageAbove55),
-                ScoredItem(label: "WBC > 15 × 10⁹/L", points: 1, present: i.wbcAbove15),
+                ScoredItem(label: "WCC > 15 × 10⁹/L", points: 1, present: i.wbcAbove15),
                 ScoredItem(label: "Serum calcium < 2.0 mmol/L", points: 1, present: i.calciumBelow2),
+                ScoredItem(label: "Serum urea > 16 mmol/L", points: 1, present: i.ureaAbove16),
+                ScoredItem(label: "LDH > 600 IU/L or AST > 200 IU/L (one criterion)", points: 1, present: i.enzymeCriterion),
                 ScoredItem(label: "Serum albumin < 32 g/L", points: 1, present: i.albuminBelow32),
-                ScoredItem(label: "LDH > 600 IU/L (or > 3× ULN)", points: 1, present: i.ldh180),
-                ScoredItem(label: "AST/ALT > 200 IU/L", points: 1, present: i.ast100),
-                ScoredItem(label: "Serum glucose > 10 mmol/L (non-diabetic)", points: 1, present: i.glucoseAbove10)
+                ScoredItem(label: "Serum glucose > 10 mmol/L", points: 1, present: i.glucoseAbove10)
             ],
             redFlags: flags,
             evidenceNote: "Imrie CW et al. Br J Surg 1978;65:478–480. Modified by Blamey SL et al. Gut 1984;25:1340–1346. Eight variables, assessed at 48 h from admission. Score ≥ 3 predicts severe acute pancreatitis with sensitivity ~70%, specificity ~85%. Widely used in UK/Commonwealth clinical practice. Variables must be based on worst values within first 48 h — not all may be available at admission. Compare with BISAP (admission-only) and APACHE II (daily, more complex)."

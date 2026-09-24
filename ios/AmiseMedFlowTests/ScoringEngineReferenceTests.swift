@@ -210,7 +210,7 @@ final class ScoringEngineReferenceTests: XCTestCase {
         XCTAssertEqual(r.risk, .high)
     }
 
-    // MARK: - Glasgow-Imrie (≥3 = severe)
+    // MARK: - Glasgow-Imrie (modified Glasgow, Blamey 1984: 8 PANCREAS criteria, ≥3 = severe)
 
     func testGlasgowImrieBelowThreshold() {
         var i = ClinicalScoringEngine.GlasgowImrieInput()
@@ -223,27 +223,80 @@ final class ScoringEngineReferenceTests: XCTestCase {
         XCTAssertTrue(r.redFlags.isEmpty)
     }
 
-    func testGlasgowImrieThreeRaisesSevereFlag() {
+    func testGlasgowImrieThreeIsSevereHigh() {
         var i = ClinicalScoringEngine.GlasgowImrieInput()
         i.ageAbove55 = true
         i.wbcAbove15 = true
         i.calciumBelow2 = true
         let r = ClinicalScoringEngine.glasgowImrie(i)
         XCTAssertEqual(r.score, 3)
-        XCTAssertGreaterThanOrEqual(r.risk, .moderate)
+        XCTAssertEqual(r.risk, .high, "≥3 = severe")
         XCTAssertFalse(r.redFlags.isEmpty)
+        XCTAssertTrue(r.interpretation.contains("Severe"))
         i.glucoseAbove10 = true
         XCTAssertEqual(ClinicalScoringEngine.glasgowImrie(i).score, 4)
         XCTAssertEqual(ClinicalScoringEngine.glasgowImrie(i).risk, .high)
     }
 
-    func testGlasgowImrieMaximum() {
+    func testGlasgowImrieUreaIsACriterion() {
+        var i = ClinicalScoringEngine.GlasgowImrieInput()
+        i.ureaAbove16 = true
+        XCTAssertEqual(ClinicalScoringEngine.glasgowImrie(i).score, 1)
+        XCTAssertTrue(ClinicalScoringEngine.glasgowImrie(i).items.contains { $0.label.contains("urea") && $0.present })
+    }
+
+    func testGlasgowImrieLDHAndASTAreOneCriterion() {
+        var i = ClinicalScoringEngine.GlasgowImrieInput()
+        i.ldh180 = true
+        XCTAssertEqual(ClinicalScoringEngine.glasgowImrie(i).score, 1, "LDH > 600")
+        i.ldh180 = false
+        i.ast100 = true
+        XCTAssertEqual(ClinicalScoringEngine.glasgowImrie(i).score, 1, "AST > 200")
+        i.ldh180 = true
+        XCTAssertEqual(ClinicalScoringEngine.glasgowImrie(i).score, 1, "both together still score 1")
+    }
+
+    func testGlasgowImrieMaximumIsEightCriteria() {
         var i = ClinicalScoringEngine.GlasgowImrieInput()
         i.pao2Below59 = true; i.ageAbove55 = true; i.wbcAbove15 = true; i.calciumBelow2 = true
-        i.albuminBelow32 = true; i.ldh180 = true; i.ast100 = true; i.glucoseAbove10 = true
+        i.ureaAbove16 = true; i.albuminBelow32 = true; i.ldh180 = true; i.ast100 = true
+        i.glucoseAbove10 = true
         let r = ClinicalScoringEngine.glasgowImrie(i)
         XCTAssertEqual(r.score, 8)
         XCTAssertEqual(r.maxScore, 8)
+        XCTAssertEqual(r.items.count, 8)
+        XCTAssertEqual(r.risk, .critical)
+    }
+
+    /// The two Glasgow implementations give the same score and band for the same findings.
+    func testGlasgowImplementationsAgree() {
+        typealias Findings = (pao2: Bool, age: Bool, wcc: Bool, ca: Bool, urea: Bool, enzyme: Bool,
+                              alb: Bool, glu: Bool)
+        let cases: [Findings] = [
+            (false, false, false, false, false, false, false, false),
+            (true, true, false, false, false, false, false, false),
+            (true, true, true, false, false, false, false, false),
+            (false, false, false, true, true, true, true, false),
+            (true, true, true, true, true, false, false, false),
+            (true, true, true, true, true, true, true, true),
+        ]
+        for f in cases {
+            var imrie = ClinicalScoringEngine.GlasgowImrieInput()
+            imrie.pao2Below59 = f.pao2; imrie.ageAbove55 = f.age; imrie.wbcAbove15 = f.wcc
+            imrie.calciumBelow2 = f.ca; imrie.ureaAbove16 = f.urea; imrie.ldh180 = f.enzyme
+            imrie.albuminBelow32 = f.alb; imrie.glucoseAbove10 = f.glu
+
+            var glasgow = GlasgowPancreatitisInput()
+            glasgow.pao2Below60 = f.pao2; glasgow.ageOver55 = f.age; glasgow.wbcOver15k = f.wcc
+            glasgow.calciumBelow2 = f.ca; glasgow.ureaOver16 = f.urea; glasgow.ldhOver600OrAstOver200 = f.enzyme
+            glasgow.albuminBelow32 = f.alb; glasgow.glucoseOver10 = f.glu
+
+            let a = ClinicalScoringEngine.glasgowImrie(imrie)
+            let b = ClinicalScoringEngine.glasgowPancreatitis(glasgow)
+            XCTAssertEqual(a.score, b.score, "\(f)")
+            XCTAssertEqual(a.risk, b.risk, "\(f)")
+            XCTAssertEqual(a.redFlags.isEmpty, b.redFlags.isEmpty, "\(f)")
+        }
     }
 
     // MARK: - BISAP (Wu 2008)
