@@ -68,25 +68,34 @@ extension SyncService {
                 who_checklist: whoJSON
             )
 
+            // pendingSync protects the plan from the pull below, so it is cleared only when the
+            // server confirms the write (an update RLS does not apply returns no rows, no error),
+            // and not if the plan was edited again while the request ran.
+            let editedAt = plan.updatedAt
+            struct PlanResponse: Decodable { let id: String }
+            let confirmed: [PlanResponse]
             if let remoteId = plan.remoteId {
                 // Update existing row
-                try await SupabaseConfig.client
+                confirmed = try await SupabaseConfig.client
                     .from("patient_operative_plans")
                     .update(row)
                     .eq("id", value: remoteId)
+                    .select("id")
                     .execute()
+                    .value
             } else {
                 // Insert new row
-                struct PlanResponse: Decodable { let id: String }
-                let response: [PlanResponse] = try await SupabaseConfig.client
+                confirmed = try await SupabaseConfig.client
                     .from("patient_operative_plans")
                     .insert(row)
                     .select("id")
                     .execute()
                     .value
-                if let first = response.first { plan.remoteId = first.id }
             }
-            plan.pendingSync = false
+            // The await above may have outlived a delete.
+            guard plan.isLive, let first = confirmed.first else { continue }
+            if plan.remoteId == nil { plan.remoteId = first.id }
+            if plan.updatedAt == editedAt { plan.pendingSync = false }
         }
         try context.save()
     }
@@ -123,6 +132,7 @@ extension SyncService {
             guard let patient = allPatients.first(where: { $0.remoteId == row.patient_id }) else { continue }
 
             let plan: OperativePlan
+            var isNewPlan = false
             if let existing = allLocal.first(where: { $0.remoteId == row.id }) {
                 plan = existing
             } else if let existing = allLocal.first(where: { $0.patient?.remoteId == row.patient_id }) {
@@ -132,9 +142,14 @@ extension SyncService {
                 plan = OperativePlan()
                 plan.patient = patient
                 context.insert(plan)
+                isNewPlan = true
             }
 
             plan.remoteId = row.id
+            // Local edits not yet pushed win (e.g. a WHO checklist tick or consent change made
+            // while this request ran, or one the server did not confirm): only the link above is
+            // taken, never the fields. Same rule as the note and patient pulls.
+            if plan.pendingSync && !isNewPlan { continue }
             if (plan.consentProcedure).isEmpty     { plan.consentProcedure      = row.consent_procedure }
             plan.consentSigned                     = row.consent_signed
             if (plan.anaesthesiaType).isEmpty      { plan.anaesthesiaType       = row.anaesthesia_type }

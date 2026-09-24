@@ -1,6 +1,6 @@
 // SyncService+AppointmentSync.swift
 // Pull confirmed appointments → auto-create patient records;
-// push edits to existing synced patients.
+// push edits to existing synced patients (pendingSync cleared only on a confirmed update).
 
 import Foundation
 import SwiftData
@@ -192,11 +192,23 @@ extension SyncService {
                 pre_op_checklist_data_json: patient.preOpChecklistDataJson,
                 patient_instructions_data_json: patient.patientInstructionsDataJson
             )
-            try await SupabaseConfig.client
+            // pendingSync is what protects these edits from the pull (PatientPullMerge), so it is
+            // cleared only when the server confirms the update. An update the server does not
+            // apply (RLS: only doctor/nurse/admin may update patients, or the row is gone)
+            // returns no rows without an error; the edit then stays pending locally rather than
+            // being reverted by the next pull. Same rule as pushPendingNotes.
+            let editedAt = patient.updatedAt
+            struct UpdateResponse: Decodable { let id: String }
+            let updated: [UpdateResponse] = try await SupabaseConfig.client
                 .from("patients")
                 .update(row)
                 .eq("id", value: remoteId)
+                .select("id")
                 .execute()
+                .value
+            // The await above may have outlived a delete; and an edit made while it ran was not
+            // in this request, so it keeps the patient pending for the next sync.
+            guard patient.isLive, !updated.isEmpty, patient.updatedAt == editedAt else { continue }
             patient.pendingSync = false
             patient.syncedAt = .now
         }

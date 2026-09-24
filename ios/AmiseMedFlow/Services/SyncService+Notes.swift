@@ -22,6 +22,9 @@ extension SyncService {
             guard let patientRemoteId = note.patient?.remoteId, !note.isEmpty else { continue }
             let signed = note.status == .signed
             let signedAt = signed ? iso.string(from: note.updatedAt) : nil
+            // An edit made while the request below runs is not in it: the note then stays
+            // pending (and protected from pullNotes) for the next sync.
+            let editedAt = note.updatedAt
 
             if let remoteId = note.remoteId {
                 // Edit to a note that is already in the cloud: update it in place. RLS allows the
@@ -48,7 +51,7 @@ extension SyncService {
                     .execute()
                     .value
                 guard note.isLive else { continue }
-                if !updated.isEmpty {
+                if !updated.isEmpty && note.updatedAt == editedAt {
                     note.pendingSync = false
                     note.syncedAt = .now
                     try? context.save()
@@ -84,9 +87,11 @@ extension SyncService {
                 .value
             guard note.isLive else { continue }
             if let first = response.first {
-                note.remoteId = first.id
-                note.pendingSync = false
-                note.syncedAt = .now
+                note.remoteId = first.id   // always: a later edit is then sent as an update
+                if note.updatedAt == editedAt {
+                    note.pendingSync = false
+                    note.syncedAt = .now
+                }
                 try? context.save()   // persist the id at once so a crash can't cause a re-insert
             }
         }

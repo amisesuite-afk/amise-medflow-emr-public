@@ -1,82 +1,248 @@
 // SyncService+Patients.swift
-// Patient sync: pull new patients, confirmed appointments, push patient edits.
+// Patient sync: pull patients (never over unpushed local edits), push new patients.
 
 import Foundation
 import SwiftData
 import Supabase
 
+/// One `patients` row as the cloud pull selects it. Internal (not private) so the pull merge
+/// rule can be unit-tested by decoding a JSON row (AmiseMedFlowTests/PullProtectionTests.swift).
+struct RemotePatientRow: Decodable {
+    let id: String
+    let full_name: String
+    let sex: String?
+    let date_of_birth: String?
+    let phone: String?
+    let email: String?
+    let address: String?
+    let mrn: String?
+    let nok_name: String?
+    let nok_relation: String?
+    let nok_phone: String?
+    let pmh_notes: String?
+    let family_history_notes: String?
+    let insurance_provider: String?
+    let policy_number: String?
+    let setting: String?
+    let location: String?
+    let acuity: String?
+    let visit_type: String?
+    let mallampati_score: Int?
+    let operation_date: String?
+    let chief_complaint: String?
+    let hpi: String?
+    let assessment_text: String?
+    let management_plan: String?
+    let working_diagnosis: String?
+    let working_diagnosis_icd: String?
+    let allergies_json: String?
+    let investigations_json: String?
+    let pmh_entries_json: String?
+    let pshx_entries_json: String?
+    let social_history: String?
+    let surgical_history: String?
+    let height_cm: Double?
+    let ward: String?
+    let bed_number: String?
+    let exam_general: String?
+    let exam_cvs: String?
+    let exam_resp: String?
+    let exam_abdo: String?
+    let exam_neuro: String?
+    let exam_msk: String?
+    let exam_skin: String?
+    let exam_other: String?
+    let encounter_status: String?
+    let check_in_time: String?
+    let created_at: String
+    // Procedure form JSON blobs
+    let trauma_data_json: String?
+    let ogd_data_json: String?
+    let colonoscopy_data_json: String?
+    let surgery_data_json: String?
+    let ercp_data_json: String?
+    let bronchoscopy_data_json: String?
+    let discharge_summary_data_json: String?
+    let post_op_review_data_json: String?
+    let referral_letter_data_json: String?
+    let consent_form_data_json: String?
+    let pre_op_checklist_data_json: String?
+    let patient_instructions_data_json: String?
+    // NEWS2 SpO₂ Scale 2 opt-in (Migration 88). nil when the server has no column yet.
+    let news2_spo2_scale2: Bool?
+}
+
+/// How the cloud pull merges a `patients` row into a local Patient. Pure (no network, no
+/// context), so it is unit-tested directly (PullProtectionTests).
+///
+/// Pull protection: `pullPatients` runs BEFORE `pushPatientEdits` in `SyncService.sync`. A patient
+/// with `pendingSync == true` holds local edits the server has not seen yet (e.g. acuity raised
+/// to urgent while offline). Writing the server row over it would silently revert that edit
+/// before it is ever pushed, and the push would then send the reverted values. So such a patient
+/// takes nothing from the server except the fields the server owns:
+/// - `remoteId`: the link to the server row (the push needs it to update, not re-insert).
+/// - `mrn`, only while the local one is empty: the server assigns an MRN on insert
+///   (`generate_patient_mrn` trigger), and the push would otherwise send nil over it.
+/// - NEWS2 SpO₂ Scale 2: it has its own "last confirmed" value and keeps an unpushed local change
+///   itself (`applyServerNEWS2Scale2`), so an unrelated pending edit must not hold it back.
+/// (`pathwayDataJson` is merged separately by `syncPathwayData`, with its own tracking.)
+/// Once the push confirms the update, `pendingSync` is cleared and the next pull applies server
+/// changes again. Same rule as the note pull (SyncService+Notes.swift).
+enum PatientPullMerge {
+
+    enum Outcome: Equatable {
+        /// Server values were applied (admin fields taken, clinical fields filled where empty).
+        case applied
+        /// Local edits not yet pushed: only the server-owned fields listed above were taken.
+        case keptPendingLocalEdits
+    }
+
+    /// Applies `row` to `patient`. `isNewRecord`: the patient was created by this pull, so it
+    /// has no local edits whatever its `pendingSync` default.
+    @discardableResult
+    static func applyServerPatientRow(_ row: RemotePatientRow, to patient: Patient,
+                                      isNewRecord: Bool,
+                                      iso: ISO8601DateFormatter = ISO8601DateFormatter()) -> Outcome {
+        // Server-owned: applied even over pending local edits.
+        patient.remoteId = row.id
+        if let scale2 = row.news2_spo2_scale2 {
+            patient.applyServerNEWS2Scale2(scale2)
+        }
+
+        if !isNewRecord && patient.pendingSync {
+            if (patient.mrn ?? "").isEmpty, let mrn = row.mrn, !mrn.isEmpty {
+                patient.mrn = mrn
+            }
+            return .keptPendingLocalEdits
+        }
+
+        patient.fullName = row.full_name
+        patient.sex = Sex.fromSupabase(row.sex)
+        if let dob = row.date_of_birth { patient.dateOfBirth = iso.date(from: dob) }
+        patient.phone = row.phone
+        patient.email = row.email
+        patient.address = row.address
+        patient.mrn = row.mrn
+        patient.nokName = row.nok_name
+        patient.nokRelation = row.nok_relation
+        patient.nokPhone = row.nok_phone
+        patient.pmhNotes = row.pmh_notes
+        patient.familyHistoryNotes = row.family_history_notes
+        patient.insuranceProvider = row.insurance_provider
+        patient.policyNumber = row.policy_number
+        if let s = row.setting { patient.setting = ClinicalSetting(rawValue: s.capitalized) ?? .outpatient }
+        if let l = row.location { patient.location = ClinicalLocation(rawValue: locationDisplayName(l)) ?? .rodney_bay }
+        if let a = row.acuity { patient.acuity = acuityFromString(a) }
+        // Clinical fields — only update from remote if local is still empty
+        // (prefer local edits; remote is the source of truth only on first pull)
+        if let cc = row.chief_complaint, (patient.chiefComplaint ?? "").isEmpty {
+            patient.chiefComplaint = cc
+        }
+        if let hpi = row.hpi, (patient.hpi ?? "").isEmpty {
+            patient.hpi = hpi
+        }
+        if let at = row.assessment_text, (patient.assessmentText ?? "").isEmpty {
+            patient.assessmentText = at
+        }
+        if let mp = row.management_plan, (patient.managementPlan ?? "").isEmpty {
+            patient.managementPlan = mp
+        }
+        if let wd = row.working_diagnosis, (patient.workingDiagnosis ?? "").isEmpty {
+            patient.workingDiagnosis = wd
+            patient.workingDiagnosisICD = row.working_diagnosis_icd
+        }
+        if let vt = row.visit_type, patient.visitType == nil {
+            patient.visitType = VisitType(rawValue: vt)
+        }
+        if let ms = row.mallampati_score, patient.mallampatiScore == nil {
+            patient.mallampatiScore = ms
+        }
+        if let od = row.operation_date, patient.operationDate == nil {
+            patient.operationDate = iso.date(from: od)
+        }
+        if let aj = row.allergies_json, (patient.allergiesJson ?? "").isEmpty {
+            patient.allergiesJson = aj
+        }
+        if let ij = row.investigations_json, (patient.investigationsJson ?? "").isEmpty {
+            patient.investigationsJson = ij
+        }
+        if let pmh = row.pmh_entries_json, (patient.pmhEntriesJson ?? "").isEmpty {
+            patient.pmhEntriesJson = pmh
+        }
+        if let psx = row.pshx_entries_json, (patient.pshxEntriesJson ?? "").isEmpty {
+            patient.pshxEntriesJson = psx
+        }
+        if let sh = row.social_history, (patient.socialHistory ?? "").isEmpty {
+            patient.socialHistory = sh
+        }
+        if let sx = row.surgical_history, (patient.surgicalHistory ?? "").isEmpty {
+            patient.surgicalHistory = sx
+        }
+        if let h = row.height_cm, patient.heightCm == nil { patient.heightCm = h }
+        if let w = row.ward,   (patient.ward ?? "").isEmpty   { patient.ward = w }
+        if let b = row.bed_number, (patient.bedNumber ?? "").isEmpty { patient.bedNumber = b }
+        if let eg = row.exam_general, (patient.examGeneral ?? "").isEmpty { patient.examGeneral = eg }
+        if let ec = row.exam_cvs,    (patient.examCVS ?? "").isEmpty     { patient.examCVS     = ec }
+        if let er = row.exam_resp,   (patient.examResp ?? "").isEmpty    { patient.examResp    = er }
+        if let ea = row.exam_abdo,   (patient.examAbdo ?? "").isEmpty    { patient.examAbdo    = ea }
+        if let en = row.exam_neuro,  (patient.examNeuro ?? "").isEmpty   { patient.examNeuro   = en }
+        if let em = row.exam_msk,    (patient.examMSK ?? "").isEmpty     { patient.examMSK     = em }
+        if let es = row.exam_skin,   (patient.examSkin ?? "").isEmpty    { patient.examSkin    = es }
+        if let eo = row.exam_other,  (patient.examOther ?? "").isEmpty   { patient.examOther   = eo }
+
+        // Procedure form JSON blobs — prefer local if non-empty
+        if let v = row.trauma_data_json,               (patient.traumaDataJson ?? "").isEmpty               { patient.traumaDataJson               = v }
+        if let v = row.ogd_data_json,                  (patient.ogdDataJson ?? "").isEmpty                  { patient.ogdDataJson                  = v }
+        if let v = row.colonoscopy_data_json,          (patient.colonoscopyDataJson ?? "").isEmpty          { patient.colonoscopyDataJson          = v }
+        if let v = row.surgery_data_json,              (patient.surgeryDataJson ?? "").isEmpty              { patient.surgeryDataJson              = v }
+        if let v = row.ercp_data_json,                 (patient.ercpDataJson ?? "").isEmpty                 { patient.ercpDataJson                 = v }
+        if let v = row.bronchoscopy_data_json,         (patient.bronchoscopyDataJson ?? "").isEmpty         { patient.bronchoscopyDataJson         = v }
+        if let v = row.discharge_summary_data_json,    (patient.dischargeSummaryDataJson ?? "").isEmpty     { patient.dischargeSummaryDataJson     = v }
+        if let v = row.post_op_review_data_json,       (patient.postOpReviewDataJson ?? "").isEmpty         { patient.postOpReviewDataJson         = v }
+        if let v = row.referral_letter_data_json,      (patient.referralLetterDataJson ?? "").isEmpty       { patient.referralLetterDataJson       = v }
+        if let v = row.consent_form_data_json,         (patient.consentFormDataJson ?? "").isEmpty          { patient.consentFormDataJson          = v }
+        if let v = row.pre_op_checklist_data_json,     (patient.preOpChecklistDataJson ?? "").isEmpty       { patient.preOpChecklistDataJson       = v }
+        if let v = row.patient_instructions_data_json, (patient.patientInstructionsDataJson ?? "").isEmpty  { patient.patientInstructionsDataJson  = v }
+
+        if let es = row.encounter_status {
+            patient.encounterStatus = EncounterStatus(rawValue: es) ?? .notCheckedIn
+        }
+        if let ct = row.check_in_time {
+            patient.checkInTime = iso.date(from: ct)
+        }
+        patient.syncedAt = .now
+        // New from this pull, or an existing patient with no unpushed edits: clean either way.
+        patient.pendingSync = false
+        return .applied
+    }
+
+    static func locationDisplayName(_ code: String) -> String {
+        switch code {
+        case "rodney_bay": return "Rodney Bay"
+        case "tapion":     return "Tapion"
+        case "okeu":       return "OKEU"
+        case "victoria":   return "Victoria"
+        default:           return "Other"
+        }
+    }
+
+    static func acuityFromString(_ s: String) -> Acuity {
+        switch s {
+        case "emergency": return .emergency
+        case "urgent":    return .urgent
+        case "priority":  return .priority
+        default:          return .routine
+        }
+    }
+}
+
 extension SyncService {
 
     // MARK: - Patient sync
 
-    private struct RemotePatient: Decodable {
-        let id: String
-        let full_name: String
-        let sex: String?
-        let date_of_birth: String?
-        let phone: String?
-        let email: String?
-        let address: String?
-        let mrn: String?
-        let nok_name: String?
-        let nok_relation: String?
-        let nok_phone: String?
-        let pmh_notes: String?
-        let family_history_notes: String?
-        let insurance_provider: String?
-        let policy_number: String?
-        let setting: String?
-        let location: String?
-        let acuity: String?
-        let visit_type: String?
-        let mallampati_score: Int?
-        let operation_date: String?
-        let chief_complaint: String?
-        let hpi: String?
-        let assessment_text: String?
-        let management_plan: String?
-        let working_diagnosis: String?
-        let working_diagnosis_icd: String?
-        let allergies_json: String?
-        let investigations_json: String?
-        let pmh_entries_json: String?
-        let pshx_entries_json: String?
-        let social_history: String?
-        let surgical_history: String?
-        let height_cm: Double?
-        let ward: String?
-        let bed_number: String?
-        let exam_general: String?
-        let exam_cvs: String?
-        let exam_resp: String?
-        let exam_abdo: String?
-        let exam_neuro: String?
-        let exam_msk: String?
-        let exam_skin: String?
-        let exam_other: String?
-        let encounter_status: String?
-        let check_in_time: String?
-        let created_at: String
-        // Procedure form JSON blobs
-        let trauma_data_json: String?
-        let ogd_data_json: String?
-        let colonoscopy_data_json: String?
-        let surgery_data_json: String?
-        let ercp_data_json: String?
-        let bronchoscopy_data_json: String?
-        let discharge_summary_data_json: String?
-        let post_op_review_data_json: String?
-        let referral_letter_data_json: String?
-        let consent_form_data_json: String?
-        let pre_op_checklist_data_json: String?
-        let patient_instructions_data_json: String?
-        // NEWS2 SpO₂ Scale 2 opt-in (Migration 88). nil when the server has no column yet.
-        let news2_spo2_scale2: Bool?
-    }
-
     func pullPatients(context: ModelContext) async throws {
         let columns = "id, full_name, sex, date_of_birth, phone, email, address, mrn, nok_name, nok_relation, nok_phone, pmh_notes, family_history_notes, insurance_provider, policy_number, setting, location, acuity, visit_type, mallampati_score, operation_date, chief_complaint, hpi, assessment_text, management_plan, working_diagnosis, working_diagnosis_icd, allergies_json, investigations_json, pmh_entries_json, pshx_entries_json, social_history, surgical_history, height_cm, ward, bed_number, exam_general, exam_cvs, exam_resp, exam_abdo, exam_neuro, exam_msk, exam_skin, exam_other, encounter_status, check_in_time, created_at, trauma_data_json, ogd_data_json, colonoscopy_data_json, surgery_data_json, ercp_data_json, bronchoscopy_data_json, discharge_summary_data_json, post_op_review_data_json, referral_letter_data_json, consent_form_data_json, pre_op_checklist_data_json, patient_instructions_data_json"
-        func fetchRows(_ select: String) async throws -> [RemotePatient] {
+        func fetchRows(_ select: String) async throws -> [RemotePatientRow] {
             try await SupabaseConfig.client
                 .from("patients")
                 .select(select)
@@ -87,7 +253,7 @@ extension SyncService {
         }
         // A server without news2_spo2_scale2 (before Migration 88) gets the old select, so the
         // patient pull keeps working; the flag then decodes as nil and is left alone.
-        let rows: [RemotePatient]
+        let rows: [RemotePatientRow]
         do {
             rows = try await fetchRows(columns + ", " + NEWS2Scale2Sync.column)
         } catch {
@@ -97,7 +263,8 @@ extension SyncService {
 
         let iso = ISO8601DateFormatter()
 
-        // Load all local patients once, then match in Swift (avoids #Predicate capture issues)
+        // Load all local patients once, then match in Swift (avoids #Predicate capture issues).
+        // Fetched after the request, so an edit made while it ran is already pendingSync here.
         let allLocal = try context.fetch(FetchDescriptor<Patient>())
 
         for row in rows {
@@ -117,127 +284,18 @@ extension SyncService {
                 return p
             }()
 
-            patient.remoteId = row.id
-            patient.fullName = row.full_name
-            patient.sex = Sex.fromSupabase(row.sex)
-            if let dob = row.date_of_birth { patient.dateOfBirth = iso.date(from: dob) }
-            patient.phone = row.phone
-            patient.email = row.email
-            patient.address = row.address
-            patient.mrn = row.mrn
-            patient.nokName = row.nok_name
-            patient.nokRelation = row.nok_relation
-            patient.nokPhone = row.nok_phone
-            patient.pmhNotes = row.pmh_notes
-            patient.familyHistoryNotes = row.family_history_notes
-            patient.insuranceProvider = row.insurance_provider
-            patient.policyNumber = row.policy_number
-            if let s = row.setting { patient.setting = ClinicalSetting(rawValue: s.capitalized) ?? .outpatient }
-            if let l = row.location { patient.location = ClinicalLocation(rawValue: locationDisplayName(l)) ?? .rodney_bay }
-            if let a = row.acuity { patient.acuity = acuityFromString(a) }
-            // Clinical fields — only update from remote if local is still empty
-            // (prefer local edits; remote is the source of truth only on first pull)
-            if let cc = row.chief_complaint, (patient.chiefComplaint ?? "").isEmpty {
-                patient.chiefComplaint = cc
-            }
-            if let hpi = row.hpi, (patient.hpi ?? "").isEmpty {
-                patient.hpi = hpi
-            }
-            if let at = row.assessment_text, (patient.assessmentText ?? "").isEmpty {
-                patient.assessmentText = at
-            }
-            if let mp = row.management_plan, (patient.managementPlan ?? "").isEmpty {
-                patient.managementPlan = mp
-            }
-            if let wd = row.working_diagnosis, (patient.workingDiagnosis ?? "").isEmpty {
-                patient.workingDiagnosis = wd
-                patient.workingDiagnosisICD = row.working_diagnosis_icd
-            }
-            if let vt = row.visit_type, patient.visitType == nil {
-                patient.visitType = VisitType(rawValue: vt)
-            }
-            if let ms = row.mallampati_score, patient.mallampatiScore == nil {
-                patient.mallampatiScore = ms
-            }
-            if let od = row.operation_date, patient.operationDate == nil {
-                patient.operationDate = iso.date(from: od)
-            }
-            if let aj = row.allergies_json, (patient.allergiesJson ?? "").isEmpty {
-                patient.allergiesJson = aj
-            }
-            if let ij = row.investigations_json, (patient.investigationsJson ?? "").isEmpty {
-                patient.investigationsJson = ij
-            }
-            if let pmh = row.pmh_entries_json, (patient.pmhEntriesJson ?? "").isEmpty {
-                patient.pmhEntriesJson = pmh
-            }
-            if let psx = row.pshx_entries_json, (patient.pshxEntriesJson ?? "").isEmpty {
-                patient.pshxEntriesJson = psx
-            }
-            if let sh = row.social_history, (patient.socialHistory ?? "").isEmpty {
-                patient.socialHistory = sh
-            }
-            if let sx = row.surgical_history, (patient.surgicalHistory ?? "").isEmpty {
-                patient.surgicalHistory = sx
-            }
-            if let h = row.height_cm, patient.heightCm == nil { patient.heightCm = h }
-            if let w = row.ward,   (patient.ward ?? "").isEmpty   { patient.ward = w }
-            if let b = row.bed_number, (patient.bedNumber ?? "").isEmpty { patient.bedNumber = b }
-            if let eg = row.exam_general, (patient.examGeneral ?? "").isEmpty { patient.examGeneral = eg }
-            if let ec = row.exam_cvs,    (patient.examCVS ?? "").isEmpty     { patient.examCVS     = ec }
-            if let er = row.exam_resp,   (patient.examResp ?? "").isEmpty    { patient.examResp    = er }
-            if let ea = row.exam_abdo,   (patient.examAbdo ?? "").isEmpty    { patient.examAbdo    = ea }
-            if let en = row.exam_neuro,  (patient.examNeuro ?? "").isEmpty   { patient.examNeuro   = en }
-            if let em = row.exam_msk,    (patient.examMSK ?? "").isEmpty     { patient.examMSK     = em }
-            if let es = row.exam_skin,   (patient.examSkin ?? "").isEmpty    { patient.examSkin    = es }
-            if let eo = row.exam_other,  (patient.examOther ?? "").isEmpty   { patient.examOther   = eo }
-
-            // Procedure form JSON blobs — prefer local if non-empty
-            if let v = row.trauma_data_json,               (patient.traumaDataJson ?? "").isEmpty               { patient.traumaDataJson               = v }
-            if let v = row.ogd_data_json,                  (patient.ogdDataJson ?? "").isEmpty                  { patient.ogdDataJson                  = v }
-            if let v = row.colonoscopy_data_json,          (patient.colonoscopyDataJson ?? "").isEmpty          { patient.colonoscopyDataJson          = v }
-            if let v = row.surgery_data_json,              (patient.surgeryDataJson ?? "").isEmpty              { patient.surgeryDataJson              = v }
-            if let v = row.ercp_data_json,                 (patient.ercpDataJson ?? "").isEmpty                 { patient.ercpDataJson                 = v }
-            if let v = row.bronchoscopy_data_json,         (patient.bronchoscopyDataJson ?? "").isEmpty         { patient.bronchoscopyDataJson         = v }
-            if let v = row.discharge_summary_data_json,    (patient.dischargeSummaryDataJson ?? "").isEmpty     { patient.dischargeSummaryDataJson     = v }
-            if let v = row.post_op_review_data_json,       (patient.postOpReviewDataJson ?? "").isEmpty         { patient.postOpReviewDataJson         = v }
-            if let v = row.referral_letter_data_json,      (patient.referralLetterDataJson ?? "").isEmpty       { patient.referralLetterDataJson       = v }
-            if let v = row.consent_form_data_json,         (patient.consentFormDataJson ?? "").isEmpty          { patient.consentFormDataJson          = v }
-            if let v = row.pre_op_checklist_data_json,     (patient.preOpChecklistDataJson ?? "").isEmpty       { patient.preOpChecklistDataJson       = v }
-            if let v = row.patient_instructions_data_json, (patient.patientInstructionsDataJson ?? "").isEmpty  { patient.patientInstructionsDataJson  = v }
-
-            // NEWS2 SpO₂ Scale 2: server value applies unless this device has an unpushed change
-            // to the flag itself (SyncService+NEWS2Scale2). Absent column → left alone.
-            if let scale2 = row.news2_spo2_scale2 {
-                patient.applyServerNEWS2Scale2(scale2)
-            }
-
-            if let es = row.encounter_status {
-                patient.encounterStatus = EncounterStatus(rawValue: es) ?? .notCheckedIn
-            }
-            if let ct = row.check_in_time {
-                patient.checkInTime = iso.date(from: ct)
-            }
-            patient.syncedAt = .now
-            // Only mark clean for patients created from this pull.
-            // Existing dirty patients keep pendingSync=true so pushPatientEdits
-            // can still flush their local edits in the same sync cycle.
-            if existing == nil {
-                patient.pendingSync = false
-            }
+            // A patient with unpushed local edits (pendingSync) keeps them: only the server-owned
+            // link fields are taken, and pushPatientEdits sends the local values later in this
+            // same sync. See PatientPullMerge.
+            PatientPullMerge.applyServerPatientRow(row, to: patient,
+                                                   isNewRecord: existing == nil, iso: iso)
         }
 
         try context.save()
     }
 
     func locationDisplayName(_ code: String) -> String {
-        switch code {
-        case "rodney_bay": return "Rodney Bay"
-        case "tapion":     return "Tapion"
-        case "okeu":       return "OKEU"
-        case "victoria":   return "Victoria"
-        default:           return "Other"
-        }
+        PatientPullMerge.locationDisplayName(code)
     }
 
     func locationCode(_ location: ClinicalLocation) -> String {
@@ -251,12 +309,7 @@ extension SyncService {
     }
 
     func acuityFromString(_ s: String) -> Acuity {
-        switch s {
-        case "emergency": return .emergency
-        case "urgent":    return .urgent
-        case "priority":  return .priority
-        default:          return .routine
-        }
+        PatientPullMerge.acuityFromString(s)
     }
 
     func pushPendingPatients(context: ModelContext) async throws {
@@ -382,6 +435,8 @@ extension SyncService {
                 pre_op_checklist_data_json: patient.preOpChecklistDataJson,
                 patient_instructions_data_json: patient.patientInstructionsDataJson
             )
+            // The values `row` was built from; an edit after this point is not in the insert.
+            let editedAt = patient.updatedAt
             struct InsertResponse: Decodable { let id: String }
             // Idempotent push: if an earlier insert for this MRN already reached the server
             // (response lost, app killed before save), adopt that row instead of inserting again.
@@ -400,9 +455,10 @@ extension SyncService {
                 if let row = already.first(where: {
                     Patient.normalize($0.full_name) == patient.normalizedName && !claimed.contains($0.id)
                 }) {
+                    // Link only. The server row holds what the lost insert sent, not edits made
+                    // on this device since, so the patient stays pending: pushPatientEdits (next
+                    // in the same sync) sends the local values and clears it once confirmed.
                     patient.remoteId = row.id
-                    patient.pendingSync = false
-                    patient.syncedAt = .now
                     try context.save()
                     continue
                 }
@@ -415,8 +471,12 @@ extension SyncService {
                 .value
             if let first = response.first, patient.isLive {
                 patient.remoteId = first.id
-                patient.pendingSync = false
-                patient.syncedAt = .now
+                // An edit made while the requests ran was not in the insert: stay pending, so
+                // pushPatientEdits (next in the same sync) sends it and the pull never reverts it.
+                if patient.updatedAt == editedAt {
+                    patient.pendingSync = false
+                    patient.syncedAt = .now
+                }
                 try context.save()   // persist the id immediately so a crash can't cause a re-insert
             }
         }

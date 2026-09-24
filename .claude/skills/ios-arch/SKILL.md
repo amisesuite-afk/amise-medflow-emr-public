@@ -72,6 +72,14 @@ Pull/push for patients, notes, prescriptions, vitals. `syncIfAuthenticated()` on
 every foreground resume. A patient column added by a not-yet-applied migration must not break
 the pull or push: select it with a fallback to the old column list and push it in its own
 request (see `SyncService+NEWS2Scale2.swift`, `patients.news2_spo2_scale2`, Migration 88).
+Pull protection: `sync()` pulls patients BEFORE pushing them, so a pull must never write over a
+record with `pendingSync == true` (it would revert an offline edit before it is pushed). Patients
+go through `PatientPullMerge.applyServerPatientRow` (only `remoteId`, an MRN the local copy lacks,
+and the Scale 2 flag apply to a pending patient); notes and operative plans skip pending rows;
+prescriptions/vitals/billing/documents pulls only insert new rows. A push clears `pendingSync`
+only when the server returns the written row (`.select("id")`; an RLS-refused update returns no
+rows, no error) and `updatedAt` did not change during the request. Tests:
+`AmiseMedFlowTests/PullProtectionTests.swift`.
 
 **PeerSyncService**: MCSession, service type `"amise-medflow"`, matches peers by
 SHA-256 of email. Manifest-based (syncCode → syncedAt), longer text wins for
