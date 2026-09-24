@@ -198,7 +198,7 @@ struct ScheduleView: View {
         .task { await calSvc.sync() }
         .onAppear { anchor = cal.startOfDay(for: .now) }
         .sheet(isPresented: $showAdd) { AppointmentSchedulerView() }
-        .sheet(item: $selectedPatient) { PatientDetailView(patient: $0) }
+        .patientRecordPresentation(item: $selectedPatient)
         .sheet(item: $selectedEntry) { entry in
             let setting: ClinicalSetting = {
                 switch entry.label {

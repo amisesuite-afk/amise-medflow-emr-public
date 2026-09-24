@@ -118,9 +118,7 @@ struct EndoscopyListView: View {
             .sheet(isPresented: $showAdd) {
                 AddPatientView(initialSetting: .endoscopy)
             }
-            .sheet(item: $selectedPatient) { p in
-                PatientDetailView(patient: p)
-            }
+            .patientRecordPresentation(item: $selectedPatient)
         }
     }
 

@@ -105,9 +105,7 @@ struct PatientListView: View {
             .sheet(isPresented: $showAdd) {
                 AddPatientView(initialSetting: .outpatient)
             }
-            .sheet(item: $selectedPatient) { p in
-                PatientDetailView(patient: p)
-            }
+            .patientRecordPresentation(item: $selectedPatient)
         }
     }
 

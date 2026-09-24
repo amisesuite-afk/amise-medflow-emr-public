@@ -202,7 +202,7 @@ struct TodayDashboardView: View {
                     }
                 }
             }
-            .sheet(item: $selectedPatient) { PatientDetailView(patient: $0) }
+            .patientRecordPresentation(item: $selectedPatient)
             .sheet(isPresented: $showAdd) { AddPatientView() }
             .sheet(isPresented: $showCalendarImport) {
                 CalendarImportSheet(events: calSvc.events)

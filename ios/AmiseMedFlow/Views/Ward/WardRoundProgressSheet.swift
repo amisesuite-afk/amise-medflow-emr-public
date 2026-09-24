@@ -87,9 +87,9 @@ struct WardRoundProgressSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .onAppear { prefillSOAP() }
             .toolbar { toolbarContent }
-            .sheet(isPresented: $showFullRecord) {
-                PatientDetailView(patient: patient)
-            }
+            .patientRecordPresentation(item: Binding(
+                get: { showFullRecord ? patient : nil },
+                set: { if $0 == nil { showFullRecord = false } }))
             .sheet(isPresented: $showVitals) {
                 VitalsEntryView(patient: patient)
             }
