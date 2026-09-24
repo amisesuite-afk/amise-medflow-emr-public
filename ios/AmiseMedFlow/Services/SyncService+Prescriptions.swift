@@ -5,10 +5,104 @@ import Foundation
 import SwiftData
 import Supabase
 
+/// `prescriptions.route` on the server vs the route shown on this device.
+///
+/// The runner creates `prescriptions` from supabase-emr-enhancement-migration.sql (Migration 32):
+/// `route text not null default 'oral' check (route in ('oral', 'iv', 'im', 'sc', 'topical',
+/// 'rectal', 'sublingual', 'inhaled', 'ophthalmic', 'otic', 'nasal', 'per_rectum', 'other'))`.
+/// The other definitions (Migration 68's CREATE TABLE IF NOT EXISTS, the flat-column ADD COLUMN IF
+/// NOT EXISTS of Migrations 77/78, and the two unwired duplicates) never replace that column, so
+/// the CHECK is what the server enforces. This app shows and stores "Oral", "IV", "PR", or a
+/// formulary route such as "PO/IV", which the CHECK rejects (23514): the insert or update failed
+/// and the prescription stayed pending for ever.
+///
+/// Push: `serverValue` maps the local route to an allowed value; a route with no single allowed
+/// value (several routes, or one the CHECK does not list) is sent as "other" rather than rejected.
+/// Pull: `display(fromServer:)` gives the label the pickers use. Local rows keep their own label:
+/// `sameRoute` compares in server values, so "PO/IV" here and "other" on the server are the same.
+/// Pure; tested in SyncCompletenessTests.
+enum PrescriptionRoute {
+    /// The values the server's CHECK constraint allows.
+    static let serverValues: Set<String> = [
+        "oral", "iv", "im", "sc", "topical", "rectal", "sublingual", "inhaled", "ophthalmic",
+        "otic", "nasal", "per_rectum", "other",
+    ]
+
+    /// Label shown on this device for each server value (the pickers' spelling where they have one).
+    static let displayLabels: [String: String] = [
+        "oral": "Oral", "iv": "IV", "im": "IM", "sc": "SC", "topical": "Topical",
+        "rectal": "PR", "per_rectum": "PR", "sublingual": "SL", "inhaled": "Inhaled",
+        "ophthalmic": "Ophthalmic", "otic": "Otic", "nasal": "Nasal", "other": "Other",
+    ]
+
+    /// Local spellings (lowercased) of a single route → server value.
+    static let aliases: [String: String] = [
+        "oral": "oral", "po": "oral", "by mouth": "oral",
+        "iv": "iv", "intravenous": "iv",
+        "im": "im", "intramuscular": "im", "deep im only": "im",
+        "sc": "sc", "sc only": "sc", "subcut": "sc", "subcutaneous": "sc",
+        "topical": "topical", "external": "topical",
+        "pr": "rectal", "rectal": "rectal", "per rectum": "per_rectum", "per_rectum": "per_rectum",
+        "sl": "sublingual", "sublingual": "sublingual",
+        "inhaled": "inhaled", "nebulised": "inhaled", "nebulized": "inhaled", "mdi": "inhaled",
+        "ophthalmic": "ophthalmic", "otic": "otic",
+        "nasal": "nasal", "intranasal": "nasal",
+        "other": "other",
+    ]
+
+    /// The value to send for a local route: nil when empty (left out: the column default 'oral'
+    /// applies on insert, and an update keeps the server's value), otherwise an allowed value.
+    static func serverValue(_ route: String?) -> String? {
+        let trimmed = (route ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        // Several routes ("PO/IV", "IV bolus / continuous infusion"): one value only when the
+        // first part names a route and every other part that names one names the same.
+        let parts = trimmed.split(separator: "/").map(String.init)
+        if parts.count > 1 {
+            let named = Set(parts.compactMap(single))
+            if let first = single(parts[0]), named == [first] { return first }
+            return "other"
+        }
+        return single(trimmed) ?? "other"
+    }
+
+    /// The label for a route read from the server; an unknown value is shown as it is.
+    static func display(fromServer value: String?) -> String? {
+        guard let value, !value.isEmpty else { return nil }
+        return displayLabels[value.lowercased()] ?? value
+    }
+
+    /// Whether a local route and a server route are the same once both are in server values
+    /// ('rectal' and 'per_rectum' are both shown as "PR", so they count as the same).
+    static func sameRoute(local: String?, server: String?) -> Bool {
+        func canonical(_ value: String?) -> String? {
+            let v = serverValue(value)
+            return v == "per_rectum" ? "rectal" : v
+        }
+        return canonical(local) == canonical(server)
+    }
+
+    /// One route: an alias as written, without a trailing "(…)" qualifier, or its first word
+    /// ("IV infusion over 30 min" → iv, "PO (with food)" → oral).
+    private static func single(_ raw: String) -> String? {
+        var s = raw.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        if let alias = aliases[s] { return alias }
+        if let paren = s.firstIndex(of: "(") {
+            s = String(s[..<paren]).trimmingCharacters(in: .whitespacesAndNewlines)
+            if let alias = aliases[s] { return alias }
+        }
+        if let first = s.split(separator: " ").first, let alias = aliases[String(first)] {
+            return alias
+        }
+        return nil
+    }
+}
+
 /// The body of the `prescriptions` UPDATE for an edited prescription: the same values the insert
 /// sends, without patient_id and prescriber_id (set once, at insert). An empty field is left out
-/// of the JSON, as in the insert (the live schema, Migration 31, has NOT NULL dose, frequency and
-/// route, so an explicit null would fail the whole update). Internal for SyncGapsTests.
+/// of the JSON, as in the insert (the live schema, Migration 32, has NOT NULL dose, frequency and
+/// route, so an explicit null would fail the whole update). The route is sent as its server value
+/// (PrescriptionRoute). Internal for SyncGapsTests.
 struct PrescriptionUpdateRow: Encodable {
     let drug_name: String
     let dose: String?
@@ -22,7 +116,7 @@ struct PrescriptionUpdateRow: Encodable {
     init(_ rx: Prescription, iso: ISO8601DateFormatter = ISO8601DateFormatter()) {
         drug_name = rx.drug
         dose = rx.dose.isEmpty ? nil : rx.dose
-        route = rx.route.isEmpty ? nil : rx.route
+        route = PrescriptionRoute.serverValue(rx.route)
         frequency = rx.frequency.isEmpty ? nil : rx.frequency
         duration = rx.duration.isEmpty ? nil : rx.duration
         indication = rx.indication.isEmpty ? nil : rx.indication
@@ -102,7 +196,7 @@ extension SyncService {
                         prescriber_id: prescriberId,
                         drug_name: rx.drug,
                         dose: rx.dose.isEmpty ? nil : rx.dose,
-                        route: rx.route.isEmpty ? nil : rx.route,
+                        route: PrescriptionRoute.serverValue(rx.route),   // the CHECK's lowercase values
                         frequency: rx.frequency.isEmpty ? nil : rx.frequency,
                         duration: rx.duration.isEmpty ? nil : rx.duration,
                         indication: rx.indication.isEmpty ? nil : rx.indication,
@@ -177,7 +271,7 @@ extension SyncService {
 
             let rx = Prescription(drug: row.drug_name,
                                   dose: row.dose ?? "",
-                                  route: row.route ?? "Oral",
+                                  route: PrescriptionRoute.display(fromServer: row.route) ?? "Oral",
                                   frequency: row.frequency ?? "",
                                   duration: row.duration ?? "",
                                   indication: row.indication ?? "")

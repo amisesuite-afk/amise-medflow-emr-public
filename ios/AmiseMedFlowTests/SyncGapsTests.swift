@@ -175,7 +175,8 @@ final class SyncGapsTests: XCTestCase {
 
         XCTAssertEqual(object["drug_name"] as? String, "Co-amoxiclav")
         XCTAssertEqual(object["dose"] as? String, "625 mg")
-        XCTAssertEqual(object["route"] as? String, "Oral")
+        XCTAssertEqual(object["route"] as? String, "oral",
+                       "the server's CHECK allows lowercase values only (PrescriptionRoute)")
         XCTAssertEqual(object["frequency"] as? String, "TDS")
         XCTAssertEqual(object["indication"] as? String, "Cellulitis")
         XCTAssertEqual(object["instructions"] as? String, "With food")
