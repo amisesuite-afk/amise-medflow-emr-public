@@ -6,7 +6,8 @@ import SwiftUI
 extension ClinicalScoresView {
 
     func confirmPendingField(_ field: PendingScoreField) {
-        guard let score = selectedScore else { return }
+        guard let score = selectedScore, patient.isLive else { return }
+        CrashReporting.breadcrumb("Confirmed a pending score variable", category: "scores")
 
         // Append a dated audit line to PMH notes
         let fmt = DateFormatter(); fmt.dateStyle = .medium

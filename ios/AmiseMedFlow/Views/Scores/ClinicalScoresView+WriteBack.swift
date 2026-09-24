@@ -9,6 +9,7 @@ extension ClinicalScoresView {
     // MARK: - MEWS write-back
 
     func saveNEWS2ToVitals() {
+        guard patient.isLive else { return }
         let entry = VitalsEntry(patient: patient)
         entry.respiratoryRate    = news2I.respiratoryRate
         entry.spo2               = news2I.spo2
@@ -18,9 +19,12 @@ extension ClinicalScoresView {
         entry.avpu               = news2I.avpu
         modelContext.insert(entry)
         news2Saved = true
+        CrashReporting.breadcrumb("Saved NEWS2 readings to vitals", category: "scores")
+        refreshSnapshot()
     }
 
     func saveMEWSToVitals() {
+        guard patient.isLive else { return }
         let entry = VitalsEntry(patient: patient)
         entry.respiratoryRate    = mewsI.respiratoryRate
         entry.spo2               = mewsI.oxygenSaturation
@@ -35,12 +39,15 @@ extension ClinicalScoresView {
         }
         modelContext.insert(entry)
         mewsSaved = true
+        CrashReporting.breadcrumb("Saved MEWS readings to vitals", category: "scores")
+        refreshSnapshot()
     }
 
     // MARK: - Score write-back
 
     func saveScoreToAssessment(_ r: ClinicalScore) {
-        guard r.score.isFinite else { return }
+        guard r.score.isFinite, patient.isLive else { return }
+        CrashReporting.breadcrumb("Saved score to assessment", category: "scores")
         let fmt = DateFormatter()
         fmt.dateStyle = .medium
         fmt.timeStyle = .short
@@ -81,6 +88,7 @@ extension ClinicalScoresView {
         patient.updatedAt   = .now
         patient.pendingSync = true
         scoreSaved = true
+        refreshSnapshot()
     }
 
     /// Layer 5 — returns true when a score result strongly supports the current working diagnosis.

@@ -9,8 +9,12 @@ extension ClinicalScoresView {
     // MARK: - Recalculate
 
     func recalculate() {
-        scoreSaved = false
-        guard let score = selectedScore else { result = nil; return }
+        // Runs on every input change: write @State only when it actually changes.
+        if scoreSaved { scoreSaved = false }
+        guard let score = selectedScore else {
+            if result != nil { result = nil }
+            return
+        }
         result = switch score {
         case .alvarado:     ClinicalScoringEngine.alvarado(alv)
         case .tokyoChole:   ClinicalScoringEngine.tokyoCholecystitis(tkyC)

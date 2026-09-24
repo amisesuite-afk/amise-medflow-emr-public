@@ -83,7 +83,9 @@ extension ClinicalScoresView {
                 Text("Score Breakdown")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
-                ForEach(r.items.filter(\.present)) { item in
+                // Positional ids: ScoredItem.id is a fresh UUID on every recalculation, which made
+                // SwiftUI tear down and rebuild every row on each input change.
+                ForEach(Array(r.items.filter(\.present).enumerated()), id: \.offset) { _, item in
                     HStack {
                         Text("✓ \(item.label)")
                             .font(.caption)
@@ -118,10 +120,10 @@ extension ClinicalScoresView {
                     .padding(.top, 4)
             }
 
-            // Score history for current system
-            let history = patient.scoreHistory
+            // Score history for current system (cached snapshot, already newest first — this card
+            // re-renders on every input change, so no relationship sorting here)
+            let history = snapshot.history
                 .filter { $0.scoreName == r.systemName }
-                .sorted { $0.recordedAt > $1.recordedAt }
                 .prefix(5)
             if !history.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {

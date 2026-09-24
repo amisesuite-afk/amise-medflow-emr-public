@@ -9,9 +9,10 @@ extension ClinicalScoresView {
     // MARK: - Auto-populate from patient data
 
     func autoPopulate(for score: ActiveScore) {
-        mewsSaved = false
-        news2Saved = false
-        scoreSaved = false
+        guard patient.isLive else { return }
+        if mewsSaved  { mewsSaved = false }
+        if news2Saved { news2Saved = false }
+        if scoreSaved { scoreSaved = false }
         switch score {
         case .alvarado:
             let (input, fill) = PatientScoreAutoPopulator.alvarado(patient: patient)

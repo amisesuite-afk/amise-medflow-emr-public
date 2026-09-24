@@ -82,7 +82,7 @@ extension ClinicalScoresView {
                 }
 
                 // ── Block 4: Recorded score history ──────────────────────────
-                if !patient.scoreHistory.isEmpty {
+                if !snapshot.history.isEmpty {
                     contextBlock(title: "RECORDED SCORES", icon: "clock.arrow.circlepath") {
                         scoreHistoryList
                     }
@@ -162,18 +162,13 @@ extension ClinicalScoresView {
     // MARK: - Monitoring pills (Block 1)
 
     func monitoringPill(_ score: ActiveScore) -> some View {
-        let latestVitals = patient.vitalsEntries
-            .sorted { $0.recordedAt > $1.recordedAt }
-            .first
-        let savedEntry = patient.scoreHistory
-            .filter { $0.scoreName == score.rawValue }
-            .sorted { $0.recordedAt > $1.recordedAt }
-            .first
+        // From the cached snapshot — no relationship sorting in body.
+        let savedEntry = snapshot.latestByName[score.rawValue]
 
         // NEWS2: derive live value directly from most-recent vitals
         let liveNews2: (value: Int, risk: String)? = {
-            guard score == .news2, let v = latestVitals, v.hasAnyValue else { return nil }
-            return (v.news2Score, v.news2Risk)
+            guard score == .news2, let n = snapshot.liveNEWS2 else { return nil }
+            return (n.value, n.risk)
         }()
 
         let displayScore: String? = liveNews2.map { "\($0.value)" } ?? savedEntry?.abbreviation
@@ -209,8 +204,8 @@ extension ClinicalScoresView {
                         .font(.caption2)
                         .foregroundStyle(.tertiary)
                 }
-                if let v = latestVitals, score == .news2 {
-                    Text("Vitals: \(v.recordedAt, style: .relative)")
+                if let vitalsAt = snapshot.latestVitalsAt, score == .news2 {
+                    Text("Vitals: \(vitalsAt, style: .relative)")
                         .font(.system(size: 9))
                         .foregroundStyle(.tertiary)
                         .lineLimit(1)
@@ -255,10 +250,7 @@ extension ClinicalScoresView {
     }
 
     func compactScoreCard(_ rec: DiagnosisScoreRecommendation) -> some View {
-        let savedEntry = patient.scoreHistory
-            .filter { $0.scoreName == rec.score.rawValue }
-            .sorted { $0.recordedAt > $1.recordedAt }
-            .first
+        let savedEntry = snapshot.latestByName[rec.score.rawValue]
 
         return VStack(alignment: .leading, spacing: 6) {
             HStack {
@@ -294,7 +286,7 @@ extension ClinicalScoresView {
     // MARK: - Score history list (Block 4)
 
     var scoreHistoryList: some View {
-        let entries = patient.scoreHistory.sorted { $0.recordedAt > $1.recordedAt }
+        let entries = snapshot.history   // already newest first
         return VStack(spacing: 0) {
             ForEach(entries) { entry in
                 HStack(spacing: 10) {
@@ -379,10 +371,7 @@ extension ClinicalScoresView {
     }
 
     func scoreCard(_ score: ActiveScore) -> some View {
-        let lastEntry = patient.scoreHistory
-            .filter { $0.scoreName == score.rawValue }
-            .sorted { $0.recordedAt > $1.recordedAt }
-            .first
+        let lastEntry = snapshot.latestByName[score.rawValue]
         let isRecommended = recommendedScores.contains(where: { $0.score == score })
 
         return VStack(alignment: .leading, spacing: 10) {

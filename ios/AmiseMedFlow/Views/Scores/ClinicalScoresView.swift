@@ -203,6 +203,11 @@ struct ClinicalScoresView: View {
     /// Cached Layer 2 recommendations — computed once on appear / dx change, not on every body eval.
     @State var cachedRecommendations: [DiagnosisScoreRecommendation] = []
 
+    /// Value copies of saved scores + latest vitals. Rebuilt only when the record changes, so body
+    /// never sorts/filters SwiftData relationships (it used to, dozens of times per render and twice
+    /// per slider tick) and never reads attributes of a deleted entry.
+    @State var snapshot = ScoresPatientSnapshot()
+
     var filteredScores: [ActiveScore] {
         guard selectedCategory != .all else { return ActiveScore.allCases }
         return ActiveScore.allCases.filter { $0.category == selectedCategory }
@@ -235,14 +240,52 @@ struct ClinicalScoresView: View {
     }
 
     private func refreshRecommendations() {
-        cachedRecommendations = DiagnosisScoreMapper.recommendations(for: patient)
+        guard patient.isLive else { return }
+        let fresh = DiagnosisScoreMapper.recommendations(for: patient)
+        // Write only on a real change — every @State write re-renders the whole (large) screen.
+        if fresh.map({ "\($0.score.rawValue)|\($0.rationale)" })
+            != cachedRecommendations.map({ "\($0.score.rawValue)|\($0.rationale)" }) {
+            cachedRecommendations = fresh
+        }
         if selectedCategory == .all,
-           let cat = DiagnosisScoreMapper.suggestedCategory(for: patient.chiefComplaint) {
+           let cat = DiagnosisScoreMapper.suggestedCategory(for: patient.chiefComplaint),
+           cat != selectedCategory {
             selectedCategory = cat
         }
     }
 
+    /// Rebuilds `snapshot` from the patient's relationships (one pass each). Writes only on change.
+    func refreshSnapshot() {
+        guard patient.isLive else { return }
+        let fresh = ScoresPatientSnapshot(patient: patient)
+        if fresh != snapshot { snapshot = fresh }
+    }
+
+    /// Cheap change signal for `snapshot`: local edits bump updatedAt; sync adding or removing
+    /// saved scores or vitals changes a count.
+    var snapshotKey: ScoresSnapshotKey {
+        ScoresSnapshotKey(updatedAt: patient.updatedAt,
+                          scoreCount: patient.scoreHistory.count,
+                          vitalsCount: patient.vitalsEntries.count)
+    }
+
     var body: some View {
+        // Reading a deleted model's attributes crashes SwiftData (e.g. the record was merged by
+        // duplicate clean-up or removed by sync while this screen was open).
+        if patient.isLive {
+            liveBody
+        } else {
+            ContentUnavailableView(
+                "Record no longer available",
+                systemImage: "person.crop.circle.badge.xmark",
+                description: Text("This patient record was removed or merged.")
+            )
+            .navigationTitle("Clinical Scores")
+            .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+
+    private var liveBody: some View {
         VStack(spacing: 0) {
             if let score = selectedScore {
                 // Score form — shown over either mode
@@ -267,15 +310,23 @@ struct ClinicalScoresView: View {
         .navigationTitle("Clinical Scores")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            CrashReporting.breadcrumb("Opened Clinical Scores")
+            CrashReporting.breadcrumb("Opened Clinical Scores", category: "scores")
+            refreshSnapshot()
             refreshRecommendations()
             if selectedScore == nil, let s = initialScore { selectedScore = s }
         }
+        .onChange(of: snapshotKey) { _, _ in refreshSnapshot() }
         .onChange(of: patient.workingDiagnosis)    { _, _ in refreshRecommendations() }
         .onChange(of: patient.workingDiagnosisICD) { _, _ in refreshRecommendations() }
         .onChange(of: selectedScore) { _, newScore in
-            if let score = newScore { CrashReporting.breadcrumb("Opened score: \(score.rawValue)") }
-            if let score = newScore { autoPopulate(for: score) } else { autoFill = ScoreAutoFill() }
+            guard patient.isLive else { return }
+            if let score = newScore {
+                CrashReporting.breadcrumb("Opened score: \(score.rawValue)", category: "scores")
+                autoPopulate(for: score)
+                CrashReporting.breadcrumb("Auto-populated score", category: "scores")
+            } else {
+                autoFill = ScoreAutoFill()
+            }
             recalculate()
         }
         .sheet(isPresented: $showScoresShareSheet) {
@@ -286,6 +337,7 @@ struct ClinicalScoresView: View {
     }
 
     func exportScoresPDF() async {
+        CrashReporting.breadcrumb("Exporting scores PDF", category: "scores")
         isExportingScoresPDF = true
         defer { isExportingScoresPDF = false }
 
@@ -313,4 +365,63 @@ struct ClinicalScoresView: View {
         showScoresShareSheet = true
     }
 
+}
+
+// MARK: - Patient snapshot (value copies for rendering)
+
+/// Change signal for `ScoresPatientSnapshot` (see `ClinicalScoresView.snapshotKey`).
+struct ScoresSnapshotKey: Equatable {
+    let updatedAt: Date
+    let scoreCount: Int
+    let vitalsCount: Int
+}
+
+/// What the Scores screen shows from the patient's saved scores and vitals, as plain values.
+/// Built in one pass per relationship; deleted models are skipped.
+struct ScoresPatientSnapshot: Equatable {
+    struct SavedScore: Identifiable, Equatable {
+        let id: UUID
+        let scoreName: String
+        let abbreviation: String
+        let riskRaw: String
+        let recordedAt: Date
+    }
+
+    struct LiveNEWS2: Equatable {
+        let value: Int
+        let risk: String
+    }
+
+    /// Every saved score, newest first.
+    var history: [SavedScore] = []
+    /// Newest saved entry per score name.
+    var latestByName: [String: SavedScore] = [:]
+    /// Time of the most recent vitals entry.
+    var latestVitalsAt: Date? = nil
+    /// NEWS2 from the most recent vitals entry, when it holds any values.
+    var liveNEWS2: LiveNEWS2? = nil
+
+    init() {}
+
+    init(patient: Patient) {
+        history = patient.scoreHistory
+            .filter(\.isLive)
+            .map { SavedScore(id: $0.id,
+                              scoreName: $0.scoreName,
+                              abbreviation: $0.abbreviation,
+                              riskRaw: $0.riskRaw,
+                              recordedAt: $0.recordedAt) }
+            .sorted { $0.recordedAt > $1.recordedAt }
+        for entry in history where latestByName[entry.scoreName] == nil {
+            latestByName[entry.scoreName] = entry
+        }
+
+        let latestVitals = patient.vitalsEntries
+            .filter(\.isLive)
+            .max { $0.recordedAt < $1.recordedAt }
+        latestVitalsAt = latestVitals?.recordedAt
+        if let v = latestVitals, v.hasAnyValue {
+            liveNEWS2 = LiveNEWS2(value: v.news2Score, risk: v.news2Risk)
+        }
+    }
 }

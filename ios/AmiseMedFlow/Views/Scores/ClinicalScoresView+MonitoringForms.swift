@@ -90,7 +90,10 @@ extension ClinicalScoresView {
             .disabled(mewsSaved)
             .animation(.easeInOut(duration: 0.2), value: mewsSaved)
         }
-        .onChange(of: mewsI) { _, _ in mewsSaved = false; recalculate() }
+        .onChange(of: mewsI) { _, _ in
+            if mewsSaved { mewsSaved = false }
+            recalculate()
+        }
     }
 
 
@@ -152,7 +155,10 @@ extension ClinicalScoresView {
             .disabled(news2Saved)
             .animation(.easeInOut(duration: 0.2), value: news2Saved)
         }
-        .onChange(of: news2I) { _, _ in news2Saved = false; recalculate() }
+        .onChange(of: news2I) { _, _ in
+            if news2Saved { news2Saved = false }
+            recalculate()
+        }
     }
 
 
