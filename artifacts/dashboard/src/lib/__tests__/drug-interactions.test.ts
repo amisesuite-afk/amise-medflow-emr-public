@@ -4,14 +4,16 @@
  * 1. Lint: every term used by a rule is defined in DRUG_TERMS, and every class has members.
  *    Adding a rule against an unmapped class (e.g. "fluoroquinolone") fails here.
  * 2. Class-based rules now fire on real prescription strings (generics, old INNs, brands).
- * 3. Never-remove invariant: every alert the pre-H-07 engine raised is still raised, for the
+ * 3. False-match guards ported from the iOS tests (DrugInteractionTests.swift): "arb" inside
+ *    carbamazepine / bicarbonate / carbonate, "5-ASA" (mesalazine) read as aspirin.
+ * 4. Never-remove invariant: every alert the pre-H-07 engine raised is still raised, for the
  *    same medication pair, with the same effect at the same or higher severity.
  */
 import { describe, it, expect } from 'vitest';
-import { checkInteractions, INTERACTIONS, type DrugInteraction } from '@/lib/drug-interactions';
-import { DRUG_TERMS, parseMember, matchTerm } from '@/lib/drug-classes';
-
-const ORIGINAL_RULE_COUNT = 36;
+import {
+  checkInteractions, INTERACTIONS, LEGACY_TERMS, ORIGINAL_RULE_COUNT, type DrugInteraction,
+} from '@/lib/drug-interactions';
+import { DRUG_TERMS, parseMember, matchTerm, containsWholeWord } from '@/lib/drug-classes';
 const RANK = { contraindicated: 3, major: 2, moderate: 1 } as const;
 
 function find(meds: string[], a: RegExp, b: RegExp) {
@@ -214,9 +216,113 @@ describe('matching precision', () => {
     expect([...ranks].sort((a, b) => b - a)).toEqual(ranks);
     expect(hits[0].interaction.severity).toBe('contraindicated');
   });
+
+  it('severity order is clinical, not alphabetical (iOS parity case)', () => {
+    const hits = checkInteractions(['ondansetron', 'azithromycin', 'phenelzine', 'sertraline',
+      'Clopidogrel 75mg', 'Omeprazole 20mg', 'Warfarin']);
+    const sev = hits.map(h => h.interaction.severity);
+    const ranks = sev.map(s => RANK[s]);
+    expect([...ranks].sort((a, b) => b - a)).toEqual(ranks);
+    expect(sev[0]).toBe('contraindicated');
+    expect(sev).toContain('major');
+    expect(sev[sev.length - 1]).toBe('moderate');
+    // Deterministic: the same list always gives the same order.
+    expect(checkInteractions(['ondansetron', 'azithromycin', 'phenelzine', 'sertraline',
+      'Clopidogrel 75mg', 'Omeprazole 20mg', 'Warfarin'])).toEqual(hits);
+  });
 });
 
-// ── 3. Never remove an alert ────────────────────────────────────────────────
+// ── 3. False-match guards (found by the iOS port) ────────────────────────────
+
+/** Rules whose terms include `term`, among every rule shown for these medications. */
+function rulesUsing(meds: string[], term: string) {
+  return checkInteractions(meds).flatMap(allRules).filter(r => r.drugs.includes(term));
+}
+
+describe('false-match guards (iOS parity)', () => {
+  it('only the original 36 rules\' terms keep raw substring matching', () => {
+    expect(ORIGINAL_RULE_COUNT).toBe(36);
+    for (const t of ['warfarin', 'aspirin', 'nsaid', 'ssri', 'opioid', 'benzodiazepine', 'ace inhibitor',
+      'contrast', 'potassium', 'maoi', 'heparin', 'diuretic']) {
+      expect(LEGACY_TERMS.has(t), t).toBe(true);
+    }
+    for (const t of ['arb', 'anticoagulant', 'antiplatelet', 'snri', 'qt prolonging', 'macrolide',
+      'azole antifungal', 'gabapentinoid', 'potassium-sparing diuretic']) {
+      expect(LEGACY_TERMS.has(t), t).toBe(false);
+    }
+  });
+
+  const ARB_LOOKALIKES = [
+    'Carbamazepine (Tegretol)', 'Carboplatin AUC5 IV', 'Sodium bicarbonate 1.26% IV',
+    'Ferric carboxymaltose (Ferinject) 1g IV', 'Calcium carbonate + D3 (Adcal-D3)',
+    'Carbimazole 20mg', // also on the formulary; same raw-"arb" false alert
+  ];
+
+  it('"arb" does not match inside carbamazepine / carboplatin / bicarbonate / carboxymaltose / carbonate', () => {
+    for (const med of ARB_LOOKALIKES) {
+      expect(matchTerm('arb', med.toLowerCase(), LEGACY_TERMS.has('arb')), med).toBeNull();
+      // No ARB rule (+ NSAID, + potassium, + potassium-sparing diuretic) for any of them.
+      for (const partner of ['Ibuprofen 400mg', 'Potassium chloride IV', 'Spironolactone 25mg', 'Amiloride 5mg']) {
+        expect(rulesUsing([partner, med], 'arb'), `${partner} + ${med}`).toEqual([]);
+      }
+    }
+  });
+
+  it('the reported false alerts are gone', () => {
+    expect(checkInteractions(['Ibuprofen 400mg', 'Carbamazepine (Tegretol)'])).toEqual([]);
+    expect(checkInteractions(['Sodium bicarbonate', 'Potassium chloride IV'])).toEqual([]);
+    expect(checkInteractions(['Spironolactone', 'Calcium carbonate + D3 (Adcal-D3)'])).toEqual([]);
+    expect(checkInteractions(['Diclofenac 50mg', 'Carboplatin'])).toEqual([]);
+    expect(checkInteractions(['Naproxen 500mg', 'Ferric carboxymaltose'])).toEqual([]);
+  });
+
+  it('real ARBs, and the literal class name, still match', () => {
+    expect(matchTerm('arb', 'losartan 50mg')?.canonical).toBe('losartan');
+    expect(matchTerm('arb', 'entresto 49/51mg')?.canonical).toBe('valsartan');
+    expect(matchTerm('arb', 'arb (unspecified)')?.canonical).toBe('arb');
+    expect(rulesUsing(['Ibuprofen 400mg', 'Candesartan 8mg'], 'arb').length).toBeGreaterThan(0);
+    expect(rulesUsing(['ARB', 'Potassium chloride IV'], 'arb').length).toBeGreaterThan(0);
+    expect(rulesUsing(['losartan potassium 50mg', 'Spironolactone'], 'arb').length).toBeGreaterThan(0);
+  });
+
+  it('the literal name of any H-07 class matches as a whole word, never as a substring', () => {
+    expect(matchTerm('snri', 'snri prn')?.canonical).toBe('snri');
+    expect(rulesUsing(['tramadol', 'SNRI'], 'snri').length).toBeGreaterThan(0);
+    expect(matchTerm('macrolide', 'nonmacrolides')).toBeNull();
+  });
+
+  it('"5-ASA" (mesalazine) is not aspirin', () => {
+    const mesalazine = 'Mesalazine (5-ASA, Pentasa)';
+    expect(matchTerm('aspirin', mesalazine.toLowerCase(), true)).toBeNull();
+    expect(matchTerm('antiplatelet', mesalazine.toLowerCase())).toBeNull();
+    expect(containsWholeWord('asa', '5-asa')).toBe(false);
+    expect(checkInteractions(['Warfarin', mesalazine])).toEqual([]);
+    expect(checkInteractions(['Heparin 5000 units sc', mesalazine])).toEqual([]);
+    expect(checkInteractions(['Rivaroxaban 20mg', '5-ASA 800mg'])).toEqual([]);
+  });
+
+  it('ASA as aspirin still matches (including after a letter-hyphen or in brackets)', () => {
+    expect(containsWholeWord('asa', 'asa 81 mg')).toBe(true);
+    expect(containsWholeWord('asa', 'aspirin (asa) 75mg')).toBe(true);
+    expect(containsWholeWord('asa', 'low-asa')).toBe(true);
+    expect(containsWholeWord('asa', 'nasal')).toBe(false);
+    expect(checkInteractions(['Warfarin 5mg', 'ASA 81 mg'])).toHaveLength(1);
+    expect(checkInteractions(['Warfarin 5mg', 'Mometasone nasal spray'])).toEqual([]);
+  });
+
+  it('an entry is never paired with itself through a class/brand match', () => {
+    expect(checkInteractions(['co-codamol 30/500', 'amoxicillin 500mg'])).toEqual([]);
+    expect(checkInteractions(['losartan potassium 50mg'])).toEqual([]);
+  });
+
+  it('legacy literal class names still fire exactly as before', () => {
+    expect(matchTerm('nsaid', 'nsaid prn', true)?.legacy).toBe(true);
+    expect(find(['warfarin 5mg', 'nsaid prn'], /warfarin/, /nsaid/)).toBeDefined();
+    expect(find(['opioid analgesia', 'benzodiazepine'], /opioid/, /benzodiazepine/)).toBeDefined();
+  });
+});
+
+// ── 4. Never remove an alert ────────────────────────────────────────────────
 
 /** Verbatim copy of the pre-H-07 matcher, run over the original 36 rules. */
 function legacyCheck(medList: string[]) {
@@ -248,6 +354,9 @@ describe('never-remove invariant', () => {
     'opioid analgesia', 'benzodiazepine', 'morphine 10mg', 'midazolam 2mg', 'steroid', 'corticosteroid cream',
     'paracetamol 1g', 'insulin', 'beta blocker', 'maoi', 'pethidine 50mg', 'lithium', 'diuretic',
     'morphine + midazolam infusion',
+    // False-match guards (iOS corpus): these must not create or remove any legacy alert.
+    'Mesalazine (5-ASA, Pentasa)', 'Carbamazepine (Tegretol)', 'sodium bicarbonate', 'calcium carbonate',
+    'carboplatin', 'ferric carboxymaltose', 'Venlafaxine (Efexor)', 'Linezolid', 'Clarithromycin',
   ];
 
   it('every pre-H-07 alert still fires (same pair, same effect, severity ≥) for all pairs and triples', () => {

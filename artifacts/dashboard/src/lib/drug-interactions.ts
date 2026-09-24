@@ -18,8 +18,9 @@ export interface DrugInteraction {
 }
 
 // Partial list of clinically important interactions for surgical/general practice.
-// Terms match case-insensitively: the raw term as a substring of the medication string
-// (original behaviour, kept) OR any class member / synonym / brand as a whole word.
+// Terms match case-insensitively: any class member / synonym / brand as a whole word, OR the
+// raw term itself — as a substring for terms the original 36 rules use (pre-H-07 behaviour,
+// kept), as a whole word for terms only the H-07 rules use.
 export const INTERACTIONS: DrugInteraction[] = [
   // Anticoagulants
   { drugs: ['warfarin', 'aspirin'],        severity: 'major',           effect: 'Increased bleeding risk', action: 'Monitor INR closely; consider PPI cover' },
@@ -121,7 +122,25 @@ export interface FoundInteraction {
   related: DrugInteraction[];
 }
 
-const SEVERITY_RANK: Record<DrugInteraction['severity'], number> = {
+/**
+ * The first ORIGINAL_RULE_COUNT entries of INTERACTIONS are the pre-H-07 rules, unchanged.
+ * Only the terms they name keep the pre-H-07 raw-substring match (so every old alert still
+ * fires). Terms only the H-07 class rules use ("arb", "anticoagulant", "qt prolonging", …)
+ * match as whole words only: a raw "arb" fired inside "carbamazepine" and "sodium bicarbonate".
+ * Same rule as iOS `DrugInteractionService.legacyTerms` (whose original list has 27 rules).
+ */
+export const ORIGINAL_RULE_COUNT = 36;
+export const LEGACY_TERMS: ReadonlySet<string> = new Set(
+  INTERACTIONS.slice(0, ORIGINAL_RULE_COUNT).flatMap(r => r.drugs),
+);
+
+/**
+ * Clinical rank, higher = more severe. Always sort by this, never by the severity name
+ * (alphabetical order would put "major" before "contraindicated"). Same order as iOS
+ * `DrugInteraction.Severity.rank` (contraindicated > major > moderate > minor; the web scale
+ * has no "minor" grade).
+ */
+export const SEVERITY_RANK: Record<DrugInteraction['severity'], number> = {
   contraindicated: 3,
   major: 2,
   moderate: 1,
@@ -132,8 +151,10 @@ const norm = (s: string) => s.trim().toLowerCase();
 /**
  * Deterministic interaction screen over a free-text medication list.
  *
- * A rule term matches an entry by (1) the pre-H-07 raw substring test, kept unchanged, OR
- * (2) whole-word membership of the term's class / synonym list in `drug-classes.ts`.
+ * A rule term matches an entry by (1) the pre-H-07 raw substring test, kept unchanged but only
+ * for terms in LEGACY_TERMS, OR (2) whole-word membership of the term's class / synonym list
+ * in `drug-classes.ts` (a name after "<digit>-" is not a word start: "5-ASA" is not aspirin),
+ * OR (3) for non-legacy terms, the literal term as a whole word ("ARB", "SNRI").
  * Class matches only ever ADD alerts. A class match must pair two different list entries
  * (e.g. "losartan potassium" alone is not "ARB + potassium"); a same-class rule (QT + QT)
  * additionally needs two different drugs. Hits on the same pair of entries are merged into
@@ -144,13 +165,18 @@ export function checkInteractions(medList: string[]): FoundInteraction[] {
   const lc = medList.map(norm).filter(Boolean);
   type Hit = { ix: DrugInteraction; ruleOrder: number; mA: string; mB: string; vA?: string; vB?: string };
   const byPair = new Map<string, Hit[]>();
+  const pairIdx = new Map<string, [number, number]>();
+  const hitsFor = (term: string) => {
+    const fallback = LEGACY_TERMS.has(term);
+    return lc.map((m, i) => ({ i, m, hit: matchTerm(term, m, fallback) })).filter(x => x.hit !== null);
+  };
 
   INTERACTIONS.forEach((ix, ruleOrder) => {
     const [a, b] = ix.drugs;
     const sameTerm = a === b;
-    const hitsA = lc.map((m, i) => ({ i, m, hit: matchTerm(a, m) })).filter(x => x.hit !== null);
+    const hitsA = hitsFor(a);
     if (hitsA.length === 0) return;
-    const hitsB = lc.map((m, i) => ({ i, m, hit: matchTerm(b, m) })).filter(x => x.hit !== null);
+    const hitsB = hitsFor(b);
 
     for (const A of hitsA) {
       for (const B of hitsB) {
@@ -164,6 +190,7 @@ export function checkInteractions(medList: string[]): FoundInteraction[] {
         if (sameTerm && (A.i > B.i || ha.canonical === hb.canonical)) continue;
 
         const key = A.i <= B.i ? `${A.i}|${B.i}` : `${B.i}|${A.i}`;
+        pairIdx.set(key, [Math.min(A.i, B.i), Math.max(A.i, B.i)]);
         const list = byPair.get(key) ?? [];
         if (!list.some(h => h.ix === ix)) {
           list.push({ ix, ruleOrder, mA: A.m, mB: B.m, vA: ha.viaClass, vB: hb.viaClass });
@@ -173,8 +200,8 @@ export function checkInteractions(medList: string[]): FoundInteraction[] {
     }
   });
 
-  const found: FoundInteraction[] = [];
-  for (const hits of byPair.values()) {
+  const ranked: { found: FoundInteraction; ruleOrder: number; lo: number; hi: number }[] = [];
+  for (const [key, hits] of byPair) {
     // Most severe first; original rule order breaks ties (original wording wins).
     hits.sort((x, y) =>
       SEVERITY_RANK[y.ix.severity] - SEVERITY_RANK[x.ix.severity] || x.ruleOrder - y.ruleOrder);
@@ -183,12 +210,21 @@ export function checkInteractions(medList: string[]): FoundInteraction[] {
     const kept: Hit[] = [];
     for (const h of hits) if (!kept.some(k => norm(k.ix.effect) === norm(h.ix.effect))) kept.push(h);
     const [head, ...rest] = kept;
-    found.push({
-      interaction: head.ix,
-      matchedA: head.mA, matchedB: head.mB,
-      viaClassA: head.vA, viaClassB: head.vB,
-      related: rest.map(r => r.ix),
+    const [lo, hi] = pairIdx.get(key)!;
+    ranked.push({
+      found: {
+        interaction: head.ix,
+        matchedA: head.mA, matchedB: head.mB,
+        viaClassA: head.vA, viaClassB: head.vB,
+        related: rest.map(r => r.ix),
+      },
+      ruleOrder: head.ruleOrder, lo, hi,
     });
   }
-  return found.sort((x, y) => SEVERITY_RANK[y.interaction.severity] - SEVERITY_RANK[x.interaction.severity]);
+  // Clinical severity first (explicit rank), then original rule order, then list position —
+  // the same deterministic order as iOS `DrugInteractionService.check`.
+  ranked.sort((x, y) =>
+    SEVERITY_RANK[y.found.interaction.severity] - SEVERITY_RANK[x.found.interaction.severity]
+    || x.ruleOrder - y.ruleOrder || x.lo - y.lo || x.hi - y.hi);
+  return ranked.map(r => r.found);
 }

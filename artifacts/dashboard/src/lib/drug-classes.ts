@@ -12,7 +12,10 @@
  * (used to tell two different drugs of the same class apart); the rest are older/other INN
  * spellings (frusemide, indomethacin, meperidine, acetaminophen) and common Caribbean / UK /
  * US brand names. Members are matched case-insensitively as WHOLE WORDS, so a short brand
- * cannot fire inside an unrelated word (e.g. "ASA" never matches "nasal").
+ * cannot fire inside an unrelated word (e.g. "ASA" never matches "nasal"), and a name directly
+ * after "<digit>-" is not a word start ("5-ASA" is mesalazine, not aspirin). The raw term is
+ * substring-matched only for terms the original 36 rules use; newer terms ("arb") match as
+ * whole words only. Both rules match the iOS port (`ios/AmiseMedFlow/Services/DrugClasses.swift`).
  *
  * Class membership follows the BNF (British National Formulary, BNF online — drug monographs
  * and "Interactions" appendix) and Stockley's Drug Interactions; brand names from the
@@ -501,16 +504,35 @@ export function parseMember(member: string): ParsedMember {
   return { generic: names[0] ?? '', names };
 }
 
-const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+/** ASCII a–z or 0–9 (entries are lowercased before matching). */
+const isWordChar = (ch: string | undefined) => ch !== undefined && /[a-z0-9]/.test(ch);
 
-// Whole-word match: the name must not be embedded in a longer alphanumeric word.
-function wordRe(name: string): RegExp {
-  return new RegExp(`(^|[^a-z0-9])${escapeRe(name)}(?=$|[^a-z0-9])`);
+/**
+ * Case-sensitive (callers lowercase first) whole-word test: `name` must not be embedded in a
+ * longer alphanumeric word. Same boundary rule as the regex `(^|[^a-z0-9])name(?=$|[^a-z0-9])`
+ * (any non-ASCII character counts as a boundary), plus one exception ported from iOS
+ * (`DrugClasses.swift`): a name directly after "<digit>-" is part of a chemical abbreviation,
+ * not a new word, so "5-ASA" (mesalazine, e.g. "Mesalazine (5-ASA, Pentasa)") is not read as
+ * "ASA" (aspirin). Written without regex lookbehind so it runs on older Safari/iPadOS.
+ */
+export function containsWholeWord(name: string, text: string): boolean {
+  if (!name) return false;
+  let from = 0;
+  for (;;) {
+    const start = text.indexOf(name, from);
+    if (start < 0) return false;
+    const end = start + name.length;
+    const followsDigitHyphen = start >= 2 && text[start - 1] === '-' && /[0-9]/.test(text[start - 2]);
+    const boundaryBefore = start === 0 || (!isWordChar(text[start - 1]) && !followsDigitHyphen);
+    const boundaryAfter = end === text.length || !isWordChar(text[end]);
+    if (boundaryBefore && boundaryAfter) return true;
+    from = start + 1;
+  }
 }
 
 interface CompiledTerm {
   def: DrugTermDef;
-  members: { generic: string; res: RegExp[] }[];
+  members: { generic: string; names: string[] }[];
 }
 
 const compiled = new Map<string, CompiledTerm>();
@@ -520,16 +542,13 @@ function compile(term: string): CompiledTerm | undefined {
   if (cached) return cached;
   const def = DRUG_TERMS[term];
   if (!def) return undefined;
-  const c: CompiledTerm = {
-    def,
-    members: def.members.map(parseMember).map(m => ({ generic: m.generic, res: m.names.map(wordRe) })),
-  };
+  const c: CompiledTerm = { def, members: def.members.map(parseMember) };
   compiled.set(term, c);
   return c;
 }
 
 export interface TermMatch {
-  /** Canonical drug identity (generic name, or the raw term for a legacy substring match). */
+  /** Canonical drug identity (generic name, or the raw term for a literal term match). */
   canonical: string;
   /** True when the match came from the legacy raw-substring rule (pre-H-07 behaviour). */
   legacy: boolean;
@@ -539,21 +558,29 @@ export interface TermMatch {
 
 /**
  * Does the (lowercased) medication entry match a rule term?
- *  1. Legacy behaviour, kept unchanged so no existing alert can disappear: the raw term as a
- *     substring of the entry ("nsaid" in "nsaid prn", "warfarin" in "warfarin 5mg").
- *  2. NEW (H-07): any member name of the term, as a whole word.
+ *  1. Any member name of the term (generic, synonym, brand), as a whole word (H-07).
+ *  2. The term itself:
+ *     - `substringFallback` true (terms named by the ORIGINAL 36 rules — `LEGACY_TERMS` in
+ *       `drug-interactions.ts`): the pre-H-07 raw substring test, kept unchanged so no existing
+ *       alert can disappear ("nsaid" in "nsaid prn", "warfarin" in "warfarin 5mg").
+ *     - otherwise (terms only the H-07 class rules use): as a whole word only. A raw substring
+ *       made the new term "arb" fire inside "carbamazepine", "carboplatin", "sodium
+ *       bicarbonate", "ferric carboxymaltose" and "calcium carbonate" (false alerts found by the
+ *       iOS port). The literal class name ("ARB", "SNRI prn") still matches as a word.
  */
-export function matchTerm(term: string, entryLc: string): TermMatch | null {
+export function matchTerm(term: string, entryLc: string, substringFallback = false): TermMatch | null {
+  const substringHit = substringFallback && entryLc.includes(term);
   const c = compile(term);
   for (const m of c?.members ?? []) {
-    if (m.res.some(re => re.test(entryLc))) {
+    if (m.names.some(name => containsWholeWord(name, entryLc))) {
       return {
         canonical: m.generic,
-        legacy: entryLc.includes(term),
+        legacy: substringHit,
         viaClass: c!.def.kind === 'class' ? c!.def.label : undefined,
       };
     }
   }
-  if (entryLc.includes(term)) return { canonical: term, legacy: true };
+  if (substringHit) return { canonical: term, legacy: true };
+  if (!substringFallback && containsWholeWord(term, entryLc)) return { canonical: term, legacy: false };
   return null;
 }
