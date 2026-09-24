@@ -17,8 +17,10 @@
  *   practice_line  — which practice number was used, e.g. "Tapion"
  *
  * Transcription:
- *   If OPENAI_API_KEY is set → Whisper API is called (async, never blocks response).
- *   Otherwise recording is stored audio-only; transcript is null until manually added.
+ *   If OPENAI_API_KEY is set and transcription is enabled (neither DISABLE_AI=true
+ *   nor DISABLE_TRANSCRIPTION=true — see lib/ai-gate.ts) → Whisper API is called
+ *   (async, never blocks response). Otherwise recording is stored audio-only
+ *   (transcription_status 'skipped'); transcript is null until manually added.
  *
  * The Twilio voicemail TwiML also uses transcribe="true" when TWILIO_TRANSCRIPTION=true
  * so that Twilio posts the transcript to /api/calls/transcription-callback.
@@ -30,6 +32,7 @@ import { sb } from '../lib/supabase.js';
 import { logger } from '../lib/logger.js';
 import { toE164 } from '../lib/sms.js';
 import { logAudit } from '../lib/audit.js';
+import { isTranscriptionEnabled } from '../lib/ai-gate.js';
 
 const router = Router();
 
@@ -95,7 +98,7 @@ async function transcribeWithWhisper(
   originalName: string,
 ): Promise<string | null> {
   const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return null;
+  if (!apiKey || !isTranscriptionEnabled()) return null;
 
   try {
     const formData = new FormData();
@@ -245,7 +248,7 @@ router.post(
     const patientId = callerNumber ? await findPatient(callerNumber) : null;
 
     // 3. Write call_log immediately (transcription happens async below)
-    const hasTranscription = !!process.env.OPENAI_API_KEY;
+    const hasTranscription = !!process.env.OPENAI_API_KEY && isTranscriptionEnabled();
     const { data: log, error: logErr } = await sb()
       .from('call_logs')
       .insert({

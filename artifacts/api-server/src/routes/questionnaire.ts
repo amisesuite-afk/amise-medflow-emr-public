@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { randomBytes } from 'node:crypto';
-import Anthropic from '@anthropic-ai/sdk';
+import { createAnthropicClient, isAiEnabled } from '../lib/ai-gate.js';
 import { z } from 'zod';
 import { sb, audit, requireStaffAuth } from '../lib/supabase.js';
 import { sendSms } from '../lib/sms.js';
@@ -26,7 +26,7 @@ import type {
 
 const router = Router();
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+const anthropic = createAnthropicClient();
 const CLAUDE_MODEL = process.env.CLAUDE_MODEL || 'claude-opus-4-5';
 
 const CONSENT_TEXT_V1 =
@@ -276,7 +276,32 @@ async function generateIntakeSummary(sessionId: string): Promise<void> {
       : [];
     const specialty = detectSpecialty(chiefComplaintValues);
 
-    const systemPrompt = `You are a clinical documentation assistant for Amise Medical Services, a general and endoscopic surgery practice in Saint Lucia led by Dr Dawit Daniel Kabiye MD DM.
+    let parsed: {
+      chiefComplaint?: string;
+      keyPositives?: string[];
+      redFlags?: Array<{ symptom: string; severity: string; action: string }>;
+      recommendedFocusAreas?: string[];
+      estimatedUrgency?: string;
+      summary?: string;
+    };
+    let modelUsed: string = CLAUDE_MODEL;
+
+    if (!isAiEnabled()) {
+      // DISABLE_AI=true — deterministic fallback, nothing is sent to Anthropic.
+      // Still write the intake_summaries row so the nurse queue / doctor
+      // approval / populateEMR flow keeps working: the chief complaint comes
+      // straight from the patient's answer, and urgency falls back to the
+      // questionnaire-detected red-flag severity (floor applied below).
+      const ccText = chiefComplaintResponse?.answerDisplay
+        ?? (chiefComplaintValues.length ? chiefComplaintValues.join(', ') : undefined);
+      parsed = {
+        chiefComplaint: ccText,
+        estimatedUrgency: 'routine',
+        summary: undefined,
+      };
+      modelUsed = 'none (DISABLE_AI=true)';
+    } else {
+      const systemPrompt = `You are a clinical documentation assistant for Amise Medical Services, a general and endoscopic surgery practice in Saint Lucia led by Dr Dawit Daniel Kabiye MD DM.
 
 Your task: analyse the patient's pre-consultation questionnaire responses and produce a structured pre-visit briefing for the physician, including a History of Presenting Illness (HPI) narrative the physician can use as a starting point for the first-visit clinical note.
 
@@ -290,7 +315,7 @@ CRITICAL RULES:
 - Write the HPI as flowing third-person prose (no bullet points), under 300 words
 - Format as JSON only, no markdown fences`;
 
-    const userPrompt = `Analyse the following pre-consultation questionnaire and return a JSON object with this exact schema:
+      const userPrompt = `Analyse the following pre-consultation questionnaire and return a JSON object with this exact schema:
 {
   "chiefComplaint": "string — brief chief complaint extracted from responses",
   "keyPositives": ["string", "..."],
@@ -303,48 +328,40 @@ CRITICAL RULES:
 QUESTIONNAIRE RESPONSES:
 ${responseSummaryText}`;
 
-    const msg = await anthropic.messages.create({
-      model: CLAUDE_MODEL,
-      max_tokens: 1024,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userPrompt }],
-    });
+      const msg = await anthropic.messages.create({
+        model: CLAUDE_MODEL,
+        max_tokens: 1024,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }],
+      });
 
-    const raw = msg.content
-      .filter(b => b.type === 'text')
-      .map(b => (b as { type: 'text'; text: string }).text)
-      .join('')
-      .trim()
-      .replace(/^```json\s*/i, '')
-      .replace(/^```\s*/i, '')
-      .replace(/```\s*$/, '');
+      const raw = msg.content
+        .filter(b => b.type === 'text')
+        .map(b => (b as { type: 'text'; text: string }).text)
+        .join('')
+        .trim()
+        .replace(/^```json\s*/i, '')
+        .replace(/^```\s*/i, '')
+        .replace(/```\s*$/, '');
 
-    let parsed: {
-      chiefComplaint?: string;
-      keyPositives?: string[];
-      redFlags?: Array<{ symptom: string; severity: string; action: string }>;
-      recommendedFocusAreas?: string[];
-      estimatedUrgency?: string;
-      summary?: string;
-    };
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        parsed = { summary: raw, estimatedUrgency: 'routine' };
+      }
 
-    try {
-      parsed = JSON.parse(raw);
-    } catch {
-      parsed = { summary: raw, estimatedUrgency: 'routine' };
-    }
-
-    // Scan AI output for forbidden content (diagnoses, fees, drug doses)
-    if (parsed.summary && !checkForbiddenContent(parsed.summary).safe) {
-      parsed.summary = parsed.summary
-        .split('\n')
-        .map((line: string) =>
-          FORBIDDEN_PATTERNS.some(p => p.test(line))
-            ? '[REDACTED — clinical review required]'
-            : line,
-        )
-        .join('\n');
-      logger.warn({ sessionId }, '[questionnaire] AI summary contained forbidden content — redacted');
+      // Scan AI output for forbidden content (diagnoses, fees, drug doses)
+      if (parsed.summary && !checkForbiddenContent(parsed.summary).safe) {
+        parsed.summary = parsed.summary
+          .split('\n')
+          .map((line: string) =>
+            FORBIDDEN_PATTERNS.some(p => p.test(line))
+              ? '[REDACTED — clinical review required]'
+              : line,
+          )
+          .join('\n');
+        logger.warn({ sessionId }, '[questionnaire] AI summary contained forbidden content — redacted');
+      }
     }
 
     const validUrgencies = ['routine', 'priority', 'urgent', 'emergency'] as const;
@@ -391,7 +408,7 @@ ${responseSummaryText}`;
           estimated_urgency: estimatedUrgency,
           raw_responses: rawResponses,
           generated_at: new Date().toISOString(),
-          model_used: CLAUDE_MODEL,
+          model_used: modelUsed,
           reviewed_by_doctor: false,
         },
         { onConflict: 'session_id' },
@@ -1133,6 +1150,15 @@ router.post('/api/questionnaire/session/:token/vitals-photo', async (req, res) =
   }
   if (!SUPPORTED_VITALS_MIME_TYPES.has(mimeType)) {
     res.status(400).json({ error: `Unsupported image type: ${mimeType}` });
+    return;
+  }
+  if (!isAiEnabled()) {
+    // Patient-facing (token-authenticated) — shown verbatim by
+    // VitalsPhotoCapture, so word it for the patient, not for staff.
+    res.status(503).json({
+      error: 'Reading photos is not available at the moment. You can skip this optional step — your vitals will be taken at your visit.',
+      disabled: true,
+    });
     return;
   }
 

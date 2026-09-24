@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import Anthropic from '@anthropic-ai/sdk';
+import type Anthropic from '@anthropic-ai/sdk';
+import { createAnthropicClient, rejectIfAiDisabled } from '../lib/ai-gate.js';
 import { requireStaffAuth, sb } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
-import { AI_DISABLED } from '../lib/ai-guard.js';
 import { assemblePatientContext, formatContextBlock } from '../lib/patient-context.js';
 import { logAudit } from '../lib/audit.js';
 
 const router = Router();
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+const client = createAnthropicClient();
 const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-4-6';
 
 const CLINICAL_SYSTEM_PROMPT = `You are an AI clinical decision support assistant working alongside Dr Dawit Daniel Kabiye, MD, DM (specialist general and endoscopic surgeon, Saint Lucia).
@@ -72,13 +72,7 @@ interface ConsultRequest {
 
 router.post('/api/ai-consult', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
-  if (AI_DISABLED) {
-    res.status(503).json({
-      error: 'AI features are temporarily disabled (DISABLE_AI=true). Re-enable the service to use this feature.',
-      disabled: true,
-    });
-    return;
-  }
+  if (rejectIfAiDisabled(res)) return;
 
   try {
     const body = req.body as ConsultRequest;
@@ -300,6 +294,7 @@ Respond with ONLY a JSON object (no markdown fences, no preamble). Follow the re
 
 router.post('/api/ai/edit-note', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
+  if (rejectIfAiDisabled(res)) return;
   const { section, currentText, instruction } = req.body as {
     section?: string; currentText?: string; instruction?: string;
   };
@@ -323,7 +318,7 @@ router.post('/api/ai/edit-note', async (req, res) => {
 
 router.post('/api/ai/fill-document', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
-  if (AI_DISABLED) { res.status(503).json({ error: 'AI features are disabled' }); return; }
+  if (rejectIfAiDisabled(res)) return;
   const {
     docType, patientName, age, sex, symptoms, assessment, plan,
     procedures, medications, comorbidities, disposition,
@@ -381,7 +376,7 @@ interface DrugInteraction { drug1: string; drug2: string; severity: 'major' | 'm
 
 router.post('/api/ai/drug-interactions', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
-  if (AI_DISABLED) { res.status(503).json({ error: 'AI features are disabled' }); return; }
+  if (rejectIfAiDisabled(res)) return;
   const drugs: DrugInputDI[] = Array.isArray(req.body?.drugs) ? req.body.drugs : [];
   if (drugs.length < 2) { res.json({ interactions: [] }); return; }
   const drugList = drugs.map(d => [d.drugName, d.dose, d.frequency].filter(Boolean).join(' ')).join(', ');

@@ -1,10 +1,10 @@
 import { Router, type Request, type Response } from 'express';
-import Anthropic from '@anthropic-ai/sdk';
+import { createAnthropicClient, rejectIfAiDisabled } from '../lib/ai-gate.js';
 import { requireStaffAuth, audit } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 
 const router = Router();
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+const client = createAnthropicClient();
 const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-4-6';
 
 const PRACTICE = 'Amise Medical Services — General & Endoscopic Surgery\nDr Dawit Daniel Kabiye, MD, DM\nRodney Bay Medical Centre, Saint Lucia';
@@ -45,6 +45,7 @@ Style requirements:
 
 router.post('/', async (req: Request, res: Response) => {
   if (!(await requireStaffAuth(req, res))) return;
+  if (rejectIfAiDisabled(res)) return;
   const { patient, procedureType, fields, date } = req.body as {
     patient: { name: string; age: string; sex: string; dob: string };
     procedureType: string;

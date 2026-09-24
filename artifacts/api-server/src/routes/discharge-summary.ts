@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import Anthropic from '@anthropic-ai/sdk';
+import { createAnthropicClient, rejectIfAiDisabled } from '../lib/ai-gate.js';
 import { requireStaffAuth, audit } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 
 const router = Router();
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+const client = createAnthropicClient();
 const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-4-6';
 
 const SYSTEM_PROMPT = `You are a specialist medical documentation writer for Amise Medical Services, a general and endoscopic surgery practice in Saint Lucia, led by Dr Dawit Daniel Kabiye, MD, DM.
@@ -64,6 +64,7 @@ function fmt(v: unknown): string {
 
 router.post('/api/ai/discharge-summary', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
+  if (rejectIfAiDisabled(res)) return;
   try {
     const body = req.body as DischargeSummaryRequest;
     const {

@@ -27,7 +27,7 @@ import { logger } from '../lib/logger.js';
 import { sendSms, smsBodyStaffNewBooking, toE164 } from '../lib/sms.js';
 import { sendMetaWhatsApp, sendTelnyxWhatsApp } from '../lib/whatsapp-send.js';
 import { outboundBlocked } from '../lib/outbound.js';
-import Anthropic from '@anthropic-ai/sdk';
+import { createAnthropicClient, isAiEnabled } from '../lib/ai-gate.js';
 
 const router = Router();
 
@@ -212,9 +212,11 @@ async function generateDraft(
   portalUrl:       string,
 ): Promise<string | null> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return null;
+  // No draft (null) when unconfigured or DISABLE_AI=true — the inbound message
+  // is still stored and staff reply manually, same as a failed draft.
+  if (!apiKey || !isAiEnabled()) return null;
   try {
-    const client = new Anthropic({ apiKey });
+    const client = createAnthropicClient({ apiKey });
     const resp = await client.messages.create({
       model:      process.env.CLAUDE_MODEL ?? 'claude-haiku-4-5-20251001',
       max_tokens: 220,

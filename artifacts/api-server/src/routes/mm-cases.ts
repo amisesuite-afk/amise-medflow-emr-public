@@ -1,10 +1,9 @@
 import { Router } from 'express';
-import Anthropic from '@anthropic-ai/sdk';
+import { createAnthropicClient, rejectIfAiDisabled } from '../lib/ai-gate.js';
 import { getSupabaseAdmin, audit, requireStaffAuth, getStaffUserId } from '../lib/supabase.js';
 import { logger, errStr } from '../lib/logger.js';
-import { AI_DISABLED } from '../lib/ai-guard.js';
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY!, timeout: 30_000 });
+const anthropic = createAnthropicClient({ timeout: 30_000 });
 const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-4-6';
 
 const router = Router();
@@ -199,7 +198,7 @@ router.delete('/api/mm-cases/:id', async (req, res) => {
 // POST /api/mm-cases/:id/analysis — AI-generated postmortem / RCA summary
 router.post('/api/mm-cases/:id/analysis', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
-  if (AI_DISABLED) { res.status(503).json({ error: 'AI features are disabled' }); return; }
+  if (rejectIfAiDisabled(res)) return;
 
   const { id } = req.params;
 

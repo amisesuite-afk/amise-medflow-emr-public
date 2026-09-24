@@ -39,7 +39,7 @@ Related existing documents: `docs/SECRETS-HYGIENE.md`, `docs/AUDIT-TRAIL-COVERAG
 4. **Outbound messaging.**
    - The 24-hour reminder email is forced to `'auto'`, bypassing `MODE=dry_run`, and its AI-drafted body is not safety-checked (`cron.ts:85`).
    - Automated prep messages tell every patient "do NOT take ... insulin" (H-09, H-10).
-5. **AI.** Anthropic receives **identifiable PHI** from the web and API, with no de-identification. iOS AI is disabled. The `DISABLE_AI` kill switch is checked in only 3 of the 18 API files that call Anthropic, and not at all in the front-desk intake. **No BAA or DPA is recorded** with any vendor.
+5. **AI.** Anthropic receives **identifiable PHI** from the web and API, with no de-identification. iOS AI is disabled. The `DISABLE_AI` kill switch now covers every AI call site in the API and the front-desk intake (A-20, done). **No BAA or DPA is recorded** with any vendor.
 6. **Regulatory.** Patient-facing triage, NEWS2 escalation, the Bayesian differential and the AI consult are **likely medical-device functions** in the UK, the EU and the US.
 
 ## Status of open actions and owners
@@ -76,7 +76,7 @@ Related existing documents: `docs/SECRETS-HYGIENE.md`, `docs/AUDIT-TRAIL-COVERAG
 | A-17 | Retention schedule and a deletion or anonymisation process (including backups and devices) | PO, LAW, ENG | **PO** approves the schedule | P2 | Open | `data-inventory.md` §3 |
 | A-18 | Enable PITR, or document acceptance of the ~24-hour RPO. Back up all storage buckets. Hold a restore drill | PO (budget), ENG | **PO** | P2 | Open | H-13, G-10 |
 | A-19 | iOS: explicit file protection, exclude the store from backups, on-device dictation, minimise PHI in notifications and calendar events | ENG | — | P2 | Open | G-11, G-12 |
-| A-20 | Make `DISABLE_AI` cover all AI routes, including the front-desk intake | ENG | — | P2 | Open | G-8 |
+| A-20 | Make `DISABLE_AI` cover all AI routes, including the front-desk intake | ENG | — | P2 | **Done**: `lib/ai-gate.ts` in api-server and front-desk, CI-tested. Also covers Whisper; `DISABLE_TRANSCRIPTION` added | G-8 |
 | A-21 | Multi-tenant architecture (or a per-customer isolated stack) before multi-practice sale | ENG, PO | PO | P1 (sale blocker) | Open | G-1 |
 | A-22 | Enable GitHub secret scanning and push protection. First rotation of secrets | PO (repo admin), ENG | — | P2 | Open | `docs/SECRETS-HYGIENE.md` |
 | A-23 | Pen test (staging environment with synthetic data), then SOC 2 Type I readiness | PO (commissions), ENG | PO | P2 | Open | `security-controls.md` §4-5 |

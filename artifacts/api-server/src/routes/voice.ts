@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import Anthropic from '@anthropic-ai/sdk';
+import { createAnthropicClient, rejectIfAiDisabled } from '../lib/ai-gate.js';
 import { requireStaffAuth, sb } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 import { assemblePatientContext, formatContextBlock } from '../lib/patient-context.js';
 import { logAudit } from '../lib/audit.js';
 
 const router = Router();
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+const client = createAnthropicClient();
 const MODEL = process.env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001';
 
 const SOAP_SYSTEM_PROMPT = `You are a surgical clinical documentation assistant for Dr Dawit Daniel Kabiye (specialist general and endoscopic surgeon, Saint Lucia). You receive a raw voice dictation transcript from a clinical consultation and segment it into structured SOAP components. Use British medical English. Be concise. Do not invent content not present in the transcript.
@@ -37,6 +37,7 @@ If a section has no dictated content, return an empty string (not null). Only po
 router.post('/api/voice/segment', async (req, res) => {
   const ok = await requireStaffAuth(req, res);
   if (!ok) return;
+  if (rejectIfAiDisabled(res)) return;
 
   const { transcript, visitType, context, patientId, encounterId } = req.body as {
     transcript: string;

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import Anthropic from '@anthropic-ai/sdk';
+import { createAnthropicClient, rejectIfAiDisabled, isAiEnabled } from '../lib/ai-gate.js';
 import { sb, getSupabaseAdmin, audit, requireStaffAuth } from '../lib/supabase.js';
 import { logger, errStr } from '../lib/logger.js';
 import { sendSms, smsBodyStaffChangeRequest } from '../lib/sms.js';
@@ -7,7 +7,7 @@ import { logAudit } from '../lib/audit.js';
 import { sendOrDraft } from '../lib/gmail.js';
 
 const router = Router();
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+const anthropic = createAnthropicClient();
 const MODEL = process.env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001';
 
 // Auto-invite to the front-desk portal when a consultation request is marked
@@ -399,6 +399,7 @@ router.post('/api/patient/intake', async (req, res) => {
 // This endpoint exists as a fallback when generation failed or needs re-running.
 router.post('/api/patient/intake-summary', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
+  if (rejectIfAiDisabled(res)) return;
 
   const { intake_id } = (req.body ?? {}) as { intake_id?: string };
 
@@ -412,6 +413,11 @@ router.post('/api/patient/intake-summary', async (req, res) => {
 });
 
 async function generateSummary(intakeId: string): Promise<void> {
+  // DISABLE_AI=true: leave ai_summary null — staff review the raw intake form.
+  if (!isAiEnabled()) {
+    logger.info({ intakeId }, '[portal/intake-summary] skipped — AI disabled');
+    return;
+  }
   try {
     const { data: intake, error } = await sb()
       .from('patient_intake')
@@ -585,6 +591,7 @@ router.post('/api/patient/documents/register', async (req, res) => {
 // guarded against double-processing inside extractDocumentInsights itself.
 router.post('/api/patient/documents/:id/extract', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
+  if (rejectIfAiDisabled(res)) return;
   const { id } = req.params;
   res.json({ status: 'queued' });
   void extractDocumentInsights(id);
@@ -601,6 +608,12 @@ const EXTRACTABLE_MIME = new Set([
 // diagnoses, interprets, or speculates. Output is queued for staff review,
 // never written into the clinical record automatically.
 export async function extractDocumentInsights(documentId: string): Promise<void> {
+  // DISABLE_AI=true: leave ai_extraction_status as-is ('pending'), so the
+  // document stays in the manual review queue and can be re-run later.
+  if (!isAiEnabled()) {
+    logger.info({ documentId }, '[portal/documents] extraction skipped — AI disabled');
+    return;
+  }
   try {
     const { data: doc, error } = await sb()
       .from('documents')

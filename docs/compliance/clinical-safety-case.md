@@ -87,7 +87,7 @@ The product should **not be sold or deployed to other practices** until the acti
 
 | Sub-claim | Evidence available now | Gap |
 |---|---|---|
-| C1. Decision-support outputs do not act autonomously | Working diagnosis is set by clinician tap (iOS `ConsultationView+PlanTab.swift:129`). Diagnosis radiation needs an explicit tap (`CLAUDE.md`). AI drafts are labelled and audited. The `ai_proposals` review queue (`routes/ai-proposals.ts`) | The iOS differential % has no disclaimer (H-06). Some AI routes are not gated by `DISABLE_AI` |
+| C1. Decision-support outputs do not act autonomously | Working diagnosis is set by clinician tap (iOS `ConsultationView+PlanTab.swift:129`). Diagnosis radiation needs an explicit tap (`CLAUDE.md`). AI drafts are labelled and audited. The `ai_proposals` review queue (`routes/ai-proposals.ts`) | The iOS differential % has no disclaimer (H-06) |
 | C2. Calculations are correct | Some unit tests: `ios/AmiseMedFlowTests/ClinicalScoringEngineTests.swift`, `lib/pane-engine/src/__tests__/*`, `artifacts/api-server/src/test/triage-rules.test.ts` | **NEWS2 defects confirmed (H-04).** No inventory of test vectors for each score. Duplicate implementations |
 | C3. Patient-facing triage is sensitive for emergencies | The deterministic emergency redirect with acknowledgement. The AI urgency floor (`questionnaire.ts:352-378`) | No sensitivity or specificity evidence. Regex coverage is unvalidated (H-01) |
 | C4. Automated patient messaging contains no clinical advice and is supervised | The MODE gate with the boot guard (`api-server/src/index.ts:33-40`). `FORBIDDEN_PATTERNS` | **Bypasses confirmed:** `cron.ts:85` forced `'auto'`, unchecked drafts, and WhatsApp providers (H-09). **Blanket medication advice in prep text (H-10)** |

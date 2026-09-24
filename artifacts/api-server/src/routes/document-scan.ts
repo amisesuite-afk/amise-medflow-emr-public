@@ -11,7 +11,8 @@
  */
 
 import { Router, type Request, type Response } from 'express';
-import Anthropic from '@anthropic-ai/sdk';
+import type Anthropic from '@anthropic-ai/sdk';
+import { createAnthropicClient, isAiEnabled, sendAiDisabled } from '../lib/ai-gate.js';
 import { requireStaffAuth } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 import { logAudit } from '../lib/audit.js';
@@ -19,7 +20,7 @@ import { convertToMarkdown } from '../lib/markitdown.js';
 import { parseClinicalDocument, type ExtractedData } from '../lib/clinical-parser.js';
 
 const router = Router();
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+const client = createAnthropicClient();
 
 const MODEL = process.env.CLAUDE_SCAN_MODEL || 'claude-sonnet-4-6';
 
@@ -100,10 +101,12 @@ router.post('/', async (req: Request, res: Response) => {
 
     // ── Step 2: native clinical parser (local, zero tokens) ──────────────────
     let extracted: ExtractedData | null = null;
+    let nativeParse: ExtractedData | null = null;
     let usedClaude = false;
 
     if (markdownText) {
       const { extracted: parsed, confidence } = parseClinicalDocument(markdownText);
+      nativeParse = parsed;
       log.info({ confidence }, 'document-scan: native parse confidence');
 
       if (confidence >= CONFIDENCE_THRESHOLD) {
@@ -115,6 +118,21 @@ router.post('/', async (req: Request, res: Response) => {
     }
 
     // ── Step 3: Claude fallback (when native parse insufficient or image-only) ─
+    // DISABLE_AI=true: never call Claude. Return the low-confidence native
+    // parse (flagged for manual review) if there was text to parse; an image
+    // or scanned PDF with no text layer can't be read locally, so 503.
+    if (!extracted && !isAiEnabled()) {
+      if (nativeParse) {
+        extracted = {
+          ...nativeParse,
+          keyFlags: [...nativeParse.keyFlags, '⚠ AI extraction is disabled — local parse only, low confidence. Review against the original document.'],
+        };
+      } else {
+        sendAiDisabled(res);
+        return;
+      }
+    }
+
     if (!extracted) {
       usedClaude = true;
       type ImageMediaType = 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';

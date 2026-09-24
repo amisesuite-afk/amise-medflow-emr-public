@@ -154,8 +154,8 @@ Source: `CLAUDE.md` ("Auth model is single-tenant, role-based"), `supabase-schem
 | 5 | **Meta (WhatsApp Cloud API)** ⚙️ | Patient phone numbers and reply text. Inbound messages via webhook | `WHATSAPP_ACCESS_TOKEN` set | `routes/whatsapp.ts:240-266, 544` |
 | 6 | **Telnyx** ⚙️ | Patient phone numbers and reply text | `TELNYX_API_KEY` set | `routes/whatsapp.ts:268-286` |
 | 7 | **Digicel SMS** ⛔ | **No data flows today.** `SMS_PROVIDER=digicel` throws "not implemented" | n/a | `artifacts/api-server/src/lib/sms.ts:103-105` |
-| 8 | **Anthropic (Claude)** ✅⚙️ | **Web and API: identifiable PHI is sent.** See §6 | `ANTHROPIC_API_KEY` set. `DISABLE_AI` only covers some routes (see §6) | See §6 |
-| 9 | **OpenAI Whisper** ⚙️ | Audio of uploaded mobile-phone call recordings, sent for transcription | `OPENAI_API_KEY` set | `routes/call-recording.ts:92-122` |
+| 8 | **Anthropic (Claude)** ✅⚙️ | **Web and API: identifiable PHI is sent.** See §6 | `ANTHROPIC_API_KEY` set and `DISABLE_AI` not `true`. `DISABLE_AI=true` now covers every call site in the API and the front-desk intake (see §6) | See §6 |
+| 9 | **OpenAI Whisper** ⚙️ | Audio of uploaded mobile-phone call recordings, sent for transcription | `OPENAI_API_KEY` set, and neither `DISABLE_AI=true` nor `DISABLE_TRANSCRIPTION=true` | `routes/call-recording.ts` (`transcribeWithWhisper`) |
 | 10 | **Sentry** ⚙️ | Error events: stack traces, and potentially error messages, URLs and breadcrumbs from web and API. PHI-minimised crash data from iOS | `SENTRY_DSN` / `VITE_SENTRY_DSN` / iOS `SENTRY_DSN` set | `artifacts/dashboard/src/main.tsx:14-17`, `artifacts/api-server/src/index.ts:11-15`, `ios/.../CrashReporting.swift` |
 | 11 | **Vercel** ✅ | Hosts the dashboard, front-desk and finance-auditor apps. **All `/api/*` traffic from those apps is rewritten through Vercel to Render** (see each app's `vercel.json`), so PHI is in transit through Vercel. The front-desk Next.js API routes run on Vercel with the Supabase service-role key (`artifacts/front-desk/app/api/staff/*`) | Always | `.github/workflows/deploy-*.yml`, `docs/INCIDENT-RUNBOOK.md` |
 | 12 | **Render** ✅ | Hosts the API server. Processes all PHI handled by the API. Holds all secrets and stdout logs | Always | `render.yaml`, `docs/INCIDENT-RUNBOOK.md` |
@@ -176,7 +176,7 @@ Source: `CLAUDE.md` ("Auth model is single-tenant, role-based"), `supabase-schem
   - Two iOS screens still describe AI data transmission: the consent sheet (`Views/AIConsentGate.swift`, which says "de-contextualised patient data is sent") and Settings (`Views/SettingsView.swift:277`). Their wording is inconsistent with the stubbed service.
   - `AIService.clinicalContext()` would include the **patient's full name** if re-enabled (`AIService.swift:23`), so the "de-contextualised" claim is not accurate as written.
 - **Web and API: enabled whenever `ANTHROPIC_API_KEY` is set.**
-  - **The `DISABLE_AI=true` kill switch (`artifacts/api-server/src/lib/ai-guard.ts`) is only partial.** Only `lib/claude.ts` (email classification and drafting, lines 51 and 109), `routes/ai-consult.ts` and `routes/mm-cases.ts` check it. The other API routes that call Anthropic, and the front-desk intake, ignore it. Removing the API key is the only complete off switch today.
+  - **`DISABLE_AI=true` is a complete off switch** for the API and the front-desk intake (fixed; previously it covered only 3 of 18 API files). See "Kill switch coverage" below. Removing `ANTHROPIC_API_KEY` still also works.
   - **Identifiable PHI is sent.** Examples:
     - name, age, sex and DOB (`routes/ai-consult.ts:109`)
     - DOB (`routes/generate-letter.ts:77`)
@@ -186,6 +186,39 @@ Source: `CLAUDE.md` ("Auth model is single-tenant, role-based"), `supabase-schem
   - No de-identification step exists (a search for `deidentif`/`anonymi` found nothing).
 - **Patient-facing conversational intake (front-desk).** `artifacts/front-desk/lib/claude.ts` sends the whole WhatsApp/SMS conversation, including the name, DOB, symptoms, PMH, medications and allergies it collects, to `claude-haiku-4-5-20251001`.
 - **API routes calling Anthropic:** `ai-consult`, `discharge-summary`, `document-scan`, `generate-endoscopy-report`, `generate-letter`, `generate-operative-note`, `investigations`, `mm-cases`, `narrative`, `portal`, `previsit`, `procedure-report`, `questionnaire`, `suggest-codes`, `summary`, `voice` and `whatsapp`, plus `lib/claude.ts`.
+
+### Kill switch coverage (`DISABLE_AI`)
+
+- **One gate per deployment.** `artifacts/api-server/src/lib/ai-gate.ts` (replaces `lib/ai-guard.ts`) and `artifacts/front-desk/lib/ai-gate.ts`. Same variable and semantics as before: AI is off only when `DISABLE_AI` is exactly `true`. It is now read on every call, not once at import.
+- **Two layers.**
+  - Every Anthropic client is built by `createAnthropicClient()`. Its `messages.create` / `stream` / `countTokens` / `parse` refuse to run while AI is disabled, so a route that forgets its own check still sends nothing.
+  - Each route checks first and degrades gracefully (below).
+- **CI enforcement.** `api-server/src/test/ai-gate.test.ts` and `front-desk/test/ai-gate.test.ts` fail if `new Anthropic(` appears outside `ai-gate.ts`. They mock the SDK and assert that no client method is called with `DISABLE_AI=true` across the routes below.
+- **Set it in both places.** Render (API) and the front-desk Vercel project each read their own environment. See `docs/INCIDENT-RUNBOOK.md`.
+- **Transcription decision.** `DISABLE_AI=true` also stops Whisper, because OpenAI is an AI vendor receiving PHI (call audio). A separate `DISABLE_TRANSCRIPTION=true` stops only transcription (Whisper and Twilio voicemail transcription) and leaves Claude on. Recordings are still stored, with `transcription_status = 'skipped'`.
+
+| Call site | With `DISABLE_AI=true` |
+|---|---|
+| `lib/claude.ts` `classifyMessage` / `draftReply` (email intake, reminders) | Existing fallback: `unknown` classification for manual review, and a placeholder draft for staff to replace |
+| `ai-consult.ts`: `/api/ai-consult`, `/api/ai/edit-note`, `/api/ai/fill-document`, `/api/ai/drug-interactions` | 503 `{ error, disabled: true }` |
+| `mm-cases.ts` `/api/mm-cases/:id/analysis` | 503. M&M case CRUD is unaffected |
+| `narrative.ts`, `voice.ts`, `suggest-codes.ts`, `previsit.ts` `/ai-format` | 503 |
+| `discharge-summary.ts`, `procedure-report.ts`, `generate-letter.ts`, `generate-operative-note.ts`, `generate-endoscopy-report.ts` | 503, before any stream is opened |
+| `summary.ts` `/api/summary/generate`, `/api/soap/polish` | Existing deterministic template fallback (as when no API key is set) |
+| `summary.ts` `/api/ai/refine` | 503 |
+| `document-scan.ts` | Local markitdown and native parser only. A low-confidence parse is returned with a "review against the original" flag. An image or scan with no text layer gets 503 |
+| `investigations.ts` `/extract-results`, `/scan-referral` | 503 |
+| `investigations.ts` `/api/documents/:id/extract` (folder watcher) | 200 `{ ok: true, skipped: 'ai_disabled' }`, so the watcher does not retry |
+| `portal.ts` `generateSummary` / `extractDocumentInsights` (background) | Skipped. `ai_summary` stays null, and `ai_extraction_status` stays `pending` for manual review or a later re-run. The staff re-trigger endpoints return 503 |
+| `questionnaire.ts` intake summary (background) | Deterministic row: chief complaint from the patient's answer, no narrative, urgency from the questionnaire red flags (the urgency floor still applies), `model_used = 'none (DISABLE_AI=true)'` |
+| `questionnaire.ts` vitals photo (patient-facing) | 503 with patient-worded text ("skip this optional step") |
+| `whatsapp.ts` `generateDraft` | No draft (null). The message is stored and staff reply manually |
+| `call-recording.ts` Whisper | Not called. Audio stored, `transcription_status = 'skipped'` |
+| `calls.ts` Twilio voicemail transcription | `transcribe="false"` |
+| front-desk `lib/claude.ts` `runIntakeTurn` (WhatsApp/SMS/web intake) | Deterministic PANE triage only. An emergency gets the fixed ER/911 redirect and escalates. Everything else gets a holding reply for staff. No fields are extracted and no slots are offered |
+| front-desk `lib/claude.ts` `draftProcedurePrepAdjustment` | No draft. The standard prep message is unaffected |
+
+The dashboard has no server-side AI calls. Its in-browser Whisper.js dictation runs locally, and its AI features go through the API routes above.
 - **The default model is inconsistent with `CLAUDE.md`.** `CLAUDE.md` states the default is `claude-haiku-4-5-20251001`, but the code defaults vary by route:
   - `claude-opus-4-5`: `lib/claude.ts:7`, `questionnaire.ts:30`, `investigations.ts:14`
   - `claude-sonnet-4-6`: most document routes

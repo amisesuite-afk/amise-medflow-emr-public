@@ -1,11 +1,11 @@
 import { Router, type Request, type Response } from 'express';
-import Anthropic from '@anthropic-ai/sdk';
+import { createAnthropicClient, rejectIfAiDisabled } from '../lib/ai-gate.js';
 import { requireStaffAuth } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 import { logAudit } from '../lib/audit.js';
 
 const router = Router();
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+const client = createAnthropicClient();
 const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-4-6';
 
 const INSTRUCTIONS = `You are a clinical coding specialist for a general and endoscopic surgery practice in Saint Lucia (Caribbean).
@@ -34,6 +34,7 @@ Rules:
 
 router.post('/', async (req: Request, res: Response) => {
   if (!(await requireStaffAuth(req, res))) return;
+  if (rejectIfAiDisabled(res)) return;
   const { assessment, plan, procedures, symptoms, patientAge, patientSex } = req.body as {
     assessment?: string;
     plan?: string;

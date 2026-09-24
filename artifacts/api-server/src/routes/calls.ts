@@ -27,6 +27,7 @@ import { z } from 'zod';
 import { sb, requireStaffAuth } from '../lib/supabase.js';
 import { logger } from '../lib/logger.js';
 import { logAudit } from '../lib/audit.js';
+import { isTranscriptionEnabled } from '../lib/ai-gate.js';
 
 const router = Router();
 
@@ -610,7 +611,7 @@ router.post('/api/calls/twiml', (req, res) => {
   if (forwardNumbers.length === 0) {
     // Legacy voicemail-only flow
     const waNumbers = whatsappNumbersForSpeech();
-    const twilioTranscribe = process.env.TWILIO_TRANSCRIPTION === 'true';
+    const twilioTranscribe = process.env.TWILIO_TRANSCRIPTION === 'true' && isTranscriptionEnabled();
     const transcriptionAttrs = twilioTranscribe
       ? `transcribe="true" transcriptionCallback="${apiBase}/api/calls/transcription-callback" transcriptionCallbackMethod="POST"`
       : `transcribe="false"`;
@@ -656,7 +657,7 @@ router.post('/api/calls/no-answer', (req, res) => {
   const apiBase = process.env.API_BASE_URL ?? `https://${req.headers.host ?? 'localhost'}`;
   const lineGreeting = line && line !== 'Unknown' ? `, ${line}` : '';
 
-  const twilioTranscribe = process.env.TWILIO_TRANSCRIPTION === 'true';
+  const twilioTranscribe = process.env.TWILIO_TRANSCRIPTION === 'true' && isTranscriptionEnabled();
   const transcriptionAttrs = twilioTranscribe
     ? `transcribe="true" transcriptionCallback="${apiBase}/api/calls/transcription-callback" transcriptionCallbackMethod="POST"`
     : `transcribe="false"`;

@@ -68,7 +68,7 @@
 | G-5 | **PHI persisted in the browser** (localStorage and IndexedDB) and not cleared on sign-out | `dashboard/src/context/AppContext.tsx:829-850, 1006, 1033-1035`; `lib/sync-outbox.ts`; `AuthContext.tsx:170-174` | Medium (shared workstations) |
 | G-6 | **Web and API Sentry have no PHI scrubbing** | `dashboard/src/main.tsx:14-17`; `api-server/src/index.ts:11-15` | Medium |
 | G-7 | Logs contain patient phone numbers and message previews | `api-server/src/lib/sms.ts:58, 71-97` | Low-Medium |
-| G-8 | **The `DISABLE_AI` kill switch is partial** | Only `lib/claude.ts`, `routes/ai-consult.ts` and `routes/mm-cases.ts` check it | Medium (governance) |
+| G-8 | ~~**The `DISABLE_AI` kill switch is partial**~~ **Fixed.** `DISABLE_AI=true` now covers every Anthropic and Whisper call site in the API and the front-desk intake, through one gate per deployment (`lib/ai-gate.ts`), and is CI-tested | `artifacts/api-server/src/lib/ai-gate.ts`; `artifacts/front-desk/lib/ai-gate.ts`; `src/test/ai-gate.test.ts`; coverage table in `data-inventory.md` §6 | Closed (was Medium, governance) |
 | G-9 | iOS WebDAV backups are plaintext JSON with Basic auth over a user-supplied URL, with no retention | `NASBackupService+WebDAV.swift:26-57`; `NASBackupService.swift:226-229`; `NASBackupService+Restore.swift:45` | Medium |
 | G-10 | Server backup mirrors only `patient-documents`, not `call-recordings`, `patient-photos` or `clinical-attachments`. Storage is mirrored unencrypted, relying on NAS volume encryption | `.github/workflows/backup.yml`; `scripts/backup/backup-storage.sh:4-6` | Medium |
 | G-11 | PHI on the iOS lock screen and in the device calendar | `NotificationService.swift:49, 71`; `CalendarService.swift:81, 110, 139` | Low-Medium |

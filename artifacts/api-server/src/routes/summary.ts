@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import Anthropic from '@anthropic-ai/sdk';
+import { createAnthropicClient, rejectIfAiDisabled, isAiEnabled } from '../lib/ai-gate.js';
 import { z } from 'zod';
 import { requireAuth } from '../middlewares/auth.js';
 import { checkForbiddenContent, FORBIDDEN_PATTERNS } from '@workspace/triage-engine';
 import { logAudit } from '../lib/audit.js';
 
 const router = Router();
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+const client = createAnthropicClient();
 
 /** Run FORBIDDEN_PATTERNS over every line of a plain-text document.
  *  Used on template fallbacks so the safety filter applies regardless of
@@ -284,7 +284,8 @@ router.post('/api/summary/generate', requireAuth, async (req, res) => {
     return;
   }
 
-  if (!process.env.ANTHROPIC_API_KEY) {
+  // Deterministic template when AI is unconfigured or switched off (DISABLE_AI).
+  if (!process.env.ANTHROPIC_API_KEY || !isAiEnabled()) {
     res.json({ document: scanTemplate(buildTemplateSoap(req.body)) });
     return;
   }
@@ -336,6 +337,7 @@ router.post('/api/ai/refine', requireAuth, async (req, res) => {
     res.status(400).json({ error: 'text is required' });
     return;
   }
+  if (rejectIfAiDisabled(res)) return;
   if (!process.env.ANTHROPIC_API_KEY) {
     res.status(503).json({ error: 'AI not configured on this server' });
     return;
@@ -503,8 +505,8 @@ router.post('/api/soap/polish', requireAuth, async (req, res) => {
     return;
   }
 
-  // Graceful fallback when AI is not configured
-  if (!process.env.ANTHROPIC_API_KEY) {
+  // Graceful fallback when AI is not configured or switched off (DISABLE_AI)
+  if (!process.env.ANTHROPIC_API_KEY || !isAiEnabled()) {
     res.json(buildSoapPolishFallback(parsed.data));
     return;
   }

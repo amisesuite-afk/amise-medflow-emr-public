@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import Anthropic from '@anthropic-ai/sdk';
+import { createAnthropicClient, rejectIfAiDisabled } from '../lib/ai-gate.js';
 import { sb, requireStaffAuth } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 import { logAudit } from '../lib/audit.js';
 import { sendSms as sendSmsMessage } from '../lib/sms.js';
 
 const router = Router();
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+const client = createAnthropicClient();
 const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-4-6';
 
 const PREVISIT_SYSTEM_PROMPT = `You are formatting a patient's pre-visit questionnaire for Dr Dawit Daniel Kabiye (specialist general and endoscopic surgeon, Saint Lucia). Transform raw patient-submitted answers into structured clinical documentation. Use British medical English. Be concise and professional.
@@ -299,6 +299,7 @@ router.post('/api/previsit/submit', async (req, res) => {
 router.post('/api/previsit/ai-format', async (req, res) => {
   const ok = await requireStaffAuth(req, res);
   if (!ok) return;
+  if (rejectIfAiDisabled(res)) return;
 
   const { patientId, submissionId } = req.body as { patientId: string; submissionId?: string };
 

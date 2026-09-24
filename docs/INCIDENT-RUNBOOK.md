@@ -36,6 +36,23 @@ next process restart, so this is not instant:
    service. This takes the API down entirely, so only use it if outbound messaging is actively
    causing patient-facing harm and a 1-2 minute restart isn't fast enough.
 
+## Switching off AI (Anthropic / OpenAI Whisper)
+
+`DISABLE_AI=true` stops every call to Anthropic and OpenAI Whisper. It is checked at call time
+through one gate per deployment: `artifacts/api-server/src/lib/ai-gate.ts` and
+`artifacts/front-desk/lib/ai-gate.ts`. The two deployments read their own environments, so set it
+in **both** places:
+
+1. Render dashboard → `amise-medflow-api` → Environment → `DISABLE_AI=true` → Save (restarts).
+2. Vercel → the front-desk project → Settings → Environment Variables → `DISABLE_AI=true` →
+   redeploy. This covers the WhatsApp/SMS/web conversational intake.
+
+While it is set, AI routes return `503` with `disabled: true` or use their deterministic
+fallback (see the table in `docs/compliance/data-inventory.md` §6). No request is sent to the
+vendor. `DISABLE_TRANSCRIPTION=true` switches off only call transcription (Whisper and Twilio
+voicemail transcription) and leaves Claude on. Removing `ANTHROPIC_API_KEY` / `OPENAI_API_KEY`
+still works as a belt-and-braces measure.
+
 ## Rolling back a bad frontend deploy (Vercel)
 
 Four projects deploy independently, each via its own GitHub Actions workflow running
