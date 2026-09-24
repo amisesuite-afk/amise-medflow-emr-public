@@ -266,6 +266,4 @@ struct AddPatientView: View {
         }
     }
 
-    @ViewBuilder
-
 }

@@ -381,10 +381,30 @@ extension ProcedureFormPDF {
 
 
     static func drawPhaseHeader(ctx: UIGraphicsPDFRendererContext,
-                                        title: String, subtitle: String,
+                                title: String, subtitle: String,
+                                complete: Bool, y: CGFloat) -> CGFloat {
+        let lm: CGFloat = 36
+        let width: CGFloat = page.width - lm * 2
+        let bg = complete ? teal : UIColor(red: 0.35, green: 0.35, blue: 0.35, alpha: 1)
+        bg.setFill()
+        UIRectFill(CGRect(x: lm, y: y, width: width, height: 18))
+        let titleAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 9, weight: .bold),
+            .foregroundColor: UIColor.white
+        ]
+        let subtitleAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 7),
+            .foregroundColor: UIColor.white.withAlphaComponent(0.85)
+        ]
+        title.draw(in: CGRect(x: lm + 6, y: y + 2, width: 160, height: 12), withAttributes: titleAttrs)
+        subtitle.draw(in: CGRect(x: lm + 6, y: y + 7, width: width - 12, height: 10), withAttributes: subtitleAttrs)
+        let tick = complete ? "✓" : "○"
+        tick.draw(in: CGRect(x: page.width - lm - 18, y: y + 3, width: 14, height: 12), withAttributes: titleAttrs)
+        return y + 22
+    }
 
     static func drawChecklistItems(ctx: UIGraphicsPDFRendererContext,
-                                           items: [(Bool, String)], y: CGFloat) -> CGFloat {
+                                   items: [(Bool, String)], y: CGFloat) -> CGFloat {
         var y = y
         for (checked, label) in items {
             y = drawChecklistItem(ctx: ctx, checked: checked, label: label, accent: false, y: y)
@@ -393,6 +413,28 @@ extension ProcedureFormPDF {
     }
 
     static func drawChecklistItem(ctx: UIGraphicsPDFRendererContext,
-                                          checked: Bool, label: String,
+                                  checked: Bool, label: String,
+                                  accent: Bool, y: CGFloat) -> CGFloat {
+        let lm: CGFloat = 36
+        let width: CGFloat = page.width - lm * 2
+        let rowH: CGFloat = 14
+        if accent {
+            teal.withAlphaComponent(0.08).setFill()
+            UIRectFill(CGRect(x: lm, y: y, width: width, height: rowH))
+        }
+        let boxRect = CGRect(x: lm + 6, y: y + 3, width: 8, height: 8)
+        (checked ? teal : UIColor.lightGray).setStroke()
+        UIRectFrame(boxRect)
+        if checked {
+            teal.setFill()
+            UIRectFill(boxRect.insetBy(dx: 2, dy: 2))
+        }
+        let attrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 7.5),
+            .foregroundColor: UIColor.darkText
+        ]
+        label.draw(in: CGRect(x: lm + 18, y: y + 3, width: width - 24, height: 10), withAttributes: attrs)
+        return y + rowH
+    }
 
 }

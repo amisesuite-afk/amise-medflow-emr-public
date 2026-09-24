@@ -304,3 +304,59 @@ struct PSIPortInput: Equatable {
     var pao2Under60orSpO2Under90: Bool = false // +10
     var pleuralEffusion: Bool = false          // +10
 }
+
+// MARK: – Additional GI / Surgical Inputs
+
+extension ClinicalScoringEngine {
+
+    struct ManningInput: Equatable {
+        // Manning Criteria for IBS (Manning et al, BMJ 1978)
+        var painRelievedByDefecation: Bool = false
+        var looserStoolsWithOnsetOfPain: Bool = false
+        var increasedFrequencyWithOnsetOfPain: Bool = false
+        var abdomenVisiblyDistended: Bool = false
+        var mucusPerRectum: Bool = false
+        var feelingOfIncompleteEmptying: Bool = false
+    }
+
+    struct FongCRSInput: Equatable {
+        // Fong Clinical Risk Score — colorectal liver metastases (Fong et al, Ann Surg 1999)
+        var nodePosivePrimaryTumour: Bool = false
+        var diseaseFreeIntervalLess12Mo: Bool = false
+        var moreThanOneHepaticTumour: Bool = false
+        var largestTumourOver5cm: Bool = false
+        var ceaOver200: Bool = false
+    }
+
+    struct RIPASAInput: Equatable {
+        // RIPASA Score for appendicitis (Chong et al, J R Coll Surg Edinb 2010)
+        var male: Bool = false                     // +1.0
+        var age14to39: Bool = false                // +1.0 (≥14 & <40)
+        var foreignNational: Bool = false          // +1.0
+        var migratingToRIF: Bool = false           // +0.5
+        var anorexia: Bool = false                 // +1.0
+        var nausea: Bool = false                   // +1.0
+        var vomiting: Bool = false                 // +1.0
+        var durationUnder48h: Bool = false         // +1.0
+        var rofFossaTenderness: Bool = false       // +0.5
+        var guarding: Bool = false                 // +2.0
+        var reboundTenderness: Bool = false        // +1.0
+        var rovsing: Bool = false                  // +2.0
+        var fever37_5to38_5: Bool = false          // +1.0
+        var elevatedWBC: Bool = false              // +1.0
+        var abnormalUrinalysis: Bool = false       // -1.0
+    }
+
+    struct FGSIInput: Equatable {
+        // Fournier's Gangrene Severity Index (Laor et al, J Urol 1995)
+        var temperature: Double = 37.0             // °C
+        var heartRate: Int = 80                    // bpm
+        var respiratoryRate: Int = 16              // breaths/min
+        var sodium: Double = 138.0                 // mmol/L
+        var potassium: Double = 4.0                // mmol/L
+        var creatinine: Double = 88.0              // µmol/L
+        var haematocrit: Double = 40.0             // %
+        var wbc: Double = 7.0                      // ×10⁹/L
+        var bicarbonate: Double = 24.0             // mmol/L
+    }
+}
