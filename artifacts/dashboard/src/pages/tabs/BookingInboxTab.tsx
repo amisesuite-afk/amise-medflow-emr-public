@@ -125,7 +125,7 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string; 
 };
 
 const PREP_INSTRUCTIONS: Record<string, string> = {
-  colonoscopy:  'Clear fluids only the day before. Take prescribed bowel prep solution as directed. Nothing by mouth from midnight. Patient must arrange a driver — sedation given.',
+  colonoscopy:  'Clear fluids only the day before. Take prescribed bowel prep solution as directed. Clear fluids until 2 hours before the procedure (prep needs fluid), then nothing to drink. Patient must arrange a driver — sedation given.',
   ogd:          'Nothing to eat or drink from midnight. May take essential medications with a small sip of water. Arrange a driver home.',
   egd:          'Nothing to eat or drink from midnight. May take essential medications with a small sip of water. Arrange a driver home.',
   ercp_workup:  'Nothing by mouth from midnight. Stop blood thinners as advised by doctor. Must arrange a driver — cannot drive after sedation.',

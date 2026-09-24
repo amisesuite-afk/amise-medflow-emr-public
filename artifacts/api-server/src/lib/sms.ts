@@ -132,7 +132,7 @@ const PREP_INSTRUCTIONS: Record<string, string> = {
     'COLONOSCOPY PREPARATION',
     'TWO DAYS BEFORE: Switch to a low-fibre diet (white bread, rice, chicken, fish -- avoid fruits, vegetables, seeds, nuts, whole grains).',
     'DAY BEFORE: Clear fluids only from morning (water, clear broth, black tea/coffee, apple juice -- no milk, no red/purple drinks, no alcohol). Take your prescribed bowel prep solution exactly as directed by the clinic.',
-    'MORNING OF: Nothing by mouth from midnight.',
+    'MORNING OF: Finish your bowel prep as directed. Clear fluids only, then nothing to drink for 2 hours before your appointment time.',
     'IMPORTANT: Good bowel preparation is essential for a safe and effective examination. If your prep is incomplete, the procedure may need to be repeated.',
     '',
     GENERAL_PREP,
