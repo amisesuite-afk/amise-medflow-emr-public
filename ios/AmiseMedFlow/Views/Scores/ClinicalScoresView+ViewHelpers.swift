@@ -163,7 +163,7 @@ extension ClinicalScoresView {
 
     func monitoringPill(_ score: ActiveScore) -> some View {
         // From the cached snapshot — no relationship sorting in body.
-        let savedEntry = snapshot.latestByName[score.rawValue]
+        let savedEntry = snapshot.latest(for: score)
 
         // NEWS2: derive live value directly from most-recent vitals
         let liveNews2: (value: Int, risk: String)? = {
@@ -250,7 +250,7 @@ extension ClinicalScoresView {
     }
 
     func compactScoreCard(_ rec: DiagnosisScoreRecommendation) -> some View {
-        let savedEntry = snapshot.latestByName[rec.score.rawValue]
+        let savedEntry = snapshot.latest(for: rec.score)
 
         return VStack(alignment: .leading, spacing: 6) {
             HStack {
@@ -304,7 +304,7 @@ extension ClinicalScoresView {
                         .font(.caption2)
                         .foregroundStyle(.tertiary)
                     Button {
-                        if let match = ActiveScore.allCases.first(where: { $0.rawValue == entry.scoreName }) {
+                        if let match = entry.activeScore {
                             selectedScore = match
                             result = nil
                         }
@@ -371,7 +371,7 @@ extension ClinicalScoresView {
     }
 
     func scoreCard(_ score: ActiveScore) -> some View {
-        let lastEntry = snapshot.latestByName[score.rawValue]
+        let lastEntry = snapshot.latest(for: score)
         let isRecommended = recommendedScores.contains(where: { $0.score == score })
 
         return VStack(alignment: .leading, spacing: 10) {

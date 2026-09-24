@@ -284,7 +284,7 @@ extension PatientScoreAutoPopulator {
         }
 
         // Vitals auto-fill
-        if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
+        if let v = patient.latestVitals {
             if let hr = v.heartRate, hr >= 110 {
                 i.heartRateAbove109 = true
                 f.addAutoFilled(key: "heartRateAbove109", label: "HR \(hr) ≥ 110 bpm from latest vitals", source: "Vitals")
@@ -321,7 +321,7 @@ extension PatientScoreAutoPopulator {
         }
 
         // Vitals auto-fill
-        if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
+        if let v = patient.latestVitals {
             if let hr = v.heartRate, hr >= 100 {
                 i.hrAbove99 = true
                 f.addAutoFilled(key: "hrAbove99", label: "HR \(hr) ≥ 100 bpm from latest vitals", source: "Vitals")
@@ -392,7 +392,7 @@ extension PatientScoreAutoPopulator {
         var i = ClinicalScoringEngine.ShockIndexInput()
         var f = ScoreAutoFill()
 
-        if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
+        if let v = patient.latestVitals {
             if let hr = v.heartRate {
                 i.heartRate = hr
                 f.addAutoFilled(key: "heartRate", label: "Heart rate \(hr) bpm from latest vitals", source: "Vitals")

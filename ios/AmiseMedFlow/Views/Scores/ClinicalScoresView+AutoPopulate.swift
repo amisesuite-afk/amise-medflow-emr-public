@@ -13,6 +13,10 @@ extension ClinicalScoresView {
         if mewsSaved  { mewsSaved = false }
         if news2Saved { news2Saved = false }
         if scoreSaved { scoreSaved = false }
+        // One shared read of the patient's PMH / investigations / vitals / clinical text for this
+        // run, instead of one per helper call (APACHE II and friends call them many times).
+        let sharedData = ScoreAutoPopulateContext.begin(for: patient)
+        defer { sharedData.end() }
         switch score {
         case .alvarado:
             let (input, fill) = PatientScoreAutoPopulator.alvarado(patient: patient)

@@ -267,7 +267,7 @@ extension PatientScoreAutoPopulator {
         }
 
         // Vitals
-        if let vitals = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
+        if let vitals = patient.latestVitals {
             if let hr = vitals.heartRate {
                 if hr >= 90 { i.heartRate = 2 } else if hr >= 70 { i.heartRate = 1 }
                 f.addAutoFilled(key: "heartRate", label: "Heart rate \(hr) bpm from latest vitals", source: "Vitals")

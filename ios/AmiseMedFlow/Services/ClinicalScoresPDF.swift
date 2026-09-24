@@ -45,7 +45,7 @@ enum ClinicalScoresPDF {
 
         var buckets: [ScoreCategory: [ScoreHistoryEntry]] = [:]
         for entry in all {
-            let cat = ActiveScore(rawValue: entry.scoreName)?.category ?? .monitoring
+            let cat = ActiveScore(storedScoreName: entry.scoreName)?.category ?? .monitoring
             buckets[cat, default: []].append(entry)
         }
 

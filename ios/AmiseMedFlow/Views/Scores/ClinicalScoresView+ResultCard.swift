@@ -123,7 +123,8 @@ extension ClinicalScoresView {
             // Score history for current system (cached snapshot, already newest first — this card
             // re-renders on every input change, so no relationship sorting here)
             let history = snapshot.history
-                .filter { $0.scoreName == r.systemName }
+                .filter { $0.scoreName == r.systemName
+                    || ($0.activeScore != nil && $0.activeScore == selectedScore) }
                 .prefix(5)
             if !history.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {

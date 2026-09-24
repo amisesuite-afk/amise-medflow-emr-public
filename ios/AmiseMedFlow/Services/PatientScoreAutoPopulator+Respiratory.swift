@@ -287,7 +287,7 @@ extension PatientScoreAutoPopulator {
         }
 
         // SpO₂ from latest vitals
-        let latestVitals = patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
+        let latestVitals = patient.latestVitals
         if let spo2 = latestVitals?.spo2 {
             i.spo2Preop = spo2
             f.addAutoFilled(key: "spo2", label: "SpO₂ \(spo2)% from latest vitals", source: "Vitals")

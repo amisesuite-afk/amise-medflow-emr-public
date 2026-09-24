@@ -17,7 +17,7 @@ extension PatientScoreAutoPopulator {
             .compactMap { $0 }.joined(separator: " ").lowercased()
 
         // Weight from latest vitals
-        if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+        if let v = patient.latestVitals,
            let wt = v.weightKg {
             i.weightKg = wt
             f.addAutoFilled(key: "weightKg", label: "Weight \(Int(wt)) kg from latest vitals", source: "Vitals")
@@ -103,7 +103,7 @@ extension PatientScoreAutoPopulator {
         } else { f.addPending(key: "haemoptysis", label: "Haemoptysis — confirm from history", source: "History") }
 
         // Heart rate from vitals
-        if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+        if let v = patient.latestVitals,
            let hr = v.heartRate {
             if hr >= 95 {
                 i.heartRateAbove94 = true

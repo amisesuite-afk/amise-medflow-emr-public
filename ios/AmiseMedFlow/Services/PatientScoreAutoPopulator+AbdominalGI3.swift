@@ -65,7 +65,7 @@ extension PatientScoreAutoPopulator {
         }
 
         // Vitals: fever, WBC
-        let latestV = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first
+        let latestV = patient.latestVitals
         if let temp = latestV?.temperatureCelsius {
             if temp >= 37.5 && temp <= 38.5 {
                 i.fever37_5to38_5 = true
@@ -108,7 +108,7 @@ extension PatientScoreAutoPopulator {
             haematocrit: 40.0, wbc: 7.0, bicarbonate: 24.0)
         var f = ScoreAutoFill()
 
-        let latestV = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first
+        let latestV = patient.latestVitals
 
         if let temp = latestV?.temperatureCelsius {
             i.temperature = temp
@@ -162,7 +162,7 @@ extension PatientScoreAutoPopulator {
             f.addPending(key: "age", label: "Age group — check DOB", source: "Demographics")
         }
         // Shock: latest vitals
-        let latestV = patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
+        let latestV = patient.latestVitals
         if let v = latestV {
             if let sbp = v.bpSystolic, let hr = v.heartRate {
                 if sbp < 100 {

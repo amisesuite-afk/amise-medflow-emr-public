@@ -34,7 +34,7 @@ extension PatientScoreAutoPopulator {
         }
 
         // Temperature
-        if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+        if let v = patient.latestVitals,
            let temp = v.temperatureCelsius, temp >= 38.5 {
             i.tempAbove38point5 = true
             f.addAutoFilled(key: "tempAbove38point5", label: "Temperature \(temp)°C ≥ 38.5°C from latest vitals", source: "Vitals")
@@ -134,7 +134,7 @@ extension PatientScoreAutoPopulator {
         } else { f.addPending(key: "coughPercussionHop", label: "Pain with cough, percussion, or hopping — confirm on examination", source: "Examination") }
 
         // Pyrexia
-        if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+        if let v = patient.latestVitals,
            let temp = v.temperatureCelsius, temp >= 38.0 {
             i.pyrexia = true
             f.addAutoFilled(key: "pyrexia", label: "Temperature \(String(format: "%.1f", temp))°C ≥ 38°C from vitals", source: "Vitals")

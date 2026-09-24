@@ -41,7 +41,7 @@ extension PatientScoreAutoPopulator {
         }
 
         // BMI from latest vitals
-        let latestVitals = patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
+        let latestVitals = patient.latestVitals
         if let wt = latestVitals?.weightKg, let ht = patient.heightCm, ht > 0 {
             let bmi = wt / pow(ht / 100, 2)
             i.bmi = bmi
@@ -156,7 +156,7 @@ extension PatientScoreAutoPopulator {
             .compactMap { $0 }.joined(separator: " ").lowercased()
 
         // Fever from vitals
-        let latestV = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first
+        let latestV = patient.latestVitals
         if let temp = latestV?.temperatureCelsius, temp >= 38.0 {
             i.feverGe38 = true
             f.addAutoFilled(key: "fever", label: String(format: "Temperature %.1f°C ≥38°C", temp), source: "Vitals")

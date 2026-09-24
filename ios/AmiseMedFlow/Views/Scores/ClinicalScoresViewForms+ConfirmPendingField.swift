@@ -17,6 +17,9 @@ extension ClinicalScoresView {
         } else {
             patient.pmhNotes = line
         }
+        // Local edit to the record — mark it so sync pushes it.
+        patient.updatedAt   = .now
+        patient.pendingSync = true
 
         // Set the matching boolean toggle on the current score input
         switch score {

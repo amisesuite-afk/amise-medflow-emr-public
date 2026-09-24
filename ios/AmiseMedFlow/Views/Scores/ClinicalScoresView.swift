@@ -336,10 +336,17 @@ struct ClinicalScoresView: View {
         }
     }
 
+    @MainActor
     func exportScoresPDF() async {
         CrashReporting.breadcrumb("Exporting scores PDF", category: "scores")
         isExportingScoresPDF = true
         defer { isExportingScoresPDF = false }
+
+        // PDF generation below is synchronous on the main actor (it reads SwiftData models), so
+        // give the run loop a moment to draw the spinner first. A bare Task.yield() can resume
+        // in the same main-queue drain, before any render; a short sleep cannot.
+        try? await Task.sleep(nanoseconds: 50_000_000)
+        guard patient.isLive else { return }
 
         let data = ClinicalScoresPDF.generate(patient: patient)
 
@@ -382,6 +389,9 @@ struct ScoresPatientSnapshot: Equatable {
     struct SavedScore: Identifiable, Equatable {
         let id: UUID
         let scoreName: String
+        /// The score this entry belongs to (stored names are engine display names; older or
+        /// other-device entries may hold the rawValue — both resolve).
+        let activeScore: ActiveScore?
         let abbreviation: String
         let riskRaw: String
         let recordedAt: Date
@@ -394,8 +404,10 @@ struct ScoresPatientSnapshot: Equatable {
 
     /// Every saved score, newest first.
     var history: [SavedScore] = []
-    /// Newest saved entry per score name.
-    var latestByName: [String: SavedScore] = [:]
+    /// Newest saved entry per score. Keyed by score, not stored name: saves store the engine
+    /// display name, which never equals `ActiveScore.rawValue` (the old name-keyed lookup by
+    /// rawValue therefore never found a saved score).
+    var latestByScore: [ActiveScore: SavedScore] = [:]
     /// Time of the most recent vitals entry.
     var latestVitalsAt: Date? = nil
     /// NEWS2 from the most recent vitals entry, when it holds any values.
@@ -408,12 +420,15 @@ struct ScoresPatientSnapshot: Equatable {
             .filter(\.isLive)
             .map { SavedScore(id: $0.id,
                               scoreName: $0.scoreName,
+                              activeScore: ActiveScore(storedScoreName: $0.scoreName),
                               abbreviation: $0.abbreviation,
                               riskRaw: $0.riskRaw,
                               recordedAt: $0.recordedAt) }
             .sorted { $0.recordedAt > $1.recordedAt }
-        for entry in history where latestByName[entry.scoreName] == nil {
-            latestByName[entry.scoreName] = entry
+        for entry in history {
+            if let score = entry.activeScore, latestByScore[score] == nil {
+                latestByScore[score] = entry
+            }
         }
 
         let latestVitals = patient.vitalsEntries
@@ -423,5 +438,10 @@ struct ScoresPatientSnapshot: Equatable {
         if let v = latestVitals, v.hasAnyValue {
             liveNEWS2 = LiveNEWS2(value: v.news2Score, risk: v.news2Risk)
         }
+    }
+
+    /// Newest saved entry for `score`, whichever name form it was stored under.
+    func latest(for score: ActiveScore) -> SavedScore? {
+        latestByScore[score]
     }
 }

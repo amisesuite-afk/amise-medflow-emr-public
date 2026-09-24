@@ -210,7 +210,7 @@ extension PatientScoreAutoPopulator {
         var i = SOFAInput()
         var f = ScoreAutoFill()
 
-        let vitals = patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
+        let vitals = patient.latestVitals
 
         // CNS: AVPU → GCS proxy
         if let v = vitals {
@@ -278,7 +278,7 @@ extension PatientScoreAutoPopulator {
         i.gcs = 15  // default to fully alert; user adjusts if impaired
 
         // Vitals from latest entry
-        if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
+        if let v = patient.latestVitals {
             // Temperature
             if let tempC = v.temperatureCelsius {
                 let pts: Int

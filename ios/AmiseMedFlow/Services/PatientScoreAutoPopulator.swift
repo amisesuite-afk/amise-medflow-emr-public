@@ -32,23 +32,90 @@ struct ScoreAutoFill {
     }
 }
 
+// MARK: - Per-run shared patient data
+
+/// One auto-populate run's view of the patient data the helpers below read.
+///
+/// Without it every helper call re-decodes the PMH / investigations JSON, re-joins and
+/// re-lowercases the clinical text and re-sorts the vitals — and APACHE II, Ranson, CHA₂DS₂-VASc
+/// and similar call `latestLab` / `clinicalTextContains` a dozen times or more, on the main
+/// thread, when a score is opened. Each value here is computed on first use, with exactly the same expression the
+/// uncached helper uses, so results are identical; it just happens once per run.
+///
+/// Scope: `begin(for:)` … `end()` around one populate call (see
+/// `ClinicalScoresView.autoPopulate(for:)`). The active context is per thread and only used for the
+/// patient it was built for; outside a scope the helpers compute directly, as before. The
+/// populators never modify the patient, so nothing can go stale within a run.
+final class ScoreAutoPopulateContext {
+    fileprivate static let threadKey = "com.amise.medflow.scoreAutoPopulateContext"
+
+    /// Restores whatever context (usually none) was active before `begin(for:)`.
+    struct Scope {
+        fileprivate let previous: Any?
+        func end() {
+            Thread.current.threadDictionary[ScoreAutoPopulateContext.threadKey] = previous
+        }
+    }
+
+    /// Makes a fresh context for `patient` active on this thread until `end()` is called.
+    static func begin(for patient: Patient) -> Scope {
+        let dict = Thread.current.threadDictionary
+        let previous = dict[threadKey]
+        dict[threadKey] = ScoreAutoPopulateContext(patient: patient)
+        return Scope(previous: previous)
+    }
+
+    /// The context active on this thread, when it was built for `patient`.
+    static func active(for patient: Patient) -> ScoreAutoPopulateContext? {
+        guard let ctx = Thread.current.threadDictionary[threadKey] as? ScoreAutoPopulateContext,
+              ctx.patient === patient else { return nil }
+        return ctx
+    }
+
+    let patient: Patient
+
+    init(patient: Patient) {
+        self.patient = patient
+    }
+
+    /// PMH notes, HPI, CC, working diagnosis, assessment and PMH entries, joined and lowercased.
+    private(set) lazy var clinicalText: String = self.patient.scoreClinicalTextBlock()
+    /// Drug + indication of every prescription, lowercased.
+    private(set) lazy var prescriptionText: String = self.patient.scorePrescriptionText()
+    /// Most recent vitals entry.
+    private(set) lazy var latestVitals: VitalsEntry? = self.patient.scoreLatestVitals()
+    /// Resulted investigations (decoded once), in stored order, with lowercased names.
+    private(set) lazy var resultedLabs: [ScoreResultedLab] = self.patient.scoreResultedLabs()
+
+    /// `latestLab(named:)` results for this run, keyed by the keyword list.
+    private var labValues: [String: Double?] = [:]
+
+    func latestLab(named keywords: [String]) -> Double? {
+        let key = keywords.joined(separator: "\u{1F}")
+        if let cached = labValues[key] { return cached }
+        let value = patient.scoreLatestLab(named: keywords, in: resultedLabs)
+        labValues.updateValue(value, forKey: key)
+        return value
+    }
+}
+
+/// A resulted investigation with its name lowercased once.
+struct ScoreResultedLab {
+    let lowerName: String
+    let entry: InvestigationEntry
+}
+
 // MARK: - Patient data helpers (module-internal)
 
 extension Patient {
     /// Searches PMH entries, PMH notes, HPI, CC, and working diagnosis for keywords.
     func clinicalTextContains(_ keywords: [String]) -> Bool {
-        let blocks = ([pmhNotes, hpi, chiefComplaint, workingDiagnosis, assessmentText]
-            .compactMap { $0 }
-            + pmhEntries.map(\.condition))
-            .joined(separator: " ")
-            .lowercased()
+        let blocks = ScoreAutoPopulateContext.active(for: self)?.clinicalText ?? scoreClinicalTextBlock()
         return keywords.contains { blocks.contains($0) }
     }
 
     func prescriptionsContain(_ keywords: [String]) -> Bool {
-        let text = prescriptions
-            .map { "\($0.drug) \($0.indication)".lowercased() }
-            .joined(separator: " ")
+        let text = ScoreAutoPopulateContext.active(for: self)?.prescriptionText ?? scorePrescriptionText()
         return keywords.contains { text.contains($0) }
     }
 
@@ -63,13 +130,45 @@ extension Patient {
     }
 
     var latestVitals: VitalsEntry? {
-        vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
+        if let ctx = ScoreAutoPopulateContext.active(for: self) { return ctx.latestVitals }
+        return scoreLatestVitals()
     }
 
     func latestLab(named keywords: [String]) -> Double? {
-        let match = investigations
+        if let ctx = ScoreAutoPopulateContext.active(for: self) { return ctx.latestLab(named: keywords) }
+        return scoreLatestLab(named: keywords, in: scoreResultedLabs())
+    }
+
+    // Uncached computations — the single source for both the direct and the per-run paths.
+
+    fileprivate func scoreClinicalTextBlock() -> String {
+        ([pmhNotes, hpi, chiefComplaint, workingDiagnosis, assessmentText]
+            .compactMap { $0 }
+            + pmhEntries.map(\.condition))
+            .joined(separator: " ")
+            .lowercased()
+    }
+
+    fileprivate func scorePrescriptionText() -> String {
+        prescriptions
+            .map { "\($0.drug) \($0.indication)".lowercased() }
+            .joined(separator: " ")
+    }
+
+    fileprivate func scoreLatestVitals() -> VitalsEntry? {
+        vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
+    }
+
+    fileprivate func scoreResultedLabs() -> [ScoreResultedLab] {
+        investigations
             .filter { $0.status == .resulted }
-            .filter { inv in keywords.contains { inv.name.lowercased().contains($0) } }
+            .map { ScoreResultedLab(lowerName: $0.name.lowercased(), entry: $0) }
+    }
+
+    fileprivate func scoreLatestLab(named keywords: [String], in resulted: [ScoreResultedLab]) -> Double? {
+        let match = resulted
+            .filter { lab in keywords.contains { lab.lowerName.contains($0) } }
+            .map(\.entry)
             .sorted { ($0.resultedAt ?? $0.orderedAt) < ($1.resultedAt ?? $1.orderedAt) }
             .last
         guard let entry = match else { return nil }

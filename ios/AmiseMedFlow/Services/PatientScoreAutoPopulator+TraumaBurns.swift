@@ -20,7 +20,7 @@ extension PatientScoreAutoPopulator {
         }
 
         // Pull SBP and RR from latest vitals
-        if let latest = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
+        if let latest = patient.latestVitals {
             if let sbp = latest.bpSystolic {
                 i.systolicBP = sbp
                 f.addAutoFilled(key: "systolicBP", label: "Systolic BP \(sbp) mmHg from latest vitals", source: "Vitals")
@@ -60,7 +60,7 @@ extension PatientScoreAutoPopulator {
         var f = ScoreAutoFill()
 
         // Weight from patient record
-        let latestV = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first
+        let latestV = patient.latestVitals
         if let kg = latestV?.weightKg {
             i.weight = kg > 20 ? 0 : (kg >= 10 ? 1 : 2)
             f.addAutoFilled(key: "weight", label: String(format: "Weight %.1f kg from vitals", kg), source: "Vitals")

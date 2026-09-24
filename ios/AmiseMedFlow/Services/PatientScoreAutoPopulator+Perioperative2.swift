@@ -58,7 +58,7 @@ extension PatientScoreAutoPopulator {
         f.addAutoFilled(key: "age", label: "Age \(age) years → POSSUM age score \(i.agePhys)", source: "Demographics")
 
         // SBP from vitals → physiological point score
-        let latestV = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first
+        let latestV = patient.latestVitals
         if let sbp = latestV?.bpSystolic {
             i.sbpPhys = sbp >= 171 || sbp <= 89 ? 8 : (sbp >= 131 || sbp <= 109) ? 2 : 1
             f.addAutoFilled(key: "sbp", label: "Systolic BP \(sbp) mmHg → score \(i.sbpPhys)", source: "Vitals")
@@ -172,7 +172,7 @@ extension PatientScoreAutoPopulator {
         var i = ClinicalScoringEngine.AldreteInput()
         var f = ScoreAutoFill()
         // Fill SpO2 from latest vitals
-        let latestV = patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
+        let latestV = patient.latestVitals
         if let spo2 = latestV?.spo2 {
             if spo2 >= 92 {
                 i.oxygenSat = 2
