@@ -212,7 +212,7 @@ extension ConsultationView {
         .padding(.vertical, 2)
     }
 
-    private struct LabTrend {
+    struct LabTrend {
         let arrow: String
         let deltaText: String
         let color: Color

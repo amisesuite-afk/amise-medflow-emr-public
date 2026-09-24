@@ -46,7 +46,7 @@ final class PeerSyncService: NSObject, ObservableObject {
     var browser:    MCNearbyServiceBrowser?
 
     var modelContext: ModelContext?
-    private var emailHash: String = ""
+    var emailHash: String = ""
     private var storedEmail: String = ""
 
     var foundPeers: Set<MCPeerID> = []

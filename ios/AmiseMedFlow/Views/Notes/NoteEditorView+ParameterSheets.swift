@@ -6,7 +6,7 @@ import SwiftData
 
 // MARK: - Parameter sheets for note draft generation
 
-private struct ReferralParamsSheet: View {
+struct ReferralParamsSheet: View {
     @Binding var specialty: String
     @Binding var reason: String
     let onGenerate: () -> Void
@@ -39,7 +39,7 @@ private struct ReferralParamsSheet: View {
     }
 }
 
-private struct DischargeParamsSheet: View {
+struct DischargeParamsSheet: View {
     @Binding var treatment: String
     @Binding var followUp: String
     let onGenerate: () -> Void

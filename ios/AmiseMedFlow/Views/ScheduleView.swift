@@ -4,15 +4,15 @@ import EventKit
 
 // MARK: - Constants
 
-private let kStartHour = 7
-private let kEndHour   = 21
-private let kHourH: CGFloat   = 60
-private let kGutterW: CGFloat = 48
-private var kTimelineH: CGFloat { CGFloat(kEndHour - kStartHour) * kHourH }
+let kStartHour = 7
+let kEndHour   = 21
+let kHourH: CGFloat   = 60
+let kGutterW: CGFloat = 48
+var kTimelineH: CGFloat { CGFloat(kEndHour - kStartHour) * kHourH }
 
 // MARK: - Unified entry
 
-private struct CalEntry: Identifiable {
+struct CalEntry: Identifiable {
     let id: String
     let title: String
     let subtitle: String?

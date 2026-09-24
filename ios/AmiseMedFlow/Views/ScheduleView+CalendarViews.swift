@@ -8,7 +8,7 @@ import EventKit
 
 // MARK: - Month view
 
-private struct MonthCalView: View {
+struct MonthCalView: View {
     let monthDate: Date
     let entries: [CalEntry]
     let onSelectDay: (Date) -> Void
@@ -121,7 +121,7 @@ private struct MonthDayCell: View {
 
 // MARK: - Week view
 
-private struct WeekCalView: View {
+struct WeekCalView: View {
     let weekStart: Date
     let entries: [CalEntry]
     let onTap: (CalEntry) -> Void
@@ -165,7 +165,7 @@ private struct WeekCalView: View {
 
 // MARK: - Day view
 
-private struct DayCalView: View {
+struct DayCalView: View {
     let date: Date
     let entries: [CalEntry]
     let onTap: (CalEntry) -> Void

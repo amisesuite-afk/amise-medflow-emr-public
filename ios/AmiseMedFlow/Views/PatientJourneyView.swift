@@ -3,7 +3,7 @@ import SwiftData
 
 // MARK: - Timeline event model
 
-private struct JourneyEvent: Identifiable {
+struct JourneyEvent: Identifiable {
     let id: UUID
     let date: Date
     let icon: String

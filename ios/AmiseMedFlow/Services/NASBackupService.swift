@@ -4,7 +4,7 @@ import SwiftData
 
 // MARK: - Keychain helpers (private to this file)
 
-private enum KCHelper {
+enum KCHelper {
     private static let service = "com.amisesuite.medflow.nas"
 
     static func save(_ value: String, forKey key: String) {

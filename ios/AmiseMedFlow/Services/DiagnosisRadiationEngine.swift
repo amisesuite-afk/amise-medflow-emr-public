@@ -283,7 +283,7 @@ enum DiagnosisRadiationEngine {
 
     // MARK: Internal entry type
 
-    private struct Entry {
+    struct Entry {
         let keywords: [String]
         let radiation: DiagnosisRadiation
     }

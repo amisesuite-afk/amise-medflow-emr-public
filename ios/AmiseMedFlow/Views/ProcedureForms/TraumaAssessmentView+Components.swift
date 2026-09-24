@@ -7,7 +7,7 @@ import SwiftData
 
 // MARK: - Trauma lab value chip
 
-private struct TraumaLabChip: View {
+struct TraumaLabChip: View {
     let label: String
     let value: String
     var critical: Bool = false

@@ -13,7 +13,7 @@ import PencilKit
 
 // MARK: - PDF / file picker wrapper (Files app integration)
 
-private struct FilePicker: UIViewControllerRepresentable {
+struct FilePicker: UIViewControllerRepresentable {
     let allowedTypes: [UTType]
     var onPicked: ([URL]) -> Void
 
@@ -40,7 +40,7 @@ private struct FilePicker: UIViewControllerRepresentable {
 
 // MARK: - Camera picker wrapper
 
-private struct CameraPickerView: UIViewControllerRepresentable {
+struct CameraPickerView: UIViewControllerRepresentable {
     var completion: (UIImage) -> Void
     @Environment(\.dismiss) private var dismiss
 

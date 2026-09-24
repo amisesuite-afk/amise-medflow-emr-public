@@ -39,7 +39,7 @@ extension ConsultationView {
 
 // MARK: - Drug interaction row
 
-private struct InteractionAlertRow: View {
+struct InteractionAlertRow: View {
     let alert: DrugInteractionAlert
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -56,7 +56,7 @@ private struct InteractionAlertRow: View {
 
 // MARK: - Add Medication sheet
 
-private struct AddMedicationSheet: View {
+struct AddMedicationSheet: View {
     @Bindable var patient: Patient
     let context: ModelContext
     @Environment(\.dismiss) private var dismiss
@@ -137,7 +137,7 @@ private struct AddMedicationSheet: View {
 
 // MARK: - Bayesian differential row
 
-private struct BayesianDxRow: View {
+struct BayesianDxRow: View {
     let result: BayesianDiagnosisEngine.DiagnosisResult
     let onApply: () -> Void
 
@@ -198,7 +198,7 @@ private struct BayesianDxRow: View {
 
 // MARK: - Consultation Letter Sheet
 
-private struct ConsultationLetterSheet: View {
+struct ConsultationLetterSheet: View {
     let letterText: String
     let patient: Patient
     @Environment(\.dismiss) private var dismiss

@@ -9,7 +9,7 @@ import QuickLook
 
 // MARK: - Document row
 
-private struct DocumentRow: View {
+struct DocumentRow: View {
     @Bindable var doc: PatientDocument
     let ai: AIService
     let onPreview: () -> Void

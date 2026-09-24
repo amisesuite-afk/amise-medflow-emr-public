@@ -7,7 +7,7 @@ struct ConsultationView: View {
     @Bindable var patient: Patient
     var startingTab: ConsultTab = .hpi
     var embeddedInNav: Bool = false
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) var context
     @StateObject var ai = AIService()
     @StateObject var pipeline = ClinicalPipelineOrchestrator()
 

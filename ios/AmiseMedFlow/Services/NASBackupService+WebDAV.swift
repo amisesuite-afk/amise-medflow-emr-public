@@ -72,7 +72,7 @@ extension NASBackupService {
 
 // MARK: - Backup manifest
 
-private struct BackupManifest: Codable {
+struct BackupManifest: Codable {
     let createdAt: Date
     let appVersion: String
     let recordCounts: [String: Int]

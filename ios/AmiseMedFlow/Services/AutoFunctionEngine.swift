@@ -182,7 +182,7 @@ enum AutoFunctionEngine {
             actions.append(AutoAction(
                 function: .alert,
                 title: "EMERGENCY: \(decision.title)",
-                detail: decision.actions.first ?? decision.rationale,
+                detail: decision.immediateActions.first ?? decision.rationale,
                 urgency: .critical,
                 targetSection: .management,
                 payload: nil

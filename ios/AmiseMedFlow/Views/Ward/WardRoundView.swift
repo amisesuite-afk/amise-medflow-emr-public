@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 // Carries both patient and pre-created note into the discharge sheet
-private struct DischargeContext: Identifiable {
+struct DischargeContext: Identifiable {
     let id = UUID()
     let patient: Patient
     let note: ClinicalNote

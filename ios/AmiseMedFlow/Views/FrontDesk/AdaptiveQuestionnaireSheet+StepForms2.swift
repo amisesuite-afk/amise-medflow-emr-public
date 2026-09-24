@@ -2,6 +2,7 @@
 // Phase 4–6 form sections, save, and note-builder for the adaptive questionnaire.
 
 import SwiftUI
+import PhotosUI
 import SwiftData
 
 extension AdaptiveQuestionnaireSheet {

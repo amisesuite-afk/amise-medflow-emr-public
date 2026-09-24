@@ -2,6 +2,7 @@
 // Adaptive pre-encounter questionnaire sheet and reusable checkbox grid.
 
 import SwiftUI
+import PhotosUI
 import SwiftData
 
 struct AdaptiveQuestionnaireSheet: View {
@@ -26,7 +27,7 @@ struct AdaptiveQuestionnaireSheet: View {
 
     // MARK: Step sequencing
 
-    private enum QPhase: Equatable {
+    enum QPhase: Equatable {
         case cc, socrates, symptoms, redFlags, pmhx, social
         var title: String {
             switch self {
