@@ -7,33 +7,35 @@ import SwiftUI
 
 extension ClinicalScoresView {
 
-    @ViewBuilder func acuteFormBody(_ score: ActiveScore) -> some View {
+    // AnyView on purpose — see formBodyByCategory.
+    func acuteFormBody(_ score: ActiveScore) -> AnyView {
         switch score {
-        case .alvarado:     alvaradoForm
-        case .tokyoChole:   tokyoCholecystitisForm
-        case .tokyoCholang: tokyoCholangitisForm
-        case .ranson:       ransonForm
-        case .glasgow:      glasgowForm
-        case .bisap:        bisapForm
-        case .mpi:          mpiForm
-        case .ctsi:         ctsiForm
-        case .rts:          rtsForm
-        default:            acuteFormBodyB(score)
+        case .alvarado: return AnyView(alvaradoForm)
+        case .tokyoChole: return AnyView(tokyoCholecystitisForm)
+        case .tokyoCholang: return AnyView(tokyoCholangitisForm)
+        case .ranson: return AnyView(ransonForm)
+        case .glasgow: return AnyView(glasgowForm)
+        case .bisap: return AnyView(bisapForm)
+        case .mpi: return AnyView(mpiForm)
+        case .ctsi: return AnyView(ctsiForm)
+        case .rts: return AnyView(rtsForm)
+        default: return acuteFormBodyB(score)
         }
     }
 
-    @ViewBuilder func acuteFormBodyB(_ score: ActiveScore) -> some View {
+    // AnyView on purpose — see formBodyByCategory.
+    func acuteFormBodyB(_ score: ActiveScore) -> AnyView {
         switch score {
-        case .baux:         bauxForm
-        case .iss:          issForm
-        case .hinchey:      hincheyForm
-        case .airScore:     airScoreForm
-        case .parkland:     parklandForm
-        case .pas:          pasForm
-        case .stone:        stoneForm
-        case .pts:          ptsForm
-        case .ripasa:       ripasaForm
-        default:            EmptyView()
+        case .baux: return AnyView(bauxForm)
+        case .iss: return AnyView(issForm)
+        case .hinchey: return AnyView(hincheyForm)
+        case .airScore: return AnyView(airScoreForm)
+        case .parkland: return AnyView(parklandForm)
+        case .pas: return AnyView(pasForm)
+        case .stone: return AnyView(stoneForm)
+        case .pts: return AnyView(ptsForm)
+        case .ripasa: return AnyView(ripasaForm)
+        default: return AnyView(EmptyView())
         }
     }
 

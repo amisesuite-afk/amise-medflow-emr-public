@@ -7,19 +7,20 @@ import SwiftUI
 
 extension ClinicalScoresView {
 
-    @ViewBuilder func cardiacFormBody(_ score: ActiveScore) -> some View {
+    // AnyView on purpose — see formBodyByCategory.
+    func cardiacFormBody(_ score: ActiveScore) -> AnyView {
         switch score {
-        case .cha2ds2vasc: cha2ds2vascForm
-        case .hasBled:     hasBledForm
-        case .heart:       heartForm
-        case .timi:        timiForm
-        case .grace:       graceForm
-        case .rcri:        rcriForm
-        case .dasi:        dasiForm
-        case .euroScoreII: euroScoreIIForm
-        case .dukeIE:      dukeIEForm
-        case .shockIndex:  shockIndexForm
-        default:           EmptyView()
+        case .cha2ds2vasc: return AnyView(cha2ds2vascForm)
+        case .hasBled: return AnyView(hasBledForm)
+        case .heart: return AnyView(heartForm)
+        case .timi: return AnyView(timiForm)
+        case .grace: return AnyView(graceForm)
+        case .rcri: return AnyView(rcriForm)
+        case .dasi: return AnyView(dasiForm)
+        case .euroScoreII: return AnyView(euroScoreIIForm)
+        case .dukeIE: return AnyView(dukeIEForm)
+        case .shockIndex: return AnyView(shockIndexForm)
+        default: return AnyView(EmptyView())
         }
     }
 

@@ -7,17 +7,18 @@ import SwiftUI
 
 extension ClinicalScoresView {
 
-    @ViewBuilder func vascularFormBody(_ score: ActiveScore) -> some View {
+    // AnyView on purpose — see formBodyByCategory.
+    func vascularFormBody(_ score: ActiveScore) -> AnyView {
         switch score {
-        case .wellsDVT:      wellsDVTForm
-        case .wellsPE:       wellsPEForm
-        case .caprini:       capriniForm
-        case .padua:         paduaForm
-        case .fourT:         fourTForm
-        case .spesi:         spesiForm
-        case .perc:          percForm
-        case .revisedGeneva: revisedGenevaForm
-        default:             EmptyView()
+        case .wellsDVT: return AnyView(wellsDVTForm)
+        case .wellsPE: return AnyView(wellsPEForm)
+        case .caprini: return AnyView(capriniForm)
+        case .padua: return AnyView(paduaForm)
+        case .fourT: return AnyView(fourTForm)
+        case .spesi: return AnyView(spesiForm)
+        case .perc: return AnyView(percForm)
+        case .revisedGeneva: return AnyView(revisedGenevaForm)
+        default: return AnyView(EmptyView())
         }
     }
 

@@ -7,32 +7,34 @@ import SwiftUI
 
 extension ClinicalScoresView {
 
-    @ViewBuilder func giFormBody(_ score: ActiveScore) -> some View {
+    // AnyView on purpose — see formBodyByCategory.
+    func giFormBody(_ score: ActiveScore) -> AnyView {
         switch score {
-        case .rockall:        rockallForm
-        case .blatchford:     blatchfordForm
-        case .aims65:         aims65Form
-        case .forrest:        forrestForm
-        case .haps:           hapsForm
-        case .glasgowImrie:   glasgowImrieForm
-        case .albi:           albiForm
-        case .auditC:         auditCForm
-        case .oakland:        oaklandForm
-        default:              giFormBodyB(score)
+        case .rockall: return AnyView(rockallForm)
+        case .blatchford: return AnyView(blatchfordForm)
+        case .aims65: return AnyView(aims65Form)
+        case .forrest: return AnyView(forrestForm)
+        case .haps: return AnyView(hapsForm)
+        case .glasgowImrie: return AnyView(glasgowImrieForm)
+        case .albi: return AnyView(albiForm)
+        case .auditC: return AnyView(auditCForm)
+        case .oakland: return AnyView(oaklandForm)
+        default: return giFormBodyB(score)
         }
     }
 
-    @ViewBuilder func giFormBodyB(_ score: ActiveScore) -> some View {
+    // AnyView on purpose — see formBodyByCategory.
+    func giFormBodyB(_ score: ActiveScore) -> AnyView {
         switch score {
-        case .kingsCriteria:  kingsCriteriaForm
-        case .losAngeles:     losAngelesForm
-        case .meld3:          meld3Form
-        case .trueloveWitts:  trueloveWittsForm
-        case .harveyBradshaw: harveyBradshawForm
-        case .maddrey:        maddreyForm
-        case .manning:        manningForm
-        case .fongCrs:        fongCrsForm
-        default:              EmptyView()
+        case .kingsCriteria: return AnyView(kingsCriteriaForm)
+        case .losAngeles: return AnyView(losAngelesForm)
+        case .meld3: return AnyView(meld3Form)
+        case .trueloveWitts: return AnyView(trueloveWittsForm)
+        case .harveyBradshaw: return AnyView(harveyBradshawForm)
+        case .maddrey: return AnyView(maddreyForm)
+        case .manning: return AnyView(manningForm)
+        case .fongCrs: return AnyView(fongCrsForm)
+        default: return AnyView(EmptyView())
         }
     }
 

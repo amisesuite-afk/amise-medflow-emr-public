@@ -33,17 +33,19 @@ extension ClinicalScoresView {
         formBodyByCategory(score)
     }
 
-    @ViewBuilder private func formBodyByCategory(_ score: ActiveScore) -> some View {
+    // Returns AnyView on purpose: the score.category dispatch used to fold ~100 form types into one
+    // nested generic; instantiating it overflowed the main-thread stack (Swift demangler recursion).
+    private func formBodyByCategory(_ score: ActiveScore) -> AnyView {
         switch score.category {
-        case .all:        EmptyView()
-        case .acute:      acuteFormBody(score)
-        case .gi:         giFormBody(score)
-        case .vascular:   vascularFormBody(score)
-        case .sepsis:     sepsisFormBody(score)
-        case .preop:      preopFormBody(score)
-        case .neuro:      neuroFormBody(score)
-        case .cardiac:    cardiacFormBody(score)
-        case .monitoring: monitoringFormBody(score)
+        case .all: return AnyView(EmptyView())
+        case .acute: return acuteFormBody(score)
+        case .gi: return giFormBody(score)
+        case .vascular: return vascularFormBody(score)
+        case .sepsis: return sepsisFormBody(score)
+        case .preop: return preopFormBody(score)
+        case .neuro: return neuroFormBody(score)
+        case .cardiac: return cardiacFormBody(score)
+        case .monitoring: return monitoringFormBody(score)
         }
     }
 

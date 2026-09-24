@@ -7,29 +7,31 @@ import SwiftUI
 
 extension ClinicalScoresView {
 
-    @ViewBuilder func sepsisFormBody(_ score: ActiveScore) -> some View {
+    // AnyView on purpose — see formBodyByCategory.
+    func sepsisFormBody(_ score: ActiveScore) -> AnyView {
         switch score {
-        case .sirs:       sirsForm
-        case .qsofa:      qsofaForm
-        case .psiPort:    psiPortForm
-        case .sofa:       sofaForm
-        case .curb65:     curb65Form
-        case .apacheII:   apacheIIForm
-        case .kdigo:      kdigoForm
-        case .nutric:     nutricForm
-        default:          sepsisFormBodyB(score)
+        case .sirs: return AnyView(sirsForm)
+        case .qsofa: return AnyView(qsofaForm)
+        case .psiPort: return AnyView(psiPortForm)
+        case .sofa: return AnyView(sofaForm)
+        case .curb65: return AnyView(curb65Form)
+        case .apacheII: return AnyView(apacheIIForm)
+        case .kdigo: return AnyView(kdigoForm)
+        case .nutric: return AnyView(nutricForm)
+        default: return sepsisFormBodyB(score)
         }
     }
 
-    @ViewBuilder func sepsisFormBodyB(_ score: ActiveScore) -> some View {
+    // AnyView on purpose — see formBodyByCategory.
+    func sepsisFormBodyB(_ score: ActiveScore) -> AnyView {
         switch score {
-        case .decaf:      decafForm
-        case .centor:     centorForm
-        case .berlinARDS: berlinARDSForm
-        case .fgsi:       fgsiForm
-        case .sapsII:     sapsIIForm
-        case .mmrc:       mmrcForm
-        default:          EmptyView()
+        case .decaf: return AnyView(decafForm)
+        case .centor: return AnyView(centorForm)
+        case .berlinARDS: return AnyView(berlinARDSForm)
+        case .fgsi: return AnyView(fgsiForm)
+        case .sapsII: return AnyView(sapsIIForm)
+        case .mmrc: return AnyView(mmrcForm)
+        default: return AnyView(EmptyView())
         }
     }
 

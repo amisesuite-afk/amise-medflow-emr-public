@@ -7,36 +7,38 @@ import SwiftUI
 
 extension ClinicalScoresView {
 
-    @ViewBuilder func preopFormBody(_ score: ActiveScore) -> some View {
+    // AnyView on purpose — see formBodyByCategory.
+    func preopFormBody(_ score: ActiveScore) -> AnyView {
         switch score {
-        case .rcri:        rcriForm
-        case .asa:         asaForm
-        case .childPugh:   childPughForm
-        case .meld:        meldForm
-        case .stopBang:    stopBangForm
-        case .fib4:        fib4Form
-        case .ppossum:     ppossumForm
-        case .nrs2002:     nrs2002Form
-        case .mallampati:  mallampatiForm
-        case .cfs:         cfsForm
-        default:           preopFormBodyB(score)
+        case .rcri: return AnyView(rcriForm)
+        case .asa: return AnyView(asaForm)
+        case .childPugh: return AnyView(childPughForm)
+        case .meld: return AnyView(meldForm)
+        case .stopBang: return AnyView(stopBangForm)
+        case .fib4: return AnyView(fib4Form)
+        case .ppossum: return AnyView(ppossumForm)
+        case .nrs2002: return AnyView(nrs2002Form)
+        case .mallampati: return AnyView(mallampatiForm)
+        case .cfs: return AnyView(cfsForm)
+        default: return preopFormBodyB(score)
         }
     }
 
-    @ViewBuilder func preopFormBodyB(_ score: ActiveScore) -> some View {
+    // AnyView on purpose — see formBodyByCategory.
+    func preopFormBodyB(_ score: ActiveScore) -> AnyView {
         switch score {
-        case .dasi:        dasiForm
-        case .barthel:     barthelForm
-        case .euroScoreII: euroScoreIIForm
-        case .ecog:        ecogForm
-        case .cci:         cciForm
-        case .mfi5:        mfi5Form
-        case .must:        mustForm
-        case .mirels:      mirelsForm
-        case .ariscat:     ariscatForm
-        case .clavienDindo: clavienDindoForm
-        case .aldrete:     aldreteForm
-        default:           EmptyView()
+        case .dasi: return AnyView(dasiForm)
+        case .barthel: return AnyView(barthelForm)
+        case .euroScoreII: return AnyView(euroScoreIIForm)
+        case .ecog: return AnyView(ecogForm)
+        case .cci: return AnyView(cciForm)
+        case .mfi5: return AnyView(mfi5Form)
+        case .must: return AnyView(mustForm)
+        case .mirels: return AnyView(mirelsForm)
+        case .ariscat: return AnyView(ariscatForm)
+        case .clavienDindo: return AnyView(clavienDindoForm)
+        case .aldrete: return AnyView(aldreteForm)
+        default: return AnyView(EmptyView())
         }
     }
 

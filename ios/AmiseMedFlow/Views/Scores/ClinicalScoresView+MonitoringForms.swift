@@ -7,20 +7,21 @@ import SwiftUI
 
 extension ClinicalScoresView {
 
-    @ViewBuilder func monitoringFormBody(_ score: ActiveScore) -> some View {
+    // AnyView on purpose — see formBodyByCategory.
+    func monitoringFormBody(_ score: ActiveScore) -> AnyView {
         switch score {
-        case .mews:          mewsForm
-        case .news2:         news2Form
-        case .waterlow:      waterlowForm
-        case .surgicalApgar: surgicalApgarForm
-        case .phq9:          phq9Form
-        case .braden:        bradenForm
-        case .ipss:          ipssForm
-        case .lace:          laceForm
-        case .findRisc:      findRiscForm
-        case .ckdEpi:        ckdEpiForm
-        case .cage:          cageForm
-        default:             EmptyView()
+        case .mews: return AnyView(mewsForm)
+        case .news2: return AnyView(news2Form)
+        case .waterlow: return AnyView(waterlowForm)
+        case .surgicalApgar: return AnyView(surgicalApgarForm)
+        case .phq9: return AnyView(phq9Form)
+        case .braden: return AnyView(bradenForm)
+        case .ipss: return AnyView(ipssForm)
+        case .lace: return AnyView(laceForm)
+        case .findRisc: return AnyView(findRiscForm)
+        case .ckdEpi: return AnyView(ckdEpiForm)
+        case .cage: return AnyView(cageForm)
+        default: return AnyView(EmptyView())
         }
     }
 

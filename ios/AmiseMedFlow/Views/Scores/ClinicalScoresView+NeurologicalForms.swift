@@ -7,14 +7,15 @@ import SwiftUI
 
 extension ClinicalScoresView {
 
-    @ViewBuilder func neuroFormBody(_ score: ActiveScore) -> some View {
+    // AnyView on purpose — see formBodyByCategory.
+    func neuroFormBody(_ score: ActiveScore) -> AnyView {
         switch score {
-        case .abcd2:  abcd2Form
-        case .lrinec: lrinecForm
-        case .gcs:    gcsForm
-        case .nihss:  nihssForm
-        case .mrs:    mrsForm
-        default:      EmptyView()
+        case .abcd2: return AnyView(abcd2Form)
+        case .lrinec: return AnyView(lrinecForm)
+        case .gcs: return AnyView(gcsForm)
+        case .nihss: return AnyView(nihssForm)
+        case .mrs: return AnyView(mrsForm)
+        default: return AnyView(EmptyView())
         }
     }
 
