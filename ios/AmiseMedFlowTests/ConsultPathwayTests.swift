@@ -91,6 +91,23 @@ final class ConsultPathwayTests: XCTestCase {
         XCTAssertTrue(flags.contains { $0.title.contains("Penicillin") })
     }
 
+    func testStoredRiskScoresAreFlagged() {
+        let p = patient()
+        p.asaClass = 4
+        p.stopBangScore = 3
+        p.gcsScore = 7
+        let flags = VisitRiskAssessment.assess(p, pathway: .procedure)
+        XCTAssertTrue(flags.contains { $0.title == "ASA 4" && $0.level == .high })
+        XCTAssertTrue(flags.contains { $0.title == "STOP-BANG 3" && $0.level == .moderate })
+        XCTAssertTrue(flags.contains { $0.title == "GCS 7" && $0.level == .high })
+        XCTAssertFalse(flags.contains { $0.title == "No ASA / RCRI recorded" })
+    }
+
+    func testProcedureWithoutASAPromptsForScores() {
+        let flags = VisitRiskAssessment.assess(patient(), pathway: .procedure)
+        XCTAssertTrue(flags.contains { $0.title == "No ASA / RCRI recorded" })
+    }
+
     func testMissingVitalsFlaggedForWardReview() {
         let flags = VisitRiskAssessment.assess(patient(setting: .inpatient), pathway: .wardReview)
         XCTAssertTrue(flags.contains { $0.title == "No vitals recorded" && $0.level == .moderate })

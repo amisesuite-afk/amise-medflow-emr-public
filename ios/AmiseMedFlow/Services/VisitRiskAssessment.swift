@@ -152,7 +152,48 @@ enum VisitRiskAssessment {
                                detail: "Watch for leak, bleeding, SSI, VTE.", icon: "bandage"))
         }
 
+        flags += scoreFlags(p, pathway: pathway)
+
         return flags.sorted { $0.level > $1.level }
+    }
+
+    /// Risk scores already calculated and stored on the patient (Clinical Scores screen).
+    static func scoreFlags(_ p: Patient, pathway: ConsultPathway?) -> [RiskFlag] {
+        var flags: [RiskFlag] = []
+        func add(_ value: Int?, _ name: String, high: Int, moderate: Int, _ detail: String, icon: String) {
+            guard let v = value else { return }
+            if v >= high { flags.append(.init(level: .high, title: "\(name) \(v)", detail: detail, icon: icon)) }
+            else if v >= moderate { flags.append(.init(level: .moderate, title: "\(name) \(v)", detail: detail, icon: icon)) }
+        }
+        add(p.asaClass ?? p.asaScore, "ASA", high: 4, moderate: 3, "Anaesthetic risk — senior anaesthetic review.", icon: "lungs")
+        add(p.rcriScore, "RCRI", high: 3, moderate: 2, "Elevated perioperative cardiac risk.", icon: "heart")
+        add(p.stopBangScore, "STOP-BANG", high: 5, moderate: 3, "Obstructive sleep apnoea risk — airway and post-op monitoring.", icon: "zzz")
+        add(p.capriniScore, "Caprini", high: 5, moderate: 3, "VTE risk — mechanical ± pharmacological prophylaxis plan.", icon: "drop.circle")
+        add(p.cfsScore, "Clinical Frailty Scale", high: 7, moderate: 5, "Frailty — higher complication and mortality risk.", icon: "figure.walk")
+        add(p.mustScore, "MUST", high: 99, moderate: 2, "Malnutrition risk — dietetic review.", icon: "fork.knife")
+        add(p.qsofaScore, "qSOFA", high: 2, moderate: 99, "Sepsis concern with suspected infection — Sepsis 6 / escalation.", icon: "thermometer.high")
+        add(p.hasBledScore, "HAS-BLED", high: 99, moderate: 3, "High bleeding risk on anticoagulation.", icon: "drop.triangle")
+        if let gcs = p.gcsScore {
+            if gcs <= 8 {
+                flags.append(.init(level: .high, title: "GCS \(gcs)", detail: "Airway at risk — senior/anaesthetic review.", icon: "brain.head.profile"))
+            } else if gcs <= 12 {
+                flags.append(.init(level: .moderate, title: "GCS \(gcs)", detail: "Reduced consciousness — frequent neuro observations.", icon: "brain.head.profile"))
+            }
+        }
+        if let egfr = p.ckdEpiEgfr {
+            if egfr < 30 {
+                flags.append(.init(level: .high, title: String(format: "eGFR %.0f", egfr),
+                                   detail: "Severe renal impairment — drug dosing, contrast and fluid caution.", icon: "drop.halffull"))
+            } else if egfr < 60 {
+                flags.append(.init(level: .moderate, title: String(format: "eGFR %.0f", egfr),
+                                   detail: "Renal impairment — check drug dosing and contrast.", icon: "drop.halffull"))
+            }
+        }
+        if pathway == .procedure && (p.asaClass ?? p.asaScore) == nil && p.rcriScore == nil {
+            flags.append(.init(level: .info, title: "No ASA / RCRI recorded",
+                               detail: "Calculate in Clinical Scores before the procedure.", icon: "list.clipboard"))
+        }
+        return flags
     }
 
     static func overall(_ flags: [RiskFlag]) -> RiskFlag.Level {
