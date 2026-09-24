@@ -117,6 +117,11 @@ struct ConsultationView: View {
     }
 
     var body: some View {
+        withToolbarAndDialogs(withSheetsAndAlerts(withChangeHandlers(baseContent)))
+    }
+
+    // Split out of `body`: one ~30-modifier chain exceeded the type-checker time limit.
+    private var baseContent: some View {
         VStack(spacing: 0) {
             if !patient.allergies.isEmpty { allergyBanner }
             // Clinical alarm banner — fires from free text parsing
@@ -130,75 +135,52 @@ struct ConsultationView: View {
             tabContent
         }
         .background(Color(.systemBackground))
-        .onAppear {
-            activeTab = startingTab
-            // Advance encounter status to withDoctor the moment the doctor opens the record
-            if patient.encounterStatus == .waiting || patient.encounterStatus == .notCheckedIn {
-                patient.encounterStatus = .withDoctor
-                patient.updatedAt = .now
-                patient.pendingSync = true
-                try? context.save()
-            }
-            // Pre-populate SOCRATES from questionnaire HPI if not yet filled
-            if socratesSelections.isEmpty, let hpi = patient.hpi {
-                socratesSelections = parseSocratesFromHPI(hpi)
-            }
-            // Pre-populate PMH chips from persisted pmhNotes (questionnaire write-back)
-            if pmhChipSelections.isEmpty, let notes = patient.pmhNotes {
-                pmhChipSelections = parsePMHChipsFromNotes(notes)
-            }
-            // P9: Pre-populate PSHx chips from persisted surgicalHistory
-            if pshxChipSelections.isEmpty, let pshx = patient.surgicalHistory {
-                pshxChipSelections = parsePSHxChipsFromSurgicalHistory(pshx)
-            }
-            // P8: Re-populate social chips so SurgicalRiskEngine sees correct state
-            if selectedSocialChips.isEmpty, let social = patient.socialHistory {
-                selectedSocialChips = parseSocialChipsFromHistory(social)
-                recomputeRisk()
-            }
-            pipeline.runNow(for: patient, socratesSelections: socratesSelections)
-            MRNGenerator.backfillIfNeeded(patient)
-        }
+        .onAppear { handleAppear() }
         .navigationTitle("Consultation")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarBackground(Color(.systemBackground), for: .navigationBar)
+    }
+
+    private func handleAppear() {
+        activeTab = startingTab
+        // Advance encounter status to withDoctor the moment the doctor opens the record
+        if patient.encounterStatus == .waiting || patient.encounterStatus == .notCheckedIn {
+            patient.encounterStatus = .withDoctor
+            patient.updatedAt = .now
+            patient.pendingSync = true
+            try? context.save()
+        }
+        // Pre-populate SOCRATES from questionnaire HPI if not yet filled
+        if socratesSelections.isEmpty, let hpi = patient.hpi {
+            socratesSelections = parseSocratesFromHPI(hpi)
+        }
+        // Pre-populate PMH chips from persisted pmhNotes (questionnaire write-back)
+        if pmhChipSelections.isEmpty, let notes = patient.pmhNotes {
+            pmhChipSelections = parsePMHChipsFromNotes(notes)
+        }
+        // P9: Pre-populate PSHx chips from persisted surgicalHistory
+        if pshxChipSelections.isEmpty, let pshx = patient.surgicalHistory {
+            pshxChipSelections = parsePSHxChipsFromSurgicalHistory(pshx)
+        }
+        // P8: Re-populate social chips so SurgicalRiskEngine sees correct state
+        if selectedSocialChips.isEmpty, let social = patient.socialHistory {
+            selectedSocialChips = parseSocialChipsFromHistory(social)
+            recomputeRisk()
+        }
+        pipeline.runNow(for: patient, socratesSelections: socratesSelections)
+        MRNGenerator.backfillIfNeeded(patient)
+    }
+
+    private func withChangeHandlers(_ content: some View) -> some View {
+        content
         .onChange(of: activeTab) { _, tab in
             if tab == .diagnosis { refreshBayesian() }
         }
         .onChange(of: patient.workingDiagnosis) { _, _ in
             dismissedRadiation = false
         }
-        .onChange(of: patient.chiefComplaint) { _, newCC in
-            guard let cc = newCC, !cc.isEmpty else {
-                triageResult = nil
-                ccBayesDiff = []
-                return
-            }
-            // Immediate early Bayesian differential using CC + PMH/PSHx only
-            let pmhNotes  = patient.pmhEntries.map(\.condition).joined(separator: ", ")
-            let pshxNotes = patient.pshxEntries.map(\.procedure).joined(separator: ", ")
-            let earlyDiff = BayesianDiagnosisEngine.infer(
-                chiefComplaint: cc,
-                socratesSelections: [:],
-                pmhNotes: pmhNotes,
-                surgicalHistory: pshxNotes,
-                examAbdo: nil,
-                examGeneral: nil,
-                investigations: [],
-                ageYears: patient.ageYears,
-                sex: patient.sex,
-                specialtyHint: selectedSpecialtyHint
-            )
-            ccBayesDiff = Array(earlyDiff.prefix(4))
-            // Debounced full pathway + Bayesian refresh
-            pathwayTask?.cancel()
-            pathwayTask = Task {
-                try? await Task.sleep(nanoseconds: 800_000_000)
-                guard !Task.isCancelled else { return }
-                await MainActor.run { runPathway(); refreshBayesian() }
-            }
-        }
+        .onChange(of: patient.chiefComplaint) { _, newCC in handleChiefComplaintChange(newCC) }
         .onChange(of: patient.hpi) { _, _ in
             refreshBayesian()
             pipeline.schedule(for: patient, socratesSelections: socratesSelections)
@@ -218,6 +200,41 @@ struct ConsultationView: View {
         .onChange(of: socratesSelections) { _, _ in
             pipeline.schedule(for: patient, socratesSelections: socratesSelections)
         }
+    }
+
+    private func handleChiefComplaintChange(_ newCC: String?) {
+        guard let cc = newCC, !cc.isEmpty else {
+            triageResult = nil
+            ccBayesDiff = []
+            return
+        }
+        // Immediate early Bayesian differential using CC + PMH/PSHx only
+        let pmhNotes  = patient.pmhEntries.map(\.condition).joined(separator: ", ")
+        let pshxNotes = patient.pshxEntries.map(\.procedure).joined(separator: ", ")
+        let earlyDiff = BayesianDiagnosisEngine.infer(
+            chiefComplaint: cc,
+            socratesSelections: [:],
+            pmhNotes: pmhNotes,
+            surgicalHistory: pshxNotes,
+            examAbdo: nil,
+            examGeneral: nil,
+            investigations: [],
+            ageYears: patient.ageYears,
+            sex: patient.sex,
+            specialtyHint: selectedSpecialtyHint
+        )
+        ccBayesDiff = Array(earlyDiff.prefix(4))
+        // Debounced full pathway + Bayesian refresh
+        pathwayTask?.cancel()
+        pathwayTask = Task {
+            try? await Task.sleep(nanoseconds: 800_000_000)
+            guard !Task.isCancelled else { return }
+            await MainActor.run { runPathway(); refreshBayesian() }
+        }
+    }
+
+    private func withSheetsAndAlerts(_ content: some View) -> some View {
+        content
         .sheet(isPresented: $showAddAllergy) { addAllergySheet }
         .sheet(isPresented: $showAddMedication) {
             AddMedicationSheet(patient: patient, context: context)
@@ -239,6 +256,10 @@ struct ConsultationView: View {
         .sheet(isPresented: $showLetterSheet) {
             ConsultationLetterSheet(letterText: generatedLetterText, patient: patient)
         }
+    }
+
+    private func withToolbarAndDialogs(_ content: some View) -> some View {
+        content
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
