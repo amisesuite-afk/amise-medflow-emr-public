@@ -140,6 +140,12 @@ extension PatientScoreAutoPopulator {
         var i = NEWS2Input()
         var f = ScoreAutoFill(); f.isAttempted = true
 
+        // SpO₂ scale is a per-patient clinician decision (confirmed hypercapnic respiratory
+        // failure), independent of whether vitals exist. Marked auto only when it is on — off is
+        // the default Scale 1 for everyone.
+        i.useSpO2Scale2 = patient.news2UseSpO2Scale2
+        if i.useSpO2Scale2 { f.autoFieldKeys.insert("useSpO2Scale2") }
+
         guard let v = patient.latestVitals else {
             f.addPending(key: "all",
                 label: "No vitals recorded — enter current readings",
@@ -156,12 +162,15 @@ extension PatientScoreAutoPopulator {
         // AVPU maps directly (same enum type)
         i.avpu = v.avpu; f.autoFieldKeys.insert("avpu")
 
+        // Air or oxygen is always recorded on a vitals entry (like ACVPU), so it is taken from
+        // the same entry as the readings rather than left as a question.
+        i.onSupplementalO2 = v.onSupplementalO2; f.autoFieldKeys.insert("onSupplementalO2")
+
         if v.respiratoryRate   == nil { f.addPending(key: "respiratoryRate",   label: "Respiratory rate (breaths/min)", source: "Measure at bedside") }
         if v.spo2              == nil { f.addPending(key: "spo2",              label: "SpO₂ (%)",                       source: "Pulse oximetry") }
         if v.bpSystolic        == nil { f.addPending(key: "systolicBP",        label: "Systolic blood pressure (mmHg)", source: "Measure BP") }
         if v.heartRate         == nil { f.addPending(key: "heartRate",         label: "Heart rate (bpm)",               source: "Measure pulse") }
         if v.temperatureCelsius == nil { f.addPending(key: "temperatureCelsius", label: "Temperature (°C)",             source: "Measure") }
-        f.addPending(key: "onSupplementalO2", label: "On supplemental oxygen?", source: "Clinical assessment")
 
         return (i, f)
     }

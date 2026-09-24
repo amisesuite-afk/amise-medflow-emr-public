@@ -273,13 +273,23 @@ extension ClinicalScoresView {
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .padding(.bottom, 4)
-            scoreToggle("PaO₂ < 59.2 mmHg (< 7.9 kPa)", binding: $glasgowImrieI.pao2Below59, points: "+1", autoKey: "pao2Below59")
+            scoreToggle("PaO₂ < 8 kPa (60 mmHg)", binding: $glasgowImrieI.pao2Below59, points: "+1", autoKey: "pao2Below59")
             scoreToggle("Age > 55 years", binding: $glasgowImrieI.ageAbove55, points: "+1", autoKey: "ageAbove55")
             scoreToggle("WBC > 15 × 10⁹/L", binding: $glasgowImrieI.wbcAbove15, points: "+1", autoKey: "wbcAbove15")
             scoreToggle("Serum calcium < 2.0 mmol/L", binding: $glasgowImrieI.calciumBelow2, points: "+1", autoKey: "calciumBelow2")
+            scoreToggle("Urea > 16 mmol/L", binding: $glasgowImrieI.ureaAbove16, points: "+1", autoKey: "ureaAbove16")
+            // LDH and AST are ONE criterion (Blamey 1984): one row, one point. The input keeps two
+            // fields (`ldh180`, `ast100`); the row is on when either is, and off clears both.
+            scoreToggle("LDH > 600 IU/L or AST > 200 IU/L",
+                        binding: Binding(
+                            get: { glasgowImrieI.enzymeCriterion },
+                            set: { on in
+                                glasgowImrieI.ldh180 = on
+                                if !on { glasgowImrieI.ast100 = false }
+                            }),
+                        points: "+1",
+                        autoKey: "ldh180")
             scoreToggle("Serum albumin < 32 g/L", binding: $glasgowImrieI.albuminBelow32, points: "+1", autoKey: "albuminBelow32")
-            scoreToggle("LDH > 600 IU/L (or > 3× ULN)", binding: $glasgowImrieI.ldh180, points: "+1", autoKey: "ldh180")
-            scoreToggle("AST / ALT > 200 IU/L", binding: $glasgowImrieI.ast100, points: "+1", autoKey: "ast100")
             scoreToggle("Serum glucose > 10 mmol/L (non-diabetic)", binding: $glasgowImrieI.glucoseAbove10, points: "+1", autoKey: "glucoseAbove10")
         }
         .onChange(of: glasgowImrieI) { _, _ in recalculate() }

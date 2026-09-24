@@ -206,13 +206,24 @@ extension PatientScoreAutoPopulator {
             f.addAutoFilled(key: "glucoseAbove10", label: "Hyperglycaemia > 10 mmol/L detected in notes (non-diabetic)", source: "History/Notes")
         }
 
-        // All laboratory values require manual confirmation
-        f.addPending(key: "pao2Below59",    label: "PaO₂ < 59.2 mmHg (< 7.9 kPa) — check ABG (worst value in 48 h)",    source: "ABG")
+        // Urea > 16 mmol/L from resulted labs; values > 50 treated as BUN mg/dL → ÷2.8 (same
+        // conversion as Glasgow/Blatchford/CURB-65). The latest result is not necessarily the
+        // 48-h worst, so a value at or below 16 stays a question rather than a "no".
+        if let urea = patient.latestLab(named: ["urea","blood urea","bun","blood urea nitrogen"]),
+           (urea > 50 ? urea / 2.8 : urea) > 16 {
+            i.ureaAbove16 = true
+            f.addAutoFilled(key: "ureaAbove16", label: "Urea > 16 mmol/L (latest resulted U&E)", source: "Labs")
+        } else {
+            f.addPending(key: "ureaAbove16", label: "Urea > 16 mmol/L — check U&E (48-h worst)", source: "U&E")
+        }
+
+        // Remaining laboratory values require manual confirmation
+        f.addPending(key: "pao2Below59",    label: "PaO₂ < 8 kPa (60 mmHg) — check ABG (worst value in 48 h)",           source: "ABG")
         f.addPending(key: "wbcAbove15",     label: "WBC > 15 × 10⁹/L — check FBC (worst value in 48 h)",                  source: "FBC")
         f.addPending(key: "calciumBelow2",  label: "Serum calcium < 2.0 mmol/L — check bone profile (48-h worst)",         source: "Bloods")
         f.addPending(key: "albuminBelow32", label: "Serum albumin < 32 g/L — check LFTs / albumin (48-h worst)",           source: "LFTs")
-        f.addPending(key: "ldh180",         label: "LDH > 600 IU/L or > 3× ULN — check LDH (48-h worst)",                 source: "Bloods")
-        f.addPending(key: "ast100",         label: "AST/ALT > 200 IU/L — check LFTs (48-h worst)",                         source: "LFTs")
+        // LDH and AST are one criterion: one question, confirmed via `ldh180`.
+        f.addPending(key: "ldh180",         label: "LDH > 600 IU/L or AST > 200 IU/L — check LDH / LFTs (48-h worst)",     source: "Bloods / LFTs")
 
         return (i, f)
     }

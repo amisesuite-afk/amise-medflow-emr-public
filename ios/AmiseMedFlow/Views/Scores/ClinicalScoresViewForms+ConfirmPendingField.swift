@@ -425,8 +425,9 @@ extension ClinicalScoresView {
             case "ageAbove55":       glasgowImrieI.ageAbove55 = true
             case "wbcAbove15":       glasgowImrieI.wbcAbove15 = true
             case "calciumBelow2":    glasgowImrieI.calciumBelow2 = true
+            case "ureaAbove16":      glasgowImrieI.ureaAbove16 = true
             case "albuminBelow32":   glasgowImrieI.albuminBelow32 = true
-            case "ldh180":           glasgowImrieI.ldh180 = true
+            case "ldh180":           glasgowImrieI.ldh180 = true   // LDH > 600 or AST > 200 (one criterion)
             case "ast100":           glasgowImrieI.ast100 = true
             case "glucoseAbove10":   glasgowImrieI.glucoseAbove10 = true
             default: break

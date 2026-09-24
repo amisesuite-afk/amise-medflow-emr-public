@@ -185,6 +185,175 @@ final class ScoresFollowupTests: XCTestCase {
         assertSameWithSharedData("MELD", PatientScoreAutoPopulator.meld(patient:), patient: p)
         assertSameWithSharedData("CURB-65", PatientScoreAutoPopulator.curb65(patient:), patient: p)
         assertSameWithSharedData("Blatchford", PatientScoreAutoPopulator.blatchford(patient:), patient: p)
+        assertSameWithSharedData("NEWS2", PatientScoreAutoPopulator.news2(patient:), patient: p)
+        assertSameWithSharedData("Glasgow-Imrie", PatientScoreAutoPopulator.glasgowImrie(patient:), patient: p)
+    }
+
+    // MARK: - NEWS2 auto-populate: SpO₂ scale from the patient, oxygen from the latest vitals
+
+    private func vitals(for p: Patient, minutesAgo: Double, onO2: Bool) -> VitalsEntry {
+        let v = VitalsEntry(patient: p, recordedAt: Date(timeIntervalSinceNow: -minutesAgo * 60))
+        v.respiratoryRate = 18; v.spo2 = 95; v.bpSystolic = 120; v.heartRate = 80
+        v.temperatureCelsius = 37.0
+        v.onSupplementalO2 = onO2
+        context.insert(v)
+        return v
+    }
+
+    func testNEWS2PopulatorTakesScale2FromPatientAndOxygenFromLatestVitals() throws {
+        let p = Patient(fullName: "Hypercapnic Patient")
+        p.news2UseSpO2Scale2 = true
+        context.insert(p)
+        _ = vitals(for: p, minutesAgo: 10, onO2: true)
+        try context.save()
+
+        let (input, fill) = PatientScoreAutoPopulator.news2(patient: p)
+        XCTAssertTrue(input.useSpO2Scale2)
+        XCTAssertTrue(input.onSupplementalO2)
+        XCTAssertTrue(fill.isAuto("useSpO2Scale2"))
+        XCTAssertTrue(fill.isAuto("onSupplementalO2"))
+        XCTAssertFalse(fill.pendingFields.contains { $0.id == "onSupplementalO2" },
+                       "oxygen is recorded on every vitals entry — no longer a question")
+        XCTAssertTrue(fill.pendingFields.isEmpty)
+    }
+
+    func testNEWS2PopulatorDefaultsToScale1AndOnAir() throws {
+        let p = Patient(fullName: "Scale 1 Patient")
+        context.insert(p)
+        _ = vitals(for: p, minutesAgo: 10, onO2: false)
+        try context.save()
+
+        let (input, fill) = PatientScoreAutoPopulator.news2(patient: p)
+        XCTAssertFalse(input.useSpO2Scale2, "Scale 2 is opt-in only")
+        XCTAssertFalse(fill.isAuto("useSpO2Scale2"), "default Scale 1 is not shown as auto-filled")
+        XCTAssertFalse(input.onSupplementalO2)
+        XCTAssertTrue(fill.isAuto("onSupplementalO2"))
+    }
+
+    func testNEWS2PopulatorUsesOxygenFromTheNewestVitalsOnly() throws {
+        let p = Patient(fullName: "Weaned Patient")
+        context.insert(p)
+        _ = vitals(for: p, minutesAgo: 240, onO2: true)
+        _ = vitals(for: p, minutesAgo: 5, onO2: false)
+        try context.save()
+        XCTAssertFalse(PatientScoreAutoPopulator.news2(patient: p).0.onSupplementalO2)
+
+        _ = vitals(for: p, minutesAgo: 1, onO2: true)
+        try context.save()
+        XCTAssertTrue(PatientScoreAutoPopulator.news2(patient: p).0.onSupplementalO2)
+    }
+
+    func testNEWS2PopulatorKeepsScale2WithoutVitals() throws {
+        let p = Patient(fullName: "No Vitals Patient")
+        p.news2UseSpO2Scale2 = true
+        context.insert(p)
+        try context.save()
+
+        let (input, fill) = PatientScoreAutoPopulator.news2(patient: p)
+        XCTAssertTrue(input.useSpO2Scale2)
+        XCTAssertTrue(fill.isAuto("useSpO2Scale2"))
+        XCTAssertFalse(input.onSupplementalO2)
+        XCTAssertFalse(fill.isAuto("onSupplementalO2"), "no vitals — nothing to take oxygen from")
+        XCTAssertEqual(fill.pendingFields.map(\.id), ["all"])
+    }
+
+    func testNEWS2PopulatedInputScoresLikeTheVitalsEntry() throws {
+        let p = Patient(fullName: "Consistency Patient")
+        p.news2UseSpO2Scale2 = true
+        context.insert(p)
+        let v = vitals(for: p, minutesAgo: 10, onO2: true)
+        v.spo2 = 97   // Scale 2 on oxygen: ≥97 → 3
+        try context.save()
+
+        let (input, _) = PatientScoreAutoPopulator.news2(patient: p)
+        let calc = ClinicalScoringEngine.news2(input)
+        XCTAssertEqual(Int(calc.score), v.news2Score,
+                       "Scores calculator and vitals must agree once scale and oxygen are carried over")
+    }
+
+    // MARK: - Glasgow-Imrie auto-populate: urea from labs, enzyme criterion as one question
+
+    private func imriePatient(urea: String?) throws -> Patient {
+        let p = Patient(fullName: "Pancreatitis Patient")
+        if let urea = urea {
+            p.investigations = [InvestigationEntry(name: "Urea", category: .blood,
+                                                   status: .resulted, result: urea)]
+        }
+        context.insert(p)
+        try context.save()
+        return p
+    }
+
+    func testGlasgowImrieSetsUreaAbove16FromLabs() throws {
+        let (input, fill) = PatientScoreAutoPopulator.glasgowImrie(patient: try imriePatient(urea: "18.2 mmol/L"))
+        XCTAssertTrue(input.ureaAbove16)
+        XCTAssertTrue(fill.isAuto("ureaAbove16"))
+        XCTAssertFalse(fill.pendingFields.contains { $0.id == "ureaAbove16" })
+    }
+
+    func testGlasgowImrieTreatsLargeUreaAsBUNMgPerDL() throws {
+        // Values > 50 are read as BUN mg/dL: 56 ÷ 2.8 = 20 mmol/L → criterion met.
+        XCTAssertTrue(PatientScoreAutoPopulator.glasgowImrie(patient: try imriePatient(urea: "56")).0.ureaAbove16)
+        // Values ≤ 50 are read as mmol/L; the threshold is strictly greater than 16.
+        XCTAssertTrue(PatientScoreAutoPopulator.glasgowImrie(patient: try imriePatient(urea: "16.1")).0.ureaAbove16)
+        XCTAssertFalse(PatientScoreAutoPopulator.glasgowImrie(patient: try imriePatient(urea: "16")).0.ureaAbove16,
+                       "exactly 16 mmol/L is not > 16")
+    }
+
+    func testGlasgowImrieLeavesUreaPendingWhenNotAbove16OrMissing() throws {
+        for urea in ["11", nil] as [String?] {
+            let (input, fill) = PatientScoreAutoPopulator.glasgowImrie(patient: try imriePatient(urea: urea))
+            XCTAssertFalse(input.ureaAbove16, "\(urea ?? "no urea")")
+            XCTAssertFalse(fill.isAuto("ureaAbove16"), "\(urea ?? "no urea")")
+            XCTAssertTrue(fill.pendingFields.contains { $0.id == "ureaAbove16" },
+                          "latest urea is not the 48-h worst — still a question (\(urea ?? "no urea"))")
+        }
+    }
+
+    func testGlasgowImrieAsksLDHAndASTAsOneCriterion() throws {
+        let (_, fill) = PatientScoreAutoPopulator.glasgowImrie(patient: try imriePatient(urea: nil))
+        let enzyme = fill.pendingFields.filter { $0.id == "ldh180" || $0.id == "ast100" }
+        XCTAssertEqual(enzyme.map(\.id), ["ldh180"])
+        XCTAssertTrue(enzyme.first?.label.contains("LDH > 600 IU/L or AST > 200 IU/L") ?? false)
+        XCTAssertTrue(fill.pendingFields.first { $0.id == "pao2Below59" }?.label
+                        .hasPrefix("PaO₂ < 8 kPa (60 mmHg)") ?? false)
+    }
+
+    // MARK: - Live NEWS2 pill values
+
+    func testLiveNEWS2CarriesBandAndCompleteness() throws {
+        let p = try richPatient()
+        let live = try XCTUnwrap(ScoresPatientSnapshot(patient: p).liveNEWS2)
+        // RR 26 (3) + SpO₂ 91 (3) + air (0) + SBP 88 (3) + HR 124 (2) + T 38.9 (1) + Alert (0)
+        XCTAssertEqual(live.value, 12)
+        XCTAssertEqual(live.band, .high)
+        XCTAssertEqual(live.risk, "High")
+        XCTAssertTrue(live.isComplete)
+        XCTAssertNil(live.incompleteNote)
+    }
+
+    func testLiveNEWS2MarksIncompleteVitals() throws {
+        let p = Patient(fullName: "Partial Obs Patient")
+        context.insert(p)
+        let v = VitalsEntry(patient: p)
+        v.heartRate = 80
+        context.insert(v)
+        try context.save()
+
+        let live = try XCTUnwrap(ScoresPatientSnapshot(patient: p).liveNEWS2)
+        XCTAssertFalse(live.isComplete)
+        XCTAssertEqual(live.missingParameters, v.news2MissingParameters)
+        XCTAssertEqual(live.missingParameters, ["RR", "SpO₂", "BP", "Temp"])
+        XCTAssertEqual(live.incompleteNote, "Incomplete: RR, SpO₂, BP, Temp not recorded")
+        XCTAssertEqual(live.band, .low)
+    }
+
+    func testLiveNEWS2RiskLabelsMatchEveryBand() {
+        for band in NEWS2Band.allCases {
+            let live = ScoresPatientSnapshot.LiveNEWS2(value: 0, band: band, missingParameters: [])
+            XCTAssertEqual(live.risk, band.label)
+        }
+        XCTAssertEqual(NEWS2Band.allCases.map(\.label), ["Low", "Low-medium", "Medium", "High"])
     }
 
     func testHelpersGiveIdenticalResultsWithSharedData() throws {

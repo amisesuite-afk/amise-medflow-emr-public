@@ -397,9 +397,20 @@ struct ScoresPatientSnapshot: Equatable {
         let recordedAt: Date
     }
 
+    /// NEWS2 of the latest vitals entry, copied out as values (never read the model in body).
     struct LiveNEWS2: Equatable {
         let value: Int
-        let risk: String
+        let band: NEWS2Band
+        /// Unrecorded NEWS2 parameters, in chart order (empty when complete). Missing ones score 0.
+        let missingParameters: [String]
+
+        /// "Low", "Low-medium", "Medium" or "High".
+        var risk: String { band.label }
+        var isComplete: Bool { missingParameters.isEmpty }
+        /// "Incomplete: RR, SpO₂ not recorded", or nil when every parameter was recorded.
+        var incompleteNote: String? {
+            isComplete ? nil : "Incomplete: \(missingParameters.joined(separator: ", ")) not recorded"
+        }
     }
 
     /// Every saved score, newest first.
@@ -436,7 +447,9 @@ struct ScoresPatientSnapshot: Equatable {
             .max { $0.recordedAt < $1.recordedAt }
         latestVitalsAt = latestVitals?.recordedAt
         if let v = latestVitals, v.hasAnyValue {
-            liveNEWS2 = LiveNEWS2(value: v.news2Score, risk: v.news2Risk)
+            liveNEWS2 = LiveNEWS2(value: v.news2Score,
+                                  band: v.news2Band,
+                                  missingParameters: v.news2IsComplete ? [] : v.news2MissingParameters)
         }
     }
 

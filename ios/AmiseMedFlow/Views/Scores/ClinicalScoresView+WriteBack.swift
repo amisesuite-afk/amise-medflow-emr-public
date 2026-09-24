@@ -17,6 +17,8 @@ extension ClinicalScoresView {
         entry.heartRate          = news2I.heartRate
         entry.temperatureCelsius = news2I.temperatureCelsius
         entry.avpu               = news2I.avpu
+        // Oxygen scores +2 in NEWS2; without this the saved entry read as "on air".
+        entry.onSupplementalO2   = news2I.onSupplementalO2
         modelContext.insert(entry)
         news2Saved = true
         CrashReporting.breadcrumb("Saved NEWS2 readings to vitals", category: "scores")

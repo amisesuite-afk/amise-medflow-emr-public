@@ -165,15 +165,20 @@ extension ClinicalScoresView {
         // From the cached snapshot — no relationship sorting in body.
         let savedEntry = snapshot.latest(for: score)
 
-        // NEWS2: derive live value directly from most-recent vitals
-        let liveNews2: (value: Int, risk: String)? = {
-            guard score == .news2, let n = snapshot.liveNEWS2 else { return nil }
-            return (n.value, n.risk)
-        }()
+        // NEWS2: live value from the most recent vitals (value copy in the snapshot)
+        let liveNews2: ScoresPatientSnapshot.LiveNEWS2? = score == .news2 ? snapshot.liveNEWS2 : nil
 
         let displayScore: String? = liveNews2.map { "\($0.value)" } ?? savedEntry?.abbreviation
         let displayRisk:  String? = liveNews2.map { $0.risk }       ?? savedEntry?.riskRaw
-        let riskCol = displayRisk.map { scoreHistoryColor($0) } ?? Color.secondary
+        // Live NEWS2 is coloured by its RCP band ("Low"/"Low-medium"/"Medium"/"High"), the same
+        // colours as every other NEWS2 display. scoreHistoryColor only knows ScoreRisk raw values
+        // ("Low Risk" …) and fell through to red for every NEWS2 band. Saved entries keep it.
+        let riskCol: Color = {
+            if let n = liveNews2 { return Color(hex: n.band.colorHex) }
+            if let raw = savedEntry?.riskRaw { return scoreHistoryColor(raw) }
+            return Color.secondary
+        }()
+        let incompleteNote: String? = liveNews2?.incompleteNote
 
         return Button {
             selectedScore = score
@@ -203,6 +208,15 @@ extension ClinicalScoresView {
                     Text("Tap to record")
                         .font(.caption2)
                         .foregroundStyle(.tertiary)
+                }
+                if let note = incompleteNote {
+                    // Missing parameters score 0, so an incomplete NEWS2 can under-state risk.
+                    Label(note, systemImage: "exclamationmark.circle")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundStyle(.orange)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityLabel(Text("NEWS2 partial. \(note)"))
                 }
                 if let vitalsAt = snapshot.latestVitalsAt, score == .news2 {
                     Text("Vitals: \(vitalsAt, style: .relative)")

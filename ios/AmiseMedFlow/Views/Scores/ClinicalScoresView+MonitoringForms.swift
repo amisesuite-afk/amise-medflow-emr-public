@@ -116,6 +116,16 @@ extension ClinicalScoresView {
             mewsSlider(label: "SpO₂ (%)", autoKey: "spo2",
                        value: Binding(get: { Double(news2I.spo2) }, set: { news2I.spo2 = Int($0) }),
                        in: 70...100, step: 1, display: "\(news2I.spo2)%")
+            VStack(alignment: .leading, spacing: 2) {
+                scoreToggle("SpO₂ Scale 2 (confirmed hypercapnic respiratory failure)",
+                            binding: $news2I.useSpO2Scale2,
+                            points: news2I.useSpO2Scale2 ? "Scale 2" : "Scale 1",
+                            autoKey: "useSpO2Scale2")
+                Text("Clinician decision only. Supplemental oxygen alone does not change the scale. Saved vitals use the patient's Scale 2 setting (set in Vitals).")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
             scoreToggle("On supplemental oxygen", binding: $news2I.onSupplementalO2, points: "+2", autoKey: "onSupplementalO2")
             mewsSlider(label: "Systolic BP (mmHg)", autoKey: "systolicBP",
                        value: Binding(get: { Double(news2I.systolicBP) }, set: { news2I.systolicBP = Int($0) }),
