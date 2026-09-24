@@ -91,12 +91,24 @@ extension ConsultationView {
                               filled: !patient.allergies.isEmpty, filledColor: .red)
             }
 
-            if !interactions.isEmpty {
+            // Display only (H-07). Shown whenever two or more drugs were screened, so an empty
+            // result still carries the "absence of an alert" note.
+            let alerts = interactions
+            if !alerts.isEmpty {
                 Section {
-                    ForEach(interactions) { alert in InteractionAlertRow(alert: alert) }
+                    ForEach(alerts) { alert in InteractionAlertRow(alert: alert) }
                 } header: {
                     Label("Drug Interaction Alerts", systemImage: "exclamationmark.triangle")
                         .foregroundStyle(.orange)
+                } footer: {
+                    InteractionAbsenceNote()
+                }
+            } else if patient.prescriptions.count >= 2 {
+                Section {
+                    InteractionAbsenceNote(noneFound: true)
+                } header: {
+                    Label("Drug Interaction Alerts", systemImage: "exclamationmark.triangle")
+                        .foregroundStyle(.secondary)
                 }
             }
         }

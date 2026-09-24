@@ -46,10 +46,12 @@ struct InteractionAlertRow: View {
             HStack(spacing: 6) {
                 Image(systemName: alert.interaction.severity.icon)
                     .foregroundStyle(alert.interaction.severity.color)
-                Text("\(alert.drugA) + \(alert.drugB)").font(.caption.weight(.semibold))
+                Text(alert.pairDisplay).font(.caption.weight(.semibold))
             }
+            Text(alert.interaction.clinicalEffect).font(.caption)
             Text(alert.interaction.mechanism).font(.caption).foregroundStyle(.secondary)
             Text("→ \(alert.interaction.management)").font(.caption2).foregroundStyle(.orange)
+            InteractionRelatedEffects(related: alert.related)
         }
     }
 }

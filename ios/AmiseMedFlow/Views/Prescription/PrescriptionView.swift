@@ -24,8 +24,11 @@ struct PrescriptionView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             List {
-                if !interactions.isEmpty {
-                    interactionsSection
+                // Shown whenever two or more drugs were screened, so an empty result carries the
+                // "absence of an alert does not mean there is no interaction" note (H-07).
+                let alerts = interactions
+                if !alerts.isEmpty || patient.prescriptions.count >= 2 {
+                    interactionsSection(alerts)
                 }
 
                 if let plan = radiationPlan {

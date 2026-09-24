@@ -2,6 +2,18 @@ import Foundation
 import SwiftUI
 
 // MARK: - Deterministic Drug Interaction Engine
+//
+// Decision support only; display only. Alerts never block, edit or auto-act on a prescription.
+//
+// Rule terms are either classes ("nsaid", "opioid", "ssri", "qt prolonging") or specific drugs
+// ("warfarin"). Every term MUST be defined in `DrugClasses.terms` (class members, synonyms and
+// Caribbean/UK/US brand names, each with its BNF / Stockley's / SmPC source);
+// `DrugInteractionTests` fails if a rule names an unmapped term. Before H-07 the class names
+// were only substring-matched, so "Warfarin" + "Diclofenac" raised no alert.
+//
+// Parity: the dashboard's `artifacts/dashboard/src/lib/drug-interactions.ts` (same vocabulary,
+// same merging, same severity ordering; see `DrugClasses.swift` for two matching details that
+// differ). Each rule keeps its own iOS severity grade; the surgeon reviews grades separately.
 
 struct DrugInteraction: Identifiable {
     let id = UUID()
@@ -17,6 +29,17 @@ struct DrugInteraction: Identifiable {
         case major           = "Major"
         case moderate        = "Moderate"
         case minor           = "Minor"
+
+        /// Clinical rank, higher = more severe. Sort by this, never by the name
+        /// (alphabetical order put "Minor" before "Moderate").
+        var rank: Int {
+            switch self {
+            case .contraindicated: return 4
+            case .major:           return 3
+            case .moderate:        return 2
+            case .minor:           return 1
+            }
+        }
 
         var color: Color {
             switch self {
@@ -40,39 +63,196 @@ struct DrugInteraction: Identifiable {
 
 struct DrugInteractionAlert: Identifiable {
     let id = UUID()
+    /// The medication entries exactly as written (e.g. "Diclofenac 50 mg"). `drugA` matched
+    /// the headline rule's `drug1Pattern`, `drugB` its `drug2Pattern`.
     let drugA: String
     let drugB: String
+    /// Headline rule: the most severe rule that hit this pair (original rule order breaks ties).
     let interaction: DrugInteraction
+    /// Class label when drugA / drugB matched through class membership (e.g. "NSAID").
+    var viaClassA: String? = nil
+    var viaClassB: String? = nil
+    /// Other rules that hit the SAME pair of medications with a different effect. Nothing is
+    /// dropped: the most severe rule is the headline and the rest are listed here.
+    var related: [DrugInteraction] = []
+
+    /// "Diclofenac 50 mg (NSAID)" — shows which class the entry matched through.
+    var drugADisplay: String { DrugInteractionAlert.withClass(drugA, viaClassA) }
+    var drugBDisplay: String { DrugInteractionAlert.withClass(drugB, viaClassB) }
+    var pairDisplay: String { "\(drugADisplay) + \(drugBDisplay)" }
+
+    static func withClass(_ entry: String, _ viaClass: String?) -> String {
+        guard let label = viaClass, !label.isEmpty else { return entry }
+        return "\(entry) (\(label))"
+    }
 }
 
 enum DrugInteractionService {
 
+    /// Hazard log H-07: the checker is a partial reference list, so an empty result must never
+    /// read as "no interaction". Shown wherever interaction results are displayed.
+    static let absenceNote =
+        "Partial reference list (BNF / Stockley's classes). Absence of an alert does not mean there is no interaction."
+
+    /// The first `originalRuleCount` entries of `rules` are the pre-H-07 iOS rules, unchanged.
+    /// Class-based rules are appended after them.
+    static let originalRuleCount = 27
+
+    /// Terms named by the original rules. Only these keep the pre-H-07 raw-substring match
+    /// (so every old alert still fires); terms used only by the class rules added for H-07
+    /// match through `DrugClasses` members alone ("arb" must not fire inside "carbamazepine").
+    static let legacyTerms: Set<String> = Set(
+        rules.prefix(originalRuleCount).flatMap { [$0.drug1Pattern.lowercased(), $0.drug2Pattern.lowercased()] }
+    )
+
+    private struct Entry {
+        let index: Int
+        let original: String
+        let lc: String
+        let bytes: [UInt8]
+    }
+
+    private struct TermHit {
+        let entry: Entry
+        let match: DrugTermMatch
+    }
+
+    private struct Hit {
+        let rule: DrugInteraction
+        let ruleOrder: Int
+        let a: TermHit
+        let b: TermHit
+    }
+
+    private struct PairKey: Hashable {
+        let lo: Int
+        let hi: Int
+    }
+
+    private struct Ranked {
+        let alert: DrugInteractionAlert
+        let ruleOrder: Int
+        let key: PairKey
+    }
+
+    /// Deterministic interaction screen over a free-text medication list.
+    ///
+    /// A rule term matches an entry by (1) the pre-H-07 raw substring test, kept unchanged, OR
+    /// (2) whole-word membership of the term's class / synonym list in `DrugClasses`. Class
+    /// matches only ever ADD alerts. Every pair of entries is evaluated (never an entry with
+    /// itself); a same-class rule (QT + QT) additionally needs two different drugs. Hits on the
+    /// same pair of entries are merged into one alert (most severe first) with every other
+    /// distinct effect kept in `related`. Results are ordered by clinical severity.
     static func check(drugs: [String]) -> [DrugInteractionAlert] {
         guard drugs.count >= 2 else { return [] }
-        var alerts: [DrugInteractionAlert] = []
-        let normalised = drugs.map { $0.lowercased() }
 
-        for i in 0..<normalised.count {
-            for j in (i+1)..<normalised.count {
-                let a = normalised[i]
-                let b = normalised[j]
-                for rule in rules {
-                    let p1 = rule.drug1Pattern.lowercased()
-                    let p2 = rule.drug2Pattern.lowercased()
-                    if (a.contains(p1) && b.contains(p2)) || (a.contains(p2) && b.contains(p1)) {
-                        alerts.append(DrugInteractionAlert(
-                            drugA: drugs[i],
-                            drugB: drugs[j],
-                            interaction: rule
-                        ))
+        var entries: [Entry] = []
+        for (i, drug) in drugs.enumerated() {
+            let lc = drug.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            if !lc.isEmpty {
+                entries.append(Entry(index: i, original: drug, lc: lc, bytes: Array(lc.utf8)))
+            }
+        }
+        guard entries.count >= 2 else { return [] }
+
+        var hitCache: [String: [TermHit]] = [:]
+        func hits(for term: String) -> [TermHit] {
+            if let cached = hitCache[term] { return cached }
+            let substringFallback = DrugInteractionService.legacyTerms.contains(term)
+            var found: [TermHit] = []
+            for entry in entries {
+                if let m = DrugClasses.match(term: term, lowercasedEntry: entry.lc, bytes: entry.bytes,
+                                             substringFallback: substringFallback) {
+                    found.append(TermHit(entry: entry, match: m))
+                }
+            }
+            hitCache[term] = found
+            return found
+        }
+
+        var byPair: [PairKey: [Hit]] = [:]
+        var pairOrder: [PairKey] = []
+
+        for (ruleOrder, rule) in rules.enumerated() {
+            let termA = rule.drug1Pattern.lowercased()
+            let termB = rule.drug2Pattern.lowercased()
+            let sameTerm = termA == termB
+            let hitsA = hits(for: termA)
+            if hitsA.isEmpty { continue }
+            let hitsB = hits(for: termB)
+
+            for ha in hitsA {
+                for hb in hitsB {
+                    // Never pair an entry with itself (the pre-H-07 loop never did either).
+                    if ha.entry.index == hb.entry.index { continue }
+                    // Same-class rule (QT + QT): count each pair once, and only for two different drugs.
+                    if sameTerm && (ha.entry.index > hb.entry.index || ha.match.canonical == hb.match.canonical) {
+                        continue
                     }
+                    let key = PairKey(lo: min(ha.entry.index, hb.entry.index),
+                                      hi: max(ha.entry.index, hb.entry.index))
+                    var list = byPair[key] ?? []
+                    if list.isEmpty { pairOrder.append(key) }
+                    if !list.contains(where: { $0.ruleOrder == ruleOrder }) {
+                        list.append(Hit(rule: rule, ruleOrder: ruleOrder, a: ha, b: hb))
+                    }
+                    byPair[key] = list
                 }
             }
         }
-        return alerts.sorted { $0.interaction.severity.rawValue < $1.interaction.severity.rawValue }
+
+        var ranked: [Ranked] = []
+        for key in pairOrder {
+            guard let pairHits = byPair[key] else { continue }
+            // Most severe first; original rule order breaks ties (original wording wins).
+            let sortedHits = pairHits.sorted { x, y in
+                if x.rule.severity.rank != y.rule.severity.rank {
+                    return x.rule.severity.rank > y.rule.severity.rank
+                }
+                return x.ruleOrder < y.ruleOrder
+            }
+            // Collapse only exact duplicates of the same effect (keeping the most severe);
+            // every distinct effect stays visible.
+            var kept: [Hit] = []
+            for h in sortedHits {
+                let effect = normalisedEffect(h.rule)
+                if !kept.contains(where: { normalisedEffect($0.rule) == effect }) {
+                    kept.append(h)
+                }
+            }
+            guard let head = kept.first else { continue }
+            let alert = DrugInteractionAlert(
+                drugA: head.a.entry.original,
+                drugB: head.b.entry.original,
+                interaction: head.rule,
+                viaClassA: head.a.match.viaClass,
+                viaClassB: head.b.match.viaClass,
+                related: kept.dropFirst().map { $0.rule }
+            )
+            ranked.append(Ranked(alert: alert, ruleOrder: head.ruleOrder, key: key))
+        }
+
+        // Clinical severity: contraindicated > major > moderate > minor (explicit rank).
+        ranked.sort { x, y in
+            let rx = x.alert.interaction.severity.rank
+            let ry = y.alert.interaction.severity.rank
+            if rx != ry { return rx > ry }
+            if x.ruleOrder != y.ruleOrder { return x.ruleOrder < y.ruleOrder }
+            if x.key.lo != y.key.lo { return x.key.lo < y.key.lo }
+            return x.key.hi < y.key.hi
+        }
+        return ranked.map { $0.alert }
+    }
+
+    private static func normalisedEffect(_ rule: DrugInteraction) -> String {
+        rule.clinicalEffect.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
     }
 
     // MARK: - Surgical Practice Interaction Rules
+    //
+    // Rules 1–27 are the original iOS rules, unchanged. The class-based rules ported from the
+    // dashboard (H-07) are appended after them, so that when two rules hit the same pair the
+    // original (more specific) wording is shown first at equal severity.
 
     static let rules: [DrugInteraction] = [
         // --- Anticoagulant interactions ---
@@ -245,5 +425,132 @@ enum DrugInteractionService {
               mechanism: "Additive QT prolongation + fluconazole inhibits ondansetron metabolism",
               clinicalEffect: "Risk of QT prolongation and arrhythmia",
               management: "ECG monitoring; avoid high-dose ondansetron; consider cyclizine instead"),
+
+        // ── Class-based rules ported from the dashboard for H-07 ───────────────────────────
+        // Same terms, severities, effects and actions as the dashboard's 21 added rules; the
+        // three already on this list (nsaid + ace inhibitor, methotrexate + nsaid,
+        // tramadol + snri) are not duplicated. Source for each: BNF Interactions appendix and
+        // Stockley's Drug Interactions unless stated; MHRA Drug Safety Updates / SmPCs where cited.
+
+        // Bleeding — BNF: NSAIDs, antiplatelets and SSRIs/SNRIs each increase bleeding risk with
+        // coumarins, DOACs and heparins.
+        .init(drug1Pattern: "anticoagulant", drug2Pattern: "nsaid",
+              severity: .major,
+              mechanism: "Additive antihaemostatic effect: NSAIDs inhibit platelet function and may cause GI mucosal injury (BNF)",
+              clinicalEffect: "Increased bleeding risk",
+              management: "Avoid NSAIDs; use paracetamol instead. If unavoidable, add PPI and monitor for bleeding"),
+
+        .init(drug1Pattern: "anticoagulant", drug2Pattern: "antiplatelet",
+              severity: .major,
+              mechanism: "Additive antihaemostatic effect: platelet inhibition on top of anticoagulation (BNF)",
+              clinicalEffect: "Increased bleeding risk",
+              management: "Combine only with a clear indication (e.g. recent ACS/stent) and specialist input; add PPI; minimise duration"),
+
+        .init(drug1Pattern: "anticoagulant", drug2Pattern: "ssri",
+              severity: .moderate,
+              mechanism: "SSRIs impair platelet serotonin uptake and platelet aggregation (BNF)",
+              clinicalEffect: "Increased bleeding risk (SSRIs impair platelet serotonin uptake)",
+              management: "Monitor for bleeding; check INR when starting/stopping an SSRI with warfarin; consider PPI"),
+
+        .init(drug1Pattern: "anticoagulant", drug2Pattern: "snri",
+              severity: .moderate,
+              mechanism: "SNRIs impair platelet serotonin uptake and platelet aggregation (BNF)",
+              clinicalEffect: "Increased bleeding risk (SNRIs impair platelet serotonin uptake)",
+              management: "Monitor for bleeding; check INR when starting/stopping an SNRI with warfarin; consider PPI"),
+
+        .init(drug1Pattern: "nsaid", drug2Pattern: "ssri",
+              severity: .moderate,
+              mechanism: "Both impair platelet function; NSAIDs also injure the GI mucosa (BNF)",
+              clinicalEffect: "Increased risk of GI bleeding",
+              management: "Consider PPI gastroprotection; avoid if previous GI bleed"),
+
+        .init(drug1Pattern: "nsaid", drug2Pattern: "snri",
+              severity: .moderate,
+              mechanism: "Both impair platelet function; NSAIDs also injure the GI mucosa (BNF)",
+              clinicalEffect: "Increased risk of GI bleeding",
+              management: "Consider PPI gastroprotection; avoid if previous GI bleed"),
+
+        // Serotonin toxicity — BNF; SSRI/SNRI SmPCs (MAOI + SSRI/SNRI contraindicated, including
+        // for 14 days after stopping an irreversible MAOI).
+        .init(drug1Pattern: "maoi", drug2Pattern: "ssri",
+              severity: .contraindicated,
+              mechanism: "Monoamine-oxidase inhibition plus serotonin re-uptake inhibition — additive serotonergic effect (BNF; SmPCs)",
+              clinicalEffect: "Severe serotonin syndrome",
+              management: "Contraindicated; do not co-administer (observe MAOI washout)"),
+
+        .init(drug1Pattern: "maoi", drug2Pattern: "snri",
+              severity: .contraindicated,
+              mechanism: "Monoamine-oxidase inhibition plus serotonin re-uptake inhibition — additive serotonergic effect (BNF; SmPCs)",
+              clinicalEffect: "Severe serotonin syndrome",
+              management: "Contraindicated; do not co-administer (observe MAOI washout)"),
+
+        // Respiratory depression — MHRA DSU Oct 2017 (gabapentin), Feb 2021 (pregabalin).
+        .init(drug1Pattern: "opioid", drug2Pattern: "gabapentinoid",
+              severity: .major,
+              mechanism: "Additive CNS depression (MHRA Drug Safety Update: gabapentin Oct 2017, pregabalin Feb 2021)",
+              clinicalEffect: "Additive CNS/respiratory depression",
+              management: "Use lowest effective doses; monitor sedation and respiratory rate, especially elderly/post-op"),
+
+        // QT — CredibleMeds "Known Risk of TdP"; BNF. Two DIFFERENT QT-prolonging drugs.
+        .init(drug1Pattern: "qt prolonging", drug2Pattern: "qt prolonging",
+              severity: .major,
+              mechanism: "Both drugs are on the CredibleMeds \"Known Risk of TdP\" list — additive QT prolongation",
+              clinicalEffect: "Additive QT prolongation — risk of torsade de pointes",
+              management: "Avoid combination where possible; check baseline ECG (QTc), potassium and magnesium; stop if QTc >500 ms"),
+
+        // Warfarin potentiation — BNF (macrolides; azoles). MHRA DSU June 2016: miconazole oral gel.
+        .init(drug1Pattern: "warfarin", drug2Pattern: "macrolide",
+              severity: .major,
+              mechanism: "Macrolides increase the anticoagulant effect of warfarin (BNF)",
+              clinicalEffect: "Potentiates anticoagulation — INR rise",
+              management: "Check INR within 3–5 days of starting; adjust warfarin dose"),
+
+        .init(drug1Pattern: "warfarin", drug2Pattern: "azole antifungal",
+              severity: .major,
+              mechanism: "Azole antifungals inhibit CYP2C9/3A4, reducing warfarin metabolism (BNF; MHRA Drug Safety Update June 2016: miconazole oral gel)",
+              clinicalEffect: "Potentiates anticoagulation — INR rise (CYP2C9/3A4 inhibition)",
+              management: "Avoid miconazole oral gel; otherwise reduce warfarin and monitor INR closely"),
+
+        // Statin myopathy — Zocor (simvastatin) and Klaricid SmPCs: strong CYP3A4-inhibiting
+        // macrolides are contraindicated with simvastatin.
+        .init(drug1Pattern: "clarithromycin", drug2Pattern: "simvastatin",
+              severity: .contraindicated,
+              mechanism: "CYP3A4 inhibition by the macrolide greatly raises simvastatin exposure (Zocor and Klaricid SmPCs)",
+              clinicalEffect: "Greatly raised simvastatin levels — myopathy / rhabdomyolysis",
+              management: "Withhold simvastatin for the course, or use a non-interacting antibiotic (e.g. azithromycin)"),
+
+        .init(drug1Pattern: "erythromycin", drug2Pattern: "simvastatin",
+              severity: .contraindicated,
+              mechanism: "CYP3A4 inhibition by the macrolide greatly raises simvastatin exposure (Zocor SmPC)",
+              clinicalEffect: "Greatly raised simvastatin levels — myopathy / rhabdomyolysis",
+              management: "Withhold simvastatin for the course, or use a non-interacting antibiotic (e.g. azithromycin)"),
+
+        // Hyperkalaemia — BNF: ACE inhibitors / ARBs with potassium-sparing diuretics, aldosterone
+        // antagonists or potassium salts.
+        .init(drug1Pattern: "ace inhibitor", drug2Pattern: "potassium-sparing diuretic",
+              severity: .major,
+              mechanism: "Both reduce renal potassium excretion (BNF)",
+              clinicalEffect: "Hyperkalaemia",
+              management: "Monitor potassium and renal function closely"),
+
+        .init(drug1Pattern: "arb", drug2Pattern: "potassium-sparing diuretic",
+              severity: .major,
+              mechanism: "Both reduce renal potassium excretion (BNF)",
+              clinicalEffect: "Hyperkalaemia",
+              management: "Monitor potassium and renal function closely"),
+
+        .init(drug1Pattern: "arb", drug2Pattern: "potassium",
+              severity: .major,
+              mechanism: "Angiotensin-II receptor blockers reduce renal potassium excretion; the supplement adds potassium (BNF)",
+              clinicalEffect: "Hyperkalaemia",
+              management: "Monitor potassium closely; avoid potassium supplements unless clearly necessary"),
+
+        // Renal — BNF: NSAIDs with ARBs increase the risk of renal impairment and reduce the
+        // antihypertensive effect (the ACE-inhibitor equivalent is already rule 7 above).
+        .init(drug1Pattern: "nsaid", drug2Pattern: "arb",
+              severity: .moderate,
+              mechanism: "NSAIDs blunt prostaglandin-mediated renal vasodilation and antagonise the antihypertensive effect (BNF)",
+              clinicalEffect: "Risk of acute kidney injury; reduced antihypertensive effect",
+              management: "Avoid in CKD, dehydration or with a diuretic; monitor renal function and potassium"),
     ]
 }

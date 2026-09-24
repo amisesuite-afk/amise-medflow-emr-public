@@ -32,6 +32,11 @@ struct AddPrescriptionSheet: View {
             .filter { $0.drugA == drugQuery || $0.drugB == drugQuery }
     }
 
+    /// True once the typed drug has been screened against at least one existing prescription.
+    private var liveInteractionCheckRan: Bool {
+        drugQuery.trimmingCharacters(in: .whitespaces).count >= 3 && !patient.prescriptions.isEmpty
+    }
+
     private var allergyMatches: [AllergyEntry] {
         guard drugQuery.count >= 3 else { return [] }
         let q = drugQuery.lowercased()
@@ -161,19 +166,33 @@ struct AddPrescriptionSheet: View {
                     }
                 }
 
-                if !liveInteractions.isEmpty {
+                // Display only (H-07): the class each drug matched through, every merged effect,
+                // and the "absence of an alert" note. Never blocks saving.
+                let live = liveInteractions
+                if !live.isEmpty {
                     Section {
-                        ForEach(liveInteractions) { alert in
-                            HStack(spacing: 6) {
-                                Image(systemName: alert.interaction.severity.icon)
-                                    .foregroundStyle(alert.interaction.severity.color)
+                        ForEach(live) { alert in
+                            VStack(alignment: .leading, spacing: 3) {
+                                HStack(spacing: 6) {
+                                    Image(systemName: alert.interaction.severity.icon)
+                                        .foregroundStyle(alert.interaction.severity.color)
+                                    Text(alert.pairDisplay)
+                                        .font(.caption.weight(.semibold))
+                                }
                                 Text(alert.interaction.clinicalEffect)
                                     .font(.caption)
+                                InteractionRelatedEffects(related: alert.related)
                             }
                         }
                     } header: {
                         Label("Interaction Warning", systemImage: "exclamationmark.triangle.fill")
                             .foregroundStyle(.orange)
+                    } footer: {
+                        InteractionAbsenceNote()
+                    }
+                } else if liveInteractionCheckRan {
+                    Section {
+                        InteractionAbsenceNote(noneFound: true)
                     }
                 }
 

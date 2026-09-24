@@ -195,34 +195,49 @@ extension PrescriptionView {
 
     // MARK: - Interaction alerts
 
+    /// Display only (hazard log H-07): shows which class each drug matched through, every
+    /// merged effect, and the "absence of an alert" note. Never blocks or edits a prescription.
     @ViewBuilder
-    var interactionsSection: some View {
+    func interactionsSection(_ alerts: [DrugInteractionAlert]) -> some View {
         Section {
-            ForEach(interactions) { alert in
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack(spacing: 6) {
-                        Image(systemName: alert.interaction.severity.icon)
-                            .foregroundStyle(alert.interaction.severity.color)
-                        Text("\(alert.drugA) + \(alert.drugB)")
-                            .font(.subheadline.weight(.semibold))
-                        Spacer()
-                        Text(alert.interaction.severity.rawValue)
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(alert.interaction.severity.color)
+            if alerts.isEmpty {
+                InteractionAbsenceNote(noneFound: true)
+            } else {
+                ForEach(alerts) { alert in
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(spacing: 6) {
+                            Image(systemName: alert.interaction.severity.icon)
+                                .foregroundStyle(alert.interaction.severity.color)
+                            Text(alert.pairDisplay)
+                                .font(.subheadline.weight(.semibold))
+                            Spacer()
+                            Text(alert.interaction.severity.rawValue)
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(alert.interaction.severity.color)
+                        }
+                        Text(alert.interaction.clinicalEffect)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Text(alert.interaction.management)
+                            .font(.caption.italic())
+                            .foregroundStyle(.orange)
+                        InteractionRelatedEffects(related: alert.related)
                     }
-                    Text(alert.interaction.clinicalEffect)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Text(alert.interaction.management)
-                        .font(.caption.italic())
-                        .foregroundStyle(.orange)
+                    .padding(.vertical, 2)
                 }
-                .padding(.vertical, 2)
             }
         } header: {
-            Label("Drug Interactions (\(interactions.count))", systemImage: "exclamationmark.triangle.fill")
+            Label(interactionsHeaderTitle(count: alerts.count), systemImage: "exclamationmark.triangle.fill")
                 .foregroundStyle(.orange)
+        } footer: {
+            if !alerts.isEmpty {
+                InteractionAbsenceNote()
+            }
         }
+    }
+
+    private func interactionsHeaderTitle(count: Int) -> String {
+        count == 0 ? "Drug Interactions" : "Drug Interactions (\(count))"
     }
 
     // MARK: - Prescription list
