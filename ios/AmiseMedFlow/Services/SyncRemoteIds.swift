@@ -65,7 +65,7 @@ enum SyncRemoteId {
     static func needsServerRow(_ remoteId: String?) -> Bool {
         switch kind(remoteId) {
         case .notInserted, .appointmentPlaceholder: return true
-        case .server, .invalid:              return false
+        case .server, .invalid:                     return false
         }
     }
 }

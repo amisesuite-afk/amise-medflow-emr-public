@@ -7,6 +7,8 @@ import SwiftData
 ///    (SyncRemoteId, the UUID guard every push uses).
 /// 2. Prescriptions, vitals and billing items edited after their first upload are sent as
 ///    updates (the UPDATE payload builders and the rule for clearing pendingSync).
+/// 3. Peer sync never clears pendingSync, and a peer's unsent change stays pending here
+///    (PeerApplyPending; the end-to-end apply cases are in PeerApplyPendingTests below).
 @MainActor
 final class SyncGapsTests: XCTestCase {
 
@@ -47,8 +49,9 @@ final class SyncGapsTests: XCTestCase {
     }
 
     func testServerIdRejectsEverythingElse() {
-        for bad in [nil, "", "appt:\(lowerUUID)", "appt:", "not-a-uuid", "12345",
-                    "\(lowerUUID) ", "{\(lowerUUID)}", "3f2504e04f8911d39a0c0305e82c3301"] {
+        let rejected: [String?] = [nil, "", "appt:\(lowerUUID)", "appt:", "not-a-uuid", "12345",
+                                   "\(lowerUUID) ", "{\(lowerUUID)}", "3f2504e04f8911d39a0c0305e82c3301"]
+        for bad in rejected {
             XCTAssertNil(SyncRemoteId.serverId(bad), "must never be sent: \(bad ?? "nil")")
         }
     }

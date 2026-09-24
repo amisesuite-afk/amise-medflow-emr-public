@@ -78,8 +78,24 @@ go through `PatientPullMerge.applyServerPatientRow` (only `remoteId`, an MRN the
 and the Scale 2 flag apply to a pending patient); notes and operative plans skip pending rows;
 prescriptions/vitals/billing/documents pulls only insert new rows. A push clears `pendingSync`
 only when the server returns the written row (`.select("id")`; an RLS-refused update returns no
-rows, no error) and `updatedAt` did not change during the request. Tests:
+rows, no error) and `updatedAt` did not change during the request (`SyncPushConfirmation`). Tests:
 `AmiseMedFlowTests/PullProtectionTests.swift`.
+Remote ids (`Services/SyncRemoteIds.swift`): a patient created from a confirmed booking carries
+the placeholder `"appt:<appointment id>"`, which is not a row id. Every push sends a remoteId only
+through `SyncRemoteId.serverId(_:)` (UUID guard, row ids and `patient_id`); never compare with
+`hasPrefix("appt:")` by hand. `pushPendingPatients` gives a placeholder patient a real row once it
+has local work (its own edits or a pending child record): the booking's `patient_id`, else an
+MRN + name match, else an insert; `adoptServerId` replaces the placeholder and
+`AppointmentLinks` stops the appointment pull re-creating it.
+Notes, operative plans, prescriptions, vitals and billing items push an UPDATE when they have a
+server id and an INSERT otherwise; a tombstoned row is never updated. Prescription, VitalsEntry
+and BillingLineItem have `updatedAt` (optional) and `markEdited()`: call it on every edit of an
+existing record (BillingView's inline editor does). Payloads: `PrescriptionUpdateRow`,
+`VitalsUpdateRow` (cleared readings sent as null), `BillingItemUpdateRow`.
+Peer apply (`PeerApplyPending`): never clears `pendingSync`; a peer's unsent change (payload
+`pendingSync`) that changed the record here becomes pending here too, only when the record has a
+server row (idempotent update; inserts stay with the origin device). Child records already here
+take the peer's server id by syncCode. Tests: `AmiseMedFlowTests/SyncGapsTests.swift`.
 Resilience: `sync()` runs each step through `runSyncStep` (a failure sets `syncError`, later
 steps still run) and every push loop handles errors per record via `continueAfterPushFailure`
 (`SyncService+Refusals.swift`). A `42501` marks the record in `SyncRefusals` (kept locally, still
