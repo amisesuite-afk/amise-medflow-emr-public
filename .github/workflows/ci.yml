@@ -39,6 +39,12 @@ jobs:
       - name: Lint RLS policy presence
         run: pnpm --filter @workspace/scripts run lint:rls-policies
 
+      # Applies every run-migrations.yml step to an empty in-process Postgres
+      # (PGlite), twice, with Supabase stand-ins. Catches forward references and
+      # non-idempotent steps. No database connection, no secrets; about 10s.
+      - name: Check migrations on a fresh database
+        run: pnpm --filter @workspace/scripts run check:migrations-fresh
+
       - name: Lint dx-variant clinical phases
         run: pnpm --filter @workspace/scripts run lint:dx-phases
 
