@@ -151,12 +151,45 @@ final class DeduplicationTests: XCTestCase {
             ("workingDiagnosis", { $0.workingDiagnosis = "Acute appendicitis" }),
             ("examGeneral",      { $0.examGeneral = "Unwell" }),
             ("examAbdo",         { $0.examAbdo = "Tender RIF" }),
+            ("examCVS",          { $0.examCVS = "HS I+II+0" }),
+            ("examResp",         { $0.examResp = "Clear" }),
+            ("examNeuro",        { $0.examNeuro = "GCS 15" }),
+            ("examMSK",          { $0.examMSK = "Full ROM" }),
+            ("examSkin",         { $0.examSkin = "Cellulitis left shin" }),
+            ("examOther",        { $0.examOther = "PR: no blood" }),
+            ("chiefComplaint",   { $0.chiefComplaint = "RIF pain" }),
+            ("associatedSymptoms", { $0.associatedSymptoms = "Vomiting" }),
+            ("pmhNotes",         { $0.pmhNotes = "Type 2 diabetes" }),
+            ("surgicalHistory",  { $0.surgicalHistory = "Lap chole 2019" }),
+            ("familyHistory",    { $0.familyHistoryNotes = "Bowel cancer (father)" }),
+            ("socialHistory",    { $0.socialHistory = "Smoker" }),
+            ("allergy",          { $0.allergies = [AllergyEntry(name: "Penicillin", severity: "Severe",
+                                                                reaction: "Anaphylaxis")] }),
+            ("NKDA",             { $0.allergies = [Patient.nkdaMarkerEntry()] }),
+            ("pmhEntries",       { $0.pmhEntries = [PMHEntry(condition: "Hypertension")] }),
+            ("pshxEntries",      { $0.pshxEntries = [PSHxEntry(procedure: "Appendicectomy")] }),
+            ("ogd form",         { $0.ogdDataJson = "{\"findings\":\"Normal\"}" }),
+            ("discharge form",   { $0.dischargeSummaryDataJson = "{\"summary\":\"Home\"}" }),
+            ("pathway form",     { $0.pathwayDataJson = "{\"burns\":{}}" }),
+            ("ASA",              { $0.asaClass = 2 }),
+            ("height",           { $0.heightCm = 170 }),
         ]
         for (label, apply) in setters {
             let p = patient("Field \(label)")
             apply(p)
             XCTAssertTrue(p.hasClinicalData, label)
         }
+    }
+
+    func testEmptyJSONAndAdministrativeFieldsAreNotClinicalData() {
+        let p = patient("Admin Only")
+        p.phone = "758-000-0000"
+        p.email = "a@example.com"
+        p.mrn = "AMF-2026-000001"
+        p.allergiesJson = "[]"
+        p.ogdDataJson = "  "
+        p.operationDate = date(2026, 10, 1)   // appointment date from the calendar
+        XCTAssertFalse(p.hasClinicalData)
     }
 
     func testVitalsCountAsClinicalData() throws {
@@ -206,6 +239,42 @@ final class DeduplicationTests: XCTestCase {
         a.hpi = "History on device A"
         b.hpi = "History on device B"
         XCTAssertEqual(Set([a, b].deduped().map(\.id)), [a.id, b.id])
+    }
+
+    /// A copy whose only clinical content is an allergy is never hidden, never chosen for removal,
+    /// and is preferred as the keeper over an empty copy.
+    func testAllergyOnlyCopyIsNeverHiddenOrRemovable() {
+        let empty = patient("Lena Joseph", order: 0)
+        let allergyOnly = patient("Lena Joseph", order: 1)
+        allergyOnly.allergies = [AllergyEntry(name: "Penicillin", severity: "Severe", reaction: "Anaphylaxis")]
+
+        XCTAssertTrue(allergyOnly.hasClinicalData)
+        XCTAssertEqual([empty, allergyOnly].duplicateKeeper.id, allergyOnly.id)
+        XCTAssertEqual([empty, allergyOnly].deduped().map(\.id), [allergyOnly.id],
+                       "the empty copy is hidden behind the allergy copy, never the other way round")
+
+        // Two charted copies (one holds only an allergy): both stay visible.
+        let charted = patient("Lena Joseph", order: 2)
+        charted.hpi = "Epigastric pain"
+        let shown = Set([empty, allergyOnly, charted].deduped().map(\.id))
+        XCTAssertTrue(shown.contains(allergyOnly.id))
+        XCTAssertTrue(shown.contains(charted.id))
+        XCTAssertFalse(shown.contains(empty.id))
+    }
+
+    func testSameManualMRNNeverHidesACopyWithClinicalData() {
+        let older = patient("Anne Brown", order: 0)
+        let newer = patient("Anne Brown", order: 1)
+        older.mrn = "H-200"
+        newer.mrn = "H-200"
+        older.allergies = [AllergyEntry(name: "Latex", severity: "Moderate", reaction: "Urticaria")]
+        let shown = [older, newer].deduped()
+        XCTAssertEqual(shown.map(\.id), [older.id],
+                       "equal richness: the copy with clinical data is kept, not the newer empty one")
+
+        newer.examAbdo = "Soft"
+        XCTAssertEqual(Set([older, newer].deduped().map(\.id)), [older.id, newer.id],
+                       "both copies hold clinical data, so neither is hidden")
     }
 
     func testDedupedKeepsSameNameDifferentDOB() {

@@ -24,15 +24,22 @@ extension Array where Element == Patient {
         for p in live {
             let key = p.dedupKey
             if let existing = seen[key] {
-                if p.dedupRichness > existing.dedupRichness ||
-                   (p.dedupRichness == existing.dedupRichness && p.createdAt > existing.createdAt) {
-                    seen[key] = p
+                if p.dedupRichness != existing.dedupRichness {
+                    if p.dedupRichness > existing.dedupRichness { seen[key] = p }
+                } else {
+                    // Equal richness: prefer the copy with clinical data, then the newer one.
+                    let pData = p.hasClinicalData, eData = existing.hasClinicalData
+                    if (pData && !eData) || (pData == eData && p.createdAt > existing.createdAt) {
+                        seen[key] = p
+                    }
                 }
             } else {
                 seen[key] = p
             }
         }
-        let unique = live.filter { seen[$0.dedupKey]?.id == $0.id }
+        // A copy that holds clinical data is never hidden, even when it shares its key with the
+        // record that is kept; the duplicate review shows it for the clinician to reconcile.
+        let unique = live.filter { seen[$0.dedupKey]?.id == $0.id || $0.hasClinicalData }
         // Hide empty same-name copies behind the record that is kept.
         var hidden = Set<UUID>()
         for group in unique.possibleDuplicateGroups() {
@@ -104,12 +111,46 @@ extension Patient {
     }
 
     /// True when the record holds anything clinical. Such records are never offered for removal
-    /// by the duplicate review. The clinician must deal with them from the chart itself.
+    /// by the duplicate review, and never hidden from lists. The clinician must deal with them
+    /// from the chart itself. Errs on the side of "has data": any non-blank clinical field counts,
+    /// including a single allergy or NKDA entry, a saved procedure form or pathway form.
     var hasClinicalData: Bool {
         if dedupRichness > 0 || !documents.isEmpty || !operativePlans.isEmpty ||
             !billingItems.isEmpty || !scoreHistory.isEmpty { return true }
-        let text = [hpi, assessmentText, managementPlan, workingDiagnosis, examGeneral, examAbdo]
-        return text.contains { !($0 ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+        // Clinical measurements / assessments. Visit type and operation/appointment date are set by
+        // registration and calendar import, so they are administrative and not counted.
+        if asaClass != nil || heightCm != nil { return true }
+        let text: [String?] = [
+            // Presentation and history
+            chiefComplaint, associatedSymptoms, hpi, pmhNotes, surgicalHistory,
+            familyHistoryNotes, socialHistory, notes,
+            // Assessment and plan
+            assessmentText, managementPlan, workingDiagnosis, workingDiagnosisICD, workingDiagnosisCC,
+            aiClinicalReasoning,
+            // Examination (every system)
+            examGeneral, examCVS, examResp, examAbdo, examNeuro, examMSK, examSkin, examOther,
+        ]
+        if text.contains(where: Patient.hasContent) { return true }
+        // Structured JSON (allergies, investigations, PMH/PSHx entries, pathway and procedure forms).
+        let json: [String?] = [
+            allergiesJson, investigationsJson, pmhEntriesJson, pshxEntriesJson, pathwayDataJson,
+            traumaDataJson, ogdDataJson, colonoscopyDataJson, surgeryDataJson, ercpDataJson,
+            bronchoscopyDataJson, dischargeSummaryDataJson, postOpReviewDataJson,
+            referralLetterDataJson, consentFormDataJson, preOpChecklistDataJson,
+            patientInstructionsDataJson,
+        ]
+        return json.contains(where: Patient.hasJSONContent)
+    }
+
+    private static func hasContent(_ s: String?) -> Bool {
+        !(s ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    /// Non-blank and not an empty JSON container. A saved form with default values still counts:
+    /// when in doubt the record is treated as holding clinical data.
+    private static func hasJSONContent(_ s: String?) -> Bool {
+        let t = (s ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        return !t.isEmpty && t != "[]" && t != "{}" && t != "null"
     }
 
     var clinicalDataSummary: String {
@@ -122,7 +163,9 @@ extension Patient {
         add(documents.count, "docs")
         add(operativePlans.count, "op plans")
         add(scoreHistory.count, "scores")
-        if parts.isEmpty && hasClinicalData { parts.append("history/assessment text") }
+        add(recordedAllergies.count, "allergies")
+        if hasExplicitNKDA { parts.append("NKDA") }
+        if parts.isEmpty && hasClinicalData { parts.append("history, exam or form entries") }
         return parts.isEmpty ? "No clinical data" : parts.joined(separator: " · ")
     }
 
