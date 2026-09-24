@@ -51,14 +51,26 @@ create index if not exists idx_referring_providers_email on referring_providers 
 -- ── RLS ──
 alter table referring_providers enable row level security;
 
-create policy "staff_select_referring_providers" on referring_providers
-  for select using (auth.uid() is not null);
-create policy "staff_insert_referring_providers" on referring_providers
-  for insert with check (auth.uid() is not null);
-create policy "staff_update_referring_providers" on referring_providers
-  for update using (auth.uid() is not null);
-create policy "admins_delete_referring_providers" on referring_providers
-  for delete using (auth_role() = 'admin');
+do $guard$ begin
+  create policy "staff_select_referring_providers" on referring_providers
+    for select using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_insert_referring_providers" on referring_providers
+    for insert with check (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_update_referring_providers" on referring_providers
+    for update using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "admins_delete_referring_providers" on referring_providers
+    for delete using (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
 grant select, insert, update, delete on public.referring_providers to authenticated;
 

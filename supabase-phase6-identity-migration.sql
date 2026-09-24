@@ -35,8 +35,11 @@ CREATE TABLE IF NOT EXISTS public.patient_identifiers (
 
 ALTER TABLE public.patient_identifiers ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "staff access" ON public.patient_identifiers
-  FOR ALL TO authenticated USING (true) WITH CHECK (true);
+do $guard$ begin
+  CREATE POLICY "staff access" ON public.patient_identifiers
+    FOR ALL TO authenticated USING (true) WITH CHECK (true);
+exception when duplicate_object then null;
+end $guard$;
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.patient_identifiers TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.patient_identifiers TO service_role;
@@ -70,8 +73,11 @@ CREATE TABLE IF NOT EXISTS public.duplicate_queue (
 
 ALTER TABLE public.duplicate_queue ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "staff access" ON public.duplicate_queue
-  FOR ALL TO authenticated USING (true) WITH CHECK (true);
+do $guard$ begin
+  CREATE POLICY "staff access" ON public.duplicate_queue
+    FOR ALL TO authenticated USING (true) WITH CHECK (true);
+exception when duplicate_object then null;
+end $guard$;
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.duplicate_queue TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.duplicate_queue TO service_role;

@@ -746,5 +746,16 @@ jobs:
             -H "Content-Type: application/json" \
             -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
+      # Deferred parts of earlier steps that referenced objects a later step
+      # creates (a fresh database has none of production's hand-made objects).
+      # Checked by `pnpm --filter @workspace/scripts run check:migrations-fresh`.
+      - name: "Migration 90: deferred forward references (patients_select_own_sessions from Migration 2)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-deferred-forward-refs-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+
       - name: Done
-        run: echo "All 89 migrations completed successfully. See migrations/README.md for files intentionally excluded (conflicting duplicate table definitions) and how to add the next migration."
+        run: echo "All 90 migrations completed successfully. See migrations/README.md for files intentionally excluded (conflicting duplicate table definitions) and how to add the next migration."

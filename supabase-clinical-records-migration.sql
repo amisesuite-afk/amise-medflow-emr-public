@@ -293,63 +293,123 @@ end $$;
 -- ── clinical_notes ──
 -- Drafts visible only to author + admins; signed notes visible to nurses too.
 -- Only doctors/admins can write notes.
-create policy "staff_select_clinical_notes" on clinical_notes
-  for select using (
-    auth_role() in ('doctor', 'admin')
-    or (auth_role() = 'nurse' and status = 'signed')
-  );
-create policy "doctors_insert_clinical_notes" on clinical_notes
-  for insert with check (auth_role() in ('doctor', 'admin'));
-create policy "doctors_update_clinical_notes" on clinical_notes
-  for update using (
-    created_by = auth.uid()
-    or auth_role() = 'admin'
-  );
-create policy "admins_delete_clinical_notes" on clinical_notes
-  for delete using (auth_role() = 'admin');
+do $guard$ begin
+  create policy "staff_select_clinical_notes" on clinical_notes
+    for select using (
+      auth_role() in ('doctor', 'admin')
+      or (auth_role() = 'nurse' and status = 'signed')
+    );
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "doctors_insert_clinical_notes" on clinical_notes
+    for insert with check (auth_role() in ('doctor', 'admin'));
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "doctors_update_clinical_notes" on clinical_notes
+    for update using (
+      created_by = auth.uid()
+      or auth_role() = 'admin'
+    );
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "admins_delete_clinical_notes" on clinical_notes
+    for delete using (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── documents ──
-create policy "staff_select_documents" on documents
-  for select using (auth.uid() is not null);
-create policy "staff_insert_documents" on documents
-  for insert with check (auth.uid() is not null);
-create policy "staff_update_documents" on documents
-  for update using (
-    created_by = auth.uid()
-    or auth_role() in ('doctor', 'admin')
-  );
-create policy "admins_delete_documents" on documents
-  for delete using (auth_role() = 'admin');
+do $guard$ begin
+  create policy "staff_select_documents" on documents
+    for select using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_insert_documents" on documents
+    for insert with check (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_update_documents" on documents
+    for update using (
+      created_by = auth.uid()
+      or auth_role() in ('doctor', 'admin')
+    );
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "admins_delete_documents" on documents
+    for delete using (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── billing_charges ──
-create policy "staff_select_billing" on billing_charges
-  for select using (auth.uid() is not null);
-create policy "staff_insert_billing" on billing_charges
-  for insert with check (auth.uid() is not null);
-create policy "staff_update_billing" on billing_charges
-  for update using (auth.uid() is not null);
-create policy "admins_delete_billing" on billing_charges
-  for delete using (auth_role() = 'admin');
+do $guard$ begin
+  create policy "staff_select_billing" on billing_charges
+    for select using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_insert_billing" on billing_charges
+    for insert with check (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_update_billing" on billing_charges
+    for update using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "admins_delete_billing" on billing_charges
+    for delete using (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── imaging_orders ──
-create policy "staff_select_imaging" on imaging_orders
-  for select using (auth.uid() is not null);
-create policy "clinical_insert_imaging" on imaging_orders
-  for insert with check (auth_role() in ('doctor', 'admin', 'nurse'));
-create policy "clinical_update_imaging" on imaging_orders
-  for update using (auth_role() in ('doctor', 'admin', 'nurse'));
-create policy "admins_delete_imaging" on imaging_orders
-  for delete using (auth_role() = 'admin');
+do $guard$ begin
+  create policy "staff_select_imaging" on imaging_orders
+    for select using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "clinical_insert_imaging" on imaging_orders
+    for insert with check (auth_role() in ('doctor', 'admin', 'nurse'));
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "clinical_update_imaging" on imaging_orders
+    for update using (auth_role() in ('doctor', 'admin', 'nurse'));
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "admins_delete_imaging" on imaging_orders
+    for delete using (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── investigation_results ──
-create policy "staff_select_investigations" on investigation_results
-  for select using (auth.uid() is not null);
-create policy "staff_insert_investigations" on investigation_results
-  for insert with check (auth.uid() is not null);
-create policy "clinical_update_investigations" on investigation_results
-  for update using (auth_role() in ('doctor', 'admin', 'nurse'));
-create policy "admins_delete_investigations" on investigation_results
-  for delete using (auth_role() = 'admin');
+do $guard$ begin
+  create policy "staff_select_investigations" on investigation_results
+    for select using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_insert_investigations" on investigation_results
+    for insert with check (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "clinical_update_investigations" on investigation_results
+    for update using (auth_role() in ('doctor', 'admin', 'nurse'));
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "admins_delete_investigations" on investigation_results
+    for delete using (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
 -- ─────────────────────────────────────────────────────────────
 -- INDEXES

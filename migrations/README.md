@@ -26,13 +26,17 @@ it's idempotent (nearly all are — `CREATE TABLE IF NOT EXISTS`, `ADD COLUMN IF
    existing step, before `Done`, following the existing `Migration N: <description>` naming
    pattern. This is the step that was skipped for ~44 migrations over this project's history
    and is what caused the backlog item this file exists to close — don't repeat it.
-4. `pnpm --filter @workspace/scripts run lint:grants` (CI-enforced) will catch a missing
+4. Run `pnpm --filter @workspace/scripts run check:migrations-fresh` (CI-enforced, about 10s).
+   It applies every wired step to an empty in-process Postgres, twice, and fails on a forward
+   reference, a non-idempotent statement, or a policy or grant that a re-run would re-open
+   before Migration 89. See [Fresh-database check](#fresh-database-check).
+5. `pnpm --filter @workspace/scripts run lint:grants` (CI-enforced) will catch a missing
    `service_role` grant on a new table; it does not catch a migration file never being wired
    into the runner, since that's a workflow-file gap, not a SQL-file gap. There is currently no
    automated check for "every `supabase*.sql` file is referenced somewhere in
    `run-migrations.yml`" — a good candidate for a future lint script, but out of scope here
    since (see below) not every loose file *should* be wired in.
-5. If you're building on a migration that hasn't been applied to production yet, say so in the
+6. If you're building on a migration that hasn't been applied to production yet, say so in the
    PR — the runner is only ever triggered manually, on purpose, by someone who can confirm
    production is in the expected state first.
 
@@ -89,6 +93,104 @@ column list, or `\d <table>` via SQL Editor), pick the file matching what's actu
 add its step to `run-migrations.yml`, and delete (or clearly mark superseded, e.g. rename to
 `.superseded.sql` so it's excluded from `lint:grants`/`lint:rls-policies`'s glob) the losing
 duplicate file(s) so this situation can't quietly get worse.
+
+## Fresh-database check
+
+`scripts/src/check-migrations-fresh.ts` (`pnpm --filter @workspace/scripts run
+check:migrations-fresh`, run in CI) reads the steps from `run-migrations.yml` and applies each
+file, in order, to an empty PGlite database (Postgres compiled to WASM, in process). Nothing
+connects to a real database. Supabase's own objects are replaced by stand-ins: the `anon`,
+`authenticated` and `service_role` roles, the `extensions` schema (`uuid-ossp`, `pgcrypto`),
+`auth.users`, `auth.uid()`, `auth.role()`, `auth.jwt()`, `auth.email()`, `storage.buckets`,
+`storage.objects`, `storage.foldername()`/`filename()`/`extension()`, and the
+`supabase_realtime` publication. Each file is sent as one string, as the runner sends it, so
+one failing statement rolls back the whole file.
+
+It then checks three things:
+
+1. **Every step applies a second time.** The runner is re-run from the top, so every file must
+   be idempotent.
+2. **The second pass leaves the schema unchanged.** It compares a catalogue snapshot (columns,
+   constraints, indexes, RLS flags, policies, triggers, functions, grants, publication tables,
+   buckets) after each pass. A difference means a guarded statement skipped on the first pass
+   because a *later* step creates what it needs. That is a forward reference that raises no
+   error.
+3. **A re-run does not re-open access.** It re-runs the steps before Migration 89 and lists any
+   policy or table grant that exists then but not in the final state. Such access would be open
+   for part of every production run, until step 89 narrows it again.
+
+Guarded steps report what they skip with `RAISE NOTICE`, and the check always prints those.
+
+### What it found (fixed, first applied by the next run)
+
+The runner as it stood could not complete on any database:
+
+- **Fresh database: 15 steps failed.** The first was Migration 2, and several later failures
+  were knock-on effects of it.
+- **Re-run against a database that already had the objects (production): 35 steps failed.** The
+  first was "Run base schema" (`policy "users_select_own_profile" ... already exists`). Every
+  `CREATE POLICY`, most `CREATE TRIGGER` and every `ADD CONSTRAINT` was bare. The README's
+  "re-run from the top" process could not have got past the base schema, so production has in
+  practice been migrated some other way (e.g. the SQL editor).
+
+Forward references, where a step uses something a later step creates:
+
+| Step | Reference | Fix |
+|---|---|---|
+| 2 (patient portal) | policy `patients_select_own_sessions` on `questionnaire_sessions`, created by Migration 3 | Migration 2 skips the policy when the table is missing. New **Migration 90** (`supabase-deferred-forward-refs-migration.sql`, appended last) creates it. It is a no-op on production, which already has it. The other failures (6, 7, 14, 23, 89) were knock-on effects of 2 rolling back. |
+
+No other step uses anything a later step creates. The snapshot comparison (point 2 above)
+confirms this for guarded statements too.
+
+References to objects **no runner step creates** at all (production-only, or created only by
+the excluded conflicting files listed above). Each is now guarded so the step completes; on
+production, where the object exists, the step behaves as before:
+
+| Step | Reference | On a fresh database |
+|---|---|---|
+| 21 (procedure prep drafts) | FK `thread_id → conversation_threads`. The table was applied to production by hand from `artifacts/front-desk/supabase-schema.sql` and is not in the runner. | `thread_id` is created without the FK. The FK is added if `conversation_threads` exists. |
+| 29 (appointment requests align) | back-fill from `chief_complaint`, `preferred_site`, `preferred_date`, `triage_level`, legacy production-only columns from the same front-desk schema | each back-fill is skipped (nothing to back-fill) |
+| 56 (slice C) | FK `clinical_states.problem_id → patient_problems` (excluded conflicting table) | column created without the FK. The FK is added if `patient_problems` exists. |
+| 66 (clinical audit trigger) | `audit_log` (excluded conflicting table) | The step used to `RAISE EXCEPTION`; it now raises a notice. Its existing re-check still attaches no trigger while `audit_log` is missing. |
+| 77 (prescriptions flat columns, wired twice) | back-fill from `prescriptions.items`, which exists only in the excluded prescriptions files | back-fill skipped. This UPDATE is also why the step failed on production (hence Migration 78). |
+| 80 (mm_cases RCA) | `mm_cases` (excluded conflicting table) | skipped |
+| 83 (pmh_items grant fix) | `pmh_items` (only in the unwired `supabase-missing-tables-migration.sql`) | skipped |
+
+Other fixes:
+
+- **68 (iOS EMR columns)** used `CREATE POLICY IF NOT EXISTS`, which is not valid Postgres in
+  any version. The step failed with a syntax error on every database, so its columns and
+  tables have come from later steps. It is now guarded like the rest.
+- **Idempotency.** Every bare `CREATE POLICY` in a wired file is wrapped as
+  `do $guard$ begin create policy ...; exception when duplicate_object then null; end $guard$;`.
+  It creates the policy only if it is missing and never overwrites one, so a policy that a
+  later step (notably 89) narrowed keeps its narrowed definition. The same applies to the
+  trigger in 40 and the constraints in 5 and 61.
+- **Re-run window.** Three earlier steps re-created or re-opened policies that 89 narrows or
+  drops: the six "Authenticated users can ... clinical attachments / patient documents"
+  storage policies (35), `staff_manage_consultation_requests` (7, which used drop+create) and
+  `doctors_update_patients` (base schema). Each now skips when Migration 89 has already run
+  (`to_regclass('public.user_profiles_revoked') is not null`). Without this, the first
+  complete production run after this change would have let any signed-in user, portal
+  patients included, read those storage buckets until step 89 ran.
+
+**Before the next production run:** the runner has never completed there. Expect it to apply
+everything that has been failing, including 68, 77, 87, 88, 89 and 90. Read the Migration 89
+notes below before running it.
+
+### Steps that cannot fully apply on a fresh database
+
+A fresh database built only from the runner still lacks the following, until the conflicting
+duplicates above are resolved and wired in:
+
+- `audit_log`, so Migration 66 attaches no audit triggers;
+- `patient_problems`, so `clinical_states.problem_id` has no FK;
+- `mm_cases`, so there are no RCA columns (80);
+- `pmh_items`, so the grant fix (83) is skipped;
+- `conversation_threads`, so `procedure_prep_drafts.thread_id` has no FK and the front-desk
+  thread features have no table;
+- the legacy `appointment_requests` columns, which are only back-filled from on production
+  (29), and `prescriptions.items` (77).
 
 ## Later additions
 
@@ -309,3 +411,14 @@ migration together with, or soon after, that deploy.
 are overridden here, so this step must stay after every step that creates those policies.
 `lint:rls-policies` now fails if the last definition of a required policy, in runner order, is
 "any authenticated user".
+
+### Migration 90 — `supabase-deferred-forward-refs-migration.sql` (deferred forward references)
+
+- Creates `patients_select_own_sessions` on `questionnaire_sessions`, which Migration 2
+  referenced before Migration 3 created the table. Migration 2 now skips it when the table is
+  missing, so a fresh run no longer fails at step 2.
+- Appended last so no applied step is renumbered. Idempotent, and a no-op on production,
+  which already has the policy. It is a patient own-row policy, which Migration 89 leaves
+  alone, so running after 89 is safe.
+- For a future forward reference, do the same with a new step appended at the end: guard the
+  early step and create the object in the new file.

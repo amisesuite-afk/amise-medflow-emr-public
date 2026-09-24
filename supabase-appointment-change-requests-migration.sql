@@ -33,16 +33,25 @@ create index if not exists idx_change_requests_status
 alter table appointment_change_requests enable row level security;
 
 -- Patients can create and view their own requests.
-create policy "patients_insert_own_change_requests" on appointment_change_requests
-  for insert with check (patient_id = my_patient_id());
+do $guard$ begin
+  create policy "patients_insert_own_change_requests" on appointment_change_requests
+    for insert with check (patient_id = my_patient_id());
+exception when duplicate_object then null;
+end $guard$;
 
-create policy "patients_select_own_change_requests" on appointment_change_requests
-  for select using (patient_id = my_patient_id());
+do $guard$ begin
+  create policy "patients_select_own_change_requests" on appointment_change_requests
+    for select using (patient_id = my_patient_id());
+exception when duplicate_object then null;
+end $guard$;
 
 -- Staff (any authenticated user who is not a portal patient) can view and
 -- resolve all requests.
-create policy "staff_manage_change_requests" on appointment_change_requests
-  for all using (auth.uid() is not null and my_patient_id() is null);
+do $guard$ begin
+  create policy "staff_manage_change_requests" on appointment_change_requests
+    for all using (auth.uid() is not null and my_patient_id() is null);
+exception when duplicate_object then null;
+end $guard$;
 
 grant select, insert on public.appointment_change_requests to authenticated;
 grant select, insert, update on public.appointment_change_requests to service_role;

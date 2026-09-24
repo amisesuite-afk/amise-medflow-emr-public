@@ -38,36 +38,54 @@ $$;
 -- ─────────────────────────────────────────────────────────────
 -- RLS: patients — own row only
 -- ─────────────────────────────────────────────────────────────
-create policy "patients_select_own" on patients
-  for select using (auth_user_id = auth.uid());
+do $guard$ begin
+  create policy "patients_select_own" on patients
+    for select using (auth_user_id = auth.uid());
+exception when duplicate_object then null;
+end $guard$;
 
-create policy "patients_update_own_contact" on patients
-  for update using (auth_user_id = auth.uid())
-  with check (auth_user_id = auth.uid());
+do $guard$ begin
+  create policy "patients_update_own_contact" on patients
+    for update using (auth_user_id = auth.uid())
+    with check (auth_user_id = auth.uid());
+exception when duplicate_object then null;
+end $guard$;
 
 -- ─────────────────────────────────────────────────────────────
 -- RLS: appointments — own appointments
 -- ─────────────────────────────────────────────────────────────
-create policy "patients_select_own_appointments" on appointments
-  for select using (patient_id = my_patient_id());
+do $guard$ begin
+  create policy "patients_select_own_appointments" on appointments
+    for select using (patient_id = my_patient_id());
+exception when duplicate_object then null;
+end $guard$;
 
 -- ─────────────────────────────────────────────────────────────
 -- RLS: medications — own active medications
 -- ─────────────────────────────────────────────────────────────
-create policy "patients_select_own_medications" on medications
-  for select using (patient_id = my_patient_id());
+do $guard$ begin
+  create policy "patients_select_own_medications" on medications
+    for select using (patient_id = my_patient_id());
+exception when duplicate_object then null;
+end $guard$;
 
 -- ─────────────────────────────────────────────────────────────
 -- RLS: allergies — own allergies
 -- ─────────────────────────────────────────────────────────────
-create policy "patients_select_own_allergies" on allergies
-  for select using (patient_id = my_patient_id());
+do $guard$ begin
+  create policy "patients_select_own_allergies" on allergies
+    for select using (patient_id = my_patient_id());
+exception when duplicate_object then null;
+end $guard$;
 
 -- ─────────────────────────────────────────────────────────────
 -- RLS: referrals — own referrals
 -- ─────────────────────────────────────────────────────────────
-create policy "patients_select_own_referrals" on referrals
-  for select using (patient_id = my_patient_id());
+do $guard$ begin
+  create policy "patients_select_own_referrals" on referrals
+    for select using (patient_id = my_patient_id());
+exception when duplicate_object then null;
+end $guard$;
 
 -- ─────────────────────────────────────────────────────────────
 -- RLS: documents — own non-confidential documents
@@ -75,17 +93,31 @@ create policy "patients_select_own_referrals" on referrals
 -- staff to explicitly share them with the patient in a future
 -- update (not in this initial migration).
 -- ─────────────────────────────────────────────────────────────
-create policy "patients_select_own_documents" on documents
-  for select using (
-    patient_id = my_patient_id()
-    and is_confidential = false
-  );
+do $guard$ begin
+  create policy "patients_select_own_documents" on documents
+    for select using (
+      patient_id = my_patient_id()
+      and is_confidential = false
+    );
+exception when duplicate_object then null;
+end $guard$;
 
 -- ─────────────────────────────────────────────────────────────
 -- RLS: questionnaire_sessions — own sessions
+-- questionnaire_sessions is created by the NEXT runner step (Migration 3,
+-- supabase-apcq-migration.sql), so on a fresh database it does not exist
+-- yet. Skip here when it is missing; supabase-deferred-forward-refs-migration.sql
+-- (Migration 90) creates the same policy once the table exists.
 -- ─────────────────────────────────────────────────────────────
-create policy "patients_select_own_sessions" on questionnaire_sessions
-  for select using (patient_id = my_patient_id());
+do $guard$ begin
+  if to_regclass('public.questionnaire_sessions') is null then
+    raise notice 'questionnaire_sessions missing: patients_select_own_sessions deferred to Migration 90';
+    return;
+  end if;
+  create policy "patients_select_own_sessions" on questionnaire_sessions
+    for select using (patient_id = my_patient_id());
+exception when duplicate_object then null;
+end $guard$;
 
 -- ─────────────────────────────────────────────────────────────
 -- GRANTS: anon needs nothing extra; authenticated patients

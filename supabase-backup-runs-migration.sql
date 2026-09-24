@@ -19,8 +19,11 @@ CREATE TABLE IF NOT EXISTS public.backup_runs (
 -- RLS
 ALTER TABLE public.backup_runs ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "staff read" ON public.backup_runs
-  FOR SELECT TO authenticated USING (true);
+do $guard$ begin
+  CREATE POLICY "staff read" ON public.backup_runs
+    FOR SELECT TO authenticated USING (true);
+exception when duplicate_object then null;
+end $guard$;
 
 -- GitHub Actions uses service_role to insert (no RLS check needed, but GRANT required)
 GRANT SELECT, INSERT, UPDATE ON TABLE public.backup_runs TO authenticated;

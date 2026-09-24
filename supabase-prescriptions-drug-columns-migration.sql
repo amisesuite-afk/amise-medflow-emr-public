@@ -19,7 +19,23 @@ ALTER TABLE public.prescriptions
 -- pre-date this migration (web-created prescriptions). Leaves drug NULL for any
 -- row whose items array is empty or missing — acceptable since NOT NULL is not
 -- being enforced retroactively here.
-UPDATE public.prescriptions
-   SET drug = items->0->>'name'
- WHERE drug IS NULL
-   AND jsonb_array_length(items) > 0;
+--
+-- Only when 'items' exists. No runner step creates it (it came from one of the
+-- excluded duplicate prescriptions definitions, see migrations/README.md), and
+-- the unguarded UPDATE rolled this whole step back on databases without it --
+-- which is why Migration 78 exists. Guarded, the step is a no-op there.
+DO $guard$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'prescriptions' AND column_name = 'items'
+  ) THEN
+    EXECUTE $sql$
+      UPDATE public.prescriptions
+         SET drug = items->0->>'name'
+       WHERE drug IS NULL
+         AND jsonb_array_length(items) > 0
+    $sql$;
+  ELSE
+    RAISE NOTICE 'prescriptions.items missing: drug back-fill skipped';
+  END IF;
+END $guard$;

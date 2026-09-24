@@ -47,8 +47,11 @@ CREATE TABLE IF NOT EXISTS public.escalation_events (
 
 ALTER TABLE public.escalation_events ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "staff access" ON public.escalation_events
-  FOR ALL TO authenticated USING (true) WITH CHECK (true);
+do $guard$ begin
+  CREATE POLICY "staff access" ON public.escalation_events
+    FOR ALL TO authenticated USING (true) WITH CHECK (true);
+exception when duplicate_object then null;
+end $guard$;
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.escalation_events TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.escalation_events TO service_role;

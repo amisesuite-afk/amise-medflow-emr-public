@@ -56,11 +56,17 @@ CREATE INDEX IF NOT EXISTS theatre_cases_session_idx
 ALTER TABLE public.theatre_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.theatre_cases    ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "staff access" ON public.theatre_sessions
-  FOR ALL TO authenticated USING (true) WITH CHECK (true);
+do $guard$ begin
+  CREATE POLICY "staff access" ON public.theatre_sessions
+    FOR ALL TO authenticated USING (true) WITH CHECK (true);
+exception when duplicate_object then null;
+end $guard$;
 
-CREATE POLICY "staff access" ON public.theatre_cases
-  FOR ALL TO authenticated USING (true) WITH CHECK (true);
+do $guard$ begin
+  CREATE POLICY "staff access" ON public.theatre_cases
+    FOR ALL TO authenticated USING (true) WITH CHECK (true);
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── Grants ────────────────────────────────────────────────────────────────────
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.theatre_sessions TO authenticated;

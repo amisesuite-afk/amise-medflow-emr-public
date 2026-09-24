@@ -14,15 +14,21 @@ values (
 on conflict (id) do nothing;
 
 -- Service role can read/write all recordings
-create policy "service_role full access on call-recordings"
-  on storage.objects for all
-  using (bucket_id = 'call-recordings' and auth.role() = 'service_role')
-  with check (bucket_id = 'call-recordings' and auth.role() = 'service_role');
+do $guard$ begin
+  create policy "service_role full access on call-recordings"
+    on storage.objects for all
+    using (bucket_id = 'call-recordings' and auth.role() = 'service_role')
+    with check (bucket_id = 'call-recordings' and auth.role() = 'service_role');
+exception when duplicate_object then null;
+end $guard$;
 
 -- Authenticated staff can read recordings (for audio player in dashboard)
-create policy "authenticated staff can read call recordings"
-  on storage.objects for select
-  using (
-    bucket_id = 'call-recordings'
-    and auth.role() = 'authenticated'
-  );
+do $guard$ begin
+  create policy "authenticated staff can read call recordings"
+    on storage.objects for select
+    using (
+      bucket_id = 'call-recordings'
+      and auth.role() = 'authenticated'
+    );
+exception when duplicate_object then null;
+end $guard$;
