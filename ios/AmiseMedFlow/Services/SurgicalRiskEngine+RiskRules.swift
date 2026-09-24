@@ -8,7 +8,7 @@ extension SurgicalRiskEngine {
 
     // MARK: Infection
 
-    private static func infectRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
+    static func infectRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
         // Critical: DM + steroids + malnutrition — all three axes impaired
         if i.hasDM && i.hasSteroids && i.bmiCategory.isMalnourished {
             out.append(SurgicalRiskAlert(
@@ -50,7 +50,7 @@ extension SurgicalRiskEngine {
 
     // MARK: Healing
 
-    private static func healingRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
+    static func healingRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
         var factors: [String] = []
         if i.hasDM              { factors.append("DM") }
         if i.hasSteroids        { factors.append("corticosteroids") }
@@ -91,7 +91,7 @@ extension SurgicalRiskEngine {
 
     // MARK: Frailty
 
-    private static func frailtyRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
+    static func frailtyRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
         let age     = i.ageYears
         let chronic = i.chronicConditionCount
         let isolated = i.livesAlone || i.isCareHome
@@ -120,7 +120,7 @@ extension SurgicalRiskEngine {
 
     // MARK: Nutrition / BMI
 
-    private static func nutritionRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
+    static func nutritionRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
         switch i.bmiCategory {
         case .severelyUnderweight:
             out.append(SurgicalRiskAlert(
@@ -159,7 +159,7 @@ extension SurgicalRiskEngine {
 
     // MARK: Perioperative / metabolic
 
-    private static func periopRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
+    static func periopRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
         // Steroid stress-dose — HPA axis suppression
         if i.hasSteroids {
             out.append(SurgicalRiskAlert(
@@ -208,7 +208,7 @@ extension SurgicalRiskEngine {
 
     // MARK: Anticoagulation
 
-    private static func anticoagRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
+    static func anticoagRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
         if i.hasAnticoag {
             let detail = "Patient is on therapeutic anticoagulation. Interruption carries thrombotic risk; continuation carries bleeding risk. Requires formal perioperative anticoagulation plan."
             out.append(SurgicalRiskAlert(
@@ -234,7 +234,7 @@ extension SurgicalRiskEngine {
 
     // MARK: Anaesthetic
 
-    private static func anaestheticRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
+    static func anaestheticRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
         // OSA + obesity — highest airway/respiratory risk combination
         if i.hasOSA && i.bmiCategory.isHighObese {
             out.append(SurgicalRiskAlert(

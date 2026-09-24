@@ -7,10 +7,10 @@ struct SurgeryNoteView: View {
     @Bindable var patient: Patient
     @Environment(\.modelContext) private var context
 
-    @State private var data: SurgeryNoteData = SurgeryNoteData()
+    @State var data: SurgeryNoteData = SurgeryNoteData()
     @State private var hasSurgeryDate = false
-    @State private var hasStartTime = false
-    @State private var hasEndTime = false
+    @State var hasStartTime = false
+    @State var hasEndTime = false
     @State private var pdfWrapper: PDFDataWrapper?
     @State private var showTemplatePicker = false
     @State private var suggestedTemplate: ProcedureTemplate? = nil

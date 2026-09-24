@@ -5,7 +5,7 @@ import SwiftUI
 
 // MARK: - Shared Helpers
 
-private struct CardSection<Content: View>: View {
+struct CardSection<Content: View>: View {
     let title: String
     @ViewBuilder let content: () -> Content
 
@@ -27,7 +27,7 @@ private struct CardSection<Content: View>: View {
     }
 }
 
-private struct BulletList: View {
+struct BulletList: View {
     let items: [String]
     let color: Color
 
@@ -47,7 +47,7 @@ private struct BulletList: View {
     }
 }
 
-private struct UrgencyChip: View {
+struct UrgencyChip: View {
     let label: String
     var body: some View {
         Text(label)

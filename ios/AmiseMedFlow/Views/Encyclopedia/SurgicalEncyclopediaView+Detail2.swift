@@ -6,7 +6,7 @@ import SwiftUI
 
 // MARK: - Procedures Tab
 
-private struct ProceduresTab: View {
+struct ProceduresTab: View {
     let condition: SurgicalCondition
 
     var body: some View {
@@ -136,7 +136,7 @@ private struct ApproachBadge: View {
 
 // MARK: - Post-op Tab
 
-private struct PostOpTab: View {
+struct PostOpTab: View {
     let condition: SurgicalCondition
 
     var body: some View {
@@ -191,7 +191,7 @@ private struct PostOpRow: View {
 
 // MARK: - Follow-up Tab
 
-private struct FollowUpTab: View {
+struct FollowUpTab: View {
     let condition: SurgicalCondition
     private var fu: FollowUpProtocol { condition.followUp }
 

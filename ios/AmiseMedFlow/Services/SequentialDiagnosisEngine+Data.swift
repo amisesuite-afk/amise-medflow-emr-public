@@ -75,7 +75,7 @@ struct FeatureCorrelationGroup {
 // Replicate evidence weights from BayesianDiagnosisEngine in double precision.
 // Keys mirror the private Feature.key / Feature.value convention.
 
-private enum LogLRTable {
+enum LogLRTable {
 
     // Scale: every 10 units ≈ 10× likelihood ratio (natural log units × ~4.34)
     // These match the integer values in BayesianDiagnosisEngine scaled to Double.

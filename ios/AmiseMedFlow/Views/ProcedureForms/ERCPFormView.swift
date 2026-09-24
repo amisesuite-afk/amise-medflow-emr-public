@@ -7,7 +7,7 @@ struct ERCPFormView: View {
     @Bindable var patient: Patient
     @Environment(\.modelContext) private var context
 
-    @State private var data: ERCPData = ERCPData()
+    @State var data: ERCPData = ERCPData()
     @State private var hasProcedureDate = false
     @StateObject private var ai = AIService()
     @State private var aiError: String?
