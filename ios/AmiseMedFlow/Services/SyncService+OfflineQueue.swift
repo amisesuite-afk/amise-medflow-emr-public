@@ -23,7 +23,7 @@ extension SyncService {
 
     private static let outboxKey = "com.amise.medflow.sync-outbox"
 
-    private struct OutboxEntry: Codable {
+    struct OutboxEntry: Codable {
         let entityType: String
         let entityId:   String
         let payload:    [String: String]   // values serialised to String for Codable compatibility

@@ -18,7 +18,7 @@ final class SyncService: ObservableObject {
 
     private let monitor = NWPathMonitor()
     private let networkQueue = DispatchQueue(label: "com.amise.network")
-    private var modelContext: ModelContext?
+    var modelContext: ModelContext?
     private var periodicSyncTask: Task<Void, Never>?
     private var realtimeTask: Task<Void, Never>?
 
