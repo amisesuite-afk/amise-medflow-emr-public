@@ -6,6 +6,7 @@ struct SettingsView: View {
     @EnvironmentObject private var peerSync: PeerSyncService
     @EnvironmentObject private var nasBackup: NASBackupService
     @Environment(\.modelContext) private var context
+    @ObservedObject private var practiceStore = PracticeProfileStore.shared
 
     @State private var showLogin = false
     @State private var showSignOutConfirm = false
@@ -154,7 +155,7 @@ struct SettingsView: View {
                 Section {
                     TextField("WebDAV URL",
                               text: $nasBackup.serverURL,
-                              prompt: Text("http://amise-storage:5005"))
+                              prompt: Text("http://your-nas:5005"))
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                         .keyboardType(.URL)
@@ -255,15 +256,24 @@ struct SettingsView: View {
                 } header: {
                     Text("NAS Backup")
                 } footer: {
-                    Text("Backs up all patient records to a Synology, QNAP, or any WebDAV server.\n\nSynology DSM: Control Panel → File Services → WebDAV → Enable. Port 5005 (HTTP) or 5006 (HTTPS).\n\nExample — over Tailscale: http://amise-storage:5005 or http://100.119.29.97:5005. The iPhone is already on the same Tailnet, so backup works from any network automatically.")
+                    Text("Backs up all patient records to a Synology, QNAP, or any WebDAV server.\n\nSynology DSM: Control Panel → File Services → WebDAV → Enable. Port 5005 (HTTP) or 5006 (HTTPS).\n\nExample — over Tailscale: http://your-nas:5005 (Tailscale machine name) or http://100.x.y.z:5005 (its Tailscale IP). If this device is on the same Tailnet as the NAS, backup works from any network automatically.")
                 }
 
                 // MARK: Practice
-                Section("Practice") {
-                    LabeledContent("Name", value: "Amise Medical Services")
-                    LabeledContent("Location", value: "Saint Lucia")
-                    LabeledContent("Surgeon", value: "Dr Dawit Daniel Kabiye")
-                    LabeledContent("Specialty", value: "General & Endoscopic Surgery")
+                Section {
+                    LabeledContent("Name", value: practiceStore.profile.practiceName)
+                    LabeledContent("Location", value: practiceStore.profile.country)
+                    LabeledContent("Surgeon", value: practiceStore.profile.clinicianName)
+                    LabeledContent("Specialty", value: practiceStore.profile.specialty)
+                    NavigationLink {
+                        PracticeProfileView(store: practiceStore)
+                    } label: {
+                        Label("Practice Profile", systemImage: "building.2")
+                    }
+                } header: {
+                    Text("Practice")
+                } footer: {
+                    Text("Practice, clinician and contact details printed on documents, letters, PDFs, SMS and email.")
                 }
 
                 // MARK: AI & Privacy
