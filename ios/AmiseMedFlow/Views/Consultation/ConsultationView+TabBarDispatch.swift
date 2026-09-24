@@ -1,45 +1,141 @@
 // ConsultationView+TabBarDispatch.swift
-// Tab bar and tab content dispatch.
+// Pathway step bar, step footer and tab content dispatch.
 
 import SwiftUI
 import SwiftData
 
 extension ConsultationView {
 
-    // MARK: - Horizontal tab bar
+    // MARK: - Pathway step bar
+
+    /// Steps for the chosen pathway, in order. Other tabs stay reachable from "More".
+    var pathwaySteps: [ConsultTab] { pathway.steps }
+    var otherTabs: [ConsultTab] { ConsultTab.allCases.filter { !pathwaySteps.contains($0) } }
 
     var tabBar: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 0) {
-                ForEach(ConsultTab.allCases, id: \.self) { tab in
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.15)) { activeTab = tab }
-                    } label: {
-                        VStack(spacing: 0) {
-                            HStack(spacing: 4) {
-                                if tabFilled(tab) {
-                                    Circle()
-                                        .fill(activeTab == tab ? AMColor.accent : Color.green)
-                                        .frame(width: 5, height: 5)
-                                }
-                                Text(tab.rawValue)
-                                    .font(.system(size: 13, weight: activeTab == tab ? .bold : .semibold))
-                                    .foregroundStyle(activeTab == tab ? AMColor.accent : AMColor.sidebarText)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 10)
+        HStack(spacing: 0) {
+            Button { showPathwayPicker = true } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: pathway.icon)
+                    Text(pathway.title)
+                        .lineLimit(1)
+                    Image(systemName: "chevron.down").font(.system(size: 9, weight: .bold))
+                }
+                .font(.system(size: 12, weight: .bold))
+                .foregroundStyle(Color(hex: pathway.accentHex))
+                .padding(.horizontal, 10).padding(.vertical, 6)
+                .background(Color(hex: pathway.accentHex).opacity(0.15), in: Capsule())
+            }
+            .buttonStyle(.plain)
+            .padding(.leading, 8)
+
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 0) {
+                        ForEach(Array(pathwaySteps.enumerated()), id: \.element) { idx, tab in
+                            stepButton(tab, number: idx + 1).id(tab)
+                        }
+                        // A tab opened from "More" shows at the end while it is active.
+                        if otherTabs.contains(activeTab) {
+                            stepButton(activeTab, number: nil).id(activeTab)
+                        }
+                        Menu {
+                            ForEach(otherTabs, id: \.self) { tab in
+                                Button(tab.rawValue) { withAnimation(.easeInOut(duration: 0.15)) { activeTab = tab } }
                             }
-                            Rectangle()
-                                .fill(activeTab == tab ? AMColor.accent : Color.clear)
-                                .frame(height: 2)
+                        } label: {
+                            Text("More")
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(AMColor.sidebarText)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 10)
                         }
                     }
-                    .buttonStyle(.plain)
+                    .padding(.horizontal, 4)
+                }
+                .onChange(of: activeTab) { _, tab in
+                    withAnimation { proxy.scrollTo(tab, anchor: .center) }
                 }
             }
-            .padding(.horizontal, 4)
         }
         .background(AMColor.sidebarBg)
         .frame(height: 44)
+    }
+
+    private func stepButton(_ tab: ConsultTab, number: Int?) -> some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.15)) { activeTab = tab }
+        } label: {
+            VStack(spacing: 0) {
+                HStack(spacing: 4) {
+                    if tabFilled(tab) {
+                        Circle()
+                            .fill(activeTab == tab ? AMColor.accent : Color.green)
+                            .frame(width: 5, height: 5)
+                    }
+                    Text(number.map { "\($0) " } ?? "")
+                        .font(.system(size: 10, weight: .bold).monospacedDigit())
+                        .foregroundColor(AMColor.sidebarGroup)
+                    + Text(pathway.label(for: tab))
+                        .font(.system(size: 13, weight: activeTab == tab ? .bold : .semibold))
+                        .foregroundColor(activeTab == tab ? AMColor.accent : AMColor.sidebarText)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 10)
+                Rectangle()
+                    .fill(activeTab == tab ? AMColor.accent : Color.clear)
+                    .frame(height: 2)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Step footer (Back / Next)
+
+    @ViewBuilder
+    var stepFooter: some View {
+        if let idx = pathwaySteps.firstIndex(of: activeTab) {
+            let prev = idx > 0 ? pathwaySteps[idx - 1] : nil
+            let next = idx + 1 < pathwaySteps.count ? pathwaySteps[idx + 1] : nil
+            HStack {
+                if let prev {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.15)) { activeTab = prev }
+                    } label: {
+                        Label(pathway.label(for: prev), systemImage: "chevron.left")
+                            .font(.system(size: 13, weight: .semibold))
+                    }
+                }
+                Spacer()
+                Text("Step \(idx + 1) of \(pathwaySteps.count)")
+                    .font(.caption2.monospacedDigit())
+                    .foregroundStyle(.secondary)
+                Spacer()
+                if let next {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.15)) { activeTab = next }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Text("Next: \(pathway.label(for: next))")
+                            Image(systemName: "chevron.right")
+                        }
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 12).padding(.vertical, 7)
+                        .background(AMColor.accent, in: Capsule())
+                    }
+                } else {
+                    Label("Last step", systemImage: "flag.checkered")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(AMColor.accent)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(.bar)
+        }
     }
 
     func tabFilled(_ tab: ConsultTab) -> Bool {
@@ -56,6 +152,12 @@ extension ConsultationView {
         case .diagnosis:      return patient.workingDiagnosis != nil
         case .plan:      return !(patient.managementPlan ?? "").isEmpty
         case .history:   return !patient.encounters.isEmpty
+        case .risk:      return patient.visitType != nil
+        case .ward:
+            return patient.pathwayData.ward.reviewedAt.map { Calendar.current.isDateInToday($0) } ?? false
+        case .trauma:    return patient.traumaDataJson != nil
+        case .burns:     return !patient.pathwayData.burns.regionFractions.values.filter { $0 > 0 }.isEmpty
+        case .screening: return !patient.pathwayData.wellness.statuses.isEmpty
         }
     }
 
@@ -76,8 +178,40 @@ extension ConsultationView {
         case .diagnosis:      diagnosisTab
         case .plan:      planTab
         case .history:   encounterHistoryTab
+        case .risk:      riskTab
+        case .ward:      WardReviewPanel(patient: patient)
+        case .trauma:    TraumaAssessmentView(patient: patient)
+        case .burns:     BurnsAssessmentView(patient: patient)
+        case .screening: WellnessScreeningView(patient: patient)
         }
     }
 
+    // MARK: - Risk step
 
+    var riskTab: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 14) {
+                RiskSnapshotCard(flags: VisitRiskAssessment.assess(patient, pathway: pathway))
+                if !surgicalRiskAlerts.isEmpty {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Label("Surgical risk alerts", systemImage: "exclamationmark.shield")
+                            .font(.subheadline.weight(.semibold))
+                        ForEach(surgicalRiskAlerts) { a in
+                            Text("• \(a.title) — \(a.action)")
+                                .font(.caption)
+                        }
+                    }
+                    .padding(12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.orange.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+                }
+                Text("VISIT PATHWAY")
+                    .font(.system(size: 11, weight: .heavy))
+                    .tracking(0.6)
+                    .foregroundStyle(.secondary)
+                VisitPathwayPicker(patient: patient, current: pathway, onSelect: { choosePathway($0) }, showsRisk: false)
+            }
+            .padding(16)
+        }
+    }
 }

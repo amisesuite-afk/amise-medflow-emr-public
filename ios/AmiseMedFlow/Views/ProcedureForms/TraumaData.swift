@@ -107,7 +107,10 @@ extension Patient {
     var traumaData: TraumaData {
         get {
             guard let json = traumaDataJson, let data = json.data(using: .utf8) else { return TraumaData() }
-            return (try? JSONDecoder().decode(TraumaData.self, from: data)) ?? TraumaData()
+            // Must match the setter's .iso8601 encoding, or any saved date makes decoding fail
+            // and the whole form reads back blank.
+            let decoder = JSONDecoder(); decoder.dateDecodingStrategy = .iso8601
+            return (try? decoder.decode(TraumaData.self, from: data)) ?? TraumaData()
         }
         set {
             let encoder = JSONEncoder()

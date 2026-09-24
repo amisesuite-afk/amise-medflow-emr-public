@@ -72,7 +72,10 @@ extension Patient {
     var ogdData: OGDData {
         get {
             guard let json = ogdDataJson, let data = json.data(using: .utf8) else { return OGDData() }
-            return (try? JSONDecoder().decode(OGDData.self, from: data)) ?? OGDData()
+            // Must match the setter's .iso8601 encoding, or any saved date makes decoding fail
+            // and the whole form reads back blank.
+            let decoder = JSONDecoder(); decoder.dateDecodingStrategy = .iso8601
+            return (try? decoder.decode(OGDData.self, from: data)) ?? OGDData()
         }
         set {
             let encoder = JSONEncoder()

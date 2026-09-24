@@ -195,8 +195,10 @@ struct AddPatientView: View {
                                 if setting != .endoscopy { setting = .endoscopy }
                             case .surgeryElective, .dayOfSurgery:
                                 if setting != .theatre { setting = .theatre }
-                            case .surgeryEmergency, .trauma:
+                            case .surgeryEmergency, .trauma, .burns:
                                 if setting != .emergency { setting = .emergency }
+                            case .wardReview:
+                                if setting != .inpatient { setting = .inpatient }
                             default: break
                             }
                         } label: {

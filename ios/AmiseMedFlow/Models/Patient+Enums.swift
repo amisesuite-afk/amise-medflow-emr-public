@@ -114,6 +114,10 @@ enum VisitType: String, Codable, CaseIterable {
     case surgeryElective  = "Elective Surgery"
     case surgeryEmergency = "Emergency Surgery"
     case bronchoscopy     = "Bronchoscopy"
+    // Raw values are persisted (SwiftData + Supabase visit_type) — append only, never rename.
+    case wardReview       = "Ward Review"
+    case burns            = "Burns"
+    case wellness         = "Wellness / Check-up"
 
     var icon: String {
         switch self {
@@ -130,6 +134,9 @@ enum VisitType: String, Codable, CaseIterable {
         case .surgeryElective:  return "scissors"
         case .surgeryEmergency: return "bolt.heart.fill"
         case .bronchoscopy:     return "lungs"
+        case .wardReview:       return "bed.double.fill"
+        case .burns:            return "flame.fill"
+        case .wellness:         return "heart.text.square"
         }
     }
 
@@ -148,6 +155,9 @@ enum VisitType: String, Codable, CaseIterable {
         case .surgeryElective:  return "Elective Sx"
         case .surgeryEmergency: return "Emerg Sx"
         case .bronchoscopy:     return "Bronch"
+        case .wardReview:       return "Ward"
+        case .burns:            return "Burns"
+        case .wellness:         return "Check-up"
         }
     }
 
@@ -166,6 +176,9 @@ enum VisitType: String, Codable, CaseIterable {
         case .surgeryElective:  return "#7C3AED"
         case .surgeryEmergency: return "#DC2626"
         case .bronchoscopy:     return "#0891B2"
+        case .wardReview:       return "#4D7C0F"
+        case .burns:            return "#EA580C"
+        case .wellness:         return "#059669"
         }
     }
 }

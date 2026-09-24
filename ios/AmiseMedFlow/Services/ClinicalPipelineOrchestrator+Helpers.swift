@@ -90,6 +90,21 @@ extension ClinicalPipelineOrchestrator {
             return autoActions.filter {
                 [AutoFunction.document, .calculate].contains($0.function)
             }
+
+        case .burns:
+            // Burns: same acute priorities as trauma
+            return autoActions.filter {
+                [AutoFunction.alert, .calculate, .order, .compare].contains($0.function)
+            }
+
+        case .wardReview:
+            // Ward review: everything except new-consult questioning
+            return autoActions.filter { $0.function != .ask }
+
+        case .wellness:
+            // Wellness: screening and documentation; no operative planning or emergency alerts
+            if hasUrgentFlag { return autoActions }
+            return autoActions.filter { ![AutoFunction.prepare].contains($0.function) }
         }
     }
 }

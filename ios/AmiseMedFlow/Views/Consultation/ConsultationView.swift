@@ -58,6 +58,9 @@ struct ConsultationView: View {
     @State private var showSaveEncounterConfirm = false
     @State private var encounterSavedFeedback = false
     @State var selectedEncounter: Encounter? = nil
+    // Visit pathway ("first door") — orders the steps in the tab bar
+    @State var pathway: ConsultPathway = .firstVisit
+    @State var showPathwayPicker = false
 
     enum ExamMode { case short, full }
 
@@ -127,12 +130,12 @@ struct ConsultationView: View {
             // Clinical alarm banner — fires from free text parsing
             let activeAlarms = clinicalAlarms.filter { !dismissedAlarmIds.contains($0.id) }
             if !activeAlarms.isEmpty { clinicalAlarmBanner(activeAlarms) }
-            if !embeddedInNav {
-                completenessBar
-                tabBar
-                Divider()
-            }
+            if !embeddedInNav { completenessBar }
+            tabBar
+            Divider()
             tabContent
+                .frame(maxHeight: .infinity)
+            stepFooter
         }
         .background(Color(.systemBackground))
         .onAppear { handleAppear() }
@@ -143,9 +146,14 @@ struct ConsultationView: View {
     }
 
     private func handleAppear() {
-        activeTab = startingTab
+        let encounterStarting = patient.encounterStatus == .waiting || patient.encounterStatus == .notCheckedIn
+        pathway = ConsultPathway.from(patient.visitType) ?? ConsultPathway.recommend(for: patient).pathway
+        // Explicit starting tab (iPad sidebar) wins; otherwise open at the pathway's first step.
+        activeTab = (embeddedInNav || startingTab != .hpi) ? startingTab : (pathway.steps.first ?? .hpi)
+        // First door: ask what kind of visit this is when the encounter starts.
+        if encounterStarting { showPathwayPicker = true }
         // Advance encounter status to withDoctor the moment the doctor opens the record
-        if patient.encounterStatus == .waiting || patient.encounterStatus == .notCheckedIn {
+        if encounterStarting {
             patient.encounterStatus = .withDoctor
             patient.updatedAt = .now
             patient.pendingSync = true
@@ -233,8 +241,26 @@ struct ConsultationView: View {
         }
     }
 
+    /// Clinician chose a pathway: record the visit type and jump to its first step.
+    func choosePathway(_ p: ConsultPathway) {
+        pathway = p
+        let vt = p.visitType(keeping: patient.visitType)
+        if patient.visitType != vt {
+            patient.visitType = vt
+            patient.updatedAt = .now
+            patient.pendingSync = true
+            try? context.save()
+        }
+        withAnimation(.easeInOut(duration: 0.15)) { activeTab = p.steps.first ?? .hpi }
+    }
+
     private func withSheetsAndAlerts(_ content: some View) -> some View {
         content
+        .sheet(isPresented: $showPathwayPicker) {
+            VisitPathwaySheet(patient: patient,
+                              current: ConsultPathway.from(patient.visitType),
+                              onSelect: { choosePathway($0) })
+        }
         .sheet(isPresented: $showAddAllergy) { addAllergySheet }
         .sheet(isPresented: $showAddMedication) {
             AddMedicationSheet(patient: patient, context: context)

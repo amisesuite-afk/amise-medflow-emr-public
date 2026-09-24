@@ -24,7 +24,7 @@ struct PatientDetailPadView: View {
         let sections = PatientDetailSection.allCases.filter { section in
             guard allowed.contains(section) else { return false }
             switch section {
-            case .trauma:  return patient.visitType == .trauma
+            case .trauma:  return patient.visitType == .trauma || patient.visitType == .burns
             case .ogd:     return patient.visitType == .ogd || patient.visitType == .dayOfSurgery
             case .surgery: return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
             case .ercp:         return patient.visitType == .ercp || patient.visitType == .dayOfSurgery

@@ -453,8 +453,10 @@ struct QuickAddSheet: View {
             setting = .endoscopy
         case .surgeryElective, .dayOfSurgery:
             setting = .theatre
-        case .surgeryEmergency, .trauma:
+        case .surgeryEmergency, .trauma, .burns:
             setting = .emergency
+        case .wardReview:
+            setting = .inpatient
         case .urgentReview:
             if section == .wardRounds { setting = .inpatient }
         default:

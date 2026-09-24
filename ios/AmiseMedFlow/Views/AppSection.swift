@@ -63,9 +63,9 @@ enum AppSection: String, CaseIterable, Hashable, Identifiable {
         case .endoscopy:
             return [.ogd, .colonoscopy, .ercp, .bronchoscopy]
         case .wardRounds:
-            return [.urgentReview, .surgeryEmergency, .trauma, .postOp]
+            return [.wardReview, .urgentReview, .surgeryEmergency, .trauma, .burns, .postOp]
         case .outpatients:
-            return [.newConsult, .followUp, .postOp, .urgentReview, .telephone]
+            return [.newConsult, .followUp, .postOp, .urgentReview, .wellness, .burns, .telephone]
         case .schedule:
             return [.newConsult, .followUp, .postOp]
         }
