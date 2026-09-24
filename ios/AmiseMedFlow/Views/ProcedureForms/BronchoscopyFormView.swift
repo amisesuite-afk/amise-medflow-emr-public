@@ -1,3 +1,6 @@
+import SwiftUI
+import SwiftData
+
 // MARK: - View
 
 struct BronchoscopyFormView: View {
@@ -8,46 +11,47 @@ struct BronchoscopyFormView: View {
     @State var hasProcedureDate = false
     @State var pdfWrapper: PDFDataWrapper?
 
-    private let indications = [
+    let indications = [
         "Haemoptysis", "Persistent cough", "Wheeze / stridor",
         "Lung mass / suspicious lesion", "Mediastinal lymphadenopathy",
         "Recurrent pneumonia / consolidation", "Interstitial lung disease",
         "Foreign body removal", "Atelectasis", "Suspected endobronchial lesion",
         "Infection / microbiological sampling", "Post-intubation follow-up", "Other"
     ]
-    private let vocalCordsOptions = [
+    let vocalCordsOptions = [
         "Vocal cord palsy (left)", "Vocal cord palsy (right)", "Bilateral palsy",
         "Nodule / polyp", "Oedema", "Erythema", "Lesion requiring biopsy"
     ]
-    private let airwayFindingOptions = [
+    static let airwayFindingOptions = [
         "Mucosal erythema / inflammation", "Endobronchial lesion",
         "Extrinsic compression", "Submucosal infiltration", "Mucus plug",
         "Haemorrhage / blood", "Stricture / stenosis", "Carcinoma in situ",
         "Post-surgical changes", "Foreign body", "Pus / secretions"
     ]
-    private let tracheaFindingOptions = [
+    let airwayFindingOptions = BronchoscopyFormView.airwayFindingOptions
+    let tracheaFindingOptions = [
         "Tracheomalacia", "Extrinsic compression", "Tracheal stenosis",
         "Mucosal lesion", "Secretions", "Deviation"
-    ] + airwayFindingOptions
-    private let carinaFindingOptions = [
+    ] + BronchoscopyFormView.airwayFindingOptions
+    let carinaFindingOptions = [
         "Carina blunted / widened", "Carina fixed", "Peribronchial infiltrate"
-    ] + airwayFindingOptions
-    private let interventionOptions = [
+    ] + BronchoscopyFormView.airwayFindingOptions
+    let interventionOptions = [
         "Bronchoalveolar lavage (BAL)", "Endobronchial biopsy",
         "Transbronchial biopsy (TBLB)", "EBUS-TBNA",
         "Brushings (cytology)", "Protected specimen brush",
         "Foreign body removal", "Endobronchial debulking",
         "Balloon dilation", "Stent insertion", "APC / laser"
     ]
-    private let complicationOptions = [
+    let complicationOptions = [
         "None", "Oxygen desaturation",
         "Bronchospasm", "Haemorrhage (mild)", "Haemorrhage (significant)",
         "Pneumothorax", "Cardiorespiratory event", "Laryngospasm",
         "Reaction to sedation / topical anaesthesia"
     ]
-    private let approachOptions = ["Trans-nasal", "Trans-oral"]
-    private let sedationOptions  = ["MAC / Propofol", "Midazolam + Fentanyl", "General Anaesthesia", "Topical only (no sedation)"]
-    private let oxygenOptions    = ["Nasal prongs", "Hudson mask", "High-flow nasal oxygen", "ETT / LMA (GA)"]
+    let approachOptions = ["Trans-nasal", "Trans-oral"]
+    let sedationOptions  = ["MAC / Propofol", "Midazolam + Fentanyl", "General Anaesthesia", "Topical only (no sedation)"]
+    let oxygenOptions    = ["Nasal prongs", "Hudson mask", "High-flow nasal oxygen", "ETT / LMA (GA)"]
 
     var body: some View {
         Form {

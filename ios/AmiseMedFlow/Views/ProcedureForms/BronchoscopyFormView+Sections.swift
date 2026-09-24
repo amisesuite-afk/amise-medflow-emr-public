@@ -284,8 +284,8 @@ extension BronchoscopyFormView {
                     Text(opt)
                         .font(.caption)
                         .padding(.horizontal, 10).padding(.vertical, 5)
-                        .background(isOn ? Color.teal.opacity(0.2) : Color.secondary.opacity(0.1),
-                                    in: Capsule())
+                        .background { isOn ? Color.teal.opacity(0.2) : Color.secondary.opacity(0.1) }
+                        .clipShape(Capsule())
                         .foregroundStyle(isOn ? .teal : .secondary)
                 }
                 .buttonStyle(.plain)
@@ -319,7 +319,7 @@ extension BronchoscopyFormView {
         var lines: [String] = [
             "BRONCHOSCOPY REPORT",
             "",
-            "Patient: \(patient.fullName)  |  DOB: \(patient.formattedDOB)",
+            "Patient: \(patient.fullName)  |  DOB: \(patient.dateOfBirth.map { DateFormatter.localizedString(from: $0, dateStyle: .medium, timeStyle: .none) } ?? "—")",
             "Date: \(dateStr)  |  Operator: \(data.operator_)  |  Assistant: \(data.assistant)",
             "Indication: \(data.indication.joined(separator: ", "))",
             "Approach: \(data.approach)  |  Sedation: \(data.sedationUsed)  |  Bronchoscope: \(data.bronchoscopeModel)",
