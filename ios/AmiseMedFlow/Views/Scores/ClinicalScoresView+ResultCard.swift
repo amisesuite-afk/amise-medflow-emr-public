@@ -88,7 +88,9 @@ extension ClinicalScoresView {
                         Text("✓ \(item.label)")
                             .font(.caption)
                         Spacer()
-                        Text(item.points == Double(Int(item.points))
+                        // Int(_:) traps on NaN/infinite; format those as a dash instead.
+                        Text(!item.points.isFinite ? "—"
+                             : item.points == item.points.rounded()
                              ? "+\(Int(item.points))"
                              : "+\(String(format: "%.1f", item.points))")
                             .font(.caption.monospacedDigit())
