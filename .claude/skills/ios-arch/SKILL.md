@@ -163,6 +163,39 @@ Swipe actions: leading = Mark Reviewed (green), trailing = Discharge (teal) /
 Escalate (orange). Discharge flow: confirmation dialog → `DischargeFlowSheet`
 (pre-filled summary) or direct discharge.
 
+## Consultation pathways ("first door")
+
+`ConsultationView` opens on a visit pathway, which orders its steps (tab bar, Back/Next footer;
+other tabs under "More"):
+
+| Piece | File |
+|---|---|
+| `ConsultPathway` (7 pathways, `steps`, `recommend(for:)`, `from(VisitType)`) | `Services/ConsultPathway.swift` |
+| `VisitRiskAssessment` (risk snapshot flags) | `Services/VisitRiskAssessment.swift` |
+| First-door sheet, pathway cards, `RiskSnapshotCard` | `Views/Consultation/VisitPathwayPicker.swift` |
+| Step bar, footer, `tabFilled`, `pathwayProgress`, tab dispatch | `Views/Consultation/ConsultationView+TabBarDispatch.swift` |
+| Burns / Wellness / Ward review steps | `BurnsAssessmentView`, `WellnessScreeningView`, `WardReviewPanel` |
+| Stored data (`Patient.pathwayDataJson` → `PathwayData`) + `ScreeningEngine` | `Views/Consultation/PathwayData.swift` |
+
+- The first door auto-opens only when the encounter starts (status waiting/not checked in).
+  Choosing a pathway sets `patient.visitType` (keeps a more specific type, e.g. ERCP).
+- New `ConsultTab` cases need a `tabFilled` and a `tabContent` branch (both exhaustive switches).
+- `VisitType` raw values are persisted (SwiftData + Supabase `visit_type`): append cases, never
+  rename. `ClinicalPipelineOrchestrator.filteredAutoActions` switches exhaustively on it.
+- Codable form data stored as JSON must decode missing keys to defaults (see `PathwayData`)
+  and must decode dates with the same strategy it encodes (`.iso8601`). A mismatch makes the
+  whole form read back blank. (Trauma and OGD had this bug.)
+- `pathwayDataJson` syncs over peer sync (newer wins), not Supabase (no column yet).
+- Unit tests: `AmiseMedFlowTests/ConsultPathwayTests.swift` (pathway, risk, burns, screening);
+  CI runs them in the "Unit tests (simulator)" job of `ios-build-check.yml`.
+
+## SwiftData deleted-model crashes
+
+Reading any attribute of a deleted model after save (before `@Query` refreshes) crashes
+(Xcode stops in a `@_PersistedProperty` getter). Patient `@Query`s go through
+`queriedAllPatients.filter(\.isLive)`, so keep that pattern for new patient lists, and check
+`patient.isLive` after any `await` in sync loops.
+
 ## Swift/SwiftUI compile error patterns
 
 ### `Color.opacity()` ambiguity
