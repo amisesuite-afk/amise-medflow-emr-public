@@ -3,6 +3,8 @@
 // Cardiovascular, Respiratory, Endocrine, Infectious, Musculoskeletal,
 // Vascular, Urology, Neurology, Haematology.
 
+import Foundation
+
 extension DiagnosisRadiationEngine {
 
     static let _medicalEntries: [Entry] = [

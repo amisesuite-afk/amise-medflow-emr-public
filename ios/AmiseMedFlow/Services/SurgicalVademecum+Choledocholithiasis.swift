@@ -1,6 +1,8 @@
 // SurgicalVademecum+Choledocholithiasis.swift
 // Surgical vademecum entries for: Choledocholithiasis
 
+import Foundation
+
 extension SurgicalVademecum {
 
     // MARK: Choledocholithiasis

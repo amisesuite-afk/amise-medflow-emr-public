@@ -1,6 +1,8 @@
 // DiagnosisRadiationEngine+DiseaseDictionary3b.swift
 // Medical disease dictionary — Rheumatology, Haematology, and remaining entries (part B).
 
+import Foundation
+
 
 
 extension DiagnosisRadiationEngine {

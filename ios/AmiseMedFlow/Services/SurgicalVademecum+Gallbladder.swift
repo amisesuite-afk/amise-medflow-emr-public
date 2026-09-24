@@ -1,6 +1,8 @@
 // SurgicalVademecum+Gallbladder.swift
 // Surgical vademecum entries for: Gallbladder
 
+import Foundation
+
 extension SurgicalVademecum {
 
     // MARK: Gallbladder

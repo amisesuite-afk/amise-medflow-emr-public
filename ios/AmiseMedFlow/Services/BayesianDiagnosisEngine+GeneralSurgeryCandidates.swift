@@ -1,6 +1,8 @@
 // BayesianDiagnosisEngine+GeneralSurgeryCandidates.swift
 // General Surgery / Multidisciplinary differential candidate tables
 
+import Foundation
+
 extension BayesianDiagnosisEngine {
 
 

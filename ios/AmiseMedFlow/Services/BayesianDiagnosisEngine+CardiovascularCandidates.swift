@@ -1,6 +1,8 @@
 // BayesianDiagnosisEngine+CardiovascularCandidates.swift
 // Cardiovascular / Vascular differential candidate tables
 
+import Foundation
+
 extension BayesianDiagnosisEngine {
 
 

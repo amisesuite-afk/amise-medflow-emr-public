@@ -1,6 +1,8 @@
 // BayesianDiagnosisEngine+HeadNeckEndocrineCandidates.swift
 // Head / Neck / Endocrine / Parotid differential candidate tables
 
+import Foundation
+
 extension BayesianDiagnosisEngine {
 
 

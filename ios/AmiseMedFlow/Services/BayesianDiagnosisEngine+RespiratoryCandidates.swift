@@ -1,6 +1,8 @@
 // BayesianDiagnosisEngine+RespiratoryCandidates.swift
 // Respiratory differential candidate tables
 
+import Foundation
+
 extension BayesianDiagnosisEngine {
 
 

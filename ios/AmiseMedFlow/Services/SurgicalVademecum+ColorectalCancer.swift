@@ -1,6 +1,8 @@
 // SurgicalVademecum+ColorectalCancer.swift
 // Surgical vademecum entries for: Colorectal Cancer
 
+import Foundation
+
 extension SurgicalVademecum {
 
     // MARK: Colorectal Cancer

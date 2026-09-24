@@ -1,6 +1,8 @@
 // DiagnosisRadiationEngine+DiseaseDictionary4b.swift
 // Medical disease dictionary — Neurology, Dermatology, and remaining entries (part B).
 
+import Foundation
+
 
 
 extension DiagnosisRadiationEngine {

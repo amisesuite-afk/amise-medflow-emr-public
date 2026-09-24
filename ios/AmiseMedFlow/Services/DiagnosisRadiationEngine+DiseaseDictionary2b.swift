@@ -1,6 +1,8 @@
 // DiagnosisRadiationEngine+DiseaseDictionary2b.swift
 // Medical disease dictionary — Respiratory, Endocrine, and remaining entries (part B).
 
+import Foundation
+
 
 
 extension DiagnosisRadiationEngine {

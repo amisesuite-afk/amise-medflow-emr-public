@@ -1,6 +1,8 @@
 // SurgicalVademecum+Appendix.swift
 // Surgical vademecum entries for: Appendix
 
+import Foundation
+
 extension SurgicalVademecum {
 
     // MARK: Appendix

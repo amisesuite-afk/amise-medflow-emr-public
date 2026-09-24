@@ -1,6 +1,8 @@
 // BayesianDiagnosisEngine+UrologyCandidates.swift
 // Urology differential candidate tables
 
+import Foundation
+
 extension BayesianDiagnosisEngine {
 
 

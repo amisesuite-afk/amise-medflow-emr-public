@@ -1,6 +1,8 @@
 // DiagnosisRadiationEngine+DiseaseDictionary3.swift
 // Disease dictionary — Infectious/Tropical (Caribbean specific), Musculoskeletal, Vascular Surgical.
 
+import Foundation
+
 extension DiagnosisRadiationEngine {
 
     static let _medicalEntries2: [Entry] = [

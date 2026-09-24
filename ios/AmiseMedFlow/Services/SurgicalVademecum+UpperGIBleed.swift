@@ -1,6 +1,8 @@
 // SurgicalVademecum+UpperGIBleed.swift
 // Surgical vademecum entries for: Upper GI Bleed
 
+import Foundation
+
 extension SurgicalVademecum {
 
     // MARK: Upper GI Bleed

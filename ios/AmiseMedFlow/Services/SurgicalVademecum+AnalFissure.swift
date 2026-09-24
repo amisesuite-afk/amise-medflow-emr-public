@@ -1,6 +1,8 @@
 // SurgicalVademecum+AnalFissure.swift
 // Surgical vademecum entries for: Anal Fissure
 
+import Foundation
+
 extension SurgicalVademecum {
 
     // MARK: Anal Fissure

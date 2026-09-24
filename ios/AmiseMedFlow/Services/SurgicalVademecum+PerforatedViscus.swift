@@ -1,6 +1,8 @@
 // SurgicalVademecum+PerforatedViscus.swift
 // Surgical vademecum entries for: Perforated Viscus
 
+import Foundation
+
 extension SurgicalVademecum {
 
     // MARK: Perforated Viscus

@@ -1,6 +1,8 @@
 // SurgicalVademecum+Haemorrhoids.swift
 // Surgical vademecum entries for: Haemorrhoids
 
+import Foundation
+
 extension SurgicalVademecum {
 
     // MARK: Haemorrhoids

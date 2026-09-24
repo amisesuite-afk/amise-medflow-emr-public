@@ -1,6 +1,8 @@
 // BayesianDiagnosisEngine+AbdominalGICandidates.swift
 // GI / Abdominal Surgery differential candidate tables
 
+import Foundation
+
 extension BayesianDiagnosisEngine {
 
     // MARK: - Candidate tables

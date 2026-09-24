@@ -373,12 +373,10 @@ struct DocumentsView: View {
             var parts: [String] = []
             parts.append("Document: \(name)")
             parts.append("Category: \(category)")
-            if let uploaded = doc.uploadedAt {
-                let df = DateFormatter()
-                df.dateStyle = .medium; df.timeStyle = .none
-                df.timeZone = TimeZone(identifier: "America/St_Lucia")
-                parts.append("Uploaded: \(df.string(from: uploaded))")
-            }
+            let df = DateFormatter()
+            df.dateStyle = .medium; df.timeStyle = .none
+            df.timeZone = TimeZone(identifier: "America/St_Lucia")
+            parts.append("Uploaded: \(df.string(from: doc.uploadedAt))")
             if !textSnippet.isEmpty {
                 parts.append("")
                 parts.append("Extracted content preview:")

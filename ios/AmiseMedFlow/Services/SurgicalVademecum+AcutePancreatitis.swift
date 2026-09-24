@@ -1,6 +1,8 @@
 // SurgicalVademecum+AcutePancreatitis.swift
 // Surgical vademecum entries for: Acute Pancreatitis
 
+import Foundation
+
 extension SurgicalVademecum {
 
     // MARK: Acute Pancreatitis

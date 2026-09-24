@@ -1,6 +1,8 @@
 // SurgicalVademecum+InguinalHernia.swift
 // Surgical vademecum entries for: Inguinal Hernia
 
+import Foundation
+
 extension SurgicalVademecum {
 
     // MARK: Inguinal Hernia

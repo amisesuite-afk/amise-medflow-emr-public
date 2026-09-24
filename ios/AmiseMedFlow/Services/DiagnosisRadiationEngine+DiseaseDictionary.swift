@@ -2,6 +2,8 @@
 // Full disease dictionary (surgical specialties).
 // allEntries aggregates surgical + medical sub-arrays for engine access.
 
+import Foundation
+
 extension DiagnosisRadiationEngine {
 
     // MARK: - Entry point (surgical + medical)

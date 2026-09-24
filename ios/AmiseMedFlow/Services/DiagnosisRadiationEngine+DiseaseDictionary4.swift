@@ -1,6 +1,8 @@
 // DiagnosisRadiationEngine+DiseaseDictionary4.swift
 // Disease dictionary — Acute Surgical Abdomen, Urology/Renal, Neurology (Stroke/TIA), Haematology.
 
+import Foundation
+
 extension DiagnosisRadiationEngine {
 
     static let _medicalEntries3: [Entry] = [

@@ -107,7 +107,7 @@ let pmhToCommonMeds: [String: [String]] = [
 
 // MARK: - CC → suggested investigations lookup
 
-private typealias CCInv = (name: String, category: InvestigationEntry.InvCategory)
+typealias CCInv = (name: String, category: InvestigationEntry.InvCategory)
 
 let ccInvestigations: [String: [CCInv]] = [
     "Abdominal pain": [

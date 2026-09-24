@@ -1,6 +1,9 @@
 // TraumaAssessmentView+Sections.swift
 // ISS, secondary survey, burns, and helper sections for TraumaAssessmentView.
 
+import SwiftUI
+import SwiftData
+
 
 
 extension TraumaAssessmentView {

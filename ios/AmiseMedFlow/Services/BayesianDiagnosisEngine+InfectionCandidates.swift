@@ -1,6 +1,8 @@
 // BayesianDiagnosisEngine+InfectionCandidates.swift
 // Infection / Sepsis / Soft Tissue differential candidate tables
 
+import Foundation
+
 extension BayesianDiagnosisEngine {
 
 
