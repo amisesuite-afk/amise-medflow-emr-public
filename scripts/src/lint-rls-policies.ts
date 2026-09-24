@@ -42,7 +42,9 @@ const REQUIRED_POLICIES: Record<string, string[]> = {
   patients: [
     'staff_select_patients',
     'staff_insert_patients',
-    'doctors_update_patients',
+    // Was 'doctors_update_patients'; replaced (and opened to front_desk, with
+    // a column guard trigger) by supabase-staff-only-rls-migration.sql.
+    'staff_update_patients',
     'admins_delete_patients',
   ],
   clinical_notes: [

@@ -36,13 +36,17 @@
 --      is NULL, and RLS treats NULL as false -> no access.
 --   4. The same for the staff storage policies on the private buckets.
 --
+--   5. patients UPDATE is opened to front_desk (staff_update_patients, which
+--      replaces doctors_update_patients). A BEFORE UPDATE trigger stops
+--      front_desk changing anything but administrative columns (section 3b).
+--
 -- PRESERVED (not touched)
 --   Patient self-access: patients_select_own, patients_update_own_contact,
 --   patients_select_own_{appointments,medications,allergies,referrals,
 --   documents,sessions,intake,change_requests}, patients_insert_own_*,
 --   patients_{upload,select,delete}_own_docs (storage), all anon intake
 --   policies, all service_role policies, and every policy that already uses a
---   narrower role list (e.g. clinical_notes, doctors_update_patients).
+--   narrower role list (e.g. clinical_notes, admins_delete_patients).
 --
 -- STAFF IMPACT
 --   None for staff with a user_profiles row: every role in the CHECK
@@ -50,6 +54,9 @@
 --   "is authenticated" test for them. This includes the iOS app and the
 --   dashboard, which sign in as staff. Staff WITHOUT a profile row lose access
 --   (they had it only through the "is authenticated" hole).
+--   Front desk gains patients UPDATE for admin columns. A front-desk update
+--   that changes a clinical column used to affect 0 rows silently; it now
+--   fails with 42501 (see section 3b).
 --
 -- Idempotent: drop policy if exists / create policy, create or replace
 -- function, create table if not exists; every table is guarded by
@@ -188,6 +195,19 @@ begin
     create policy "staff_insert_patients" on public.patients
       for insert to authenticated
       with check ((select public.auth_role()) in ('front_desk', 'nurse', 'doctor', 'admin'));
+
+    -- UPDATE: all staff roles, including front_desk (previously doctor/
+    -- nurse/admin only, so front-desk edits silently updated 0 rows).
+    -- Front desk is limited to administrative columns by the
+    -- patients_front_desk_column_guard trigger in section 3b. Replaces
+    -- doctors_update_patients; the name changed because it no longer
+    -- describes the policy.
+    drop policy if exists "doctors_update_patients" on public.patients;
+    drop policy if exists "staff_update_patients" on public.patients;
+    create policy "staff_update_patients" on public.patients
+      for update to authenticated
+      using ((select public.auth_role()) in ('front_desk', 'nurse', 'doctor', 'admin'))
+      with check ((select public.auth_role()) in ('front_desk', 'nurse', 'doctor', 'admin'));
   end if;
 
   -- documents: staff read/insert. staff_update_documents allowed
@@ -246,6 +266,82 @@ begin
   -- auth_role() with doctor/admin (and nurse for signed notes) only, so a
   -- portal patient - with no profile, or with the old auto 'front_desk'
   -- profile - never passed them.
+end $$;
+
+
+-- ── 3b. Front desk may edit patient ADMIN details, not clinical fields ───────
+-- BEFORE UPDATE guard on patients. When the caller's role is front_desk, any
+-- column outside the allow-list whose value actually changes
+-- (OLD IS DISTINCT FROM NEW) raises SQLSTATE 42501. Unchanged values pass, so
+-- a client that sends the whole row (the iOS pushPatientEdits payload does)
+-- succeeds when only admin fields differ. New columns are blocked for front
+-- desk by default until added here.
+--
+-- Everyone else passes through: nurse/doctor/admin; portal patients (their
+-- own-row policy is separate); and the service role / API server and
+-- migrations, where auth.uid() is null so auth_role() is null.
+--
+-- Allow-list sources: the columns in the migration tree, the api-server
+-- PATCH /api/patients/:id demographics fields (patients-staff.ts), and the
+-- iOS front-desk screens (FDPatientDemographicsPanel: check-in;
+-- AppointmentSchedulerView: setting + operation_date when booking).
+create or replace function public.enforce_front_desk_patient_columns()
+returns trigger
+language plpgsql
+security invoker
+set search_path = public, pg_temp
+as $$
+declare
+  admin_columns constant text[] := array[
+    -- identity and contact
+    'full_name', 'first_name', 'last_name', 'date_of_birth', 'sex',
+    'phone', 'email', 'address', 'quarter', 'occupation', 'photo_url',
+    'mrn', 'nhi_number',
+    -- next of kin / emergency contact
+    'nok_name', 'nok_relation', 'nok_phone', 'emergency_contact', 'emergency_phone',
+    -- insurance and referral administration
+    'insurance_provider', 'policy_number', 'pre_auth_status', 'referred_by',
+    -- scheduling / encounter flow set by the front desk
+    'check_in_time', 'encounter_status', 'setting', 'location', 'operation_date',
+    -- bookkeeping
+    'updated_at', 'updated_by'
+  ];
+  blocked text[];
+begin
+  if public.auth_role() is distinct from 'front_desk' then
+    return new;
+  end if;
+
+  select array_agg(n.key order by n.key)
+    into blocked
+  from jsonb_each(to_jsonb(new)) as n
+  join jsonb_each(to_jsonb(old)) as o on o.key = n.key
+  where n.value is distinct from o.value
+    and not (n.key = any (admin_columns));
+
+  if blocked is not null then
+    -- Column names only, never values (no PHI in the error).
+    raise exception 'front-desk staff may only change administrative patient fields; blocked: %',
+        array_to_string(blocked, ', ')
+      using errcode = '42501',
+            hint = 'Front desk may edit identity, contact, next-of-kin, insurance and scheduling fields. Ask a nurse or doctor to change clinical fields.';
+  end if;
+  return new;
+end;
+$$;
+
+do $$
+begin
+  if to_regclass('public.patients') is null then
+    raise notice '[staff-only-rls] public.patients missing - front-desk column guard skipped';
+    return;
+  end if;
+  drop trigger if exists patients_front_desk_column_guard on public.patients;
+  -- BEFORE triggers fire in name order: this runs before trg_updated_at, so it
+  -- sees only what the client sent (updated_at is allow-listed either way).
+  create trigger patients_front_desk_column_guard
+    before update on public.patients
+    for each row execute function public.enforce_front_desk_patient_columns();
 end $$;
 
 

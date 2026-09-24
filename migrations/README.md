@@ -177,6 +177,31 @@ What it does (idempotent; every table is guarded with `to_regclass()`):
   one of "is authenticated", keeping the name and command. This also catches policies applied
   by hand in production, such as the conflicting-duplicate tables above.
 - **Storage** staff policies are recreated with the staff check.
+- **Front desk may edit a patient's admin details.**
+  - `staff_update_patients` replaces `doctors_update_patients`, which covered doctor, nurse and
+    admin only. Before, a front-desk update silently changed 0 rows.
+  - The BEFORE UPDATE trigger `patients_front_desk_column_guard`
+    (`enforce_front_desk_patient_columns()`) raises SQLSTATE `42501` when a `front_desk`
+    caller changes a column outside the allow-list. It compares `OLD` and `NEW` with
+    `IS DISTINCT FROM`, so a full-row update whose clinical values are unchanged still
+    succeeds.
+  - Allow-list:
+    - identity and contact: `full_name`, `first_name`, `last_name`, `date_of_birth`, `sex`,
+      `phone`, `email`, `address`, `quarter`, `occupation`, `photo_url`, `mrn`, `nhi_number`;
+    - next of kin: `nok_name`, `nok_relation`, `nok_phone`, `emergency_contact`,
+      `emergency_phone`;
+    - insurance and referral: `insurance_provider`, `policy_number`, `pre_auth_status`,
+      `referred_by`;
+    - scheduling: `check_in_time`, `encounter_status`, `setting`, `location`,
+      `operation_date`;
+    - bookkeeping: `updated_at`, `updated_by`.
+  - Everything else is blocked for front desk, including any column added later. That covers
+    clinical text, diagnosis, allergies, exams, plans, procedure JSON, `acuity`,
+    `news2_spo2_scale2`, `pathway_data_json`, `ward`/`bed_number`, and the portal link
+    `auth_user_id`/`portal_*`.
+  - Nurse, doctor and admin are not affected. Neither are portal patients or the service role:
+    the API server has no `auth.uid()`, so the trigger lets it through. Note that this means
+    `PATCH /api/patients/:id` is not restricted by the trigger.
 - **The new predicate is** `(select auth_role()) in ('front_desk','nurse','doctor','admin')`.
   `auth_role()` returns NULL for a user with no profile row, so such a user gets no access.
 
@@ -226,6 +251,23 @@ automatically. After creating the user, an admin must do one of the following:
 - create the user with the admin API and `app_metadata: { staff_role: '<role>' }`.
 
 Until then the user can sign in but cannot see any data.
+
+**iOS front desk (needs a decision before running).** `pushPatientEdits` sends the whole
+patient row, and the iPad front-desk screens set some fields on the blocked list:
+
+- `AdaptiveQuestionnaireSheet+StepForms2.swift` writes `chief_complaint`, `pmh_notes`,
+  `surgical_history` and `allergies_json`;
+- `FDPatientDemographicsPanel.swift` edits `chief_complaint`.
+
+A local value that is stale (the device kept a dirty copy while a clinician changed the
+field) also counts as a change. Such a push now fails with `42501`, where before it silently
+changed 0 rows. `SyncService.sync()` runs its steps in one `do` block, so that failure also
+skips every later step of the sync cycle, on every sync, until the edit is cleared. Before
+running this migration, either:
+
+- allow-list the intake fields;
+- make the iOS push omit blocked columns for the front-desk role;
+- catch per-patient push errors.
 
 **Deploy order.** The API-side fixes for S-1 and S-3 (a staff role is required on
 `/api/staff/*` and on `requireStaffAuth`) check `user_profiles`. Until this migration runs,
