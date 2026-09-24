@@ -58,6 +58,9 @@ final class Encounter {
     // MARK: - Clinician free-text summary (optional, for letter / handover)
     var clinicianSummary: String?
 
+    // MARK: - Pathway forms at time of visit (burns, ward round, screening) — readable text
+    var pathwaySummary: String?
+
     // MARK: - Back-reference to owning patient
     var patient: Patient?
 
@@ -134,6 +137,8 @@ extension Encounter {
         acuity = patient.acuity
         setting = patient.setting
         location = patient.location
+
+        pathwaySummary = patient.pathwaySummaryForVisit
 
         // Encode SOCRATES selections: Set<String> → [String]
         let serialisable = socratesSelections.mapValues { Array($0) }

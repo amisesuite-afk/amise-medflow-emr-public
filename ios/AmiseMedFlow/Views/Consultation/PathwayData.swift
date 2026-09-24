@@ -39,6 +39,42 @@ extension Patient {
     }
 }
 
+// MARK: - Visit summary (frozen into Encounter.pathwaySummary on Save Visit)
+
+extension Patient {
+    /// Readable summary of the pathway forms used in this visit, or nil if none were filled.
+    var pathwaySummaryForVisit: String? {
+        let data = pathwayData
+        let age: Int? = dateOfBirth == nil ? nil : ageYears
+        var parts: [String] = []
+
+        let b = data.burns
+        if b.tbsa(ageYears: age) > 0 || !b.mechanism.isEmpty {
+            parts.append(b.summary(ageYears: age))
+        }
+
+        let w = data.ward
+        if let r = w.reviewedAt, Calendar.current.isDateInToday(r), !w.marks.isEmpty {
+            let lines = WardReview.items.compactMap { item -> String? in
+                guard let m = w.marks[item] else { return nil }
+                let note = (w.notes[item] ?? "").isEmpty ? "" : " — \(w.notes[item]!)"
+                return "\(item): \(m == .ok ? "OK" : "CONCERN")\(m == .concern ? note : "")"
+            }
+            parts.append("Ward round checklist:\n" + lines.joined(separator: "\n"))
+        }
+
+        let s = data.wellness
+        if !s.statuses.isEmpty {
+            let items = ScreeningEngine.items(age: age, sex: sex, bmi: latestBMI(), w: s)
+            let lines = items.compactMap { item -> String? in
+                s.statuses[item.id].map { "\(item.title): \($0.rawValue)" }
+            }
+            if !lines.isEmpty { parts.append("Screening:\n" + lines.joined(separator: "\n")) }
+        }
+        return parts.isEmpty ? nil : parts.joined(separator: "\n\n")
+    }
+}
+
 // MARK: - Burns
 
 struct BurnsAssessment: Codable {

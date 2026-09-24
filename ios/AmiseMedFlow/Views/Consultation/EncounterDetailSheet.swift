@@ -46,6 +46,12 @@ struct EncounterDetailSheet: View {
                         }
                     }
                 }
+                if let pathway = encounter.pathwaySummary, !pathway.isEmpty {
+                    Section("Pathway Assessments") {
+                        Text(pathway)
+                            .font(.subheadline)
+                    }
+                }
                 if let summary = encounter.clinicianSummary, !summary.isEmpty {
                     Section("Clinician Summary") {
                         Text(summary)
