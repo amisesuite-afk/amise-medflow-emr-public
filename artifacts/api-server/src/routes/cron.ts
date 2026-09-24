@@ -3,6 +3,7 @@ import { sb, getSupabaseAdmin, audit, requireCronSecret } from '../lib/supabase.
 import { sendSms, smsBody48h, smsBodyPostVisit, smsBodyStaffEscalation, getPrepInstructions } from '../lib/sms.js';
 import { sendOrDraft } from '../lib/gmail.js';
 import { draftReply } from '../lib/claude.js';
+import { screenOutboundText, reminderEmailMode } from '../lib/outbound.js';
 import { formatSlotForDisplay, fetchAllEventsForDate } from '../lib/calendar.js';
 import { logger, errStr } from '../lib/logger.js';
 
@@ -82,9 +83,41 @@ router.post('/api/cron/reminders', async (req, res) => {
           const prepSection = prepInstructions
             ? `\n\n---\nPREPARATION INSTRUCTIONS\n\n${prepInstructions}\n\nIf you have any questions about your preparation, please call us at ${process.env.PRACTICE_PHONE ?? '+1 758 284 0557'}.`
             : '';
-          await sendOrDraft({ to: appt.patient_email, subject: `Reminder: ${draft.subject}`, body: `${draft.body}${prepSection}` }, 'auto');
-          await audit({ action: 'remind', entityType: 'appointment_request', entityId: appt.id, payload: { kind: 'email_24h', prep_included: !!prepInstructions } });
-          results.push({ id: appt.id, action: 'email_24h_sent' });
+          const subject = `Reminder: ${draft.subject}`;
+          const body = `${draft.body}${prepSection}`;
+
+          // H-09b: the body is Claude-drafted, so screen the whole outgoing
+          // message (subject + AI text + prep) against FORBIDDEN_PATTERNS.
+          // Quarantined content is never sent to the patient; it is recorded
+          // in the audit log and handed to staff for human review.
+          const screen = screenOutboundText(subject, body);
+          if (!draft.safe || !screen.safe) {
+            const violations = [...new Set([...draft.violations, ...screen.violations])];
+            req.log.warn({ appointmentId: appt.id, violations }, '[cron/reminders] 24h reminder draft quarantined — forbidden content');
+            await audit({ action: 'skip', entityType: 'appointment_request', entityId: appt.id, payload: { kind: 'email_24h', quarantined: true, violations } });
+            const reviewTo = process.env.STAFF_NOTIFY_EMAIL ?? process.env.DOCTOR_NOTIFY_EMAIL;
+            if (reviewTo) {
+              await sendOrDraft({
+                to: reviewTo,
+                subject: `[REVIEW REQUIRED] 24h reminder held — ${appt.patient_name ?? 'patient'} [${String(appt.id).slice(0, 8)}]`,
+                body:
+                  `The automated 24-hour reminder email for booking ${appt.id} was NOT sent to the patient because ` +
+                  `the AI-drafted text matched the forbidden-content rules (fees, diagnoses, drug doses, results or medication instructions).\n\n` +
+                  `Matched rules:\n${violations.map(v => `  - ${v}`).join('\n')}\n\n` +
+                  `Please review and contact the patient manually if a reminder is still needed.\n\n` +
+                  `--- Quarantined draft (not sent) ---\nTo: ${appt.patient_email}\nSubject: ${subject}\n\n${body}`,
+              }, 'auto'); // staff-internal alert; still skipped under MODE=dry_run
+            }
+            results.push({ id: appt.id, action: 'email_24h_quarantined' });
+            continue;
+          }
+
+          // H-09a: obeys MODE like every other outbound action (dry_run → skipped,
+          // supervised → Gmail draft for staff review, auto → sent). The only
+          // override is the opt-in REMINDER_EMAIL_AUTO_SEND flag (see lib/outbound.ts).
+          const sendResult = await sendOrDraft({ to: appt.patient_email, subject, body }, reminderEmailMode());
+          await audit({ action: 'remind', entityType: 'appointment_request', entityId: appt.id, payload: { kind: 'email_24h', prep_included: !!prepInstructions, email_result: sendResult.action } });
+          results.push({ id: appt.id, action: `email_24h_${sendResult.action}` });
         }
       }
 

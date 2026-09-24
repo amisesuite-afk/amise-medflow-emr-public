@@ -1,4 +1,5 @@
 import { logger } from './logger.js';
+import { outboundBlocked } from './outbound.js';
 
 export function toE164(raw: string): string {
   const trimmed = raw.trim();
@@ -43,7 +44,6 @@ async function getTwilioClient() {
 
 export async function sendSms(args: SmsArgs): Promise<SmsResult> {
   const provider = process.env.SMS_PROVIDER || 'dry_run';
-  const mode = process.env.MODE || 'dry_run';
 
   // Dedup key = to + first 40 chars of body
   const dedupKey = `${args.to}:${args.body.slice(0, 40)}`;
@@ -54,7 +54,8 @@ export async function sendSms(args: SmsArgs): Promise<SmsResult> {
     return { action: 'skipped' };
   }
 
-  if (provider === 'dry_run' || mode === 'dry_run') {
+  // MODE gate (lib/outbound.ts) — an unrecognised MODE fails closed to dry_run.
+  if (provider === 'dry_run' || outboundBlocked('sms', { to: args.to })) {
     logger.info({ to: args.to, channel: 'dry_run', bodyPreview: args.body.slice(0, 60) }, '[SMS dry-run]');
     return { action: 'skipped' };
   }
@@ -109,12 +110,20 @@ export async function sendSms(args: SmsArgs): Promise<SmsResult> {
 
 // Preparation instructions aligned with ESGE/BSG/ASA outpatient guidelines,
 // adapted for the Saint Lucian setting (Tapion Hospital, Rodney Bay clinic).
+//
+// Hazard H-10 / CLAUDE.md Tone rule: these are sent automatically, so they must
+// carry administrative logistics only — never an instruction to take, hold,
+// stop or change a medicine (a blanket "do not take insulin" risks DKA in type 1
+// diabetes; a blanket anticoagulant hold risks thrombosis or bleeding). Patients
+// on insulin, diabetes medicines or blood thinners are told to call the clinic
+// for individual instructions instead. Enforced by src/test/outbound-safety.test.ts.
+// Any wording change here needs the clinical owner's approval.
 const GENERAL_PREP = [
   'WHAT TO WEAR: Loose, comfortable clothing (you will change into a gown). Remove all jewellery, piercings, watches, and hair accessories before arrival.',
   'WHAT TO BRING: Valid photo ID, insurance card (if applicable), a complete list of your current medications (including doses), any relevant referral letters, blood results, or imaging reports.',
   'TRANSPORT: Arrange a responsible adult to drive you home -- you CANNOT drive after sedation or anaesthesia. You should not take public transport alone. Plan for someone to stay with you for 24 hours after your procedure.',
   'FASTING: Nothing to eat for 6 hours and nothing to drink for 2 hours before your appointment time, unless otherwise instructed below.',
-  'MEDICATIONS: Take essential heart, blood pressure, and anti-seizure medications with a small sip of water on the morning of your procedure. Do NOT take diabetes tablets or insulin on the morning -- call us if unsure.',
+  'MEDICATIONS: If you take insulin, blood thinners or diabetes medicines, please call the clinic before your procedure for instructions. If you have any questions about your other medicines, please call us.',
   'CONTINGENCIES: If you develop fever, a new cough, vomiting, or feel unwell in the days before your procedure, call us immediately -- we may need to reschedule. If you have a medical emergency at any time, call 911 or go to Victoria Hospital A&E / Tapion Hospital immediately -- do not wait.',
 ].join('\n');
 
@@ -123,7 +132,7 @@ const PREP_INSTRUCTIONS: Record<string, string> = {
     'COLONOSCOPY PREPARATION',
     'TWO DAYS BEFORE: Switch to a low-fibre diet (white bread, rice, chicken, fish -- avoid fruits, vegetables, seeds, nuts, whole grains).',
     'DAY BEFORE: Clear fluids only from morning (water, clear broth, black tea/coffee, apple juice -- no milk, no red/purple drinks, no alcohol). Take your prescribed bowel prep solution exactly as directed by the clinic.',
-    'MORNING OF: Nothing by mouth from midnight. You may take essential medications with a small sip of water.',
+    'MORNING OF: Nothing by mouth from midnight.',
     'IMPORTANT: Good bowel preparation is essential for a safe and effective examination. If your prep is incomplete, the procedure may need to be repeated.',
     '',
     GENERAL_PREP,
@@ -133,8 +142,6 @@ const PREP_INSTRUCTIONS: Record<string, string> = {
     'GASTROSCOPY (OGD) PREPARATION',
     'Nothing to eat for 6 hours before your appointment.',
     'You may drink water up to 2 hours before -- then nothing by mouth.',
-    'Take essential medications (heart, blood pressure, anti-seizure) with a small sip of water.',
-    'If you have diabetes, do NOT take your morning diabetes tablets or insulin -- call us for specific guidance.',
     '',
     GENERAL_PREP,
   ].join('\n'),
@@ -143,8 +150,6 @@ const PREP_INSTRUCTIONS: Record<string, string> = {
     'GASTROSCOPY (OGD) PREPARATION',
     'Nothing to eat for 6 hours before your appointment.',
     'You may drink water up to 2 hours before -- then nothing by mouth.',
-    'Take essential medications (heart, blood pressure, anti-seizure) with a small sip of water.',
-    'If you have diabetes, do NOT take your morning diabetes tablets or insulin -- call us for specific guidance.',
     '',
     GENERAL_PREP,
   ].join('\n'),
@@ -152,7 +157,7 @@ const PREP_INSTRUCTIONS: Record<string, string> = {
   ercp_workup: [
     'ERCP WORK-UP PREPARATION',
     'Nothing to eat for 6 hours and nothing to drink for 2 hours before your appointment.',
-    'Blood thinners: follow the specific instructions given to you by Dr Kabiye. Do NOT stop any medication without being told to.',
+    'BLOOD THINNERS: If you take blood thinners, please call the clinic before your appointment for instructions.',
     'Bring all recent blood results and imaging (ultrasound, CT, MRCP) to your appointment.',
     '',
     GENERAL_PREP,
@@ -161,8 +166,6 @@ const PREP_INSTRUCTIONS: Record<string, string> = {
   pre_op: [
     'PRE-OPERATIVE INSTRUCTIONS -- OUTPATIENT SURGERY',
     'Nothing to eat for 6 hours and nothing to drink for 2 hours before your surgery time.',
-    'Take essential heart, blood pressure, and anti-seizure medications with a small sip of water.',
-    'Do NOT take diabetes tablets, insulin, or blood thinners on the morning unless specifically instructed by Dr Kabiye.',
     'Shower or bathe on the morning of surgery. Do not apply lotions, deodorant, or make-up to the surgical area.',
     'Leave all valuables at home.',
     'A responsible adult MUST accompany you and remain at the facility. You will need someone to stay with you for 24 hours after discharge.',
@@ -198,13 +201,19 @@ const PREP_INSTRUCTIONS: Record<string, string> = {
     'Do NOT apply any creams or ointments to the wound on the day of your appointment -- the doctor needs to see it as-is.',
     'Bring a list of all medications including insulin type, dose, and timing.',
     'If you notice sudden worsening -- spreading redness, black areas, pus, fever, or inability to bear weight -- call 911 or go to Victoria Hospital A&E / Tapion Hospital immediately. Do NOT wait for your appointment.',
-    '',
-    GENERAL_PREP,
+    // GENERAL_PREP deliberately omitted: it carries sedation fasting and
+    // transport rules, and a 6-hour fast is unnecessary (and a hypoglycaemia
+    // risk) for a diabetic patient attending an outpatient foot review.
   ].join('\n'),
 };
 
 export function getPrepInstructions(appointmentType: string): string | null {
   return PREP_INSTRUCTIONS[appointmentType.toLowerCase()] ?? null;
+}
+
+/** All prep templates, for safety tests. */
+export function allPrepInstructions(): Readonly<Record<string, string>> {
+  return PREP_INSTRUCTIONS;
 }
 
 export function requiresPrep(appointmentType: string): boolean {

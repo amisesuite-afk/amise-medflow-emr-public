@@ -96,8 +96,8 @@ pnpm run test:e2e                              # Playwright walkthrough — requ
 
 - **Client-side triage**: Scoring runs entirely in the browser — no API round-trip for acuity calculation.
 - **Shared lib**: `lib/triage-engine` is consumed by both dashboard (Vite) and API server (esbuild).
-- **Mode gate**: All outbound actions (email, SMS, calendar writes) are gated by `MODE` env var — always start with `dry_run`. Booting with `MODE=auto` requires `CONFIRM_AUTO_MODE=true` or the api-server refuses to start (CI-independent, enforced at boot in `artifacts/api-server/src/index.ts`) — the active mode is also logged as a loud banner on every boot.
-- **Safety layer**: Every Claude-drafted reply is scanned against `FORBIDDEN_PATTERNS` before sending. Forbidden content (fees, diagnoses, drug doses, results) is quarantined for human review.
+- **Mode gate**: All outbound actions (email, SMS, WhatsApp via Twilio/Meta/Telnyx, calendar writes) are gated by `MODE` env var — always start with `dry_run`. The single gate is `artifacts/api-server/src/lib/outbound.ts` (`outboundBlocked()`, `resolveEmailMode()`); every provider call must consult it. An unrecognised `MODE` value fails closed to `dry_run`, and a per-call `sendOrDraft(..., force)` override can tighten the mode or promote a staff-internal alert under `supervised`, but can never lift `dry_run`. Booting with `MODE=auto` requires `CONFIRM_AUTO_MODE=true` or the api-server refuses to start (CI-independent, enforced at boot in `artifacts/api-server/src/index.ts`) — the active mode is also logged as a loud banner on every boot.
+- **Safety layer**: Every Claude-drafted reply is scanned against `FORBIDDEN_PATTERNS` before sending (`screenOutboundText()` in `lib/outbound.ts`). Forbidden content (fees, diagnoses, drug doses, results, medication-hold instructions) is quarantined for human review — never sent to the patient; recorded as an audit `skip` with the matched rules, and (for the 24h reminder) forwarded to `STAFF_NOTIFY_EMAIL`/`DOCTOR_NOTIFY_EMAIL` as a `[REVIEW REQUIRED]` alert. Static prep templates in `lib/sms.ts` must never tell a patient to take, hold or stop a medicine (hazard H-10) — `src/test/outbound-safety.test.ts` enforces this.
 - **Auth flow**: Staff log in via Supabase email/password. `AuthGuard` blocks access until a valid session exists.
 - **Vite proxy**: In dev, Supabase requests go through `/sb-proxy` to avoid CORS. Production uses the Supabase URL directly.
 
@@ -128,6 +128,7 @@ pnpm run test:e2e                              # Playwright walkthrough — requ
 | `SESSION_SECRET` | Express session secret |
 | `MODE` | `dry_run` (default) / `supervised` / `auto` |
 | `CONFIRM_AUTO_MODE` | Must be `true` for the api-server to boot when `MODE=auto` — a bare `MODE=auto` refuses to start. Prevents a misconfigured environment from going live into unsupervised outbound messaging silently. |
+| `REMINDER_EMAIL_AUTO_SEND` | `true` lets the patient 24h reminder email (`/api/cron/reminders`) send directly under `MODE=supervised` instead of being left as a Gmail draft for staff review. Defaults off. Never overrides `MODE=dry_run`, and the body is still `FORBIDDEN_PATTERNS`-screened. Practice-owner opt-in only (hazard H-09). |
 | `CRON_SECRET` | Shared secret for cron endpoint auth |
 | `DOCTOR_NOTIFY_EMAIL` | Email for escalations and daily summary |
 | `STAFF_NOTIFY_EMAIL` | Email for staff booking alerts (falls back to `DOCTOR_NOTIFY_EMAIL`) |

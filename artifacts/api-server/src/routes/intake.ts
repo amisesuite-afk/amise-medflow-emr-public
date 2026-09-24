@@ -12,6 +12,8 @@ const router = Router();
 router.post('/api/intake/run', async (req, res) => {
   if (!requireCronSecret(req, res)) return;
 
+  // A caller-supplied mode can only tighten the gate: sendOrDraft() refuses to
+  // lift MODE=dry_run whatever is passed here (lib/outbound.ts).
   const mode = (req.body?.mode as string) || process.env.MODE || 'dry_run';
   // In auto mode, downgrade to supervised for patient-facing communications
   // so a human always reviews outbound messages before they reach patients.
@@ -47,7 +49,14 @@ router.post('/api/intake/run', async (req, res) => {
 
       if (triageResult.recommendedAction === 'escalate_urgent' || triageResult.recommendedAction === 'escalate_priority' || triageResult.recommendedAction === 'escalate_review') {
         const ack = await draftReply({ template: 'urgent_ack', patientFirstName: classification.patient_first_name });
-        await sendOrDraft({ to: msg.from, subject: ack.subject, body: ack.body, threadId: msg.threadId }, intakeMode);
+        if (ack.safe) {
+          await sendOrDraft({ to: msg.from, subject: ack.subject, body: ack.body, threadId: msg.threadId }, intakeMode);
+        } else {
+          // H-09: quarantine a Claude-drafted ack with forbidden content; the
+          // doctor escalation below still goes out, so a human sees the message.
+          req.log.warn({ violations: ack.violations }, '[intake] unsafe urgent-ack draft — not sent to patient');
+          await audit({ action: 'skip', entityType: 'gmail_message', entityId: id, payload: { kind: 'urgent_ack', quarantined: true, violations: ack.violations } });
+        }
 
         if (process.env.DOCTOR_NOTIFY_EMAIL) {
           await sendOrDraft({

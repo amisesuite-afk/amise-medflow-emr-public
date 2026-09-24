@@ -7,6 +7,7 @@ import { sendSms, smsBodyBookingAck, smsBodyStaffNewBooking, getPrepInstructions
 import { sendOrDraft } from '../lib/gmail.js';
 import { google } from 'googleapis';
 import { logger, errStr } from '../lib/logger.js';
+import { outboundBlocked } from '../lib/outbound.js';
 
 const router = Router();
 
@@ -293,7 +294,8 @@ router.post('/api/booking/patient-confirm/:id', async (req, res) => {
 
     let googleEventId: string | null = null;
     const cal = getCalendarClient();
-    if (cal && row.confirmed_slot) {
+    // Calendar writes obey the MODE gate (dry_run → no event; booking still confirms).
+    if (cal && row.confirmed_slot && !outboundBlocked('calendar', { op: 'patient-confirm', bookingId: id })) {
       const slotStart = new Date(row.confirmed_slot);
       const slotEnd   = new Date(slotStart.getTime() + 30 * 60_000);
       try {

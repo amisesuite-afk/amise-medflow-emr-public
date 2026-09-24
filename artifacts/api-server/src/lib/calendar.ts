@@ -1,4 +1,5 @@
 import { google, calendar_v3 } from 'googleapis';
+import { outboundBlocked } from './outbound.js';
 import {
   SLOT_RULES, EXCLUSIONS, AppointmentType, Location,
   isPublicHoliday,
@@ -169,8 +170,16 @@ export interface CreateEventArgs {
   reason?: string;
 }
 
-export async function createEvent(args: CreateEventArgs): Promise<{ eventId: string; calendarId: string }> {
+/**
+ * Creates a booking event AND emails the patient a Google invitation
+ * (`sendUpdates: 'all'`), so it is MODE-gated like any other outbound send.
+ * Under MODE=dry_run nothing is written and `eventId` is null.
+ */
+export async function createEvent(args: CreateEventArgs): Promise<{ eventId: string | null; calendarId: string }> {
   const calId = calendarIdFor(args.location);
+  if (outboundBlocked('calendar', { op: 'createEvent', calendarId: calId })) {
+    return { eventId: null, calendarId: calId };
+  }
   const cal = getCalendar();
 
   const event: calendar_v3.Schema$Event = {
@@ -383,6 +392,7 @@ export async function updateEventDescription(
   eventId: string,
   description: string,
 ): Promise<void> {
+  if (outboundBlocked('calendar', { op: 'updateEventDescription', calendarId, eventId })) return;
   const cal = getCalendar();
   await cal.events.patch({ calendarId, eventId, requestBody: { description } });
 }

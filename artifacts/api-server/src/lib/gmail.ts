@@ -1,4 +1,5 @@
 import { google, gmail_v1 } from 'googleapis';
+import { outboundBlocked, resolveEmailMode, type Mode } from './outbound.js';
 
 async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
   for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -178,7 +179,7 @@ export async function markRead(id: string): Promise<void> {
   });
 }
 
-export type Mode = 'dry_run' | 'supervised' | 'auto';
+export type { Mode } from './outbound.js';
 
 export interface SendArgs {
   to: string;
@@ -193,16 +194,23 @@ export interface SendResult {
   gmailId?: string;
 }
 
+/**
+ * Send, draft or skip an email according to MODE (see lib/outbound.ts).
+ * `force` may tighten the mode for one message, or promote a staff-internal
+ * alert to 'auto' under MODE=supervised, but it can never lift MODE=dry_run
+ * (hazard H-09: a forced 'auto' used to send patient email in dry_run).
+ */
 export async function sendOrDraft(args: SendArgs, force?: Mode): Promise<SendResult> {
-  const mode: Mode = (force || process.env.MODE || 'dry_run') as Mode;
-  const gmail = getGmail();
-
-  const raw = buildRfc822(args);
-  const encoded = Buffer.from(raw).toString('base64url');
+  const mode = resolveEmailMode(force);
 
   if (mode === 'dry_run') {
+    outboundBlocked('email', { to: args.to, subject: args.subject.slice(0, 80) });
     return { action: 'skipped' };
   }
+
+  const gmail = getGmail();
+  const raw = buildRfc822(args);
+  const encoded = Buffer.from(raw).toString('base64url');
 
   if (mode === 'supervised') {
     const { data } = await withRetry(() => gmail.users.drafts.create({

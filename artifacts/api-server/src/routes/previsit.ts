@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { sb, requireStaffAuth } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 import { logAudit } from '../lib/audit.js';
+import { sendSms as sendSmsMessage } from '../lib/sms.js';
 
 const router = Router();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
@@ -120,14 +121,14 @@ router.post('/api/previsit/create', async (req, res) => {
     let smsSent = false;
     if (sendSms && patientPhone && process.env.SMS_PROVIDER === 'twilio') {
       try {
-        const twilio = await import('twilio').then(m => m.default);
-        const tw = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
-        await tw.messages.create({
-          from: process.env.TWILIO_FROM_NUMBER!,
+        // Routed through lib/sms.ts so the MODE gate applies (H-09) — this
+        // used to call the Twilio client directly and ignored MODE=dry_run.
+        const result = await sendSmsMessage({
           to: patientPhone,
           body: `AMISE Medical Services: Please complete your pre-visit questionnaire before your appointment. Your secure link: ${link}`,
+          forceChannel: 'sms',
         });
-        smsSent = true;
+        smsSent = result.action === 'sent';
       } catch (smsErr) {
         log.warn({ err: smsErr }, 'previsit SMS send failed (non-fatal)');
       }
