@@ -18,6 +18,10 @@
  *   3. Colonoscopy uses the approved clear-fluid wording; minor procedures say
  *      no fasting is needed; the diabetic foot clinic carries no fasting or
  *      sedation text.
+ *   4. Every booking type in front-desk APPOINTMENT_TYPES has an explicit
+ *      entry in APPOINTMENT_INSTRUCTIONS, every mapped instruction set exists,
+ *      and consultation-style visits (thyroid clinic, pre-op assessment, …)
+ *      resolve to text with no fasting or sedation.
  *
  * Run: pnpm --filter @workspace/scripts run lint:patient-instructions
  */
@@ -25,7 +29,13 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PROCEDURE_INSTRUCTIONS } from '../../artifacts/front-desk/lib/instructions';
+import {
+  APPOINTMENT_INSTRUCTIONS,
+  PROCEDURE_INSTRUCTIONS,
+  getInstructionsForAppointment,
+  type ProcedureInstructions,
+} from '../../artifacts/front-desk/lib/instructions';
+import { APPOINTMENT_TYPES } from '../../artifacts/front-desk/lib/scheduling';
 
 // scripts/src/lint-patient-instructions.ts -> scripts/src -> scripts -> repo root
 const REPO_ROOT = join(fileURLToPath(import.meta.url), '..', '..', '..');
@@ -101,8 +111,12 @@ for (const [key, inst] of Object.entries(PROCEDURE_INSTRUCTIONS)) {
   for (const s of sentences(all)) if (MIDNIGHT_FAST.test(s)) failures.push(`instructions.ts ${key}: fasting from midnight: "${s}"`);
 }
 
+const INSTRUCTIONS_BY_KEY: Readonly<Record<string, ProcedureInstructions | undefined>> = PROCEDURE_INSTRUCTIONS;
+const MAPPING_BY_TYPE: Readonly<Record<string, string | null | undefined>> = APPOINTMENT_INSTRUCTIONS;
+const has = (obj: object, key: string) => Object.prototype.hasOwnProperty.call(obj, key);
+
 const joined = (key: string) => {
-  const inst = PROCEDURE_INSTRUCTIONS[key];
+  const inst = INSTRUCTIONS_BY_KEY[key];
   if (!inst) { failures.push(`instructions.ts: missing "${key}" entry`); return ''; }
   return [...inst.beforeVisit, ...inst.onTheDay].join('\n');
 };
@@ -114,6 +128,57 @@ if (!joined('minor_procedure').includes('No fasting is needed. Please eat a ligh
 }
 if (/\b(fast\w*|nil by mouth|nothing to eat|sedation)\b/i.test(joined('diabetic_foot'))) {
   failures.push('instructions.ts diabetic_foot: must carry no fasting or sedation text');
+}
+
+// ── Booking type → instruction set mapping ────────────────────────────────────
+// Instructions must never be looked up by the raw booking type (that sent
+// thyroid SURGERY fasting text to Thyroid CLINIC patients, and New Consultation
+// text to OGD / flexi-sig / pre-op patients). Every APPOINTMENT_TYPES key needs
+// an explicit entry in APPOINTMENT_INSTRUCTIONS (null = neutral set), and every
+// mapped instruction key must exist.
+for (const type of Object.keys(APPOINTMENT_TYPES)) {
+  if (!has(APPOINTMENT_INSTRUCTIONS, type)) {
+    failures.push(`APPOINTMENT_INSTRUCTIONS: booking type "${type}" has no explicit mapping (use null for the neutral set)`);
+  }
+}
+for (const [type, key] of Object.entries(MAPPING_BY_TYPE)) {
+  if (!has(APPOINTMENT_TYPES, type)) {
+    failures.push(`APPOINTMENT_INSTRUCTIONS: "${type}" is not a booking type in APPOINTMENT_TYPES`);
+  }
+  if (key !== null && (key === undefined || !has(PROCEDURE_INSTRUCTIONS, key))) {
+    failures.push(`APPOINTMENT_INSTRUCTIONS: "${type}" maps to instruction set "${String(key)}", which does not exist`);
+  }
+}
+
+// Clinically pinned mappings (Dr Kabiye's review, instruction-mapping fix).
+const PINNED: Record<string, string | null> = {
+  ogd:       'gastroscopy',
+  flexi_sig: 'flexi_sig',
+  pre_op:    'pre_op_assessment',
+  thyroid:   'thyroid_clinic',
+};
+for (const [type, key] of Object.entries(PINNED)) {
+  if (MAPPING_BY_TYPE[type] !== key) {
+    failures.push(`APPOINTMENT_INSTRUCTIONS: "${type}" must map to "${key}", found "${String(MAPPING_BY_TYPE[type])}"`);
+  }
+}
+
+// Consultation-style visits that must never carry fasting or sedation text.
+const NO_FAST = /\b(nothing to eat|nil by mouth|nothing by mouth|sedation)\b/i;
+for (const type of ['thyroid', 'pre_op', 'new_consult', 'follow_up', 'breast', 'telephone']) {
+  const inst = getInstructionsForAppointment(type);
+  const text = [...inst.beforeVisit, ...inst.onTheDay].join('\n');
+  if (NO_FAST.test(text)) failures.push(`booking type "${type}" (${inst.displayName}): must carry no fasting or sedation text`);
+}
+if (!joined('pre_op_assessment').includes('No fasting is needed for this visit unless the clinic has told you otherwise.')) {
+  failures.push('instructions.ts pre_op_assessment: missing "No fasting is needed for this visit unless the clinic has told you otherwise."');
+}
+if (NO_FAST.test(joined('general_appointment'))) {
+  failures.push('instructions.ts general_appointment: the neutral set must carry no fasting or sedation text');
+}
+// Unknown types get the neutral set — never another type's preparation.
+if (getInstructionsForAppointment('__lint_unknown_type__') !== PROCEDURE_INSTRUCTIONS.general_appointment) {
+  failures.push('getInstructionsForAppointment: unknown booking types must fall back to general_appointment');
 }
 
 // ── Pages and staff reference text ────────────────────────────────────────────
@@ -130,4 +195,4 @@ if (failures.length) {
   console.error('Use the approved wording: "MEDICATIONS: If you take insulin, blood thinners or diabetes medicines, please call the clinic before your procedure for instructions."');
   process.exit(1);
 }
-console.log(`✓ lint:patient-instructions — ${Object.keys(PROCEDURE_INSTRUCTIONS).length} instruction sets and ${SOURCE_FILES.length} source files clean.`);
+console.log(`✓ lint:patient-instructions — ${Object.keys(PROCEDURE_INSTRUCTIONS).length} instruction sets, ${Object.keys(APPOINTMENT_TYPES).length} booking-type mappings and ${SOURCE_FILES.length} source files clean.`);

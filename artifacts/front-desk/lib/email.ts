@@ -4,7 +4,7 @@
  * Sends HTML emails with full procedure-specific patient instructions.
  */
 import { google } from 'googleapis';
-import { getInstructions, type ProcedureInstructions } from '@/lib/instructions';
+import { getInstructionsForAppointment, type ProcedureInstructions } from '@/lib/instructions';
 import { LOCATION_LABELS } from '@/lib/calendar';
 import type { BookingTrack } from '@/lib/scheduling';
 
@@ -73,7 +73,7 @@ function buildEmailHtml(opts: {
 }): string {
   const { patientName, appointmentType, slot, isConfirmed, track } = opts;
   const firstName = patientName.split(' ')[0];
-  const inst: ProcedureInstructions = getInstructions(appointmentType);
+  const inst: ProcedureInstructions = getInstructionsForAppointment(appointmentType);
   const locLabel = slot ? (LOCATION_LABELS[slot.location] ?? slot.location) : inst.location;
 
   const statusColour = isConfirmed ? '#10b981' : '#f59e0b';
@@ -240,7 +240,7 @@ export async function sendConfirmationEmail(opts: {
     return false;
   }
 
-  const inst = getInstructions(opts.appointmentType);
+  const inst = getInstructionsForAppointment(opts.appointmentType);
   const statusText = opts.isConfirmed ? 'Appointment Confirmed' : 'Appointment Request Received';
   const subject = opts.slot
     ? `${statusText}: ${inst.displayName} — ${opts.slot.display}`

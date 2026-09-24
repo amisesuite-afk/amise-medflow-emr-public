@@ -154,6 +154,9 @@ const PREP_INSTRUCTIONS: Record<string, string> = {
     GENERAL_PREP,
   ].join('\n'),
 
+  // Fasting kept pending Dr Kabiye's confirmation of whether an ercp_workup
+  // booking is a consultation or the ERCP itself; the front-desk booking email
+  // (artifacts/front-desk/lib/instructions.ts ercp_workup) now matches it.
   ercp_workup: [
     'ERCP WORK-UP PREPARATION',
     'Nothing to eat for 6 hours and nothing to drink for 2 hours before your appointment.',

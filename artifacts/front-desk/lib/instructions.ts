@@ -6,6 +6,10 @@
  * Clinical decisions remain with Dr Kabiye and the clinical team.
  */
 
+// Relative import (not '@/lib/…') so scripts/src/lint-patient-instructions.ts
+// can load this file under tsx without the Next.js path alias.
+import { APPOINTMENT_TYPES, isAppointmentTypeKey, type AppointmentTypeKey } from './scheduling';
+
 export interface ProcedureInstructions {
   displayName:    string;
   location:       string;
@@ -55,7 +59,33 @@ const BRING_STANDARD = [
   'Any relevant prior test results, imaging, or hospital records',
 ];
 
-export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
+const PROCEDURE_INSTRUCTIONS_DEFS = {
+
+  // ── NEUTRAL (no procedure-specific instructions) ───────────────────────────
+  // Sent for booking types mapped to `null` in APPOINTMENT_INSTRUCTIONS below
+  // (and for unknown types) — logistics only, no fasting or preparation rules.
+  // displayName is replaced with the booking type's own label at lookup time.
+
+  general_appointment: {
+    displayName: 'Appointment',
+    location:    'As shown in your appointment details',
+    duration:    'As advised by the clinic',
+    beforeVisit: [
+      'Our team will contact you with any preparation needed for this appointment.',
+      'If you are not sure whether you need to prepare (for example, whether you need to fast), please call the clinic before your appointment.',
+    ],
+    onTheDay: [
+      'Arrive 10 minutes early for registration.',
+      'Bring your photo ID and insurance card.',
+    ],
+    afterCare: null,
+    whatToBring: [
+      ...BRING_STANDARD,
+    ],
+    urgentSigns: [
+      'If your condition worsens before your appointment — do not wait, attend the nearest emergency department or call Tapion Hospital: 758-284-0557 / 758-720-7111',
+    ],
+  },
 
   // ── CONSULTATIONS ──────────────────────────────────────────────────────────
 
@@ -132,19 +162,29 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
 
   // ── ENDOSCOPY ──────────────────────────────────────────────────────────────
 
+  // The `ercp_workup` booking type is ambiguous in this codebase: the slot
+  // engine books it as a 30-minute Rodney Bay consultation, but the booking
+  // form files it under "Endoscopy & Procedures" at Tapion and it is the only
+  // ERCP option staff can pick. The api-server 48 h reminder (sms.ts
+  // ercp_workup) tells these patients to fast, so this entry carries the same
+  // fasting rule rather than "eat normally" — the patient must never receive
+  // both. Flagged for Dr Kabiye to confirm; do not relax without approval.
   ercp_workup: {
-    displayName: 'ERCP Work-up Consultation',
+    displayName: 'ERCP / Biliary Investigation',
     location:    'Rodney Bay (Providence Building)',
     duration:    '30 minutes',
     beforeVisit: [
-      'No special preparation is required for the work-up consultation.',
+      FASTING_STANDARD,
+      'If you are not sure whether you need to fast for this appointment, please call the clinic.',
+      BLOOD_THINNERS_CALL,
+      MEDICATIONS_CALL,
+      'Arrange for a responsible adult to drive you home — you cannot drive if sedation is given.',
       'Gather all relevant imaging (ultrasound, CT, MRCP) and blood test results (especially liver function tests — LFTs and bilirubin).',
       'Make a note of all medications, particularly blood-thinning agents (warfarin, rivaroxaban, apixaban, clopidogrel, aspirin).',
       'Note any prior procedures on the bile duct, gallbladder, or pancreas.',
     ],
     onTheDay: [
       'Arrive 10 minutes early.',
-      'You may eat and drink normally before this consultation.',
     ],
     afterCare: null,
     whatToBring: [
@@ -277,6 +317,44 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
     ],
   },
 
+  // Preparation wording taken from the api-server `flexi_sig` template
+  // (artifacts/api-server/src/lib/sms.ts), which says "light breakfast only".
+  // The dashboard staff summary (BookingInboxTab.tsx) says "clear fluids only
+  // on morning of procedure" — unresolved conflict, flagged for Dr Kabiye.
+  flexi_sig: {
+    displayName: 'Flexible Sigmoidoscopy',
+    location:    'Tapion Hospital (La Toc, Castries)',
+    duration:    '15–30 minutes (plus preparation and recovery time)',
+    beforeVisit: [
+      'Follow the bowel preparation instructions provided (usually a single enema or mini-prep on the morning of the procedure).',
+      'Light breakfast only on the morning of the procedure (toast, tea — avoid heavy or greasy food).',
+      MEDICATIONS_CALL,
+      'You may not need sedation — ask us about your options.',
+      'If sedation is planned: arrange for a responsible adult to drive you home — you cannot drive after sedation.',
+      'If you develop fever, a new cough, vomiting, or feel unwell in the days before your procedure, call us — we may need to reschedule.',
+    ],
+    onTheDay: [
+      'Arrive at the time stated.',
+      'Wear loose, comfortable clothing — you will be asked to change into a hospital gown.',
+      'Remove all jewellery, piercings, watches, and hair accessories before arrival.',
+    ],
+    afterCare: [
+      'If sedation was given: rest for the remainder of the day; do not drive or make important decisions for 24 hours.',
+      'You may have mild bloating or wind — this is normal and will pass.',
+      'Results will be discussed at your follow-up appointment or by phone.',
+    ],
+    whatToBring: [
+      ...BRING_STANDARD,
+      'Responsible adult if sedation is planned',
+    ],
+    urgentSigns: [
+      'Significant rectal bleeding (more than a small amount of streaking)',
+      'Severe abdominal pain or distension',
+      'High fever above 38.5 °C',
+      'Go to the nearest emergency department or call Tapion Hospital: 758-284-0557 / 758-720-7111',
+    ],
+  },
+
   // ── BREAST ─────────────────────────────────────────────────────────────────
 
   breast: {
@@ -305,6 +383,35 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
       'Rapidly enlarging breast lump or swelling',
       'Breast redness, warmth, and fever (may indicate infection) — contact us promptly',
       'Nipple discharge that is bloody',
+    ],
+  },
+
+  // ── THYROID CLINIC (consultation — NOT thyroid surgery, see thyroid_surgery) ─
+
+  thyroid_clinic: {
+    displayName: 'Thyroid Clinic',
+    location:    'Rodney Bay (Providence Building)',
+    duration:    '45 minutes',
+    beforeVisit: [
+      'No special preparation is required for the clinic. You may eat and drink normally.',
+      'Collect and bring any thyroid blood test results, neck ultrasound or scan reports, and biopsy reports you have.',
+      'Note when you first noticed any neck swelling or other symptoms and how they have changed.',
+      'Note all medications you are currently taking, including vitamins and supplements.',
+    ],
+    onTheDay: [
+      'Arrive at least 10 minutes early for registration.',
+      'Wear a top with an open or low neckline so your neck can be examined easily.',
+      'You are welcome to bring a family member or trusted person for support.',
+    ],
+    afterCare: null,
+    whatToBring: [
+      ...BRING_STANDARD,
+      'Any thyroid blood test results',
+      'Any neck ultrasound, scan, or biopsy reports',
+      'Referral letter from your GP or specialist (if applicable)',
+    ],
+    urgentSigns: [
+      'Difficulty breathing or swallowing, or rapidly increasing neck swelling — go to the nearest emergency department or call Tapion Hospital: 758-284-0557 / 758-720-7111',
     ],
   },
 
@@ -367,7 +474,42 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
     ],
   },
 
-  // ── GENERAL ELECTIVE SURGERY (used for pre-op instructions) ───────────────
+  // ── PRE-OPERATIVE ASSESSMENT (clinic visit before an operation) ───────────
+  // The `pre_op` booking type is the assessment visit, not the operation, so
+  // there is no fasting here. Logistics mirror the api-server `pre_op`
+  // template (illness before surgery, what to bring) minus its surgery-day
+  // fasting / shower / escort rules.
+
+  pre_op_assessment: {
+    displayName: 'Pre-operative Assessment',
+    location:    'Rodney Bay (Providence Building)',
+    duration:    '45 minutes',
+    beforeVisit: [
+      'This is a check-up visit before your operation, not the operation itself. No fasting is needed for this visit unless the clinic has told you otherwise.',
+      'Write down any problems you or your family have had with anaesthetics in the past.',
+      'Note any medical conditions you have (for example diabetes, heart disease, or asthma) and any allergies.',
+      'Note all medications you are currently taking, including vitamins and supplements — your medicines will be reviewed at this visit.',
+      'Your instructions for the day of your operation will be given to you separately.',
+    ],
+    onTheDay: [
+      'Arrive 10 minutes early for registration.',
+      'Wear loose, comfortable clothing.',
+      'You are welcome to bring a family member or trusted person for support.',
+    ],
+    afterCare: null,
+    whatToBring: [
+      ...BRING_STANDARD,
+      'All current medications in their original packaging',
+      'Any letter or information you have about your planned operation',
+      'Results of any blood tests, ECG, or scans done for your operation',
+    ],
+    urgentSigns: [
+      'If you develop any illness (fever, cough, cold) in the days before your operation, call us — your operation may need to be postponed for your safety.',
+      'Sudden worsening of your condition before your operation — go to the nearest emergency department or call Tapion Hospital: 758-284-0557 / 758-720-7111',
+    ],
+  },
+
+  // ── GENERAL ELECTIVE SURGERY (staff-scheduled surgery, day of operation) ──
 
   elective_surgery: {
     displayName: 'Elective Surgery',
@@ -520,7 +662,10 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
 
   // ── THYROID SURGERY ────────────────────────────────────────────────────────
 
-  thyroid: {
+  // Renamed from `thyroid`: that key collided with the `thyroid` booking type
+  // (the Thyroid CLINIC, a consultation), so clinic patients were emailed
+  // fasting and surgical instructions.
+  thyroid_surgery: {
     displayName: 'Thyroid Surgery',
     location:    'Tapion Hospital (La Toc, Castries)',
     duration:    '90–180 minutes',
@@ -589,24 +734,87 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
       'High fever',
     ],
   },
-};
+} satisfies Record<string, ProcedureInstructions>;
+
+export type InstructionKey = keyof typeof PROCEDURE_INSTRUCTIONS_DEFS;
+
+export const PROCEDURE_INSTRUCTIONS: Readonly<Record<InstructionKey, ProcedureInstructions>> =
+  PROCEDURE_INSTRUCTIONS_DEFS;
 
 /**
- * Returns the instructions for a given appointment type.
- * Falls back to new_consult if the type is not found.
+ * Which instruction set is emailed for each bookable appointment type.
+ *
+ * Booking-type keys and instruction keys are separate namespaces: never look
+ * an instruction set up by the raw booking type. Doing so previously sent the
+ * New Consultation text for OGD, flexi-sig and pre-op bookings (no entry of
+ * that name) and thyroid SURGERY text — including fasting — to Thyroid CLINIC
+ * patients (same key).
+ *
+ * `null` = no procedure-specific instructions; the neutral
+ * `general_appointment` set is sent under the booking type's own label.
+ *
+ * Typed as a Record over AppointmentTypeKey, so adding a booking type to
+ * APPOINTMENT_TYPES without choosing its instructions here fails typecheck.
+ * `pnpm --filter @workspace/scripts run lint:patient-instructions` checks the
+ * same at runtime.
+ *
+ * Not reachable from any booking type (kept for staff-scheduled surgery and
+ * procedures, looked up by instruction key): ercp, elective_surgery,
+ * hernia_repair, cholecystectomy, colorectal, thyroid_surgery, minor_procedure.
  */
-export function getInstructions(appointmentType: string): ProcedureInstructions {
-  return (
-    PROCEDURE_INSTRUCTIONS[appointmentType] ??
-    PROCEDURE_INSTRUCTIONS['new_consult']
-  );
+export const APPOINTMENT_INSTRUCTIONS: Readonly<Record<AppointmentTypeKey, InstructionKey | null>> = {
+  new_consult:               'new_consult',
+  follow_up:                 'follow_up',
+  telephone:                 'telephone',
+  ogd:                       'gastroscopy',
+  colonoscopy:               'colonoscopy',
+  ercp_workup:               'ercp_workup',
+  flexi_sig:                 'flexi_sig',
+  breast:                    'breast',
+  thyroid:                   'thyroid_clinic',
+  diabetic_foot:             'diabetic_foot',
+  pre_op:                    'pre_op_assessment',
+  post_op:                   'post_op',
+  // Anaesthesia pre-assessment and lab visits have no approved patient
+  // instruction set yet (e.g. lab_fasting needs a fasting-bloods rule signed
+  // off by Dr Kabiye) — send the neutral set and let staff give specifics.
+  anaesthesia_preassessment: null,
+  lab_fasting:               null,
+  lab_collection:            null,
+  lab_urine:                 null,
+  lab_histology:             null,
+};
+
+function isInstructionKey(key: string): key is InstructionKey {
+  return Object.prototype.hasOwnProperty.call(PROCEDURE_INSTRUCTIONS, key);
+}
+
+/**
+ * Returns the patient instructions for a booking/appointment type.
+ *
+ *  1. A bookable type (APPOINTMENT_TYPES key) goes through
+ *     APPOINTMENT_INSTRUCTIONS; a `null` mapping gives the neutral set
+ *     labelled with the booking type's name.
+ *  2. Otherwise, a string that is itself an instruction key (e.g. `ercp`,
+ *     `hernia_repair` for staff-scheduled surgery) gets that set.
+ *  3. Anything else gets the neutral set — never another type's preparation.
+ */
+export function getInstructionsForAppointment(appointmentType: string): ProcedureInstructions {
+  if (isAppointmentTypeKey(appointmentType)) {
+    const key = APPOINTMENT_INSTRUCTIONS[appointmentType];
+    if (key) return PROCEDURE_INSTRUCTIONS[key];
+    return { ...PROCEDURE_INSTRUCTIONS.general_appointment, displayName: APPOINTMENT_TYPES[appointmentType].label };
+  }
+  if (isInstructionKey(appointmentType)) return PROCEDURE_INSTRUCTIONS[appointmentType];
+  console.warn(`[instructions] No instruction mapping for appointment type "${appointmentType}" — sending neutral instructions`);
+  return PROCEDURE_INSTRUCTIONS.general_appointment;
 }
 
 /**
  * Returns a plain-text version of instructions for SMS / short-form WhatsApp.
  */
 export function shortInstructions(appointmentType: string): string {
-  const inst = getInstructions(appointmentType);
+  const inst = getInstructionsForAppointment(appointmentType);
   const key  = inst.beforeVisit[0] ?? 'No special preparation required.';
   return `Preparation: ${key} What to bring: ${inst.whatToBring.slice(0, 2).join('; ')}. Questions? Call 758-284-0557.`;
 }
