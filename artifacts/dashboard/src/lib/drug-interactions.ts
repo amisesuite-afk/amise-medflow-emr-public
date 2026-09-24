@@ -1,12 +1,25 @@
+/**
+ * Deterministic drug-interaction screen (decision support; display only).
+ *
+ * Rule terms are either classes ("nsaid", "opioid", "ssri", "qt prolonging") or specific
+ * drugs ("warfarin"). Every term MUST be defined in `drug-classes.ts` (class members,
+ * synonyms and Caribbean/UK/US brand names, each with its BNF / Stockley's / SmPC source);
+ * `__tests__/drug-interactions.test.ts` fails if a rule names an unmapped term. Before
+ * H-07 the class names were only substring-matched, so "warfarin" + "diclofenac" raised
+ * no alert.
+ */
+import { matchTerm } from './drug-classes';
+
 export interface DrugInteraction {
-  drugs: [string, string];   // canonical lowercase drug names
+  drugs: [string, string];   // rule terms (lowercase): a class or drug key in DRUG_TERMS
   severity: 'contraindicated' | 'major' | 'moderate';
   effect: string;
   action: string;
 }
 
 // Partial list of clinically important interactions for surgical/general practice.
-// Drug names are matched case-insensitively as substrings of the medication string.
+// Terms match case-insensitively: the raw term as a substring of the medication string
+// (original behaviour, kept) OR any class member / synonym / brand as a whole word.
 export const INTERACTIONS: DrugInteraction[] = [
   // Anticoagulants
   { drugs: ['warfarin', 'aspirin'],        severity: 'major',           effect: 'Increased bleeding risk', action: 'Monitor INR closely; consider PPI cover' },
@@ -50,32 +63,132 @@ export const INTERACTIONS: DrugInteraction[] = [
   { drugs: ['maoi', 'pethidine'],          severity: 'contraindicated', effect: 'Life-threatening serotonin crisis', action: 'Contraindicated; use morphine instead' },
   { drugs: ['lithium', 'nsaid'],           severity: 'major',           effect: 'Lithium toxicity (NSAIDs reduce renal lithium clearance)', action: 'Avoid NSAIDs; monitor lithium levels' },
   { drugs: ['lithium', 'diuretic'],        severity: 'major',           effect: 'Lithium toxicity', action: 'Monitor lithium levels closely; maintain adequate fluid intake' },
+
+  // ── Class-based rules added for H-07 ───────────────────────────────────────────────────
+  // Appended AFTER the original rules so that, when two rules hit the same pair, the
+  // original (more specific) wording is shown first. Severity is this app's 3-level scale.
+  // Source for each: BNF Interactions appendix and Stockley's Drug Interactions unless
+  // stated; MHRA Drug Safety Updates / SmPCs where cited.
+  // Bleeding — BNF: NSAIDs, antiplatelets and SSRIs/SNRIs each increase bleeding risk with
+  // coumarins, DOACs and heparins.
+  { drugs: ['anticoagulant', 'nsaid'],     severity: 'major',           effect: 'Increased bleeding risk', action: 'Avoid NSAIDs; use paracetamol instead. If unavoidable, add PPI and monitor for bleeding' },
+  { drugs: ['anticoagulant', 'antiplatelet'], severity: 'major',        effect: 'Increased bleeding risk', action: 'Combine only with a clear indication (e.g. recent ACS/stent) and specialist input; add PPI; minimise duration' },
+  { drugs: ['anticoagulant', 'ssri'],      severity: 'moderate',        effect: 'Increased bleeding risk (SSRIs impair platelet serotonin uptake)', action: 'Monitor for bleeding; check INR when starting/stopping an SSRI with warfarin; consider PPI' },
+  { drugs: ['anticoagulant', 'snri'],      severity: 'moderate',        effect: 'Increased bleeding risk (SNRIs impair platelet serotonin uptake)', action: 'Monitor for bleeding; check INR when starting/stopping an SNRI with warfarin; consider PPI' },
+  { drugs: ['nsaid', 'ssri'],              severity: 'moderate',        effect: 'Increased risk of GI bleeding', action: 'Consider PPI gastroprotection; avoid if previous GI bleed' },
+  { drugs: ['nsaid', 'snri'],              severity: 'moderate',        effect: 'Increased risk of GI bleeding', action: 'Consider PPI gastroprotection; avoid if previous GI bleed' },
+  // Serotonin toxicity — BNF; tramadol and SSRI/SNRI SmPCs (MAOI + SSRI/SNRI contraindicated,
+  // including for 14 days after stopping an irreversible MAOI).
+  { drugs: ['tramadol', 'snri'],           severity: 'major',           effect: 'Serotonin syndrome risk', action: 'Avoid combination; use alternative analgesia' },
+  { drugs: ['maoi', 'ssri'],               severity: 'contraindicated', effect: 'Severe serotonin syndrome', action: 'Contraindicated; do not co-administer (observe MAOI washout)' },
+  { drugs: ['maoi', 'snri'],               severity: 'contraindicated', effect: 'Severe serotonin syndrome', action: 'Contraindicated; do not co-administer (observe MAOI washout)' },
+  // Respiratory depression — MHRA DSU Oct 2017 (gabapentin), Feb 2021 (pregabalin).
+  { drugs: ['opioid', 'gabapentinoid'],    severity: 'major',           effect: 'Additive CNS/respiratory depression', action: 'Use lowest effective doses; monitor sedation and respiratory rate, especially elderly/post-op' },
+  // QT — CredibleMeds "Known Risk of TdP"; BNF. Two DIFFERENT QT-prolonging drugs.
+  { drugs: ['qt prolonging', 'qt prolonging'], severity: 'major',       effect: 'Additive QT prolongation — risk of torsade de pointes', action: 'Avoid combination where possible; check baseline ECG (QTc), potassium and magnesium; stop if QTc >500 ms' },
+  // Warfarin potentiation — BNF (macrolides; azoles). MHRA DSU June 2016: miconazole oral gel.
+  { drugs: ['warfarin', 'macrolide'],      severity: 'major',           effect: 'Potentiates anticoagulation — INR rise', action: 'Check INR within 3–5 days of starting; adjust warfarin dose' },
+  { drugs: ['warfarin', 'azole antifungal'], severity: 'major',         effect: 'Potentiates anticoagulation — INR rise (CYP2C9/3A4 inhibition)', action: 'Avoid miconazole oral gel; otherwise reduce warfarin and monitor INR closely' },
+  // Statin myopathy — Zocor (simvastatin) and Klaricid SmPCs: strong CYP3A4-inhibiting
+  // macrolides are contraindicated with simvastatin.
+  { drugs: ['clarithromycin', 'simvastatin'], severity: 'contraindicated', effect: 'Greatly raised simvastatin levels — myopathy / rhabdomyolysis', action: 'Withhold simvastatin for the course, or use a non-interacting antibiotic (e.g. azithromycin)' },
+  { drugs: ['erythromycin', 'simvastatin'],   severity: 'contraindicated', effect: 'Greatly raised simvastatin levels — myopathy / rhabdomyolysis', action: 'Withhold simvastatin for the course, or use a non-interacting antibiotic (e.g. azithromycin)' },
+  // Hyperkalaemia — BNF: ACE inhibitors / ARBs with potassium-sparing diuretics, aldosterone
+  // antagonists or potassium salts.
+  { drugs: ['ace inhibitor', 'potassium-sparing diuretic'], severity: 'major', effect: 'Hyperkalaemia', action: 'Monitor potassium and renal function closely' },
+  { drugs: ['arb', 'potassium-sparing diuretic'],           severity: 'major', effect: 'Hyperkalaemia', action: 'Monitor potassium and renal function closely' },
+  { drugs: ['arb', 'potassium'],                            severity: 'major', effect: 'Hyperkalaemia', action: 'Monitor potassium closely; avoid potassium supplements unless clearly necessary' },
+  // Renal — BNF: NSAIDs with ACE inhibitors / ARBs increase the risk of renal impairment and
+  // reduce the antihypertensive effect (also on the iOS rule list).
+  { drugs: ['nsaid', 'ace inhibitor'],     severity: 'moderate',        effect: 'Risk of acute kidney injury; reduced antihypertensive effect', action: 'Avoid in CKD, dehydration or with a diuretic; monitor renal function and potassium' },
+  { drugs: ['nsaid', 'arb'],               severity: 'moderate',        effect: 'Risk of acute kidney injury; reduced antihypertensive effect', action: 'Avoid in CKD, dehydration or with a diuretic; monitor renal function and potassium' },
+  // Methotrexate — BNF: NSAIDs reduce methotrexate excretion (also on the iOS rule list).
+  { drugs: ['methotrexate', 'nsaid'],      severity: 'major',           effect: 'Methotrexate toxicity (reduced renal clearance)', action: 'Avoid; if unavoidable, monitor FBC, renal and liver function' },
 ];
 
 export interface FoundInteraction {
   interaction: DrugInteraction;
+  /** The medication entries as written (lowercased), e.g. "diclofenac 50mg tds". */
   matchedA: string;
   matchedB: string;
+  /** Class label when a side matched through class membership (e.g. "NSAID"). */
+  viaClassA?: string;
+  viaClassB?: string;
+  /**
+   * Other rules that hit the SAME pair of medications with a different effect. Nothing is
+   * dropped: the most severe rule is shown as the headline and the rest are listed here.
+   */
+  related: DrugInteraction[];
 }
 
-export function checkInteractions(medList: string[]): FoundInteraction[] {
-  const lc = medList.map(m => m.toLowerCase());
-  const found: FoundInteraction[] = [];
+const SEVERITY_RANK: Record<DrugInteraction['severity'], number> = {
+  contraindicated: 3,
+  major: 2,
+  moderate: 1,
+};
 
-  for (const ix of INTERACTIONS) {
+const norm = (s: string) => s.trim().toLowerCase();
+
+/**
+ * Deterministic interaction screen over a free-text medication list.
+ *
+ * A rule term matches an entry by (1) the pre-H-07 raw substring test, kept unchanged, OR
+ * (2) whole-word membership of the term's class / synonym list in `drug-classes.ts`.
+ * Class matches only ever ADD alerts. A class match must pair two different list entries
+ * (e.g. "losartan potassium" alone is not "ARB + potassium"); a same-class rule (QT + QT)
+ * additionally needs two different drugs. Hits on the same pair of entries are merged into
+ * one card (most severe first) with every other distinct effect kept in `related`.
+ * Display only — never blocks or edits a prescription.
+ */
+export function checkInteractions(medList: string[]): FoundInteraction[] {
+  const lc = medList.map(norm).filter(Boolean);
+  type Hit = { ix: DrugInteraction; ruleOrder: number; mA: string; mB: string; vA?: string; vB?: string };
+  const byPair = new Map<string, Hit[]>();
+
+  INTERACTIONS.forEach((ix, ruleOrder) => {
     const [a, b] = ix.drugs;
-    const matchA = lc.filter(m => m.includes(a));
-    const matchB = lc.filter(m => m.includes(b));
-    if (matchA.length > 0 && matchB.length > 0) {
-      found.push({ interaction: ix, matchedA: matchA[0], matchedB: matchB[0] });
+    const sameTerm = a === b;
+    const hitsA = lc.map((m, i) => ({ i, m, hit: matchTerm(a, m) })).filter(x => x.hit !== null);
+    if (hitsA.length === 0) return;
+    const hitsB = lc.map((m, i) => ({ i, m, hit: matchTerm(b, m) })).filter(x => x.hit !== null);
+
+    for (const A of hitsA) {
+      for (const B of hitsB) {
+        const ha = A.hit!, hb = B.hit!;
+        if (A.i === B.i) {
+          // Pre-H-07 behaviour allowed one entry to match both sides by raw substring; keep
+          // that (never remove an alert) but never create a new self-pair via class lookup.
+          if (sameTerm || !(ha.legacy && hb.legacy)) continue;
+        }
+        // Same-class rule (QT + QT): two different entries AND two different drugs.
+        if (sameTerm && (A.i > B.i || ha.canonical === hb.canonical)) continue;
+
+        const key = A.i <= B.i ? `${A.i}|${B.i}` : `${B.i}|${A.i}`;
+        const list = byPair.get(key) ?? [];
+        if (!list.some(h => h.ix === ix)) {
+          list.push({ ix, ruleOrder, mA: A.m, mB: B.m, vA: ha.viaClass, vB: hb.viaClass });
+        }
+        byPair.set(key, list);
+      }
     }
-  }
-  // Deduplicate by drug pair
-  const seen = new Set<string>();
-  return found.filter(f => {
-    const key = [f.interaction.drugs[0], f.interaction.drugs[1]].sort().join('|');
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
   });
+
+  const found: FoundInteraction[] = [];
+  for (const hits of byPair.values()) {
+    // Most severe first; original rule order breaks ties (original wording wins).
+    hits.sort((x, y) =>
+      SEVERITY_RANK[y.ix.severity] - SEVERITY_RANK[x.ix.severity] || x.ruleOrder - y.ruleOrder);
+    // Collapse only exact duplicates of the same effect (keeping the most severe); every
+    // distinct effect stays visible.
+    const kept: Hit[] = [];
+    for (const h of hits) if (!kept.some(k => norm(k.ix.effect) === norm(h.ix.effect))) kept.push(h);
+    const [head, ...rest] = kept;
+    found.push({
+      interaction: head.ix,
+      matchedA: head.mA, matchedB: head.mB,
+      viaClassA: head.vA, viaClassB: head.vB,
+      related: rest.map(r => r.ix),
+    });
+  }
+  return found.sort((x, y) => SEVERITY_RANK[y.interaction.severity] - SEVERITY_RANK[x.interaction.severity]);
 }
