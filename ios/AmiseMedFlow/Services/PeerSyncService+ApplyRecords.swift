@@ -15,6 +15,8 @@ extension PeerSyncService {
         let existing = (try? context.fetch(FetchDescriptor<Patient>())) ?? []
         let iso = ISO8601DateFormatter()
         for rec in records {
+            // Deleted on this device: don't let a peer recreate it.
+            if PatientIdentityStore.isDeleted(rec.syncCode) || PatientIdentityStore.isDeleted(rec.remoteId) { continue }
             // Match by syncCode first; fall back to remoteId for records synced before this feature
             let patient = existing.first { $0.syncCode == rec.syncCode }
                 ?? existing.first { rid in rec.remoteId != nil && rid.remoteId == rec.remoteId }

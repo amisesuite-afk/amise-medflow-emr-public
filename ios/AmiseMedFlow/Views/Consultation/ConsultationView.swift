@@ -169,7 +169,7 @@ struct ConsultationView: View {
             recomputeRisk()
         }
         pipeline.runNow(for: patient, socratesSelections: socratesSelections)
-        MRNGenerator.backfillIfNeeded(patient)
+        MRNGenerator.backfillIfNeeded(patient, in: context)
     }
 
     private func withChangeHandlers(_ content: some View) -> some View {

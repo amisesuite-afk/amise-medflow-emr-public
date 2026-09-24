@@ -38,6 +38,7 @@ struct QuickAddSheet: View {
     @State private var mrn       = ""
 
     @State private var showDuplicate = false
+    @State private var didSave = false   // blocks a double tap on Add from creating two records
     @State private var pendingName   = ""
 
     // MARK: - Init
@@ -95,7 +96,7 @@ struct QuickAddSheet: View {
                 Button("Add anyway", role: .destructive) { commitSave() }
                 Button("Cancel", role: .cancel) { }
             } message: {
-                Text("\"\(pendingName)\" already exists. Add a separate record?")
+                Text("\"\(pendingName)\" already exists (\(duplicateMRNs)). Only add a separate record if this is a different person.")
             }
         }
     }
@@ -387,7 +388,7 @@ struct QuickAddSheet: View {
                             TextField("Auto-generated on save", text: $mrn)
                                 .padding(12)
                                 .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 10))
-                            Button("Generate") { mrn = MRNGenerator.next() }
+                            Button("Generate") { mrn = MRNGenerator.next(existing: allPatients) }
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(.white)
                                 .padding(.horizontal, 12)
@@ -467,12 +468,16 @@ struct QuickAddSheet: View {
 
     // MARK: - Save new patient
 
+    private var duplicateMRNs: String {
+        let name = Patient.normalize(pendingName)
+        return allPatients.filter { $0.normalizedName == name }
+            .map { $0.mrn ?? "no MRN" }.joined(separator: ", ")
+    }
+
     private func attemptSave() {
         let trimmed = fullName.trimmingCharacters(in: .whitespaces)
         pendingName = trimmed
-        let dup = allPatients.first {
-            $0.fullName.trimmingCharacters(in: .whitespaces).lowercased() == trimmed.lowercased()
-        }
+        let dup = allPatients.first { $0.normalizedName == Patient.normalize(trimmed) }
         if dup != nil {
             showDuplicate = true
         } else {
@@ -481,6 +486,8 @@ struct QuickAddSheet: View {
     }
 
     private func commitSave() {
+        guard !didSave else { return }
+        didSave = true
         let trimmed = fullName.trimmingCharacters(in: .whitespaces)
         let p = Patient(
             fullName: trimmed,
@@ -489,7 +496,7 @@ struct QuickAddSheet: View {
             location: location,
             acuity: .routine
         )
-        p.mrn = mrn.isEmpty ? MRNGenerator.next() : mrn
+        p.mrn = mrn.isEmpty ? MRNGenerator.next(existing: allPatients) : mrn
         p.visitType = visitType
         if hasDOB { p.dateOfBirth = dob }
         if !phone.isEmpty { p.phone = phone }

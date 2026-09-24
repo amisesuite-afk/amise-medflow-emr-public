@@ -44,6 +44,7 @@ extension SyncService {
 
         for appt in rows {
             guard let name = appt.patient_name, !name.isEmpty else { continue }
+            guard !PatientIdentityStore.isDeleted("appt:\(appt.id)") else { continue }
             // Avoid duplicates: match by appointment_id stored in remoteId, or by name+phone
             let existing = allLocal.first { p in
                 p.remoteId == "appt:\(appt.id)" ||
@@ -52,6 +53,7 @@ extension SyncService {
             guard existing == nil else { continue }
 
             let p = Patient(fullName: name)
+            p.mrn = MRNGenerator.next(in: context)
             p.phone = appt.patient_phone
             p.email = appt.patient_email
             p.chiefComplaint = appt.reason

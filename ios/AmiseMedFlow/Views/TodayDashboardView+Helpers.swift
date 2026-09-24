@@ -20,6 +20,7 @@ extension TodayDashboardView {
     func createAndInsertPatient(from event: EKEvent) -> Patient {
         let parsed = CalendarEventParser.parse(title: event.title ?? "", calLabel: event.calEntryLabel)
         let p = Patient(fullName: parsed.name, setting: parsed.setting)
+        p.mrn = MRNGenerator.next(in: context)
         p.operationDate = event.startDate
         p.appointmentType = parsed.appointmentType
         p.acuity = .routine

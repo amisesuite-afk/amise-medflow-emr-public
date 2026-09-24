@@ -304,7 +304,7 @@ struct PatientDetailPadView: View {
     // HPI text and all other structured fields are included)
 
     private func padSaveEncounter() {
-        MRNGenerator.backfillIfNeeded(patient)
+        MRNGenerator.backfillIfNeeded(patient, in: context)
         let encounter = Encounter(
             visitType: patient.visitType ?? .newConsult,
             acuity: patient.acuity,

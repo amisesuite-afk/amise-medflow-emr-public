@@ -64,7 +64,7 @@ extension WardRoundView {
     // MARK: - Actions
 
     func delete(_ patients: [Patient], at offsets: IndexSet) {
-        for i in offsets { context.delete(patients[i]) }
+        for i in offsets { context.deletePatient(patients[i]) }
     }
 
     func markReviewed(_ patient: Patient) {

@@ -162,7 +162,7 @@ struct PatientDetailView: View {
                                 isPresented: $showDeleteConfirm,
                                 titleVisibility: .visible) {
                 Button("Delete Patient", role: .destructive) {
-                    context.delete(patient)
+                    context.deletePatient(patient)
                     try? context.save()
                     dismiss()
                 }

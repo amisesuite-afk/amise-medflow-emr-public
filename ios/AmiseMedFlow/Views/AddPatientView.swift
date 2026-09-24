@@ -10,6 +10,7 @@ struct AddPatientView: View {
     var initialSetting: ClinicalSetting
 
     @State var showDuplicateAlert = false
+    @State var didSave = false   // blocks a double tap on Add from creating two records
 
     // Identity
     @State var fullName = ""
@@ -88,7 +89,7 @@ struct AddPatientView: View {
                 Button("Add Anyway", role: .destructive) { commitSave() }
                 Button("Cancel", role: .cancel) { }
             } message: {
-                Text("A patient named \"\(fullName.trimmingCharacters(in: .whitespaces))\" already exists. Add a separate record?")
+                Text(duplicateMessage)
             }
         }
     }
@@ -112,7 +113,7 @@ struct AddPatientView: View {
             HStack(spacing: 8) {
                 TextField("MRN (auto-generated on save)", text: $mrn)
                 if mrn.isEmpty {
-                    Button("Generate") { mrn = MRNGenerator.next() }
+                    Button("Generate") { mrn = MRNGenerator.next(existing: existingPatients) }
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(AMColor.accent)
                         .buttonStyle(.bordered)

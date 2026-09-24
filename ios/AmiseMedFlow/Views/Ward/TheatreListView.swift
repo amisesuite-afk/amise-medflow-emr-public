@@ -69,7 +69,7 @@ struct TheatreListView: View {
                             }
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                 Button(role: .destructive) {
-                                    context.delete(patient)
+                                    context.deletePatient(patient)
                                 } label: {
                                     Label("Remove", systemImage: "trash")
                                 }

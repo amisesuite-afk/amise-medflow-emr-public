@@ -44,6 +44,9 @@ struct PatientListView: View {
     var body: some View {
         NavigationStack {
             List {
+                if searchText.isEmpty {
+                    DuplicatePatientsBanner(patients: allPatients)
+                }
                 if allPatients.isEmpty {
                     ContentUnavailableView(
                         "No patients",
@@ -83,7 +86,7 @@ struct PatientListView: View {
             .task {
                 // Backfill MRNs for any patient created before auto-generation was wired up.
                 for p in allPatients where p.mrn == nil || p.mrn?.isEmpty == true {
-                    MRNGenerator.backfillIfNeeded(p)
+                    MRNGenerator.backfillIfNeeded(p, existing: allPatients)
                 }
             }
             .toolbar {
@@ -105,17 +108,16 @@ struct PatientListView: View {
 
     // MARK: – Actions
 
-    /// Deletes the tapped row and any hidden duplicates of the same patient
-    /// in the same setting (same dedupKey). Clinical data is intentionally
-    /// preserved on the winner; duplicates with no encounters/vitals/notes
-    /// are safe to remove.
+    /// Deletes the tapped row and any hidden local copies of the SAME record (same remoteId /
+    /// manual MRN, see Patient.dedupKey). Same-name patients are separate records and are handled
+    /// in the duplicate review sheet, never here.
     private func deleteWithDuplicates(from patients: [Patient], at offsets: IndexSet) {
         for i in offsets {
             let victim = patients[i]
             let key = victim.dedupKey
             allPatients
                 .filter { $0.setting == victim.setting && $0.dedupKey == key }
-                .forEach { context.delete($0) }
+                .forEach { context.deletePatient($0) }
         }
     }
 }

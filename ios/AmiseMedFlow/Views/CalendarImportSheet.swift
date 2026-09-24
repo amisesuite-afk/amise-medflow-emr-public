@@ -192,6 +192,7 @@ struct CalendarImportSheet: View {
         let toAdd = appointments.filter { $0.selected && !$0.alreadyExists }
         for appt in toAdd {
             let p = Patient(fullName: appt.parsedName, setting: appt.setting)
+            p.mrn = MRNGenerator.next(in: context)
             p.operationDate = appt.startTime
             p.appointmentType = appt.appointmentType
             p.acuity = .routine

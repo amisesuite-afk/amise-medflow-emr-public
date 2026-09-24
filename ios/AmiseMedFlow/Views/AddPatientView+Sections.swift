@@ -108,11 +108,19 @@ extension AddPatientView {
         }
     }
 
+    var duplicateMatches: [Patient] {
+        let name = Patient.normalize(fullName)
+        return existingPatients.filter { $0.normalizedName == name }
+    }
+
+    var duplicateMessage: String {
+        let ids = duplicateMatches.map { $0.mrn ?? "no MRN" }.joined(separator: ", ")
+        return "\"\(fullName.trimmingCharacters(in: .whitespaces))\" already exists (\(ids)). "
+            + "Only add a separate record if this is a different person."
+    }
+
     func save() {
-        let trimmed = fullName.trimmingCharacters(in: .whitespaces)
-        let conflicts = existingPatients.filter {
-            $0.fullName.trimmingCharacters(in: .whitespaces).lowercased() == trimmed.lowercased()
-        }
+        let conflicts = duplicateMatches
         if !conflicts.isEmpty {
             showDuplicateAlert = true
             return
@@ -121,6 +129,8 @@ extension AddPatientView {
     }
 
     func commitSave() {
+        guard !didSave else { return }
+        didSave = true
         let p = Patient(
             fullName: fullName.trimmingCharacters(in: .whitespaces),
             sex: sex,
@@ -131,7 +141,7 @@ extension AddPatientView {
         if hasDOB               { p.dateOfBirth = dateOfBirth }
         if !phone.isEmpty       { p.phone = phone }
         if !email.isEmpty       { p.email = email }
-        p.mrn = mrn.isEmpty ? MRNGenerator.next() : mrn
+        p.mrn = mrn.isEmpty ? MRNGenerator.next(existing: existingPatients) : mrn
         p.visitType = visitType
         if !chiefComplaint.isEmpty   { p.chiefComplaint = chiefComplaint }
         if !appointmentType.isEmpty  { p.appointmentType = appointmentType }

@@ -95,6 +95,9 @@ struct SectionPatientListView: View {
                     )
                 } else {
                     List {
+                        if searchText.isEmpty {
+                            DuplicatePatientsBanner(patients: allPatients)
+                        }
                         ForEach(patients) { patient in
                             Button { selectedPatient = patient } label: {
                                 PatientRow(patient: patient)
@@ -115,7 +118,7 @@ struct SectionPatientListView: View {
         .searchable(text: $searchText, prompt: "Search name or complaint")
         .task {
             for p in allPatients where p.mrn == nil || p.mrn?.isEmpty == true {
-                MRNGenerator.backfillIfNeeded(p)
+                MRNGenerator.backfillIfNeeded(p, existing: allPatients)
             }
         }
         .toolbar {
@@ -148,7 +151,7 @@ struct SectionPatientListView: View {
     }
 
     private func delete(at offsets: IndexSet) {
-        for i in offsets { context.delete(patients[i]) }
+        for i in offsets { context.deletePatient(patients[i]) }
     }
 }
 

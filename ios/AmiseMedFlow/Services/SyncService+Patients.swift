@@ -87,7 +87,16 @@ extension SyncService {
         let allLocal = try context.fetch(FetchDescriptor<Patient>())
 
         for row in rows {
+            // Deleted on this device: skip so it does not reappear (deletes are local-only).
+            if PatientIdentityStore.isDeleted(row.id) { continue }
+            // Match the Supabase row; else adopt a local record with the same MRN that has not
+            // received its remoteId yet (e.g. its insert reached the server but the app was
+            // closed before the id was saved), instead of creating a second copy.
             let existing = allLocal.first { $0.remoteId == row.id }
+                ?? allLocal.first { p in
+                    p.remoteId == nil && !(p.mrn ?? "").isEmpty && p.mrn == row.mrn &&
+                    p.normalizedName == Patient.normalize(row.full_name)
+                }
             let patient = existing ?? {
                 let p = Patient(fullName: row.full_name)
                 context.insert(p)
@@ -352,6 +361,29 @@ extension SyncService {
                 patient_instructions_data_json: patient.patientInstructionsDataJson
             )
             struct InsertResponse: Decodable { let id: String }
+            // Idempotent push: if an earlier insert for this MRN already reached the server
+            // (response lost, app killed before save), adopt that row instead of inserting again.
+            // MRN AND name must both match: MRN counters are per-device, so an MRN alone could
+            // belong to a different patient registered on another device.
+            if let mrn = patient.mrn, !mrn.isEmpty {
+                struct ExistingRow: Decodable { let id: String; let full_name: String }
+                let already: [ExistingRow] = try await SupabaseConfig.client
+                    .from("patients")
+                    .select("id, full_name")
+                    .eq("mrn", value: mrn)
+                    .execute()
+                    .value
+                let claimed = Set(try context.fetch(FetchDescriptor<Patient>()).compactMap(\.remoteId))
+                if let row = already.first(where: {
+                    Patient.normalize($0.full_name) == patient.normalizedName && !claimed.contains($0.id)
+                }) {
+                    patient.remoteId = row.id
+                    patient.pendingSync = false
+                    patient.syncedAt = .now
+                    try context.save()
+                    continue
+                }
+            }
             let response: [InsertResponse] = try await SupabaseConfig.client
                 .from("patients")
                 .insert(row)
@@ -362,6 +394,7 @@ extension SyncService {
                 patient.remoteId = first.id
                 patient.pendingSync = false
                 patient.syncedAt = .now
+                try context.save()   // persist the id immediately so a crash can't cause a re-insert
             }
         }
         try context.save()

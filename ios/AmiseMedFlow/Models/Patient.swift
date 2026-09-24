@@ -307,7 +307,9 @@ final class Patient {
         self.createdAt = .now
         self.updatedAt = .now
         self.pendingSync = true
-        self.mrn = MRNGenerator.next()
+        // MRN is assigned by the creating flow (MRNGenerator.next(existing:)/next(in:)) so it can
+        // avoid numbers already used on other devices. Records pulled from the cloud or a peer
+        // carry their own MRN; anything left without one is back-filled when the list opens.
     }
 
     // MARK: - Longitudinal context from closed encounters
