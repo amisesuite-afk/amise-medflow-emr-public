@@ -81,7 +81,9 @@ struct DuplicatePatientsSheet: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } }
             }
-            .confirmationDialog(removalTitle, isPresented: $confirmRemoval, titleVisibility: .visible) {
+            // A centred alert, not a confirmationDialog: on iPad a confirmationDialog inside a
+            // sheet presents as a popover that can end up invisible while still blocking touches.
+            .alert(removalTitle, isPresented: $confirmRemoval) {
                 Button("Remove from this device", role: .destructive) { performRemoval() }
                 Button("Cancel", role: .cancel) { pendingRemoval = [] }
             } message: {
