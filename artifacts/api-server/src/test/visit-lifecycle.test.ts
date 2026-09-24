@@ -18,7 +18,7 @@ function makeQuery(result: QueryResult) {
     then: (resolve: (v: QueryResult) => unknown, reject?: (e: unknown) => unknown) =>
       Promise.resolve(result).then(resolve, reject),
   };
-  for (const m of ['select','update','insert','delete','upsert','eq','neq','in','not','order','limit']) {
+  for (const m of ['select','update','insert','delete','upsert','eq','neq','in','not','is','order','limit']) {
     q[m] = vi.fn().mockReturnValue(q);
   }
   q['maybeSingle'] = vi.fn().mockResolvedValue(result);

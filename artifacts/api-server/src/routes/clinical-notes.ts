@@ -73,6 +73,7 @@ router.get('/api/clinical-notes/patient/:patientId', async (req, res) => {
       .from('clinical_notes')
       .select('id, encounter_id, note_type, status, content, signed_by, signed_at, ai_assisted, created_at')
       .eq('patient_id', patientId)
+      .is('deleted_at', null)
       .not('content', 'like', '[HPI]%')
       .not('content', 'like', '[EXAMINATION%')
       .not('content', 'like', '[AI_CONSULT%')
@@ -106,7 +107,7 @@ router.patch('/api/clinical-notes/:id', async (req, res) => {
   try {
     const supa = getSupabaseAdmin();
     const { data: existing, error: fetchErr } = await supa
-      .from('clinical_notes').select('id, patient_id, status').eq('id', id).maybeSingle();
+      .from('clinical_notes').select('id, patient_id, status').eq('id', id).is('deleted_at', null).maybeSingle();
     if (fetchErr || !existing) { res.status(404).json({ error: 'Clinical note not found' }); return; }
 
     const staffId = await getStaffUserId(req);

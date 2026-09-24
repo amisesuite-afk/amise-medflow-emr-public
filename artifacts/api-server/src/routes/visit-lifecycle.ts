@@ -191,7 +191,8 @@ router.post('/api/visit/complete/:encounterId', async (req, res) => {
       .from('clinical_notes')
       .update({ status: 'signed', updated_at: new Date().toISOString() })
       .eq('encounter_id', encounterId)
-      .eq('status', 'draft');
+      .eq('status', 'draft')
+      .is('deleted_at', null);
     if (signNotesErr) logger.warn({ err: signNotesErr, encounterId }, '[visit/complete] clinical_notes sign failed');
 
     // Close encounter
@@ -431,6 +432,7 @@ router.post('/api/visit/sign-notes/:encounterId', async (req, res) => {
       })
       .eq('encounter_id', encounterId)
       .eq('status', 'draft')
+      .is('deleted_at', null)
       .select('id');
 
     if (signErr) throw signErr;
@@ -466,6 +468,7 @@ router.post('/api/visit/sign-note/:noteId', async (req, res) => {
       .from('clinical_notes')
       .select('id, patient_id, status')
       .eq('id', noteId)
+      .is('deleted_at', null)
       .maybeSingle();
 
     if (fetchErr || !note) { res.status(404).json({ error: 'Note not found' }); return; }
@@ -514,6 +517,7 @@ router.post('/api/visit/amend-note/:noteId', async (req, res) => {
       .from('clinical_notes')
       .select('id, patient_id, encounter_id, note_type, status, version')
       .eq('id', noteId)
+      .is('deleted_at', null)
       .maybeSingle();
 
     if (fetchErr || !original) {

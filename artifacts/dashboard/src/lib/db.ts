@@ -708,6 +708,7 @@ async function upsertDraftNote(
     .select('id')
     .eq('encounter_id', encounterId)
     .eq('status', 'draft')
+    .is('deleted_at', null)
     .like('content', prefixLike)
     .maybeSingle();
   if (findErr) { console.error('[db] upsertDraftNote find:', findErr); return { error: findErr.message }; }
@@ -1236,6 +1237,7 @@ export async function loadEncounterClinicalNotes(
     .from('clinical_notes')
     .select('id, note_type, status, content, signed_by, signed_at, version, previous_version_id, created_at, ai_assisted')
     .eq('encounter_id', encounterId)
+    .is('deleted_at', null)
     .not('content', 'like', '[HPI]%')
     .not('content', 'like', '[EXAMINATION%')
     .not('content', 'like', '[AI_CONSULT%')
@@ -1486,6 +1488,7 @@ export async function loadDischargeNotes(
     .from('clinical_notes')
     .select('content')
     .eq('encounter_id', encounterId)
+    .is('deleted_at', null)
     .like('content', `${DISCHARGE_PREFIX}%`)
     .order('created_at', { ascending: false })
     .limit(1)
@@ -1543,6 +1546,7 @@ export async function loadInpatientDetails(
     .from('clinical_notes')
     .select('content')
     .eq('encounter_id', encounterId)
+    .is('deleted_at', null)
     .like('content', `${INPATIENT_PREFIX}%`)
     .maybeSingle();
 
@@ -1762,6 +1766,7 @@ export async function loadEncounterData(
     sq(supabase.from('clinical_notes')
       .select('content')
       .eq('encounter_id', encounterId)
+      .is('deleted_at', null)
       .like('content', '[HPI]%')
       .order('created_at', { ascending: false })
       .limit(1)
@@ -1777,6 +1782,7 @@ export async function loadEncounterData(
     sq(supabase.from('clinical_notes')
       .select('content')
       .eq('encounter_id', encounterId)
+      .is('deleted_at', null)
       .like('content', '[EXAMINATION_JSON]%')
       .order('created_at', { ascending: false })
       .limit(1)
