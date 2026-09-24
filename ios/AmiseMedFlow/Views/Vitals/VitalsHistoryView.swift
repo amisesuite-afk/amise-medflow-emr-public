@@ -102,7 +102,7 @@ struct VitalsRow: View {
                     .foregroundStyle(.secondary)
                 Spacer()
                 if entry.hasAnyValue {
-                    Text("NEWS2: \(entry.news2Score) — \(entry.news2Risk)")
+                    Text("NEWS2: \(entry.news2Score) — \(entry.news2RiskDisplay)")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(Color(hex: entry.news2Color))
                 }

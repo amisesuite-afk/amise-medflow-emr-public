@@ -149,7 +149,7 @@ struct ClinicalReasoningView: View {
                 if let v = latestVitals, v.hasAnyValue {
                     HStack(spacing: 6) {
                         Image(systemName: "waveform.path.ecg").font(.caption2).foregroundStyle(.secondary)
-                        Text("NEWS2 \(v.news2Score) — \(v.news2Risk)")
+                        Text("NEWS2 \(v.news2Score) — \(v.news2RiskDisplay)")
                             .font(.system(size: 12, weight: .semibold))
                             .foregroundStyle(Color(hex: v.news2Color))
                         Spacer()

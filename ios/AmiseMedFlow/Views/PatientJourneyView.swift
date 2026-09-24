@@ -89,7 +89,7 @@ struct PatientJourneyView: View {
                 id: v.id,
                 date: v.recordedAt,
                 icon: v.news2HasRedFlag ? "waveform.path.ecg.rectangle.fill" : "waveform.path.ecg",
-                title: "Vitals — NEWS2 \(v.news2Score) (\(v.news2Risk))",
+                title: "Vitals — \(v.news2Summary)",
                 subtitle: subtitle,
                 category: .vitals
             ))

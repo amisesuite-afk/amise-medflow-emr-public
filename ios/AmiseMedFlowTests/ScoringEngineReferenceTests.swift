@@ -292,6 +292,24 @@ final class ScoringEngineReferenceTests: XCTestCase {
         XCTAssertEqual(rs.score, 3)
         XCTAssertGreaterThan(rs.risk, .low)
         XCTAssertFalse(rs.redFlags.isEmpty)
+        // RCP: single parameter 3 = low-medium, urgent ward-based response. ScoreRisk has no
+        // low-medium level, so it maps to .moderate with an explicit URGENT interpretation.
+        XCTAssertEqual(rs.risk, .moderate)
+        XCTAssertTrue(rs.interpretation.contains("Low-medium"))
+        XCTAssertTrue(rs.interpretation.contains("URGENT"))
+
+        var four = NEWS2Input()
+        four.respiratoryRate = 22            // 2
+        four.heartRate = 115                 // 2
+        XCTAssertEqual(ClinicalScoringEngine.news2(four).score, 4)
+        XCTAssertEqual(ClinicalScoringEngine.news2(four).risk, .low)
+
+        var five = four
+        five.temperatureCelsius = 38.5       // 1 → 5
+        let r5 = ClinicalScoringEngine.news2(five)
+        XCTAssertEqual(r5.score, 5)
+        XCTAssertEqual(r5.risk, .moderate)
+        XCTAssertTrue(r5.interpretation.contains("Medium"))
 
         var seven = NEWS2Input()
         seven.respiratoryRate = 22           // 2
@@ -302,6 +320,26 @@ final class ScoringEngineReferenceTests: XCTestCase {
         let r7 = ClinicalScoringEngine.news2(seven)
         XCTAssertEqual(r7.score, 7)
         XCTAssertEqual(r7.risk, .critical)
+    }
+
+    /// Supplemental oxygen alone keeps SpO₂ Scale 1; Scale 2 needs the explicit opt-in.
+    func testEngineNEWS2OxygenDoesNotSwitchToScale2() {
+        var i = NEWS2Input()
+        i.onSupplementalO2 = true
+        i.spo2 = 97
+        XCTAssertEqual(ClinicalScoringEngine.news2(i).score, 2, "Scale 1: 97% = 0, +2 for oxygen")
+        i.spo2 = 88
+        XCTAssertEqual(ClinicalScoringEngine.news2(i).score, 5, "Scale 1: 88% = 3, +2 for oxygen")
+
+        i.useSpO2Scale2 = true
+        i.spo2 = 97
+        XCTAssertEqual(ClinicalScoringEngine.news2(i).score, 5, "Scale 2 on O2: 97% = 3, +2")
+        i.spo2 = 88
+        XCTAssertEqual(ClinicalScoringEngine.news2(i).score, 2, "Scale 2: 88% = 0, +2")
+        i.spo2 = 85
+        XCTAssertEqual(ClinicalScoringEngine.news2(i).score, 4, "Scale 2: 84–85 = 2, +2")
+        i.spo2 = 87
+        XCTAssertEqual(ClinicalScoringEngine.news2(i).score, 3, "Scale 2: 86–87 = 1, +2")
     }
 
     // MARK: - ScoreRisk ordering (used by every "risk >= .high" check in the app)

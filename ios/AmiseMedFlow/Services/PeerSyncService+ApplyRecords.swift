@@ -54,6 +54,8 @@ extension PeerSyncService {
                 if let h = rec.heightCm { patient.heightCm  = h }
                 if let w = rec.ward,        !w.isEmpty { patient.ward       = w }
                 if let b = rec.bedNumber,   !b.isEmpty { patient.bedNumber  = b }
+                // NEWS2 SpO₂ scale (clinician decision): newer wins; absent in older payloads.
+                if let scale2 = rec.news2UseSpO2Scale2 { patient.news2UseSpO2Scale2 = scale2 }
             }
 
             // ── Clinical narrative: longer value wins regardless of timestamp ─

@@ -87,7 +87,7 @@ extension TodayDashboardView {
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundStyle(.primary)
                             if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
-                                Text("NEWS2 \(v.news2Score) · \(v.news2Risk) risk")
+                                Text("NEWS2 \(v.news2Score) · \(v.news2Risk) risk\(v.news2IsComplete ? "" : " · incomplete")")
                                     .font(.caption)
                                     .foregroundStyle(.red)
                             } else if patient.setting == .emergency {

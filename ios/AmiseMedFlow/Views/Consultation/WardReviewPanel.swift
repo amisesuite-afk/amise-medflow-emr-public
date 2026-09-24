@@ -53,19 +53,20 @@ struct WardReviewPanel: View {
             if let v = latestVitals {
                 let hours = Int(Date.now.timeIntervalSince(v.recordedAt) / 3600)
                 HStack {
-                    NEWS2Badge(score: v.news2Score, risk: v.news2Risk)
+                    NEWS2Badge(score: v.news2Score, risk: v.news2Risk, incomplete: !v.news2IsComplete)
                     Text(hours < 1 ? "Within the last hour" : "\(hours) h ago")
                         .font(.caption)
                         .foregroundStyle(hours >= 12 ? .orange : .secondary)
                     Spacer()
                 }
                 Text(vitalsLine(v)).font(.caption.monospacedDigit())
-                if v.news2Score >= 5 || v.news2HasRedFlag {
-                    Label(v.news2Score >= 7 || v.news2HasRedFlag
-                          ? "NEWS2 high — urgent/emergency response."
-                          : "NEWS2 ≥5 — urgent ward-based response.",
-                          systemImage: "exclamationmark.triangle.fill")
+                if v.news2Band > .low {
+                    Label(v.news2Band.prompt, systemImage: "exclamationmark.triangle.fill")
                         .font(.caption.weight(.semibold)).foregroundStyle(.red)
+                }
+                if let note = v.news2IncompleteNote {
+                    Text("Partial NEWS2 — \(note)")
+                        .font(.caption2).foregroundStyle(.orange)
                 }
             } else {
                 Text("No observations recorded.").font(.caption).foregroundStyle(.orange)

@@ -50,10 +50,10 @@ extension ProcedureFormPDF {
                 if let hr = v.heartRate         { parts.append("HR \(hr) bpm") }
                 if let t  = v.temperatureCelsius { parts.append(String(format: "Temp %.1f°C", t)) }
                 if let sp = v.spo2              { parts.append("SpO₂ \(sp)%") }
-                let detail = parts.isEmpty ? "NEWS2 \(v.news2Score) (\(v.news2Risk))"
+                let detail = parts.isEmpty ? v.news2Summary
                     : parts.joined(separator: "  ·  ") + "  —  NEWS2 \(v.news2Score)"
                 events.append(TimelineEntry(date: v.recordedAt, category: "Vitals",
-                    title: "Observations — NEWS2 \(v.news2Score) (\(v.news2Risk))", detail: detail))
+                    title: "Observations — \(v.news2Summary)", detail: detail))
             }
 
             for note in patient.clinicalNotes {

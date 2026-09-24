@@ -250,7 +250,7 @@ enum ClinicalNotePDF {
         if let sk = patient.examSkin,    !sk.isEmpty  { examParts.append("Skin: \(sk)") }
         if let ot = patient.examOther,   !ot.isEmpty  { examParts.append("Other: \(ot)") }
         if let v  = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first, v.hasAnyValue {
-            var vLine = "Vitals: NEWS2 \(v.news2Score) (\(v.news2Risk))"
+            var vLine = "Vitals: \(v.news2Summary)"
             if let bp  = v.bpString    { vLine += " · BP \(bp) mmHg" }
             if let hr  = v.heartRate   { vLine += " · HR \(hr) bpm" }
             if let rr  = v.respiratoryRate { vLine += " · RR \(rr)/min" }

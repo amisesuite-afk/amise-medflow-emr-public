@@ -54,7 +54,7 @@ extension Patient {
         // Vitals
         if let v = vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first, v.hasAnyValue {
             lines.append("LATEST VITALS (\(v.recordedAt.formatted(date: .omitted, time: .shortened)))")
-            var vParts = ["NEWS2 \(v.news2Score) (\(v.news2Risk))"]
+            var vParts = [v.news2Summary]
             if let bp = v.bpString { vParts.append("BP \(bp) mmHg") }
             if let hr = v.heartRate { vParts.append("HR \(hr) bpm") }
             if let rr = v.respiratoryRate { vParts.append("RR \(rr)/min") }

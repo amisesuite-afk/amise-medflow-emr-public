@@ -176,115 +176,78 @@ extension ClinicalScoringEngine {
     }
 
     // MARK: NEWS2 (National Early Warning Score 2, RCP 2017)
+    // Points and bands come from NEWS2Chart, shared with VitalsEntry, so the Scores screen and
+    // the ward/patient views always agree on both the number and the risk band.
 
     static func news2(_ i: NEWS2Input) -> ClinicalScore {
-        // Respiratory rate
-        let rrPoints: Int
-        switch i.respiratoryRate {
-        case ..<9:    rrPoints = 3
-        case 9...11:  rrPoints = 1
-        case 12...20: rrPoints = 0
-        case 21...24: rrPoints = 2
-        default:      rrPoints = 3
-        }
+        let r = NEWS2Chart.evaluate(respiratoryRate: i.respiratoryRate,
+                                    spo2: i.spo2,
+                                    onOxygen: i.onSupplementalO2,
+                                    useSpO2Scale2: i.useSpO2Scale2,
+                                    systolicBP: i.systolicBP,
+                                    heartRate: i.heartRate,
+                                    temperatureCelsius: i.temperatureCelsius,
+                                    avpu: i.avpu)
+        let total = Double(r.total)
 
-        // SpO2 scoring — Scale 2 when on supplemental O2, Scale 1 otherwise
-        let spo2Points: Int
-        if i.onSupplementalO2 {
-            // Scale 2
-            switch i.spo2 {
-            case ..<88:   spo2Points = 3
-            case 88...92: spo2Points = 0
-            case 93...94: spo2Points = 1
-            case 95...96: spo2Points = 2
-            default:      spo2Points = 3
-            }
-        } else {
-            // Scale 1
-            switch i.spo2 {
-            case ..<92:   spo2Points = 3
-            case 92...93: spo2Points = 2
-            case 94...95: spo2Points = 1
-            default:      spo2Points = 0
-            }
-        }
-
-        let o2Points = i.onSupplementalO2 ? 2 : 0
-
-        let sbpPoints: Int
-        switch i.systolicBP {
-        case ..<91:     sbpPoints = 3
-        case 91...100:  sbpPoints = 2
-        case 101...110: sbpPoints = 1
-        case 111...219: sbpPoints = 0
-        default:        sbpPoints = 3
-        }
-
-        let hrPoints: Int
-        switch i.heartRate {
-        case ..<41:     hrPoints = 3
-        case 41...50:   hrPoints = 1
-        case 51...90:   hrPoints = 0
-        case 91...110:  hrPoints = 1
-        case 111...130: hrPoints = 2
-        default:        hrPoints = 3
-        }
-
-        let tempPoints: Int
-        switch i.temperatureCelsius {
-        case ..<35.1:  tempPoints = 3
-        case 35.1..<36.1: tempPoints = 1
-        case 36.1..<38.1: tempPoints = 0
-        case 38.1..<39.1: tempPoints = 1
-        default:       tempPoints = 2
-        }
-
-        let avpuPoints = i.avpu.news2Points
-        let hasRedFlag = rrPoints >= 3 || spo2Points >= 3 || sbpPoints >= 3 || hrPoints >= 3 || tempPoints >= 3 || avpuPoints >= 3
-
-        let total = Double(rrPoints + spo2Points + o2Points + sbpPoints + hrPoints + tempPoints + avpuPoints)
-
-        let (risk, interp, recs) = news2Risk(total, hasRedFlag: hasRedFlag)
+        let (interp, recs) = news2Interpretation(r)
         let items: [ScoredItem] = [
-            .init(label: "Respiratory rate", points: Double(rrPoints), present: rrPoints > 0),
-            .init(label: "SpO₂ (\(i.onSupplementalO2 ? "Scale 2" : "Scale 1"))", points: Double(spo2Points), present: spo2Points > 0),
-            .init(label: "Supplemental O₂", points: Double(o2Points), present: o2Points > 0),
-            .init(label: "Systolic BP", points: Double(sbpPoints), present: sbpPoints > 0),
-            .init(label: "Heart rate", points: Double(hrPoints), present: hrPoints > 0),
-            .init(label: "Temperature", points: Double(tempPoints), present: tempPoints > 0),
-            .init(label: "AVPU consciousness", points: Double(avpuPoints), present: avpuPoints > 0),
+            .init(label: "Respiratory rate", points: Double(r.respirationPoints), present: r.respirationPoints > 0),
+            .init(label: "SpO₂ (\(i.useSpO2Scale2 ? "Scale 2 — hypercapnic RF" : "Scale 1"))",
+                  points: Double(r.spo2Points), present: r.spo2Points > 0),
+            .init(label: "Supplemental O₂", points: Double(r.oxygenPoints), present: r.oxygenPoints > 0),
+            .init(label: "Systolic BP", points: Double(r.systolicBPPoints), present: r.systolicBPPoints > 0),
+            .init(label: "Heart rate", points: Double(r.heartRatePoints), present: r.heartRatePoints > 0),
+            .init(label: "Temperature", points: Double(r.temperaturePoints), present: r.temperaturePoints > 0),
+            .init(label: "AVPU consciousness", points: Double(r.consciousnessPoints), present: r.consciousnessPoints > 0),
         ]
         var redFlags: [String] = []
-        if total >= 7 { redFlags.append("NEWS2 ≥7: continuous monitoring, immediate senior review") }
-        if hasRedFlag { redFlags.append("Single parameter score 3: escalate per local protocol") }
+        if r.total >= 7 { redFlags.append("NEWS2 ≥7: emergency response — continuous monitoring, immediate senior review") }
+        if r.hasSingleParameterScore3 {
+            redFlags.append("Single parameter score 3: urgent ward-based response — inform the medical team")
+        }
         return ClinicalScore(
             systemName: "National Early Warning Score 2",
-            abbreviation: "NEWS2 \(Int(total))",
+            abbreviation: "NEWS2 \(r.total)",
             score: total, maxScore: 20,
-            risk: risk, interpretation: interp,
+            risk: r.band.scoreRisk, interpretation: interp,
             recommendations: recs, items: items, redFlags: redFlags,
-            evidenceNote: "Royal College of Physicians 2017. NEWS2 validated for acutely ill adults."
+            evidenceNote: "Royal College of Physicians 2017 (NEWS2). 0–4 low; a 3 in any single parameter "
+                + "low-medium (urgent ward-based response); 5–6 medium (urgent response); ≥7 high "
+                + "(emergency response). SpO₂ Scale 2 only for confirmed hypercapnic respiratory failure."
         )
     }
 
-    private static func news2Risk(_ s: Double, hasRedFlag: Bool) -> (ScoreRisk, String, [String]) {
-        switch s {
-        case 0:
-            return (.low, "NEWS2 0/20 — Minimum: routine monitoring",
-                    ["Routine obs (minimum 12-hourly)"])
-        case 1...4 where !hasRedFlag:
-            return (.low, "NEWS2 \(Int(s))/20 — Low: ward-level response",
-                    ["Minimum 4–6 hourly obs", "Inform nurse in charge if deteriorating"])
-        case 1...4 where hasRedFlag, 5...6:
-            return (.moderate, "NEWS2 \(Int(s))/20 — Medium: urgent review",
-                    ["Increase obs to 1 hourly", "Inform bedside nurse immediately",
-                     "Urgent review by competent clinician within 30 min",
+    /// RCP NEWS2 clinical response per band (NEWS2 report 2017, chart 4).
+    private static func news2Interpretation(_ r: NEWS2Result) -> (String, [String]) {
+        let s = r.total
+        switch r.band {
+        case .low where s == 0:
+            return ("NEWS2 0/20 — Low: routine monitoring",
+                    ["Minimum 12-hourly observations"])
+        case .low:
+            return ("NEWS2 \(s)/20 — Low: ward-based response",
+                    ["Minimum 4–6-hourly observations",
+                     "Registered nurse to assess and decide whether to increase monitoring or escalate"])
+        case .lowMedium:
+            return ("NEWS2 \(s)/20 — Low-medium (single parameter scoring 3): URGENT ward-based response",
+                    ["Minimum 1-hourly observations",
+                     "Registered nurse to inform the medical team caring for the patient",
+                     "Urgent review by a clinician to decide whether escalation of care is needed"])
+        case .medium:
+            return ("NEWS2 \(s)/20 — Medium: URGENT response threshold",
+                    ["Minimum 1-hourly observations",
+                     "Registered nurse to inform the medical team immediately",
+                     "Urgent assessment by a clinician competent in the care of acutely ill patients",
+                     "Care in an environment with monitoring facilities",
                      "Consider ABG, bloods, ECG"])
-        default:
-            return (.critical, "NEWS2 \(Int(s))/20 — High: emergency response",
-                    ["Continuous monitoring", "Immediate senior review or emergency response",
-                     "Consider HDU/ICU transfer", "IV access, bloods, ABG, ECG now",
-                     "Escalate to registrar or consultant"])
+        case .high:
+            return ("NEWS2 \(s)/20 — High: EMERGENCY response",
+                    ["Continuous monitoring of vital signs",
+                     "Registered nurse to inform the medical team immediately — at least registrar level",
+                     "Emergency assessment by a team with critical-care competencies",
+                     "Consider HDU/ICU transfer",
+                     "IV access, bloods, ABG, ECG now"])
         }
     }
 

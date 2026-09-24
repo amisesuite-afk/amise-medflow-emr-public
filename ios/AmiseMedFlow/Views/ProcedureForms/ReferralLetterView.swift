@@ -129,7 +129,7 @@ struct ReferralLetterView: View {
                 }
                 if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
                    v.hasAnyValue {
-                    var vParts: [String] = ["NEWS2 \(v.news2Score) (\(v.news2Risk))"]
+                    var vParts: [String] = [v.news2Summary]
                     if let bp = v.bpString  { vParts.append("BP \(bp)") }
                     if let hr = v.heartRate { vParts.append("HR \(hr)") }
                     if let t  = v.temperatureCelsius { vParts.append(String(format: "Temp %.1f°C", t)) }

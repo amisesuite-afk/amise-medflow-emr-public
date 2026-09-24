@@ -291,6 +291,12 @@ final class Patient {
     var consentSent: Bool = false            // Consent form given to patient
     var preOpInstructionsSent: Bool = false  // Pre-op instructions sent to patient
 
+    // MARK: - NEWS2 SpO₂ scale
+    // RCP NEWS2 (2017): SpO₂ Scale 2 is ONLY for patients with confirmed hypercapnic respiratory
+    // failure, on a clinician's decision. Default false = Scale 1 for everyone, including patients
+    // on supplemental oxygen. Local + peer sync / full backup only (no Supabase column yet).
+    var news2UseSpO2Scale2: Bool = false
+
     // MARK: - Structured clinical history (JSON-encoded)
     var pmhEntriesJson: String?    // JSON: [PMHEntry]
     var pshxEntriesJson: String?   // JSON: [PSHxEntry]

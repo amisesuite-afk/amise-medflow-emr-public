@@ -62,16 +62,45 @@ final class NEWS2Tests: XCTestCase {
         }
     }
 
-    func testSpO2Scale2OnOxygenIncludesTwoPointsForOxygen() {
-        // Scale 2 values on the chart that are unambiguous: 88–92 = 0, 93–94 = 1, 95–96 = 2, ≥97 = 3,
-        // ≤83 = 3. Every entry here is on oxygen, so +2 is added.
-        let cases: [(Int, Int)] = [(83, 3), (88, 0), (92, 0), (93, 1), (94, 1), (95, 2), (96, 2), (97, 3)]
+    /// RCP NEWS2 SpO₂ Scale 2, on oxygen: ≤83 = 3, 84–85 = 2, 86–87 = 1, 88–92 = 0,
+    /// 93–94 = 1, 95–96 = 2, ≥97 = 3; plus 2 for supplemental oxygen.
+    func testSpO2Scale2OnOxygenFollowsRCPChart() {
+        patient.news2UseSpO2Scale2 = true
+        let cases: [(Int, Int)] = [(80, 3), (83, 3), (84, 2), (85, 2), (86, 1), (87, 1), (88, 0), (92, 0),
+                                   (93, 1), (94, 1), (95, 2), (96, 2), (97, 3), (100, 3)]
         let v = entry()
         v.onSupplementalO2 = true
         for (spo2, points) in cases {
             v.spo2 = spo2
-            XCTAssertEqual(v.news2Score, points + 2, "SpO2 \(spo2) on O2")
+            XCTAssertEqual(v.news2Score, points + 2, "Scale 2 SpO2 \(spo2) on O2")
         }
+    }
+
+    /// Scale 2 on air: 93 and above scores 0; the low end is the same as on oxygen.
+    func testSpO2Scale2OnAir() {
+        patient.news2UseSpO2Scale2 = true
+        let cases: [(Int, Int)] = [(83, 3), (84, 2), (85, 2), (86, 1), (87, 1), (88, 0), (92, 0),
+                                   (93, 0), (95, 0), (97, 0), (100, 0)]
+        let v = entry()
+        for (spo2, points) in cases {
+            v.spo2 = spo2
+            XCTAssertEqual(v.news2Score, points, "Scale 2 SpO2 \(spo2) on air")
+        }
+    }
+
+    /// Being on oxygen does NOT switch to Scale 2 (RCP: Scale 2 only for confirmed hypercapnic
+    /// respiratory failure, on a clinician's decision). Scale 1 applies, plus 2 for oxygen.
+    func testSupplementalOxygenAloneKeepsScale1() {
+        XCTAssertFalse(patient.news2UseSpO2Scale2, "Scale 2 must be opt-in")
+        let cases: [(Int, Int)] = [(91, 3), (92, 2), (93, 2), (94, 1), (95, 1), (96, 0), (97, 0), (100, 0)]
+        let v = entry()
+        v.onSupplementalO2 = true
+        for (spo2, points) in cases {
+            v.spo2 = spo2
+            XCTAssertEqual(v.news2Score, points + 2, "Scale 1 SpO2 \(spo2) on O2")
+        }
+        v.spo2 = 88
+        XCTAssertTrue(v.news2HasRedFlag, "SpO2 88% on Scale 1 scores 3")
     }
 
     func testSupplementalOxygenAloneScoresTwo() {
@@ -191,7 +220,88 @@ final class NEWS2Tests: XCTestCase {
             XCTAssertTrue(v.news2HasRedFlag, label)
             // A red-flag parameter must never be reported as low risk, whatever the total.
             XCTAssertNotEqual(v.news2Risk, "Low", label)
+            // RCP: a 3 in a single parameter with an aggregate below 5 is low-medium
+            // (urgent ward-based response).
+            XCTAssertEqual(v.news2Band, .lowMedium, label)
+            XCTAssertEqual(v.news2Risk, "Low-medium", label)
         }
+    }
+
+    /// A single parameter scoring 3 must flag even when every other parameter (including RR) is
+    /// missing.
+    func testSingleParameterThreeFlagsWhenOtherParametersAreMissing() {
+        let setters: [(String, (VitalsEntry) -> Void)] = [
+            ("SBP 90",        { $0.bpSystolic = 90 }),
+            ("SBP 220",       { $0.bpSystolic = 220 }),
+            ("AVPU voice",    { $0.avpu = .voice }),
+            ("AVPU confused", { $0.avpu = .confused }),
+            ("SpO2 91",       { $0.spo2 = 91 }),
+            ("HR 40",         { $0.heartRate = 40 }),
+            ("HR 131",        { $0.heartRate = 131 }),
+            ("Temp 35.0",     { $0.temperatureCelsius = 35.0 }),
+            ("RR 8",          { $0.respiratoryRate = 8 }),
+        ]
+        for (label, apply) in setters {
+            let v = entry()
+            apply(v)
+            XCTAssertTrue(v.news2HasRedFlag, label)
+            XCTAssertEqual(v.news2Band, .lowMedium, label)
+            XCTAssertFalse(v.news2IsComplete, label)
+        }
+    }
+
+    func testScale2ExtremesRaiseRedFlag() {
+        patient.news2UseSpO2Scale2 = true
+        let low = entry()
+        low.spo2 = 83
+        XCTAssertTrue(low.news2HasRedFlag, "Scale 2 SpO2 83")
+        let highOnO2 = entry()
+        highOnO2.onSupplementalO2 = true
+        highOnO2.spo2 = 97
+        XCTAssertTrue(highOnO2.news2HasRedFlag, "Scale 2 SpO2 97 on O2")
+        let target = entry()
+        target.onSupplementalO2 = true
+        target.spo2 = 90
+        XCTAssertFalse(target.news2HasRedFlag, "Scale 2 SpO2 90 on O2 is in the target range")
+    }
+
+    func testRedFlagDoesNotLowerAMediumOrHighAggregate() {
+        let v = normalEntry()
+        v.bpSystolic = 90        // 3
+        v.heartRate = 115        // 2
+        XCTAssertEqual(v.news2Score, 5)
+        XCTAssertEqual(v.news2Risk, "Medium")
+        v.respiratoryRate = 22   // 2 → 7
+        XCTAssertEqual(v.news2Score, 7)
+        XCTAssertEqual(v.news2Risk, "High")
+    }
+
+    // MARK: - Completeness (missing parameters count as 0 but are reported)
+
+    func testFullObservationsAreComplete() {
+        let v = normalEntry()
+        XCTAssertTrue(v.news2IsComplete)
+        XCTAssertTrue(v.news2MissingParameters.isEmpty)
+        XCTAssertNil(v.news2IncompleteNote)
+        XCTAssertEqual(v.news2Summary, "NEWS2 0 (Low)")
+        XCTAssertEqual(v.news2RiskDisplay, "Low")
+    }
+
+    func testMissingParametersAreListedInChartOrder() {
+        let v = entry()
+        v.bpSystolic = 120
+        v.heartRate = 115        // 2
+        XCTAssertEqual(v.news2Score, 2, "missing parameters count as 0; the number is unchanged")
+        XCTAssertFalse(v.news2IsComplete)
+        XCTAssertEqual(v.news2MissingParameters, ["RR", "SpO₂", "Temp"])
+        XCTAssertEqual(v.news2IncompleteNote, "incomplete: RR, SpO₂, Temp not recorded")
+        XCTAssertEqual(v.news2Summary, "NEWS2 2 (Low — incomplete: RR, SpO₂, Temp not recorded)")
+        XCTAssertEqual(v.news2RiskDisplay, "Low · incomplete")
+    }
+
+    func testEmptyEntryListsEveryScoredParameterAsMissing() {
+        let v = entry()
+        XCTAssertEqual(v.news2MissingParameters, ["RR", "SpO₂", "BP", "HR", "Temp"])
     }
 
     func testValuesJustInsideTheRedFlagLimitsDoNotRaiseIt() {
@@ -246,7 +356,36 @@ final class NEWS2Tests: XCTestCase {
             input.temperatureCelsius = o.temp
             input.avpu = o.avpu
 
-            XCTAssertEqual(Double(v.news2Score), ClinicalScoringEngine.news2(input).score, "\(o)")
+            let engine = ClinicalScoringEngine.news2(input)
+            XCTAssertEqual(Double(v.news2Score), engine.score, "\(o)")
+            XCTAssertEqual(v.news2Band.scoreRisk, engine.risk, "risk band \(o)")
+            XCTAssertEqual(v.news2HasRedFlag,
+                           engine.redFlags.contains { $0.hasPrefix("Single parameter") }, "red flag \(o)")
+        }
+    }
+
+    /// Both implementations use Scale 2 only when it is explicitly selected, and agree on it.
+    func testVitalsEntryAgreesWithScoringEngineOnScale2() {
+        patient.news2UseSpO2Scale2 = true
+        let profiles: [(spo2: Int, o2: Bool)] = [(83, false), (85, true), (87, true), (90, true),
+                                                 (93, true), (95, true), (97, true), (97, false)]
+        for o in profiles {
+            let v = normalEntry()
+            v.spo2 = o.spo2
+            v.onSupplementalO2 = o.o2
+
+            var input = NEWS2Input()
+            input.respiratoryRate = 16
+            input.spo2 = o.spo2
+            input.onSupplementalO2 = o.o2
+            input.useSpO2Scale2 = true
+            input.systolicBP = 120
+            input.heartRate = 70
+            input.temperatureCelsius = 37.0
+
+            let engine = ClinicalScoringEngine.news2(input)
+            XCTAssertEqual(Double(v.news2Score), engine.score, "Scale 2 \(o)")
+            XCTAssertEqual(v.news2Band.scoreRisk, engine.risk, "Scale 2 band \(o)")
         }
     }
 

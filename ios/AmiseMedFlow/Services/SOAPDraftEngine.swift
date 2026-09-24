@@ -133,7 +133,7 @@ struct SOAPDraftEngine {
 
         // Vitals
         if let v = p.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first, v.hasAnyValue {
-            var vitals: [String] = ["NEWS2 \(v.news2Score) (\(v.news2Risk))"]
+            var vitals: [String] = [v.news2Summary]
             if let bp = v.bpString { vitals.append("BP \(bp)") }
             if let hr = v.heartRate { vitals.append("HR \(hr) bpm") }
             if let rr = v.respiratoryRate { vitals.append("RR \(rr)/min") }

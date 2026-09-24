@@ -40,7 +40,7 @@ final class VitalsEntry {
     var weightKg: Double?
     var glucoseMmol: Double?
     var avpu: AVPU
-    var onSupplementalO2: Bool   // adds 2 pts to NEWS2; switches SpO₂ to Scale 2 for hypercapnic RF
+    var onSupplementalO2: Bool   // adds 2 pts to NEWS2 (SpO₂ scale is chosen per patient, not by O₂)
     var notes: String?
 
     var patient: Patient?
@@ -67,75 +67,50 @@ final class VitalsEntry {
         temperatureCelsius != nil || spo2 != nil || weightKg != nil
     }
 
-    // MARK: - Full NEWS2 score (RCP 2017)
-    // Includes: RR, SpO₂ (Scale 1 & 2), supplemental O₂, systolic BP, HR, temperature, AVPU
+    // MARK: - NEWS2 (RCP 2017) — calculated by NEWS2Chart, shared with the Scores screen
 
-    var news2Score: Int {
-        var score = 0
+    /// SpO₂ Scale 2 is used ONLY when a clinician has marked this patient as having confirmed
+    /// hypercapnic respiratory failure (Patient.news2UseSpO2Scale2). Everyone else, including
+    /// patients on supplemental oxygen, is scored on Scale 1; oxygen adds 2 points separately.
+    var news2UsesSpO2Scale2: Bool { patient?.news2UseSpO2Scale2 ?? false }
 
-        // 1. Respiratory rate
-        if let rr = respiratoryRate {
-            score += rr <= 8 ? 3 : rr <= 11 ? 1 : rr <= 20 ? 0 : rr <= 24 ? 2 : 3
-        }
-
-        // 2. SpO₂ — Scale 1 (default) or Scale 2 (supplemental O₂ / hypercapnic RF)
-        if let spo = spo2 {
-            if onSupplementalO2 {
-                // Scale 2 (COPD / hypercapnic respiratory failure)
-                score += spo >= 97 ? 3 : spo >= 95 ? 2 : spo >= 93 ? 1 : spo >= 88 ? 0 : 3
-            } else {
-                // Scale 1 (standard)
-                score += spo >= 96 ? 0 : spo >= 94 ? 1 : spo >= 92 ? 2 : 3
-            }
-        }
-
-        // 3. Supplemental O₂ (+2 if receiving any)
-        if onSupplementalO2 { score += 2 }
-
-        // 4. Systolic BP
-        if let sys = bpSystolic {
-            score += sys <= 90 ? 3 : sys <= 100 ? 2 : sys <= 110 ? 1 : sys <= 219 ? 0 : 3
-        }
-
-        // 5. Heart rate
-        if let hr = heartRate {
-            score += hr <= 40 ? 3 : hr <= 50 ? 1 : hr <= 90 ? 0 : hr <= 110 ? 1 : hr <= 130 ? 2 : 3
-        }
-
-        // 6. Temperature
-        if let temp = temperatureCelsius {
-            score += temp <= 35.0 ? 3 : temp <= 36.0 ? 1 : temp <= 38.0 ? 0 : temp <= 39.0 ? 1 : 2
-        }
-
-        // 7. AVPU consciousness
-        score += avpu.news2Points
-
-        return score
+    var news2Result: NEWS2Result {
+        NEWS2Chart.evaluate(respiratoryRate: respiratoryRate,
+                            spo2: spo2,
+                            onOxygen: onSupplementalO2,
+                            useSpO2Scale2: news2UsesSpO2Scale2,
+                            systolicBP: bpSystolic,
+                            heartRate: heartRate,
+                            temperatureCelsius: temperatureCelsius,
+                            avpu: avpu)
     }
 
-    // Medium risk threshold: any single parameter ≥3 triggers medium even if total <5
-    var news2HasRedFlag: Bool {
-        guard let rr = respiratoryRate else { return false }
-        if rr <= 8 || rr > 24 { return true }
-        if let spo = spo2, spo < 92 { return true }
-        if let sys = bpSystolic, sys <= 90 || sys > 219 { return true }
-        if let hr  = heartRate,  hr <= 40 || hr > 130   { return true }
-        if let t   = temperatureCelsius, t <= 35.0       { return true }
-        if avpu != .alert                                 { return true }
-        return false
-    }
+    /// Aggregate NEWS2. Parameters that were not recorded count as 0 — check `news2IsComplete`.
+    var news2Score: Int { news2Result.total }
 
-    var news2Risk: String {
-        if news2Score >= 7 || news2HasRedFlag { return "High" }
-        if news2Score >= 5                    { return "Medium" }
-        return "Low"
-    }
+    /// A score of 3 in any single parameter, whatever else is (or is not) recorded.
+    var news2HasRedFlag: Bool { news2Result.hasSingleParameterScore3 }
 
-    var news2Color: String {
-        switch news2Risk {
-        case "High":   return "#DC2626"
-        case "Medium": return "#F97316"
-        default:       return "#22C55E"
-        }
-    }
+    var news2Band: NEWS2Band { news2Result.band }
+
+    /// "Low", "Low-medium" (single parameter 3: urgent ward-based response), "Medium" or "High".
+    var news2Risk: String { news2Band.label }
+
+    var news2Color: String { news2Band.colorHex }
+
+    /// True when RR, SpO₂, systolic BP, HR and temperature were all recorded.
+    var news2IsComplete: Bool { news2Result.isComplete }
+
+    /// Unrecorded NEWS2 parameters, in chart order (e.g. ["RR", "SpO₂"]).
+    var news2MissingParameters: [String] { news2Result.missingParameters }
+
+    /// "incomplete: RR, SpO₂ not recorded", or nil when complete.
+    var news2IncompleteNote: String? { news2Result.incompleteNote }
+
+    /// Text for notes, handovers and PDFs: "NEWS2 5 (Medium)" or
+    /// "NEWS2 2 (Low — incomplete: RR, SpO₂ not recorded)".
+    var news2Summary: String { news2Result.summary }
+
+    /// Short risk label for compact rows: "Low" or "Low · incomplete".
+    var news2RiskDisplay: String { news2IsComplete ? news2Risk : "\(news2Risk) · incomplete" }
 }

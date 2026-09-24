@@ -246,7 +246,7 @@ extension ProcedureFormPDF {
 
                     // Latest vitals
                     if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first, v.hasAnyValue {
-                        var vParts = ["NEWS2 \(v.news2Score) (\(v.news2Risk))"]
+                        var vParts = [v.news2Summary]
                         if let bp = v.bpString  { vParts.append("BP \(bp)") }
                         if let hr = v.heartRate  { vParts.append("HR \(hr)") }
                         if let sp = v.spo2       { vParts.append("SpO₂ \(sp)%") }

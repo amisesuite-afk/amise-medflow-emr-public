@@ -209,7 +209,7 @@ struct TheatreRow: View {
     private var news2Label: (score: Int, color: Color, risk: String)? {
         guard let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
               v.hasAnyValue else { return nil }
-        return (v.news2Score, Color(hex: v.news2Color), v.news2Risk)
+        return (v.news2Score, Color(hex: v.news2Color), v.news2RiskDisplay)
     }
 
     private var asaColor: Color {

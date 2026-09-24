@@ -275,7 +275,7 @@ struct PatientRow: View {
                                 .font(.system(size: 10, weight: .bold))
                                 .foregroundStyle(news2TrendColor)
                         }
-                        Text(v.news2Risk)
+                        Text(v.news2RiskDisplay)
                             .font(.system(size: 9))
                             .foregroundStyle(Color(hex: v.news2Color).opacity(0.8))
                     } else {

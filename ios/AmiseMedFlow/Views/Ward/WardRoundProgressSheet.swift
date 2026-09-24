@@ -215,7 +215,7 @@ struct WardRoundProgressSheet: View {
             Section {
                 VStack(spacing: 8) {
                     HStack {
-                        news2Tile(score: v.news2Score, risk: v.news2Risk)
+                        news2Tile(score: v.news2Score, risk: v.news2RiskDisplay)
                         Spacer()
                         Button {
                             showVitals = true

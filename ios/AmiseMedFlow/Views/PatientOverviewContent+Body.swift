@@ -84,7 +84,7 @@ extension PatientOverviewContent {
                                 Text(news2AlertLevel >= 7 ? "HIGH NEWS2 RISK" : "MEDIUM NEWS2 RISK")
                                     .font(.system(size: 11, weight: .heavy))
                                     .tracking(0.5)
-                                Text("Score \(news2AlertLevel) — \(latestVitals?.news2Risk ?? "")")
+                                Text("Score \(news2AlertLevel) — \(latestVitals?.news2RiskDisplay ?? "")")
                                     .font(.caption2)
                             }
                             Spacer()
@@ -272,7 +272,7 @@ extension PatientOverviewContent {
                 overviewCard(title: "Latest Vitals — \(v.recordedAt.formatted(.relative(presentation: .named)))") {
                     HStack {
                         Spacer()
-                        Text("NEWS2 \(v.news2Score) — \(v.news2Risk)")
+                        Text("NEWS2 \(v.news2Score) — \(v.news2RiskDisplay)")
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(Color(hex: v.news2Color))
                     }

@@ -91,7 +91,7 @@ extension SOAPDraftEngine {
             if let temp = v.temperatureCelsius { vitals.append(String(format: "temperature %.1f°C", temp)) }
             if let spo = v.spo2 { vitals.append("SpO₂ \(spo)%") }
             if !vitals.isEmpty {
-                findings.append("Vital signs: \(vitals.joined(separator: ", ")). NEWS2 score \(v.news2Score) (\(v.news2Risk)).")
+                findings.append("Vital signs: \(vitals.joined(separator: ", ")). \(v.news2Summary).")
             }
         }
         var examParts: [String] = []

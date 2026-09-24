@@ -98,7 +98,7 @@ struct TodayPatientRow: View {
 
             // NEWS2 badge (ward only) or post-op day
             if style == .ward, let v = latestVitals {
-                NEWS2Badge(score: v.news2Score, risk: v.news2Risk)
+                NEWS2Badge(score: v.news2Score, risk: v.news2Risk, incomplete: !v.news2IsComplete)
             } else if style == .ward, let days = patient.postOpDays {
                 Text("POD \(days)")
                     .font(.caption2.monospacedDigit())

@@ -97,12 +97,28 @@ final class SOAPDraftEngineTests: XCTestCase {
             v.respiratoryRate = 16
         }
         let o = SOAPDraftEngine.draft(patient: p).o
-        XCTAssertTrue(o.contains("Vitals:"))
-        XCTAssertTrue(o.contains("HR 88 bpm"))
-        XCTAssertTrue(o.contains("RR 16/min"))
-        XCTAssertFalse(o.contains("BP "), "BP was not recorded")
-        XCTAssertFalse(o.contains("Temp"), "temperature was not recorded")
-        XCTAssertFalse(o.contains("SpO"), "SpO2 was not recorded")
+        // Unrecorded observations are not listed as values; the NEWS2 is marked as partial and
+        // names what is missing (the number itself is unchanged: missing parameters count as 0).
+        XCTAssertTrue(o.contains(
+            "Vitals: NEWS2 0 (Low — incomplete: SpO₂, BP, Temp not recorded), HR 88 bpm, RR 16/min."), o)
+        XCTAssertFalse(o.contains("BP 1"), "BP was not recorded")
+        XCTAssertFalse(o.contains("°C"), "temperature was not recorded")
+        XCTAssertFalse(o.contains("SpO₂ 9"), "SpO2 was not recorded")
+    }
+
+    func testCompleteVitalsAreNotMarkedIncomplete() throws {
+        let p = patient()
+        try addVitals(to: p) { v in
+            v.respiratoryRate = 16
+            v.spo2 = 98
+            v.bpSystolic = 120
+            v.bpDiastolic = 80
+            v.heartRate = 72
+            v.temperatureCelsius = 36.8
+        }
+        let o = SOAPDraftEngine.draft(patient: p).o
+        XCTAssertTrue(o.contains("Vitals: NEWS2 0 (Low), BP 120/80"), o)
+        XCTAssertFalse(o.contains("incomplete"))
     }
 
     func testLatestVitalsAreUsed() throws {

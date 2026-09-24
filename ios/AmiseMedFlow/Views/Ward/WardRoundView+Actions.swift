@@ -30,7 +30,7 @@ extension WardRoundView {
                 if let dx = patient.workingDiagnosis { lines.append("  Dx: \(dx)") }
                 else if let cc = patient.chiefComplaint { lines.append("  CC: \(cc)") }
                 if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first, v.hasAnyValue {
-                    var vParts = ["NEWS2 \(v.news2Score) (\(v.news2Risk))"]
+                    var vParts = [v.news2Summary]
                     if let bp = v.bpString { vParts.append("BP \(bp)") }
                     if let hr = v.heartRate { vParts.append("HR \(hr)") }
                     if let spo = v.spo2 { vParts.append("SpO₂ \(spo)%") }
@@ -128,7 +128,7 @@ extension WardRoundView {
 
         var vitalsBlock = "  Not recorded"
         if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first, v.hasAnyValue {
-            var parts = ["NEWS2 \(v.news2Score) (\(v.news2Risk))"]
+            var parts = [v.news2Summary]
             if let bp = v.bpString { parts.append("BP \(bp) mmHg") }
             if let hr = v.heartRate { parts.append("HR \(hr) bpm") }
             if let rr = v.respiratoryRate { parts.append("RR \(rr)/min") }

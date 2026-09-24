@@ -92,6 +92,9 @@ struct PeerPatient: Codable {
     // Consultation pathway forms (burns, wellness, ward review). Optional so payloads from
     // devices on an older build still decode.
     let pathwayDataJson: String?
+    // NEWS2 SpO₂ Scale 2 opt-in (confirmed hypercapnic respiratory failure). Optional so payloads
+    // and backups from older builds still decode; nil means "not sent" and never changes the flag.
+    let news2UseSpO2Scale2: Bool?
 
     init(_ p: Patient) {
         let iso = ISO8601DateFormatter()
@@ -134,6 +137,7 @@ struct PeerPatient: Codable {
         preOpChecklistDataJson      = p.preOpChecklistDataJson
         patientInstructionsDataJson = p.patientInstructionsDataJson
         pathwayDataJson             = p.pathwayDataJson
+        news2UseSpO2Scale2          = p.news2UseSpO2Scale2
     }
 }
 

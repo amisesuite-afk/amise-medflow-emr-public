@@ -321,7 +321,7 @@ enum PatientSummaryPDF {
         if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first, v.hasAnyValue {
             y = maybeNewPage(ctx: ctx, y: y)
             y = sectionTitle("Latest Vitals  ·  \(DateFormatter.ectShort.string(from: v.recordedAt)) ECT", y: y)
-            var vRows: [(String, String)] = [("NEWS2", "\(v.news2Score) — \(v.news2Risk)")]
+            var vRows: [(String, String)] = [("NEWS2", "\(v.news2Score) — \(v.news2Risk)" + (v.news2IncompleteNote.map { " (\($0))" } ?? ""))]
             if let bp = v.bpString  { vRows.append(("BP", "\(bp) mmHg")) }
             if let hr = v.heartRate { vRows.append(("Heart rate", "\(hr) bpm")) }
             if let rr = v.respiratoryRate { vRows.append(("Resp rate", "\(rr)/min")) }

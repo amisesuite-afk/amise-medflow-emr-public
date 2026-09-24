@@ -118,6 +118,9 @@ struct NEWS2Input: Equatable {
     var respiratoryRate: Int = 14
     var spo2: Int = 97
     var onSupplementalO2: Bool = false
+    // SpO₂ Scale 2 ONLY for confirmed hypercapnic respiratory failure, on a clinician's decision
+    // (RCP NEWS2 2017). Default Scale 1 — supplemental O₂ alone does not switch the scale.
+    var useSpO2Scale2: Bool = false
     var systolicBP: Int = 120
     var heartRate: Int = 75
     var temperatureCelsius: Double = 36.8
