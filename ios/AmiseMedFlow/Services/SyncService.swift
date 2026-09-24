@@ -165,6 +165,9 @@ final class SyncService: ObservableObject {
             try await pullDocumentMetadata(context: context)
             try await pushPendingBillingItems(context: context)
             try await pullBillingItems(context: context)
+            // Own requests, never throws: a server without the column (migration 86) must not
+            // break the rest of the sync.
+            await syncPathwayData(context: context)
             lastSyncedAt = .now
             recountPending(context: context)
         } catch {

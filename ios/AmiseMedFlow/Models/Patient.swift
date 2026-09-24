@@ -234,8 +234,11 @@ final class Patient {
     // MARK: - Visit type (structured)
     var visitType: VisitType?
     // Consultation pathway forms (burns, wellness screening, ward review) — JSON: PathwayData.
-    // Local to the device for now (not in the Supabase patients table).
+    // Synced via patients.pathway_data_json (SyncService+PathwayData) and peer sync.
     var pathwayDataJson: String?
+    // Last pathwayDataJson value confirmed with Supabase; differs from pathwayDataJson when
+    // there are local edits still to push.
+    var pathwaySyncedJson: String?
 
     // MARK: - Consultation form fields
     var hpi: String?

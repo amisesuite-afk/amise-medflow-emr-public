@@ -185,7 +185,9 @@ other tabs under "More"):
 - Codable form data stored as JSON must decode missing keys to defaults (see `PathwayData`)
   and must decode dates with the same strategy it encodes (`.iso8601`). A mismatch makes the
   whole form read back blank. (Trauma and OGD had this bug.)
-- `pathwayDataJson` syncs over peer sync (newer wins), not Supabase (no column yet).
+- `pathwayDataJson` syncs over peer sync (newer wins) and Supabase `patients.pathway_data_json`
+  (`SyncService+PathwayData.swift`, own requests that never fail the main sync; unpushed local
+  edits win; column added by `supabase-pathway-data-migration.sql`, Migration 86).
 - Unit tests: `AmiseMedFlowTests/ConsultPathwayTests.swift` (pathway, risk, burns, screening);
   CI runs them in the "Unit tests (simulator)" job of `ios-build-check.yml`.
 
