@@ -5,6 +5,12 @@ import UIKit
 
 extension ProcedureFormPDF {
 
+    static let secondaryRegions_pdf = [
+        "Head", "Face", "Neck", "Chest", "Abdomen",
+        "Pelvis", "Spine", "Left Upper Limb", "Right Upper Limb",
+        "Left Lower Limb", "Right Lower Limb", "Back", "Perineum", "Skin"
+    ]
+
     // MARK: - Patient Journey Timeline PDF
 
     static func journeyTimeline(patient: Patient) -> Data {
