@@ -67,6 +67,7 @@ enum ProcedureFormPDF {
         return h
     }
 
+    @discardableResult
     static func drawSignatureBlock(ctx: UIGraphicsPDFRendererContext,
                                            surgeon: String, y: CGFloat) -> CGFloat {
         var y = maybeNewPage(ctx: ctx, y: y, minSpace: 110)

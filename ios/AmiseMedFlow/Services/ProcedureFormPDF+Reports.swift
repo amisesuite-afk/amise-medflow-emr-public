@@ -196,7 +196,6 @@ extension ProcedureFormPDF {
                         ? UIColor.systemGreen.withAlphaComponent(0.05)
                         : teal.withAlphaComponent(0.04)
                     rowBg.setFill()
-                    let rowStartY = y
                     UIRectFill(CGRect(x: lm - 4, y: y - 2, width: bodyW + 8, height: 13))
 
                     // Review badge (right-aligned)
