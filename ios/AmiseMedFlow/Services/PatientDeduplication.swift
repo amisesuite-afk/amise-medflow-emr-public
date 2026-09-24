@@ -58,6 +58,8 @@ extension Array where Element == Patient {
     /// DOBs that do not contradict each other (equal, or missing on one side). Pairs the clinician
     /// has marked as different people are excluded. Each group has 2+ records, oldest first.
     func possibleDuplicateGroups() -> [[Patient]] {
+        // Read the "different people" list once, not once per pair.
+        let distinct = PatientIdentityStore.distinctPairSet()
         let byName = Dictionary(grouping: filter(\.isLive)) { $0.normalizedName }
         var groups: [[Patient]] = []
         for (name, records) in byName where !name.isEmpty && records.count > 1 {
@@ -67,7 +69,7 @@ extension Array where Element == Patient {
                 remaining.removeFirst()
                 var group = [first]
                 remaining.removeAll { other in
-                    guard group.allSatisfy({ $0.mayBeSamePerson(as: other) }) else { return false }
+                    guard group.allSatisfy({ $0.mayBeSamePerson(as: other, distinct: distinct) }) else { return false }
                     group.append(other)
                     return true
                 }
@@ -122,8 +124,8 @@ extension Patient {
         return parts.isEmpty ? "No clinical data" : parts.joined(separator: " · ")
     }
 
-    fileprivate func mayBeSamePerson(as other: Patient) -> Bool {
-        if PatientIdentityStore.markedDistinct(self, other) { return false }
+    fileprivate func mayBeSamePerson(as other: Patient, distinct: Set<String>) -> Bool {
+        if distinct.contains(PatientIdentityStore.pairKey(self, other)) { return false }
         guard let a = dateOfBirth, let b = other.dateOfBirth else { return true }
         return Calendar.current.isDate(a, inSameDayAs: b)
     }
@@ -175,12 +177,14 @@ enum PatientIdentityStore {
         distinctPairs.contains(pairKey(a, b))
     }
 
+    static func distinctPairSet() -> Set<String> { distinctPairs }
+
     private static var distinctPairs: Set<String> {
         let raw = UserDefaults.standard.string(forKey: distinctKey) ?? ""
         return Set(raw.split(separator: "\n").map(String.init))
     }
 
-    private static func pairKey(_ a: Patient, _ b: Patient) -> String {
+    static func pairKey(_ a: Patient, _ b: Patient) -> String {
         [a.syncCode.isEmpty ? a.id.uuidString : a.syncCode,
          b.syncCode.isEmpty ? b.id.uuidString : b.syncCode].sorted().joined(separator: "|")
     }
