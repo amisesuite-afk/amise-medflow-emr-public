@@ -89,6 +89,9 @@ struct PeerPatient: Codable {
     let consentFormDataJson: String?
     let preOpChecklistDataJson: String?
     let patientInstructionsDataJson: String?
+    // Consultation pathway forms (burns, wellness, ward review). Optional so payloads from
+    // devices on an older build still decode.
+    let pathwayDataJson: String?
 
     init(_ p: Patient) {
         let iso = ISO8601DateFormatter()
@@ -130,6 +133,7 @@ struct PeerPatient: Codable {
         consentFormDataJson         = p.consentFormDataJson
         preOpChecklistDataJson      = p.preOpChecklistDataJson
         patientInstructionsDataJson = p.patientInstructionsDataJson
+        pathwayDataJson             = p.pathwayDataJson
     }
 }
 

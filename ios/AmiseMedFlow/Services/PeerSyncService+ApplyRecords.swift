@@ -98,6 +98,8 @@ extension PeerSyncService {
             patient.consentFormDataJson         = peerMerge(patient.consentFormDataJson,         rec.consentFormDataJson)
             patient.preOpChecklistDataJson      = peerMerge(patient.preOpChecklistDataJson,      rec.preOpChecklistDataJson)
             patient.patientInstructionsDataJson = peerMerge(patient.patientInstructionsDataJson, rec.patientInstructionsDataJson)
+            // Pathway forms are edited in place (checklists, toggles): newer wins, not longer.
+            patient.pathwayDataJson = mergeDoc(patient.pathwayDataJson, rec.pathwayDataJson, remoteIsNewer: remoteIsNewer)
 
             // ── Doctor-assessed fields: non-empty on first fill; newer wins for updates ──
             patient.assessmentText = mergeDoc(patient.assessmentText, rec.assessmentText, remoteIsNewer: remoteIsNewer)
