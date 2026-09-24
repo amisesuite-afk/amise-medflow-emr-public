@@ -15,7 +15,10 @@ import PhotosUI
 struct FrontDeskPadView: View {
     @EnvironmentObject private var sync: SyncService
     @EnvironmentObject private var calendarService: CalendarService
-    @Query private var allPatients: [Patient]
+    @Query private var queriedAllPatients: [Patient]
+    // Deleted/detached records are dropped before any view reads them (SwiftData
+    // crashes when a body touches a deleted model before @Query refreshes).
+    private var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
     @State private var selectedTab: FDTab = .checkIn
 
     private func badge(for tab: FDTab) -> Int {
@@ -131,7 +134,10 @@ struct FrontDeskPadView: View {
 // MARK: - Check-In tab
 
 private struct FDCheckInView: View {
-    @Query private var allPatients: [Patient]
+    @Query private var queriedAllPatients: [Patient]
+    // Deleted/detached records are dropped before any view reads them (SwiftData
+    // crashes when a body touches a deleted model before @Query refreshes).
+    private var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
     @Environment(\.modelContext) private var context
 
     @State private var searchQuery = ""
@@ -303,7 +309,10 @@ private struct FDPatientRow: View {
 // MARK: - Questionnaire tab
 
 private struct FDQuestionnaireView: View {
-    @Query private var allPatients: [Patient]
+    @Query private var queriedAllPatients: [Patient]
+    // Deleted/detached records are dropped before any view reads them (SwiftData
+    // crashes when a body touches a deleted model before @Query refreshes).
+    private var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
     @State private var searchQuery = ""
     @State private var selectedPatient: Patient?
     @State private var showForm = false

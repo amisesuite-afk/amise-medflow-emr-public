@@ -15,8 +15,10 @@ private struct RegularRootView: View {
     @State private var showDashboard = false
 
     // Count badges per patient section
-    @Query private var allPatients: [Patient]
-
+    @Query private var queriedAllPatients: [Patient]
+    // Deleted/detached records are dropped before any view reads them (SwiftData
+    // crashes when a body touches a deleted model before @Query refreshes).
+    private var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
     private func count(for section: AppSection) -> Int {
         switch section {
         case .wardRounds:  allPatients.filter { $0.setting == .inpatient || $0.setting == .emergency }.deduped().count

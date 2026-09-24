@@ -13,7 +13,7 @@ import SwiftData
 extension Array where Element == Patient {
 
     func deduped() -> [Patient] {
-        let live = filter { !$0.isDeleted }
+        let live = filter(\.isLive)
         var seen: [String: Patient] = [:]
         for p in live {
             let key = p.dedupKey
@@ -43,7 +43,7 @@ extension Array where Element == Patient {
         let key = Patient.normalize(name)
         guard !key.isEmpty else { return [] }
         return filter { p in
-            guard !p.isDeleted, p.normalizedName == key else { return false }
+            guard p.isLive, p.normalizedName == key else { return false }
             guard let a = dateOfBirth, let b = p.dateOfBirth else { return true }
             return Calendar.current.isDate(a, inSameDayAs: b)
         }
@@ -58,7 +58,7 @@ extension Array where Element == Patient {
     /// DOBs that do not contradict each other (equal, or missing on one side). Pairs the clinician
     /// has marked as different people are excluded. Each group has 2+ records, oldest first.
     func possibleDuplicateGroups() -> [[Patient]] {
-        let byName = Dictionary(grouping: filter { !$0.isDeleted }) { $0.normalizedName }
+        let byName = Dictionary(grouping: filter(\.isLive)) { $0.normalizedName }
         var groups: [[Patient]] = []
         for (name, records) in byName where !name.isEmpty && records.count > 1 {
             let sorted = records.sorted { $0.createdAt < $1.createdAt }
@@ -79,6 +79,10 @@ extension Array where Element == Patient {
 }
 
 extension Patient {
+
+    /// Still attached to a context and not deleted. Reading attributes of a deleted model after
+    /// save (before @Query refreshes) crashes SwiftData, so lists filter on this first.
+    var isLive: Bool { modelContext != nil && !isDeleted }
 
     /// Stable identity key: remoteId → manually-entered MRN → local record id.
     /// Auto-generated MRNs (AMF-YYYY-NNNNNN) are excluded because they are unique per record
@@ -185,7 +189,7 @@ enum PatientIdentityStore {
 extension ModelContext {
     /// Delete a patient on this device and remember it so sync does not bring it back.
     func deletePatient(_ patient: Patient) {
-        let others = ((try? fetch(FetchDescriptor<Patient>())) ?? []).filter { !$0.isDeleted }
+        let others = ((try? fetch(FetchDescriptor<Patient>())) ?? []).filter(\.isLive)
         PatientIdentityStore.markDeleted(patient, survivors: others)
         delete(patient)
     }

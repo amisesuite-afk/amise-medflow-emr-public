@@ -71,7 +71,8 @@ extension SyncService {
         guard !dirty.isEmpty else { return }
 
         for patient in dirty {
-            guard let remoteId = patient.remoteId else { continue }
+            // The loop awaits the network; a patient deleted meanwhile must not be read.
+            guard patient.isLive, let remoteId = patient.remoteId else { continue }
             struct UpdateRow: Encodable {
                 let full_name: String
                 let sex: String

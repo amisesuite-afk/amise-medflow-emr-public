@@ -45,7 +45,10 @@ struct DuplicatePatientsBanner: View {
 }
 
 struct DuplicatePatientsSheet: View {
-    @Query(sort: \Patient.createdAt) private var allPatients: [Patient]
+    @Query(sort: \Patient.createdAt) private var queriedAllPatients: [Patient]
+    // Deleted/detached records are dropped before any view reads them (SwiftData
+    // crashes when a body touches a deleted model before @Query refreshes).
+    private var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
 
@@ -177,12 +180,12 @@ struct DuplicatePatientsSheet: View {
 
     private func performRemoval() {
         // Re-check at the moment of removal: never delete a record that gained clinical data.
-        let victims = pendingRemoval.filter { !$0.isDeleted && !$0.hasClinicalData }
+        let victims = pendingRemoval.filter { $0.isLive && !$0.hasClinicalData }
         pendingRemoval = []
         removedIDs.formUnion(victims.map(\.id))
         Task { @MainActor in
             try? await Task.sleep(for: .milliseconds(400))   // let the list animate the rows out
-            for p in victims where !p.isDeleted { context.deletePatient(p) }
+            for p in victims where p.isLive { context.deletePatient(p) }
             try? context.save()
         }
     }

@@ -46,8 +46,10 @@ private let durations: [(label: String, seconds: TimeInterval)] = [
 struct AppointmentSchedulerView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
-    @Query(sort: \Patient.createdAt, order: .reverse) private var allPatients: [Patient]
-
+    @Query(sort: \Patient.createdAt, order: .reverse) private var queriedAllPatients: [Patient]
+    // Deleted/detached records are dropped before any view reads them (SwiftData
+    // crashes when a body touches a deleted model before @Query refreshes).
+    private var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
     @EnvironmentObject private var calendarService: CalendarService
     @EnvironmentObject private var sync: SyncService
 

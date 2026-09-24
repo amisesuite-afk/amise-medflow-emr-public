@@ -23,8 +23,10 @@ struct CalendarImportSheet: View {
     @Environment(\.modelContext) private var context
 
     let events: [EKEvent]
-    @Query private var allPatients: [Patient]
-
+    @Query private var queriedAllPatients: [Patient]
+    // Deleted/detached records are dropped before any view reads them (SwiftData
+    // crashes when a body touches a deleted model before @Query refreshes).
+    private var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
     @State private var appointments: [CalendarAppointment] = []
     @State private var importing = false
     @State private var done = false

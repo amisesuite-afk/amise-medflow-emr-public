@@ -5,8 +5,10 @@ struct AddPatientView: View {
     @Environment(\.modelContext) var context
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var calSvc: CalendarService
-    @Query var existingPatients: [Patient]
-
+    @Query private var queriedExistingPatients: [Patient]
+    // Deleted/detached records are dropped before any view reads them (SwiftData
+    // crashes when a body touches a deleted model before @Query refreshes).
+    var existingPatients: [Patient] { queriedExistingPatients.filter(\.isLive) }
     var initialSetting: ClinicalSetting
 
     @State var showDuplicateAlert = false

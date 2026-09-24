@@ -2,7 +2,10 @@ import SwiftUI
 import SwiftData
 
 struct TriageDashboardView: View {
-    @Query(sort: \Patient.createdAt, order: .reverse) private var allPatients: [Patient]
+    @Query(sort: \Patient.createdAt, order: .reverse) private var queriedAllPatients: [Patient]
+    // Deleted/detached records are dropped before any view reads them (SwiftData
+    // crashes when a body touches a deleted model before @Query refreshes).
+    private var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
     @Environment(\.dismiss) private var dismiss
 
     private var wardPatients: [Patient] {

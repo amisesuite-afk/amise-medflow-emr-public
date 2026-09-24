@@ -4,7 +4,10 @@ import SwiftData
 // MARK: - Clinical dashboard — opened by tapping the AMF logo
 
 struct DashboardView: View {
-    @Query private var allPatients: [Patient]
+    @Query private var queriedAllPatients: [Patient]
+    // Deleted/detached records are dropped before any view reads them (SwiftData
+    // crashes when a body touches a deleted model before @Query refreshes).
+    private var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
     @EnvironmentObject private var sync: SyncService
     @EnvironmentObject private var peerSync: PeerSyncService
     @Environment(\.dismiss) private var dismiss

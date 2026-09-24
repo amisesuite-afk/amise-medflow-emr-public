@@ -3,7 +3,10 @@ import SwiftData
 import EventKit
 
 struct TodayDashboardView: View {
-    @Query var allPatients: [Patient]
+    @Query private var queriedAllPatients: [Patient]
+    // Deleted/detached records are dropped before any view reads them (SwiftData
+    // crashes when a body touches a deleted model before @Query refreshes).
+    var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
     @Environment(\.modelContext) var context
     @EnvironmentObject var calSvc: CalendarService
 

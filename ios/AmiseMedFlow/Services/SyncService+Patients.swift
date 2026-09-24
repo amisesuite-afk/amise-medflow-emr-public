@@ -245,6 +245,8 @@ extension SyncService {
         guard !pending.isEmpty else { return }
 
         for patient in pending {
+            // The loop awaits the network; a patient deleted meanwhile must not be read.
+            guard patient.isLive else { continue }
             struct InsertRow: Encodable {
                 let full_name: String
                 let sex: String
@@ -374,6 +376,7 @@ extension SyncService {
                     .execute()
                     .value
                 let claimed = Set(try context.fetch(FetchDescriptor<Patient>()).compactMap(\.remoteId))
+                guard patient.isLive else { continue }
                 if let row = already.first(where: {
                     Patient.normalize($0.full_name) == patient.normalizedName && !claimed.contains($0.id)
                 }) {
@@ -390,7 +393,7 @@ extension SyncService {
                 .select("id")
                 .execute()
                 .value
-            if let first = response.first {
+            if let first = response.first, patient.isLive {
                 patient.remoteId = first.id
                 patient.pendingSync = false
                 patient.syncedAt = .now

@@ -14,8 +14,13 @@ struct QuickAddSheet: View {
     @Environment(\.dismiss)      private var dismiss
     @EnvironmentObject private var calSvc: CalendarService
 
-    @Query(sort: \Patient.updatedAt, order: .reverse) private var allPatients: [Patient]
+    @Query(sort: \Patient.updatedAt, order: .reverse) private var queriedAllPatients: [Patient]
 
+    // Deleted/detached records are dropped before any view reads them (SwiftData
+
+    // crashes when a body touches a deleted model before @Query refreshes).
+
+    private var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
     // ── Search ──────────────────────────────────────────────────────────
     @State private var searchText = ""
 

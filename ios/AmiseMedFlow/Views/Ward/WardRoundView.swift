@@ -10,7 +10,10 @@ struct DischargeContext: Identifiable {
 
 struct WardRoundView: View {
     // No sort on @Query — enum sort crashes SwiftData at runtime
-    @Query private var allPatients: [Patient]
+    @Query private var queriedAllPatients: [Patient]
+    // Deleted/detached records are dropped before any view reads them (SwiftData
+    // crashes when a body touches a deleted model before @Query refreshes).
+    private var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
     @Environment(\.modelContext) var context
 
     @State var showAdd = false
