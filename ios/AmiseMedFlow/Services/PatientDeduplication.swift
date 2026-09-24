@@ -10,6 +10,12 @@ import SwiftData
 //   clinical data is never hidden. Groups marked "different people" are never collapsed.
 // The duplicate banner/review sheet (DuplicatePatientsSheet) lets the clinician clean them up.
 
+extension PersistentModel {
+    /// Still attached to a context and not deleted. Reading attributes of a deleted model after
+    /// save (before @Query refreshes) crashes SwiftData, so lists and sync loops check this first.
+    var isLive: Bool { modelContext != nil && !isDeleted }
+}
+
 extension Array where Element == Patient {
 
     func deduped() -> [Patient] {
@@ -81,10 +87,6 @@ extension Array where Element == Patient {
 }
 
 extension Patient {
-
-    /// Still attached to a context and not deleted. Reading attributes of a deleted model after
-    /// save (before @Query refreshes) crashes SwiftData, so lists filter on this first.
-    var isLive: Bool { modelContext != nil && !isDeleted }
 
     /// Stable identity key: remoteId → manually-entered MRN → local record id.
     /// Auto-generated MRNs (AMF-YYYY-NNNNNN) are excluded because they are unique per record
