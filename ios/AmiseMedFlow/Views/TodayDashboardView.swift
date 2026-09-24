@@ -17,7 +17,9 @@ struct TodayDashboardView: View {
     @State private var isRefreshing = false
     @State var calEventActionTarget: EKEvent? = nil
     @State var calEventActionPatient: Patient? = nil
-    @State private var showCalEncounterSheet = false
+    // Patient whose consultation was started from a calendar appointment
+    // (full screen on iPad, sheet on iPhone; see consultationPresentation).
+    @State private var calEncounterPatient: Patient? = nil
     @State private var showPreConsultSheet = false
     @State var showCalEventDialog = false
 
@@ -218,7 +220,7 @@ struct TodayDashboardView: View {
                         calEventActionTarget = nil
                     }
                     Button("Start Encounter") {
-                        showCalEncounterSheet = true
+                        calEncounterPatient = calEventActionPatient
                         calEventActionTarget = nil
                     }
                     Button("Open Patient File") {
@@ -240,11 +242,8 @@ struct TodayDashboardView: View {
                 }
                 Button("Cancel", role: .cancel) { calEventActionTarget = nil; calEventActionPatient = nil }
             }
-            .sheet(isPresented: $showCalEncounterSheet, onDismiss: { calEventActionPatient = nil }) {
-                if let patient = calEventActionPatient {
-                    ConsultationView(patient: patient)
-                }
-            }
+            .consultationPresentation(item: $calEncounterPatient,
+                                      onDismiss: { calEventActionPatient = nil })
             .sheet(isPresented: $showPreConsultSheet, onDismiss: { calEventActionPatient = nil }) {
                 if let patient = calEventActionPatient {
                     PreConsultEntrySheet(patient: patient)
