@@ -123,10 +123,13 @@ enum PatientIdentityStore {
         return (UserDefaults.standard.stringArray(forKey: deletedKey) ?? []).contains(id)
     }
 
-    static func markDeleted(_ patient: Patient) {
+    /// `survivors` are the other local records. An id still held by one of them (two local copies
+    /// of the same cloud record) is not remembered, so the kept copy keeps syncing.
+    static func markDeleted(_ patient: Patient, survivors: [Patient] = []) {
         var ids = UserDefaults.standard.stringArray(forKey: deletedKey) ?? []
+        let stillHeld = Set(survivors.filter { $0.id != patient.id }.flatMap { [$0.remoteId, $0.syncCode] }.compactMap { $0 })
         for key in [patient.remoteId, patient.syncCode] {
-            if let key, !key.isEmpty, !ids.contains(key) { ids.append(key) }
+            if let key, !key.isEmpty, !stillHeld.contains(key), !ids.contains(key) { ids.append(key) }
         }
         UserDefaults.standard.set(ids, forKey: deletedKey)
     }
@@ -155,7 +158,8 @@ enum PatientIdentityStore {
 extension ModelContext {
     /// Delete a patient on this device and remember it so sync does not bring it back.
     func deletePatient(_ patient: Patient) {
-        PatientIdentityStore.markDeleted(patient)
+        let others = ((try? fetch(FetchDescriptor<Patient>())) ?? []).filter { !$0.isDeleted }
+        PatientIdentityStore.markDeleted(patient, survivors: others)
         delete(patient)
     }
 }
