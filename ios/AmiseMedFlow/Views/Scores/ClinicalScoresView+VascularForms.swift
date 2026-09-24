@@ -65,6 +65,60 @@ extension ClinicalScoresView {
             capriniRiskSection
             capriniHighRiskSection
         }
+        .onChange(of: cap) { _, _ in recalculate() }
+    }
+
+    // Age bands are mutually exclusive — selecting one clears the others so points never double-count.
+    private func capriniAgeBinding(_ keyPath: WritableKeyPath<CapriniInput, Bool>) -> Binding<Bool> {
+        Binding(
+            get: { cap[keyPath: keyPath] },
+            set: { on in
+                if on {
+                    cap.age41to59 = false
+                    cap.age60to74 = false
+                    cap.ageOver75 = false
+                }
+                cap[keyPath: keyPath] = on
+            }
+        )
+    }
+
+    @ViewBuilder private var capriniAgeSection: some View {
+        Group {
+            sectionHeader("Age")
+            scoreToggle("Age 41–60 years", binding: capriniAgeBinding(\.age41to59), points: "+1")
+            scoreToggle("Age 61–74 years", binding: capriniAgeBinding(\.age60to74), points: "+2")
+            scoreToggle("Age ≥75 years",   binding: capriniAgeBinding(\.ageOver75), points: "+3")
+        }
+    }
+
+    @ViewBuilder private var capriniRiskSection: some View {
+        Group {
+            sectionHeader("Risk Factors")
+            scoreToggle("Minor surgery planned",                      binding: $cap.minorSurgery,                 points: "+1")
+            scoreToggle("Major surgery (>45 min)",                    binding: $cap.majorSurgery,                 points: "+2")
+            scoreToggle("Laparoscopic surgery >45 min",               binding: $cap.laparoscopicSurgeryOver45min, points: "+2")
+            scoreToggle("Confined to bed / immobile >72 h",           binding: $cap.immobilityBedridden,          points: "+1")
+            scoreToggle("Central venous access",                      binding: $cap.centralVenousAccess,          points: "+2")
+            scoreToggle("Oral contraceptive / HRT",                   binding: $cap.hormonalTherapy,              points: "+1")
+            scoreToggle("Sepsis within 1 month",                      binding: $cap.sepsis30d,                    points: "+1")
+            scoreToggle("BMI >40",                                    binding: $cap.bmi40Plus,                    points: "+1")
+            scoreToggle("Malignancy (present or previous)",           binding: $cap.activeOrPriorMalignancy,      points: "+2")
+            scoreToggle("History of DVT/PE",                          binding: $cap.priorVTE,                     points: "+3")
+            scoreToggle("Family history of VTE",                      binding: $cap.familyHistoryVTE,             points: "+3")
+            scoreToggle("Thrombophilia (e.g. Factor V Leiden, APS)",  binding: $cap.thrombophilia,                points: "+3")
+        }
+    }
+
+    @ViewBuilder private var capriniHighRiskSection: some View {
+        Group {
+            sectionHeader("Very High Risk (within 1 month)")
+            scoreToggle("Stroke",                                     binding: $cap.stroke,                              points: "+5")
+            scoreToggle("Acute myocardial infarction",                binding: $cap.mi,                                  points: "+5")
+            scoreToggle("Acute spinal cord injury / paralysis",       binding: $cap.spinalCordInjury,                    points: "+5")
+            scoreToggle("Hip/pelvis/leg fracture or elective arthroplasty", binding: $cap.pelvisFractureOrHipKneeReplacement, points: "+5")
+            scoreToggle("Multiple trauma",                            binding: $cap.multipleTrauma,                      points: "+5")
+        }
     }
 
 
@@ -74,6 +128,30 @@ extension ClinicalScoresView {
         VStack(alignment: .leading, spacing: 0) {
             paduaHighRiskSection
             paduaLowRiskSection
+        }
+        .onChange(of: paduaI) { _, _ in recalculate() }
+    }
+
+    @ViewBuilder private var paduaHighRiskSection: some View {
+        Group {
+            sectionHeader("Major Risk Factors")
+            scoreToggle("Active cancer (metastases or chemo/RT within 6 months)", binding: $paduaI.activeOrRecentCancer, points: "+3")
+            scoreToggle("Previous VTE (excluding superficial thrombosis)",        binding: $paduaI.previousVTE,          points: "+3")
+            scoreToggle("Reduced mobility (bed rest ≥3 days)",                    binding: $paduaI.reducedMobility,      points: "+3")
+            scoreToggle("Known thrombophilic condition",                          binding: $paduaI.thrombophilia,        points: "+3")
+        }
+    }
+
+    @ViewBuilder private var paduaLowRiskSection: some View {
+        Group {
+            sectionHeader("Other Risk Factors")
+            scoreToggle("Recent trauma and/or surgery (≤1 month)",   binding: $paduaI.recentTraumaOrSurgery,         points: "+2")
+            scoreToggle("Age ≥70 years",                             binding: $paduaI.ageOver70,                     points: "+1")
+            scoreToggle("Heart and/or respiratory failure",          binding: $paduaI.heartOrRespiratoryFailure,     points: "+1")
+            scoreToggle("Acute MI or ischaemic stroke",              binding: $paduaI.acuteMIOrIschaemicStroke,      points: "+1")
+            scoreToggle("Acute infection and/or rheumatological disorder", binding: $paduaI.acuteInfectionOrInflammatory, points: "+1")
+            scoreToggle("Obesity (BMI ≥30)",                         binding: $paduaI.obese,                         points: "+1")
+            scoreToggle("Ongoing hormonal treatment",                binding: $paduaI.ongoingHormonalTreatment,      points: "+1")
         }
     }
 

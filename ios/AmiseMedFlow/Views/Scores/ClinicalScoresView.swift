@@ -276,7 +276,7 @@ struct ClinicalScoresView: View {
         }
     }
 
-    private func exportScoresPDF() async {
+    func exportScoresPDF() async {
         isExportingScoresPDF = true
         defer { isExportingScoresPDF = false }
 

@@ -16,6 +16,85 @@ extension ClinicalScoresView {
             apacheIILabsSection
             apacheIIContextSection
         }
+        .onChange(of: apacheIII) { _, _ in recalculate() }
+    }
+
+    // MARK: - APACHE II sub-sections
+
+    @ViewBuilder var apacheIIVitalsSection: some View {
+        Group {
+            sectionHeader("Vitals — worst value in first 24 h")
+            apacheSegment("Temperature (°C)", selection: $apacheIII.tempPoints,
+                options: [(0,"0 — 36.0–38.4°C"), (1,"1 — 38.5–38.9°C"),
+                          (2,"2 — 32.0–33.9°C"), (3,"3 — 30.0–31.9°C or 39.0–40.9°C"),
+                          (4,"4 — ≥41°C or ≤29.9°C")])
+            apacheSegment("Mean Arterial Pressure (mmHg)", selection: $apacheIII.mapPoints,
+                options: [(0,"0 — 70–109"), (2,"2 — 50–69 or 110–129"),
+                          (3,"3 — 130–159"), (4,"4 — ≥160 or ≤49")])
+            apacheSegment("Heart Rate (bpm)", selection: $apacheIII.hrPoints,
+                options: [(0,"0 — 70–109"), (2,"2 — 55–69 or 110–139"),
+                          (3,"3 — 40–54 or 140–179"), (4,"4 — ≥180 or ≤39")])
+            apacheSegment("Respiratory Rate (br/min)", selection: $apacheIII.rrPoints,
+                options: [(0,"0 — 12–24"), (1,"1 — 10–11 or 25–34"),
+                          (2,"2 — 6–9"), (3,"3 — 35–49"), (4,"4 — ≥50 or ≤5")])
+            apacheSegment("Oxygenation (A-aDO₂ or PaO₂)", selection: $apacheIII.oxyPoints,
+                options: [(0,"0 — No FiO₂ or PaO₂ >70 mmHg"), (1,"1 — PaO₂ 61–70 mmHg"),
+                          (2,"2 — A-aDO₂ 200–349 or PaO₂ 55–60"),
+                          (3,"3 — A-aDO₂ 350–499"), (4,"4 — A-aDO₂ ≥500 or PaO₂ <55")])
+        }
+    }
+
+    @ViewBuilder var apacheIILabsSection: some View {
+        Group {
+            sectionHeader("Biochemistry & Haematology")
+            apacheSegment("Arterial pH", selection: $apacheIII.pHPoints,
+                options: [(0,"0 — 7.33–7.49"), (1,"1 — 7.50–7.59"),
+                          (2,"2 — 7.25–7.32 or 7.60–7.69"),
+                          (3,"3 — 7.15–7.24 or ≥7.70"), (4,"4 — <7.15")])
+            apacheSegment("Serum Sodium (mmol/L)", selection: $apacheIII.sodiumPoints,
+                options: [(0,"0 — 130–149"), (1,"1 — 150–154"),
+                          (2,"2 — 120–129 or 155–159"),
+                          (3,"3 — 111–119 or 160–179"), (4,"4 — ≤110 or ≥180")])
+            apacheSegment("Serum Potassium (mmol/L)", selection: $apacheIII.potassiumPoints,
+                options: [(0,"0 — 3.5–5.4"), (1,"1 — 3.0–3.4 or 5.5–5.9"),
+                          (2,"2 — 2.5–2.9 or 6.0–6.9"), (4,"4 — <2.5 or ≥7.0")])
+            apacheSegment("Serum Creatinine (µmol/L)", selection: $apacheIII.creatininePoints,
+                options: [(0,"0 — 53–123 µmol/L"), (2,"2 — 44–52 or 124–176"),
+                          (3,"3 — 177–309"), (4,"4 — ≥310 or <44 (double if ARF)")])
+            apacheSegment("Haematocrit (%)", selection: $apacheIII.haematocritPoints,
+                options: [(0,"0 — 30–45.9%"), (1,"1 — 20–29.9 or 46–49.9"),
+                          (2,"2 — 50–59.9"), (4,"4 — ≥60 or <20")])
+            apacheSegment("WBC (×10³/mm³)", selection: $apacheIII.wbcPoints,
+                options: [(0,"0 — 3–14.9"), (1,"1 — 1–2.9 or 15–19.9"),
+                          (2,"2 — 20–39.9"), (4,"4 — ≥40 or <1")])
+            VStack(alignment: .leading, spacing: 6) {
+                Text("GCS (Actual Score 3–15)")
+                    .font(.caption.weight(.semibold)).foregroundStyle(.secondary).textCase(.uppercase)
+                HStack {
+                    Slider(value: Binding(get: { Double(apacheIII.gcs) },
+                                         set: { apacheIII.gcs = Int($0) }),
+                           in: 3...15, step: 1)
+                        .tint(AMColor.accent)
+                    Text("GCS \(apacheIII.gcs)")
+                        .font(.caption.monospacedDigit()).frame(width: 60, alignment: .trailing)
+                }
+                Text("APACHE II contribution = 15 − \(apacheIII.gcs) = \(15 - apacheIII.gcs)")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    @ViewBuilder var apacheIIContextSection: some View {
+        Group {
+            sectionHeader("Age & Chronic Health")
+            apacheSegment("Age Points", selection: $apacheIII.agePoints,
+                options: [(0,"0 — ≤44 years"), (2,"2 — 45–54"),
+                          (3,"3 — 55–64"), (5,"5 — 65–74"), (6,"6 — ≥75")])
+            apacheSegment("Chronic Health Points", selection: $apacheIII.chronicHealthPoints,
+                options: [(0,"0 — No severe organ insufficiency / immunocompromise"),
+                          (2,"2 — Elective postoperative patient with severe insufficiency"),
+                          (5,"5 — Non-operative or emergency postoperative with severe insufficiency")])
+        }
     }
 
 

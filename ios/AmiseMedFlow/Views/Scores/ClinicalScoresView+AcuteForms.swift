@@ -83,6 +83,32 @@ extension ClinicalScoresView {
             tokyoCholangitisGrade1and2
             tokyoCholangitisGrade3
         }
+        .onChange(of: tkyG) { _, _ in recalculate() }
+    }
+
+    @ViewBuilder private var tokyoCholangitisGrade1and2: some View {
+        Group {
+            sectionHeader("Diagnosis (TG18)")
+            scoreToggle("Cholangitis confirmed (Charcot's triad or imaging)", binding: $tkyG.cholangitisConfirmed, points: "Dx")
+            sectionHeader("Grade II — Moderate (any 2)")
+            scoreToggle("WBC >12,000 or <4,000/μL",        binding: $tkyG.wbcAbove12OrBelow4,  points: "II")
+            scoreToggle("Fever ≥39°C",                     binding: $tkyG.temperatureAbove39,  points: "II")
+            scoreToggle("Age ≥75 years",                   binding: $tkyG.ageAbove75,          points: "II")
+            scoreToggle("Total bilirubin ≥5 mg/dL (≥85 µmol/L)", binding: $tkyG.bilirubinAbove5, points: "II")
+            scoreToggle("Hypoalbuminaemia (<0.7 × lower limit of normal)", binding: $tkyG.albuminBelow0_7xLLN, points: "II")
+        }
+    }
+
+    @ViewBuilder private var tokyoCholangitisGrade3: some View {
+        Group {
+            sectionHeader("Grade III — Severe (any organ dysfunction)")
+            scoreToggle("Cardiovascular (dopamine ≥5 µg/kg/min or any noradrenaline)", binding: $tkyG.cardiovascularDysfunction, points: "III")
+            scoreToggle("Neurological (disturbed consciousness)", binding: $tkyG.neurologicalDysfunction,  points: "III")
+            scoreToggle("Respiratory (PaO₂/FiO₂ <300)",           binding: $tkyG.respiratoryDysfunction,   points: "III")
+            scoreToggle("Renal (oliguria, Cr >2 mg/dL)",           binding: $tkyG.renalDysfunction,         points: "III")
+            scoreToggle("Hepatic (PT-INR >1.5)",                   binding: $tkyG.hepaticDysfunction,       points: "III")
+            scoreToggle("Haematological (platelets <100k)",        binding: $tkyG.haematologicalDysfunction, points: "III")
+        }
     }
 
 
@@ -176,6 +202,23 @@ extension ClinicalScoresView {
             Text("Mannheim Peritonitis Index (Wacha & Linder 1983). Max score 47. <21 = low risk (<9% mortality), 21–29 = intermediate (~29%), ≥30 = high (>60%).")
                 .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
             mpiBodySection
+        }
+        .onChange(of: mpiI) { _, _ in recalculate() }
+    }
+
+    @ViewBuilder private var mpiBodySection: some View {
+        Group {
+            sectionHeader("Patient Factors")
+            scoreToggle("Age >50 years",                                   binding: $mpiI.ageOver50,              points: "+5")
+            scoreToggle("Female sex",                                      binding: $mpiI.femaleSex,              points: "+5")
+            scoreToggle("Organ failure (SBP <80, Cr >177 µmol/L, resp. failure)", binding: $mpiI.organFailure,    points: "+7")
+            scoreToggle("Malignancy",                                      binding: $mpiI.malignancy,             points: "+4")
+            sectionHeader("Peritonitis Factors")
+            scoreToggle("Pre-operative duration >24 h",                    binding: $mpiI.durationOver24h,        points: "+4")
+            scoreToggle("Origin of sepsis not colonic",                    binding: $mpiI.nonColonicOrigin,       points: "+4")
+            scoreToggle("Diffuse generalised peritonitis",                 binding: $mpiI.generalizedPeritonitis, points: "+6")
+            apacheSegment("Exudate", selection: $mpiI.exudate,
+                options: [(0, "Clear / serous"), (6, "Cloudy / purulent"), (12, "Faecal")])
         }
     }
 

@@ -126,6 +126,46 @@ extension ClinicalScoresView {
         }
     }
 
+    // MARK: - SAPS II integer stepper row
+
+    func sapsIIStepper(_ label: String, value: Binding<Int>,
+                       range: ClosedRange<Int>, step: Int) -> some View {
+        HStack {
+            Text(label).font(.subheadline)
+            Spacer()
+            Stepper("\(value.wrappedValue)", value: value, in: range, step: step)
+                .fixedSize()
+        }
+    }
+
+    // MARK: - AUDIT-C item picker (0-indexed points)
+
+    func auditCPicker(_ label: String, labels: [String], value: Binding<Int>) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label).font(.subheadline)
+            Picker("", selection: value) {
+                ForEach(0..<labels.count, id: \.self) { idx in
+                    Text("\(idx) — \(labels[idx])").tag(idx)
+                }
+            }
+            .pickerStyle(.menu)
+        }
+    }
+
+    // MARK: - IPSS symptom item picker (0–5)
+
+    func ipssItemPicker(_ label: String,
+                        keyPath: WritableKeyPath<ClinicalScoringEngine.IPSSInput, Int>) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label).font(.subheadline)
+            Picker("", selection: Binding(get: { ipssI[keyPath: keyPath] },
+                                          set: { ipssI[keyPath: keyPath] = $0 })) {
+                ForEach(0...5, id: \.self) { Text("\($0)").tag($0) }
+            }
+            .pickerStyle(.segmented)
+        }
+    }
+
     // MARK: - Braden scale menu picker
 
     func bradenPicker(_ label: String, labels: [String], value: Binding<Int>) -> some View {
