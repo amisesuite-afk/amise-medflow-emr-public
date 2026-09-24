@@ -11,6 +11,10 @@ packages:
   Supabase:
     url: https://github.com/supabase/supabase-swift
     from: 2.5.1
+  # Crash + app-hang reporting (see Services/CrashReporting.swift). Pinned to 8.x.
+  Sentry:
+    url: https://github.com/getsentry/sentry-cocoa
+    from: 8.36.0
 
 targets:
   AmiseMedFlow:
@@ -54,6 +58,8 @@ targets:
         # Supabase — resolved at build time via Configuration.xcconfig
         SUPABASE_URL: "$(SUPABASE_URL)"
         SUPABASE_ANON_KEY: "$(SUPABASE_ANON_KEY)"
+        # Sentry crash reporting — empty = reporting off
+        SENTRY_DSN: "$(SENTRY_DSN)"
         # Privacy usage strings
         NSCameraUsageDescription: "Camera is used for patient photo documentation."
         NSPhotoLibraryUsageDescription: "Photo library is used for attaching clinical images."
@@ -98,6 +104,8 @@ targets:
     dependencies:
       - package: Supabase
         product: Supabase
+      - package: Sentry
+        product: Sentry
 
   AmiseMedFlowTests:
     type: bundle.unit-test

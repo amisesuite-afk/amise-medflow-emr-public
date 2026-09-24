@@ -10,3 +10,8 @@ SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder
 
 // Optional: your Apple Developer Team ID (find it at developer.apple.com → Account → Membership)
 // DEVELOPMENT_TEAM = XXXXXXXXXX
+
+// Optional: Sentry DSN for crash and freeze reporting (Sentry → Project Settings → Client Keys).
+// Leave empty to turn reporting off. xcconfig treats "//" as a comment, so write the DSN with
+// "$()" between the slashes, e.g.  https:/$()/abc123@o0.ingest.sentry.io/456
+SENTRY_DSN =

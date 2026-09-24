@@ -202,6 +202,7 @@ struct DuplicatePatientsSheet: View {
     private func performRemoval() {
         // Re-check at the moment of removal: never delete a record that gained clinical data.
         let victims = pendingRemoval.filter { $0.isLive && !$0.hasClinicalData }
+        CrashReporting.breadcrumb("Removing \(victims.count) duplicate copies", category: "action")
         pendingRemoval = []
         removedIDs.formUnion(victims.map(\.id))
         Task { @MainActor in

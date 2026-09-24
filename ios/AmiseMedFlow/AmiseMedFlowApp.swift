@@ -11,6 +11,11 @@ struct AmiseMedFlowApp: App {
     @StateObject private var notifications = NotificationService()
     @Environment(\.scenePhase) private var scenePhase
 
+    init() {
+        // First, so a crash anywhere during launch is still reported.
+        CrashReporting.start()
+    }
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([Patient.self, ClinicalNote.self, VitalsEntry.self, Prescription.self, PatientDocument.self, OperativePlan.self, BillingLineItem.self, Encounter.self, ScoreHistoryEntry.self])
 

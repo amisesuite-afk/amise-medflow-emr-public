@@ -267,12 +267,14 @@ struct ClinicalScoresView: View {
         .navigationTitle("Clinical Scores")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
+            CrashReporting.breadcrumb("Opened Clinical Scores")
             refreshRecommendations()
             if selectedScore == nil, let s = initialScore { selectedScore = s }
         }
         .onChange(of: patient.workingDiagnosis)    { _, _ in refreshRecommendations() }
         .onChange(of: patient.workingDiagnosisICD) { _, _ in refreshRecommendations() }
         .onChange(of: selectedScore) { _, newScore in
+            if let score = newScore { CrashReporting.breadcrumb("Opened score: \(score.rawValue)") }
             if let score = newScore { autoPopulate(for: score) } else { autoFill = ScoreAutoFill() }
             recalculate()
         }

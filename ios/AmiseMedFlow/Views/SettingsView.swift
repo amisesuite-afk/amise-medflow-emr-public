@@ -11,6 +11,7 @@ struct SettingsView: View {
     @State private var showSignOutConfirm = false
     @State private var isSigningOut = false
     @State private var showAIDisclosure = false
+    @State private var testReportSent = false
     @State private var showClearNASConfirm = false
 
     var body: some View {
@@ -265,6 +266,24 @@ struct SettingsView: View {
                 Section("App") {
                     LabeledContent("Version",
                         value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—")
+                }
+
+                Section {
+                    LabeledContent("Crash & freeze reporting",
+                                   value: CrashReporting.isEnabled ? "On" : "Off")
+                    if CrashReporting.isEnabled {
+                        Button(testReportSent ? "Test report sent" : "Send test report") {
+                            CrashReporting.sendTestEvent()
+                            testReportSent = true
+                        }
+                        .disabled(testReportSent)
+                    }
+                } header: {
+                    Text("Diagnostics")
+                } footer: {
+                    Text(CrashReporting.isEnabled
+                         ? "Crash and freeze reports contain technical details only (code location, device, iOS and app version) — never patient data or screenshots."
+                         : "Add SENTRY_DSN to Configuration.xcconfig to turn on crash and freeze reporting.")
                 }
             }
             .navigationTitle("Settings")

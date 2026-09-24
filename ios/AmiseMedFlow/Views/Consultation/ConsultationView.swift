@@ -156,6 +156,7 @@ struct ConsultationView: View {
     }
 
     private func handleAppear() {
+        CrashReporting.breadcrumb("Opened consultation")
         let encounterStarting = patient.encounterStatus == .waiting || patient.encounterStatus == .notCheckedIn
         pathway = ConsultPathway.from(patient.visitType) ?? ConsultPathway.recommend(for: patient).pathway
         // Explicit starting tab (iPad sidebar) wins; otherwise open at the pathway's first step.
@@ -253,6 +254,7 @@ struct ConsultationView: View {
 
     /// Clinician chose a pathway: record the visit type and jump to its first step.
     func choosePathway(_ p: ConsultPathway) {
+        CrashReporting.breadcrumb("Chose pathway: \(p.rawValue)")
         pathway = p
         let vt = p.visitType(keeping: patient.visitType)
         if patient.visitType != vt {
