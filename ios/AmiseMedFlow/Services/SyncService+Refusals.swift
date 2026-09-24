@@ -69,6 +69,18 @@ enum SyncRefusals {
     }
 }
 
+/// When a push may clear `pendingSync`: only when the server returned the written row (an update
+/// that RLS does not apply returns no rows and no error) and the record was not edited while the
+/// request ran (`updatedAt` unchanged since the payload was built). Otherwise the record stays
+/// pending, the pull does not overwrite it, and the next sync sends it again. Pure; tested in
+/// SyncGapsTests.
+enum SyncPushConfirmation {
+    static func mayClearPending(rowsReturned: Int, editedAtBeforeRequest: Date?,
+                                editedAtNow: Date?) -> Bool {
+        rowsReturned > 0 && editedAtBeforeRequest == editedAtNow
+    }
+}
+
 extension SyncService {
 
     /// Handles an error from pushing ONE record. Returns true when the loop should go on to the

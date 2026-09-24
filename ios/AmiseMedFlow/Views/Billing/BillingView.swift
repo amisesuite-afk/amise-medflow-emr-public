@@ -315,18 +315,31 @@ private struct BillingItemRow: View {
     @Bindable var item: BillingLineItem
     @State private var amountText: String = ""
 
+    /// A binding that marks the line edited (updatedAt + pendingSync) when the value really
+    /// changes, so the next sync sends the edit (an update once the line is in the cloud).
+    private func edited<T: Equatable>(_ keyPath: ReferenceWritableKeyPath<BillingLineItem, T>) -> Binding<T> {
+        Binding(
+            get: { item[keyPath: keyPath] },
+            set: { newValue in
+                guard item[keyPath: keyPath] != newValue else { return }
+                item[keyPath: keyPath] = newValue
+                item.markEdited()
+            }
+        )
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
                 Text(item.cptCode).font(.subheadline.monospaced().weight(.semibold))
                 Spacer()
-                Stepper("", value: $item.units, in: 1...10)
+                Stepper("", value: edited(\.units), in: 1...10)
                     .labelsHidden().fixedSize()
                 Text("×\(item.units)").font(.caption).foregroundStyle(.secondary)
             }
             Text(item.cptDescription).font(.caption).foregroundStyle(.secondary)
             HStack(spacing: 12) {
-                TextField("Modifier", text: $item.modifier).font(.caption).frame(width: 72)
+                TextField("Modifier", text: edited(\.modifier)).font(.caption).frame(width: 72)
 
                 HStack(spacing: 3) {
                     Text("XCD").font(.caption2).foregroundStyle(.tertiary)
@@ -335,11 +348,16 @@ private struct BillingItemRow: View {
                         .keyboardType(.decimalPad)
                         .frame(width: 64)
                         .onChange(of: amountText) { _, v in
-                            item.amountXCD = Double(v) ?? 0
+                            // onAppear fills the field from the stored fee: only a real change
+                            // counts as an edit.
+                            let amount = Double(v) ?? 0
+                            guard amount != item.amountXCD else { return }
+                            item.amountXCD = amount
+                            item.markEdited()
                         }
                 }
 
-                TextField("Note", text: $item.note).font(.caption)
+                TextField("Note", text: edited(\.note)).font(.caption)
             }
         }
         .padding(.vertical, 2)

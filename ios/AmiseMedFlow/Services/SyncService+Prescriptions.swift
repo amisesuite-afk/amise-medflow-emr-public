@@ -1,9 +1,35 @@
 // SyncService+Prescriptions.swift
-// Prescription sync: push and pull prescription records.
+// Prescription sync: push (insert new, update edited) and pull prescription records.
 
 import Foundation
 import SwiftData
 import Supabase
+
+/// The body of the `prescriptions` UPDATE for an edited prescription: the same values the insert
+/// sends, without patient_id and prescriber_id (set once, at insert). An empty field is left out
+/// of the JSON, as in the insert (the live schema, Migration 31, has NOT NULL dose, frequency and
+/// route, so an explicit null would fail the whole update). Internal for SyncGapsTests.
+struct PrescriptionUpdateRow: Encodable {
+    let drug_name: String
+    let dose: String?
+    let route: String?
+    let frequency: String?
+    let duration: String?
+    let indication: String?
+    let instructions: String?
+    let prescribed_at: String
+
+    init(_ rx: Prescription, iso: ISO8601DateFormatter = ISO8601DateFormatter()) {
+        drug_name = rx.drug
+        dose = rx.dose.isEmpty ? nil : rx.dose
+        route = rx.route.isEmpty ? nil : rx.route
+        frequency = rx.frequency.isEmpty ? nil : rx.frequency
+        duration = rx.duration.isEmpty ? nil : rx.duration
+        indication = rx.indication.isEmpty ? nil : rx.indication
+        instructions = rx.instructions
+        prescribed_at = iso.string(from: rx.prescribedAt)
+    }
+}
 
 extension SyncService {
 
@@ -11,11 +37,13 @@ extension SyncService {
 
     func pushPendingPrescriptions(context: ModelContext) async throws {
         let refused = SyncRefusals.ids(.prescription)
+        // New prescriptions (insert) and edits to ones already in the cloud (update).
         let pending = try context.fetch(FetchDescriptor<Prescription>())
-            .filter { $0.pendingSync && $0.remoteId == nil && !refused.contains($0.id.uuidString) }
+            .filter { $0.pendingSync && !refused.contains($0.id.uuidString) }
         guard !pending.isEmpty else { return }
 
         let iso = ISO8601DateFormatter()
+        let tombstoned = SyncTombstones.ids(in: .prescriptions)
         var firstError: Error?
 
         struct RxRow: Encodable {
@@ -35,36 +63,70 @@ extension SyncService {
         for rx in pending {
             // The loop awaits the network; a prescription deleted meanwhile must not be read.
             guard rx.isLive else { continue }
-            // UUID guard: never a booking placeholder or malformed id as patient_id.
-            guard let patientId = SyncRemoteId.serverId(rx.patient?.remoteId) else { continue }
-            guard let prescriberId = currentUserId else { continue }
             let localId = rx.id
+            // An edit made while the request below runs is not in it: the prescription then stays
+            // pending for the next sync.
+            let editedAt = rx.updatedAt
 
-            let row = RxRow(
-                patient_id: patientId,
-                prescriber_id: prescriberId,
-                drug_name: rx.drug,
-                dose: rx.dose.isEmpty ? nil : rx.dose,
-                route: rx.route.isEmpty ? nil : rx.route,
-                frequency: rx.frequency.isEmpty ? nil : rx.frequency,
-                duration: rx.duration.isEmpty ? nil : rx.duration,
-                indication: rx.indication.isEmpty ? nil : rx.indication,
-                instructions: rx.instructions,
-                prescribed_at: iso.string(from: rx.prescribedAt)
-            )
             // Per-record try/catch so one bad row doesn't abort the whole sync. A failed row keeps
             // pendingSync = true; a refused one (42501) is not retried until the next sign-in.
             do {
-                let response: [RxResponse] = try await SupabaseConfig.client
-                    .from("prescriptions")
-                    .insert(row)
-                    .select("id")
-                    .execute()
-                    .value
-                if let first = response.first, rx.isLive {
-                    rx.remoteId = first.id
-                    rx.pendingSync = false
-                    rx.syncedAt = .now
+                switch SyncRemoteId.kind(rx.remoteId) {
+                case .server(let remoteId):
+                    // Deleted on this device (soft delete queued): never update it.
+                    guard !tombstoned.contains(remoteId) else { continue }
+                    // Edit to a prescription already in the cloud: update it in place. RLS
+                    // (doctors_update_prescriptions) allows doctor/admin; 0 rows back means not
+                    // applied — it stays pending locally rather than losing the edit.
+                    let updated: [RxResponse] = try await SupabaseConfig.client
+                        .from("prescriptions")
+                        .update(PrescriptionUpdateRow(rx, iso: iso))
+                        .eq("id", value: remoteId)
+                        .select("id")
+                        .execute()
+                        .value
+                    guard rx.isLive else { continue }
+                    if SyncPushConfirmation.mayClearPending(rowsReturned: updated.count,
+                                                            editedAtBeforeRequest: editedAt,
+                                                            editedAtNow: rx.updatedAt) {
+                        rx.pendingSync = false
+                        rx.syncedAt = .now
+                    }
+
+                case .none:
+                    // UUID guard: never a booking placeholder or malformed id as patient_id.
+                    guard let patientId = SyncRemoteId.serverId(rx.patient?.remoteId) else { continue }
+                    guard let prescriberId = currentUserId else { continue }
+                    let row = RxRow(
+                        patient_id: patientId,
+                        prescriber_id: prescriberId,
+                        drug_name: rx.drug,
+                        dose: rx.dose.isEmpty ? nil : rx.dose,
+                        route: rx.route.isEmpty ? nil : rx.route,
+                        frequency: rx.frequency.isEmpty ? nil : rx.frequency,
+                        duration: rx.duration.isEmpty ? nil : rx.duration,
+                        indication: rx.indication.isEmpty ? nil : rx.indication,
+                        instructions: rx.instructions,
+                        prescribed_at: iso.string(from: rx.prescribedAt)
+                    )
+                    let response: [RxResponse] = try await SupabaseConfig.client
+                        .from("prescriptions")
+                        .insert(row)
+                        .select("id")
+                        .execute()
+                        .value
+                    guard rx.isLive, let first = response.first else { continue }
+                    rx.remoteId = first.id   // always: a later edit is then sent as an update
+                    if SyncPushConfirmation.mayClearPending(rowsReturned: response.count,
+                                                            editedAtBeforeRequest: editedAt,
+                                                            editedAtNow: rx.updatedAt) {
+                        rx.pendingSync = false
+                        rx.syncedAt = .now
+                    }
+                    try? context.save()   // persist the id at once so a crash can't cause a re-insert
+
+                case .appointmentPlaceholder, .invalid:
+                    continue   // not a row id: never sent (SyncRemoteIds.swift)
                 }
             } catch {
                 guard continueAfterPushFailure(error, id: localId, kind: .prescription,
