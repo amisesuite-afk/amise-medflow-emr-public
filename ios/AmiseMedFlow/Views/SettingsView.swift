@@ -12,6 +12,9 @@ struct SettingsView: View {
     @State private var isSigningOut = false
     @State private var showAIDisclosure = false
     @State private var testReportSent = false
+    @State private var backupCheckMessage: String?
+    @State private var isCheckingBackup = false
+    @State private var showRestoreConfirm = false
     @State private var showClearNASConfirm = false
 
     var body: some View {
@@ -219,6 +222,32 @@ struct SettingsView: View {
                     .buttonStyle(.bordered)
 
                     if nasBackup.isConfigured {
+                        Button {
+                            isCheckingBackup = true
+                            Task {
+                                backupCheckMessage = await nasBackup.verifyLatestBackup(context: context)
+                                isCheckingBackup = false
+                            }
+                        } label: {
+                            Label(isCheckingBackup ? "Checking backup…" : "Verify latest backup (test restore)",
+                                  systemImage: "checkmark.shield")
+                        }
+                        .disabled(isCheckingBackup || nasBackup.lastBackupPath == nil)
+
+                        Button {
+                            showRestoreConfirm = true
+                        } label: {
+                            Label("Restore missing records from backup", systemImage: "arrow.down.doc")
+                        }
+                        .disabled(isCheckingBackup || nasBackup.lastBackupPath == nil)
+
+                        if let msg = backupCheckMessage {
+                            Text(msg)
+                                .font(.caption)
+                                .foregroundStyle(msg.hasPrefix("Backup OK") || msg.hasPrefix("Restore complete")
+                                                 ? Color.green : Color.orange)
+                        }
+
                         Button("Clear NAS Settings", role: .destructive) {
                             showClearNASConfirm = true
                         }
@@ -288,6 +317,18 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
+            .alert("Restore missing records?", isPresented: $showRestoreConfirm) {
+                Button("Restore") {
+                    isCheckingBackup = true
+                    Task {
+                        backupCheckMessage = await nasBackup.restoreMissingRecords(context: context, using: peerSync)
+                        isCheckingBackup = false
+                    }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Adds patients, notes, prescriptions, vitals and billing from the latest NAS backup that are missing on this device. Nothing already on the device is replaced by older backup data.")
+            }
             .sheet(isPresented: $showLogin) { LoginView() }
             .sheet(isPresented: $showAIDisclosure) {
                 AIConsentSheet(

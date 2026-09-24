@@ -240,6 +240,18 @@ final class NASBackupService: ObservableObject {
             )
             try await upload("manifest.json", try encoder.encode(manifest))
 
+            // Complete chart records (peer-sync formats) for real restores, then read them back
+            // to prove the backup is usable — a backup that can't be read is not a backup.
+            let full = try await uploadFullRecords(context: context, dirPath: dirPath, upload: upload)
+            let readBack = try await downloadFullBundle(dirPath: dirPath)
+            guard readBack.patients.count == full.patients.count,
+                  readBack.notes.count == full.notes.count else {
+                throw NASBackupError.httpError(0, "Backup verification failed: read-back counts differ")
+            }
+            UserDefaults.standard.set(Date.now, forKey: Self.lastVerifiedKey)
+            AuditLog.record("export", "document", details: ["kind": "nas_backup",
+                                                            "patients": "\(full.patients.count)"])
+
             let total = patients.count + notes.count + prescriptions.count + vitals.count
             lastBackupAt    = .now
             lastBackupCount = total
