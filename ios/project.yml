@@ -80,10 +80,13 @@ targets:
       path: AmiseMedFlow/AmiseMedFlow.entitlements
       properties: {}
 
+    # Target-level key: XcodeGen ignores configFiles nested under settings, which is why
+    # Configuration.xcconfig (SENTRY_DSN, SUPABASE_*) was never applied before.
+    configFiles:
+      Debug: Configuration.xcconfig
+      Release: Configuration.xcconfig
+
     settings:
-      configFiles:
-        Debug: Configuration.xcconfig
-        Release: Configuration.xcconfig
       base:
         PRODUCT_NAME: AmiseMedFlow
         PRODUCT_BUNDLE_IDENTIFIER: com.amise.medflow
