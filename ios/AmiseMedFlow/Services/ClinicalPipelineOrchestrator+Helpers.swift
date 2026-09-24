@@ -84,6 +84,12 @@ extension ClinicalPipelineOrchestrator {
             return autoActions.filter {
                 [AutoFunction.alert, .calculate, .order, .compare].contains($0.function)
             }
+
+        case .bronchoscopy:
+            // Bronchoscopy: document and calculate only; no operative planning or scheduling
+            return autoActions.filter {
+                [AutoFunction.document, .calculate].contains($0.function)
+            }
         }
     }
 }

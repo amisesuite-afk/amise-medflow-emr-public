@@ -9,7 +9,7 @@ extension ClinicalScoresView {
 
     // MARK: - LACE Index
 
-    private var laceForm: some View {
+    var laceForm: some View {
         Group {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Length of stay (days)").font(.subheadline)
@@ -42,7 +42,7 @@ extension ClinicalScoresView {
 
     // MARK: - FINDRISC
 
-    private var findRiscForm: some View {
+    var findRiscForm: some View {
         Group {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Age group").font(.subheadline)
@@ -134,7 +134,7 @@ extension ClinicalScoresView {
 
     // MARK: - CKD-EPI eGFR
 
-    private var ckdEpiForm: some View {
+    var ckdEpiForm: some View {
         Group {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Serum creatinine (mg/dL)").font(.subheadline)
@@ -166,7 +166,7 @@ extension ClinicalScoresView {
 
     // MARK: - CAGE
 
-    private var cageForm: some View {
+    var cageForm: some View {
         Group {
             Text("CAGE questionnaire: 2 or more positive responses = probable alcohol use disorder (sensitivity ~74%, specificity ~91% for AUD in primary care).")
                 .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)

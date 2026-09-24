@@ -1,3 +1,6 @@
+import SwiftUI
+import SwiftData
+
 // MARK: - View
 
 struct TraumaAssessmentView: View {
