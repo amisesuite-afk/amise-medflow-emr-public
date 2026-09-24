@@ -321,7 +321,7 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .phq9:           return "brain.head.profile"
         case .sapsII:         return "waveform.path.ecg.rectangle"
         case .stone:          return "diamond"
-        case .losAngeles:     return "esophagus"
+        case .losAngeles:     return "flame"
         case .meld3:          return "liver"
         case .braden:         return "bed.double"
         case .centor:         return "microbe"
