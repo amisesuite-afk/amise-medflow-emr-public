@@ -5,7 +5,7 @@ import SwiftUI
 import SwiftData
 
 
-extension ConsentFormData {
+extension ConsentFormView {
 
     // MARK: - Pre-operative investigations (read-only)
 

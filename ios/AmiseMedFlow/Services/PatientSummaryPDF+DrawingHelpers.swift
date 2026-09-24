@@ -5,7 +5,7 @@ import UIKit
 import SwiftUI
 
 
-extension None {
+extension PatientSummaryPDF {
 
     // MARK: - Drawing helpers
 

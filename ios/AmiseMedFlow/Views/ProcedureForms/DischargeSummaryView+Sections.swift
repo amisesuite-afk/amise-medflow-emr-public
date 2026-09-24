@@ -5,7 +5,7 @@ import SwiftUI
 import SwiftData
 
 
-extension DischargeSummaryData {
+extension DischargeSummaryView {
 
     // MARK: Sections
 

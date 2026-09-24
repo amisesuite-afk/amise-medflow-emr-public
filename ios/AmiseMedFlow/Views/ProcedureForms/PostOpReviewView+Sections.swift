@@ -5,7 +5,7 @@ import SwiftUI
 import SwiftData
 
 
-extension PostOpReviewData {
+extension PostOpReviewView {
 
     // MARK: Sections
 

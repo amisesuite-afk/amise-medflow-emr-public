@@ -5,7 +5,7 @@ import SwiftUI
 import SwiftData
 
 
-extension PreOpChecklistData {
+extension PreOpChecklistView {
 
     // MARK: - Sections
 
