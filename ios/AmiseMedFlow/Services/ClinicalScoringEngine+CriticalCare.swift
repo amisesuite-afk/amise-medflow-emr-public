@@ -74,27 +74,48 @@ extension ClinicalScoringEngine {
             .init(label: "SBP ≤100 mmHg", points: 1, present: i.sbpUnder100),
         ]
         let score = Double(items.filter(\.present).count)
-        let highRisk = score >= 2 && i.suspectedInfection
+        let positive = score >= 2
+        let highRisk = positive && i.suspectedInfection
 
+        // qSOFA ≥2 is a positive screen for poor outcome whether or not "suspected infection" has
+        // been ticked (the tick is often simply not done yet). Without the tick it is never
+        // reported as low: it is .high with a prompt to assess for sepsis / deterioration.
+        let risk: ScoreRisk
+        let interpretation: String
+        let recommendations: [String]
         var redFlags: [String] = []
-        if highRisk { redFlags = ["qSOFA ≥2 + infection — high risk of organ dysfunction (Sepsis-3)"] }
+        if highRisk {
+            risk = score == 3 ? .critical : .high
+            interpretation = "qSOFA \(Int(score))/3 with suspected infection — HIGH risk of organ dysfunction (probable sepsis)"
+            redFlags = ["qSOFA ≥2 + infection — high risk of organ dysfunction (Sepsis-3)"]
+            recommendations = ["Urgent clinical review", "Blood cultures + IV antibiotics within 1 h",
+                               "Serum lactate, FBC, CRP, U&E", "ICU / HDU referral",
+                               "1-hour sepsis bundle: cultures → antibiotics → fluids → lactate"]
+        } else if positive {
+            risk = .high
+            interpretation = "qSOFA \(Int(score))/3 — qSOFA ≥2 — assess for sepsis / deterioration"
+            redFlags = ["qSOFA ≥2 — assess for sepsis / deterioration"]
+            recommendations = ["Urgent clinical review",
+                               "Look for a source of infection (chest, urine, abdomen, wound, lines)",
+                               "If infection is suspected: blood cultures and IV antibiotics within 1 h (sepsis bundle)",
+                               "Serum lactate, FBC, CRP, U&E",
+                               "Consider other causes of deterioration and escalate per NEWS2"]
+        } else {
+            risk = score == 1 ? .moderate : .low
+            interpretation = "qSOFA \(Int(score))/3 — Lower risk, but reassess if clinical status changes"
+            recommendations = ["Monitor closely", "Reassess in 1–2 h if clinical concern remains"]
+        }
 
         return ClinicalScore(
             systemName: "qSOFA Score",
             abbreviation: "qSOFA",
             score: score, maxScore: 3,
-            risk: (score == 3 && i.suspectedInfection) ? .critical : (highRisk ? .high : (score == 1 ? .moderate : .low)),
-            interpretation: score >= 2
-                ? "qSOFA \(Int(score))/3 — HIGH risk of organ dysfunction if infection present"
-                : "qSOFA \(Int(score))/3 — Lower risk, but reassess if clinical status changes",
-            recommendations: score >= 2
-                ? ["Urgent clinical review", "Blood cultures + IV antibiotics within 1 h",
-                   "Serum lactate, FBC, CRP, U&E", "ICU / HDU referral",
-                   "1-hour sepsis bundle: cultures → antibiotics → fluids → lactate"]
-                : ["Monitor closely", "Reassess in 1–2 h if clinical concern remains"],
+            risk: risk,
+            interpretation: interpretation,
+            recommendations: recommendations,
             items: items,
             redFlags: redFlags,
-            evidenceNote: "Singer 2016 (Sepsis-3). ≥2 qSOFA points with infection = probable sepsis."
+            evidenceNote: "Singer 2016 (Sepsis-3). ≥2 qSOFA points identifies patients at risk of poor outcome; with infection = probable sepsis."
         )
     }
 

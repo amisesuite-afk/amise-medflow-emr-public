@@ -66,6 +66,28 @@ final class ScoringEngineReferenceTests: XCTestCase {
         XCTAssertEqual(ClinicalScoringEngine.qsofa(i).items.count, 3)
     }
 
+    /// qSOFA ≥2 without the "suspected infection" tick must never read as low risk.
+    func testQSOFATwoOrMoreWithoutInfectionTickPromptsSepsisAssessment() {
+        var i = QSOFAInput()
+        i.rrOver22 = true
+        i.sbpUnder100 = true
+        let r2 = ClinicalScoringEngine.qsofa(i)
+        XCTAssertEqual(r2.score, 2)
+        XCTAssertGreaterThanOrEqual(r2.risk, .moderate)
+        XCTAssertEqual(r2.risk, .high)
+        XCTAssertTrue(r2.interpretation.contains("qSOFA ≥2 — assess for sepsis / deterioration"))
+        XCTAssertFalse(r2.redFlags.isEmpty)
+
+        i.alteredMentation = true
+        let r3 = ClinicalScoringEngine.qsofa(i)
+        XCTAssertEqual(r3.score, 3)
+        XCTAssertEqual(r3.risk, .high)
+        XCTAssertTrue(r3.interpretation.contains("assess for sepsis / deterioration"))
+
+        i.suspectedInfection = true
+        XCTAssertEqual(ClinicalScoringEngine.qsofa(i).risk, .critical, "3 + infection stays critical")
+    }
+
     // MARK: - Wells DVT (≤0 low, 1–2 moderate, ≥3 high)
 
     func testWellsDVTBandBoundaries() {
