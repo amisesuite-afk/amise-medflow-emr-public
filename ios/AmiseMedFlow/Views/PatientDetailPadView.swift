@@ -52,11 +52,17 @@ struct PatientDetailPadView: View {
             Divider()
 
             // ── BOTTOM: full-width section nav + clinical content ─────────
+            // NavigationStack provides a navigation context so that toolbar
+            // items with .navigationBarTrailing/.navigationBarLeading placement
+            // work correctly in each section view. Without this, those placements
+            // crash on iOS 17+ when there is no NavigationStack ancestor.
             VStack(spacing: 0) {
                 sectionNav
-                sectionContent
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(AMColor.bg)
+                NavigationStack {
+                    sectionContent
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(AMColor.bg)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }

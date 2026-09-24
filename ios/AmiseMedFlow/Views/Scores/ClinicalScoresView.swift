@@ -262,6 +262,8 @@ struct ClinicalScoresView: View {
                 patientContextView
             }
         }
+        .navigationTitle("Clinical Scores")
+        .navigationBarTitleDisplayMode(.inline)
         .onAppear { refreshRecommendations() }
         .onChange(of: patient.workingDiagnosis)    { _, _ in refreshRecommendations() }
         .onChange(of: patient.workingDiagnosisICD) { _, _ in refreshRecommendations() }
