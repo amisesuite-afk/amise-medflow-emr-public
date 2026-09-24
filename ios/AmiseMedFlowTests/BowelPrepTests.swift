@@ -311,7 +311,9 @@ final class BowelPrepTests: XCTestCase {
             let text = sheet.plainText.lowercased()
             for banned in ["stop taking", "do not take", "don't take", "hold your", "withhold", "omit", "skip your",
                            "nil by mouth", "midnight"] {
-                XCTAssertFalse(text.contains(banned), "\(r.id.rawValue): \"\(banned)\"")
+                // Whole words only: "omit" must not match the advice about vomiting.
+                XCTAssertNil(text.range(of: "\\b\(banned)\\b", options: .regularExpression),
+                             "\(r.id.rawValue): \"\(banned)\"")
             }
             XCTAssertTrue(sheet.isDraft)
             XCTAssertTrue(sheet.plainText.hasPrefix("DRAFT"))
