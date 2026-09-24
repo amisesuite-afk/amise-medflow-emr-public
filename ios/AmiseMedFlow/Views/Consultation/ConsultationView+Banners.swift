@@ -170,7 +170,7 @@ extension ConsultationView {
     // MARK: - Completeness bar
 
     var completenessBar: some View {
-        let (filled, total) = patient.consultationCompleteness
+        let (filled, total, _) = pathwayProgress
         return HStack(spacing: 10) {
             ProgressView(value: Double(filled), total: Double(total))
                 .tint(filled == total ? .green : AMColor.accent)

@@ -301,7 +301,7 @@ struct ConsultationView: View {
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 if patient.encounterStatus != .complete {
-                    let completeness = patient.consultationCompleteness
+                    let completeness = pathwayProgress
                     Button {
                         showCompleteEncounterConfirm = true
                     } label: {
@@ -311,7 +311,8 @@ struct ConsultationView: View {
                             Text("Complete")
                                 .font(.system(size: 13, weight: .semibold))
                         }
-                        .foregroundStyle(completeness.filled >= 6 ? Color.green : Color(.tertiaryLabel))
+                        .foregroundStyle(completeness.total > 0 && Double(completeness.filled) / Double(completeness.total) >= 0.75
+                                         ? Color.green : Color(.tertiaryLabel))
                     }
                 } else {
                     Label("Encounter complete", systemImage: "checkmark.seal.fill")
@@ -372,7 +373,7 @@ struct ConsultationView: View {
 
     // P5: Complete encounter dialog helpers
     private var completeEncounterDialogTitle: String {
-        let c = patient.consultationCompleteness
+        let c = pathwayProgress
         if c.filled < c.total {
             return "Complete encounter (\(c.filled)/\(c.total) items filled)?"
         }
@@ -380,27 +381,10 @@ struct ConsultationView: View {
     }
 
     private var completeEncounterDialogMessage: String {
-        let c = patient.consultationCompleteness
+        let c = pathwayProgress
         if c.filled < c.total {
-            let missing = incompleteConsultationItems()
-            return "Missing: \(missing.joined(separator: ", ")). You can still complete the encounter — record will remain editable."
+            return "\(pathway.title) — not yet documented: \(c.missing.joined(separator: ", ")). You can still complete the encounter — record will remain editable."
         }
         return "The encounter will be marked complete. The record remains editable."
-    }
-
-    private func incompleteConsultationItems() -> [String] {
-        var missing: [String] = []
-        if (patient.chiefComplaint ?? "").isEmpty { missing.append("chief complaint") }
-        if (patient.hpi ?? "").isEmpty            { missing.append("HPI") }
-        let hasPMH = !(patient.pmhNotes ?? "").isEmpty || !(patient.surgicalHistory ?? "").isEmpty
-            || !patient.pmhEntries.isEmpty || !patient.pshxEntries.isEmpty
-        if !hasPMH                                { missing.append("PMH") }
-        if patient.allergies.isEmpty              { missing.append("allergies") }
-        if patient.prescriptions.isEmpty          { missing.append("medications") }
-        let hasExam = !(patient.examGeneral ?? "").isEmpty || !(patient.examAbdo ?? "").isEmpty
-        if !hasExam                               { missing.append("examination") }
-        if patient.workingDiagnosis == nil        { missing.append("working diagnosis") }
-        if (patient.managementPlan ?? "").isEmpty { missing.append("management plan") }
-        return missing
     }
 }

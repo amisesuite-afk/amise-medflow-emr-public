@@ -138,6 +138,14 @@ extension ConsultationView {
         }
     }
 
+    /// Completion of the chosen pathway's documentation steps (Risk and Last-visit are
+    /// informational and not counted).
+    var pathwayProgress: (filled: Int, total: Int, missing: [String]) {
+        let counted = pathwaySteps.filter { $0 != .risk && $0 != .history }
+        let missing = counted.filter { !tabFilled($0) }.map { pathway.label(for: $0) }
+        return (counted.count - missing.count, counted.count, missing)
+    }
+
     func tabFilled(_ tab: ConsultTab) -> Bool {
         switch tab {
         case .cc:        return !(patient.chiefComplaint ?? "").isEmpty
