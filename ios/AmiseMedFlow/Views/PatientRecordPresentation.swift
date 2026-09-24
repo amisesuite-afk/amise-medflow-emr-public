@@ -61,7 +61,18 @@ private struct ConsultationPresentation: ViewModifier {
             }
         } else {
             content.sheet(item: $item, onDismiss: onDismiss) { patient in
-                ConsultationView(patient: patient)
+                // In a NavigationStack so ConsultationView's toolbar (Save Visit / Complete) shows.
+                NavigationStack {
+                    if patient.isLive {
+                        ConsultationView(patient: patient)
+                    } else {
+                        ContentUnavailableView(
+                            "Record No Longer Available",
+                            systemImage: "person.crop.circle.badge.xmark",
+                            description: Text("This patient record was removed or merged on this device.")
+                        )
+                    }
+                }
             }
         }
     }
