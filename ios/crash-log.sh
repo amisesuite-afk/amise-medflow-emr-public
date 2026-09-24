@@ -2,11 +2,13 @@
 # Print the most recent AmiseMedFlow crash report synced from a connected iPad/iPhone.
 # Usage:  ~/amise-medflow-emr-public/ios/crash-log.sh
 
-f=$(ls -t ~/Library/Logs/CrashReporter/MobileDevice/*/AmiseMedFlow*.ips \
-          ~/Library/Logs/DiagnosticReports/AmiseMedFlow*.ips 2>/dev/null | head -1)
+f=${1:-$(ls -t ~/Downloads/AmiseMedFlow*.ips ~/Desktop/AmiseMedFlow*.ips \
+          ~/Library/Logs/CrashReporter/MobileDevice/*/AmiseMedFlow*.ips \
+          ~/Library/Logs/DiagnosticReports/AmiseMedFlow*.ips 2>/dev/null | head -1)}
 if [ -z "$f" ]; then
   echo "No AmiseMedFlow crash report found on this Mac."
-  echo "Connect the iPad, open Xcode > Window > Devices and Simulators, then run this again."
+  echo "On the phone: Settings > Privacy & Security > Analytics & Improvements > Analytics Data,"
+  echo "tap an AmiseMedFlow-... entry, Share > AirDrop to this Mac, then run this again."
   exit 1
 fi
 echo "FILE: $f"
