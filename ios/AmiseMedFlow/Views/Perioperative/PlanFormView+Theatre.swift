@@ -6,7 +6,7 @@ import SwiftUI
 import SwiftData
 import EventKit
 
-extension PlanFormView {
+extension PlanForm {
 
     // MARK: - Theatre / procedure booking
 
