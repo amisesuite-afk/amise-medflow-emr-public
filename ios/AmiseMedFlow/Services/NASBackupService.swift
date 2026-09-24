@@ -123,8 +123,8 @@ final class NASBackupService: ObservableObject {
         }
     }
     @Published private(set) var lastBackupCount: Int     = 0
-    @Published private(set) var backupError: String?     = nil
-    @Published private(set) var connectionStatus: NASConnectionStatus = .unconfigured
+    @Published var backupError: String?     = nil
+    @Published var connectionStatus: NASConnectionStatus = .unconfigured
     @Published private(set) var recentEvents: [NASBackupEvent] = []
 
     var isConfigured: Bool {
@@ -144,7 +144,7 @@ final class NASBackupService: ObservableObject {
 
     // MARK: - URLSession
 
-    private lazy var session: URLSession = {
+    lazy var session: URLSession = {
         let cfg = URLSessionConfiguration.default
         cfg.requestCachePolicy    = .reloadIgnoringLocalCacheData
         cfg.timeoutIntervalForRequest  = 30
