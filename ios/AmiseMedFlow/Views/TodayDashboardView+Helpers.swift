@@ -19,6 +19,11 @@ extension TodayDashboardView {
     @discardableResult
     func createAndInsertPatient(from event: EKEvent) -> Patient {
         let parsed = CalendarEventParser.parse(title: event.title ?? "", calLabel: event.calEntryLabel)
+        // One patient per name: reuse the existing record instead of creating another.
+        let all = (try? context.fetch(FetchDescriptor<Patient>())) ?? []
+        if let existing = all.registeredMatches(name: parsed.name, dateOfBirth: nil).first {
+            return existing
+        }
         let p = Patient(fullName: parsed.name, setting: parsed.setting)
         p.mrn = MRNGenerator.next(in: context)
         p.operationDate = event.startDate

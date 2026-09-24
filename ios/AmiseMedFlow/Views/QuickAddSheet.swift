@@ -92,11 +92,13 @@ struct QuickAddSheet: View {
                         .disabled(!nameValid)
                 }
             }
-            .alert("Duplicate name", isPresented: $showDuplicate) {
-                Button("Add anyway", role: .destructive) { commitSave() }
+            .alert("Already registered", isPresented: $showDuplicate) {
+                if let existing = duplicateMatches.first {
+                    Button("Use existing record") { moveToSection(existing) }
+                }
                 Button("Cancel", role: .cancel) { }
             } message: {
-                Text("\"\(pendingName)\" already exists (\(duplicateMRNs)). Only add a separate record if this is a different person.")
+                Text("\"\(pendingName)\" is already registered (\(duplicateMRNs)). If this is a different person with the same name, enter their date of birth.")
             }
         }
     }
@@ -468,17 +470,18 @@ struct QuickAddSheet: View {
 
     // MARK: - Save new patient
 
+    private var duplicateMatches: [Patient] {
+        allPatients.registeredMatches(name: pendingName, dateOfBirth: hasDOB ? dob : nil)
+    }
+
     private var duplicateMRNs: String {
-        let name = Patient.normalize(pendingName)
-        return allPatients.filter { $0.normalizedName == name }
-            .map { $0.mrn ?? "no MRN" }.joined(separator: ", ")
+        duplicateMatches.map { $0.mrn ?? "no MRN" }.joined(separator: ", ")
     }
 
     private func attemptSave() {
         let trimmed = fullName.trimmingCharacters(in: .whitespaces)
         pendingName = trimmed
-        let dup = allPatients.first { $0.normalizedName == Patient.normalize(trimmed) }
-        if dup != nil {
+        if !duplicateMatches.isEmpty {
             showDuplicate = true
         } else {
             commitSave()

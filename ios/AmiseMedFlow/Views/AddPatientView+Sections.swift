@@ -109,14 +109,14 @@ extension AddPatientView {
     }
 
     var duplicateMatches: [Patient] {
-        let name = Patient.normalize(fullName)
-        return existingPatients.filter { $0.normalizedName == name }
+        existingPatients.registeredMatches(name: fullName, dateOfBirth: hasDOB ? dateOfBirth : nil)
     }
 
     var duplicateMessage: String {
         let ids = duplicateMatches.map { $0.mrn ?? "no MRN" }.joined(separator: ", ")
-        return "\"\(fullName.trimmingCharacters(in: .whitespaces))\" already exists (\(ids)). "
-            + "Only add a separate record if this is a different person."
+        return "\"\(fullName.trimmingCharacters(in: .whitespaces))\" is already registered (\(ids)). "
+            + "Open that record from the Patients list. If this is a different person with the same "
+            + "name, enter their date of birth."
     }
 
     func save() {

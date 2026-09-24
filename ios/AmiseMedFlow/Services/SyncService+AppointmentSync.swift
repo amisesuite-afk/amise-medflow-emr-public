@@ -45,11 +45,9 @@ extension SyncService {
         for appt in rows {
             guard let name = appt.patient_name, !name.isEmpty else { continue }
             guard !PatientIdentityStore.isDeleted("appt:\(appt.id)") else { continue }
-            // Avoid duplicates: match by appointment_id stored in remoteId, or by name+phone
-            let existing = allLocal.first { p in
-                p.remoteId == "appt:\(appt.id)" ||
-                (p.fullName.lowercased() == name.lowercased() && p.phone == appt.patient_phone)
-            }
+            // One patient per name: match by appointment_id stored in remoteId, or by name.
+            let existing = allLocal.first { $0.remoteId == "appt:\(appt.id)" }
+                ?? allLocal.registeredMatches(name: name, dateOfBirth: nil).first
             guard existing == nil else { continue }
 
             let p = Patient(fullName: name)

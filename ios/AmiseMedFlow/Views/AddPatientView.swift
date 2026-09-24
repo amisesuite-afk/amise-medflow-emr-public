@@ -85,9 +85,8 @@ struct AddPatientView: View {
                     Button("Add") { save() }.disabled(!nameValid)
                 }
             }
-            .alert("Duplicate Name", isPresented: $showDuplicateAlert) {
-                Button("Add Anyway", role: .destructive) { commitSave() }
-                Button("Cancel", role: .cancel) { }
+            .alert("Already registered", isPresented: $showDuplicateAlert) {
+                Button("OK", role: .cancel) { }
             } message: {
                 Text(duplicateMessage)
             }

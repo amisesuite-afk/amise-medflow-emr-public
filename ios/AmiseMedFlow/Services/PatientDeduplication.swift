@@ -36,6 +36,19 @@ extension Array where Element == Patient {
         return hidden.isEmpty ? unique : unique.filter { !hidden.contains($0.id) }
     }
 
+    /// Existing records that a new registration with this name/DOB would duplicate:
+    /// same name, and DOBs that don't contradict (equal, or missing on either side).
+    /// One patient per name: a second record is only allowed for a different DOB.
+    func registeredMatches(name: String, dateOfBirth: Date?) -> [Patient] {
+        let key = Patient.normalize(name)
+        guard !key.isEmpty else { return [] }
+        return filter { p in
+            guard !p.isDeleted, p.normalizedName == key else { return false }
+            guard let a = dateOfBirth, let b = p.dateOfBirth else { return true }
+            return Calendar.current.isDate(a, inSameDayAs: b)
+        }
+    }
+
     /// The record kept from a duplicate group: the first with clinical data, else the oldest.
     var duplicateKeeper: Patient {
         first(where: \.hasClinicalData) ?? self[0]
