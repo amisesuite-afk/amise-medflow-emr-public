@@ -270,10 +270,16 @@ struct SettingsView: View {
                     } label: {
                         Label("Practice Profile", systemImage: "building.2")
                     }
+                    NavigationLink {
+                        BowelPrepSignOffView(canApprove: sync.currentUserRole == .doctor,
+                                             approverName: sync.currentUserEmail ?? practiceStore.profile.clinicianName)
+                    } label: {
+                        Label("Bowel Prep Protocols", systemImage: "checkmark.seal")
+                    }
                 } header: {
                     Text("Practice")
                 } footer: {
-                    Text("Practice, clinician and contact details printed on documents, letters, PDFs, SMS and email.")
+                    Text("Practice, clinician and contact details printed on documents, letters, PDFs, SMS and email. Bowel prep protocol wording is signed off by the surgeon here.")
                 }
 
                 // MARK: AI & Privacy

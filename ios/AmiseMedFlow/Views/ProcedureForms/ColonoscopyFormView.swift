@@ -45,6 +45,13 @@ struct ColonoscopyFormView: View {
 
     var body: some View {
         Form {
+            Section {
+                NavigationLink { BowelPrepView(patient: patient) } label: {
+                    Label("Bowel preparation — prep and timetable", systemImage: "drop.triangle")
+                }
+            } footer: {
+                Text("Before the procedure: choose the prep, see the split-dose timetable and share the patient sheet.")
+            }
             preProcedureLabsSection
             preProcedureSection
             bowelPrepSection

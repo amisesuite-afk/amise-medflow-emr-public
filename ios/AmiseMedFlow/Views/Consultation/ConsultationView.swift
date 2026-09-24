@@ -52,6 +52,7 @@ struct ConsultationView: View {
     @State var criticalLabAlert: String? = nil   // non-nil triggers alert
     @State var bayesianDx: [BayesianDiagnosisEngine.DiagnosisResult] = []
     @State var dismissedRadiation = false
+    @State var showBowelPrep = false
     @State var clinicalAlarms: [ClinicalTextParser.ClinicalAlarm] = []
     @State var dismissedAlarmIds: Set<UUID> = []
     @State var surgicalRiskAlerts: [SurgicalRiskAlert] = []

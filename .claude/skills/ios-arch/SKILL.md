@@ -201,6 +201,18 @@ other tabs under "More"):
 - Unit tests: `AmiseMedFlowTests/ConsultPathwayTests.swift` (pathway, risk, burns, screening);
   CI runs them in the "Unit tests (simulator)" job of `ios-build-check.yml`.
 
+## Bowel preparation (colonoscopy / flexible sigmoidoscopy)
+
+- Pure logic: `Services/BowelPrepProtocols.swift` — six regimens (magnesium-based default,
+  magnesium citrate, 2 L / 1 L PEG + ascorbate, 4 L PEG split, enema only), split-dose timing
+  engine (`BowelPrepScheduler`, explicit time zone), safety suggestions (`BowelPrepSafety`,
+  never blocking), per-regimen surgeon sign-off (`BowelPrepSignOff`, UserDefaults, lapses when
+  the wording fingerprint changes; refused while patient wording holds `[confirm]`).
+- Surgeon's rule: clear fluids until 2 h before; never nil by mouth from midnight.
+- UI: `Views/ProcedureForms/BowelPrepView.swift` (reached from ClinicalHubView procedure forms,
+  the top of ColonoscopyFormView, and the consultation Plan tab); sign-off in Settings →
+  Bowel Prep Protocols. Plan stored in `PathwayData.bowelPrep`. Tests: `BowelPrepTests.swift`.
+
 ## SwiftData deleted-model crashes
 
 Reading any attribute of a deleted model after save (before `@Query` refreshes) crashes

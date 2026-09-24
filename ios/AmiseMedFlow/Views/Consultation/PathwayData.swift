@@ -1,6 +1,6 @@
 // PathwayData.swift
-// Stored data for the consultation-pathway forms: burns assessment, wellness screening and the
-// ward-review checklist. Persisted as JSON in Patient.pathwayDataJson.
+// Stored data for the consultation-pathway forms: burns assessment, wellness screening, the
+// ward-review checklist and the bowel-prep plan. Persisted as JSON in Patient.pathwayDataJson.
 //
 // Every type decodes missing keys to defaults, so fields can be added later without old
 // records failing to decode (a failed decode would silently blank the form).
@@ -13,6 +13,8 @@ struct PathwayData: Codable {
     var burns = BurnsAssessment()
     var wellness = WellnessScreening()
     var ward = WardReview()
+    /// Bowel-prep plan for colonoscopy / flexible sigmoidoscopy (BowelPrepProtocols.swift).
+    var bowelPrep = BowelPrepPlan()
 
     init() {}
 
@@ -21,6 +23,7 @@ struct PathwayData: Codable {
         burns    = (try? c.decodeIfPresent(BurnsAssessment.self, forKey: .burns)) ?? BurnsAssessment()
         wellness = (try? c.decodeIfPresent(WellnessScreening.self, forKey: .wellness)) ?? WellnessScreening()
         ward     = (try? c.decodeIfPresent(WardReview.self, forKey: .ward)) ?? WardReview()
+        bowelPrep = (try? c.decodeIfPresent(BowelPrepPlan.self, forKey: .bowelPrep)) ?? BowelPrepPlan()
     }
 }
 

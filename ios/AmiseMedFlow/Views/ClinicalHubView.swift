@@ -166,8 +166,9 @@ struct ClinicalHubView: View {
                 let showReferral     = vt == .newConsult || vt == .followUp || vt == .urgentReview || vt == .postOp
                 let showConsent      = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
                 let showPreOpChecklist = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
+                let showBowelPrep    = showColonoscopy || BowelPrepProcedure.detect(for: patient) != nil
 
-                if showTrauma || showOGD || showColonoscopy || showSurgery || showERCP || showBronchoscopy || showPostOp || showDischarge || showReferral || showConsent || showPreOpChecklist {
+                if showTrauma || showOGD || showColonoscopy || showSurgery || showERCP || showBronchoscopy || showPostOp || showDischarge || showReferral || showConsent || showPreOpChecklist || showBowelPrep {
                     Section("Procedure Forms") {
                         if showTrauma {
                             NavigationLink { TraumaAssessmentView(patient: patient) } label: {
@@ -193,6 +194,11 @@ struct ClinicalHubView: View {
                         if showOGD {
                             NavigationLink { OGDFormView(patient: patient) } label: {
                                 Label("OGD / Gastroscopy Report", systemImage: "scope")
+                            }
+                        }
+                        if showBowelPrep {
+                            NavigationLink { BowelPrepView(patient: patient) } label: {
+                                Label("Bowel Preparation", systemImage: "drop.triangle")
                             }
                         }
                         if showColonoscopy {

@@ -64,6 +64,19 @@ extension ConsultationView {
                               filled: !(patient.managementPlan ?? "").isEmpty)
             }
 
+            // Bowel preparation for colonoscopy / flexible sigmoidoscopy (clinician chooses the prep)
+            if BowelPrepProcedure.detect(for: patient) != nil {
+                Section {
+                    Button {
+                        showBowelPrep = true
+                    } label: {
+                        Label(bowelPrepButtonTitle, systemImage: "drop.triangle")
+                    }
+                } header: {
+                    Text("Bowel preparation")
+                }
+            }
+
             Section {
                 Button {
                     Task { await draftPlan() }
@@ -97,6 +110,24 @@ extension ConsultationView {
                 .foregroundStyle(.blue)
             }
         }
+        .sheet(isPresented: $showBowelPrep) {
+            NavigationStack {
+                BowelPrepView(patient: patient)
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Done") { showBowelPrep = false }
+                        }
+                    }
+            }
+        }
+    }
+
+    /// "Bowel preparation — MoviPrep (2 L PEG + ascorbate)" once chosen, otherwise a prompt.
+    var bowelPrepButtonTitle: String {
+        if let id = patient.pathwayData.bowelPrep.regimen {
+            return "Bowel preparation — \(BowelPrepRegimen.regimen(id).shortName)"
+        }
+        return "Choose bowel preparation and timetable"
     }
 
     // MARK: - Pathway result (shown inline in CC tab)
