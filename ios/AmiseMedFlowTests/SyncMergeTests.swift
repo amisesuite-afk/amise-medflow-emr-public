@@ -162,7 +162,8 @@ final class PeerSyncMergeTests: XCTestCase {
         XCTAssertEqual(local.workingDiagnosis, "Acute cholecystitis")
         XCTAssertEqual(local.workingDiagnosisICD, "K81.0")
         XCTAssertEqual(local.syncedAt, t1)
-        XCTAssertFalse(local.pendingSync)
+        XCTAssertTrue(local.pendingSync,
+                      "unsent local edits are never cleared by a peer (the cloud pull would revert them)")
     }
 
     func testOlderRemoteKeepsLocalAdminAndAssessmentButStillFillsGaps() throws {

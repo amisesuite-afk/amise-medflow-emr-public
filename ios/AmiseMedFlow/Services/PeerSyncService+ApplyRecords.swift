@@ -1,11 +1,34 @@
 // PeerSyncService+ApplyRecords.swift
 // Apply received manifest records and helper methods for peer sync.
+//
+// Pending rule (PeerApplyPending): applying a peer's copy never clears this device's pendingSync
+// (that flag is what protects unsent local edits from the next cloud pull). When the peer's copy
+// holds a change it has not uploaded yet (its pendingSync) and applying it changed this device's
+// record, the record becomes pending here too, so whichever device reaches the cloud first
+// uploads it and the cloud pull cannot overwrite it meanwhile. Only for a record that already
+// has a server row: that upload is an update, and two devices sending the same values is
+// idempotent. A record with no server row yet is left to the device it came from (two inserts
+// would make two rows); it is linked by syncCode here and by remoteId once the origin uploads.
 
 import Foundation
 import MultipeerConnectivity
 import SwiftData
 import UIKit
 
+/// Whether a record is pending after a peer's copy has been applied to it. Pure; tested in
+/// SyncGapsTests.
+enum PeerApplyPending {
+    /// - localPending: this device's record had unsent edits before the apply. Never cleared.
+    /// - contentChanged: the apply changed the record's content here (a new record counts).
+    /// - hasServerRow: the record has a server row id, so uploading it is an idempotent update.
+    /// - peerPending: the peer's copy had a change it has not uploaded (nil: an older build).
+    static func pendingAfterApply(localPending: Bool, contentChanged: Bool, hasServerRow: Bool,
+                                  peerPending: Bool?) -> Bool {
+        if localPending { return true }
+        guard contentChanged, hasServerRow else { return false }
+        return peerPending == true
+    }
+}
 
 extension PeerSyncService {
 
@@ -20,6 +43,10 @@ extension PeerSyncService {
             // Match by syncCode first; fall back to remoteId for records synced before this feature
             let matched: Patient? = existing.first(where: { $0.syncCode == rec.syncCode })
                 ?? existing.first(where: { rid in rec.remoteId != nil && rid.remoteId == rec.remoteId })
+            // Before the merge: unsent local edits, and the content to compare against afterwards.
+            let wasPending = matched?.pendingSync ?? false
+            var contentBefore: Data?
+            if let m = matched { contentBefore = Self.contentFingerprint(m) }
             let patient: Patient
             if let m = matched {
                 patient = m
@@ -34,9 +61,9 @@ extension PeerSyncService {
             // neither side has a cloud sync time yet (both would otherwise be distantPast).
             let remoteIsNewer = matched == nil || peerTime > myTime
 
-            // Identity — always propagate syncCode; fill in remoteId if missing
+            // Identity — always propagate syncCode; link the server row when this copy has none.
             patient.syncCode = rec.syncCode
-            if patient.remoteId == nil, let rid = rec.remoteId { patient.remoteId = rid }
+            linkPeerRemoteId(rec.remoteId, to: patient, others: existing)
 
             // ── Administrative fields: remote wins when it is newer ──────────
             // A blank / missing / unparseable remote value never replaces a non-empty local one
@@ -136,7 +163,18 @@ extension PeerSyncService {
             patient.examOther   = mergeDoc(patient.examOther,   rec.examOther,   remoteIsNewer: remoteIsNewer)
 
             patient.syncedAt    = max(myTime, peerTime)
-            patient.pendingSync = false
+            // Unsent local edits stay pending; a peer's unsent change to a record with a server
+            // row becomes pending here too (PeerApplyPending). A content change bumps updatedAt,
+            // so a cloud push already in flight for this patient does not clear pendingSync over
+            // values it did not send.
+            let contentChanged = matched == nil || contentBefore == nil
+                || contentBefore != Self.contentFingerprint(patient)
+            if contentChanged && matched != nil { patient.updatedAt = .now }
+            patient.pendingSync = PeerApplyPending.pendingAfterApply(
+                localPending: wasPending,
+                contentChanged: contentChanged,
+                hasServerRow: SyncRemoteId.serverId(patient.remoteId) != nil,
+                peerPending: rec.pendingSync)
         }
         try context.save()
     }
@@ -144,8 +182,18 @@ extension PeerSyncService {
     func applyNotes(_ records: [PeerNote], context: ModelContext) throws {
         let existing = (try? context.fetch(FetchDescriptor<ClinicalNote>())) ?? []
         let allPatients = (try? context.fetch(FetchDescriptor<Patient>())) ?? []
+        let tombstoned = SyncTombstones.ids(in: .clinicalNotes)
         for rec in records {
-            guard existing.first(where: { $0.syncCode == rec.syncCode }) == nil else { continue }
+            if let local = existing.first(where: { $0.syncCode == rec.syncCode }) {
+                // Already here: only take the server row id this copy lacks, so its push updates
+                // that row (no second insert) and the cloud pull matches it (no second copy).
+                let linked = Self.linkedChildRemoteId(local: local.remoteId, peer: rec.remoteId,
+                                                      tombstoned: tombstoned)
+                if linked != local.remoteId { local.remoteId = linked }
+                continue
+            }
+            // Deleted on this device: don't let a peer recreate it.
+            if let rid = rec.remoteId, tombstoned.contains(rid) { continue }
             // Match patient by syncCode; fall back to remoteId
             guard let patient = allPatients.first(where: { $0.syncCode == rec.patientSyncCode })
                               ?? allPatients.first(where: { $0.remoteId == rec.patientSyncCode }) else { continue }
@@ -154,9 +202,14 @@ extension PeerSyncService {
             note.syncCode    = rec.syncCode
             note.remoteId    = rec.remoteId
             note.status      = NoteStatus(rawValue: rec.status) ?? .draft
-            note.freeText    = rec.content
+            // SOAP fields for a structured note (as the cloud pull does), so contentForSync gives
+            // back the same content if this device uploads it.
+            note.applySyncContent(rec.content)
             note.syncedAt    = Date(timeIntervalSince1970: rec.syncedAt)
-            note.pendingSync = false
+            note.pendingSync = PeerApplyPending.pendingAfterApply(
+                localPending: false, contentChanged: true,
+                hasServerRow: SyncRemoteId.serverId(rec.remoteId) != nil,
+                peerPending: rec.pendingSync)
             context.insert(note)
         }
         try context.save()
@@ -165,8 +218,15 @@ extension PeerSyncService {
     func applyPrescriptions(_ records: [PeerPrescription], context: ModelContext) throws {
         let existing = (try? context.fetch(FetchDescriptor<Prescription>())) ?? []
         let allPatients = (try? context.fetch(FetchDescriptor<Patient>())) ?? []
+        let tombstoned = SyncTombstones.ids(in: .prescriptions)
         for rec in records {
-            guard existing.first(where: { $0.syncCode == rec.syncCode }) == nil else { continue }
+            if let local = existing.first(where: { $0.syncCode == rec.syncCode }) {
+                let linked = Self.linkedChildRemoteId(local: local.remoteId, peer: rec.remoteId,
+                                                      tombstoned: tombstoned)
+                if linked != local.remoteId { local.remoteId = linked }
+                continue
+            }
+            if let rid = rec.remoteId, tombstoned.contains(rid) { continue }   // deleted here
             guard let patient = allPatients.first(where: { $0.syncCode == rec.patientSyncCode })
                              ?? allPatients.first(where: { $0.remoteId == rec.patientSyncCode }) else { continue }
             let rx = Prescription(drug: rec.drug,
@@ -181,7 +241,10 @@ extension PeerSyncService {
             rx.patient      = patient
             rx.remoteId     = rec.remoteId
             rx.syncedAt     = Date(timeIntervalSince1970: rec.syncedAt)
-            rx.pendingSync  = false
+            rx.pendingSync  = PeerApplyPending.pendingAfterApply(
+                localPending: false, contentChanged: true,
+                hasServerRow: SyncRemoteId.serverId(rec.remoteId) != nil,
+                peerPending: rec.pendingSync)
             context.insert(rx)
         }
         try context.save()
@@ -190,8 +253,15 @@ extension PeerSyncService {
     func applyVitals(_ records: [PeerVitals], context: ModelContext) throws {
         let existing = (try? context.fetch(FetchDescriptor<VitalsEntry>())) ?? []
         let allPatients = (try? context.fetch(FetchDescriptor<Patient>())) ?? []
+        let tombstoned = SyncTombstones.ids(in: .vitals)
         for rec in records {
-            guard existing.first(where: { $0.syncCode == rec.syncCode }) == nil else { continue }
+            if let local = existing.first(where: { $0.syncCode == rec.syncCode }) {
+                let linked = Self.linkedChildRemoteId(local: local.remoteId, peer: rec.remoteId,
+                                                      tombstoned: tombstoned)
+                if linked != local.remoteId { local.remoteId = linked }
+                continue
+            }
+            if let rid = rec.remoteId, tombstoned.contains(rid) { continue }   // deleted here
             guard let patient = allPatients.first(where: { $0.syncCode == rec.patientSyncCode })
                              ?? allPatients.first(where: { $0.remoteId == rec.patientSyncCode }) else { continue }
             let v = VitalsEntry(patient: patient,
@@ -210,7 +280,10 @@ extension PeerSyncService {
             v.notes              = rec.notes
             v.remoteId           = rec.remoteId
             v.syncedAt           = Date(timeIntervalSince1970: rec.syncedAt)
-            v.pendingSync        = false
+            v.pendingSync        = PeerApplyPending.pendingAfterApply(
+                localPending: false, contentChanged: true,
+                hasServerRow: SyncRemoteId.serverId(rec.remoteId) != nil,
+                peerPending: rec.pendingSync)
             context.insert(v)
         }
         try context.save()
@@ -219,8 +292,15 @@ extension PeerSyncService {
     func applyBillingItems(_ records: [PeerBillingItem], context: ModelContext) throws {
         let existing = (try? context.fetch(FetchDescriptor<BillingLineItem>())) ?? []
         let allPatients = (try? context.fetch(FetchDescriptor<Patient>())) ?? []
+        let tombstoned = SyncTombstones.ids(in: .billingItems)
         for rec in records {
-            guard existing.first(where: { $0.syncCode == rec.syncCode }) == nil else { continue }
+            if let local = existing.first(where: { $0.syncCode == rec.syncCode }) {
+                let linked = Self.linkedChildRemoteId(local: local.remoteId, peer: rec.remoteId,
+                                                      tombstoned: tombstoned)
+                if linked != local.remoteId { local.remoteId = linked }
+                continue
+            }
+            if let rid = rec.remoteId, tombstoned.contains(rid) { continue }   // deleted here
             guard let patient = allPatients.first(where: { $0.syncCode == rec.patientSyncCode })
                              ?? allPatients.first(where: { $0.remoteId == rec.patientSyncCode }) else { continue }
             let item = BillingLineItem(code: rec.cptCode,
@@ -235,10 +315,58 @@ extension PeerSyncService {
             item.patient     = patient
             item.remoteId    = rec.remoteId
             item.syncedAt    = Date(timeIntervalSince1970: rec.syncedAt)
-            item.pendingSync = false
+            item.pendingSync = PeerApplyPending.pendingAfterApply(
+                localPending: false, contentChanged: true,
+                hasServerRow: SyncRemoteId.serverId(rec.remoteId) != nil,
+                peerPending: rec.pendingSync)
             context.insert(item)
         }
         try context.save()
+    }
+
+    // MARK: - Identity helpers
+
+    /// Links `patient` to the server row the peer's copy names, when this copy has none (or only
+    /// a booking placeholder). Never gives a second local record the same remoteId (unique on
+    /// this device) and never replaces a server id.
+    func linkPeerRemoteId(_ peerRemoteId: String?, to patient: Patient, others: [Patient]) {
+        guard let rid = peerRemoteId, !rid.isEmpty, patient.remoteId != rid else { return }
+        let takesIt: Bool
+        switch SyncRemoteId.kind(patient.remoteId) {
+        case .notInserted:
+            takesIt = true   // a server id, or the peer's booking placeholder (as before)
+        case .appointmentPlaceholder, .invalid:
+            takesIt = SyncRemoteId.serverId(rid) != nil
+        case .server:
+            takesIt = false
+        }
+        guard takesIt else { return }
+        guard !others.contains(where: { $0 !== patient && $0.isLive && $0.remoteId == rid }) else { return }
+        if SyncRemoteId.serverId(rid) != nil {
+            patient.adoptServerId(rid)   // remembers a replaced booking placeholder
+        } else {
+            patient.remoteId = rid
+        }
+    }
+
+    /// The remoteId a local child record (note, prescription, vitals, billing item) should hold
+    /// once a peer's copy of it arrives: the peer's server id when this copy has none yet (not a
+    /// row deleted on this device); otherwise unchanged. Pure; tested in SyncGapsTests.
+    static func linkedChildRemoteId(local: String?, peer: String?, tombstoned: Set<String>) -> String? {
+        guard case .notInserted = SyncRemoteId.kind(local),
+              let id = SyncRemoteId.serverId(peer), !tombstoned.contains(id) else { return local }
+        return id
+    }
+
+    /// The synced content of a patient (the peer payload without sync bookkeeping), to tell
+    /// whether applying a peer's copy changed anything on this device. nil if it cannot be
+    /// encoded (treated as changed).
+    static func contentFingerprint(_ patient: Patient) -> Data? {
+        guard let data = try? JSONEncoder().encode(PeerPatient(patient)),
+              var object = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
+        else { return nil }
+        for key in PeerPatient.bookkeepingKeys { object.removeValue(forKey: key) }
+        return try? JSONSerialization.data(withJSONObject: object, options: [.sortedKeys])
     }
 
     // MARK: - Helpers

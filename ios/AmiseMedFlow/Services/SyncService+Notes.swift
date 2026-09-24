@@ -194,6 +194,26 @@ extension SyncService {
     // MARK: - SOAP content → structured fields
 
     func restoreSOAPFields(note: ClinicalNote, content: String) {
+        note.restoreSOAPFields(from: content)
+    }
+
+
+}
+
+extension ClinicalNote {
+
+    /// Sets the note from synced content (the cloud row, or a peer's PeerNote.content): SOAP
+    /// fields for a structured note, free text otherwise. The inverse of `contentForSync`.
+    func applySyncContent(_ content: String) {
+        if noteType.isStructured {
+            restoreSOAPFields(from: content)
+        } else {
+            freeText = content
+        }
+    }
+
+    func restoreSOAPFields(from content: String) {
+        let note = self
         // Content is formatted by contentForSync: "S:\n...\n\nO:\n...\n\nA:\n...\n\nP:\n..."
         var s = "", o = "", a = "", p = ""
         var current: Character? = nil

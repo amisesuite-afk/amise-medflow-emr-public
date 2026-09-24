@@ -9,7 +9,8 @@
 // Push: pushNEWS2Scale2 sends the flag in its own update, not in the whole-row patient push.
 // Before the migration that update fails; the failure is ignored and the push is retried on the
 // next sync. It also pushes a flag that arrived over peer sync, which the whole-row push would
-// not (peer sync clears pendingSync).
+// not when the patient is not pending here (peer sync makes it pending only for a peer's unsent
+// change, PeerApplyPending).
 //
 // Conflict rule (same as pathway data): a local change not yet pushed wins; otherwise the device
 // takes the server value. The flag has its own "last confirmed" value
