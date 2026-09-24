@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UIKit
 
 // MARK: - ConsultationView
 
@@ -62,6 +63,7 @@ struct ConsultationView: View {
     @State var pathway: ConsultPathway = .firstVisit
     @State var showPathwayPicker = false
     @State var lastVisitShown: Encounter? = nil   // follow-up "Last visit" card → Open
+    @State private var keyboardVisible = false        // hide the step footer while typing
 
     enum ExamMode { case short, full }
 
@@ -137,7 +139,13 @@ struct ConsultationView: View {
             lastVisitCard
             tabContent
                 .frame(maxHeight: .infinity)
-            stepFooter
+            if !keyboardVisible { stepFooter }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+            keyboardVisible = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            keyboardVisible = false
         }
         .background(Color(.systemBackground))
         .onAppear { handleAppear() }
