@@ -5,6 +5,8 @@ import SwiftData
 
 struct ClinicalScoresView: View {
     @Bindable var patient: Patient
+    /// Open straight into this score's form (e.g. AUDIT-C from wellness screening).
+    var initialScore: ActiveScore? = nil
     @Environment(\.modelContext) var modelContext
 
     @State var selectedCategory: ScoreCategory = .all
@@ -264,7 +266,10 @@ struct ClinicalScoresView: View {
         }
         .navigationTitle("Clinical Scores")
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear { refreshRecommendations() }
+        .onAppear {
+            refreshRecommendations()
+            if selectedScore == nil, let s = initialScore { selectedScore = s }
+        }
         .onChange(of: patient.workingDiagnosis)    { _, _ in refreshRecommendations() }
         .onChange(of: patient.workingDiagnosisICD) { _, _ in refreshRecommendations() }
         .onChange(of: selectedScore) { _, newScore in

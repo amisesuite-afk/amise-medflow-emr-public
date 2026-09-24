@@ -12,6 +12,7 @@ struct WellnessScreeningView: View {
     @State private var data = WellnessScreening()
     @State private var loaded = false
     @State private var planAdded = false
+    @State private var openScore: ActiveScore? = nil
 
     private var age: Int? { patient.dateOfBirth == nil ? nil : patient.ageYears }
     private var items: [ScreeningItem] {
@@ -25,6 +26,23 @@ struct WellnessScreeningView: View {
             planSection
         }
         .onAppear(perform: load)
+        .sheet(item: $openScore) { score in
+            NavigationStack {
+                ClinicalScoresView(patient: patient, initialScore: score)
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) { Button("Done") { openScore = nil } }
+                    }
+            }
+        }
+    }
+
+    /// Screening items that are completed with a score in Clinical Scores.
+    private func linkedScore(_ item: ScreeningItem) -> ActiveScore? {
+        switch item.id {
+        case "audit": return .auditC
+        case "phq":   return .phq9
+        default:      return nil
+        }
     }
 
     // MARK: - Risk parameters
@@ -105,6 +123,9 @@ struct WellnessScreeningView: View {
                     chip(status == .suggested ? "In Ix list" : "Add to Ix", active: status == .suggested) {
                         addInvestigation(ix, category: item.ixCategory, for: item)
                     }
+                }
+                if let score = linkedScore(item) {
+                    chip("Open score", active: false) { openScore = score }
                 }
                 chip("Up to date", active: status == .upToDate) { toggle(item, .upToDate) }
                 chip("Declined", active: status == .declined) { toggle(item, .declined) }
