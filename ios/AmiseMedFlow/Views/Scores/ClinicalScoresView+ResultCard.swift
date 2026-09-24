@@ -175,8 +175,11 @@ extension ClinicalScoresView {
         case .high:     Color(red: 0.9, green: 0.4, blue: 0.1)
         case .critical: .red
         }
-        let scoreStr  = score == Double(Int(score)) ? "\(Int(score))" : String(format: "%.1f", score)
-        let maxStr    = max == Double(Int(max))   ? "\(Int(max))"   : String(format: "%.0f", max)
+        // Int(_:) traps on NaN/infinite doubles (e.g. a ratio score with a zero denominator).
+        let scoreStr: String = !score.isFinite ? "—"
+            : score == score.rounded() ? "\(Int(score))" : String(format: "%.1f", score)
+        let maxStr: String = !max.isFinite ? "—"
+            : max == max.rounded() ? "\(Int(max))" : String(format: "%.0f", max)
         let scoreLabel = max > 0 ? "\(scoreStr)/\(maxStr)" : scoreStr
         return VStack(spacing: 2) {
             Text(scoreLabel)
