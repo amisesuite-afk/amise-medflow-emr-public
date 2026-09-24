@@ -28,7 +28,7 @@ struct EFGroup: Identifiable {
 // swiftlint:disable line_length
 
 // ── Neurology: Headache ──────────────────────────────────────────────────────
-private let neurologHeadacheEarlyForm: [EFGroup] = [
+let neurologHeadacheEarlyForm: [EFGroup] = [
     EFGroup(question: "Onset character", icon: "clock.badge.exclamationmark.fill", chips: [
         EFChip(label: "Thunderclap — worst ever",      dimId: "onset",        value: "Thunderclap",            multiSelect: false),
         EFChip(label: "Sudden",                        dimId: "onset",        value: "Sudden",                 multiSelect: false),
@@ -60,7 +60,7 @@ private let neurologHeadacheEarlyForm: [EFGroup] = [
 ]
 
 // ── Neurology: Dizziness / Vertigo ───────────────────────────────────────────
-private let neurologDizzinessEarlyForm: [EFGroup] = [
+let neurologDizzinessEarlyForm: [EFGroup] = [
     EFGroup(question: "Type of dizziness", icon: "rotate.3d", chips: [
         EFChip(label: "Positional (position-triggered)", dimId: "character",  value: "Positional",             multiSelect: false),
         EFChip(label: "Lightheadedness / near-faint",  dimId: "character",    value: "Lightheadedness",        multiSelect: false),
@@ -84,7 +84,7 @@ private let neurologDizzinessEarlyForm: [EFGroup] = [
 ]
 
 // ── Neurosurgery: Head injury / Trauma ───────────────────────────────────────
-private let neurosurgTraumaEarlyForm: [EFGroup] = [
+let neurosurgTraumaEarlyForm: [EFGroup] = [
     EFGroup(question: "Key clinical history", icon: "bolt.trianglebadge.exclamationmark.fill", chips: [
         EFChip(label: "Lucid interval (talked, then deteriorated)", dimId: "lucid_interval",   value: "present"),
         EFChip(label: "New-onset seizure post-injury",              dimId: "seizure",          value: "new_onset_adult"),
@@ -98,7 +98,7 @@ private let neurosurgTraumaEarlyForm: [EFGroup] = [
 ]
 
 // ── Neurosurgery: Severe headache ─────────────────────────────────────────────
-private let neurosurgHeadacheEarlyForm: [EFGroup] = [
+let neurosurgHeadacheEarlyForm: [EFGroup] = [
     EFGroup(question: "Onset", icon: "clock.badge.exclamationmark.fill", chips: [
         EFChip(label: "Thunderclap — worst ever",      dimId: "onset",        value: "Thunderclap",            multiSelect: false),
         EFChip(label: "Sudden",                        dimId: "onset",        value: "Sudden",                 multiSelect: false),
@@ -114,7 +114,7 @@ private let neurosurgHeadacheEarlyForm: [EFGroup] = [
 ]
 
 // ── Neurosurgery: Brain tumour / Hydrocephalus ───────────────────────────────
-private let neurosurgTumourEarlyForm: [EFGroup] = [
+let neurosurgTumourEarlyForm: [EFGroup] = [
     EFGroup(question: "Specific features", icon: "brain.head.profile", chips: [
         EFChip(label: "New-onset seizure in adult",                dimId: "seizure",          value: "new_onset_adult"),
         EFChip(label: "Progressive focal neurological deficit",    dimId: "new_focal_deficit", value: "present"),
@@ -124,7 +124,7 @@ private let neurosurgTumourEarlyForm: [EFGroup] = [
 ]
 
 // ── Cardiology: Chest pain ───────────────────────────────────────────────────
-private let cardiologyChestEarlyForm: [EFGroup] = [
+let cardiologyChestEarlyForm: [EFGroup] = [
     EFGroup(question: "Pain character", icon: "heart.fill", chips: [
         EFChip(label: "Pressure / tightness",          dimId: "character",    value: "Pressure"),
         EFChip(label: "Tearing / ripping",             dimId: "character",    value: "Tearing"),
@@ -145,7 +145,7 @@ private let cardiologyChestEarlyForm: [EFGroup] = [
 ]
 
 // ── Cardiology: Arrhythmia / Palpitations ────────────────────────────────────
-private let cardiologyArrhythmiaEarlyForm: [EFGroup] = [
+let cardiologyArrhythmiaEarlyForm: [EFGroup] = [
     EFGroup(question: "ECG pattern (if available)", icon: "waveform.path.ecg.rectangle", chips: [
         EFChip(label: "Irregularly irregular pulse",   dimId: "pulse",        value: "irregularly_irregular"),
         EFChip(label: "No P waves (AF on ECG)",        dimId: "ecg",          value: "no_p_waves_irregular_rhythm"),
@@ -160,7 +160,7 @@ private let cardiologyArrhythmiaEarlyForm: [EFGroup] = [
 ]
 
 // ── Internal Medicine: Anaemia workup ────────────────────────────────────────
-private let internalMedAnaemiaEarlyForm: [EFGroup] = [
+let internalMedAnaemiaEarlyForm: [EFGroup] = [
     EFGroup(question: "Associated features", icon: "drop.circle.fill", chips: [
         EFChip(label: "Crisis pain (sickle)",          dimId: "associations", value: "Crisis pain"),
         EFChip(label: "Jaundice (haemolysis)",         dimId: "associations", value: "Jaundice"),
@@ -173,7 +173,7 @@ private let internalMedAnaemiaEarlyForm: [EFGroup] = [
 ]
 
 // ── Internal Medicine: Fatigue ───────────────────────────────────────────────
-private let internalMedFatigueEarlyForm: [EFGroup] = [
+let internalMedFatigueEarlyForm: [EFGroup] = [
     EFGroup(question: "Duration & pattern", icon: "clock.arrow.2.circlepath", chips: [
         EFChip(label: "Worse with exertion (CFS/ME)",  dimId: "associations", value: "Post-exertional malaise"),
         EFChip(label: ">6 months duration",            dimId: "timing",       value: ">6 months"),
@@ -191,7 +191,7 @@ private let internalMedFatigueEarlyForm: [EFGroup] = [
 
 // MARK: - General Surgery early forms — Abdominal Pain
 
-private let surgAbdominalPainEarlyForm: [EFGroup] = [
+let surgAbdominalPainEarlyForm: [EFGroup] = [
     EFGroup(question: "Pain site (single select)", icon: "mappin.circle.fill", chips: [
         EFChip(label: "Right iliac fossa (appendix)",  dimId: "site", value: "RLQ",        multiSelect: false),
         EFChip(label: "Epigastric (PUD / reflux)",     dimId: "site", value: "Epigastric", multiSelect: false),
@@ -224,7 +224,7 @@ private let surgAbdominalPainEarlyForm: [EFGroup] = [
     ]),
 ]
 
-private let surgObstructionEarlyForm: [EFGroup] = [
+let surgObstructionEarlyForm: [EFGroup] = [
     EFGroup(question: "Obstruction features (select all that apply)", icon: "exclamationmark.circle.fill", chips: [
         EFChip(label: "Colicky abdominal pain",  dimId: "character",    value: "Colicky"),
         EFChip(label: "Abdominal distension",    dimId: "associations", value: "Distension"),
@@ -241,7 +241,7 @@ private let surgObstructionEarlyForm: [EFGroup] = [
     ]),
 ]
 
-private let surgHerniaEarlyForm: [EFGroup] = [
+let surgHerniaEarlyForm: [EFGroup] = [
     EFGroup(question: "Hernia type features (single select)", icon: "arrow.down.circle.fill", chips: [
         EFChip(label: "Groin — above inguinal ligament (inguinal)", dimId: "site",  value: "Groin", multiSelect: false),
         EFChip(label: "Groin — below inguinal ligament (femoral)",  dimId: "exam",  value: "below inguinal", multiSelect: false),
@@ -257,7 +257,7 @@ private let surgHerniaEarlyForm: [EFGroup] = [
     ]),
 ]
 
-private let surgUpperGIBleedEarlyForm: [EFGroup] = [
+let surgUpperGIBleedEarlyForm: [EFGroup] = [
     EFGroup(question: "Bleeding character (single select)", icon: "drop.fill", chips: [
         EFChip(label: "Melaena (dark / tarry stool)", dimId: "character", value: "Melaena",    multiSelect: false),
         EFChip(label: "Haematemesis (bright red)",    dimId: "character", value: "Haematemesis", multiSelect: false),
@@ -279,7 +279,7 @@ private let surgUpperGIBleedEarlyForm: [EFGroup] = [
     ]),
 ]
 
-private let surgRenalColicEarlyForm: [EFGroup] = [
+let surgRenalColicEarlyForm: [EFGroup] = [
     EFGroup(question: "Renal colic pattern (single select)", icon: "bolt.circle.fill", chips: [
         EFChip(label: "Sudden onset",              dimId: "onset",     value: "Sudden",        multiSelect: false),
         EFChip(label: "Colicky character",         dimId: "character", value: "Colicky",       multiSelect: false),
@@ -294,7 +294,7 @@ private let surgRenalColicEarlyForm: [EFGroup] = [
     ]),
 ]
 
-private let surgVascularEarlyForm: [EFGroup] = [
+let surgVascularEarlyForm: [EFGroup] = [
     EFGroup(question: "Vascular red flags (single select)", icon: "heart.circle.fill", chips: [
         EFChip(label: "Pulsatile abdominal mass (AAA)", dimId: "exam",  value: "pulsatile abdominal mass", multiSelect: false),
         EFChip(label: "Intermittent claudication (PAD)", dimId: "associations", value: "Intermittent claudication", multiSelect: false),
@@ -311,7 +311,7 @@ private let surgVascularEarlyForm: [EFGroup] = [
     ]),
 ]
 
-private let surgRectalBleedEarlyForm: [EFGroup] = [
+let surgRectalBleedEarlyForm: [EFGroup] = [
     EFGroup(question: "Bleeding pattern & associated symptoms", icon: "drop.fill", chips: [
         EFChip(label: "Bright red per rectum",        dimId: "associations", value: "Rectal bleeding"),
         EFChip(label: "Blood mixed in stool (IBD/Ca)", dimId: "diarrhoea",   value: "bloody_chronic"),
@@ -327,7 +327,7 @@ private let surgRectalBleedEarlyForm: [EFGroup] = [
     ]),
 ]
 
-private let surgGERDEarlyForm: [EFGroup] = [
+let surgGERDEarlyForm: [EFGroup] = [
     EFGroup(question: "Reflux symptoms", icon: "flame.fill", chips: [
         EFChip(label: "Heartburn",                dimId: "associations", value: "Heartburn"),
         EFChip(label: "Regurgitation",            dimId: "associations", value: "Regurgitation"),

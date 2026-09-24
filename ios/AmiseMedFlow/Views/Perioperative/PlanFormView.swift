@@ -10,7 +10,7 @@ import EventKit
 
 // MARK: - Plan form (separated so @Bindable can take non-optional)
 
-private struct PlanForm: View {
+struct PlanForm: View {
     @Bindable var patient: Patient
     @Bindable var plan: OperativePlan
     @ObservedObject var ai: AIService

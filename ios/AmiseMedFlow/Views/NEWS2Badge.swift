@@ -5,7 +5,7 @@ import SwiftUI
 
 // MARK: - NEWS2 badge
 
-private struct NEWS2Badge: View {
+struct NEWS2Badge: View {
     let score: Int
     let risk: String
 

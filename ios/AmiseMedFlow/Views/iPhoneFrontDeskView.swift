@@ -6,7 +6,7 @@ import SwiftData
 
 // MARK: - iPhone front desk view (simplified check-in + waiting queue)
 
-private struct CompactFrontDeskView: View {
+struct CompactFrontDeskView: View {
     @EnvironmentObject private var sync: SyncService
     @Query private var allPatients: [Patient]
     @State private var searchQuery = ""

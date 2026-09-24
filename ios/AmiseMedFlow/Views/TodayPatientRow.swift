@@ -6,9 +6,9 @@ import SwiftData
 
 // MARK: - Today patient row
 
-private enum TodayRowStyle { case ward, theatre, endoscopy, clinic }
+enum TodayRowStyle { case ward, theatre, endoscopy, clinic }
 
-private struct TodayPatientRow: View {
+struct TodayPatientRow: View {
     let patient: Patient
     let style: TodayRowStyle
 

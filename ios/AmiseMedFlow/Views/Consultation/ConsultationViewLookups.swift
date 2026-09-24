@@ -44,7 +44,7 @@ func crossClassAllergyExcludes(_ drug: String, allergies: [AllergyEntry]) -> Boo
 
 // MARK: - PMH → Investigations deterministic map
 
-private let pmhInvestigations: [String: [CCInv]] = [
+let pmhInvestigations: [String: [CCInv]] = [
     "Hypertension":            [("U&E", .blood), ("Creatinine / eGFR", .blood), ("ECG", .other),
                                 ("Urinalysis", .blood), ("Fasting lipids", .blood)],
     "T2DM":                    [("HbA1c", .blood), ("Fasting glucose", .blood), ("U&E", .blood),
@@ -109,7 +109,7 @@ let pmhToCommonMeds: [String: [String]] = [
 
 private typealias CCInv = (name: String, category: InvestigationEntry.InvCategory)
 
-private let ccInvestigations: [String: [CCInv]] = [
+let ccInvestigations: [String: [CCInv]] = [
     "Abdominal pain": [
         ("FBC", .blood), ("U&E", .blood), ("LFT", .blood), ("Lipase / Amylase", .blood),
         ("CRP", .blood), ("Urinalysis", .blood), ("β-hCG (females)", .blood),
@@ -231,7 +231,7 @@ private let ccInvestigations: [String: [CCInv]] = [
 ]
 
 // Common baseline investigation chips (fallback when no CC-specific set exists)
-private let commonBaselineInvs: [CCInv] = [
+let commonBaselineInvs: [CCInv] = [
     ("FBC", .blood), ("U&E", .blood), ("LFTs", .blood), ("CRP", .blood),
     ("Coagulation (INR/APTT)", .blood), ("Blood glucose", .blood),
     ("Group & Save", .blood), ("Blood cultures", .blood),
