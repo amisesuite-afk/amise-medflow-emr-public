@@ -188,6 +188,110 @@ final class PeerSyncMergeTests: XCTestCase {
         XCTAssertEqual(local.syncedAt, t1, "syncedAt never moves backwards")
     }
 
+    /// A newer remote record with blank admin fields must not erase non-empty local values.
+    func testNewerRemoteBlankAdminFieldsNeverEraseLocalValues() throws {
+        let local = localPatient(syncedAt: t0)
+        local.email = "mary@example.com"
+        local.address = "Gros Islet"
+        local.nokName = "John Local"
+        local.nokPhone = "758-333-3333"
+        local.insuranceProvider = "Sagicor"
+        local.policyNumber = "P-123"
+        local.sex = .female
+        local.dateOfBirth = Date(timeIntervalSince1970: 0)
+        let rec = remoteRecord(of: local, syncedAt: t1) { r in
+            r.phone = nil
+            r.email = ""
+            r.address = "   "
+            r.mrn = nil
+            r.nokName = nil
+            r.nokPhone = ""
+            r.insuranceProvider = nil
+            r.policyNumber = nil
+            r.sex = .unspecified
+            r.dateOfBirth = nil
+        }
+
+        try service.applyPatients([rec], context: context)
+
+        XCTAssertEqual(local.phone, "758-111-1111")
+        XCTAssertEqual(local.email, "mary@example.com")
+        XCTAssertEqual(local.address, "Gros Islet")
+        XCTAssertEqual(local.mrn, "H-700")
+        XCTAssertEqual(local.nokName, "John Local")
+        XCTAssertEqual(local.nokPhone, "758-333-3333")
+        XCTAssertEqual(local.insuranceProvider, "Sagicor")
+        XCTAssertEqual(local.policyNumber, "P-123")
+        XCTAssertEqual(local.sex, .female, "unspecified is blank, not a correction")
+        XCTAssertEqual(local.dateOfBirth, Date(timeIntervalSince1970: 0))
+        XCTAssertEqual(local.syncedAt, t1)
+    }
+
+    func testAdminMergeHelper() {
+        XCTAssertEqual(service.adminMerge("local", "remote"), "remote")
+        XCTAssertEqual(service.adminMerge("local", nil), "local")
+        XCTAssertEqual(service.adminMerge("local", "  "), "local")
+        XCTAssertEqual(service.adminMerge(nil, "remote"), "remote")
+        XCTAssertNil(service.adminMerge(nil, ""))
+    }
+
+    // MARK: - NEWS2 SpO₂ Scale 2 flag
+
+    func testScale2FlagTravelsWithNewerRecord() throws {
+        let local = localPatient(syncedAt: t0)
+        XCTAssertFalse(local.news2UseSpO2Scale2)
+        let rec = remoteRecord(of: local, syncedAt: t1) { r in r.news2UseSpO2Scale2 = true }
+        XCTAssertEqual(rec.news2UseSpO2Scale2, true)
+
+        try service.applyPatients([rec], context: context)
+        XCTAssertTrue(local.news2UseSpO2Scale2)
+    }
+
+    func testOlderRecordDoesNotChangeScale2Flag() throws {
+        let local = localPatient(syncedAt: t1)
+        local.news2UseSpO2Scale2 = true
+        let rec = remoteRecord(of: local, syncedAt: t0) { r in r.news2UseSpO2Scale2 = false }
+        try service.applyPatients([rec], context: context)
+        XCTAssertTrue(local.news2UseSpO2Scale2)
+    }
+
+    /// Payloads and backups from builds without the flag still decode; the flag is left alone.
+    func testPayloadWithoutScale2FlagDecodesAndKeepsLocalFlag() throws {
+        let local = localPatient(syncedAt: t0)
+        local.news2UseSpO2Scale2 = true
+        let rec = remoteRecord(of: local, syncedAt: t1) { r in r.phone = "758-444-4444" }
+        let data = try JSONEncoder().encode(rec)
+        var object = try XCTUnwrap(try JSONSerialization.jsonObject(with: data) as? [String: Any])
+        XCTAssertNotNil(object["news2UseSpO2Scale2"])
+        object.removeValue(forKey: "news2UseSpO2Scale2")
+        let oldPayload = try JSONSerialization.data(withJSONObject: object)
+
+        let decoded = try JSONDecoder().decode(PeerPatient.self, from: oldPayload)
+        XCTAssertNil(decoded.news2UseSpO2Scale2)
+
+        try service.applyPatients([decoded], context: context)
+        XCTAssertTrue(local.news2UseSpO2Scale2, "missing field never clears the flag")
+        XCTAssertEqual(local.phone, "758-444-4444")
+    }
+
+    /// A record first seen from a peer takes its admin fields even when neither side has a cloud
+    /// sync time yet.
+    func testNewRecordFromPeerWithoutSyncTimeKeepsAdminFields() throws {
+        let other = Patient(fullName: "Peer Only")
+        remoteContext.insert(other)
+        other.phone = "758-555-5555"
+        other.mrn = "H-900"
+        other.news2UseSpO2Scale2 = true
+        other.syncedAt = nil
+
+        try service.applyPatients([PeerPatient(other)], context: context)
+
+        let added = try context.fetch(FetchDescriptor<Patient>()).first { $0.syncCode == other.syncCode }
+        XCTAssertEqual(added?.phone, "758-555-5555")
+        XCTAssertEqual(added?.mrn, "H-900")
+        XCTAssertEqual(added?.news2UseSpO2Scale2, true)
+    }
+
     func testUnknownRecordIsAdded() throws {
         _ = localPatient(syncedAt: t0)
         let other = Patient(fullName: "New From Peer")

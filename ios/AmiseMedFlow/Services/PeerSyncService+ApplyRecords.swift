@@ -18,38 +18,50 @@ extension PeerSyncService {
             // Deleted on this device: don't let a peer recreate it.
             if PatientIdentityStore.isDeleted(rec.syncCode) || PatientIdentityStore.isDeleted(rec.remoteId) { continue }
             // Match by syncCode first; fall back to remoteId for records synced before this feature
-            let patient = existing.first { $0.syncCode == rec.syncCode }
-                ?? existing.first { rid in rec.remoteId != nil && rid.remoteId == rec.remoteId }
-                ?? {
-                    let p = Patient(fullName: rec.fullName)
-                    context.insert(p)
-                    return p
-                }()
+            let matched: Patient? = existing.first(where: { $0.syncCode == rec.syncCode })
+                ?? existing.first(where: { rid in rec.remoteId != nil && rid.remoteId == rec.remoteId })
+            let patient: Patient
+            if let m = matched {
+                patient = m
+            } else {
+                patient = Patient(fullName: rec.fullName)
+                context.insert(patient)
+            }
 
             let peerTime = Date(timeIntervalSince1970: rec.syncedAt)
             let myTime   = patient.syncedAt ?? .distantPast
-            let remoteIsNewer = peerTime > myTime
+            // A record created here from the peer takes the peer's administrative fields even when
+            // neither side has a cloud sync time yet (both would otherwise be distantPast).
+            let remoteIsNewer = matched == nil || peerTime > myTime
 
             // Identity — always propagate syncCode; fill in remoteId if missing
             patient.syncCode = rec.syncCode
             if patient.remoteId == nil, let rid = rec.remoteId { patient.remoteId = rid }
 
             // ── Administrative fields: remote wins when it is newer ──────────
+            // A blank / missing / unparseable remote value never replaces a non-empty local one
+            // (adminMerge); a newer non-empty remote value still wins.
             if remoteIsNewer {
-                patient.fullName    = rec.fullName
-                patient.sex         = Sex(rawValue: (rec.sex ?? "").capitalized) ?? .unspecified
-                if let d = rec.dob  { patient.dateOfBirth = iso.date(from: d) }
-                patient.phone       = rec.phone
-                patient.email       = rec.email
-                patient.address     = rec.address
-                patient.mrn         = rec.mrn
-                patient.nokName     = rec.nokName
-                patient.nokRelation = rec.nokRelation
-                patient.nokPhone    = rec.nokPhone
-                patient.insuranceProvider = rec.insuranceProvider
-                patient.policyNumber      = rec.policyNumber
-                if let s = rec.setting  { patient.setting  = ClinicalSetting(rawValue: s.capitalized) ?? .outpatient }
-                if let l = rec.location { patient.location  = ClinicalLocation(rawValue: l) ?? .rodney_bay }
+                if let name = nonBlank(rec.fullName) { patient.fullName = name }
+                if let s = rec.sex, let sex = Sex(rawValue: s.capitalized), sex != .unspecified {
+                    patient.sex = sex
+                }
+                if let d = rec.dob, let dob = iso.date(from: d) { patient.dateOfBirth = dob }
+                patient.phone       = adminMerge(patient.phone,       rec.phone)
+                patient.email       = adminMerge(patient.email,       rec.email)
+                patient.address     = adminMerge(patient.address,     rec.address)
+                patient.mrn         = adminMerge(patient.mrn,         rec.mrn)
+                patient.nokName     = adminMerge(patient.nokName,     rec.nokName)
+                patient.nokRelation = adminMerge(patient.nokRelation, rec.nokRelation)
+                patient.nokPhone    = adminMerge(patient.nokPhone,    rec.nokPhone)
+                patient.insuranceProvider = adminMerge(patient.insuranceProvider, rec.insuranceProvider)
+                patient.policyNumber      = adminMerge(patient.policyNumber,      rec.policyNumber)
+                if let s = rec.setting, let setting = ClinicalSetting(rawValue: s.capitalized) {
+                    patient.setting = setting
+                }
+                if let l = rec.location, let location = ClinicalLocation(rawValue: l) {
+                    patient.location = location
+                }
                 if let a = rec.acuity   { patient.acuity    = acuityFrom(a) }
                 if let h = rec.heightCm { patient.heightCm  = h }
                 if let w = rec.ward,        !w.isEmpty { patient.ward       = w }
@@ -256,6 +268,19 @@ extension PeerSyncService {
         if loc.isEmpty { return rem }
         if rem.isEmpty { return loc }
         return loc.count >= rem.count ? loc : rem
+    }
+
+    // Administrative fields when the remote record is newer: a non-empty remote value wins, but a
+    // blank or missing remote value never erases a non-empty local one (phone, email, MRN, NOK…).
+    func adminMerge(_ local: String?, _ remote: String?) -> String? {
+        if let rem = nonBlank(remote) { return rem }
+        return local
+    }
+
+    /// Trimmed value, or nil when nil/blank.
+    func nonBlank(_ s: String?) -> String? {
+        let t = (s ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        return t.isEmpty ? nil : t
     }
 
     // Non-empty wins on first fill; newer timestamp wins when both sides have content.
