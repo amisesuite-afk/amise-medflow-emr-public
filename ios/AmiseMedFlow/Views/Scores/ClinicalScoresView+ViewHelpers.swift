@@ -74,7 +74,7 @@ extension ClinicalScoresView {
                 if !riskScores.isEmpty {
                     contextBlock(title: "RISK PROFILE", icon: "shield.lefthalf.filled") {
                         clinicalScoreGrid(riskScores.map {
-                            DiagnosisScoreRecommendation(id: $0, score: $0,
+                            DiagnosisScoreRecommendation(score: $0,
                                                         rationale: $0.category.rawValue,
                                                         priority: 99)
                         })

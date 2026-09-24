@@ -12,7 +12,7 @@ import Foundation
 // Pure Swift, no network, no AI — safe for all environments.
 
 struct DiagnosisScoreRecommendation: Identifiable {
-    let id: ActiveScore
+    var id: ActiveScore { score }
     let score: ActiveScore
     let rationale: String
     let priority: Int
