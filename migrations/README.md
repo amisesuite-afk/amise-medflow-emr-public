@@ -133,3 +133,106 @@ change. None has been applied to production until someone runs the workflow.
   the old column list if the server does not have it yet. The flag is pushed in its own
   `update`, which fails harmlessly and is retried on the next sync until this migration is
   applied. The web dashboard and API server do not read or write the column.
+
+### Migration 89 — `supabase-staff-only-rls-migration.sql` (staff-only RLS, security finding S-2)
+
+Why: patient-portal users are Supabase Auth users in this same project (invited from
+`api-server/src/routes/portal.ts`). Two things gave them staff-level database access with their
+own JWT:
+
+1. Many staff policies only tested "is authenticated" (`auth.uid() is not null`,
+   `using (true)`, `auth.role() = 'authenticated'`). Postgres ORs permissive policies, so the
+   portal's "own row" policies restricted nothing. Examples: `staff_select_patients`,
+   `staff_select_documents`, `staff_all` on `appointment_requests`, and the staff policies on
+   the `clinical-attachments`, `patient-documents`, `patient-photos` and `call-recordings`
+   storage buckets.
+2. `handle_new_user()` in `supabase-schema.sql` gave **every** new auth user a `user_profiles`
+   row with role `front_desk`, including every invited portal patient. So policies that did
+   check `auth_role()` also treated portal patients as front-desk staff.
+
+What it does (idempotent; every table is guarded with `to_regclass()`):
+
+- **`handle_new_user()`** now creates a profile only when `app_metadata.staff_role` is one of
+  the four staff roles. Only the service role can set `app_metadata`. `supabase-schema.sql`
+  carries the same definition.
+- **Revokes the auto-created profiles.** A `user_profiles` row is moved to the new, admin-only
+  table `public.user_profiles_revoked` and deleted when all of these are true:
+  - its role is `front_desk`;
+  - `full_name` is null and the row was never edited;
+  - the auth user is linked to `patients.auth_user_id` or has no password (portal users sign
+    in by magic link or OTP; every staff app uses a password);
+  - it was not revoked before.
+
+  A row an admin restored is therefore never revoked again. The step raises a `NOTICE` with
+  the count, plus the number of portal-linked accounts that still hold a staff role, for
+  manual review.
+- **Explicit rewrites** (names unchanged, so `lint:rls-policies` still sees them):
+  `staff_select_patients`, `staff_insert_patients`, `staff_select_documents`,
+  `staff_insert_documents`, `staff_update_documents`, `appointment_requests.staff_all` and
+  `appointment_change_requests.staff_manage_change_requests`. `staff_update_documents` also
+  closes a patient write path: portal uploads are registered with `created_by` set to the
+  patient, and the old `created_by = auth.uid()` rule let the patient rewrite that row.
+- **A table-driven sweep** over about 55 PHI and operational tables. It rewrites each
+  permissive policy for `public` or `authenticated` whose `USING` and `WITH CHECK` are exactly
+  one of "is authenticated", keeping the name and command. This also catches policies applied
+  by hand in production, such as the conflicting-duplicate tables above.
+- **Storage** staff policies are recreated with the staff check.
+- **The new predicate is** `(select auth_role()) in ('front_desk','nurse','doctor','admin')`.
+  `auth_role()` returns NULL for a user with no profile row, so such a user gets no access.
+
+What it deliberately leaves alone:
+
+- every patient self-access policy (`patients_select_own`, `patients_update_own_contact`,
+  `patients_select_own_*`, `patients_insert_own_*`, `patients_{upload,select,delete}_own_docs`);
+- anon intake policies and `service_role` policies;
+- `clinical_notes`, whose policies were already restricted to doctor, admin and nurse;
+- reference tables with no patient data (`questionnaire_templates`, `question_bank`,
+  `branching_rules`, `clinical_guidelines`).
+
+Staff impact: none for anyone with a staff `user_profiles` row, because all four roles pass the
+new predicate. That covers the dashboard, the front-desk staff portal and the iOS app. Anyone
+signed in **without** a profile row loses access.
+
+**Before running**, list the accounts that would be affected and confirm none is a real staff
+member:
+
+```sql
+select u.email, up.role, up.full_name, up.created_at, up.updated_at,
+       exists (select 1 from patients p where p.auth_user_id = up.id) as portal_linked,
+       coalesce(u.encrypted_password, '') = '' as no_password
+from user_profiles up join auth.users u on u.id = up.id
+where up.role = 'front_desk' and up.full_name is null
+  and up.updated_at <= up.created_at + interval '1 second'
+  and (exists (select 1 from patients p where p.auth_user_id = up.id)
+       or coalesce(u.encrypted_password, '') = '');
+```
+
+Set a `full_name` on any real staff member in that list first. Also check that every staff
+account has a profile, since staff without one are locked out after this migration:
+`select u.email from auth.users u left join user_profiles up on up.id = u.id where up.id is null;`
+
+**Restore a revoked profile.** If the account is a staff member who is also linked as a portal
+patient, unlink the patient record first.
+
+```sql
+insert into user_profiles (id, full_name, role, default_site)
+select id, '<name>', role, default_site from user_profiles_revoked where id = '<uuid>';
+```
+
+**Staff onboarding after this migration.** New auth users no longer get a profile
+automatically. After creating the user, an admin must do one of the following:
+
+- run `insert into user_profiles (id, full_name, role) values ('<auth uuid>', '<name>', '<role>');`
+- create the user with the admin API and `app_metadata: { staff_role: '<role>' }`.
+
+Until then the user can sign in but cannot see any data.
+
+**Deploy order.** The API-side fixes for S-1 and S-3 (a staff role is required on
+`/api/staff/*` and on `requireStaffAuth`) check `user_profiles`. Until this migration runs,
+portal patients invited earlier still hold the auto-created `front_desk` profile. Run this
+migration together with, or soon after, that deploy.
+
+**Base schema.** `supabase-schema.sql` still creates the old open policy definitions. They
+are overridden here, so this step must stay after every step that creates those policies.
+`lint:rls-policies` now fails if the last definition of a required policy, in runner order, is
+"any authenticated user".

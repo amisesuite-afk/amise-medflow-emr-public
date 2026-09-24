@@ -18,13 +18,21 @@ create table if not exists user_profiles (
   updated_at  timestamptz not null default now()
 );
 
--- Auto-create profile on new user signup
+-- Auto-create a staff profile ONLY when the admin API set
+-- app_metadata.staff_role. Patient-portal users are auth users in this same
+-- project, so defaulting every new user to 'front_desk' made every portal
+-- patient staff (security finding S-2). Kept identical to the definition in
+-- supabase-staff-only-rls-migration.sql, which is the authoritative one.
 create or replace function handle_new_user()
-returns trigger language plpgsql security definer as $$
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  requested_role text := new.raw_app_meta_data ->> 'staff_role';
 begin
-  insert into public.user_profiles (id, full_name, role)
-  values (new.id, new.raw_user_meta_data->>'full_name', 'front_desk')
-  on conflict (id) do nothing;
+  if requested_role in ('front_desk', 'nurse', 'doctor', 'admin') then
+    insert into public.user_profiles (id, full_name, role)
+    values (new.id, new.raw_user_meta_data ->> 'full_name', requested_role)
+    on conflict (id) do nothing;
+  end if;
   return new;
 end;
 $$;

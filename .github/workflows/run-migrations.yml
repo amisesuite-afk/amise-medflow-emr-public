@@ -737,5 +737,14 @@ jobs:
             -H "Content-Type: application/json" \
             -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
+      # Must stay AFTER every step that creates the staff policies it rewrites.
+      - name: "Migration 89: staff-only RLS on PHI tables + stop auto-granting front_desk to portal users (S-2)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-staff-only-rls-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+
       - name: Done
-        run: echo "All 88 migrations completed successfully. See migrations/README.md for files intentionally excluded (conflicting duplicate table definitions) and how to add the next migration."
+        run: echo "All 89 migrations completed successfully. See migrations/README.md for files intentionally excluded (conflicting duplicate table definitions) and how to add the next migration."
