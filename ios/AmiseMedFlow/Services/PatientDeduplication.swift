@@ -3,17 +3,19 @@ import SwiftData
 
 // Patient identity and duplicate handling.
 //
-// Lists hide a record only when the SAME record appears twice locally: it has the same
-// Supabase row (remoteId) or the same manually-entered MRN. Two records that only share a name
-// are NOT hidden. Two different patients can share a name (and often lack a DOB at booking),
-// and hiding one of them would make a real chart disappear. Same-name records are instead
-// surfaced in the Patients list for the clinician to review (see DuplicatePatientsSheet).
+// Lists show one row per person. Identity uses MRN/remoteId AND name:
+// - Two local copies of the same record (same remoteId or manual MRN) collapse to one.
+// - Same name + non-conflicting DOB: the extra copies that hold NO clinical data are hidden
+//   behind the record that is kept (the one with clinical data, else the oldest). A copy with
+//   clinical data is never hidden. Groups marked "different people" are never collapsed.
+// The duplicate banner/review sheet (DuplicatePatientsSheet) lets the clinician clean them up.
 
 extension Array where Element == Patient {
 
     func deduped() -> [Patient] {
+        let live = filter { !$0.isDeleted }
         var seen: [String: Patient] = [:]
-        for p in self {
+        for p in live {
             let key = p.dedupKey
             if let existing = seen[key] {
                 if p.dedupRichness > existing.dedupRichness ||
@@ -24,14 +26,26 @@ extension Array where Element == Patient {
                 seen[key] = p
             }
         }
-        return filter { seen[$0.dedupKey]?.id == $0.id }
+        let unique = live.filter { seen[$0.dedupKey]?.id == $0.id }
+        // Hide empty same-name copies behind the record that is kept.
+        var hidden = Set<UUID>()
+        for group in unique.possibleDuplicateGroups() {
+            let keep = group.duplicateKeeper
+            for p in group where p.id != keep.id && !p.hasClinicalData { hidden.insert(p.id) }
+        }
+        return hidden.isEmpty ? unique : unique.filter { !hidden.contains($0.id) }
+    }
+
+    /// The record kept from a duplicate group: the first with clinical data, else the oldest.
+    var duplicateKeeper: Patient {
+        first(where: \.hasClinicalData) ?? self[0]
     }
 
     /// Groups of records that look like the same person: same name (case/space-insensitive) and
     /// DOBs that do not contradict each other (equal, or missing on one side). Pairs the clinician
     /// has marked as different people are excluded. Each group has 2+ records, oldest first.
     func possibleDuplicateGroups() -> [[Patient]] {
-        let byName = Dictionary(grouping: self) { $0.normalizedName }
+        let byName = Dictionary(grouping: filter { !$0.isDeleted }) { $0.normalizedName }
         var groups: [[Patient]] = []
         for (name, records) in byName where !name.isEmpty && records.count > 1 {
             let sorted = records.sorted { $0.createdAt < $1.createdAt }

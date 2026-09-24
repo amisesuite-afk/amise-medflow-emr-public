@@ -11,7 +11,9 @@ import SwiftData
 /// Banner shown at the top of patient lists when possible duplicates exist.
 struct DuplicatePatientsBanner: View {
     let patients: [Patient]
-    @State private var showReview = false
+    // Owned by the parent list, which presents DuplicatePatientsSheet. The sheet must not hang
+    // off this row: the row disappears once the last group is resolved.
+    @Binding var showReview: Bool
     // Observed so the banner updates when a group is marked "different people".
     @AppStorage(PatientIdentityStore.distinctKey) private var distinctPairs = ""
 
@@ -38,7 +40,6 @@ struct DuplicatePatientsBanner: View {
                 }
             }
             .buttonStyle(.plain)
-            .sheet(isPresented: $showReview) { DuplicatePatientsSheet() }
         }
     }
 }
@@ -50,9 +51,14 @@ struct DuplicatePatientsSheet: View {
 
     @State private var pendingRemoval: [Patient] = []
     @State private var confirmRemoval = false
+    // Records removed in this session are dropped from the list first, then deleted on the next
+    // main-actor turn, so no row is still rendering a patient at the moment SwiftData deletes it.
+    @State private var removedIDs: Set<UUID> = []
     @AppStorage(PatientIdentityStore.distinctKey) private var distinctPairs = ""
 
-    private var groups: [[Patient]] { allPatients.possibleDuplicateGroups() }
+    private var groups: [[Patient]] {
+        allPatients.filter { !removedIDs.contains($0.id) }.possibleDuplicateGroups()
+    }
 
     var body: some View {
         let _ = distinctPairs
@@ -85,9 +91,7 @@ struct DuplicatePatientsSheet: View {
     // MARK: - Group
 
     /// The record to keep: the one with clinical data if any, otherwise the oldest.
-    private func keeper(of group: [Patient]) -> Patient {
-        group.first(where: \.hasClinicalData) ?? group[0]
-    }
+    private func keeper(of group: [Patient]) -> Patient { group.duplicateKeeper }
 
     private func removable(in group: [Patient]) -> [Patient] {
         let keep = keeper(of: group)
@@ -173,10 +177,13 @@ struct DuplicatePatientsSheet: View {
 
     private func performRemoval() {
         // Re-check at the moment of removal: never delete a record that gained clinical data.
-        for p in pendingRemoval where !p.hasClinicalData {
-            context.deletePatient(p)
-        }
-        try? context.save()
+        let victims = pendingRemoval.filter { !$0.isDeleted && !$0.hasClinicalData }
         pendingRemoval = []
+        removedIDs.formUnion(victims.map(\.id))
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(400))   // let the list animate the rows out
+            for p in victims where !p.isDeleted { context.deletePatient(p) }
+            try? context.save()
+        }
     }
 }

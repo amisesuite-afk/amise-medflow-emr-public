@@ -6,6 +6,7 @@ struct PatientListView: View {
     @Environment(\.modelContext) private var context
 
     @State private var showAdd = false
+    @State private var showDuplicateReview = false
     @State private var searchText = ""
     @State private var selectedPatient: Patient?
 
@@ -45,7 +46,7 @@ struct PatientListView: View {
         NavigationStack {
             List {
                 if searchText.isEmpty {
-                    DuplicatePatientsBanner(patients: allPatients)
+                    DuplicatePatientsBanner(patients: allPatients, showReview: $showDuplicateReview)
                 }
                 if allPatients.isEmpty {
                     ContentUnavailableView(
@@ -97,6 +98,7 @@ struct PatientListView: View {
                     }
                 }
             }
+            .sheet(isPresented: $showDuplicateReview) { DuplicatePatientsSheet() }
             .sheet(isPresented: $showAdd) {
                 AddPatientView(initialSetting: .outpatient)
             }

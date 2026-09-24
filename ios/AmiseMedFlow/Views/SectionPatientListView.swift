@@ -13,6 +13,7 @@ struct SectionPatientListView: View {
     @Environment(\.modelContext) private var context
     @State private var searchText = ""
     @State private var showAdd = false
+    @State private var showDuplicateReview = false
     @State private var locationFilter: ClinicalLocation? = nil
 
     private var basePatients: [Patient] {
@@ -96,7 +97,7 @@ struct SectionPatientListView: View {
                 } else {
                     List {
                         if searchText.isEmpty {
-                            DuplicatePatientsBanner(patients: allPatients)
+                            DuplicatePatientsBanner(patients: allPatients, showReview: $showDuplicateReview)
                         }
                         ForEach(patients) { patient in
                             Button { selectedPatient = patient } label: {
@@ -129,6 +130,7 @@ struct SectionPatientListView: View {
                 }
             }
         }
+        .sheet(isPresented: $showDuplicateReview) { DuplicatePatientsSheet() }
         .sheet(isPresented: $showAdd) {
             QuickAddSheet(section: section)
         }
