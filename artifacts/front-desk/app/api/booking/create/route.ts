@@ -5,6 +5,7 @@ import { sendConfirmationEmail } from '@/lib/email';
 import { TRACK_CONFIG, encodeReason, BOOKING_DISCLAIMER, type BookingTrack } from '@/lib/scheduling';
 
 import { API_BASE as API } from '@/lib/constants';
+import { staffMachineToken } from '@/lib/machine-auth';
 
 export const runtime = 'nodejs';
 
@@ -19,7 +20,7 @@ const FALLBACK_ERROR = 'We could not process your request online. Please call us
 // session_token generation — front-desk only asks for a finished link.
 // Best-effort: a failure here must never block booking confirmation.
 async function provisionQuestionnaire(): Promise<{ url: string | null; session_id: string | null }> {
-  const staffToken = process.env.CRON_SECRET;
+  const staffToken = staffMachineToken();
   if (!staffToken) return { url: null, session_id: null };
 
   try {

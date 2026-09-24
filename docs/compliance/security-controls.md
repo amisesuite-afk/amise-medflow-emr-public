@@ -20,7 +20,8 @@
 | Explicit `service_role` grants, enforced in CI | `scripts/src/lint-migration-grants.ts`, `CLAUDE.md` New Table Checklist | Prevents 42501 failures. Not an access restriction |
 | Patient-portal credentials: scrypt hashes, 72-hour temporary passwords, deny-all RLS on `patient_accounts` | `patient-auth-migration.sql` | |
 | Private storage buckets | `supabase-*.sql` (`public = false` for all four buckets) | `getPublicUrl()` is used on `patient-photos` (`dashboard/src/lib/db.ts:181`), **to verify** |
-| Cron endpoints authenticated by a header-only shared secret | `api-server/src/lib/supabase.ts:58-73` (`requireCronSecret`) | The comparison is not constant-time. The same secret doubles as a staff token (§3, S-3) |
+| Cron endpoints authenticated by a header-only shared secret | `api-server/src/lib/supabase.ts` (`requireCronSecret`) | The comparison is not constant-time. Until `STAFF_MACHINE_TOKEN` is set, the same secret also works as the `x-staff-token` machine credential (next row) |
+| **Separate machine secret for `x-staff-token`** (S-3) | `api-server/src/lib/supabase.ts` (`staffMachineToken()`, `requireStaffAuth()`); caller `front-desk/lib/machine-auth.ts`; tests in `api-server/src/test/staff-auth.test.ts` | When `STAFF_MACHINE_TOKEN` is set, it is the only value accepted in `x-staff-token`, and `CRON_SECRET` no longer opens staff routes. Compared in constant time. While it is unset, the api-server falls back to `CRON_SECRET` and logs a warning once per process. **To do:** set `STAFF_MACHINE_TOKEN` on Render and on the front-desk Vercel project (same value, at the same time), then remove `CRON_SECRET` from front-desk. `/api/healthz/env` reports `staffMachine.token` |
 
 ### 1.2 Outbound-messaging safety (MODE gate)
 
@@ -99,6 +100,7 @@ These are **potential vulnerabilities identified by reading the code**. Each nee
 
 - `api-server/src/lib/supabase.ts:28-50`. Combined with S-2, a portal patient's token may pass staff-only API routes, which use `service_role` and bypass RLS.
 - **Fix:** require a `user_profiles` row with a staff role. Give machine callers a separate secret. Use constant-time comparison.
+- **Status:** the staff-role check and the constant-time comparison are in the code. The separate secret is `STAFF_MACHINE_TOKEN` (§1.1). It takes effect only once it is set in each environment; until then `x-staff-token` still accepts `CRON_SECRET`.
 
 **S-4: A patient session token is sent to a third-party QR service. (High.) Fixed.**
 

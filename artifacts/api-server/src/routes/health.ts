@@ -56,6 +56,8 @@ router.get("/api/healthz/env", (req, res) => {
       notify:     { staffPhone: check('STAFF_NOTIFY_PHONE'), staffEmail: check('STAFF_NOTIFY_EMAIL'), doctorEmail: check('DOCTOR_NOTIFY_EMAIL') },
       portal:     { url: process.env.PORTAL_URL || '(not set)', dashboardUrl: process.env.DASHBOARD_URL || '(not set)' },
       cron:       { secret: check('CRON_SECRET') },
+      // x-staff-token secret; false means the api-server falls back to CRON_SECRET.
+      staffMachine: { token: check('STAFF_MACHINE_TOKEN') },
     },
   });
 });

@@ -132,7 +132,8 @@ pnpm run test:e2e                              # Playwright walkthrough — requ
 | `MODE` | `dry_run` (default) / `supervised` / `auto` |
 | `CONFIRM_AUTO_MODE` | Must be `true` for the api-server to boot when `MODE=auto` — a bare `MODE=auto` refuses to start. Prevents a misconfigured environment from going live into unsupervised outbound messaging silently. |
 | `REMINDER_EMAIL_AUTO_SEND` | `true` lets the patient 24h reminder email (`/api/cron/reminders`) send directly under `MODE=supervised` instead of being left as a Gmail draft for staff review. Defaults off. Never overrides `MODE=dry_run`, and the body is still `FORBIDDEN_PATTERNS`-screened. Practice-owner opt-in only (hazard H-09). |
-| `CRON_SECRET` | Shared secret for cron endpoint auth |
+| `CRON_SECRET` | Shared secret for cron endpoint auth (`x-cron-secret`). Also accepted as `x-staff-token` only while `STAFF_MACHINE_TOKEN` is unset |
+| `STAFF_MACHINE_TOKEN` | Machine-to-machine secret for the `x-staff-token` header on staff routes (`requireStaffAuth()`), sent by front-desk (e.g. questionnaire link provisioning). When set, it is the only value accepted there. When unset, the api-server falls back to `CRON_SECRET` and logs a one-time warning. Set the same value on the api-server (Render) and front-desk (Vercel) together, and use a value different from `CRON_SECRET` |
 | `DOCTOR_NOTIFY_EMAIL` | Email for escalations and daily summary |
 | `STAFF_NOTIFY_EMAIL` | Email for staff booking alerts (falls back to `DOCTOR_NOTIFY_EMAIL`) |
 | `STAFF_NOTIFY_PHONE` | Phone for staff SMS alerts on new bookings |

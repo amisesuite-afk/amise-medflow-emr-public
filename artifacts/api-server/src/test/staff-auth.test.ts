@@ -7,7 +7,7 @@
  * Supabase client factory, so the real requireStaffAuth / verifyStaffToken /
  * requireAuth code runs end to end against a fake auth + user_profiles store.
  */
-import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterEach } from 'vitest';
 import request from 'supertest';
 import express from 'express';
 
@@ -62,6 +62,13 @@ const from = vi.fn((table: string) => {
 vi.mock('@supabase/supabase-js', () => ({
   createClient: () => ({ auth: { getUser }, from }),
 }));
+
+// Wrap timingSafeEqual so the tests can check the machine token is compared in
+// constant time (behaviour is the real implementation).
+vi.mock('node:crypto', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('node:crypto')>();
+  return { ...actual, timingSafeEqual: vi.fn(actual.timingSafeEqual) };
+});
 
 let app: express.Express;
 
@@ -149,7 +156,7 @@ describe('requireStaffAuth — admits staff', () => {
     });
   }
 
-  it('machine x-staff-token (CRON_SECRET) path is unchanged → 200', async () => {
+  it('machine x-staff-token (CRON_SECRET fallback, STAFF_MACHINE_TOKEN unset) → 200', async () => {
     const res = await request(app).get('/staff-only').set('x-staff-token', 'test-cron-secret');
     expect(res.status).toBe(200);
     expect(getUser).not.toHaveBeenCalled();
@@ -207,5 +214,97 @@ describe('requireAuth middleware (scheduling / summary routes)', () => {
   it('CRON_SECRET is not accepted by the middleware form', async () => {
     const res = await request(app).get('/staff-mw').set('x-staff-token', 'test-cron-secret');
     expect(res.status).toBe(401);
+  });
+});
+
+describe('x-staff-token uses STAFF_MACHINE_TOKEN, separate from CRON_SECRET', () => {
+  const saved = { machine: process.env.STAFF_MACHINE_TOKEN, cron: process.env.CRON_SECRET };
+  let warn: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(async () => {
+    const { logger } = await import('../lib/logger.js');
+    const { _resetStaffMachineTokenWarning } = await import('../lib/supabase.js');
+    _resetStaffMachineTokenWarning();
+    warn = vi.spyOn(logger, 'warn');
+  });
+
+  afterEach(() => {
+    warn.mockRestore();
+    if (saved.machine === undefined) delete process.env.STAFF_MACHINE_TOKEN;
+    else process.env.STAFF_MACHINE_TOKEN = saved.machine;
+    process.env.CRON_SECRET = saved.cron;
+  });
+
+  describe('STAFF_MACHINE_TOKEN set', () => {
+    beforeEach(() => {
+      process.env.STAFF_MACHINE_TOKEN = 'test-machine-token';
+    });
+
+    it('accepts STAFF_MACHINE_TOKEN → 200 without a Supabase lookup', async () => {
+      const res = await request(app).get('/staff-only').set('x-staff-token', 'test-machine-token');
+      expect(res.status).toBe(200);
+      expect(getUser).not.toHaveBeenCalled();
+    });
+
+    it('no longer accepts CRON_SECRET → 401', async () => {
+      const res = await request(app).get('/staff-only').set('x-staff-token', 'test-cron-secret');
+      expect(res.status).toBe(401);
+    });
+
+    it('rejects a wrong token of the same length → 401', async () => {
+      const res = await request(app).get('/staff-only').set('x-staff-token', 'x'.repeat('test-machine-token'.length));
+      expect(res.status).toBe(401);
+    });
+
+    it('compares in constant time', async () => {
+      const { timingSafeEqual } = await import('node:crypto');
+      vi.mocked(timingSafeEqual).mockClear();
+      await request(app).get('/staff-only').set('x-staff-token', 'test-machine-tokeX');
+      expect(timingSafeEqual).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not log the fallback warning', async () => {
+      await request(app).get('/staff-only').set('x-staff-token', 'test-machine-token');
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('is still not accepted by the requireAuth middleware form → 401', async () => {
+      const res = await request(app).get('/staff-mw').set('x-staff-token', 'test-machine-token');
+      expect(res.status).toBe(401);
+    });
+  });
+
+  describe('STAFF_MACHINE_TOKEN unset: falls back to CRON_SECRET', () => {
+    beforeEach(() => {
+      delete process.env.STAFF_MACHINE_TOKEN;
+    });
+
+    it('accepts CRON_SECRET and warns once per process', async () => {
+      const first = await request(app).get('/staff-only').set('x-staff-token', 'test-cron-secret');
+      const second = await request(app).get('/staff-only').set('x-staff-token', 'test-cron-secret');
+      expect(first.status).toBe(200);
+      expect(second.status).toBe(200);
+      const fallbackWarnings = warn.mock.calls.filter((call: unknown[]) => String(call[0]).includes('STAFF_MACHINE_TOKEN'));
+      expect(fallbackWarnings).toHaveLength(1);
+      // The warning never contains the secret itself.
+      expect(JSON.stringify(warn.mock.calls)).not.toContain('test-cron-secret');
+    });
+
+    it('treats a blank STAFF_MACHINE_TOKEN as unset', async () => {
+      process.env.STAFF_MACHINE_TOKEN = '   ';
+      const res = await request(app).get('/staff-only').set('x-staff-token', 'test-cron-secret');
+      expect(res.status).toBe(200);
+    });
+
+    it('rejects every x-staff-token when CRON_SECRET is unset too → 401', async () => {
+      delete process.env.CRON_SECRET;
+      const res = await request(app).get('/staff-only').set('x-staff-token', 'test-cron-secret');
+      expect(res.status).toBe(401);
+    });
+
+    it('rejects an empty x-staff-token → 401', async () => {
+      const res = await request(app).get('/staff-only').set('x-staff-token', '');
+      expect(res.status).toBe(401);
+    });
   });
 });

@@ -28,6 +28,12 @@ services:
         value: UNCONFIGURED_RODNEY_BAY@group.calendar.google.com
       - key: CALENDAR_ID_TAPION_ERCP
         value: UNCONFIGURED_TAPION_ERCP@group.calendar.google.com
+      # Machine secret for the x-staff-token header (front-desk → api-server).
+      # No value here: set it in the Render dashboard, and the same value in the
+      # front-desk Vercel project. While unset the api-server falls back to
+      # CRON_SECRET and logs a warning.
+      - key: STAFF_MACHINE_TOKEN
+        sync: false
       # ── Cron job URLs (set in Render dashboard → Cron Jobs, or use
       #    an external cron service like cron-job.org to POST to these) ──
       # POST /api/cron/reminders         — every 30 min (48h SMS + 24h email + post-visit)
@@ -57,7 +63,8 @@ services:
       # TWILIO_ACCOUNT_SID      = …
       # TWILIO_AUTH_TOKEN        = …
       # TWILIO_FROM_NUMBER       = +1758…
-      # CRON_SECRET              = (any strong random string)
+      # CRON_SECRET              = (any strong random string; cron jobs only)
+      # STAFF_MACHINE_TOKEN      = (a different strong random string; see envVars above)
       # DOCTOR_NOTIFY_EMAIL      = amisesuite@gmail.com
       # STAFF_NOTIFY_EMAIL       = amisesuite@gmail.com
       #

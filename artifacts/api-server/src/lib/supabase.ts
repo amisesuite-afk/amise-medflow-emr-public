@@ -95,20 +95,54 @@ export async function verifyStaffToken(jwt: string | null | undefined): Promise<
   return { ok: true, staff: { userId: user.id, email: user.email ?? null, role } };
 }
 
+let warnedCronSecretFallback = false;
+
+/** Test-only: forget that the CRON_SECRET fallback warning was logged. */
+export function _resetStaffMachineTokenWarning(): void {
+  warnedCronSecretFallback = false;
+}
+
+/**
+ * The secret accepted in `x-staff-token`.
+ *
+ * `STAFF_MACHINE_TOKEN` when set: then it is the only value accepted, and
+ * CRON_SECRET no longer opens staff routes. Unset (or blank), it falls back to
+ * `CRON_SECRET`, which this header used to share, so a deploy that has not set
+ * the new variable yet keeps working. The fallback logs a warning once per
+ * process. Returns null when neither is set (machine path disabled).
+ */
+export function staffMachineToken(): string | null {
+  const dedicated = process.env.STAFF_MACHINE_TOKEN?.trim();
+  if (dedicated) return dedicated;
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret) return null;
+  if (!warnedCronSecretFallback) {
+    warnedCronSecretFallback = true;
+    logger.warn(
+      '[auth] STAFF_MACHINE_TOKEN is not set — x-staff-token falls back to CRON_SECRET. ' +
+        'Set STAFF_MACHINE_TOKEN on the api-server and every caller (front-desk) so the two secrets are separate.',
+    );
+  }
+  return cronSecret;
+}
+
 /**
  * Gate for staff-only routes. Accepts either:
- *  - x-staff-token: <CRON_SECRET>   (machine-to-machine shared secret, e.g.
- *    front-desk → api-server questionnaire provisioning; unchanged behaviour,
- *    now compared in constant time)
+ *  - x-staff-token: <STAFF_MACHINE_TOKEN> (machine-to-machine shared secret,
+ *    e.g. front-desk → api-server questionnaire provisioning; falls back to
+ *    CRON_SECRET while STAFF_MACHINE_TOKEN is unset — see staffMachineToken();
+ *    compared in constant time)
  *  - Authorization: Bearer <supabase-jwt> belonging to a user with a staff
  *    `user_profiles` row (front_desk / nurse / doctor / admin)
  *
  * On success with a JWT, the verified identity is cached on `req.staffUser`.
  */
 export async function requireStaffAuth(req: any, res: any): Promise<boolean> {
-  const cronSecret = process.env.CRON_SECRET;
   const staffToken = req.headers['x-staff-token'];
-  if (cronSecret && typeof staffToken === 'string' && safeEqual(staffToken, cronSecret)) return true;
+  if (typeof staffToken === 'string' && staffToken.length > 0) {
+    const expected = staffMachineToken();
+    if (expected && safeEqual(staffToken, expected)) return true;
+  }
 
   const authHeader: string | undefined = req.headers.authorization;
   const jwt = authHeader?.startsWith('Bearer ') ? authHeader.slice(7).trim() : null;
