@@ -5,17 +5,17 @@ import SwiftData
 
 struct SurgeryNoteView: View {
     @Bindable var patient: Patient
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) var context
 
     @State var data: SurgeryNoteData = SurgeryNoteData()
-    @State private var hasSurgeryDate = false
+    @State var hasSurgeryDate = false
     @State var hasStartTime = false
     @State var hasEndTime = false
     @State private var pdfWrapper: PDFDataWrapper?
-    @State private var showTemplatePicker = false
-    @State private var suggestedTemplate: ProcedureTemplate? = nil
+    @State var showTemplatePicker = false
+    @State var suggestedTemplate: ProcedureTemplate? = nil
 
-    @StateObject private var ai = AIService()
+    @StateObject var ai = AIService()
     @State private var aiError: String?
     @State private var showAIOverwriteConfirm = false
 
