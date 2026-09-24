@@ -99,10 +99,10 @@ struct SOAPDraftEngine {
             parts.append("Medications: " + rxList.joined(separator: "; ") + ".")
         }
 
-        // Allergies
-        let allergyList = p.allergies
+        // Allergies — an empty list is "not recorded"; NKDA only when the chart explicitly says so.
+        let allergyList = p.recordedAllergies
         if allergyList.isEmpty {
-            parts.append("NKDA.")
+            parts.append(p.hasExplicitNKDA ? "Allergies: NKDA." : "Allergies: not recorded.")
         } else {
             let allergyText = allergyList.map { a -> String in
                 var line = a.name
@@ -111,6 +111,9 @@ struct SOAPDraftEngine {
                 return line
             }.joined(separator: ", ")
             parts.append("Allergies: \(allergyText).")
+            if p.allergyRecordConflicts {
+                parts.append("NKDA is also marked on the chart — please reconcile.")
+            }
         }
 
         // Family history

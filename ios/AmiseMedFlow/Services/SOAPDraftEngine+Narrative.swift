@@ -67,9 +67,9 @@ extension SOAPDraftEngine {
         if !rxList.isEmpty {
             bg.append("Current medications: \(rxList.joined(separator: "; ")).")
         }
-        let allergyList = p.allergies
+        let allergyList = p.recordedAllergies
         if allergyList.isEmpty {
-            bg.append("No known drug allergies.")
+            bg.append(p.hasExplicitNKDA ? "No known drug allergies." : "Allergies not recorded.")
         } else {
             let allergyText = allergyList.map { a -> String in
                 var s = a.name

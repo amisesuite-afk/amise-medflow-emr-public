@@ -87,9 +87,9 @@ extension Patient {
         }
 
         // Allergies
-        let allergyList = allergies
+        let allergyList = recordedAllergies
         if allergyList.isEmpty {
-            lines.append("ALLERGIES: NKDA")
+            lines.append(hasExplicitNKDA ? "ALLERGIES: NKDA" : "ALLERGIES: NOT RECORDED")
         } else {
             lines.append("ALLERGIES: " + allergyList.map { "\($0.name) (\($0.reaction), \($0.severity))" }.joined(separator: "; "))
         }

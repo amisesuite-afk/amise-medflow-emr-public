@@ -147,9 +147,9 @@ struct EndoscopyListView: View {
             lines.append("Procedure: \(scope)")
             if let dx = patient.workingDiagnosis { lines.append("Indication: \(dx)") }
 
-            let allergies = patient.allergies
+            let allergies = patient.recordedAllergies
             if allergies.isEmpty {
-                lines.append("Allergies: NKDA")
+                lines.append("Allergies: \(patient.noAllergyStatusText)")
             } else {
                 lines.append("Allergies: " + allergies.map { "\($0.name) (\($0.severity))" }.joined(separator: ", "))
             }

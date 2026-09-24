@@ -223,9 +223,9 @@ enum ClinicalNotePDF {
         }
 
         // Allergies
-        let allergies = patient.allergies
+        let allergies = patient.recordedAllergies
         if allergies.isEmpty {
-            blocks.append(("ALLERGIES", "No known drug allergies (NKDA)"))
+            blocks.append(("ALLERGIES", patient.hasExplicitNKDA ? "No known drug allergies (NKDA)" : "Not recorded"))
         } else {
             let allergyText = allergies.map { "\($0.name) — \($0.reaction) (\($0.severity))" }.joined(separator: "\n")
             blocks.append(("ALLERGIES", allergyText))

@@ -257,8 +257,10 @@ extension ProcedureFormPDF {
     // MARK: - Allergy helper
 
     static func consultAllergyString(patient: Patient) -> String {
-        let list = patient.allergies
-        guard !list.isEmpty else { return "No known drug allergies (NKDA)" }
+        let list = patient.recordedAllergies
+        guard !list.isEmpty else {
+            return patient.hasExplicitNKDA ? "No known drug allergies (NKDA)" : "Not recorded"
+        }
         return list.map {
             "• \($0.name) [\($0.severity)]\($0.reaction.isEmpty ? "" : " — \($0.reaction)")"
         }.joined(separator: "\n")

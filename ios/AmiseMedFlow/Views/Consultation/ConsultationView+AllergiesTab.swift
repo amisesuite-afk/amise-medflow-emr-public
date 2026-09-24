@@ -61,9 +61,11 @@ extension ConsultationView {
 
             Section {
                 if patient.allergies.isEmpty {
+                    // Empty is "not recorded", not NKDA: NKDA must be marked explicitly.
                     HStack {
-                        Image(systemName: "checkmark.shield").foregroundStyle(.green)
-                        Text("No known drug allergies (NKDA)").foregroundStyle(.secondary).font(.callout)
+                        Image(systemName: "questionmark.circle").foregroundStyle(.orange)
+                        Text("Allergies not recorded — add an allergy or mark NKDA")
+                            .foregroundStyle(.secondary).font(.callout)
                     }
                 } else {
                     ForEach(patient.allergies) { a in

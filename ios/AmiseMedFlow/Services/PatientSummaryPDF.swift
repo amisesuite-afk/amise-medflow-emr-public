@@ -202,7 +202,7 @@ enum PatientSummaryPDF {
         }
 
         // Allergies
-        let allergies = patient.allergies
+        let allergies = patient.recordedAllergies
         if !allergies.isEmpty {
             y = maybeNewPage(ctx: ctx, y: y)
             y = sectionTitle("Allergies", y: y)
@@ -210,7 +210,8 @@ enum PatientSummaryPDF {
         } else {
             y = maybeNewPage(ctx: ctx, y: y)
             y = sectionTitle("Allergies", y: y)
-            y = drawRows(ctx: ctx, rows: [("Allergies", "NKDA — no known drug allergies")], y: y)
+            let status = patient.hasExplicitNKDA ? "NKDA — no known drug allergies" : "Not recorded"
+            y = drawRows(ctx: ctx, rows: [("Allergies", status)], y: y)
         }
 
         // PMH — prefer structured entries; fall back to free-text

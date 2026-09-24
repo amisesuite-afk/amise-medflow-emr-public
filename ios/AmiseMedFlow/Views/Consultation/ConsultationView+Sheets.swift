@@ -258,8 +258,8 @@ extension ConsultationView {
     }
 
     func allergySummary() -> String {
-        let list = patient.allergies
-        guard !list.isEmpty else { return "Allergies: NKDA" }
+        let list = patient.recordedAllergies
+        guard !list.isEmpty else { return "Allergies: \(patient.noAllergyStatusText)" }
         return "Allergies: " + list.map { "\($0.name) [\($0.severity)]" }.joined(separator: ", ")
     }
 

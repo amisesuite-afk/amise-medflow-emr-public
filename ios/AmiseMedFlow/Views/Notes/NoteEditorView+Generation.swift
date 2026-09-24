@@ -358,9 +358,10 @@ extension NoteEditorView {
                 return p.prescriptions.map { $0.displayLine }.joined(separator: "\n")
             }()
             let allergiesLine: String = {
-                guard let p = patient else { return "NKDA" }
-                let list = p.allergies
-                return list.isEmpty ? "NKDA" : list.map { "\($0.name) (\($0.reaction))" }.joined(separator: "; ")
+                guard let p = patient else { return "Not recorded" }
+                let list = p.recordedAllergies
+                guard !list.isEmpty else { return p.hasExplicitNKDA ? "NKDA" : "Not recorded" }
+                return list.map { "\($0.name) (\($0.reaction))" }.joined(separator: "; ")
             }()
             return """
             \(today)

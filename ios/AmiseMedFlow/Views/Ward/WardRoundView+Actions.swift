@@ -121,8 +121,8 @@ extension WardRoundView {
         }()
 
         let allergyLines: String = {
-            let list = patient.allergies
-            guard !list.isEmpty else { return "  NKDA" }
+            let list = patient.recordedAllergies
+            guard !list.isEmpty else { return patient.hasExplicitNKDA ? "  NKDA" : "  Not recorded" }
             return list.map { "  • \($0.name) (\($0.reaction)) — \($0.severity)" }.joined(separator: "\n")
         }()
 

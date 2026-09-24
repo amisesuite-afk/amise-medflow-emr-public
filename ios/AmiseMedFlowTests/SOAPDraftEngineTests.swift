@@ -49,10 +49,13 @@ final class SOAPDraftEngineTests: XCTestCase {
         XCTAssertEqual(d.a, "Acuity: Routine.")
         XCTAssertEqual(d.p, "Routine follow-up as arranged.")
 
-        for absent in ["Presents with", "PMH:", "Surgical history:", "Medications:", "Allergies:",
+        for absent in ["Presents with", "PMH:", "Surgical history:", "Medications:",
                        "Family history:", "Social:", "Associated symptoms:"] {
             XCTAssertFalse(d.s.contains(absent), "S mentions \(absent) with nothing recorded")
         }
+        // Allergy status is always stated, and an empty list is never reported as NKDA.
+        XCTAssertTrue(d.s.contains("Allergies: not recorded."), d.s)
+        XCTAssertFalse(d.s.contains("NKDA"), "no allergies recorded must not be reported as NKDA")
         for absent in ["Vitals:", "NEWS2", "BMI", "Labs:", "Awaiting:"] {
             XCTAssertFalse(d.o.contains(absent), "O mentions \(absent) with nothing recorded")
         }
@@ -88,6 +91,40 @@ final class SOAPDraftEngineTests: XCTestCase {
         XCTAssertTrue(d.p.contains("Analgesia, repeat bloods in the morning"))
         XCTAssertFalse(d.p.contains("Investigations:"))
         XCTAssertFalse(d.p.contains("Surgical pearls"))
+    }
+
+    // MARK: - Allergy status
+
+    func testExplicitNKDAIsReportedAsNKDA() {
+        let p = patient()
+        p.allergies = [Patient.nkdaMarkerEntry()]
+        let s = SOAPDraftEngine.draft(patient: p).s
+        XCTAssertTrue(s.contains("Allergies: NKDA."), s)
+        XCTAssertFalse(s.contains("not recorded"))
+        XCTAssertFalse(s.contains("NKDA (None)"), "the NKDA marker is not listed as an allergen")
+    }
+
+    func testRecordedAllergyWithNKDAMarkerAsksToReconcile() {
+        let p = patient()
+        p.allergies = [Patient.nkdaMarkerEntry(),
+                       AllergyEntry(name: "Penicillin", severity: "Severe", reaction: "Anaphylaxis")]
+        let s = SOAPDraftEngine.draft(patient: p).s
+        XCTAssertTrue(s.contains("Allergies: Penicillin (Anaphylaxis) — Severe."), s)
+        XCTAssertTrue(s.contains("please reconcile"), s)
+        XCTAssertFalse(s.contains("Allergies: NKDA"))
+    }
+
+    func testAllergyStatusHelpers() {
+        let p = patient()
+        XCTAssertFalse(p.hasExplicitNKDA)
+        XCTAssertEqual(p.noAllergyStatusText, "not recorded")
+        p.allergies = [Patient.nkdaMarkerEntry()]
+        XCTAssertTrue(p.hasExplicitNKDA)
+        XCTAssertTrue(p.recordedAllergies.isEmpty)
+        XCTAssertEqual(p.noAllergyStatusText, "NKDA")
+        p.allergies = [AllergyEntry(name: "Latex", severity: "Moderate", reaction: "Rash")]
+        XCTAssertFalse(p.hasExplicitNKDA)
+        XCTAssertEqual(p.recordedAllergies.map(\.name), ["Latex"])
     }
 
     func testOnlyRecordedVitalsAreListed() throws {

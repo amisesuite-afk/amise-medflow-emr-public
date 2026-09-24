@@ -85,9 +85,10 @@ extension PreConsultEntrySheet {
 
         // Allergies
         if noKnownAllergies {
-            // Patient declared NKDA — don't overwrite an existing list, but record intent in pmhNotes
+            // Patient declared NKDA — never overwrite an existing list. An empty list means
+            // "not recorded", so record the declaration explicitly with the NKDA entry.
             if patient.allergies.isEmpty {
-                // already NKDA by empty list — nothing to set
+                patient.allergies = [Patient.nkdaMarkerEntry()]
             }
         } else {
             var existing = patient.allergies

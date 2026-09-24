@@ -161,9 +161,9 @@ struct TheatreListView: View {
                 lines.append(whoStr)
             }
 
-            let allergies = patient.allergies
+            let allergies = patient.recordedAllergies
             if allergies.isEmpty {
-                lines.append("Allergies: NKDA")
+                lines.append("Allergies: \(patient.noAllergyStatusText)")
             } else {
                 lines.append("Allergies: " + allergies.map { "\($0.name) (\($0.severity))" }.joined(separator: ", "))
             }

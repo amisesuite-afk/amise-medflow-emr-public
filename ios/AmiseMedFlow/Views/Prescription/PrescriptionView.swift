@@ -119,9 +119,9 @@ struct PrescriptionView: View {
 
         lines.append("")
         lines.append(String(repeating: "─", count: 48))
-        let allergyList = patient.allergies
+        let allergyList = patient.recordedAllergies
         if allergyList.isEmpty {
-            lines.append("Allergies: NKDA")
+            lines.append("Allergies: \(patient.noAllergyStatusText)")
         } else {
             lines.append("Allergies: \(allergyList.map { "\($0.name) (\($0.reaction), \($0.severity))" }.joined(separator: "; "))")
         }
