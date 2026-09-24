@@ -176,6 +176,8 @@ final class SyncService: ObservableObject {
             // Own requests, never throws: a server without the column (migration 86) must not
             // break the rest of the sync.
             await syncPathwayData(context: context)
+            // Same for the NEWS2 SpO₂ Scale 2 flag (migration 88). Its pull is in pullPatients.
+            await pushNEWS2Scale2(context: context)
             await AuditLog.flush()
             lastSyncedAt = .now
             recountPending(context: context)

@@ -69,7 +69,9 @@ on `ContentView`, `@EnvironmentObject` in every view that needs it.
 
 **SyncService**: NWPathMonitor, syncs every 30s on WiFi, pauses on cellular.
 Pull/push for patients, notes, prescriptions, vitals. `syncIfAuthenticated()` on
-every foreground resume.
+every foreground resume. A patient column added by a not-yet-applied migration must not break
+the pull or push: select it with a fallback to the old column list and push it in its own
+request (see `SyncService+NEWS2Scale2.swift`, `patients.news2_spo2_scale2`, Migration 88).
 
 **PeerSyncService**: MCSession, service type `"amise-medflow"`, matches peers by
 SHA-256 of email. Manifest-based (syncCode → syncedAt), longer text wins for

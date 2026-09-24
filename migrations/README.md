@@ -119,3 +119,17 @@ change. None has been applied to production until someone runs the workflow.
   UPDATE policies.
 - Readers: the iOS pull selects `deleted_at` and removes local copies of deleted rows. The
   web dashboard and API server add `.is('deleted_at', null)` to every read of these tables.
+
+### Migration 88 — `supabase-news2-scale2-migration.sql` (NEWS2 SpO₂ Scale 2 opt-in)
+
+- Adds `patients.news2_spo2_scale2 boolean not null default false`, guarded with
+  `to_regclass('public.patients')` and `ADD COLUMN IF NOT EXISTS`. No new table, so the
+  existing `patients` grants and RLS policies cover it.
+- The column holds the iOS `Patient.news2UseSpO2Scale2` flag: a clinician's opt-in to RCP NEWS2
+  SpO₂ Scale 2 for confirmed hypercapnic respiratory failure. Default `false` means Scale 1.
+  The flag already synced over peer sync and NAS backup. This column lets devices that only
+  sync through Supabase agree on it.
+- iOS (`SyncService+NEWS2Scale2.swift`): the patient pull selects the column and falls back to
+  the old column list if the server does not have it yet. The flag is pushed in its own
+  `update`, which fails harmlessly and is retried on the next sync until this migration is
+  applied. The web dashboard and API server do not read or write the column.

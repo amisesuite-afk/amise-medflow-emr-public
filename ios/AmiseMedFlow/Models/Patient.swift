@@ -294,8 +294,12 @@ final class Patient {
     // MARK: - NEWS2 SpO₂ scale
     // RCP NEWS2 (2017): SpO₂ Scale 2 is ONLY for patients with confirmed hypercapnic respiratory
     // failure, on a clinician's decision. Default false = Scale 1 for everyone, including patients
-    // on supplemental oxygen. Local + peer sync / full backup only (no Supabase column yet).
+    // on supplemental oxygen. Synced by peer sync, full backup and Supabase
+    // patients.news2_spo2_scale2 (SyncService+NEWS2Scale2, Migration 88).
     var news2UseSpO2Scale2: Bool = false
+    // Last news2UseSpO2Scale2 value confirmed with Supabase (nil = never confirmed). A different
+    // current value is a change still to push. Cloud bookkeeping only; not sent over peer sync.
+    var news2Scale2SyncedValue: Bool?
 
     // MARK: - Structured clinical history (JSON-encoded)
     var pmhEntriesJson: String?    // JSON: [PMHEntry]

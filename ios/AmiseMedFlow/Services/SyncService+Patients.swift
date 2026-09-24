@@ -70,16 +70,30 @@ extension SyncService {
         let consent_form_data_json: String?
         let pre_op_checklist_data_json: String?
         let patient_instructions_data_json: String?
+        // NEWS2 SpO₂ Scale 2 opt-in (Migration 88). nil when the server has no column yet.
+        let news2_spo2_scale2: Bool?
     }
 
     func pullPatients(context: ModelContext) async throws {
-        let rows: [RemotePatient] = try await SupabaseConfig.client
-            .from("patients")
-            .select("id, full_name, sex, date_of_birth, phone, email, address, mrn, nok_name, nok_relation, nok_phone, pmh_notes, family_history_notes, insurance_provider, policy_number, setting, location, acuity, visit_type, mallampati_score, operation_date, chief_complaint, hpi, assessment_text, management_plan, working_diagnosis, working_diagnosis_icd, allergies_json, investigations_json, pmh_entries_json, pshx_entries_json, social_history, surgical_history, height_cm, ward, bed_number, exam_general, exam_cvs, exam_resp, exam_abdo, exam_neuro, exam_msk, exam_skin, exam_other, encounter_status, check_in_time, created_at, trauma_data_json, ogd_data_json, colonoscopy_data_json, surgery_data_json, ercp_data_json, bronchoscopy_data_json, discharge_summary_data_json, post_op_review_data_json, referral_letter_data_json, consent_form_data_json, pre_op_checklist_data_json, patient_instructions_data_json")
-            .order("created_at", ascending: false)
-            .limit(500)
-            .execute()
-            .value
+        let columns = "id, full_name, sex, date_of_birth, phone, email, address, mrn, nok_name, nok_relation, nok_phone, pmh_notes, family_history_notes, insurance_provider, policy_number, setting, location, acuity, visit_type, mallampati_score, operation_date, chief_complaint, hpi, assessment_text, management_plan, working_diagnosis, working_diagnosis_icd, allergies_json, investigations_json, pmh_entries_json, pshx_entries_json, social_history, surgical_history, height_cm, ward, bed_number, exam_general, exam_cvs, exam_resp, exam_abdo, exam_neuro, exam_msk, exam_skin, exam_other, encounter_status, check_in_time, created_at, trauma_data_json, ogd_data_json, colonoscopy_data_json, surgery_data_json, ercp_data_json, bronchoscopy_data_json, discharge_summary_data_json, post_op_review_data_json, referral_letter_data_json, consent_form_data_json, pre_op_checklist_data_json, patient_instructions_data_json"
+        func fetchRows(_ select: String) async throws -> [RemotePatient] {
+            try await SupabaseConfig.client
+                .from("patients")
+                .select(select)
+                .order("created_at", ascending: false)
+                .limit(500)
+                .execute()
+                .value
+        }
+        // A server without news2_spo2_scale2 (before Migration 88) gets the old select, so the
+        // patient pull keeps working; the flag then decodes as nil and is left alone.
+        let rows: [RemotePatient]
+        do {
+            rows = try await fetchRows(columns + ", " + NEWS2Scale2Sync.column)
+        } catch {
+            guard NEWS2Scale2Sync.isMissingColumn(error) else { throw error }
+            rows = try await fetchRows(columns)
+        }
 
         let iso = ISO8601DateFormatter()
 
@@ -191,6 +205,12 @@ extension SyncService {
             if let v = row.consent_form_data_json,         (patient.consentFormDataJson ?? "").isEmpty          { patient.consentFormDataJson          = v }
             if let v = row.pre_op_checklist_data_json,     (patient.preOpChecklistDataJson ?? "").isEmpty       { patient.preOpChecklistDataJson       = v }
             if let v = row.patient_instructions_data_json, (patient.patientInstructionsDataJson ?? "").isEmpty  { patient.patientInstructionsDataJson  = v }
+
+            // NEWS2 SpO₂ Scale 2: server value applies unless this device has an unpushed change
+            // to the flag itself (SyncService+NEWS2Scale2). Absent column → left alone.
+            if let scale2 = row.news2_spo2_scale2 {
+                patient.applyServerNEWS2Scale2(scale2)
+            }
 
             if let es = row.encounter_status {
                 patient.encounterStatus = EncounterStatus(rawValue: es) ?? .notCheckedIn
