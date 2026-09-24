@@ -89,3 +89,33 @@ column list, or `\d <table>` via SQL Editor), pick the file matching what's actu
 add its step to `run-migrations.yml`, and delete (or clearly mark superseded, e.g. rename to
 `.superseded.sql` so it's excluded from `lint:grants`/`lint:rls-policies`'s glob) the losing
 duplicate file(s) so this situation can't quietly get worse.
+
+## Later additions
+
+Migrations added after this file was written, each wired into `run-migrations.yml` in the same
+change. None has been applied to production until someone runs the workflow.
+
+### Migration 87 — `supabase-soft-delete-migration.sql` (soft delete)
+
+- Adds nullable `deleted_at timestamptz` and `deleted_by uuid` to the five tables the iOS app
+  syncs: `clinical_notes`, `prescriptions`, `patient_vitals`, `patient_billing_items`,
+  `patient_documents`. These are **not** the web dashboard's `vitals` and `documents` tables,
+  which are separate tables with their own schema. Each table is guarded with `to_regclass()`,
+  and there is a partial index on `(patient_id) WHERE deleted_at IS NULL` for each one.
+- `clinical_notes.deleted_at` already existed from Migration 36 (`supabase-phase2-schema-migration.sql`).
+  `prescriptions.deleted_at` came only from `supabase-slice-i-prescriptions-migration.sql`,
+  which is in the excluded conflicting-duplicates set above. The API server's
+  `/api/prescriptions` routes already filter on it, so this migration is now what guarantees
+  the column exists.
+- Adds `public.soft_delete(p_table text, p_id uuid) returns text`, a `SECURITY DEFINER` RPC.
+  It is the supported way for staff to soft-delete, and **no RLS policy is added or changed**.
+  The function checks the caller's role with `auth_role()` (notes: an admin, or the doctor
+  who wrote the note or a note with no author; prescriptions: doctor or admin; vitals, billing
+  items and documents: doctor, nurse or admin; front desk is refused). It sets only
+  `deleted_at`/`deleted_by`, writes an `audit_log` row (`action = 'soft_delete'`) in the same
+  transaction, and returns `deleted`, `already_deleted` or `not_found`. A refusal raises
+  SQLSTATE `42501`. Execute is granted to `authenticated` and `service_role` and revoked from
+  `anon`. The migration file header explains why this approach was chosen over widening
+  UPDATE policies.
+- Readers: the iOS pull selects `deleted_at` and removes local copies of deleted rows. The
+  web dashboard and API server add `.is('deleted_at', null)` to every read of these tables.
