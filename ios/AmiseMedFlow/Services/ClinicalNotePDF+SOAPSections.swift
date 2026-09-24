@@ -4,12 +4,12 @@
 import UIKit
 
 
-extension None {
+extension ClinicalNotePDF {
 
     // MARK: - SOAP sections
 
     @discardableResult
-    private static func drawSOAP(ctx: UIGraphicsPDFRendererContext, page: CGRect, y: CGFloat,
+    static func drawSOAP(ctx: UIGraphicsPDFRendererContext, page: CGRect, y: CGFloat,
                                   note: ClinicalNote, teal: UIColor) -> CGFloat {
         var y = y
         let sections: [(String, String?)] = [
@@ -29,7 +29,7 @@ extension None {
     // MARK: - Free-text note
 
     @discardableResult
-    private static func drawFreeText(ctx: UIGraphicsPDFRendererContext, page: CGRect, y: CGFloat,
+    static func drawFreeText(ctx: UIGraphicsPDFRendererContext, page: CGRect, y: CGFloat,
                                       note: ClinicalNote, teal: UIColor) -> CGFloat {
         guard let text = note.freeText, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return y }
         return drawSection(ctx: ctx, page: page, y: y, label: nil, body: text, teal: teal, mono: true)
@@ -38,7 +38,7 @@ extension None {
     // MARK: - Generic section block
 
     @discardableResult
-    private static func drawSection(ctx: UIGraphicsPDFRendererContext, page: CGRect, y: CGFloat,
+    static func drawSection(ctx: UIGraphicsPDFRendererContext, page: CGRect, y: CGFloat,
                                     label: String?, body: String, teal: UIColor, mono: Bool) -> CGFloat {
         var y = y
         let maxW = page.width - 48
@@ -68,7 +68,7 @@ extension None {
     // MARK: - Visit history timeline
 
     @discardableResult
-    private static func drawVisitHistory(ctx: UIGraphicsPDFRendererContext, page: CGRect, y: CGFloat,
+    static func drawVisitHistory(ctx: UIGraphicsPDFRendererContext, page: CGRect, y: CGFloat,
                                           patient: Patient, currentId: UUID, teal: UIColor) -> CGFloat {
         var y = y
 
@@ -137,7 +137,7 @@ extension None {
 
     // MARK: - Footer
 
-    private static func drawFooter(page: CGRect, note: ClinicalNote) {
+    static func drawFooter(page: CGRect, note: ClinicalNote) {
         let footerY = page.height - 26
         UIColor.separator.withAlphaComponent(0.4).setFill()
         UIRectFill(CGRect(x: 24, y: footerY - 5, width: page.width - 48, height: 0.5))
@@ -155,7 +155,7 @@ extension None {
 
     // MARK: - Snippet helper
 
-    private static func noteSnippet(_ note: ClinicalNote) -> String {
+    static func noteSnippet(_ note: ClinicalNote) -> String {
         if note.noteType.isStructured {
             let text = [note.assessment, note.plan, note.subjective]
                 .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }

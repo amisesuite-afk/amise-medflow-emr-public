@@ -9,7 +9,7 @@ extension ClinicalScoresView {
 
     // MARK: - Truelove-Witts
 
-    private var trueloveWittsForm: some View {
+    var trueloveWittsForm: some View {
         Group {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Stools per day").font(.subheadline)
@@ -27,7 +27,7 @@ extension ClinicalScoresView {
 
     // MARK: - Harvey-Bradshaw Index
 
-    private var harveyBradshawForm: some View {
+    var harveyBradshawForm: some View {
         Group {
             VStack(alignment: .leading, spacing: 4) {
                 Text("General wellbeing (0 = very well, 4 = terrible)").font(.subheadline)
@@ -56,7 +56,7 @@ extension ClinicalScoresView {
 
     // MARK: - Maddrey Discriminant Function
 
-    private var maddreyForm: some View {
+    var maddreyForm: some View {
         Group {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Patient PT (seconds)").font(.subheadline)
@@ -94,7 +94,7 @@ extension ClinicalScoresView {
 
     // MARK: - Manning Criteria for IBS
 
-    private var manningForm: some View {
+    var manningForm: some View {
         Group {
             scoreToggle("Pain relieved by defecation",
                         binding: $manningI.painRelievedByDefecation, points: "+1")
@@ -115,7 +115,7 @@ extension ClinicalScoresView {
 
     // MARK: - Fong Clinical Risk Score
 
-    private var fongCrsForm: some View {
+    var fongCrsForm: some View {
         Group {
             scoreToggle("Lymph node–positive primary tumour",
                         binding: $fongI.nodePosivePrimaryTumour, points: "+1")
