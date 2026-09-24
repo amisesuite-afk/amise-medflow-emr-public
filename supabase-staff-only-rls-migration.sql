@@ -38,10 +38,15 @@
 --
 --   5. patients UPDATE is opened to front_desk (staff_update_patients, which
 --      replaces doctors_update_patients). A BEFORE UPDATE trigger stops
---      front_desk changing anything but administrative columns (section 3b).
+--      front_desk changing anything but administrative and patient-reported
+--      intake columns (section 3b).
+--   6. A second BEFORE UPDATE trigger limits a portal patient's update of
+--      their own row (patients_update_own_contact) to contact fields
+--      (section 3c).
 --
 -- PRESERVED (not touched)
---   Patient self-access: patients_select_own, patients_update_own_contact,
+--   Patient self-access: patients_select_own, patients_update_own_contact
+--   (the policy is unchanged; section 3c limits its columns),
 --   patients_select_own_{appointments,medications,allergies,referrals,
 --   documents,sessions,intake,change_requests}, patients_insert_own_*,
 --   patients_{upload,select,delete}_own_docs (storage), all anon intake
@@ -54,9 +59,9 @@
 --   "is authenticated" test for them. This includes the iOS app and the
 --   dashboard, which sign in as staff. Staff WITHOUT a profile row lose access
 --   (they had it only through the "is authenticated" hole).
---   Front desk gains patients UPDATE for admin columns. A front-desk update
---   that changes a clinical column used to affect 0 rows silently; it now
---   fails with 42501 (see section 3b).
+--   Front desk gains patients UPDATE for admin and intake columns. A
+--   front-desk update that changes a clinical column used to affect 0 rows
+--   silently; it now fails with 42501 (see section 3b).
 --
 -- Idempotent: drop policy if exists / create policy, create or replace
 -- function, create table if not exists; every table is guarded by
@@ -198,7 +203,7 @@ begin
 
     -- UPDATE: all staff roles, including front_desk (previously doctor/
     -- nurse/admin only, so front-desk edits silently updated 0 rows).
-    -- Front desk is limited to administrative columns by the
+    -- Front desk is limited to administrative and intake columns by the
     -- patients_front_desk_column_guard trigger in section 3b. Replaces
     -- doctors_update_patients; the name changed because it no longer
     -- describes the policy.
@@ -269,22 +274,37 @@ begin
 end $$;
 
 
--- ── 3b. Front desk may edit patient ADMIN details, not clinical fields ───────
+-- ── 3b. Front desk may edit patient ADMIN and INTAKE details, not clinical ───
 -- BEFORE UPDATE guard on patients. When the caller's role is front_desk, any
 -- column outside the allow-list whose value actually changes
 -- (OLD IS DISTINCT FROM NEW) raises SQLSTATE 42501. Unchanged values pass, so
 -- a client that sends the whole row (the iOS pushPatientEdits payload does)
--- succeeds when only admin fields differ. New columns are blocked for front
+-- succeeds when only allowed fields differ. New columns are blocked for front
 -- desk by default until added here.
 --
--- Everyone else passes through: nurse/doctor/admin; portal patients (their
--- own-row policy is separate); and the service role / API server and
--- migrations, where auth.uid() is null so auth_role() is null.
+-- Front desk does the patient intake on the iPad, so the patient-reported
+-- history it captures is allowed: chief complaint, PMH notes (with the
+-- medication list), family and surgical history, allergies, height, and the
+-- booked visit type. Clinician-only fields stay blocked: hpi, assessment,
+-- working diagnosis/ICD, management plan, exams, investigations, structured
+-- PMH/PSHx entries, social history, procedure-form JSON, acuity, mallampati,
+-- news2_spo2_scale2, pathway_data_json, ward/bed, and the portal link
+-- (auth_user_id, portal_*).
+--
+-- Everyone else passes through here: nurse/doctor/admin; portal patients
+-- (section 3c); and the service role / API server and migrations, where
+-- auth.uid() is null so auth_role() is null.
 --
 -- Allow-list sources: the columns in the migration tree, the api-server
--- PATCH /api/patients/:id demographics fields (patients-staff.ts), and the
--- iOS front-desk screens (FDPatientDemographicsPanel: check-in;
--- AppointmentSchedulerView: setting + operation_date when booking).
+-- PATCH /api/patients/:id demographics fields (patients-staff.ts), the
+-- dashboard (savePmhNotes: pmh_notes + family_history_notes) and the iOS
+-- front-desk screens (FDPatientDemographicsPanel: check-in, visit type, chief
+-- complaint; AppointmentSchedulerView: setting + operation_date;
+-- AdaptiveQuestionnaireSheet: chief complaint, PMH notes, surgical history,
+-- allergies; PatientDemographicsForm on the iPhone front desk: height, family
+-- history). The iOS app leaves blocked columns out of a front-desk push
+-- (FrontDeskPatientColumns in SyncService+AppointmentSync.swift mirrors this
+-- list).
 create or replace function public.enforce_front_desk_patient_columns()
 returns trigger
 language plpgsql
@@ -303,6 +323,10 @@ declare
     'insurance_provider', 'policy_number', 'pre_auth_status', 'referred_by',
     -- scheduling / encounter flow set by the front desk
     'check_in_time', 'encounter_status', 'setting', 'location', 'operation_date',
+    'visit_type',
+    -- patient-reported intake (questionnaire / registration)
+    'chief_complaint', 'pmh_notes', 'family_history_notes', 'surgical_history',
+    'allergies_json', 'height_cm',
     -- bookkeeping
     'updated_at', 'updated_by'
   ];
@@ -321,10 +345,66 @@ begin
 
   if blocked is not null then
     -- Column names only, never values (no PHI in the error).
-    raise exception 'front-desk staff may only change administrative patient fields; blocked: %',
+    raise exception 'front-desk staff may only change administrative and intake patient fields; blocked: %',
         array_to_string(blocked, ', ')
       using errcode = '42501',
-            hint = 'Front desk may edit identity, contact, next-of-kin, insurance and scheduling fields. Ask a nurse or doctor to change clinical fields.';
+            hint = 'Front desk may edit identity, contact, next-of-kin, insurance, scheduling and patient-reported intake fields. Ask a nurse or doctor to change clinical fields.';
+  end if;
+  return new;
+end;
+$$;
+
+
+-- ── 3c. Portal patients may edit their own contact details only ─────────────
+-- patients_update_own_contact (supabase-patient-portal-migration.sql) lets a
+-- portal patient UPDATE their own row, but it has no column list: a patient
+-- could change their name, date of birth, MRN, clinical fields, or the
+-- auth_user_id / portal_* link itself. This guard applies to a signed-in
+-- caller with no staff role (auth.uid() is not null, auth_role() is null),
+-- which after section 2 means a portal patient. RLS already limits that
+-- caller to their own row; this limits the columns. Any other column that
+-- changes raises SQLSTATE 42501, naming the columns but not their values.
+--
+-- Allow-list: phone, email, address, next of kin and emergency contact, plus
+-- the fields the portal profile page (front-desk app, patient/profile/page.tsx)
+-- already saves: photo_url, blood_group, height_cm, weight_kg. Those four are
+-- patient-reported; without them the portal's profile save would fail.
+-- Staff (any auth_role) and the service role (auth.uid() is null) pass.
+create or replace function public.enforce_patient_self_update_columns()
+returns trigger
+language plpgsql
+security invoker
+set search_path = public, pg_temp
+as $$
+declare
+  self_columns constant text[] := array[
+    -- contact
+    'phone', 'email', 'address',
+    -- next of kin / emergency contact
+    'nok_name', 'nok_relation', 'nok_phone', 'emergency_contact', 'emergency_phone',
+    -- portal profile page (patient-reported)
+    'photo_url', 'blood_group', 'height_cm', 'weight_kg',
+    -- bookkeeping
+    'updated_at', 'updated_by'
+  ];
+  blocked text[];
+begin
+  if auth.uid() is null or public.auth_role() is not null then
+    return new;
+  end if;
+
+  select array_agg(n.key order by n.key)
+    into blocked
+  from jsonb_each(to_jsonb(new)) as n
+  join jsonb_each(to_jsonb(old)) as o on o.key = n.key
+  where n.value is distinct from o.value
+    and not (n.key = any (self_columns));
+
+  if blocked is not null then
+    raise exception 'patients may only change their own contact details; blocked: %',
+        array_to_string(blocked, ', ')
+      using errcode = '42501',
+            hint = 'Contact the practice to change other details.';
   end if;
   return new;
 end;
@@ -333,15 +413,21 @@ $$;
 do $$
 begin
   if to_regclass('public.patients') is null then
-    raise notice '[staff-only-rls] public.patients missing - front-desk column guard skipped';
+    raise notice '[staff-only-rls] public.patients missing - patient column guards skipped';
     return;
   end if;
+  -- BEFORE triggers fire in name order: both guards run before
+  -- patients_set_updated_at / trg_updated_at, so they see only what the client
+  -- sent (updated_at is allow-listed either way).
   drop trigger if exists patients_front_desk_column_guard on public.patients;
-  -- BEFORE triggers fire in name order: this runs before trg_updated_at, so it
-  -- sees only what the client sent (updated_at is allow-listed either way).
   create trigger patients_front_desk_column_guard
     before update on public.patients
     for each row execute function public.enforce_front_desk_patient_columns();
+
+  drop trigger if exists patients_self_update_column_guard on public.patients;
+  create trigger patients_self_update_column_guard
+    before update on public.patients
+    for each row execute function public.enforce_patient_self_update_columns();
 end $$;
 
 

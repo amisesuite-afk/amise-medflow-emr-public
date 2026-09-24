@@ -177,14 +177,15 @@ What it does (idempotent; every table is guarded with `to_regclass()`):
   one of "is authenticated", keeping the name and command. This also catches policies applied
   by hand in production, such as the conflicting-duplicate tables above.
 - **Storage** staff policies are recreated with the staff check.
-- **Front desk may edit a patient's admin details.**
+- **Front desk may edit a patient's admin and intake details.** Front desk does patient intake
+  on the iPad, so the patient-reported history it captures is allowed.
   - `staff_update_patients` replaces `doctors_update_patients`, which covered doctor, nurse and
     admin only. Before, a front-desk update silently changed 0 rows.
   - The BEFORE UPDATE trigger `patients_front_desk_column_guard`
     (`enforce_front_desk_patient_columns()`) raises SQLSTATE `42501` when a `front_desk`
     caller changes a column outside the allow-list. It compares `OLD` and `NEW` with
     `IS DISTINCT FROM`, so a full-row update whose clinical values are unchanged still
-    succeeds.
+    succeeds. The error names the blocked columns, never their values.
   - Allow-list:
     - identity and contact: `full_name`, `first_name`, `last_name`, `date_of_birth`, `sex`,
       `phone`, `email`, `address`, `quarter`, `occupation`, `photo_url`, `mrn`, `nhi_number`;
@@ -193,15 +194,43 @@ What it does (idempotent; every table is guarded with `to_regclass()`):
     - insurance and referral: `insurance_provider`, `policy_number`, `pre_auth_status`,
       `referred_by`;
     - scheduling: `check_in_time`, `encounter_status`, `setting`, `location`,
-      `operation_date`;
+      `operation_date`, `visit_type`;
+    - patient-reported intake: `chief_complaint`, `pmh_notes` (includes the questionnaire's
+      `MEDICATIONS:` line), `family_history_notes`, `surgical_history`, `allergies_json`,
+      `height_cm`;
     - bookkeeping: `updated_at`, `updated_by`.
   - Everything else is blocked for front desk, including any column added later. That covers
-    clinical text, diagnosis, allergies, exams, plans, procedure JSON, `acuity`,
+    `hpi`, `assessment_text`, `working_diagnosis`/`working_diagnosis_icd`, `management_plan`,
+    `exam_*`, `investigations_json`, `pmh_entries_json`/`pshx_entries_json`, `social_history`,
+    the procedure-form `*_data_json` columns, `acuity`, `mallampati_score`,
     `news2_spo2_scale2`, `pathway_data_json`, `ward`/`bed_number`, and the portal link
     `auth_user_id`/`portal_*`.
-  - Nurse, doctor and admin are not affected. Neither are portal patients or the service role:
-    the API server has no `auth.uid()`, so the trigger lets it through. Note that this means
+  - Nurse, doctor and admin are not affected. Neither is the service role: the API server has
+    no `auth.uid()`, so the trigger lets it through. Note that this means
     `PATCH /api/patients/:id` is not restricted by the trigger.
+  - `patients.visit_type` is pushed by the iOS app but no migration in this tree adds it
+    (production has it). The allow-list entry is harmless where the column is missing.
+- **Portal patients may edit their own contact details only.** `patients_update_own_contact`
+  let a portal patient update any column of their own row, including name, date of birth,
+  MRN, clinical fields and `auth_user_id`. The BEFORE UPDATE trigger
+  `patients_self_update_column_guard` (`enforce_patient_self_update_columns()`) applies to a
+  signed-in caller with no staff role (`auth.uid()` set, `auth_role()` null), which after this
+  migration means a portal patient. It raises `42501` when that caller changes a column outside:
+  - contact: `phone`, `email`, `address`;
+  - next of kin: `nok_name`, `nok_relation`, `nok_phone`, `emergency_contact`,
+    `emergency_phone`;
+  - the other fields the portal profile page (`artifacts/front-desk/app/patient/profile/page.tsx`)
+    already saves: `photo_url`, `blood_group`, `height_cm`, `weight_kg`. Without them the
+    portal's profile save would fail;
+  - bookkeeping: `updated_at`, `updated_by`.
+- **Verified locally** (PGlite, every wired migration applied in runner order, this file applied
+  twice). As front desk: a phone change and a change of every intake column succeed; a full-row
+  update with unchanged clinical values succeeds; `hpi`, `acuity`, working diagnosis/ICD,
+  exams, plan, social history, investigations, procedure JSON, mallampati, Scale 2, pathway
+  data, ward/bed and `auth_user_id` each fail with `42501`. As a portal patient: contact, NOK,
+  emergency contact and the portal profile fields succeed; `full_name`, `date_of_birth`, `mrn`,
+  `hpi`, `allergies_json`, `auth_user_id` and `portal_enabled` fail with `42501`; another
+  patient's row changes 0 rows. Doctor and service role updates are unaffected.
 - **The new predicate is** `(select auth_role()) in ('front_desk','nurse','doctor','admin')`.
   `auth_role()` returns NULL for a user with no profile row, so such a user gets no access.
 
@@ -252,22 +281,24 @@ automatically. After creating the user, an admin must do one of the following:
 
 Until then the user can sign in but cannot see any data.
 
-**iOS front desk (needs a decision before running).** `pushPatientEdits` sends the whole
-patient row, and the iPad front-desk screens set some fields on the blocked list:
+**iOS front desk.** The iPad intake writes `chief_complaint`, `pmh_notes`, `surgical_history`
+and `allergies_json`, all now allowed. The iOS app also copes with a refusal:
 
-- `AdaptiveQuestionnaireSheet+StepForms2.swift` writes `chief_complaint`, `pmh_notes`,
-  `surgical_history` and `allergies_json`;
-- `FDPatientDemographicsPanel.swift` edits `chief_complaint`.
+- a front-desk push (role confirmed from `user_profiles`) leaves the blocked columns out of the
+  patient UPDATE, so a stale local copy of a clinical field cannot cause a refusal
+  (`FrontDeskPatientColumns` in `SyncService+AppointmentSync.swift` mirrors the allow-list; keep
+  them in step);
+- `SyncService.sync()` runs each step on its own, and each push loop handles errors per record.
+  A `42501` marks that record refused: it keeps its local data and `pendingSync`, is not
+  retried until the next sign-in or app launch, and the sync status shows "1 change not
+  permitted for your role".
 
-A local value that is stale (the device kept a dirty copy while a clinician changed the
-field) also counts as a change. Such a push now fails with `42501`, where before it silently
-changed 0 rows. `SyncService.sync()` runs its steps in one `do` block, so that failure also
-skips every later step of the sync cycle, on every sync, until the edit is cleared. Before
-running this migration, either:
-
-- allow-list the intake fields;
-- make the iOS push omit blocked columns for the front-desk role;
-- catch per-patient push errors.
+Open issue: the questionnaire also writes `hpi` and creates a pre-visit `clinical_notes` row.
+`hpi` stays blocked for front desk, and `doctors_insert_clinical_notes` (older than this
+migration) lets only doctor and admin insert notes. So from a front-desk device the
+patient-reported HPI and the pre-visit note stay on the device (and travel over peer sync),
+not to the cloud. Before this change the refused note insert also aborted the rest of every
+sync cycle; now only that note is held back.
 
 **Deploy order.** The API-side fixes for S-1 and S-3 (a staff role is required on
 `/api/staff/*` and on `requireStaffAuth`) check `user_profiles`. Until this migration runs,
