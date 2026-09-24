@@ -246,18 +246,18 @@ extension SyncService {
         let indication: String?
         let instructions: String?
         let prescribed_at: String
+        let updated_at: String?   // kept current by the trg_updated_at trigger (Migration 32)
         let deleted_at: String?   // nil when live, or when the server predates Migration 87
     }
 
     func pullPrescriptions(context: ModelContext) async throws {
         let rows: [RemotePrescription] = try await selectIncludingDeleted(
             from: "prescriptions",
-            columns: "id, patient_id, drug_name, dose, route, frequency, duration, indication, instructions, prescribed_at",
+            columns: "id, patient_id, drug_name, dose, route, frequency, duration, indication, instructions, prescribed_at, updated_at",
             orderBy: "prescribed_at", limit: 500)
 
         let allLocal = try context.fetch(FetchDescriptor<Prescription>())
         let allPatients = try context.fetch(FetchDescriptor<Patient>())
-        let iso = ISO8601DateFormatter()
 
         let deleted = SyncTombstones.ids(in: .prescriptions)
         for row in rows {
@@ -270,7 +270,40 @@ extension SyncService {
                 if let existing, !existing.pendingSync { context.delete(existing) }
                 continue
             }
-            guard existing == nil else { continue }
+            let prescribedAt = SyncTimestamp.parse(row.prescribed_at)
+            if let existing {
+                // Edited on another device or the web: take the server's values unless this
+                // device has unsent changes (ChildPullMerge).
+                let sameDosing: Bool = existing.drug == row.drug_name
+                    && ChildPullMerge.same(existing.dose, row.dose)
+                    && PrescriptionRoute.sameRoute(local: existing.route, server: row.route)
+                    && ChildPullMerge.same(existing.frequency, row.frequency)
+                let sameDetails: Bool = ChildPullMerge.same(existing.duration, row.duration)
+                    && ChildPullMerge.same(existing.indication, row.indication)
+                    && ChildPullMerge.same(existing.instructions, row.instructions)
+                var sameTime = true
+                if let prescribedAt { sameTime = ChildPullMerge.sameInstant(prescribedAt, existing.prescribedAt) }
+                let differs = !(sameDosing && sameDetails && sameTime)
+                let serverUpdatedAt = SyncTimestamp.parse(row.updated_at)
+                if ChildPullMerge.action(hasLocal: true, localPending: existing.pendingSync,
+                                         fieldsDiffer: differs, serverUpdatedAt: serverUpdatedAt,
+                                         localUpdatedAt: existing.updatedAt) == .update {
+                    existing.drug = row.drug_name
+                    existing.dose = row.dose ?? ""
+                    // The local label is kept while it is the same route ("PO/IV" is "other").
+                    if !PrescriptionRoute.sameRoute(local: existing.route, server: row.route) {
+                        existing.route = PrescriptionRoute.display(fromServer: row.route) ?? ""
+                    }
+                    existing.frequency = row.frequency ?? ""
+                    existing.duration = row.duration ?? ""
+                    existing.indication = row.indication ?? ""
+                    existing.instructions = row.instructions
+                    if let prescribedAt { existing.prescribedAt = prescribedAt }
+                    existing.updatedAt = serverUpdatedAt ?? .now
+                    existing.syncedAt = .now
+                }
+                continue
+            }
             guard let patient = allPatients.first(where: { $0.isLive && $0.remoteId == row.patient_id }) else { continue }
 
             let rx = Prescription(drug: row.drug_name,
@@ -280,7 +313,7 @@ extension SyncService {
                                   duration: row.duration ?? "",
                                   indication: row.indication ?? "")
             rx.instructions = row.instructions
-            rx.prescribedAt = iso.date(from: row.prescribed_at) ?? .now
+            rx.prescribedAt = prescribedAt ?? .now
             rx.patient = patient
             rx.remoteId = row.id
             rx.pendingSync = false

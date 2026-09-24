@@ -159,7 +159,6 @@ extension SyncService {
 
         let allLocal = try context.fetch(FetchDescriptor<BillingLineItem>())
         let allPatients = try context.fetch(FetchDescriptor<Patient>())
-        let iso = ISO8601DateFormatter()
 
         let deleted = SyncTombstones.ids(in: .billingItems)
         for row in rows {
@@ -172,7 +171,37 @@ extension SyncService {
                 if let existing, !existing.pendingSync { context.delete(existing) }
                 continue
             }
-            guard existing == nil else { continue }
+            let addedAt = SyncTimestamp.parse(row.added_at)
+            if let existing {
+                // Edited on another device or the web (units, fee, modifier, note): take the
+                // server's values unless this device has unsent changes. patient_billing_items
+                // has no updated_at, so the values decide (ChildPullMerge).
+                let sameCode: Bool = existing.cptCode == row.cpt_code
+                    && existing.cptDescription == row.cpt_description
+                    && existing.cptCategory == row.cpt_category
+                let sameCharge: Bool = existing.units == row.units
+                    && ChildPullMerge.same(existing.amountXCD, row.amount_xcd)
+                    && existing.modifier == row.modifier
+                    && existing.note == row.note
+                var sameTime = true
+                if let addedAt { sameTime = ChildPullMerge.sameInstant(addedAt, existing.addedAt) }
+                if ChildPullMerge.action(hasLocal: true, localPending: existing.pendingSync,
+                                         fieldsDiffer: !(sameCode && sameCharge && sameTime),
+                                         serverUpdatedAt: nil,
+                                         localUpdatedAt: existing.updatedAt) == .update {
+                    existing.cptCode        = row.cpt_code
+                    existing.cptDescription = row.cpt_description
+                    existing.cptCategory    = row.cpt_category
+                    existing.units          = row.units
+                    existing.amountXCD      = row.amount_xcd
+                    existing.modifier       = row.modifier
+                    existing.note           = row.note
+                    if let addedAt { existing.addedAt = addedAt }
+                    existing.updatedAt      = .now
+                    existing.syncedAt       = .now
+                }
+                continue
+            }
             guard let patient = allPatients.first(where: { $0.isLive && $0.remoteId == row.patient_id }) else { continue }
 
             let item = BillingLineItem(code: row.cpt_code,
@@ -182,7 +211,7 @@ extension SyncService {
             item.amountXCD  = row.amount_xcd
             item.modifier   = row.modifier
             item.note       = row.note
-            item.addedAt    = iso.date(from: row.added_at) ?? .now
+            item.addedAt    = addedAt ?? .now
             item.patient    = patient
             item.remoteId   = row.id
             item.pendingSync = false

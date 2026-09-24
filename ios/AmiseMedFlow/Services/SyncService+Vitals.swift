@@ -204,7 +204,6 @@ extension SyncService {
 
         let allLocal = try context.fetch(FetchDescriptor<VitalsEntry>())
         let allPatients = try context.fetch(FetchDescriptor<Patient>())
-        let iso = ISO8601DateFormatter()
 
         let deletedVitals = SyncTombstones.ids(in: .vitals)
         for row in rows {
@@ -217,11 +216,50 @@ extension SyncService {
                 if let existing, !existing.pendingSync { context.delete(existing) }
                 continue
             }
-            guard existing == nil else { continue }
+            let recordedAt = SyncTimestamp.parse(row.recorded_at)
+            let avpu = AVPU(rawValue: row.avpu ?? "A") ?? .alert
+            let onO2 = row.on_supplemental_o2 ?? false
+            if let existing {
+                // Corrected on another device or the web: take the server's readings unless this
+                // device has unsent changes. patient_vitals has no updated_at, so the values
+                // decide (ChildPullMerge).
+                let sameCore: Bool = existing.bpSystolic == row.bp_systolic
+                    && existing.bpDiastolic == row.bp_diastolic
+                    && existing.heartRate == row.heart_rate
+                    && existing.respiratoryRate == row.respiratory_rate
+                    && existing.spo2 == row.spo2
+                let sameOther: Bool = ChildPullMerge.same(existing.temperatureCelsius, row.temperature_c)
+                    && ChildPullMerge.same(existing.weightKg, row.weight_kg)
+                    && ChildPullMerge.same(existing.glucoseMmol, row.glucose_mmol)
+                    && existing.avpu == avpu
+                    && existing.onSupplementalO2 == onO2
+                    && ChildPullMerge.same(existing.notes, row.notes)
+                var sameTime = true
+                if let recordedAt { sameTime = ChildPullMerge.sameInstant(recordedAt, existing.recordedAt) }
+                if ChildPullMerge.action(hasLocal: true, localPending: existing.pendingSync,
+                                         fieldsDiffer: !(sameCore && sameOther && sameTime),
+                                         serverUpdatedAt: nil,
+                                         localUpdatedAt: existing.updatedAt) == .update {
+                    if let recordedAt { existing.recordedAt = recordedAt }
+                    existing.bpSystolic         = row.bp_systolic
+                    existing.bpDiastolic        = row.bp_diastolic
+                    existing.heartRate          = row.heart_rate
+                    existing.respiratoryRate    = row.respiratory_rate
+                    existing.temperatureCelsius = row.temperature_c
+                    existing.spo2               = row.spo2
+                    existing.weightKg           = row.weight_kg
+                    existing.glucoseMmol        = row.glucose_mmol
+                    existing.avpu               = avpu
+                    existing.onSupplementalO2   = onO2
+                    existing.notes              = row.notes
+                    existing.updatedAt          = .now
+                    existing.syncedAt           = .now
+                }
+                continue
+            }
             guard let patient = allPatients.first(where: { $0.isLive && $0.remoteId == row.patient_id }) else { continue }
 
-            let entry = VitalsEntry(patient: patient,
-                                   recordedAt: iso.date(from: row.recorded_at) ?? .now)
+            let entry = VitalsEntry(patient: patient, recordedAt: recordedAt ?? .now)
             entry.bpSystolic       = row.bp_systolic
             entry.bpDiastolic      = row.bp_diastolic
             entry.heartRate        = row.heart_rate
@@ -230,8 +268,8 @@ extension SyncService {
             entry.spo2             = row.spo2
             entry.weightKg         = row.weight_kg
             entry.glucoseMmol      = row.glucose_mmol
-            entry.avpu             = AVPU(rawValue: row.avpu ?? "A") ?? .alert
-            entry.onSupplementalO2 = row.on_supplemental_o2 ?? false
+            entry.avpu             = avpu
+            entry.onSupplementalO2 = onO2
             entry.notes            = row.notes
             entry.remoteId         = row.id
             entry.pendingSync      = false

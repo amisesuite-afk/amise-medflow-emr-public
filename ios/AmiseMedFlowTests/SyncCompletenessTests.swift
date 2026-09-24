@@ -6,6 +6,8 @@ import XCTest
 ///    server's CHECK constraint allows (PrescriptionRoute).
 /// 2. An UPDATE that RLS filters out returns no row and no error: while the row still exists
 ///    and the user is signed in, that is a refusal (SyncZeroRowUpdate).
+/// 3. The prescription, vitals and billing pulls update an existing clean local row when the
+///    server's copy differs (and is newer, where the table has updated_at) (ChildPullMerge).
 final class SyncCompletenessTests: XCTestCase {
 
     // MARK: - Prescription route
@@ -108,5 +110,78 @@ final class SyncCompletenessTests: XCTestCase {
                                                      rowStillExists: exists),
                            .retryLater, "requests run as anon: not this user's role")
         }
+    }
+
+    // MARK: - Child pulls: merge decision
+
+    private let early = Date(timeIntervalSince1970: 1_750_000_000)
+    private var later: Date { early.addingTimeInterval(60) }
+
+    func testRowNotHereIsInserted() {
+        XCTAssertEqual(ChildPullMerge.action(hasLocal: false, localPending: false, fieldsDiffer: true,
+                                             serverUpdatedAt: nil, localUpdatedAt: nil), .insert)
+    }
+
+    func testPendingLocalRowIsNeverOverwritten() {
+        for server in [nil, later] as [Date?] {
+            XCTAssertEqual(ChildPullMerge.action(hasLocal: true, localPending: true, fieldsDiffer: true,
+                                                 serverUpdatedAt: server, localUpdatedAt: early),
+                           .keepLocal, "pull protection: unsent local changes win")
+        }
+    }
+
+    func testNewerServerRowUpdatesACleanLocalRow() {
+        XCTAssertEqual(ChildPullMerge.action(hasLocal: true, localPending: false, fieldsDiffer: true,
+                                             serverUpdatedAt: later, localUpdatedAt: early), .update,
+                       "a prescription edited on the web reaches this device")
+    }
+
+    func testOlderOrSameServerRowIsNotApplied() {
+        XCTAssertEqual(ChildPullMerge.action(hasLocal: true, localPending: false, fieldsDiffer: true,
+                                             serverUpdatedAt: early, localUpdatedAt: later), .keepLocal)
+        XCTAssertEqual(ChildPullMerge.action(hasLocal: true, localPending: false, fieldsDiffer: true,
+                                             serverUpdatedAt: early, localUpdatedAt: early), .keepLocal)
+    }
+
+    func testTableWithoutUpdatedAtComparesTheValues() {
+        XCTAssertEqual(ChildPullMerge.action(hasLocal: true, localPending: false, fieldsDiffer: true,
+                                             serverUpdatedAt: nil, localUpdatedAt: later), .update,
+                       "vitals and billing: a clean local row takes the server's values")
+        XCTAssertEqual(ChildPullMerge.action(hasLocal: true, localPending: false, fieldsDiffer: false,
+                                             serverUpdatedAt: nil, localUpdatedAt: early), .keepLocal,
+                       "same values: nothing to write")
+    }
+
+    func testLocalRowFromBeforeUpdatedAtTakesADifferentServerRow() {
+        XCTAssertEqual(ChildPullMerge.action(hasLocal: true, localPending: false, fieldsDiffer: true,
+                                             serverUpdatedAt: early, localUpdatedAt: nil), .update)
+    }
+
+    func testSameValuesAreNeverRewrittenEvenWhenTheServerIsNewer() {
+        XCTAssertEqual(ChildPullMerge.action(hasLocal: true, localPending: false, fieldsDiffer: false,
+                                             serverUpdatedAt: later, localUpdatedAt: early), .keepLocal)
+    }
+
+    func testValueComparisons() {
+        XCTAssertTrue(ChildPullMerge.sameInstant(early, early.addingTimeInterval(0.4)),
+                      "sent without fractions, read back truncated")
+        XCTAssertFalse(ChildPullMerge.sameInstant(early, early.addingTimeInterval(2)))
+        XCTAssertTrue(ChildPullMerge.same(37.9, 37.9))
+        XCTAssertTrue(ChildPullMerge.same(nil as Double?, nil))
+        XCTAssertFalse(ChildPullMerge.same(37.9, nil))
+        XCTAssertFalse(ChildPullMerge.same(37.9, 38.0))
+        XCTAssertTrue(ChildPullMerge.same(nil as String?, ""), "nil and empty text are the same")
+        XCTAssertFalse(ChildPullMerge.same("With food", nil))
+    }
+
+    func testServerTimestampsWithAndWithoutFractions() {
+        XCTAssertEqual(SyncTimestamp.parse("2025-06-15T15:06:40+00:00"), early)
+        XCTAssertEqual(SyncTimestamp.parse("2025-06-15T15:06:40Z"), early)
+        let micro = SyncTimestamp.parse("2025-06-15T15:06:40.123456+00:00")
+        XCTAssertNotNil(micro, "Postgres now() has microseconds")
+        XCTAssertEqual(micro?.timeIntervalSince1970 ?? 0, early.timeIntervalSince1970, accuracy: 0.2)
+        XCTAssertNil(SyncTimestamp.parse(nil))
+        XCTAssertNil(SyncTimestamp.parse(""))
+        XCTAssertNil(SyncTimestamp.parse("not a date"))
     }
 }
