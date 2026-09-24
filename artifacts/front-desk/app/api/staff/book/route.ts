@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceClient } from '@/lib/supabase';
 import { APPOINTMENT_TYPES } from '@/lib/scheduling';
+import { requireStaff } from '@/lib/staff-auth';
 
 export const runtime = 'nodejs';
 
@@ -106,6 +107,9 @@ function preferredSlot(payload: StaffBookingPayload): string | null {
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  const auth = await requireStaff(req);
+  if (auth.response) return auth.response;
+
   let payload: StaffBookingPayload;
   try {
     payload = (await req.json()) as StaffBookingPayload;

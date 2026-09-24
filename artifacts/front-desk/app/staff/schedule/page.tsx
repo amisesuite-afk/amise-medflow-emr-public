@@ -3,6 +3,7 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useCallback, useRef } from 'react';
+import { staffFetch } from '@/lib/staff-supabase';
 
 const TEAL = '#0d9488';
 const BORDER = '#334155';
@@ -162,7 +163,7 @@ function PatientSection({ v, set }: { v: PatientFields; set(f: Partial<PatientFi
     if (q.length < 2) { setSuggestions([]); setShowDropdown(false); return; }
     debounceRef.current = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/staff/patients?q=${encodeURIComponent(q)}`);
+        const res = await staffFetch(`/api/staff/patients?q=${encodeURIComponent(q)}`);
         if (res.ok) {
           const data = await res.json() as { patients: PatientSuggestion[] };
           setSuggestions(data.patients ?? []);
@@ -472,7 +473,7 @@ export default function StaffSchedulePage() {
     if (recentLoading) return;
     setRecentLoading(true);
     try {
-      const res = await fetch('/api/staff/bookings');
+      const res = await staffFetch('/api/staff/bookings');
       if (res.ok) {
         const data = await res.json() as { bookings: BookingRecord[] };
         setRecentRows(data.bookings ?? []);
@@ -485,7 +486,7 @@ export default function StaffSchedulePage() {
 
   async function handleNotify(id: string) {
     try {
-      const res = await fetch(`/api/staff/lab-alert/${id}`, { method: 'POST' });
+      const res = await staffFetch(`/api/staff/lab-alert/${id}`, { method: 'POST' });
       const json = await res.json() as { message?: string; error?: string };
       if (res.ok) {
         setRecentRows(prev => prev.map(r => r.id === id ? { ...r, result_alert_pending: true } : r));
@@ -512,7 +513,7 @@ export default function StaffSchedulePage() {
         patient_phone: patient.phone,
         patient_email: patient.email,
       };
-      const res = await fetch('/api/staff/book', {
+      const res = await staffFetch('/api/staff/book', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

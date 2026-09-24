@@ -1,9 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { getServiceClient } from '@/lib/supabase';
+import { requireStaff } from '@/lib/staff-auth';
 
 export const runtime = 'nodejs';
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(req: NextRequest): Promise<NextResponse> {
+  const auth = await requireStaff(req);
+  if (auth.response) return auth.response;
+
   const since = new Date(Date.now() - 7 * 86400_000).toISOString();
 
   const { data, error } = await getServiceClient()
