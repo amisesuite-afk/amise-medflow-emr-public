@@ -63,7 +63,7 @@ Related existing documents: `docs/SECRETS-HYGIENE.md`, `docs/AUDIT-TRAIL-COVERAG
 | A-4 | Hide or label the dashboard NEWS2 panel now. Replace the three implementations with one tested implementation | ENG | **CSO** signs the fix | **P0** | Open | H-04 |
 | A-5 | Rewrite the prep-instruction medication wording. Remove or justify the forced `'auto'` in `cron.ts:85`. Check `draft.safe` | PO (clinical content), ENG | **PO** approves the wording | **P0** | Open | H-09, H-10 |
 | A-6 | Appoint a CSO. Write a Clinical Risk Management Plan. Review and accept the hazard log | PO | **PO** appoints. **CSO** signs the safety case | P1 | Open | `clinical-safety-case.md` |
-| A-7 | Remove the api.qrserver.com call (session token leak) | ENG | — | P1 | Open | S-4 |
+| A-7 | Remove the api.qrserver.com call (session token leak) | ENG | — | P1 | **Done**: local QR generation (`LocalQrCode.tsx`) and a CI lint (`lint:no-external-qr`) | S-4 |
 | A-8 | iOS peer-sync authentication hardening, or disable peer sync by default | ENG | CSO/PO accepts the residual risk | P1 | Open | S-5 |
 | A-9 | Add PHI scrubbing to web and API Sentry | ENG | — | P1 | Open | S-6 |
 | A-10 | Clinical-field merge with timestamps or conflict prompts. Server-side soft delete | ENG | CSO | P1 | Open | H-12, H-14 |

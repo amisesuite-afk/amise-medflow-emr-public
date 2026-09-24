@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { getApiOrigin } from '@/lib/api-origin';
 import { getSupabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
+import { LocalQrCode } from '@/components/LocalQrCode';
 
 const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
@@ -717,8 +718,8 @@ export default function QuestionnaireManagerTab() {
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
                 <div style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', letterSpacing: '0.06em' }}>SCAN ON PATIENT DEVICE</div>
                 <div style={{ padding: 10, borderRadius: 10, background: '#fff', border: '2px solid #e5e7eb', display: 'inline-block' }}>
-                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(patientUrl)}`}
-                    alt="QR code" width={180} height={180} style={{ display: 'block', borderRadius: 4 }} />
+                  {/* Generated locally — the URL carries the session token, so it must never go to a third-party QR service. */}
+                  <LocalQrCode value={patientUrl} size={180} alt="QR code for the patient questionnaire link" />
                 </div>
               </div>
 

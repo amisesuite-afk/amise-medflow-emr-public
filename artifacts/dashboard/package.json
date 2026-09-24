@@ -46,6 +46,7 @@
     "@tailwindcss/vite": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@types/node": "catalog:",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
@@ -84,6 +85,7 @@
     "@workspace/patient-state": "workspace:*",
     "@workspace/triage-engine": "workspace:*",
     "html2canvas": "^1.4.1",
-    "jspdf": "^4.2.1"
+    "jspdf": "^4.2.1",
+    "qrcode": "^1.5.4"
   }
 }

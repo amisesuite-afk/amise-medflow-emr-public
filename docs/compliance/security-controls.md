@@ -100,10 +100,11 @@ These are **potential vulnerabilities identified by reading the code**. Each nee
 - `api-server/src/lib/supabase.ts:28-50`. Combined with S-2, a portal patient's token may pass staff-only API routes, which use `service_role` and bypass RLS.
 - **Fix:** require a `user_profiles` row with a staff role. Give machine callers a separate secret. Use constant-time comparison.
 
-**S-4: A patient session token is sent to a third-party QR service. (High.)**
+**S-4: A patient session token is sent to a third-party QR service. (High.) Fixed.**
 
-- `dashboard/src/pages/tabs/QuestionnaireManagerTab.tsx:720` puts the questionnaire URL, which contains the session token, in a request to `api.qrserver.com`.
-- **Fix:** generate the QR code locally.
+- `dashboard/src/pages/tabs/QuestionnaireManagerTab.tsx` put the questionnaire URL, which contains the session token, in a request to `api.qrserver.com`.
+- **Fixed:** the QR code is now generated in the browser (`dashboard/src/components/LocalQrCode.tsx`, `qrcode` npm package, MIT). No request leaves the page. `pnpm --filter @workspace/scripts run lint:no-external-qr` (CI) fails the build if any web source references a third-party QR or chart-image service. No other web call sites existed. iOS has no QR generation today; if one is added, use CoreImage `CIQRCodeGenerator`.
+- **Residual:** tokens already sent before the fix may be in the vendor's logs. Questionnaire tokens expire (`supabase-questionnaire-token-expiry-migration.sql`), which limits that exposure.
 
 **S-5: iOS peer-sync peer authentication is weak. (High, to verify.)**
 

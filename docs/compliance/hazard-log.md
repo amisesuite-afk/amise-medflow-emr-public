@@ -486,7 +486,7 @@ The full analysis is in `security-controls.md` §3. In summary:
 - **RLS on `patients` and `documents` is `auth.uid() is not null`** (`supabase-schema.sql:319-320`, `supabase-clinical-records-migration.sql:312-313`), while **portal patients are Supabase Auth users in the same project** (`routes/portal.ts:65`).
 - **`requireStaffAuth()` accepts any Supabase JWT** (`api-server/src/lib/supabase.ts:28-50`).
 - **iOS peer sync accepts any nearby device presenting a non-cryptographic hash of the user's email.** That hash is broadcast in Bonjour discovery info (`PeerSyncService.swift:86-91`; `+MCDelegates.swift:19`; `+ApplyRecords.swift:233-237`).
-- **A patient questionnaire token is sent to api.qrserver.com** (`QuestionnaireManagerTab.tsx:720`).
+- ~~**A patient questionnaire token is sent to api.qrserver.com** (`QuestionnaireManagerTab.tsx:720`).~~ **Fixed:** QR codes are generated locally (`LocalQrCode.tsx`), with a CI lint against third-party QR services.
 
 | | |
 |---|---|

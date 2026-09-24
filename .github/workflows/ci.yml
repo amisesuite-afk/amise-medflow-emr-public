@@ -48,6 +48,9 @@ jobs:
       - name: Scan for navigation-lockout patterns (advisory)
         run: pnpm --filter @workspace/scripts run scan:nav-lockout
 
+      - name: Lint for third-party QR/chart services (token leak, S-4)
+        run: pnpm --filter @workspace/scripts run lint:no-external-qr
+
       - name: Build all packages
         env:
           VITE_SUPABASE_URL: https://placeholder.supabase.co
