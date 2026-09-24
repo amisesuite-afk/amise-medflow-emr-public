@@ -23,7 +23,7 @@ extension SyncService {
 
     private static let outboxKey = "com.amise.medflow.sync-outbox"
 
-    struct OutboxEntry: Codable {
+    private struct OutboxEntry: Codable {
         let entityType: String
         let entityId:   String
         let payload:    [String: String]   // values serialised to String for Codable compatibility
@@ -42,6 +42,7 @@ extension SyncService {
         pendingCount += 1
     }
 
+    @MainActor
     func flushOutbox() async {
         let entries = loadOutbox()
         guard !entries.isEmpty else { return }
@@ -106,14 +107,14 @@ extension SyncService {
         }
     }
 
-    func loadOutbox() -> [OutboxEntry] {
+    private func loadOutbox() -> [OutboxEntry] {
         guard let data = UserDefaults.standard.data(forKey: Self.outboxKey),
               let entries = try? JSONDecoder().decode([OutboxEntry].self, from: data)
         else { return [] }
         return entries
     }
 
-    func saveOutbox(_ entries: [OutboxEntry]) {
+    private func saveOutbox(_ entries: [OutboxEntry]) {
         if let data = try? JSONEncoder().encode(entries) {
             UserDefaults.standard.set(data, forKey: Self.outboxKey)
         }
