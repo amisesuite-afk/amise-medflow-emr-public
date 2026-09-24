@@ -361,4 +361,23 @@ struct WardReview: Codable {
         "Urine output", "Mobilising", "Wound", "Drains / lines / catheter",
         "VTE prophylaxis", "Antibiotics (day / stop date)", "Bloods reviewed", "Discharge plan"
     ]
+
+    /// Items that must be OK before discharge is suggested.
+    static let dischargeItems = [
+        "Pain controlled", "Eating & drinking", "Bowels / flatus", "Urine output",
+        "Mobilising", "Wound", "Discharge plan"
+    ]
+
+    /// Discharge readiness from today's checklist and the latest NEWS2 (nil = no recent obs).
+    /// Returns the items still outstanding; empty means criteria met. A prompt, not a decision.
+    func dischargeOutstanding(latestNEWS2: Int?, obsHoursOld: Int?) -> [String] {
+        var out = Self.dischargeItems.filter { marks[$0] != .ok }
+        if let n = latestNEWS2, let h = obsHoursOld, h < 12 {
+            if n > 2 { out.append("NEWS2 \(n) (needs ≤2)") }
+        } else {
+            out.append("Observations within 12 h")
+        }
+        if Self.items.contains(where: { marks[$0] == .concern }) { out.append("Open concerns") }
+        return out
+    }
 }

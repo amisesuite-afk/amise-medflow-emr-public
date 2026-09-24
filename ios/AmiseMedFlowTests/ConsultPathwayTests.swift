@@ -178,6 +178,20 @@ final class BurnsAssessmentTests: XCTestCase {
     }
 }
 
+final class WardReviewTests: XCTestCase {
+
+    func testDischargeNeedsChecklistAndRecentLowNEWS2() {
+        var w = WardReview()
+        XCTAssertFalse(w.dischargeOutstanding(latestNEWS2: 1, obsHoursOld: 2).isEmpty)
+        for item in WardReview.dischargeItems { w.marks[item] = .ok }
+        XCTAssertTrue(w.dischargeOutstanding(latestNEWS2: 1, obsHoursOld: 2).isEmpty)
+        XCTAssertTrue(w.dischargeOutstanding(latestNEWS2: 4, obsHoursOld: 2).contains { $0.hasPrefix("NEWS2") })
+        XCTAssertTrue(w.dischargeOutstanding(latestNEWS2: 1, obsHoursOld: 20).contains("Observations within 12 h"))
+        w.marks["Drains / lines / catheter"] = .concern
+        XCTAssertTrue(w.dischargeOutstanding(latestNEWS2: 1, obsHoursOld: 2).contains("Open concerns"))
+    }
+}
+
 final class ScreeningEngineTests: XCTestCase {
 
     private func ids(age: Int?, sex: Sex, bmi: Double? = nil,

@@ -23,6 +23,7 @@ struct WardReviewPanel: View {
             statusSection
             vitalsSection
             checklistSection
+            dischargeSection
             actionSection
         }
         .onAppear(perform: load)
@@ -99,6 +100,32 @@ struct WardReviewPanel: View {
             let concerns = WardReview.items.filter { data.marks[$0] == .concern }.count
             let done = WardReview.items.filter { data.marks[$0] != nil }.count
             Text("\(done)/\(WardReview.items.count) reviewed" + (concerns > 0 ? " · \(concerns) concern\(concerns == 1 ? "" : "s")" : ""))
+        }
+    }
+
+    private var dischargeSection: some View {
+        let v = latestVitals
+        let hours = v.map { Int(Date.now.timeIntervalSince($0.recordedAt) / 3600) }
+        let outstanding = data.dischargeOutstanding(latestNEWS2: v?.news2Score, obsHoursOld: hours)
+        return Section {
+            if outstanding.isEmpty {
+                Label("Discharge criteria met — consider discharge", systemImage: "checkmark.seal.fill")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.green)
+            } else {
+                VStack(alignment: .leading, spacing: 3) {
+                    Label("Not yet ready for discharge", systemImage: "hourglass")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    Text("Outstanding: " + outstanding.joined(separator: ", "))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        } header: {
+            Text("Discharge readiness")
+        } footer: {
+            Text("A prompt from the checklist and NEWS2 — the decision to discharge is the clinician's.")
         }
     }
 
