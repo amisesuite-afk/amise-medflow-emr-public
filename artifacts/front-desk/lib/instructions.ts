@@ -27,6 +27,27 @@ const URGENT_SIGNS_GENERAL = [
   'Difficulty breathing or chest pain',
 ];
 
+// Hazard H-10 / CLAUDE.md Tone rule: these instructions are emailed to the
+// patient automatically on booking (lib/email.ts), so they carry logistics
+// only — never an instruction to take, hold, stop, skip or adjust a medicine.
+// Patients on insulin, diabetes medicines or blood thinners are told to call
+// the clinic for individual instructions. Wording approved by Dr Kabiye and
+// matched to the api-server prep templates (artifacts/api-server/src/lib/sms.ts).
+// Enforced by `pnpm --filter @workspace/scripts run lint:patient-instructions`.
+// Any wording change here needs the clinical owner's approval.
+const MEDICATIONS_CALL =
+  'MEDICATIONS: If you take insulin, blood thinners or diabetes medicines, please call the clinic before your procedure for instructions. If you have any questions about your other medicines, please call us.';
+
+const BLOOD_THINNERS_CALL =
+  'BLOOD THINNERS: If you take blood thinners, please call the clinic before your appointment for instructions.';
+
+// Standard pre-procedure fasting (ASA 2023 / ESAIC) for general anaesthesia,
+// sedation, OGD and ERCP — the same 6 h food / 2 h clear-fluid rule as the
+// api-server templates. Not used for colonoscopy (bowel prep needs fluid),
+// minor procedures, or the diabetic foot clinic.
+const FASTING_STANDARD =
+  'Nothing to eat for 6 hours and nothing to drink for 2 hours before your appointment time (clear fluids such as water are fine until then).';
+
 const BRING_STANDARD = [
   'Valid photo ID (passport or national ID)',
   'Health insurance card (if applicable)',
@@ -143,9 +164,9 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
     location:    'Tapion Hospital (La Toc, Castries)',
     duration:    '60–90 minutes (plus recovery time)',
     beforeVisit: [
-      'Nil by mouth: no food or drink (including water) from midnight the night before your procedure.',
-      'Blood thinners (warfarin, rivaroxaban, apixaban, clopidogrel, aspirin): stop as specifically instructed by Dr Kabiye. Do not stop without instruction.',
-      'Diabetic patients: adjust your insulin or oral medications as directed. Do not skip meals the day before. On the procedure day, hold your morning diabetes medications unless told otherwise.',
+      FASTING_STANDARD,
+      BLOOD_THINNERS_CALL,
+      MEDICATIONS_CALL,
       'Arrange for a responsible adult to drive you home — sedation will be given and you cannot drive or operate machinery for 24 hours after.',
       'Plan for a full day at the hospital (arrival, preparation, procedure, and recovery).',
       'You may be required to stay overnight — arrange accordingly.',
@@ -188,9 +209,8 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
       '1 day before: Clear liquids only — water, apple juice (no pulp), clear broth, plain jelly (no red or purple colours). No solid food at all.',
       'Bowel preparation medication: take exactly as prescribed and at the times specified. This is essential for a successful examination.',
       'Stay close to a toilet once you start the bowel preparation.',
-      'After midnight on the day of procedure: nil by mouth (no food or drink including water). Small sips of water to take essential medications only — check with Dr Kabiye.',
-      'Blood thinners: stop as instructed by Dr Kabiye.',
-      'Diabetic patients: adjust insulin and medications as directed.',
+      'On the day of your procedure: finish your bowel prep as directed. Clear fluids only, then nothing to drink for 2 hours before your appointment time.',
+      MEDICATIONS_CALL,
       'Arrange for a responsible adult to drive you home — you cannot drive after sedation.',
     ],
     onTheDay: [
@@ -226,12 +246,9 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
     location:    'Tapion Hospital (La Toc, Castries)',
     duration:    '15–30 minutes (plus preparation and recovery)',
     beforeVisit: [
-      'Nil by mouth: no food or milk for 6 hours before the procedure.',
-      'Clear fluids (water only) permitted up to 2 hours before the procedure.',
-      'Continue your regular medications with a small sip of water unless told otherwise.',
+      FASTING_STANDARD,
+      MEDICATIONS_CALL,
       'If you take medication for acid reflux (proton pump inhibitors), check with Dr Kabiye whether to pause them.',
-      'Diabetic patients: adjust medications as directed.',
-      'Blood thinners: stop as instructed.',
       'If sedation is planned: arrange for a responsible adult to drive you home.',
       'If throat spray only (no sedation): you may be able to drive yourself — confirm with the team.',
     ],
@@ -358,9 +375,8 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
     duration:    'As per surgical team instructions',
     beforeVisit: [
       'Pre-operative assessment: you will be seen by the team before your surgery date to review your fitness for anaesthesia.',
-      'Nil by mouth: no food for 6 hours before surgery; no clear fluids for 2 hours before.',
-      'Blood thinners: stop exactly as instructed by Dr Kabiye. Do not stop without being told to do so.',
-      'Diabetic medications: hold morning insulin/tablets on the day of surgery unless instructed otherwise.',
+      FASTING_STANDARD,
+      MEDICATIONS_CALL,
       'Shower with soap or antiseptic wash (e.g. Dettol or Savlon) the evening before and the morning of surgery.',
       'Remove nail polish (fingers and toes), jewellery, piercings, and contact lenses before arriving.',
       'Do not apply creams, lotions, or deodorant to the surgical site on the day.',
@@ -397,8 +413,8 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
     duration:    '45–90 minutes',
     beforeVisit: [
       'Pre-operative assessment required before your surgery date.',
-      'Nil by mouth from midnight the night before surgery.',
-      'Stop blood-thinning medications as directed by Dr Kabiye.',
+      FASTING_STANDARD,
+      MEDICATIONS_CALL,
       'Shower with antiseptic wash the evening before and morning of surgery.',
       'Remove jewellery, nail polish, and contact lenses.',
       'Arrange transport — you cannot drive after general anaesthesia.',
@@ -435,8 +451,8 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
     beforeVisit: [
       'Same preparation as for elective surgery above.',
       'Pre-operative assessment required.',
-      'Nil by mouth from midnight.',
-      'Stop blood thinners as directed.',
+      FASTING_STANDARD,
+      MEDICATIONS_CALL,
       'Arrange transport — cannot drive after anaesthesia.',
     ],
     onTheDay: [
@@ -472,8 +488,8 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
     duration:    '30–60 minutes',
     beforeVisit: [
       'Bowel preparation: as prescribed by Dr Kabiye — follow timing instructions exactly.',
-      'Nil by mouth from midnight.',
-      'Stop blood-thinning medications as instructed.',
+      FASTING_STANDARD,
+      MEDICATIONS_CALL,
       'Arrange transport.',
     ],
     onTheDay: [
@@ -510,8 +526,8 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
     duration:    '90–180 minutes',
     beforeVisit: [
       'Pre-operative assessment including blood tests (thyroid function, calcium levels) and ENT vocal cord review.',
-      'Nil by mouth from midnight.',
-      'Stop blood thinners and thyroid-affecting medications as directed.',
+      FASTING_STANDARD,
+      MEDICATIONS_CALL,
       'Arrange transport.',
     ],
     onTheDay: [
@@ -548,8 +564,9 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
     location:    'Rodney Bay (Providence Building) or Tapion Hospital',
     duration:    '15–45 minutes',
     beforeVisit: [
-      'No special fasting is required for most minor procedures under local anaesthesia.',
-      'If a general anaesthetic is planned, nil by mouth instructions will be given separately.',
+      'No fasting is needed. Please eat a light meal before your appointment.',
+      'If you have been told you will have a general anaesthetic, the clinic will give you separate instructions.',
+      MEDICATIONS_CALL,
       'Do not shave or apply cream to the area yourself.',
     ],
     onTheDay: [

@@ -42,6 +42,9 @@ jobs:
       - name: Lint dx-variant clinical phases
         run: pnpm --filter @workspace/scripts run lint:dx-phases
 
+      - name: Lint patient prep instructions (hazard H-10)
+        run: pnpm --filter @workspace/scripts run lint:patient-instructions
+
       - name: Scan for navigation-lockout patterns (advisory)
         run: pnpm --filter @workspace/scripts run scan:nav-lockout
 

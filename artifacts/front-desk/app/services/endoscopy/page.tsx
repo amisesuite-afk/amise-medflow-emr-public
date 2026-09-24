@@ -79,7 +79,7 @@ export default function EndoscopyPage() {
           <SectionHeading>What to Expect</SectionHeading>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {[
-              { n: '1', title: 'Before your procedure', body: 'You will receive a preparation letter with fasting instructions. For colonoscopy, this includes a bowel cleansing preparation the day before. For gastroscopy, you will fast from midnight. Arrange a responsible adult to drive you home after sedation.' },
+              { n: '1', title: 'Before your procedure', body: 'You will receive a preparation letter with fasting instructions. For colonoscopy, this includes a bowel cleansing preparation the day before. For gastroscopy, there is nothing to eat for 6 hours and nothing to drink for 2 hours before your appointment time (clear fluids such as water are fine until then). Arrange a responsible adult to drive you home after sedation.' },
               { n: '2', title: 'On the day', body: 'Arrive at Tapion Hospital 30–45 minutes before your scheduled time. A nurse will check your details, weight, blood pressure, and any allergies. You will be given a hospital gown and a small cannula (IV line) placed in your arm for sedation medication.' },
               { n: '3', title: 'During the procedure', body: 'You will receive intravenous sedation (conscious sedation) so you are comfortable and relaxed. Most endoscopy procedures take 15–30 minutes. You will be monitored throughout with pulse oximetry and ECG.' },
               { n: '4', title: 'Recovery', body: 'You will rest in the recovery area for approximately 60 minutes while the sedation wears off. A nurse will check your observations. Dr Kabiye will speak with you to share findings before discharge. You must not drive, operate machinery, or sign legal documents for 24 hours.' },
@@ -109,13 +109,13 @@ export default function EndoscopyPage() {
           {/* Timeline cards */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 32 }}>
 
-            {/* 5 days before */}
+            {/* As soon as booked — medicines (hazard H-10: no take/hold/stop advice) */}
             <div style={{ background: '#fef3c7', border: '1px solid #fcd34d', borderRadius: 12, padding: '22px 24px' }}>
-              <div style={{ fontSize: 12, fontWeight: 800, color: '#92400e', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>5 Days Before</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', marginBottom: 8 }}>Stop blood-thinning medicines</div>
+              <div style={{ fontSize: 12, fontWeight: 800, color: '#92400e', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>As Soon As You Are Booked</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', marginBottom: 8 }}>Call us about your medicines</div>
               <p style={{ margin: 0, fontSize: 13, color: '#374151', lineHeight: 1.8 }}>
-                Stop iron tablets, Aspirin, Plavix, Warfarin, Xarelto, and any other anticoagulants.
-                Also stop turmeric, ginger, and cinnamon supplements. <strong>Do not stop any medication without first speaking to your doctor.</strong> If you are diabetic or have other medical conditions, please inform us.
+                <strong>MEDICATIONS:</strong> If you take insulin, blood thinners or diabetes medicines, please call the clinic before your procedure for instructions. If you have any questions about your other medicines, please call us.
+                {' '}If you are diabetic or have other medical conditions, please inform us.
               </p>
             </div>
 
@@ -176,19 +176,23 @@ export default function EndoscopyPage() {
             {/* Examination day */}
             <div style={{ background: '#f5f3ff', border: '1px solid #c4b5fd', borderRadius: 12, padding: '22px 24px' }}>
               <div style={{ fontSize: 12, fontWeight: 800, color: '#5b21b6', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Examination Day</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', marginBottom: 12 }}>Second prep dose at 5 am — nothing to eat or drink after 6 am</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', marginBottom: 12 }}>Second prep dose at 5 am — clear fluids only, then nothing to drink for 2 hours before your appointment time</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', background: '#fff', border: '1px solid #c4b5fd', borderRadius: 8, padding: '10px 14px' }}>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: '#5b21b6', width: 52, flexShrink: 0 }}>5:00 am</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: '#5b21b6', width: 76, flexShrink: 0 }}>5:00 am</div>
                   <div style={{ fontSize: 13, color: '#374151' }}>Drink your second bottle of magnesium citrate, followed by at least 4–5 large glasses of coconut water.</div>
                 </div>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', background: '#fff', border: '1px solid #c4b5fd', borderRadius: 8, padding: '10px 14px' }}>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: '#5b21b6', width: 52, flexShrink: 0 }}>6:00 am</div>
-                  <div style={{ fontSize: 13, color: '#374151' }}>Take your regular medications with a small sip of water. <strong>Blood pressure medication MUST be taken.</strong> Diabetic medication should <strong>NOT</strong> be taken on the day of the procedure unless your doctor has specifically instructed otherwise.</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: '#5b21b6', width: 76, flexShrink: 0 }}>Until 2 h before</div>
+                  <div style={{ fontSize: 13, color: '#374151' }}>Finish your bowel prep as directed. Clear fluids only, then nothing to drink for 2 hours before your appointment time.</div>
+                </div>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', background: '#fff', border: '1px solid #c4b5fd', borderRadius: 8, padding: '10px 14px' }}>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: '#5b21b6', width: 76, flexShrink: 0 }}>Medicines</div>
+                  <div style={{ fontSize: 13, color: '#374151' }}><strong>MEDICATIONS:</strong> If you take insulin, blood thinners or diabetes medicines, please call the clinic before your procedure for instructions. If you have any questions about your other medicines, please call us.</div>
                 </div>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', background: '#fff5f5', border: '1px solid #fca5a5', borderRadius: 8, padding: '10px 14px' }}>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: '#dc2626', width: 52, flexShrink: 0 }}>After 6 am</div>
-                  <div style={{ fontSize: 13, color: '#7f1d1d', fontWeight: 600 }}>Nothing to eat or drink — no water, no medication.</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: '#dc2626', width: 76, flexShrink: 0 }}>Last 2 h</div>
+                  <div style={{ fontSize: 13, color: '#7f1d1d', fontWeight: 600 }}>Nothing to drink for 2 hours before your appointment time.</div>
                 </div>
               </div>
             </div>
@@ -215,9 +219,8 @@ export default function EndoscopyPage() {
           <div style={{ background: '#f8fafc', border: '1px solid #e2eeed', borderRadius: 12, padding: '22px 24px' }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', marginBottom: 10 }}>Gastroscopy (Upper GI) Preparation</div>
             <ul style={{ margin: 0, padding: '0 0 0 16px', fontSize: 13, color: '#374151', lineHeight: 1.9 }}>
-              <li>Fast from midnight — no food or drink, including water</li>
-              <li>Take your regular morning medications with a small sip of water unless told otherwise</li>
-              <li>Stop iron tablets 5 days before</li>
+              <li>Nothing to eat for 6 hours and nothing to drink for 2 hours before your appointment time (clear fluids such as water are fine until then)</li>
+              <li><strong>MEDICATIONS:</strong> If you take insulin, blood thinners or diabetes medicines, please call the clinic before your procedure for instructions. If you have any questions about your other medicines, please call us.</li>
               <li>Inform us of blood-thinning medications (warfarin, aspirin, clopidogrel, Xarelto)</li>
               <li>Arrange a responsible adult to drive you home — no driving for 24 hours after sedation</li>
             </ul>

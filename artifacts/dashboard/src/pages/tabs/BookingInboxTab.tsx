@@ -124,13 +124,17 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string; 
   cancelled:           { label: 'Cancelled',           bg: '#fef2f2', color: '#b91c1c', border: '#fecaca' },
 };
 
+// Staff-facing summary of the patient prep (the patient text itself comes from
+// api-server lib/sms.ts). Hazard H-10: staff reading this aloud must not give
+// medication take/hold/stop/adjust advice — patients on insulin, diabetes
+// medicines or blood thinners are told to call the clinic for instructions.
 const PREP_INSTRUCTIONS: Record<string, string> = {
-  colonoscopy:  'Clear fluids only the day before. Take prescribed bowel prep solution as directed. Clear fluids until 2 hours before the procedure (prep needs fluid), then nothing to drink. Patient must arrange a driver — sedation given.',
-  ogd:          'Nothing to eat or drink from midnight. May take essential medications with a small sip of water. Arrange a driver home.',
-  egd:          'Nothing to eat or drink from midnight. May take essential medications with a small sip of water. Arrange a driver home.',
-  ercp_workup:  'Nothing by mouth from midnight. Stop blood thinners as advised by doctor. Must arrange a driver — cannot drive after sedation.',
-  pre_op:       'Nothing by mouth from midnight. Continue essential medications with a small sip of water unless instructed otherwise. Bring full medication list to appointment.',
-  flexi_sig:    'Follow bowel prep instructions provided. Clear fluids only on morning of procedure. Arrange a driver home.',
+  colonoscopy:  'Clear fluids only the day before. Take prescribed bowel prep solution as directed. Clear fluids until 2 hours before the procedure (prep needs fluid), then nothing to drink. Patients on insulin, blood thinners or diabetes medicines: ask them to call the clinic for instructions. Patient must arrange a driver — sedation given.',
+  ogd:          'Nothing to eat for 6 hours and nothing to drink for 2 hours before the appointment time (clear fluids such as water are fine until then). Patients on insulin, blood thinners or diabetes medicines: ask them to call the clinic for instructions. Arrange a driver home.',
+  egd:          'Nothing to eat for 6 hours and nothing to drink for 2 hours before the appointment time (clear fluids such as water are fine until then). Patients on insulin, blood thinners or diabetes medicines: ask them to call the clinic for instructions. Arrange a driver home.',
+  ercp_workup:  'Nothing to eat for 6 hours and nothing to drink for 2 hours before the appointment time (clear fluids such as water are fine until then). Patients on insulin, blood thinners or diabetes medicines: ask them to call the clinic for instructions. Must arrange a driver — cannot drive after sedation.',
+  pre_op:       'Nothing to eat for 6 hours and nothing to drink for 2 hours before the appointment time (clear fluids such as water are fine until then). Patients on insulin, blood thinners or diabetes medicines: ask them to call the clinic for instructions. Bring full medication list to appointment.',
+  flexi_sig:    'Follow bowel prep instructions provided. Clear fluids only on morning of procedure. Patients on insulin, blood thinners or diabetes medicines: ask them to call the clinic for instructions. Arrange a driver home.',
 };
 
 const LOCATION_LABELS: Record<string, string> = {

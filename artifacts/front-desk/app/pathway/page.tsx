@@ -111,7 +111,7 @@ const CHAINS: CareChain[] = [
     bookHref:   '/book',
     steps: [
       { label: 'Booking',            sub: 'Online or WhatsApp' },
-      { label: 'Fast from midnight', sub: 'Instructions emailed automatically' },
+      { label: 'No food 6 h, no drinks 2 h', sub: 'Instructions emailed automatically' },
       { label: 'Procedure',          sub: 'Tapion Hospital — 15–30 min' },
       { label: 'Results + Plan',     sub: 'H. pylori / biopsy review' },
     ],
