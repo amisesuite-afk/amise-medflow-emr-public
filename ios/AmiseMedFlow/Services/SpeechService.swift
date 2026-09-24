@@ -155,7 +155,9 @@ final class SpeechService: NSObject, ObservableObject {
 
         let request = SFSpeechAudioBufferRecognitionRequest()
         request.shouldReportPartialResults = true
-        request.requiresOnDeviceRecognition = false   // cloud for accuracy; on-device fallback if unavailable
+        // Dictation is patient data: keep it on the device whenever the device can recognise
+        // speech locally (A12+ with the language downloaded), so audio is not sent to Apple.
+        request.requiresOnDeviceRecognition = recognizer?.supportsOnDeviceRecognition == true
         recognitionRequest = request
 
         let inputNode = audioEngine.inputNode
