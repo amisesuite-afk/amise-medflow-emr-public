@@ -133,7 +133,7 @@ final class BowelPrepTests: XCTestCase {
     func testEnemaOnlyForSigmoidoscopy() {
         let s = schedule(.enemaOnly, 9, procedure: .flexibleSigmoidoscopy)
         XCTAssertEqual(s.mode, .enemaOnly)
-        XCTAssertEqual(s.doseStarts, [ect(5, 7, 30)])
+        XCTAssertEqual(s.doseStarts, [ect(5, 7)])   // Fleet enema at home 2 h before (surgeon's protocol)
         XCTAssertEqual(s.lastIntakeBy, ect(5, 7))
         XCTAssertNil(s.clearFluidsFrom)
     }
@@ -290,9 +290,10 @@ final class BowelPrepTests: XCTestCase {
         XCTAssertFalse(BowelPrepSignOff.isSignedOff(r, records: records))
 
         // Patient wording with [confirm] placeholders cannot be signed off.
-        XCTAssertTrue(BowelPrepRegimen.magnesiumCitrate.hasPlaceholders)
-        XCTAssertTrue(BowelPrepRegimen.enemaOnly.hasPlaceholders)
-        XCTAssertFalse(BowelPrepSignOff.approve(BowelPrepRegimen.magnesiumCitrate, by: "Dr Test", defaults: defaults))
+        // Magnesium citrate and enema wording is now complete: no regimen has a placeholder left.
+        for regimen in BowelPrepRegimen.all {
+            XCTAssertFalse(regimen.hasPlaceholders, regimen.id.rawValue)
+        }
 
         BowelPrepSignOff.withdraw(r.id, defaults: defaults)
         XCTAssertFalse(BowelPrepSignOff.isSignedOff(r, records: BowelPrepSignOff.load(from: defaults)))

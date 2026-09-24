@@ -144,8 +144,8 @@ enum BowelPrepText {
         "about your regular medicines."
 
     static let enemaDayDiet =
-        "You may eat normally the day before [confirm]. On the day, clear fluids only until your stop time " +
-        "[confirm whether a light breakfast is allowed]."
+        "No special diet is needed the day before. On the morning of your procedure, have a light " +
+        "breakfast only (for example toast and tea)."
 
     static let draftNotice =
         "DRAFT — this protocol wording is awaiting the surgeon's sign-off. Please do not give it to a " +
@@ -230,18 +230,18 @@ extension BowelPrepRegimen {
         doses: [
             BowelPrepDose(
                 label: "Bottle 1",
-                volumeText: "[confirm] bottle(s) of 296 mL (10 fl oz)",
+                volumeText: "1 bottle of 296 mL (10 fl oz)",
                 instruction:
-                    "Drink [confirm] bottle of magnesium citrate (296 mL / 10 fl oz), chilled if you prefer, " +
+                    "Drink one bottle of magnesium citrate (296 mL / 10 fl oz), chilled if you prefer, " +
                     "followed by a full glass (about 240 mL) of water or another clear fluid.",
                 intakeMinutes: 30,
-                followOnFluids: "Then drink clear fluids freely, at least [confirm] glasses over the next few hours.",
+                followOnFluids: "Then drink clear fluids freely over the next few hours.",
                 followOnMinutes: 180),
             BowelPrepDose(
                 label: "Bottle 2",
-                volumeText: "[confirm] bottle(s) of 296 mL (10 fl oz)",
+                volumeText: "1 bottle of 296 mL (10 fl oz)",
                 instruction:
-                    "Drink [confirm] bottle of magnesium citrate (296 mL / 10 fl oz), chilled if you prefer, " +
+                    "Drink the second bottle of magnesium citrate (296 mL / 10 fl oz), chilled if you prefer, " +
                     "followed by a full glass (about 240 mL) of water or another clear fluid.",
                 intakeMinutes: 30,
                 followOnFluids: "Then keep drinking clear fluids until your stop time.",
@@ -249,7 +249,7 @@ extension BowelPrepRegimen {
         ],
         additionalClearFluids:
             "A full glass (about 240 mL) of clear fluid with each bottle, then clear fluids freely until " +
-            "your stop time. Total volume: [confirm].",
+            "your stop time. Two bottles in total (592 mL), one per dose.",
         sourceNote:
             "US OTC Drug Facts label for magnesium citrate oral solution (1.745 g/30 mL), a saline " +
             "laxative: a full glass (8 fl oz) of liquid with each dose; adult maximum of one bottle in " +
@@ -259,8 +259,9 @@ extension BowelPrepRegimen {
             " ESGE names PEG-based and clinically validated non-PEG regimens; magnesium citrate alone is " +
             "not one of the regimens it names.",
         clinicianNote:
-            "Surgeon to set the number of bottles, their timing and the total fluid volume [confirm]. " +
-            "Cannot be signed off while the patient wording contains [confirm].",
+            "Surgeon's protocol: two 296 mL bottles, one per split dose (evening before and morning of " +
+            "the procedure), each followed by a full glass of clear fluid. Note the OTC label's " +
+            "one-bottle-in-24-hours adult maximum: the split keeps the bottles about 9 hours or more apart.",
         procedures: [.colonoscopy, .flexibleSigmoidoscopy],
         sameDayAllowed: false,
         sameDayIntervalMinutes: 0,
@@ -417,10 +418,10 @@ extension BowelPrepRegimen {
         doses: [
             BowelPrepDose(
                 label: "Enema",
-                volumeText: "One enema [confirm product]",
+                volumeText: "One Fleet enema (133 mL)",
                 instruction:
-                    "Use one enema [confirm product, and whether it is given at home or on arrival] about " +
-                    "1 to 2 hours before your appointment [confirm]. Lie on your left side with your knees " +
+                    "At home, about 2 hours before your appointment, use one Fleet enema (133 mL). " +
+                    "Lie on your left side with your knees " +
                     "bent, gently insert the nozzle and squeeze in the contents. Try to hold it for a few " +
                     "minutes before going to the toilet.",
                 intakeMinutes: 0,
@@ -433,12 +434,15 @@ extension BowelPrepRegimen {
             "preparation for colonoscopy; enema-only preparation for flexible sigmoidoscopy is local " +
             "practice [confirm]. Phosphate enemas: caution in renal impairment, heart failure and " +
             "dehydration [confirm against the product label].",
-        clinicianNote: "Diet and enema timing need the surgeon's local protocol [confirm].",
+        clinicianNote:
+            "Surgeon's protocol: one Fleet phosphate enema at home about 2 hours before; light breakfast " +
+            "on the morning. Phosphate enema cautions (renal impairment, heart failure, dehydration) per " +
+            "the Fleet label.",
         procedures: [.flexibleSigmoidoscopy],
         sameDayAllowed: false,
         sameDayIntervalMinutes: 0,
         lastDoseFluidsUntilCutoff: false,
-        enemaLeadMinutes: 90,
+        enemaLeadMinutes: 120,
         requiresSurgeonReview: true)
 
     static let all: [BowelPrepRegimen] =
@@ -609,8 +613,8 @@ enum BowelPrepScheduler {
         // Enema only (flexible sigmoidoscopy): no oral preparation.
         if regimen.category == .enema {
             let enemaTime = before(regimen.enemaLeadMinutes)
-            add(.clearFluidsOnly, dayOf, cutoff, "Clear fluids only",
-                "\(BowelPrepText.enemaDayDiet) Clear fluids until \(time(cutoff)).", oral: true)
+            add(.clearFluidsOnly, dayOf, cutoff, "Light breakfast, then clear fluids",
+                "\(BowelPrepText.enemaDayDiet) After breakfast, clear fluids until \(time(cutoff)).", oral: true)
             if let dose = regimen.doses.first {
                 add(.enema, enemaTime, nil, dose.label, dose.instruction, oral: false)
             }
