@@ -61,7 +61,7 @@ export default function ErpcPage() {
               <div style={{ fontSize: 13, fontWeight: 700, color: '#065f46', marginBottom: 14 }}>ERCP at a Glance</div>
               {[
                 ['Duration', '45–90 minutes'],
-                ['Anaesthesia', 'Deep sedation or general anaesthesia'],
+                ['Anaesthesia', 'General anaesthesia, at Tapion Hospital'],
                 ['Hospital stay', 'Usually same-day; overnight if complex'],
                 ['Recovery', '1–3 days rest at home'],
                 ['Success rate', '> 90% for bile duct stones'],

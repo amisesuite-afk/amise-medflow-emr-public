@@ -73,7 +73,7 @@ function apiUrl(path: string) {
   return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;
 }
 
-const PREP_TYPES = new Set(['colonoscopy', 'ogd', 'egd', 'ercp_workup', 'pre_op', 'flexi_sig']);
+const PREP_TYPES = new Set(['colonoscopy', 'ogd', 'egd', 'ercp_workup', 'pre_op', 'flexi_sig', 'lab_fasting']);
 function requiresPrep(type: string) { return PREP_TYPES.has(type.toLowerCase()); }
 
 function mapApptTypeToVisitType(apptType: string): string {
@@ -132,9 +132,10 @@ const PREP_INSTRUCTIONS: Record<string, string> = {
   colonoscopy:  'Clear fluids only the day before. Take prescribed bowel prep solution as directed. Clear fluids until 2 hours before the procedure (prep needs fluid), then nothing to drink. Patients on insulin, blood thinners or diabetes medicines: ask them to call the clinic for instructions. Patient must arrange a driver — sedation given.',
   ogd:          'Nothing to eat for 6 hours and nothing to drink for 2 hours before the appointment time (clear fluids such as water are fine until then). Patients on insulin, blood thinners or diabetes medicines: ask them to call the clinic for instructions. Arrange a driver home.',
   egd:          'Nothing to eat for 6 hours and nothing to drink for 2 hours before the appointment time (clear fluids such as water are fine until then). Patients on insulin, blood thinners or diabetes medicines: ask them to call the clinic for instructions. Arrange a driver home.',
-  ercp_workup:  'Nothing to eat for 6 hours and nothing to drink for 2 hours before the appointment time (clear fluids such as water are fine until then). Patients on insulin, blood thinners or diabetes medicines: ask them to call the clinic for instructions. Must arrange a driver — cannot drive after sedation.',
-  pre_op:       'Nothing to eat for 6 hours and nothing to drink for 2 hours before the appointment time (clear fluids such as water are fine until then). Patients on insulin, blood thinners or diabetes medicines: ask them to call the clinic for instructions. Bring full medication list to appointment.',
-  flexi_sig:    'Follow bowel prep instructions provided. Clear fluids only on morning of procedure. Patients on insulin, blood thinners or diabetes medicines: ask them to call the clinic for instructions. Arrange a driver home.',
+  ercp_workup:  'ERCP procedure at Tapion Hospital under general anaesthesia — arrive at Tapion at the time given. Nothing to eat for 6 hours and nothing to drink for 2 hours before the appointment time (clear fluids such as water are fine until then). Patients on insulin, blood thinners or diabetes medicines: ask them to call the clinic for instructions. A responsible adult must bring them, take them home and stay with them for 24 hours — no driving after a general anaesthetic.',
+  pre_op:       'Pre-operative ASSESSMENT visit (check-up, not the operation) — no fasting needed unless the clinic has said otherwise. Bring all current medicines in their original packaging, any letter about the planned operation, and any blood test, ECG or scan results. Day-of-surgery instructions are given separately.',
+  flexi_sig:    'Follow bowel prep instructions provided. Light breakfast only on the morning of the procedure (toast, tea — avoid heavy or greasy food). Patients on insulin, blood thinners or diabetes medicines: ask them to call the clinic for instructions. Arrange a driver home.',
+  lab_fasting:  'Fasting blood test — nothing to eat for 8–10 hours before; plain water is fine. Patients on insulin or diabetes medicines: ask them to call the clinic for instructions before fasting. Bring photo ID and the blood test request form.',
 };
 
 const LOCATION_LABELS: Record<string, string> = {

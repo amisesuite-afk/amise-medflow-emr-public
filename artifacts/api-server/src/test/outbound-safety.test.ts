@@ -244,16 +244,69 @@ describe('endoscopy / pre-op prep templates (H-10)', () => {
   });
 
   it('medication-holding templates point the patient to the clinic instead', () => {
-    for (const t of ['colonoscopy', 'ogd', 'egd', 'ercp_workup', 'pre_op', 'flexi_sig']) {
-      expect(getPrepInstructions(t)).toContain(
+    // pre_op is the assessment visit (medicines are reviewed there) and
+    // lab_fasting carries its own insulin / diabetes-medicines call line.
+    for (const t of ['colonoscopy', 'ogd', 'egd', 'ercp_workup', 'surgery_theatre', 'flexi_sig']) {
+      expect(getPrepInstructions(t), t).toContain(
         'If you take insulin, blood thinners or diabetes medicines, please call the clinic before your procedure for instructions.',
       );
     }
   });
 
-  it('the 48h SMS body with prep appended is also clean', () => {
-    const body = smsBody48h({ day: 'Mon', date: '5 Oct', time: '09:00', location: 'Tapion', prepInstructions: getPrepInstructions('pre_op') });
+  it.each(['pre_op', 'surgery_theatre', 'lab_fasting'])('the 48h SMS body with %s prep appended is also clean', (t) => {
+    const body = smsBody48h({ day: 'Mon', date: '5 Oct', time: '09:00', location: 'Tapion', prepInstructions: getPrepInstructions(t) });
     expect(body).not.toMatch(/do not take[^.]*insulin/i);
     expect(checkForbiddenContent(body).safe).toBe(true);
+  });
+});
+
+// ── Dr Kabiye's preparation decisions ─────────────────────────────────────────
+// Mirrored for the front-desk booking email by scripts/src/lint-patient-instructions.ts.
+
+describe('prep templates follow the surgeon\'s decisions', () => {
+  const SIX_HOUR_FAST = /nothing to eat for 6 hours/i;
+  const ANY_FAST = /\b(nothing to eat|nothing to drink|nil by mouth|nothing by mouth|FASTING:)/i;
+
+  it('flexi_sig: light breakfast, and no 6-hour fasting line', () => {
+    const t = getPrepInstructions('flexi_sig')!;
+    expect(t).toContain('Light breakfast only on the morning of the procedure');
+    expect(t).not.toMatch(SIX_HOUR_FAST);
+    expect(t).not.toMatch(/\bFASTING:/);
+  });
+
+  it('pre_op: the assessment visit carries no fasting and no sedation transport', () => {
+    const t = getPrepInstructions('pre_op')!;
+    expect(t).toContain('PRE-OPERATIVE ASSESSMENT VISIT');
+    expect(t).toContain('No fasting is needed for this visit unless the clinic has told you otherwise.');
+    expect(t).toContain('all your current medicines in their original packaging');
+    expect(t).not.toMatch(ANY_FAST);
+    expect(t).not.toMatch(/\bsedation\b|CANNOT drive|surgery time/i);
+  });
+
+  it('surgery_theatre: keeps the day-of-surgery fasting text formerly under pre_op', () => {
+    const t = getPrepInstructions('surgery_theatre')!;
+    expect(t).toContain('PRE-OPERATIVE INSTRUCTIONS -- OUTPATIENT SURGERY');
+    expect(t).toContain('Nothing to eat for 6 hours and nothing to drink for 2 hours before your surgery time.');
+  });
+
+  it('ercp_workup: the ERCP procedure at Tapion under GA — fasting, escort, call-the-clinic, no sedation wording', () => {
+    const t = getPrepInstructions('ercp_workup')!;
+    expect(t).toMatch(/Tapion Hospital/);
+    expect(t).toMatch(/general anaesthe/i);
+    expect(t).toMatch(SIX_HOUR_FAST);
+    expect(t).toContain('take you home, and stay with you for 24 hours');
+    expect(t).toContain('BLOOD THINNERS: If you take blood thinners, please call the clinic before your appointment for instructions.');
+    expect(t).not.toMatch(/sedation/i);
+  });
+
+  it('lab_fasting: 8-10 hour fasting-bloods wording, not procedure prep', () => {
+    const t = getPrepInstructions('lab_fasting')!;
+    expect(t).toContain('Nothing to eat for 8-10 hours before your blood test. You may drink plain water.');
+    expect(t).toContain('Please call the clinic if you take insulin or diabetes medicines, for instructions before fasting.');
+    expect(t).not.toMatch(/sedation|bowel prep|6 hours/i);
+  });
+
+  it('other lab types stay without a prep template', () => {
+    for (const t of ['lab_collection', 'lab_urine', 'lab_histology']) expect(getPrepInstructions(t), t).toBeNull();
   });
 });

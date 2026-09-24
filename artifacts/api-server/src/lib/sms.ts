@@ -118,13 +118,33 @@ export async function sendSms(args: SmsArgs): Promise<SmsResult> {
 // on insulin, diabetes medicines or blood thinners are told to call the clinic
 // for individual instructions instead. Enforced by src/test/outbound-safety.test.ts.
 // Any wording change here needs the clinical owner's approval.
+//
+// GENERAL_PREP is kept as separate lines so each template takes only the lines
+// that apply to it (Dr Kabiye's decisions): flexible sigmoidoscopy allows a
+// light breakfast, so it gets no FASTING line; the pre-operative ASSESSMENT
+// visit is a check-up, so it gets no fasting or sedation-transport lines; ERCP
+// is done under general anaesthesia at Tapion, so it gets a GA transport line
+// instead of the sedation one.
+const PREP_WEAR =
+  'WHAT TO WEAR: Loose, comfortable clothing (you will change into a gown). Remove all jewellery, piercings, watches, and hair accessories before arrival.';
+const PREP_BRING =
+  'WHAT TO BRING: Valid photo ID, insurance card (if applicable), a complete list of your current medications (including doses), any relevant referral letters, blood results, or imaging reports.';
+const PREP_TRANSPORT =
+  'TRANSPORT: Arrange a responsible adult to drive you home -- you CANNOT drive after sedation or anaesthesia. You should not take public transport alone. Plan for someone to stay with you for 24 hours after your procedure.';
+const PREP_FASTING =
+  'FASTING: Nothing to eat for 6 hours and nothing to drink for 2 hours before your appointment time, unless otherwise instructed below.';
+const PREP_MEDICATIONS =
+  'MEDICATIONS: If you take insulin, blood thinners or diabetes medicines, please call the clinic before your procedure for instructions. If you have any questions about your other medicines, please call us.';
+const PREP_CONTINGENCIES =
+  'CONTINGENCIES: If you develop fever, a new cough, vomiting, or feel unwell in the days before your procedure, call us immediately -- we may need to reschedule. If you have a medical emergency at any time, call 911 or go to Victoria Hospital A&E / Tapion Hospital immediately -- do not wait.';
+
 const GENERAL_PREP = [
-  'WHAT TO WEAR: Loose, comfortable clothing (you will change into a gown). Remove all jewellery, piercings, watches, and hair accessories before arrival.',
-  'WHAT TO BRING: Valid photo ID, insurance card (if applicable), a complete list of your current medications (including doses), any relevant referral letters, blood results, or imaging reports.',
-  'TRANSPORT: Arrange a responsible adult to drive you home -- you CANNOT drive after sedation or anaesthesia. You should not take public transport alone. Plan for someone to stay with you for 24 hours after your procedure.',
-  'FASTING: Nothing to eat for 6 hours and nothing to drink for 2 hours before your appointment time, unless otherwise instructed below.',
-  'MEDICATIONS: If you take insulin, blood thinners or diabetes medicines, please call the clinic before your procedure for instructions. If you have any questions about your other medicines, please call us.',
-  'CONTINGENCIES: If you develop fever, a new cough, vomiting, or feel unwell in the days before your procedure, call us immediately -- we may need to reschedule. If you have a medical emergency at any time, call 911 or go to Victoria Hospital A&E / Tapion Hospital immediately -- do not wait.',
+  PREP_WEAR,
+  PREP_BRING,
+  PREP_TRANSPORT,
+  PREP_FASTING,
+  PREP_MEDICATIONS,
+  PREP_CONTINGENCIES,
 ].join('\n');
 
 const PREP_INSTRUCTIONS: Record<string, string> = {
@@ -154,19 +174,43 @@ const PREP_INSTRUCTIONS: Record<string, string> = {
     GENERAL_PREP,
   ].join('\n'),
 
-  // Fasting kept pending Dr Kabiye's confirmation of whether an ercp_workup
-  // booking is a consultation or the ERCP itself; the front-desk booking email
-  // (artifacts/front-desk/lib/instructions.ts ercp_workup) now matches it.
+  // Dr Kabiye: an `ercp_workup` booking is the ERCP procedure itself, done
+  // under general anaesthesia at Tapion Hospital — standard GA fasting, a
+  // responsible adult to bring, take home and stay 24 h, and the call-the-clinic
+  // lines for blood thinners and other medicines. No sedation wording. Matches
+  // artifacts/front-desk/lib/instructions.ts `ercp_workup`.
   ercp_workup: [
-    'ERCP WORK-UP PREPARATION',
+    'ERCP PREPARATION -- TAPION HOSPITAL',
+    'Your ERCP is done under general anaesthesia in hospital. Arrive at Tapion Hospital (La Toc, Castries) at the time given.',
     'Nothing to eat for 6 hours and nothing to drink for 2 hours before your appointment.',
     'BLOOD THINNERS: If you take blood thinners, please call the clinic before your appointment for instructions.',
     'Bring all recent blood results and imaging (ultrasound, CT, MRCP) to your appointment.',
     '',
-    GENERAL_PREP,
+    PREP_WEAR,
+    PREP_BRING,
+    'TRANSPORT: A responsible adult must bring you to Tapion Hospital, take you home, and stay with you for 24 hours after your procedure -- you CANNOT drive after a general anaesthetic. You should not take public transport alone.',
+    PREP_MEDICATIONS,
+    PREP_CONTINGENCIES,
   ].join('\n'),
 
+  // Dr Kabiye: the `pre_op` booking type is the pre-operative ASSESSMENT visit
+  // (a check-up before the operation), not the operation — no fasting, no
+  // sedation transport. Matches artifacts/front-desk/lib/instructions.ts
+  // `pre_op_assessment`. The day-of-surgery text is `surgery_theatre` below.
   pre_op: [
+    'PRE-OPERATIVE ASSESSMENT VISIT',
+    'This is a check-up visit before your operation, not the operation itself. No fasting is needed for this visit unless the clinic has told you otherwise.',
+    'Write down any problems you or your family have had with anaesthetics in the past, any medical conditions you have (for example diabetes, heart disease, or asthma) and any allergies.',
+    'Your medicines will be reviewed at this visit. Your instructions for the day of your operation will be given to you separately.',
+    'WHAT TO BRING: Valid photo ID, insurance card (if applicable), all your current medicines in their original packaging, any letter or information you have about your planned operation, and the results of any blood tests, ECG, or scans done for your operation.',
+    'Arrive 10 minutes early for registration. You are welcome to bring a family member or trusted person for support.',
+    'If you develop any illness (fever, cough, cold) in the days before your operation, call us -- your operation may need to be postponed for your safety. If you have a medical emergency at any time, call 911 or go to Victoria Hospital A&E / Tapion Hospital immediately -- do not wait.',
+  ].join('\n'),
+
+  // Day-of-surgery preparation (staff-booked `surgery_theatre`, from the
+  // front-desk staff booking form). This is the text the `pre_op` key used to
+  // carry, unchanged; it moved here because `pre_op` is the assessment visit.
+  surgery_theatre: [
     'PRE-OPERATIVE INSTRUCTIONS -- OUTPATIENT SURGERY',
     'Nothing to eat for 6 hours and nothing to drink for 2 hours before your surgery time.',
     'Shower or bathe on the morning of surgery. Do not apply lotions, deodorant, or make-up to the surgical area.',
@@ -177,13 +221,30 @@ const PREP_INSTRUCTIONS: Record<string, string> = {
     GENERAL_PREP,
   ].join('\n'),
 
+  // Dr Kabiye: light breakfast on the morning, so GENERAL_PREP's 6-hour
+  // FASTING line is left out (it contradicted the light-breakfast line).
   flexi_sig: [
     'FLEXIBLE SIGMOIDOSCOPY PREPARATION',
     'Follow the bowel prep instructions provided (usually a single enema or mini-prep the morning of).',
     'Light breakfast only on the morning of the procedure (toast, tea -- avoid heavy or greasy food).',
     'You may not need sedation -- ask us about your options.',
     '',
-    GENERAL_PREP,
+    PREP_WEAR,
+    PREP_BRING,
+    PREP_TRANSPORT,
+    PREP_MEDICATIONS,
+    PREP_CONTINGENCIES,
+  ].join('\n'),
+
+  // Staff-booked fasting blood test (front-desk `lab_fasting`). Its reminders
+  // go through the same /api/cron reminder jobs as every other
+  // appointment_requests row. Matches artifacts/front-desk/lib/instructions.ts
+  // `lab_fasting`. No sedation, no procedure logistics.
+  lab_fasting: [
+    'FASTING BLOOD TEST PREPARATION',
+    'FASTING BLOOD TEST: Nothing to eat for 8-10 hours before your blood test. You may drink plain water. Please call the clinic if you take insulin or diabetes medicines, for instructions before fasting.',
+    'WHAT TO BRING: Valid photo ID, insurance card (if applicable), and your blood test request form.',
+    'If you have a medical emergency at any time, call 911 or go to Victoria Hospital A&E / Tapion Hospital immediately -- do not wait.',
   ].join('\n'),
 
   new_consult: [

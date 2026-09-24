@@ -122,9 +122,9 @@ const CHAINS: CareChain[] = [
     urgency:    'urgent',
     bookHref:   '/book',
     steps: [
-      { label: 'ERCP Workup Clinic', sub: 'Imaging review, medication adjustment' },
-      { label: 'Pre-procedure Prep', sub: 'NBM, bloods, anaesthesia consent' },
-      { label: 'ERCP Procedure',     sub: 'Tapion Hospital — 60–90 min' },
+      { label: 'Referral Review',    sub: 'Imaging and blood results reviewed' },
+      { label: 'Pre-procedure Prep', sub: 'No food 6 h, no drinks 2 h; bloods, consent' },
+      { label: 'ERCP Procedure',     sub: 'Tapion Hospital — general anaesthesia, 60–90 min' },
       { label: 'Recovery + Review',  sub: 'Overnight if needed, biliary follow-up' },
     ],
   },

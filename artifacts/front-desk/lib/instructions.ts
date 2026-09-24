@@ -162,31 +162,41 @@ const PROCEDURE_INSTRUCTIONS_DEFS = {
 
   // ── ENDOSCOPY ──────────────────────────────────────────────────────────────
 
-  // The `ercp_workup` booking type is ambiguous in this codebase: the slot
-  // engine books it as a 30-minute Rodney Bay consultation, but the booking
-  // form files it under "Endoscopy & Procedures" at Tapion and it is the only
-  // ERCP option staff can pick. The api-server 48 h reminder (sms.ts
-  // ercp_workup) tells these patients to fast, so this entry carries the same
-  // fasting rule rather than "eat normally" — the patient must never receive
-  // both. Flagged for Dr Kabiye to confirm; do not relax without approval.
+  // Dr Kabiye's decision: an `ercp_workup` booking is the ERCP PROCEDURE
+  // itself, at Tapion Hospital, under general anaesthesia (ERCP is currently
+  // done under GA, in hospital). Standard GA fasting (6 h food / 2 h clear
+  // fluids), a responsible adult to bring the patient, take them home and stay
+  // 24 h, and the call-the-clinic lines for blood thinners and other medicines.
+  // No sedation wording. Matches the api-server 48 h reminder (sms.ts
+  // ercp_workup), the dashboard staff text (BookingInboxTab.tsx) and the slot
+  // engine (lib/triage-engine SLOT_RULES.ercp_workup, Tapion).
   ercp_workup: {
     displayName: 'ERCP / Biliary Investigation',
-    location:    'Rodney Bay (Providence Building)',
-    duration:    '30 minutes',
+    location:    'Tapion Hospital (La Toc, Castries)',
+    duration:    '60–90 minutes (plus recovery time)',
     beforeVisit: [
+      'Your ERCP is done under general anaesthesia at Tapion Hospital.',
       FASTING_STANDARD,
-      'If you are not sure whether you need to fast for this appointment, please call the clinic.',
       BLOOD_THINNERS_CALL,
       MEDICATIONS_CALL,
-      'Arrange for a responsible adult to drive you home — you cannot drive if sedation is given.',
+      'A responsible adult must bring you to Tapion Hospital, take you home, and stay with you for 24 hours after your procedure — you cannot drive after a general anaesthetic.',
       'Gather all relevant imaging (ultrasound, CT, MRCP) and blood test results (especially liver function tests — LFTs and bilirubin).',
       'Make a note of all medications, particularly blood-thinning agents (warfarin, rivaroxaban, apixaban, clopidogrel, aspirin).',
       'Note any prior procedures on the bile duct, gallbladder, or pancreas.',
     ],
     onTheDay: [
-      'Arrive 10 minutes early.',
+      'Arrive at Tapion Hospital at the time given.',
+      'Remove all jewellery, nail polish, and contact lenses.',
+      'Wear loose, comfortable clothing.',
+      'Bring your responsible adult, who will take you home and stay with you for 24 hours.',
     ],
-    afterCare: null,
+    afterCare: [
+      'Rest at home for the remainder of the procedure day.',
+      'Do not drive or operate machinery for 24 hours after a general anaesthetic.',
+      'You may have a mild sore throat — this is normal and will settle.',
+      'You will be given discharge instructions by the nursing team at Tapion Hospital.',
+      'Attend your follow-up appointment as scheduled.',
+    ],
     whatToBring: [
       ...BRING_STANDARD,
       'All abdominal imaging (ultrasound, CT, MRCP scans) — digital or film',
@@ -204,22 +214,23 @@ const PROCEDURE_INSTRUCTIONS_DEFS = {
     location:    'Tapion Hospital (La Toc, Castries)',
     duration:    '60–90 minutes (plus recovery time)',
     beforeVisit: [
+      'Your ERCP is done under general anaesthesia at Tapion Hospital.',
       FASTING_STANDARD,
       BLOOD_THINNERS_CALL,
       MEDICATIONS_CALL,
-      'Arrange for a responsible adult to drive you home — sedation will be given and you cannot drive or operate machinery for 24 hours after.',
+      'A responsible adult must bring you to Tapion Hospital, take you home, and stay with you for 24 hours after your procedure — you cannot drive or operate machinery for 24 hours after a general anaesthetic.',
       'Plan for a full day at the hospital (arrival, preparation, procedure, and recovery).',
       'You may be required to stay overnight — arrange accordingly.',
     ],
     onTheDay: [
-      'Arrive at the time given by Tapion Hospital admissions.',
+      'Arrive at Tapion Hospital at the time given.',
       'Remove all jewellery, nail polish, and contact lenses.',
       'Wear loose, comfortable clothing.',
-      'Bring a responsible adult who will stay until you are discharged.',
+      'Bring a responsible adult who will stay until you are discharged, take you home, and stay with you for 24 hours.',
     ],
     afterCare: [
       'Rest at home for the remainder of the procedure day.',
-      'Do not drive or operate machinery for 24 hours after sedation.',
+      'Do not drive or operate machinery for 24 hours after a general anaesthetic.',
       'You may have a mild sore throat — this is normal and will settle.',
       'Light diet on the day of the procedure; progress to normal diet as tolerated.',
       'You will be given discharge instructions by the nursing team at Tapion Hospital.',
@@ -317,10 +328,9 @@ const PROCEDURE_INSTRUCTIONS_DEFS = {
     ],
   },
 
-  // Preparation wording taken from the api-server `flexi_sig` template
-  // (artifacts/api-server/src/lib/sms.ts), which says "light breakfast only".
-  // The dashboard staff summary (BookingInboxTab.tsx) says "clear fluids only
-  // on morning of procedure" — unresolved conflict, flagged for Dr Kabiye.
+  // Dr Kabiye's decision: light breakfast on the morning of the procedure (no
+  // 6-hour fast). Matches the api-server `flexi_sig` template (sms.ts) and the
+  // dashboard staff summary (BookingInboxTab.tsx).
   flexi_sig: {
     displayName: 'Flexible Sigmoidoscopy',
     location:    'Tapion Hospital (La Toc, Castries)',
@@ -475,10 +485,10 @@ const PROCEDURE_INSTRUCTIONS_DEFS = {
   },
 
   // ── PRE-OPERATIVE ASSESSMENT (clinic visit before an operation) ───────────
-  // The `pre_op` booking type is the assessment visit, not the operation, so
-  // there is no fasting here. Logistics mirror the api-server `pre_op`
-  // template (illness before surgery, what to bring) minus its surgery-day
-  // fasting / shower / escort rules.
+  // Dr Kabiye's decision: the `pre_op` booking type is the assessment visit,
+  // not the operation, so there is no fasting here. Matches the api-server
+  // `pre_op` template (sms.ts); the day-of-surgery fasting / shower / escort
+  // text lives under the api-server `surgery_theatre` key instead.
 
   pre_op_assessment: {
     displayName: 'Pre-operative Assessment',
@@ -702,6 +712,34 @@ const PROCEDURE_INSTRUCTIONS_DEFS = {
     ],
   },
 
+  // ── FASTING BLOOD TEST (staff-booked lab visit — NOT colonoscopy prep) ────
+  // Dr Kabiye's decision: `lab_fasting` gets fasting-bloods wording (8–10 h,
+  // plain water allowed, insulin / diabetes medicines → call the clinic).
+  // Other lab booking types stay on the neutral set. Matches the api-server
+  // `lab_fasting` template (sms.ts).
+
+  lab_fasting: {
+    displayName: 'Fasting Blood Test',
+    location:    'Rodney Bay (Providence Building)',
+    duration:    'As advised by the clinic',
+    beforeVisit: [
+      'FASTING BLOOD TEST: Nothing to eat for 8–10 hours before your blood test. You may drink plain water. Please call the clinic if you take insulin or diabetes medicines, for instructions before fasting.',
+    ],
+    onTheDay: [
+      'Arrive at the time given.',
+      'Bring your photo ID and your blood test request form.',
+    ],
+    afterCare: null,
+    whatToBring: [
+      'Valid photo ID (passport or national ID)',
+      'Health insurance card (if applicable)',
+      'Your blood test request form',
+    ],
+    urgentSigns: [
+      'Medical emergency — call 911 or go to the nearest emergency department or Tapion Hospital: 758-284-0557 / 758-720-7111',
+    ],
+  },
+
   // ── MINOR PROCEDURES (lipoma, cyst, skin lesions) ─────────────────────────
 
   minor_procedure: {
@@ -775,11 +813,11 @@ export const APPOINTMENT_INSTRUCTIONS: Readonly<Record<AppointmentTypeKey, Instr
   diabetic_foot:             'diabetic_foot',
   pre_op:                    'pre_op_assessment',
   post_op:                   'post_op',
-  // Anaesthesia pre-assessment and lab visits have no approved patient
-  // instruction set yet (e.g. lab_fasting needs a fasting-bloods rule signed
-  // off by Dr Kabiye) — send the neutral set and let staff give specifics.
+  // Fasting bloods: Dr Kabiye's 8–10 h fasting-bloods wording.
+  lab_fasting:               'lab_fasting',
+  // Anaesthesia pre-assessment and the other lab visits have no approved
+  // patient instruction set — send the neutral set and let staff give specifics.
   anaesthesia_preassessment: null,
-  lab_fasting:               null,
   lab_collection:            null,
   lab_urine:                 null,
   lab_histology:             null,

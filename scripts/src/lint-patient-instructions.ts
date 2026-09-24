@@ -22,6 +22,13 @@
  *      entry in APPOINTMENT_INSTRUCTIONS, every mapped instruction set exists,
  *      and consultation-style visits (thyroid clinic, pre-op assessment, …)
  *      resolve to text with no fasting or sedation.
+ *   5. Dr Kabiye's preparation decisions, in the booking email and the
+ *      dashboard staff text: ERCP work-up is the ERCP procedure at Tapion under
+ *      general anaesthesia (6 h / 2 h fast, escort for 24 h, call-the-clinic
+ *      lines, no sedation wording); flexible sigmoidoscopy allows a light
+ *      breakfast (no 6 h fast); the pre-op ASSESSMENT visit has no fasting;
+ *      fasting bloods (lab_fasting) carry the 8–10 h wording and the other lab
+ *      types stay neutral.
  *
  * Run: pnpm --filter @workspace/scripts run lint:patient-instructions
  */
@@ -176,6 +183,86 @@ if (!joined('pre_op_assessment').includes('No fasting is needed for this visit u
 if (NO_FAST.test(joined('general_appointment'))) {
   failures.push('instructions.ts general_appointment: the neutral set must carry no fasting or sedation text');
 }
+// ── Dr Kabiye's preparation decisions ─────────────────────────────────────────
+// (The api-server sms.ts templates are held to the same decisions by
+// artifacts/api-server/src/test/outbound-safety.test.ts.)
+const FASTING_TEXT = 'Nothing to eat for 6 hours and nothing to drink for 2 hours before your appointment time';
+const SIX_HOUR_FAST = /\bnothing to eat for 6 hours\b/i;
+const ANY_FAST = /\b(nothing to eat|nothing to drink|nil by mouth|nothing by mouth)\b/i;
+const everything = (key: string) => {
+  const inst = INSTRUCTIONS_BY_KEY[key];
+  if (!inst) { failures.push(`instructions.ts: missing "${key}" entry`); return ''; }
+  return [
+    ...inst.beforeVisit, ...inst.onTheDay, ...(inst.afterCare ?? []),
+    ...inst.whatToBring, ...inst.urgentSigns, ...(inst.notes ? [inst.notes] : []),
+  ].join('\n');
+};
+
+// 1. ERCP work-up is the ERCP procedure itself, at Tapion, under general
+//    anaesthesia: GA fasting, escort for 24 h, call-the-clinic lines, no
+//    sedation wording (also for the staff-scheduled `ercp` set).
+for (const key of ['ercp_workup', 'ercp']) {
+  const inst = INSTRUCTIONS_BY_KEY[key];
+  const text = everything(key);
+  if (!inst?.location.includes('Tapion')) failures.push(`instructions.ts ${key}: location must be Tapion Hospital`);
+  if (!/general anaesthe/i.test(text)) failures.push(`instructions.ts ${key}: must say the ERCP is done under general anaesthesia`);
+  if (!joined(key).includes(FASTING_TEXT)) failures.push(`instructions.ts ${key}: missing the standard 6 h food / 2 h clear-fluid fasting line`);
+  if (!/take you home, and stay with you for 24 hours/.test(text)) failures.push(`instructions.ts ${key}: missing "a responsible adult must bring you … take you home, and stay with you for 24 hours"`);
+  if (!text.includes('If you take blood thinners, please call the clinic before your appointment for instructions.')) failures.push(`instructions.ts ${key}: missing the blood-thinners call-the-clinic line`);
+  if (/\bsedat\w*/i.test(text)) failures.push(`instructions.ts ${key}: ERCP is done under general anaesthesia — no sedation wording`);
+}
+if (MAPPING_BY_TYPE.ercp_workup !== 'ercp_workup') failures.push('APPOINTMENT_INSTRUCTIONS: "ercp_workup" must map to "ercp_workup"');
+if (APPOINTMENT_TYPES.ercp_workup.location !== 'tapion') failures.push('scheduling.ts APPOINTMENT_TYPES.ercp_workup: location must be tapion');
+
+// 2. Flexible sigmoidoscopy: light breakfast on the morning — no 6-hour fast.
+{
+  const text = everything('flexi_sig');
+  if (!text.includes('Light breakfast only on the morning of the procedure')) failures.push('instructions.ts flexi_sig: missing the light-breakfast line');
+  if (SIX_HOUR_FAST.test(text)) failures.push('instructions.ts flexi_sig: must carry no 6-hour fasting line (light breakfast is allowed)');
+}
+
+// 3. Pre-operative ASSESSMENT visit: no fasting (booking type and instruction set).
+for (const text of [everything('pre_op_assessment'), (() => {
+  const inst = getInstructionsForAppointment('pre_op');
+  return [...inst.beforeVisit, ...inst.onTheDay, ...(inst.afterCare ?? []), ...inst.whatToBring, ...inst.urgentSigns].join('\n');
+})()]) {
+  if (ANY_FAST.test(text) || /\bsedation\b/i.test(text)) {
+    failures.push('pre_op / pre_op_assessment: the assessment visit must carry no fasting or sedation text');
+    break;
+  }
+}
+
+// 4. Fasting blood test: its own 8–10 h wording; other lab types stay neutral.
+if (MAPPING_BY_TYPE.lab_fasting !== 'lab_fasting') failures.push('APPOINTMENT_INSTRUCTIONS: "lab_fasting" must map to "lab_fasting"');
+if (!joined('lab_fasting').includes('Nothing to eat for 8–10 hours before your blood test. You may drink plain water. Please call the clinic if you take insulin or diabetes medicines, for instructions before fasting.')) {
+  failures.push('instructions.ts lab_fasting: missing the approved 8–10 h fasting-bloods wording');
+}
+if (/\b(sedation|bowel prep\w*|6 hours)\b/i.test(everything('lab_fasting'))) failures.push('instructions.ts lab_fasting: must carry no procedure / colonoscopy preparation text');
+for (const type of ['lab_collection', 'lab_urine', 'lab_histology']) {
+  if (MAPPING_BY_TYPE[type] !== null) failures.push(`APPOINTMENT_INSTRUCTIONS: "${type}" must stay on the neutral set (null)`);
+}
+
+// 5. Dashboard staff prep reference text (read to patients by phone) must say
+//    the same as the patient text.
+{
+  const src = readFileSync(join(REPO_ROOT, 'artifacts/dashboard/src/pages/tabs/BookingInboxTab.tsx'), 'utf8');
+  const block = src.match(/const PREP_INSTRUCTIONS: Record<string, string> = \{([\s\S]*?)\n\};/)?.[1];
+  const staff: Record<string, string> = {};
+  for (const m of (block ?? '').matchAll(/^\s*(\w+):\s*'([^']*)',?\s*$/gm)) staff[m[1]] = m[2];
+  if (!block) failures.push('BookingInboxTab.tsx: could not find the PREP_INSTRUCTIONS staff text block');
+  const s = (k: string) => staff[k] ?? (failures.push(`BookingInboxTab.tsx PREP_INSTRUCTIONS: missing "${k}"`), '');
+  if (!/Tapion/.test(s('ercp_workup')) || !SIX_HOUR_FAST.test(s('ercp_workup')) || /sedat/i.test(s('ercp_workup'))) {
+    failures.push('BookingInboxTab.tsx ercp_workup: must name Tapion, carry the 6 h fast, and have no sedation wording');
+  }
+  if (!/light breakfast/i.test(s('flexi_sig')) || /clear fluids only on (the )?morning/i.test(s('flexi_sig'))) {
+    failures.push('BookingInboxTab.tsx flexi_sig: must say light breakfast on the morning (not clear fluids only)');
+  }
+  if (ANY_FAST.test(s('pre_op')) || !/no fasting/i.test(s('pre_op'))) {
+    failures.push('BookingInboxTab.tsx pre_op: the assessment visit must say no fasting');
+  }
+  if (!/8–10 hours/.test(s('lab_fasting'))) failures.push('BookingInboxTab.tsx lab_fasting: must carry the 8–10 h fasting-bloods wording');
+}
+
 // Unknown types get the neutral set — never another type's preparation.
 if (getInstructionsForAppointment('__lint_unknown_type__') !== PROCEDURE_INSTRUCTIONS.general_appointment) {
   failures.push('getInstructionsForAppointment: unknown booking types must fall back to general_appointment');

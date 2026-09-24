@@ -51,9 +51,13 @@ export const SLOT_RULES: Record<AppointmentType, SlotRule> = {
     maxPerSession: 6,
   },
   ercp_workup: {
-    // Pre-procedure consultation at Rodney Bay (Providence Building)
-    durationMin: 30,
-    location: 'rodney_bay',
+    // The ERCP procedure itself at Tapion Hospital, under general anaesthesia
+    // (Dr Kabiye's decision) — not a consultation. Duration matches the `ercp`
+    // procedure slot below. Days/window/max are unchanged from the old
+    // consultation slot pending the surgeon's confirmation: a 90-min slot in
+    // the Monday 14:00–16:00 window fits one booking per session.
+    durationMin: 90,
+    location: 'tapion',
     days: [1],
     windowStart: '14:00',
     windowEnd: '16:00',
