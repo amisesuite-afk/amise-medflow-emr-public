@@ -80,6 +80,12 @@ struct PatientListView: View {
             }
             .navigationTitle("Patients")
             .searchable(text: $searchText, prompt: "Search name, MRN, or complaint")
+            .task {
+                // Backfill MRNs for any patient created before auto-generation was wired up.
+                for p in allPatients where p.mrn == nil || p.mrn?.isEmpty == true {
+                    MRNGenerator.backfillIfNeeded(p)
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     HStack {
@@ -190,15 +196,18 @@ struct PatientRow: View {
 
                 // Row 2: demographics · MRN · location pill · time
                 HStack(spacing: 4) {
+                    let showSex = patient.sex != .unspecified
                     if let age = patient.ageDisplay {
-                        Text("\(patient.sex.rawValue.prefix(1).uppercased()), \(age)")
+                        Text(showSex ? "\(patient.sex.rawValue.prefix(1).uppercased()), \(age)" : age)
                             .font(.caption2).foregroundStyle(.secondary)
-                    } else {
+                    } else if showSex {
                         Text(patient.sex.rawValue.prefix(1).uppercased())
                             .font(.caption2).foregroundStyle(.secondary)
                     }
                     if let mrn = patient.mrn, !mrn.isEmpty {
-                        Text("·").font(.caption2).foregroundStyle(.tertiary)
+                        if patient.ageDisplay != nil || showSex {
+                            Text("·").font(.caption2).foregroundStyle(.tertiary)
+                        }
                         Text("#\(mrn)")
                             .font(.system(size: 9).monospacedDigit())
                             .foregroundStyle(.secondary)

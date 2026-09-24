@@ -113,6 +113,11 @@ struct SectionPatientListView: View {
         }
         .navigationTitle(section.rawValue)
         .searchable(text: $searchText, prompt: "Search name or complaint")
+        .task {
+            for p in allPatients where p.mrn == nil || p.mrn?.isEmpty == true {
+                MRNGenerator.backfillIfNeeded(p)
+            }
+        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 HStack {
