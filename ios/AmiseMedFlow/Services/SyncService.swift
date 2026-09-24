@@ -87,6 +87,7 @@ final class SyncService: ObservableObject {
             currentUserEmail = session.user.email
             currentUserId = session.user.id.uuidString
             await fetchUserRole(userId: session.user.id)
+            SyncTombstones.clearRefused()   // the role may have changed since the last launch
             startRealtime()
             // Race-condition fix: setModelContext() may have run before restoreSession()
             // completed (isSignedIn was false at that point), so sync was silently skipped.
@@ -103,6 +104,7 @@ final class SyncService: ObservableObject {
         currentUserEmail = session.user.email
         currentUserId = session.user.id.uuidString
         await fetchUserRole(userId: session.user.id)
+        SyncTombstones.clearRefused()   // a different user may be allowed to delete
         await syncIfAuthenticated()
         startRealtime()
     }
@@ -153,6 +155,9 @@ final class SyncService: ObservableObject {
         defer { isSyncing = false }
 
         do {
+            // Deletes made on this device go up first, as soft deletes. Never throws: a server
+            // without Migration 87 keeps the tombstones for later.
+            await flushSoftDeletes()
             try await pullPatients(context: context)
             try await pullConfirmedAppointments(context: context)
             try await pushPendingPatients(context: context)

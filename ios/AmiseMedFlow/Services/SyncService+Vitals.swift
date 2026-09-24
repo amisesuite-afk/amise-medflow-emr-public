@@ -65,7 +65,7 @@ extension SyncService {
         try context.save()
     }
 
-    private struct RemoteVitals: Decodable {
+    private struct RemoteVitals: Decodable, Sendable {
         let id: String
         let patient_id: String
         let recorded_at: String
@@ -80,16 +80,14 @@ extension SyncService {
         let avpu: String?
         let on_supplemental_o2: Bool?
         let notes: String?
+        let deleted_at: String?   // nil when live, or when the server predates Migration 87
     }
 
     func pullVitals(context: ModelContext) async throws {
-        let rows: [RemoteVitals] = try await SupabaseConfig.client
-            .from("patient_vitals")
-            .select("id, patient_id, recorded_at, bp_systolic, bp_diastolic, heart_rate, respiratory_rate, temperature_c, spo2, weight_kg, glucose_mmol, avpu, on_supplemental_o2, notes")
-            .order("recorded_at", ascending: false)
-            .limit(1000)
-            .execute()
-            .value
+        let rows: [RemoteVitals] = try await selectIncludingDeleted(
+            from: "patient_vitals",
+            columns: "id, patient_id, recorded_at, bp_systolic, bp_diastolic, heart_rate, respiratory_rate, temperature_c, spo2, weight_kg, glucose_mmol, avpu, on_supplemental_o2, notes",
+            orderBy: "recorded_at", limit: 1000)
 
         let allLocal = try context.fetch(FetchDescriptor<VitalsEntry>())
         let allPatients = try context.fetch(FetchDescriptor<Patient>())
@@ -98,8 +96,16 @@ extension SyncService {
         let deletedVitals = SyncTombstones.ids(in: .vitals)
         for row in rows {
             guard !deletedVitals.contains(row.id) else { continue }   // deleted on this device
-            guard allLocal.first(where: { $0.remoteId == row.id }) == nil else { continue }
-            guard let patient = allPatients.first(where: { $0.remoteId == row.patient_id }) else { continue }
+            // isLive first: never read attributes of a model deleted earlier in this loop.
+            let existing = allLocal.first(where: { $0.isLive && $0.remoteId == row.id })
+            if row.deleted_at != nil {
+                // Deleted on another device or the web: drop the local copy (unless it has
+                // unsent changes) and never insert it.
+                if let existing, !existing.pendingSync { context.delete(existing) }
+                continue
+            }
+            guard existing == nil else { continue }
+            guard let patient = allPatients.first(where: { $0.isLive && $0.remoteId == row.patient_id }) else { continue }
 
             let entry = VitalsEntry(patient: patient,
                                    recordedAt: iso.date(from: row.recorded_at) ?? .now)

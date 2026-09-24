@@ -230,9 +230,13 @@ struct BillingView: View {
                 BillingItemRow(item: item)
             }
             .onDelete { indexSet in
+                let current = items   // read once: `items` re-sorts on every access
                 indexSet.forEach {
-                    SyncTombstones.add(items[$0].remoteId, in: .billingItems)
-                    context.delete(items[$0])
+                    // Tombstone → soft delete on the server at the next sync (all devices).
+                    AuditLog.record("delete", "billing_item", patient: patient,
+                                    resourceId: current[$0].remoteId ?? current[$0].syncCode)
+                    SyncTombstones.add(current[$0].remoteId, in: .billingItems)
+                    context.delete(current[$0])
                 }
             }
         }

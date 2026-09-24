@@ -232,6 +232,9 @@ struct DocumentsView: View {
                 }
                 .onDelete { indexSet in
                     indexSet.forEach {
+                        // Tombstone → soft delete on the server at the next sync (all devices).
+                        AuditLog.record("delete", "document", patient: patient,
+                                        resourceId: docs[$0].remoteId ?? docs[$0].id.uuidString)
                         SyncTombstones.add(docs[$0].remoteId, in: .documents)
                         context.delete(docs[$0])
                     }

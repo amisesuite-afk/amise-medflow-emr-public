@@ -95,23 +95,21 @@ extension SyncService {
 
     // MARK: - Pull clinical notes from remote
 
-    private struct RemoteNote: Decodable {
+    private struct RemoteNote: Decodable, Sendable {
         let id: String
         let patient_id: String
         let note_type: String
         let status: String
         let content: String?
         let created_at: String
+        let deleted_at: String?   // nil when live, or when the server predates Migration 87
     }
 
     func pullNotes(context: ModelContext) async throws {
-        let rows: [RemoteNote] = try await SupabaseConfig.client
-            .from("clinical_notes")
-            .select("id, patient_id, note_type, status, content, created_at")
-            .order("created_at", ascending: false)
-            .limit(200)
-            .execute()
-            .value
+        let rows: [RemoteNote] = try await selectIncludingDeleted(
+            from: "clinical_notes",
+            columns: "id, patient_id, note_type, status, content, created_at",
+            orderBy: "created_at", limit: 200)
 
         let allLocalNotes  = try context.fetch(FetchDescriptor<ClinicalNote>())
         let allLocalPatients = try context.fetch(FetchDescriptor<Patient>())
@@ -119,10 +117,19 @@ extension SyncService {
         let deleted = SyncTombstones.ids(in: .clinicalNotes)
         for row in rows {
             guard !deleted.contains(row.id) else { continue }   // deleted on this device
-            let patient = allLocalPatients.first { $0.remoteId == row.patient_id }
+            // isLive first: never read attributes of a model deleted earlier in this loop.
+            let existing = allLocalNotes.first { $0.isLive && $0.remoteId == row.id }
+
+            if row.deleted_at != nil {
+                // Deleted on another device or the web: drop the local copy unless it holds
+                // edits not yet uploaded. Never insert a deleted note.
+                if let existing, !existing.pendingSync { context.delete(existing) }
+                continue
+            }
+
+            let patient = allLocalPatients.first { $0.isLive && $0.remoteId == row.patient_id }
             guard let patient else { continue }
 
-            let existing = allLocalNotes.first { $0.remoteId == row.id }
             let note: ClinicalNote
             if let e = existing {
                 // Local edits not yet uploaded win: never overwrite them with the server copy.

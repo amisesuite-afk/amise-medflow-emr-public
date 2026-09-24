@@ -57,7 +57,7 @@ extension SyncService {
         try context.save()
     }
 
-    private struct RemoteBillingItem: Decodable {
+    private struct RemoteBillingItem: Decodable, Sendable {
         let id: String
         let patient_id: String
         let cpt_code: String
@@ -68,16 +68,14 @@ extension SyncService {
         let modifier: String
         let note: String
         let added_at: String
+        let deleted_at: String?   // nil when live, or when the server predates Migration 87
     }
 
     func pullBillingItems(context: ModelContext) async throws {
-        let rows: [RemoteBillingItem] = try await SupabaseConfig.client
-            .from("patient_billing_items")
-            .select("id, patient_id, cpt_code, cpt_description, cpt_category, units, amount_xcd, modifier, note, added_at")
-            .order("added_at", ascending: false)
-            .limit(1000)
-            .execute()
-            .value
+        let rows: [RemoteBillingItem] = try await selectIncludingDeleted(
+            from: "patient_billing_items",
+            columns: "id, patient_id, cpt_code, cpt_description, cpt_category, units, amount_xcd, modifier, note, added_at",
+            orderBy: "added_at", limit: 1000)
 
         let allLocal = try context.fetch(FetchDescriptor<BillingLineItem>())
         let allPatients = try context.fetch(FetchDescriptor<Patient>())
@@ -86,8 +84,16 @@ extension SyncService {
         let deleted = SyncTombstones.ids(in: .billingItems)
         for row in rows {
             guard !deleted.contains(row.id) else { continue }   // deleted on this device
-            guard allLocal.first(where: { $0.remoteId == row.id }) == nil else { continue }
-            guard let patient = allPatients.first(where: { $0.remoteId == row.patient_id }) else { continue }
+            // isLive first: never read attributes of a model deleted earlier in this loop.
+            let existing = allLocal.first(where: { $0.isLive && $0.remoteId == row.id })
+            if row.deleted_at != nil {
+                // Deleted on another device or the web: drop the local copy (unless it has
+                // unsent changes) and never insert it.
+                if let existing, !existing.pendingSync { context.delete(existing) }
+                continue
+            }
+            guard existing == nil else { continue }
+            guard let patient = allPatients.first(where: { $0.isLive && $0.remoteId == row.patient_id }) else { continue }
 
             let item = BillingLineItem(code: row.cpt_code,
                                       description: row.cpt_description,
