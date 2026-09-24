@@ -1,0 +1,66 @@
+name: iOS — Compile Check
+
+# Compile-only build for feature branches: no signing, no secrets, no upload.
+# TestFlight releases stay in ios.yml (main only).
+
+on:
+  push:
+    branches: ['claude/**']
+    paths:
+      - 'ios/**'
+      - '.github/workflows/ios-build-check.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ios-build-check-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  compile:
+    name: Compile (no signing)
+    runs-on: macos-15
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      # Same Xcode selection as ios.yml so both workflows compile with one SDK.
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 'latest'
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      # Real Configuration.xcconfig holds Supabase keys and is gitignored;
+      # placeholders are enough to compile.
+      - name: Use placeholder configuration
+        working-directory: ios
+        run: cp Configuration.xcconfig.example Configuration.xcconfig
+
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen generate
+
+      - name: Build
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild -project AmiseMedFlow.xcodeproj -scheme AmiseMedFlow \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
+            build 2>&1 | tee build.log
+
+      - name: Error summary
+        if: always()
+        working-directory: ios
+        run: |
+          echo "==== COMPILER ERRORS ===="
+          grep -E 'error:' build.log | sed 's|.*/AmiseMedFlow/||' | sort -u || true
+          echo "==== RESULT ===="
+          grep -E '\*\* BUILD (SUCCEEDED|FAILED) \*\*' build.log || echo "no BUILD result line (failed before compiling)"
