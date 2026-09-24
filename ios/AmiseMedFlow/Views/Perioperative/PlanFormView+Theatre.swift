@@ -379,13 +379,8 @@ extension PlanForm {
             lines.append("Estimated blood loss: [mL]")
             lines.append("Specimens: [None / as per histopathology request]")
             lines.append("Complications: None encountered.")
-            if !plan.postOpOrders.isEmpty {
-                lines.append("")
-                lines.append("Post-operative orders: \(plan.postOpOrders)")
-            } else {
-                lines.append("")
-                lines.append("Post-operative orders: Routine post-operative care. Analgesia and antiemetics as prescribed.")
-            }
+            lines.append("")
+            lines.append("Post-operative orders: Routine post-operative care. Analgesia and antiemetics as prescribed.")
             if !plan.surgicalTeamNote.isEmpty {
                 lines.append("")
                 lines.append("Team note: \(plan.surgicalTeamNote)")
