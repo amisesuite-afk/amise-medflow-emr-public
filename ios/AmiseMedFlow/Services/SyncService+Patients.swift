@@ -313,13 +313,16 @@ extension SyncService {
     }
 
     func pushPendingPatients(context: ModelContext) async throws {
+        let refused = SyncRefusals.ids(.patient)
         let pending = try context.fetch(FetchDescriptor<Patient>())
-            .filter { $0.pendingSync && $0.remoteId == nil }
+            .filter { $0.pendingSync && $0.remoteId == nil && !refused.contains($0.id.uuidString) }
         guard !pending.isEmpty else { return }
+        var firstError: Error?
 
         for patient in pending {
             // The loop awaits the network; a patient deleted meanwhile must not be read.
             guard patient.isLive else { continue }
+            let localId = patient.id
             struct InsertRow: Encodable {
                 let full_name: String
                 let sex: String
@@ -438,49 +441,59 @@ extension SyncService {
             // The values `row` was built from; an edit after this point is not in the insert.
             let editedAt = patient.updatedAt
             struct InsertResponse: Decodable { let id: String }
-            // Idempotent push: if an earlier insert for this MRN already reached the server
-            // (response lost, app killed before save), adopt that row instead of inserting again.
-            // MRN AND name must both match: MRN counters are per-device, so an MRN alone could
-            // belong to a different patient registered on another device.
-            if let mrn = patient.mrn, !mrn.isEmpty {
-                struct ExistingRow: Decodable { let id: String; let full_name: String }
-                let already: [ExistingRow] = try await SupabaseConfig.client
+            // One patient the server refuses (or rejects) must not hold back the others: errors
+            // are handled per patient (SyncService+Refusals.swift). It stays pending either way.
+            do {
+                // Idempotent push: if an earlier insert for this MRN already reached the server
+                // (response lost, app killed before save), adopt that row instead of inserting
+                // again. MRN AND name must both match: MRN counters are per-device, so an MRN
+                // alone could belong to a different patient registered on another device.
+                if let mrn = patient.mrn, !mrn.isEmpty {
+                    struct ExistingRow: Decodable { let id: String; let full_name: String }
+                    let already: [ExistingRow] = try await SupabaseConfig.client
+                        .from("patients")
+                        .select("id, full_name")
+                        .eq("mrn", value: mrn)
+                        .execute()
+                        .value
+                    let claimed = Set(try context.fetch(FetchDescriptor<Patient>()).compactMap(\.remoteId))
+                    guard patient.isLive else { continue }
+                    if let row = already.first(where: {
+                        Patient.normalize($0.full_name) == patient.normalizedName && !claimed.contains($0.id)
+                    }) {
+                        // Link only. The server row holds what the lost insert sent, not edits
+                        // made on this device since, so the patient stays pending: pushPatientEdits
+                        // (next in the same sync) sends the local values and clears it once
+                        // confirmed.
+                        patient.remoteId = row.id
+                        try context.save()
+                        continue
+                    }
+                }
+                let response: [InsertResponse] = try await SupabaseConfig.client
                     .from("patients")
-                    .select("id, full_name")
-                    .eq("mrn", value: mrn)
+                    .insert(row)
+                    .select("id")
                     .execute()
                     .value
-                let claimed = Set(try context.fetch(FetchDescriptor<Patient>()).compactMap(\.remoteId))
-                guard patient.isLive else { continue }
-                if let row = already.first(where: {
-                    Patient.normalize($0.full_name) == patient.normalizedName && !claimed.contains($0.id)
-                }) {
-                    // Link only. The server row holds what the lost insert sent, not edits made
-                    // on this device since, so the patient stays pending: pushPatientEdits (next
-                    // in the same sync) sends the local values and clears it once confirmed.
-                    patient.remoteId = row.id
-                    try context.save()
-                    continue
+                if let first = response.first, patient.isLive {
+                    patient.remoteId = first.id
+                    // An edit made while the requests ran was not in the insert: stay pending, so
+                    // pushPatientEdits (next in the same sync) sends it and the pull never
+                    // reverts it.
+                    if patient.updatedAt == editedAt {
+                        patient.pendingSync = false
+                        patient.syncedAt = .now
+                    }
+                    try context.save()   // persist the id immediately so a crash can't cause a re-insert
                 }
-            }
-            let response: [InsertResponse] = try await SupabaseConfig.client
-                .from("patients")
-                .insert(row)
-                .select("id")
-                .execute()
-                .value
-            if let first = response.first, patient.isLive {
-                patient.remoteId = first.id
-                // An edit made while the requests ran was not in the insert: stay pending, so
-                // pushPatientEdits (next in the same sync) sends it and the pull never reverts it.
-                if patient.updatedAt == editedAt {
-                    patient.pendingSync = false
-                    patient.syncedAt = .now
-                }
-                try context.save()   // persist the id immediately so a crash can't cause a re-insert
+            } catch {
+                guard continueAfterPushFailure(error, id: localId, kind: .patient,
+                                               firstError: &firstError) else { break }
             }
         }
         try context.save()
+        if let firstError { throw firstError }
     }
 
 }

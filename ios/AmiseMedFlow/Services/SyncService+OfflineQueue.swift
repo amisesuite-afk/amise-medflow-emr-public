@@ -10,13 +10,40 @@ extension SyncService {
     // MARK: - Pending count
 
     func recountPending(context: ModelContext) {
-        let pCount = (try? context.fetch(FetchDescriptor<Patient>()))?.filter { $0.pendingSync }.count ?? 0
-        let nCount = (try? context.fetch(FetchDescriptor<ClinicalNote>()))?.filter { $0.pendingSync }.count ?? 0
-        let rxCount = (try? context.fetch(FetchDescriptor<Prescription>()))?.filter { $0.pendingSync }.count ?? 0
-        let vCount  = (try? context.fetch(FetchDescriptor<VitalsEntry>()))?.filter { $0.pendingSync }.count ?? 0
-        let opCount  = (try? context.fetch(FetchDescriptor<OperativePlan>()))?.filter { $0.pendingSync }.count ?? 0
-        let bilCount = (try? context.fetch(FetchDescriptor<BillingLineItem>()))?.filter { $0.pendingSync }.count ?? 0
-        pendingCount = pCount + nCount + rxCount + vCount + opCount + bilCount
+        let patients = (try? context.fetch(FetchDescriptor<Patient>()))?.filter(\.isLive) ?? []
+        let notes    = (try? context.fetch(FetchDescriptor<ClinicalNote>()))?.filter { $0.isLive && $0.pendingSync } ?? []
+        let rxs      = (try? context.fetch(FetchDescriptor<Prescription>()))?.filter { $0.isLive && $0.pendingSync } ?? []
+        let vitals   = (try? context.fetch(FetchDescriptor<VitalsEntry>()))?.filter { $0.isLive && $0.pendingSync } ?? []
+        let plans    = (try? context.fetch(FetchDescriptor<OperativePlan>()))?.filter { $0.isLive && $0.pendingSync } ?? []
+        let bills    = (try? context.fetch(FetchDescriptor<BillingLineItem>()))?.filter { $0.isLive && $0.pendingSync } ?? []
+        let pendingPatients = patients.filter(\.pendingSync)
+        var total = pendingPatients.count
+        total += notes.count
+        total += rxs.count
+        total += vitals.count
+        total += plans.count
+        total += bills.count
+        pendingCount = total
+
+        // Records the server refused for this role (SyncService+Refusals.swift) that still hold
+        // unsent changes. Counted from the live records, so a refused record deleted since is
+        // not counted.
+        func refusedCount(_ ids: [UUID], _ kind: SyncRefusals.Kind) -> Int {
+            let refused = SyncRefusals.ids(kind)
+            guard !refused.isEmpty else { return 0 }
+            return ids.filter { refused.contains($0.uuidString) }.count
+        }
+        let unsentPathway = patients.filter { $0.pathwayDataJson != nil && $0.pathwayDataJson != $0.pathwaySyncedJson }
+        let unsentScale2 = patients.filter(\.news2Scale2NeedsPush)
+        var refused = refusedCount(pendingPatients.map(\.id), .patient)
+        refused += refusedCount(notes.map(\.id), .clinicalNote)
+        refused += refusedCount(rxs.map(\.id), .prescription)
+        refused += refusedCount(vitals.map(\.id), .vitals)
+        refused += refusedCount(plans.map(\.id), .operativePlan)
+        refused += refusedCount(bills.map(\.id), .billingItem)
+        refused += refusedCount(unsentPathway.map(\.id), .pathwayData)
+        refused += refusedCount(unsentScale2.map(\.id), .news2Scale2)
+        syncNotice = SyncRefusals.notice(count: refused)
     }
 
     // MARK: - Offline write queue (persisted in UserDefaults, flushed on reconnect)

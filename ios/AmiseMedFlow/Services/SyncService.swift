@@ -15,6 +15,13 @@ final class SyncService: ObservableObject {
     @Published var currentUserRole: UserRole = .frontDesk
     @Published var isSyncing: Bool = false
     @Published var syncError: String?
+    /// Short, PHI-free notice about records the server refused for this user's role
+    /// (e.g. "1 change not permitted for your role"). See SyncService+Refusals.swift.
+    @Published var syncNotice: String?
+    /// True once `currentUserRole` came from the user's `user_profiles` row. The role falls back
+    /// to `.frontDesk` when the fetch fails (e.g. offline at launch); the patient push only
+    /// leaves out clinician-only columns when the front-desk role is confirmed.
+    @Published private(set) var isRoleConfirmed: Bool = false
 
     private let monitor = NWPathMonitor()
     private let networkQueue = DispatchQueue(label: "com.amise.network")
@@ -88,6 +95,7 @@ final class SyncService: ObservableObject {
             currentUserId = session.user.id.uuidString
             await fetchUserRole(userId: session.user.id)
             SyncTombstones.clearRefused()   // the role may have changed since the last launch
+            SyncRefusals.clearAll()
             startRealtime()
             // Race-condition fix: setModelContext() may have run before restoreSession()
             // completed (isSignedIn was false at that point), so sync was silently skipped.
@@ -103,8 +111,10 @@ final class SyncService: ObservableObject {
         AuditLog.record("login", "user", details: ["client": "ios"])
         currentUserEmail = session.user.email
         currentUserId = session.user.id.uuidString
+        isRoleConfirmed = false         // never carry a confirmed role over to another user
         await fetchUserRole(userId: session.user.id)
         SyncTombstones.clearRefused()   // a different user may be allowed to delete
+        SyncRefusals.clearAll()         // ... or to make the refused edits
         await syncIfAuthenticated()
         startRealtime()
     }
@@ -116,6 +126,8 @@ final class SyncService: ObservableObject {
         currentUserEmail = nil
         currentUserId = nil
         currentUserRole = .frontDesk
+        isRoleConfirmed = false
+        syncNotice = nil
     }
 
     private func fetchUserRole(userId: UUID) async {
@@ -130,11 +142,15 @@ final class SyncService: ObservableObject {
                 .value
             if let raw = rows.first?.role, let role = UserRole(rawValue: raw) {
                 currentUserRole = role
+                isRoleConfirmed = true
             } else {
                 currentUserRole = .frontDesk
+                isRoleConfirmed = false
             }
         } catch {
-            currentUserRole = .frontDesk
+            // Keep a role confirmed earlier this session (a transient failure must not change
+            // it); otherwise fall back to front desk, unconfirmed.
+            if !isRoleConfirmed { currentUserRole = .frontDesk }
         }
     }
 
@@ -154,35 +170,42 @@ final class SyncService: ObservableObject {
         syncError = nil
         defer { isSyncing = false }
 
-        do {
-            // Deletes made on this device go up first, as soft deletes. Never throws: a server
-            // without Migration 87 keeps the tombstones for later.
-            await flushSoftDeletes()
-            try await pullPatients(context: context)
-            try await pullConfirmedAppointments(context: context)
-            try await pushPendingPatients(context: context)
-            try await pushPatientEdits(context: context)
-            try await pushPendingNotes(context: context)
-            try await pullNotes(context: context)
-            try await pushPendingPrescriptions(context: context)
-            try await pullPrescriptions(context: context)
-            try await pushPendingVitals(context: context)
-            try await pullVitals(context: context)
-            try await pushPendingOperativePlans(context: context)
-            try await pullOperativePlans(context: context)
-            try await pullDocumentMetadata(context: context)
-            try await pushPendingBillingItems(context: context)
-            try await pullBillingItems(context: context)
-            // Own requests, never throws: a server without the column (migration 86) must not
-            // break the rest of the sync.
-            await syncPathwayData(context: context)
-            // Same for the NEWS2 SpO₂ Scale 2 flag (migration 88). Its pull is in pullPatients.
-            await pushNEWS2Scale2(context: context)
-            await AuditLog.flush()
-            lastSyncedAt = .now
-            recountPending(context: context)
-        } catch {
-            syncError = error.localizedDescription
+        // The launch fetch may have failed (offline): try again, so the role-dependent push
+        // (front desk leaves out clinician-only columns) and the UI use the real role.
+        if !isRoleConfirmed, let uid = currentUserId.flatMap(UUID.init(uuidString:)) {
+            await fetchUserRole(userId: uid)
         }
+
+        // Each step runs on its own: a failure is recorded in syncError and the later steps still
+        // run. Inside each push step, errors are handled per record (SyncService+Refusals.swift),
+        // so one record the server refuses does not hold back the others. pendingSync is still
+        // cleared only on a confirmed write.
+        //
+        // Deletes made on this device go up first, as soft deletes. Never throws: a server
+        // without Migration 87 keeps the tombstones for later.
+        await flushSoftDeletes()
+        await runSyncStep("pull patients") { try await pullPatients(context: context) }
+        await runSyncStep("pull appointments") { try await pullConfirmedAppointments(context: context) }
+        await runSyncStep("push new patients") { try await pushPendingPatients(context: context) }
+        await runSyncStep("push patient edits") { try await pushPatientEdits(context: context) }
+        await runSyncStep("push notes") { try await pushPendingNotes(context: context) }
+        await runSyncStep("pull notes") { try await pullNotes(context: context) }
+        await runSyncStep("push prescriptions") { try await pushPendingPrescriptions(context: context) }
+        await runSyncStep("pull prescriptions") { try await pullPrescriptions(context: context) }
+        await runSyncStep("push vitals") { try await pushPendingVitals(context: context) }
+        await runSyncStep("pull vitals") { try await pullVitals(context: context) }
+        await runSyncStep("push operative plans") { try await pushPendingOperativePlans(context: context) }
+        await runSyncStep("pull operative plans") { try await pullOperativePlans(context: context) }
+        await runSyncStep("pull documents") { try await pullDocumentMetadata(context: context) }
+        await runSyncStep("push billing") { try await pushPendingBillingItems(context: context) }
+        await runSyncStep("pull billing") { try await pullBillingItems(context: context) }
+        // Own requests, never throws: a server without the column (migration 86) must not
+        // break the rest of the sync.
+        await syncPathwayData(context: context)
+        // Same for the NEWS2 SpO₂ Scale 2 flag (migration 88). Its pull is in pullPatients.
+        await pushNEWS2Scale2(context: context)
+        await AuditLog.flush()
+        if syncError == nil { lastSyncedAt = .now }
+        recountPending(context: context)
     }
 }

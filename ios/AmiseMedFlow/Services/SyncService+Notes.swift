@@ -10,92 +10,106 @@ extension SyncService {
     // MARK: - Note sync
 
     func pushPendingNotes(context: ModelContext) async throws {
+        let refused = SyncRefusals.ids(.clinicalNote)
         let pending = try context.fetch(FetchDescriptor<ClinicalNote>())
-            .filter { $0.pendingSync }
+            .filter { $0.pendingSync && !refused.contains($0.id.uuidString) }
         guard !pending.isEmpty else { return }
         let userId = SupabaseConfig.client.auth.currentUser?.id.uuidString
         let iso = ISO8601DateFormatter()
+        var firstError: Error?
 
         struct NoteResponse: Decodable { let id: String }
 
         for note in pending {
+            // The loop awaits the network; a note deleted meanwhile must not be read.
+            guard note.isLive else { continue }
             guard let patientRemoteId = note.patient?.remoteId, !note.isEmpty else { continue }
+            let localId = note.id
             let signed = note.status == .signed
             let signedAt = signed ? iso.string(from: note.updatedAt) : nil
             // An edit made while the request below runs is not in it: the note then stays
             // pending (and protected from pullNotes) for the next sync.
             let editedAt = note.updatedAt
 
-            if let remoteId = note.remoteId {
-                // Edit to a note that is already in the cloud: update it in place. RLS allows the
-                // author or an admin; 0 rows back means not permitted — keep it pending locally
-                // (the pull below will not overwrite it) rather than lose the edit.
-                struct NoteUpdate: Encodable {
+            // Errors are handled per note (SyncService+Refusals.swift): a note the server refuses
+            // (e.g. inserted by a role that may not write notes) stays pending locally and does
+            // not hold back the others.
+            do {
+                if let remoteId = note.remoteId {
+                    // Edit to a note that is already in the cloud: update it in place. RLS allows the
+                    // author or an admin; 0 rows back means not permitted — keep it pending locally
+                    // (the pull below will not overwrite it) rather than lose the edit.
+                    struct NoteUpdate: Encodable {
+                        let note_type: String
+                        let status: String
+                        let content: String
+                        let updated_by: String?
+                        let updated_at: String
+                        let signed_by: String?
+                        let signed_at: String?
+                    }
+                    let row = NoteUpdate(note_type: note.noteType.rawValue, status: note.status.rawValue,
+                                         content: note.contentForSync, updated_by: userId,
+                                         updated_at: iso.string(from: note.updatedAt),
+                                         signed_by: signed ? userId : nil, signed_at: signedAt)
+                    let updated: [NoteResponse] = try await SupabaseConfig.client
+                        .from("clinical_notes")
+                        .update(row)
+                        .eq("id", value: remoteId)
+                        .select("id")
+                        .execute()
+                        .value
+                    guard note.isLive else { continue }
+                    if !updated.isEmpty && note.updatedAt == editedAt {
+                        note.pendingSync = false
+                        note.syncedAt = .now
+                        try? context.save()
+                    }
+                    continue
+                }
+
+                struct NoteRow: Encodable {
+                    let patient_id: String
                     let note_type: String
                     let status: String
                     let content: String
-                    let updated_by: String?
-                    let updated_at: String
+                    let ai_assisted: Bool
+                    let created_by: String?     // lets the author edit it later (RLS)
                     let signed_by: String?
                     let signed_at: String?
                 }
-                let row = NoteUpdate(note_type: note.noteType.rawValue, status: note.status.rawValue,
-                                     content: note.contentForSync, updated_by: userId,
-                                     updated_at: iso.string(from: note.updatedAt),
-                                     signed_by: signed ? userId : nil, signed_at: signedAt)
-                let updated: [NoteResponse] = try await SupabaseConfig.client
+                let row = NoteRow(
+                    patient_id: patientRemoteId,
+                    note_type: note.noteType.rawValue,
+                    status: note.status.rawValue,
+                    content: note.contentForSync,
+                    ai_assisted: note.isAIAssisted,
+                    created_by: userId,
+                    signed_by: signed ? userId : nil,
+                    signed_at: signedAt
+                )
+                let response: [NoteResponse] = try await SupabaseConfig.client
                     .from("clinical_notes")
-                    .update(row)
-                    .eq("id", value: remoteId)
+                    .insert(row)
                     .select("id")
                     .execute()
                     .value
                 guard note.isLive else { continue }
-                if !updated.isEmpty && note.updatedAt == editedAt {
-                    note.pendingSync = false
-                    note.syncedAt = .now
-                    try? context.save()
+                if let first = response.first {
+                    note.remoteId = first.id   // always: a later edit is then sent as an update
+                    if note.updatedAt == editedAt {
+                        note.pendingSync = false
+                        note.syncedAt = .now
+                    }
+                    try? context.save()   // persist the id at once so a crash can't cause a re-insert
                 }
-                continue
-            }
-
-            struct NoteRow: Encodable {
-                let patient_id: String
-                let note_type: String
-                let status: String
-                let content: String
-                let ai_assisted: Bool
-                let created_by: String?     // lets the author edit it later (RLS)
-                let signed_by: String?
-                let signed_at: String?
-            }
-            let row = NoteRow(
-                patient_id: patientRemoteId,
-                note_type: note.noteType.rawValue,
-                status: note.status.rawValue,
-                content: note.contentForSync,
-                ai_assisted: note.isAIAssisted,
-                created_by: userId,
-                signed_by: signed ? userId : nil,
-                signed_at: signedAt
-            )
-            let response: [NoteResponse] = try await SupabaseConfig.client
-                .from("clinical_notes")
-                .insert(row)
-                .select("id")
-                .execute()
-                .value
-            guard note.isLive else { continue }
-            if let first = response.first {
-                note.remoteId = first.id   // always: a later edit is then sent as an update
-                if note.updatedAt == editedAt {
-                    note.pendingSync = false
-                    note.syncedAt = .now
-                }
-                try? context.save()   // persist the id at once so a crash can't cause a re-insert
+            } catch {
+                guard continueAfterPushFailure(error, id: localId, kind: .clinicalNote,
+                                               firstError: &firstError) else { break }
             }
         }
         try context.save()
+        if let firstError { throw firstError }
     }
 
     // MARK: - Pull clinical notes from remote

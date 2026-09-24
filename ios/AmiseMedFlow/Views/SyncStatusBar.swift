@@ -196,6 +196,13 @@ private struct SyncStatusPopover: View {
                                 .lineLimit(3)
                         }
 
+                        // Kept on this device; retried after the next sign-in.
+                        if let notice = sync.syncNotice {
+                            Label(notice, systemImage: "lock")
+                                .font(.caption)
+                                .foregroundStyle(.orange)
+                        }
+
                         Button {
                             Task { await sync.syncIfAuthenticated() }
                         } label: {

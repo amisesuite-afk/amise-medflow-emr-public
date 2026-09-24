@@ -10,14 +10,20 @@ extension SyncService {
     // MARK: - Vitals sync
 
     func pushPendingVitals(context: ModelContext) async throws {
+        let refused = SyncRefusals.ids(.vitals)
         let pending = try context.fetch(FetchDescriptor<VitalsEntry>())
-            .filter { $0.pendingSync && $0.remoteId == nil && $0.hasAnyValue }
+            .filter { $0.pendingSync && $0.remoteId == nil && $0.hasAnyValue
+                      && !refused.contains($0.id.uuidString) }
         guard !pending.isEmpty else { return }
 
         let iso = ISO8601DateFormatter()
+        var firstError: Error?
 
         for v in pending {
+            // The loop awaits the network; an entry deleted meanwhile must not be read.
+            guard v.isLive else { continue }
             guard let patientId = v.patient?.remoteId else { continue }
+            let localId = v.id
 
             struct VRow: Encodable {
                 let patient_id: String
@@ -50,19 +56,27 @@ extension SyncService {
                 notes: v.notes
             )
             struct VResponse: Decodable { let id: String }
-            let response: [VResponse] = try await SupabaseConfig.client
-                .from("patient_vitals")
-                .insert(row)
-                .select("id")
-                .execute()
-                .value
-            if let first = response.first {
-                v.remoteId = first.id
-                v.pendingSync = false
-                v.syncedAt = .now
+            // Per-record: one refused or rejected entry stays pending and does not hold back the
+            // rest (SyncService+Refusals.swift).
+            do {
+                let response: [VResponse] = try await SupabaseConfig.client
+                    .from("patient_vitals")
+                    .insert(row)
+                    .select("id")
+                    .execute()
+                    .value
+                if let first = response.first, v.isLive {
+                    v.remoteId = first.id
+                    v.pendingSync = false
+                    v.syncedAt = .now
+                }
+            } catch {
+                guard continueAfterPushFailure(error, id: localId, kind: .vitals,
+                                               firstError: &firstError) else { break }
             }
         }
         try context.save()
+        if let firstError { throw firstError }
     }
 
     private struct RemoteVitals: Decodable, Sendable {

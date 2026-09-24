@@ -18,10 +18,15 @@ extension SyncService {
     func syncPathwayData(context: ModelContext) async {
         guard let all = try? context.fetch(FetchDescriptor<Patient>()) else { return }
 
-        // Push local edits made since the last confirmed sync.
+        // Push local edits made since the last confirmed sync. A patient whose push was refused
+        // for this role (42501, e.g. front desk: pathway_data_json is clinician-only under
+        // Migration 89) is skipped until the next sign-in and does not stop the others.
+        let refused = SyncRefusals.ids(.pathwayData)
         for p in all where p.isLive {
             guard let rid = p.remoteId, !rid.isEmpty, !rid.hasPrefix("appt:"),
+                  !refused.contains(p.id.uuidString),
                   let json = p.pathwayDataJson, json != p.pathwaySyncedJson else { continue }
+            let localId = p.id
             struct Row: Encodable { let pathway_data_json: String }
             do {
                 try await SupabaseConfig.client
@@ -30,7 +35,8 @@ extension SyncService {
                     .eq("id", value: rid)
                     .execute()
             } catch {
-                return   // column missing, offline or not permitted — retry next sync
+                if markIfRefused(error, id: localId, kind: .pathwayData) { continue }
+                return   // column missing or offline — retry next sync
             }
             // The await above may have outlived a delete.
             if p.isLive { p.pathwaySyncedJson = json }

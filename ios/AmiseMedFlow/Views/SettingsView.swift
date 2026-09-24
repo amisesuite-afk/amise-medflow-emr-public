@@ -78,6 +78,13 @@ struct SettingsView: View {
                             .font(.caption)
                     }
 
+                    // Kept on this device; retried after the next sign-in.
+                    if let notice = sync.syncNotice {
+                        Label(notice, systemImage: "lock")
+                            .foregroundStyle(.orange)
+                            .font(.caption)
+                    }
+
                     if sync.isSignedIn && !sync.isSyncing {
                         Button("Sync Now") {
                             Task { await sync.sync(context: context) }

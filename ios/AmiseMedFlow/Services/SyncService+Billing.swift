@@ -10,14 +10,19 @@ extension SyncService {
     // MARK: - Billing item sync
 
     func pushPendingBillingItems(context: ModelContext) async throws {
+        let refused = SyncRefusals.ids(.billingItem)
         let pending = try context.fetch(FetchDescriptor<BillingLineItem>())
-            .filter { $0.pendingSync && $0.remoteId == nil }
+            .filter { $0.pendingSync && $0.remoteId == nil && !refused.contains($0.id.uuidString) }
         guard !pending.isEmpty else { return }
 
         let iso = ISO8601DateFormatter()
+        var firstError: Error?
 
         for item in pending {
+            // The loop awaits the network; an item deleted meanwhile must not be read.
+            guard item.isLive else { continue }
             guard let patientId = item.patient?.remoteId else { continue }
+            let localId = item.id
 
             struct BilRow: Encodable {
                 let patient_id: String
@@ -42,19 +47,27 @@ extension SyncService {
                 added_at: iso.string(from: item.addedAt)
             )
             struct BilResponse: Decodable { let id: String }
-            let response: [BilResponse] = try await SupabaseConfig.client
-                .from("patient_billing_items")
-                .insert(row)
-                .select("id")
-                .execute()
-                .value
-            if let first = response.first {
-                item.remoteId = first.id
-                item.pendingSync = false
-                item.syncedAt = .now
+            // Per-record: one refused or rejected item stays pending and does not hold back the
+            // rest (SyncService+Refusals.swift).
+            do {
+                let response: [BilResponse] = try await SupabaseConfig.client
+                    .from("patient_billing_items")
+                    .insert(row)
+                    .select("id")
+                    .execute()
+                    .value
+                if let first = response.first, item.isLive {
+                    item.remoteId = first.id
+                    item.pendingSync = false
+                    item.syncedAt = .now
+                }
+            } catch {
+                guard continueAfterPushFailure(error, id: localId, kind: .billingItem,
+                                               firstError: &firstError) else { break }
             }
         }
         try context.save()
+        if let firstError { throw firstError }
     }
 
     private struct RemoteBillingItem: Decodable, Sendable {

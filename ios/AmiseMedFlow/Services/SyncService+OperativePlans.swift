@@ -10,14 +10,19 @@ extension SyncService {
     // MARK: - Operative plan sync (push-only; plan is per-patient and upserted)
 
     func pushPendingOperativePlans(context: ModelContext) async throws {
+        let refused = SyncRefusals.ids(.operativePlan)
         let pending = try context.fetch(FetchDescriptor<OperativePlan>())
-            .filter { $0.pendingSync }
+            .filter { $0.pendingSync && !refused.contains($0.id.uuidString) }
         guard !pending.isEmpty else { return }
 
         let iso = ISO8601DateFormatter()
+        var firstError: Error?
 
         for plan in pending {
+            // The loop awaits the network; a plan deleted meanwhile must not be read.
+            guard plan.isLive else { continue }
             guard let patientId = plan.patient?.remoteId else { continue }
+            let localId = plan.id
 
             let whoDict: [String: Bool] = [
                 "identity":           plan.whoIdentityConfirmed,
@@ -74,23 +79,31 @@ extension SyncService {
             let editedAt = plan.updatedAt
             struct PlanResponse: Decodable { let id: String }
             let confirmed: [PlanResponse]
-            if let remoteId = plan.remoteId {
-                // Update existing row
-                confirmed = try await SupabaseConfig.client
-                    .from("patient_operative_plans")
-                    .update(row)
-                    .eq("id", value: remoteId)
-                    .select("id")
-                    .execute()
-                    .value
-            } else {
-                // Insert new row
-                confirmed = try await SupabaseConfig.client
-                    .from("patient_operative_plans")
-                    .insert(row)
-                    .select("id")
-                    .execute()
-                    .value
+            // Per-record: one refused or rejected plan stays pending and does not hold back the
+            // rest (SyncService+Refusals.swift).
+            do {
+                if let remoteId = plan.remoteId {
+                    // Update existing row
+                    confirmed = try await SupabaseConfig.client
+                        .from("patient_operative_plans")
+                        .update(row)
+                        .eq("id", value: remoteId)
+                        .select("id")
+                        .execute()
+                        .value
+                } else {
+                    // Insert new row
+                    confirmed = try await SupabaseConfig.client
+                        .from("patient_operative_plans")
+                        .insert(row)
+                        .select("id")
+                        .execute()
+                        .value
+                }
+            } catch {
+                guard continueAfterPushFailure(error, id: localId, kind: .operativePlan,
+                                               firstError: &firstError) else { break }
+                continue
             }
             // The await above may have outlived a delete.
             guard plan.isLive, let first = confirmed.first else { continue }
@@ -98,6 +111,7 @@ extension SyncService {
             if plan.updatedAt == editedAt { plan.pendingSync = false }
         }
         try context.save()
+        if let firstError { throw firstError }
     }
 
     private struct RemoteOperativePlan: Decodable {

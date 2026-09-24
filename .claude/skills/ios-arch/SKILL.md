@@ -80,6 +80,14 @@ prescriptions/vitals/billing/documents pulls only insert new rows. A push clears
 only when the server returns the written row (`.select("id")`; an RLS-refused update returns no
 rows, no error) and `updatedAt` did not change during the request. Tests:
 `AmiseMedFlowTests/PullProtectionTests.swift`.
+Resilience: `sync()` runs each step through `runSyncStep` (a failure sets `syncError`, later
+steps still run) and every push loop handles errors per record via `continueAfterPushFailure`
+(`SyncService+Refusals.swift`). A `42501` marks the record in `SyncRefusals` (kept locally, still
+pending, skipped until the next sign-in/launch; `syncNotice` shows "N changes not permitted for
+your role"); a transport error stops that loop. New push loops must follow the same pattern.
+Front desk (role confirmed via `isRoleConfirmed`) sends only `FrontDeskPatientColumns` in the
+patient UPDATE (`PatientUpdateRow`), mirroring Migration 89's column guard. Tests:
+`AmiseMedFlowTests/FrontDeskSyncTests.swift`.
 
 **PeerSyncService**: MCSession, service type `"amise-medflow"`, matches peers by
 SHA-256 of email. Manifest-based (syncCode → syncedAt), longer text wins for

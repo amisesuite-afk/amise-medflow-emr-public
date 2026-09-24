@@ -52,15 +52,20 @@ extension Patient {
 
 extension SyncService {
 
-    /// Pushes local Scale 2 changes. Own requests, never throws: offline, not permitted, or a
-    /// server without the column stops the loop and it is retried on the next sync.
+    /// Pushes local Scale 2 changes. Own requests, never throws: offline or a server without the
+    /// column stops the loop and it is retried on the next sync. A patient whose push is not
+    /// permitted for this role (42501; the flag is clinician-only under Migration 89) is skipped
+    /// until the next sign-in and does not stop the others.
     func pushNEWS2Scale2(context: ModelContext) async {
         guard let all = try? context.fetch(FetchDescriptor<Patient>()) else { return }
         struct Row: Encodable { let news2_spo2_scale2: Bool }
+        let refused = SyncRefusals.ids(.news2Scale2)
 
         for p in all where p.isLive {
             guard let rid = p.remoteId, !rid.isEmpty, !rid.hasPrefix("appt:"),
+                  !refused.contains(p.id.uuidString),
                   p.news2Scale2NeedsPush else { continue }
+            let localId = p.id
             let value = p.news2UseSpO2Scale2
             do {
                 try await SupabaseConfig.client
@@ -69,6 +74,7 @@ extension SyncService {
                     .eq("id", value: rid)
                     .execute()
             } catch {
+                if markIfRefused(error, id: localId, kind: .news2Scale2) { continue }
                 break
             }
             // The await above may have outlived a delete. If the flag was changed again during

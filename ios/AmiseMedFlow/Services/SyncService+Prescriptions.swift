@@ -10,11 +10,13 @@ extension SyncService {
     // MARK: - Prescription sync
 
     func pushPendingPrescriptions(context: ModelContext) async throws {
+        let refused = SyncRefusals.ids(.prescription)
         let pending = try context.fetch(FetchDescriptor<Prescription>())
-            .filter { $0.pendingSync && $0.remoteId == nil }
+            .filter { $0.pendingSync && $0.remoteId == nil && !refused.contains($0.id.uuidString) }
         guard !pending.isEmpty else { return }
 
         let iso = ISO8601DateFormatter()
+        var firstError: Error?
 
         struct RxRow: Encodable {
             let patient_id: String
@@ -31,8 +33,11 @@ extension SyncService {
         struct RxResponse: Decodable { let id: String }
 
         for rx in pending {
+            // The loop awaits the network; a prescription deleted meanwhile must not be read.
+            guard rx.isLive else { continue }
             guard let patientId = rx.patient?.remoteId else { continue }
             guard let prescriberId = currentUserId else { continue }
+            let localId = rx.id
 
             let row = RxRow(
                 patient_id: patientId,
@@ -46,7 +51,8 @@ extension SyncService {
                 instructions: rx.instructions,
                 prescribed_at: iso.string(from: rx.prescribedAt)
             )
-            // Per-record try/catch so one bad row doesn't abort the whole sync.
+            // Per-record try/catch so one bad row doesn't abort the whole sync. A failed row keeps
+            // pendingSync = true; a refused one (42501) is not retried until the next sign-in.
             do {
                 let response: [RxResponse] = try await SupabaseConfig.client
                     .from("prescriptions")
@@ -54,17 +60,18 @@ extension SyncService {
                     .select("id")
                     .execute()
                     .value
-                if let first = response.first {
+                if let first = response.first, rx.isLive {
                     rx.remoteId = first.id
                     rx.pendingSync = false
                     rx.syncedAt = .now
                 }
             } catch {
-                // Leave pendingSync = true so it retries next cycle.
-                continue
+                guard continueAfterPushFailure(error, id: localId, kind: .prescription,
+                                               firstError: &firstError) else { break }
             }
         }
         try context.save()
+        if let firstError { throw firstError }
     }
 
     private struct RemotePrescription: Decodable, Sendable {
