@@ -4,13 +4,9 @@
 import SwiftUI
 import SwiftData
 
-
-import SwiftUI
-import SwiftData
-
 // MARK: - Data model
 
-struct BronchoscopyData: Codable {
+struct BronchoscopyData: Codable, Equatable {
     // Pre-procedure
     var indication: [String] = []
     var indicationOther: String = ""

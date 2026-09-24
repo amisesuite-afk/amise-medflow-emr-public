@@ -1,25 +1,28 @@
+import SwiftUI
+import SwiftData
+
 // MARK: - View
 
 struct ColonoscopyFormView: View {
     @Bindable var patient: Patient
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) var context
 
     @State var data: ColonoscopyData = ColonoscopyData()
     @State var hasProcedureDate = false
     @State var pdfWrapper: PDFDataWrapper?
 
     // Common finding chips shared across colon segments
-    private let colonFindingOptions = [
+    let colonFindingOptions = [
         "Polyp(s)", "Diverticulosis", "Diverticulitis", "Angiodysplasia",
         "Colitis (active)", "Colitis (chronic)", "Melanosis coli",
         "Mucosal oedema / erythema", "Haemorrhoids", "Tumour / mass",
         "Stricture", "Extrinsic compression", "Post-surgical changes", "Normal"
     ]
-    private let ileumFindingOptions = [
+    let ileumFindingOptions = [
         "Normal", "Lymphoid follicular hyperplasia", "Ulcers",
         "Stricture", "Nodularity", "Parasites", "Terminal ileitis"
     ]
-    private let indications = [
+    let indications = [
         "Colorectal cancer screening", "Polyp surveillance",
         "Change in bowel habit", "Rectal bleeding", "Anaemia / iron deficiency",
         "Diarrhoea", "Abdominal pain", "Weight loss",
@@ -27,14 +30,14 @@ struct ColonoscopyFormView: View {
         "Abnormal CT / imaging", "Pre-operative assessment",
         "Therapeutic — dilation", "Therapeutic — APC / haemostasis", "Other"
     ]
-    private let interventionOptions = [
+    let interventionOptions = [
         "Polypectomy (cold snare)", "Polypectomy (hot snare)",
         "Biopsy (forceps)", "APC", "Haemostatic clip",
         "Adrenaline injection", "Band ligation",
         "Balloon dilation", "Stent insertion",
         "Tattoo / marking", "Foreign body removal"
     ]
-    private let complicationOptions = [
+    let complicationOptions = [
         "None", "Perforation", "Haemorrhage (intra-procedural)",
         "Haemorrhage (delayed)", "Post-polypectomy syndrome",
         "Cardiorespiratory event", "Pain / vasovagal"

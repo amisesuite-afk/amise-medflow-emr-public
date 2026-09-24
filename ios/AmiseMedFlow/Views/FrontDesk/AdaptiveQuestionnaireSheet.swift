@@ -7,15 +7,15 @@ import SwiftData
 struct AdaptiveQuestionnaireSheet: View {
     var patient: Patient?
 
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var context
-    @EnvironmentObject private var sync: SyncService
+    @Environment(\.dismiss) var dismiss
+    @Environment(\.modelContext) var context
+    @EnvironmentObject var sync: SyncService
 
     @State var answers = EncounterAnswers()
     @State var currentStepIndex = 0
     @State var symptomFilter = ""
-    @State private var prescriptionPhotoItem: PhotosPickerItem?
-    @State private var prescriptionImageData: Data?
+    @State var prescriptionPhotoItem: PhotosPickerItem?
+    @State var prescriptionImageData: Data?
 
     // Patient demographics used for gating — resolved once from the model
     var patientSex: Sex { patient?.sex ?? .unspecified }

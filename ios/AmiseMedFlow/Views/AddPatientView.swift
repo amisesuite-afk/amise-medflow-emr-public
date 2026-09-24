@@ -2,10 +2,10 @@ import SwiftUI
 import SwiftData
 
 struct AddPatientView: View {
-    @Environment(\.modelContext) private var context
-    @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var calSvc: CalendarService
-    @Query private var existingPatients: [Patient]
+    @Environment(\.modelContext) var context
+    @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var calSvc: CalendarService
+    @Query var existingPatients: [Patient]
 
     var initialSetting: ClinicalSetting
 
@@ -60,8 +60,8 @@ struct AddPatientView: View {
         }
     }
 
-    private var showAdmission: Bool { setting == .inpatient || setting == .emergency }
-    private var showProcedure: Bool { setting == .theatre || setting == .endoscopy }
+    var showAdmission: Bool { setting == .inpatient || setting == .emergency }
+    var showProcedure: Bool { setting == .theatre || setting == .endoscopy }
     private var nameValid: Bool { !fullName.trimmingCharacters(in: .whitespaces).isEmpty }
 
     var body: some View {

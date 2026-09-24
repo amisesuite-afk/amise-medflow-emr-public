@@ -84,7 +84,7 @@ extension Patient {
 
 struct PreOpChecklistView: View {
     @Bindable var patient: Patient
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) var context
 
     @State var data = PreOpChecklistData()
     @State var pdfWrapper: PDFDataWrapper?

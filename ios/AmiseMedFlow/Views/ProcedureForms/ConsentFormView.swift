@@ -81,14 +81,14 @@ extension Patient {
 
 struct ConsentFormView: View {
     @Bindable var patient: Patient
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) var context
 
     @State var data = ConsentFormData()
     @State var pdfWrapper: PDFDataWrapper?
     @State var showTemplatePicker = false
     @State var suggestedTemplate: ProcedureTemplate? = nil
 
-    private let specificRiskOptions = [
+    let specificRiskOptions = [
         // GI / abdominal
         "Anastomotic leak", "Bile duct injury", "Bowel injury",
         "Post-op ileus / obstruction", "Hernia recurrence",
@@ -107,7 +107,7 @@ struct ConsentFormView: View {
         "Lymphoedema", "Seroma / haematoma", "Mesh-related complications"
     ]
 
-    private let alternativeOptions = [
+    let alternativeOptions = [
         "Conservative management / watchful waiting",
         "Medical management (medications)",
         "Endoscopic treatment",
@@ -118,7 +118,7 @@ struct ConsentFormView: View {
         "No treatment"
     ]
 
-    private let anaesthesiaOptions = [
+    let anaesthesiaOptions = [
         "General anaesthesia", "Spinal anaesthesia",
         "Epidural anaesthesia", "Regional / local anaesthesia",
         "MAC / sedation", "Local anaesthesia only"

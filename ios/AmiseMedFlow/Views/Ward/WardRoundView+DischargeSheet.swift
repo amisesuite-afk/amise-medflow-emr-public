@@ -14,7 +14,7 @@ struct DischargeFlowSheet: View {
     let onDischarge: (Patient) -> Void
 
     @Environment(\.dismiss) private var dismiss
-    @State private var text: String
+    @State var text: String
 
     init(patient: Patient, note: ClinicalNote, onDischarge: @escaping (Patient) -> Void) {
         self.patient = patient

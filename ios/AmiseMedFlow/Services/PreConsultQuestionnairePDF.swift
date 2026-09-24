@@ -8,14 +8,14 @@ import UIKit
 enum PreConsultQuestionnairePDF {
 
     private static let teal   = UIColor(red: 0.063, green: 0.663, blue: 0.682, alpha: 1)
-    private static let pageW: CGFloat = 595
+    static let pageW: CGFloat = 595
     private static let pageH: CGFloat = 842
-    private static let lm: CGFloat = 36          // left margin
-    private static let rm: CGFloat = 36          // right margin
-    private static var usableW: CGFloat { pageW - lm - rm }
-    private static let lineH: CGFloat = 18       // answer line height
-    private static let checkSz: CGFloat = 11     // tick-box size
-    private static let rowGap: CGFloat = 6       // gap between tick rows
+    static let lm: CGFloat = 36          // left margin
+    static let rm: CGFloat = 36          // right margin
+    static var usableW: CGFloat { pageW - lm - rm }
+    static let lineH: CGFloat = 18       // answer line height
+    static let checkSz: CGFloat = 11     // tick-box size
+    static let rowGap: CGFloat = 6       // gap between tick rows
 
     // MARK: - Public entry point
 

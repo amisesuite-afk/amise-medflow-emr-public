@@ -66,7 +66,7 @@ extension ClinicalScoringEngine {
         }
     }
 
-    private static func ctsiRisk(_ s: Int) -> (ScoreRisk, String, [String], [String]) {
+    static func ctsiRisk(_ s: Int) -> (ScoreRisk, String, [String], [String]) {
         switch s {
         case ..<4:
             return (.low, "Mild — CTSI \(s): low complication risk",

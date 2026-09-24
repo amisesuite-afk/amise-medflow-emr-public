@@ -1,8 +1,11 @@
+import SwiftUI
+import SwiftData
+
 // MARK: - View
 
 struct OGDFormView: View {
     @Bindable var patient: Patient
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) var context
 
     @State var data: OGDData = OGDData()
     @State var hasProcedureDate = false
@@ -11,27 +14,27 @@ struct OGDFormView: View {
     @State var showAIOverwriteConfirm = false
     @State var pdfWrapper: PDFDataWrapper?
 
-    private let indications = [
+    let indications = [
         "Dyspepsia / reflux", "Dysphagia", "Haematemesis / melaena",
         "Anaemia", "Weight loss", "Abdominal pain", "Barrett's surveillance",
         "Coeliac screen", "Post-surgery follow-up", "Foreign body removal", "Other"
     ]
-    private let oesophagusOptions = [
+    let oesophagusOptions = [
         "Oesophagitis (Grade A)", "Oesophagitis (Grade B)", "Oesophagitis (Grade C)", "Oesophagitis (Grade D)",
         "Barrett's oesophagus", "Hiatus hernia", "Stricture", "Varices", "Schatzki ring",
         "Webs", "Candidiasis", "Diverticulum", "Polyp"
     ]
-    private let stomachOptions = [
+    let stomachOptions = [
         "Gastritis", "Erosions", "Ulcer (prepyloric)", "Ulcer (lesser curve)",
         "Ulcer (greater curve)", "Ulcer (fundus)", "Atrophy", "Metaplasia",
         "Polyp", "GAVE", "Portal hypertensive gastropathy", "Submucosal lesion",
         "Post-surgical changes"
     ]
-    private let duodenumOptions = [
+    let duodenumOptions = [
         "Normal D1", "Duodenitis", "Ulcer D1", "Ulcer D2",
         "Polyp", "Villous atrophy", "Submucosal lesion", "Parasites"
     ]
-    private let interventionOptions = [
+    let interventionOptions = [
         "Biopsy", "Polypectomy", "APC", "Injection sclerotherapy",
         "Band ligation (varices)", "Haemostatic clip", "Adrenaline injection",
         "Dilation (Savary)", "Balloon dilation", "Foreign body removal",

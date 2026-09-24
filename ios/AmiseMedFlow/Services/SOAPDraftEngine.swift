@@ -385,7 +385,7 @@ struct SOAPDraftEngine {
         return lines.joined(separator: "\n").ifEmpty("Plan to be determined following clinical review.")
     }
 
-    private static func buildFollowUp(_ p: Patient) -> String {
+    static func buildFollowUp(_ p: Patient) -> String {
         if let cond = SurgicalAlgorithmEngine.shared.lookup(diagnosisName: p.workingDiagnosis) {
             let fu = cond.followUp
             var parts: [String] = []

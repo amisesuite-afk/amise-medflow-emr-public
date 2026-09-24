@@ -12,8 +12,8 @@ struct WardRoundProgressSheet: View {
     @Bindable var patient: Patient
     let onMarkReviewed: (Patient) -> Void
 
-    @Environment(\.modelContext) private var context
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) var context
+    @Environment(\.dismiss) var dismiss
 
     @State var subjective: String = ""
     @State var objective: String = ""

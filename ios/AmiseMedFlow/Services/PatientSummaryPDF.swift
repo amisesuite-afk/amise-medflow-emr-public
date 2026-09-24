@@ -6,11 +6,11 @@ import SwiftUI
 enum PatientSummaryPDF {
 
     // Teal brand colour
-    private static let teal = UIColor(red: 0.063, green: 0.663, blue: 0.682, alpha: 1)
-    private static let pageW: CGFloat = 595  // A4 portrait
-    private static let pageH: CGFloat = 842
-    private static let margin: CGFloat = 28
-    private static let colW: CGFloat = 595 - 56 // pageW - 2*margin
+    static let teal = UIColor(red: 0.063, green: 0.663, blue: 0.682, alpha: 1)
+    static let pageW: CGFloat = 595  // A4 portrait
+    static let pageH: CGFloat = 842
+    static let margin: CGFloat = 28
+    static let colW: CGFloat = 595 - 56 // pageW - 2*margin
 
     static func generate(for patient: Patient) -> Data {
         let pageRect = CGRect(x: 0, y: 0, width: pageW, height: pageH)

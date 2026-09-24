@@ -11,7 +11,7 @@ struct DiagnosisHubView: View {
     @Bindable var patient: Patient
     var onNavigate: ((PatientDetailSection) -> Void)?
 
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) var context
 
     // Photo / camera state
     @State var photoPickerItem: PhotosPickerItem?
@@ -34,7 +34,7 @@ struct DiagnosisHubView: View {
 
     // MARK: - Computed helpers
 
-    private var investigations: [InvestigationEntry] {
+    var investigations: [InvestigationEntry] {
         patient.investigations
     }
     private var pendingInvs: Int {

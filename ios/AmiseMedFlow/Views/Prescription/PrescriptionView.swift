@@ -3,12 +3,12 @@ import SwiftData
 
 struct PrescriptionView: View {
     @Bindable var patient: Patient
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) var context
     @State var showAddSheet = false
     @State var radiationExpanded = false
     @State var dosingExpanded = false
 
-    private var interactions: [DrugInteractionAlert] {
+    var interactions: [DrugInteractionAlert] {
         let names = patient.prescriptions.map { $0.drug }
         return DrugInteractionService.check(drugs: names)
     }

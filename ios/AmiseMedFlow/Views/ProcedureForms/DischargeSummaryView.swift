@@ -70,7 +70,7 @@ extension Patient {
 
 struct DischargeSummaryView: View {
     @Bindable var patient: Patient
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) var context
 
     @State var data = DischargeSummaryData()
     @State var hasAdmissionDate = false
@@ -78,7 +78,7 @@ struct DischargeSummaryView: View {
     @State var hasDrainRemovalDate = false
     @State var pdfWrapper: PDFDataWrapper?
 
-    private let returnPrecautionOptions = [
+    let returnPrecautionOptions = [
         "Fever > 38°C", "Worsening pain uncontrolled by analgesia",
         "Wound redness, swelling, or discharge", "Increasing abdominal distension",
         "Nausea / vomiting persisting > 24 h", "Difficulty swallowing",

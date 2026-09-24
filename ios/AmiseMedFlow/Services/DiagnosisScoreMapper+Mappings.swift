@@ -8,7 +8,7 @@ extension DiagnosisScoreMapper {
 
     // MARK: - ICD-10 prefix mapping
 
-    private static func icdRecommendations(_ icd: String) -> [DiagnosisScoreRecommendation] {
+    static func icdRecommendations(_ icd: String) -> [DiagnosisScoreRecommendation] {
         let code = icd.uppercased().trimmingCharacters(in: .whitespaces)
         var r: [DiagnosisScoreRecommendation] = []
 
@@ -100,7 +100,7 @@ extension DiagnosisScoreMapper {
 
     // MARK: - Chief complaint augmentation
 
-    private static func ccAugmentations(_ cc: String) -> [DiagnosisScoreRecommendation] {
+    static func ccAugmentations(_ cc: String) -> [DiagnosisScoreRecommendation] {
         var r: [DiagnosisScoreRecommendation] = []
 
         func add(_ score: ActiveScore, _ rationale: String, _ priority: Int) {

@@ -5,10 +5,10 @@ import SwiftData
 
 struct ERCPFormView: View {
     @Bindable var patient: Patient
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) var context
 
     @State var data: ERCPData = ERCPData()
-    @State private var hasProcedureDate = false
+    @State var hasProcedureDate = false
     @StateObject private var ai = AIService()
     @State private var aiError: String?
     @State private var showAIOverwriteConfirm = false

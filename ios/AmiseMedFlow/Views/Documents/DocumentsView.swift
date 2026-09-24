@@ -5,7 +5,7 @@ import PencilKit
 
 struct DocumentsView: View {
     @Bindable var patient: Patient
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) var context
     @StateObject private var ai = AIService()
 
     @State private var pickerItems: [PhotosPickerItem] = []

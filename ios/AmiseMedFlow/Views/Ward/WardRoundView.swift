@@ -11,7 +11,7 @@ private struct DischargeContext: Identifiable {
 struct WardRoundView: View {
     // No sort on @Query — enum sort crashes SwiftData at runtime
     @Query private var allPatients: [Patient]
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) var context
 
     @State var showAdd = false
     @State var selectedPatient: Patient?
@@ -22,7 +22,7 @@ struct WardRoundView: View {
     @State var showTriage = false
     @State var handoverPDF: PDFDataWrapper? = nil
 
-    private var inpatients: [Patient] {
+    var inpatients: [Patient] {
         var results = allPatients.filter {
             $0.setting == .inpatient || $0.setting == .emergency
         }
@@ -32,7 +32,7 @@ struct WardRoundView: View {
         return results.sorted { $0.acuity < $1.acuity }.deduped()
     }
 
-    private var grouped: [(ClinicalLocation, [Patient])] {
+    var grouped: [(ClinicalLocation, [Patient])] {
         let locs: [ClinicalLocation] = locationFilter.map { [$0] } ?? ClinicalLocation.allCases
         return locs.compactMap { loc in
             let pts = inpatients.filter { $0.location == loc }

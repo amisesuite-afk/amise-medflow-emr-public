@@ -3,22 +3,22 @@ import SwiftData
 import EventKit
 
 struct TodayDashboardView: View {
-    @Query private var allPatients: [Patient]
-    @Environment(\.modelContext) private var context
-    @EnvironmentObject private var calSvc: CalendarService
+    @Query var allPatients: [Patient]
+    @Environment(\.modelContext) var context
+    @EnvironmentObject var calSvc: CalendarService
 
-    @State private var selectedPatient: Patient?
-    @State private var showAdd = false
-    @State private var showCalendarImport = false
+    @State var selectedPatient: Patient?
+    @State var showAdd = false
+    @State var showCalendarImport = false
     @State private var searchQuery = ""
     @State private var isRefreshing = false
-    @State private var calEventActionTarget: EKEvent? = nil
-    @State private var calEventActionPatient: Patient? = nil
+    @State var calEventActionTarget: EKEvent? = nil
+    @State var calEventActionPatient: Patient? = nil
     @State private var showCalEncounterSheet = false
     @State private var showPreConsultSheet = false
-    @State private var showCalEventDialog = false
+    @State var showCalEventDialog = false
 
-    private let cal = Calendar.current
+    let cal = Calendar.current
 
     // MARK: - Patient groups (deduped via PatientDeduplication.swift)
 

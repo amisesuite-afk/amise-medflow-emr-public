@@ -8,40 +8,40 @@ import SwiftData
 
 struct PreConsultEntrySheet: View {
     let patient: Patient
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) var context
     @Environment(\.dismiss) private var dismiss
 
     // CC
-    @State private var selectedCC: String = ""
-    @State private var customCC: String = ""
-    @State private var duration: String = ""
-    @State private var severity: Int = 0
+    @State var selectedCC: String = ""
+    @State var customCC: String = ""
+    @State var duration: String = ""
+    @State var severity: Int = 0
 
     // Associated symptoms
-    @State private var selectedAssoc: Set<String> = []
+    @State var selectedAssoc: Set<String> = []
 
     // PMH
-    @State private var selectedPMH: Set<String> = []
-    @State private var customPMH: String = ""
+    @State var selectedPMH: Set<String> = []
+    @State var customPMH: String = ""
 
     // PSHx
-    @State private var selectedPSHx: Set<String> = []
-    @State private var customPSHx: String = ""
+    @State var selectedPSHx: Set<String> = []
+    @State var customPSHx: String = ""
 
     // Medications
-    @State private var medications: [MedRow] = [MedRow()]
+    @State var medications: [MedRow] = [MedRow()]
 
     // Allergies
-    @State private var noKnownAllergies = false
-    @State private var allergyRows: [AllergyRow] = [AllergyRow()]
+    @State var noKnownAllergies = false
+    @State var allergyRows: [AllergyRow] = [AllergyRow()]
 
     // Family history
-    @State private var selectedFHx: Set<String> = []
+    @State var selectedFHx: Set<String> = []
 
     // Social history
-    @State private var smokingStatus: String = ""
-    @State private var alcoholStatus: String = ""
-    @State private var occupation: String = ""
+    @State var smokingStatus: String = ""
+    @State var alcoholStatus: String = ""
+    @State var occupation: String = ""
 
     // Derived CC for assoc chip list
     private var ccForChips: String { selectedCC.isEmpty ? customCC : selectedCC }

@@ -62,12 +62,12 @@ private struct AddMedicationSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var drugQuery = ""
-    @State private var suggestions: [SurgicalDrug] = []
+    @State var suggestions: [SurgicalDrug] = []
     @State private var selectedDrug: SurgicalDrug?
-    @State private var dose = ""
-    @State private var route = "Oral"
-    @State private var frequency = "Once daily"
-    @State private var duration = "7 days"
+    @State var dose = ""
+    @State var route = "Oral"
+    @State var frequency = "Once daily"
+    @State var duration = "7 days"
     @State private var indication = ""
 
     var body: some View {

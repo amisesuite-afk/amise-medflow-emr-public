@@ -10,7 +10,7 @@ extension PreConsultQuestionnairePDF {
     // MARK: - Past medical history (§4)
 
     @discardableResult
-    private static func drawPMHSection(y: CGFloat) -> CGFloat {
+    static func drawPMHSection(y: CGFloat) -> CGFloat {
         var yy = y
         let conditions = [
             "Hypertension", "Diabetes (Type 1 or 2)", "Heart disease / angina",
@@ -36,7 +36,7 @@ extension PreConsultQuestionnairePDF {
     // MARK: - Past surgical history (§5)
 
     @discardableResult
-    private static func drawPSHxSection(y: CGFloat) -> CGFloat {
+    static func drawPSHxSection(y: CGFloat) -> CGFloat {
         var yy = y
         "Please list any operations or procedures you have had:".draw(
             in: CGRect(x: lm, y: yy, width: usableW, height: 11),
@@ -66,7 +66,7 @@ extension PreConsultQuestionnairePDF {
     // MARK: - Medications (§6)
 
     @discardableResult
-    private static func drawMedicationsSection(y: CGFloat) -> CGFloat {
+    static func drawMedicationsSection(y: CGFloat) -> CGFloat {
         var yy = y
         "Please list all current medications (including vitamins, supplements, and herbal remedies):".draw(
             in: CGRect(x: lm, y: yy, width: usableW, height: 11),
@@ -96,7 +96,7 @@ extension PreConsultQuestionnairePDF {
     // MARK: - Allergies (§7)
 
     @discardableResult
-    private static func drawAllergiesSection(y: CGFloat) -> CGFloat {
+    static func drawAllergiesSection(y: CGFloat) -> CGFloat {
         var yy = y
         drawCheckbox(label: "No known allergies (NKDA)", x: lm, y: yy, maxW: 220)
         yy += checkSz + rowGap + 4
@@ -128,7 +128,7 @@ extension PreConsultQuestionnairePDF {
     // MARK: - Family history (§8)
 
     @discardableResult
-    private static func drawFamilyHistorySection(y: CGFloat) -> CGFloat {
+    static func drawFamilyHistorySection(y: CGFloat) -> CGFloat {
         var yy = y
         let conditions = [
             "Bowel / colorectal cancer", "Stomach cancer", "Oesophageal cancer",
@@ -153,7 +153,7 @@ extension PreConsultQuestionnairePDF {
     // MARK: - Social history (§9)
 
     @discardableResult
-    private static func drawSocialHistorySection(y: CGFloat) -> CGFloat {
+    static func drawSocialHistorySection(y: CGFloat) -> CGFloat {
         var yy = y
 
         // Smoking
@@ -193,7 +193,7 @@ extension PreConsultQuestionnairePDF {
     // MARK: - Any other concerns (§10)
 
     @discardableResult
-    private static func drawOtherSection(y: CGFloat) -> CGFloat {
+    static func drawOtherSection(y: CGFloat) -> CGFloat {
         var yy = y
         "Is there anything else you would like the doctor to know?".draw(
             in: CGRect(x: lm, y: yy, width: usableW, height: 11),
@@ -230,7 +230,7 @@ extension PreConsultQuestionnairePDF {
 
     // MARK: - Footer
 
-    private static func drawFooter(page: CGRect) {
+    static func drawFooter(page: CGRect) {
         let footerY = page.height - 20
         let footerText = "Amise Medical Services  ·  Saint Lucia  ·  Administrative form — not a clinical record  ·  For appointment scheduling purposes only"
         footerText.draw(
@@ -241,7 +241,7 @@ extension PreConsultQuestionnairePDF {
 
     // MARK: - Drawing primitives
 
-    private static func drawCheckbox(label: String, x: CGFloat, y: CGFloat, maxW: CGFloat) {
+    static func drawCheckbox(label: String, x: CGFloat, y: CGFloat, maxW: CGFloat) {
         let box = CGRect(x: x, y: y, width: checkSz, height: checkSz)
         UIColor.lightGray.withAlphaComponent(0.5).setStroke()
         UIBezierPath(rect: box).stroke()
@@ -252,7 +252,7 @@ extension PreConsultQuestionnairePDF {
                              .foregroundColor: UIColor.darkText])
     }
 
-    private static func drawUnderline(x: CGFloat, y: CGFloat, w: CGFloat) {
+    static func drawUnderline(x: CGFloat, y: CGFloat, w: CGFloat) {
         UIColor.lightGray.withAlphaComponent(0.6).setStroke()
         let path = UIBezierPath()
         path.move(to: CGPoint(x: x, y: y))
@@ -261,7 +261,7 @@ extension PreConsultQuestionnairePDF {
         path.stroke()
     }
 
-    private static func drawLabelLine(label: String, x: CGFloat, y: CGFloat, w: CGFloat) {
+    static func drawLabelLine(label: String, x: CGFloat, y: CGFloat, w: CGFloat) {
         label.draw(
             in: CGRect(x: x, y: y, width: w, height: 11),
             withAttributes: [.font: UIFont.systemFont(ofSize: 7.5, weight: .medium),

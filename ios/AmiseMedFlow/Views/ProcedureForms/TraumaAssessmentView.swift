@@ -5,7 +5,7 @@ import SwiftData
 
 struct TraumaAssessmentView: View {
     @Bindable var patient: Patient
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) var context
 
     @State var data: TraumaData = TraumaData()
     @State var hasTOI = false
@@ -21,13 +21,13 @@ struct TraumaAssessmentView: View {
         "Needle decompression", "Chest seal", "Tourniquet",
         "Wound packing", "Spinal immobilisation", "Oxygen", "None"
     ]
-    private let aisOptions = [0, 1, 2, 3, 4, 5, 6]
-    private let secondaryRegions = [
+    let aisOptions = [0, 1, 2, 3, 4, 5, 6]
+    let secondaryRegions = [
         "Head", "Face", "Neck", "Chest", "Abdomen",
         "Pelvis", "Spine", "Left Upper Limb", "Right Upper Limb",
         "Left Lower Limb", "Right Lower Limb", "Back", "Perineum", "Skin"
     ]
-    private let burnRegionKeys = [
+    let burnRegionKeys = [
         "Head": 9.0, "Right Arm": 9.0, "Left Arm": 9.0,
         "Anterior Trunk": 18.0, "Posterior Trunk": 18.0,
         "Right Thigh": 4.5, "Right Leg": 4.5,

@@ -41,17 +41,17 @@ final class PeerSyncService: NSObject, ObservableObject {
     private static let serviceType = "amise-medflow"   // ≤15 chars, alphanumeric+hyphen
 
     private let myPeer: MCPeerID
-    private var session:   MCSession?
-    private var advertiser: MCNearbyServiceAdvertiser?
-    private var browser:    MCNearbyServiceBrowser?
+    var session:   MCSession?
+    var advertiser: MCNearbyServiceAdvertiser?
+    var browser:    MCNearbyServiceBrowser?
 
-    private var modelContext: ModelContext?
+    var modelContext: ModelContext?
     private var emailHash: String = ""
     private var storedEmail: String = ""
 
-    private var foundPeers: Set<MCPeerID> = []
-    private var receivedCount: [MCPeerID: Int] = [:]
-    private var sentCount:     [MCPeerID: Int] = [:]
+    var foundPeers: Set<MCPeerID> = []
+    var receivedCount: [MCPeerID: Int] = [:]
+    var sentCount:     [MCPeerID: Int] = [:]
 
     override init() {
         myPeer = Self.loadOrCreatePeerID()
@@ -146,7 +146,7 @@ final class PeerSyncService: NSObject, ObservableObject {
 
     // MARK: - Send manifest on connect
 
-    private func sendManifest(to peer: MCPeerID) {
+    func sendManifest(to peer: MCPeerID) {
         guard let ctx = modelContext, let sess = session else { return }
         Task {
             let manifest = await buildManifest(context: ctx)
@@ -187,7 +187,7 @@ final class PeerSyncService: NSObject, ObservableObject {
 
     // MARK: - Process received manifest → send missing records
 
-    private func handleManifest(_ manifest: PeerManifest, from peer: MCPeerID) {
+    func handleManifest(_ manifest: PeerManifest, from peer: MCPeerID) {
         guard manifest.emailHash == emailHash,
               let ctx = modelContext, let sess = session else { return }
 

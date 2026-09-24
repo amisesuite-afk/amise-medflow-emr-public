@@ -96,22 +96,22 @@ extension Patient {
 
 struct PostOpReviewView: View {
     @Bindable var patient: Patient
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) var context
 
     @State var data = PostOpReviewData()
     @State var hasReviewDate = false
     @State var hasExpectedDischarge = false
     @State var pdfWrapper: PDFDataWrapper?
 
-    private let woundFindingOptions = [
+    let woundFindingOptions = [
         "Sutures intact", "Staples intact", "Wound open / dehiscence",
         "Purulent discharge", "Haematoma", "Seroma",
         "Superficial infection", "Deep infection", "Healing well"
     ]
-    private let drainFluidOptions = ["Serous", "Serosanguineous", "Sanguineous", "Bile", "Pus", "Enteric content"]
-    private let labOptions = ["FBC", "U&E / Creatinine", "LFT", "CRP", "Serum amylase",
+    let drainFluidOptions = ["Serous", "Serosanguineous", "Sanguineous", "Bile", "Pus", "Enteric content"]
+    let labOptions = ["FBC", "U&E / Creatinine", "LFT", "CRP", "Serum amylase",
                                "Coagulation", "Blood cultures", "Wound swab", "Urine MC&S"]
-    private let dischargeBarrierOptions = [
+    let dischargeBarrierOptions = [
         "Ongoing pain", "Nausea / vomiting", "Wound concern",
         "Awaiting pathology", "Awaiting imaging", "Social care",
         "Physiotherapy input needed", "District nurse arrangement", "Medical clearance needed"

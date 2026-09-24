@@ -8,66 +8,66 @@ struct ConsultationView: View {
     var startingTab: ConsultTab = .hpi
     var embeddedInNav: Bool = false
     @Environment(\.modelContext) private var context
-    @StateObject private var ai = AIService()
-    @StateObject private var pipeline = ClinicalPipelineOrchestrator()
+    @StateObject var ai = AIService()
+    @StateObject var pipeline = ClinicalPipelineOrchestrator()
 
-    @State private var activeTab: ConsultTab = .hpi
-    @State private var examMode: ExamMode = .short
-    @State private var showAddAllergy = false
+    @State var activeTab: ConsultTab = .hpi
+    @State var examMode: ExamMode = .short
+    @State var showAddAllergy = false
     @State private var showAddMedication = false
-    @State private var newAllergyName = ""
-    @State private var newAllergySeverity = "Moderate"
-    @State private var newAllergyReaction = ""
-    @State private var triageResult: TriageResult?
-    @State private var ccBayesDiff: [BayesianDiagnosisEngine.DiagnosisResult] = []
-    @State private var selectedSpecialtyHint: String? = nil  // set when a CC chip is tapped
-    @State private var isAssessing = false
+    @State var newAllergyName = ""
+    @State var newAllergySeverity = "Moderate"
+    @State var newAllergyReaction = ""
+    @State var triageResult: TriageResult?
+    @State var ccBayesDiff: [BayesianDiagnosisEngine.DiagnosisResult] = []
+    @State var selectedSpecialtyHint: String? = nil  // set when a CC chip is tapped
+    @State var isAssessing = false
     @State private var pathwayTask: Task<Void, Never>?
-    @State private var icdQuery = ""
-    @State private var icdSuggestions: [ICDCode] = []
-    @State private var showAIError = false
-    @State private var consultationPDFWrapper: PDFDataWrapper?
-    @State private var showLetterSheet = false
-    @State private var generatedLetterText = ""
-    @State private var socratesSelections: [String: Set<String>] = [:]
-    @State private var socratesExpandedDim: String? = "onset"
-    @State private var pmhChipSelections: Set<String> = []
-    @State private var pmhBypassConfirmed = false
-    @State private var pshxChipSelections: Set<String> = []
-    @State private var pshxBypassConfirmed = false
-    @State private var fhChipSelections: Set<String> = []
-    @State private var selectedSocialChips: Set<String> = []
+    @State var icdQuery = ""
+    @State var icdSuggestions: [ICDCode] = []
+    @State var showAIError = false
+    @State var consultationPDFWrapper: PDFDataWrapper?
+    @State var showLetterSheet = false
+    @State var generatedLetterText = ""
+    @State var socratesSelections: [String: Set<String>] = [:]
+    @State var socratesExpandedDim: String? = "onset"
+    @State var pmhChipSelections: Set<String> = []
+    @State var pmhBypassConfirmed = false
+    @State var pshxChipSelections: Set<String> = []
+    @State var pshxBypassConfirmed = false
+    @State var fhChipSelections: Set<String> = []
+    @State var selectedSocialChips: Set<String> = []
     // PMH — medication history
-    @State private var medQuery = ""
-    @State private var medSuggestions: [SurgicalDrug] = []
-    @State private var expandedMed: SurgicalDrug? = nil
-    @State private var medDose = ""
-    @State private var medRoute = "Oral"
-    @State private var medFreq = "OD"
-    @State private var isSuggestingMeds = false
-    @State private var aiMedSuggestions: [String] = []
-    @State private var newInvName = ""
-    @State private var newInvCategory: InvestigationEntry.InvCategory = .blood
-    @State private var criticalLabAlert: String? = nil   // non-nil triggers alert
-    @State private var bayesianDx: [BayesianDiagnosisEngine.DiagnosisResult] = []
-    @State private var dismissedRadiation = false
-    @State private var clinicalAlarms: [ClinicalTextParser.ClinicalAlarm] = []
-    @State private var dismissedAlarmIds: Set<UUID> = []
-    @State private var surgicalRiskAlerts: [SurgicalRiskAlert] = []
+    @State var medQuery = ""
+    @State var medSuggestions: [SurgicalDrug] = []
+    @State var expandedMed: SurgicalDrug? = nil
+    @State var medDose = ""
+    @State var medRoute = "Oral"
+    @State var medFreq = "OD"
+    @State var isSuggestingMeds = false
+    @State var aiMedSuggestions: [String] = []
+    @State var newInvName = ""
+    @State var newInvCategory: InvestigationEntry.InvCategory = .blood
+    @State var criticalLabAlert: String? = nil   // non-nil triggers alert
+    @State var bayesianDx: [BayesianDiagnosisEngine.DiagnosisResult] = []
+    @State var dismissedRadiation = false
+    @State var clinicalAlarms: [ClinicalTextParser.ClinicalAlarm] = []
+    @State var dismissedAlarmIds: Set<UUID> = []
+    @State var surgicalRiskAlerts: [SurgicalRiskAlert] = []
     @State private var showCompleteEncounterConfirm = false
     @State private var showSaveEncounterConfirm = false
     @State private var encounterSavedFeedback = false
-    @State private var selectedEncounter: Encounter? = nil
+    @State var selectedEncounter: Encounter? = nil
 
     enum ExamMode { case short, full }
 
-    private var interactions: [DrugInteractionAlert] {
+    var interactions: [DrugInteractionAlert] {
         DrugInteractionService.check(drugs: patient.prescriptions.map { $0.drug })
     }
 
     // Recompute surgical risk alerts from current state. Call whenever PMH,
     // medications, social chips, or vitals change.
-    private func recomputeRisk() {
+    func recomputeRisk() {
         var inputs = SurgicalRiskInputs(
             pmh: pmhChipSelections,
             medicationNames: patient.prescriptions.map { $0.drug },
@@ -82,7 +82,7 @@ struct ConsultationView: View {
     // Deterministic PMH → medication quick-picks.
     // Unions all selected PMH chips, de-dupes, excludes already-added drugs,
     // and excludes any drug the patient is allergic to (name match, case-insensitive).
-    private var pmhDerivedMedSuggestions: [String] {
+    var pmhDerivedMedSuggestions: [String] {
         let addedNames = Set(patient.prescriptions.map { $0.drug.lowercased() })
         let allergies  = patient.allergies
         var seen = Set<String>()
@@ -102,7 +102,7 @@ struct ConsultationView: View {
     }
 
     // Deterministic PMH → Investigations quick-suggest.
-    private var pmhDerivedIxSuggestions: [(name: String, category: InvestigationEntry.InvCategory)] {
+    var pmhDerivedIxSuggestions: [(name: String, category: InvestigationEntry.InvCategory)] {
         let existing = Set(patient.investigations.map { $0.name })
         var seen = Set<String>()
         var result: [(name: String, category: InvestigationEntry.InvCategory)] = []

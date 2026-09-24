@@ -10,31 +10,31 @@ import UIKit
 struct PatientOverviewContent: View {
     @Bindable var patient: Patient
 
-    private var latestVitals: VitalsEntry? {
+    var latestVitals: VitalsEntry? {
         patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
     }
 
-    private var latestNote: ClinicalNote? {
+    var latestNote: ClinicalNote? {
         patient.clinicalNotes.sorted { $0.createdAt > $1.createdAt }.first
     }
 
-    private var criticalAllergies: [AllergyEntry] {
+    var criticalAllergies: [AllergyEntry] {
         patient.allergies.filter {
             $0.severity.lowercased().contains("anaphylaxis") ||
             $0.severity.lowercased().contains("severe")
         }
     }
 
-    private var news2AlertLevel: Int {
+    var news2AlertLevel: Int {
         guard let v = latestVitals, v.hasAnyValue else { return 0 }
         return v.news2Score
     }
 
-    private var criticalLabPanel: LabPanel {
+    var criticalLabPanel: LabPanel {
         LabPanel.parse(from: patient.investigations)
     }
 
-    private var criticalLabSummary: String {
+    var criticalLabSummary: String {
         let labs = criticalLabPanel
         let tokens: [String?] = [
             labs.haemoglobin.flatMap { $0.value < 8 ? String(format: "Hb %.1f g/dL", $0.value) : nil },
@@ -85,7 +85,7 @@ struct PatientOverviewContent: View {
     }
 
     @ViewBuilder
-    private var checklistRow: some View {
+    var checklistRow: some View {
         let pending = checkItems.filter { !$0.done }
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 5) {
@@ -127,7 +127,7 @@ struct PatientOverviewContent: View {
         .background(Color.secondary.opacity(0.05), in: RoundedRectangle(cornerRadius: 12))
     }
 
-    private func notePreview(_ note: ClinicalNote) -> String? {
+    func notePreview(_ note: ClinicalNote) -> String? {
         if note.noteType.isStructured {
             return [note.assessment, note.plan]
                 .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }

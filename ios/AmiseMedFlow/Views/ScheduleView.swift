@@ -36,7 +36,7 @@ struct ScheduleView: View {
     @EnvironmentObject private var calSvc: CalendarService
 
     @State private var mode: CalMode = .week
-    @State private var anchor: Date  = Calendar.ect.startOfDay(for: .now)
+    @State var anchor: Date  = Calendar.ect.startOfDay(for: .now)
     @State private var selectedPatient: Patient?
     @State private var selectedEntry: CalEntry?
     @State private var showAdd = false

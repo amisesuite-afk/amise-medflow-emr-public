@@ -3,24 +3,24 @@ import SwiftData
 
 struct NoteEditorView: View {
     @Bindable var note: ClinicalNote
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) var dismiss
     @Environment(\.modelContext) var context
-    @State private var isDrafting = false
+    @State var isDrafting = false
 
     @State private var showAIOptions        = false
-    @State private var aiError: String?
-    @State private var showError            = false
-    @State private var showShareSheet       = false
-    @State private var shareURL: URL?
-    @State private var isExportingPDF       = false
+    @State var aiError: String?
+    @State var showError            = false
+    @State var showShareSheet       = false
+    @State var shareURL: URL?
+    @State var isExportingPDF       = false
     @State private var showReferralSheet    = false
-    @State private var referralSpecialty    = ""
-    @State private var referralReason       = ""
+    @State var referralSpecialty    = ""
+    @State var referralReason       = ""
     @State private var showDischargeSheet   = false
-    @State private var dischargeTreatment   = ""
-    @State private var dischargeFollowUp    = ""
+    @State var dischargeTreatment   = ""
+    @State var dischargeFollowUp    = ""
 
-    private let soapPlaceholders = (
+    let soapPlaceholders = (
         s: "What the patient reports — symptoms, history, concerns",
         o: "Vital signs, examination findings, investigation results",
         a: "Impression, working diagnosis, problem list",
