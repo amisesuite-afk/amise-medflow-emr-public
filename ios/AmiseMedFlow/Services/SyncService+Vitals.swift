@@ -127,7 +127,7 @@ extension SyncService {
                         v.syncedAt = .now
                     }
 
-                case .none:
+                case .notInserted:
                     guard v.hasAnyValue else { continue }
                     // UUID guard: never a booking placeholder or malformed id as patient_id.
                     guard let patientId = SyncRemoteId.serverId(v.patient?.remoteId) else { continue }

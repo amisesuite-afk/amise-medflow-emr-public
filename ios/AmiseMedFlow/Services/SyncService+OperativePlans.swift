@@ -27,7 +27,7 @@ extension SyncService {
             let planRemoteId: String?
             switch SyncRemoteId.kind(plan.remoteId) {
             case .server(let id):                   planRemoteId = id
-            case .none:                             planRemoteId = nil
+            case .notInserted:                      planRemoteId = nil
             case .appointmentPlaceholder, .invalid: continue
             }
             let localId = plan.id

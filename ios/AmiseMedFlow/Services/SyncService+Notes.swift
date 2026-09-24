@@ -35,7 +35,7 @@ extension SyncService {
             case .server(let id):
                 guard !tombstoned.contains(id) else { continue }
                 noteRemoteId = id
-            case .none:
+            case .notInserted:
                 noteRemoteId = nil
             case .appointmentPlaceholder, .invalid:
                 continue

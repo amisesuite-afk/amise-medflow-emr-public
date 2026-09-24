@@ -20,7 +20,7 @@ enum SyncRemoteId {
 
     enum Kind: Equatable {
         /// nil or empty: not inserted yet.
-        case none
+        case notInserted
         /// A booking placeholder; the associated value is the appointment_requests id.
         case appointmentPlaceholder(appointmentId: String)
         /// A server row id (canonical UUID).
@@ -30,7 +30,7 @@ enum SyncRemoteId {
     }
 
     static func kind(_ remoteId: String?) -> Kind {
-        guard let raw = remoteId, !raw.isEmpty else { return .none }
+        guard let raw = remoteId, !raw.isEmpty else { return .notInserted }
         if raw.hasPrefix(appointmentPrefix) {
             return .appointmentPlaceholder(appointmentId: String(raw.dropFirst(appointmentPrefix.count)))
         }
@@ -64,7 +64,7 @@ enum SyncRemoteId {
     /// insert could duplicate a row that exists under the id the app lost).
     static func needsServerRow(_ remoteId: String?) -> Bool {
         switch kind(remoteId) {
-        case .none, .appointmentPlaceholder: return true
+        case .notInserted, .appointmentPlaceholder: return true
         case .server, .invalid:              return false
         }
     }

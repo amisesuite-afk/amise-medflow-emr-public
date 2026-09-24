@@ -90,7 +90,7 @@ extension SyncService {
                         item.syncedAt = .now
                     }
 
-                case .none:
+                case .notInserted:
                     // UUID guard: never a booking placeholder or malformed id as patient_id.
                     guard let patientId = SyncRemoteId.serverId(item.patient?.remoteId) else { continue }
                     let row = BilRow(

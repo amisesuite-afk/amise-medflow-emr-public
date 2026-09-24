@@ -326,7 +326,7 @@ extension SyncService {
             .filter { p in
                 guard !refused.contains(p.id.uuidString) else { return false }
                 switch SyncRemoteId.kind(p.remoteId) {
-                case .none:                   return p.pendingSync
+                case .notInserted:            return p.pendingSync
                 case .appointmentPlaceholder: return p.pendingSync || p.hasPendingChildRecords
                 case .server, .invalid:       return false
                 }

@@ -56,8 +56,8 @@ final class SyncGapsTests: XCTestCase {
     // MARK: - Placeholder detection
 
     func testKindClassifiesRemoteIds() {
-        XCTAssertEqual(SyncRemoteId.kind(nil), .none)
-        XCTAssertEqual(SyncRemoteId.kind(""), .none)
+        XCTAssertEqual(SyncRemoteId.kind(nil), .notInserted)
+        XCTAssertEqual(SyncRemoteId.kind(""), .notInserted)
         XCTAssertEqual(SyncRemoteId.kind(lowerUUID), .server(lowerUUID))
         XCTAssertEqual(SyncRemoteId.kind("appt:\(lowerUUID)"),
                        .appointmentPlaceholder(appointmentId: lowerUUID))

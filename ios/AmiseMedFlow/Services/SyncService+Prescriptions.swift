@@ -93,7 +93,7 @@ extension SyncService {
                         rx.syncedAt = .now
                     }
 
-                case .none:
+                case .notInserted:
                     // UUID guard: never a booking placeholder or malformed id as patient_id.
                     guard let patientId = SyncRemoteId.serverId(rx.patient?.remoteId) else { continue }
                     guard let prescriberId = currentUserId else { continue }
