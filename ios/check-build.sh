@@ -11,6 +11,19 @@ echo "Version: $(git log --oneline -1)"
 command -v xcodegen >/dev/null || { echo "xcodegen missing — run: brew install xcodegen"; exit 1; }
 xcodegen generate --quiet || { echo "xcodegen failed — send this output"; exit 1; }
 
+# Download Swift packages first (Supabase, Sentry). Xcode's built-in git is tried first, then
+# the system git; public packages need no GitHub sign-in, so ignore any sign-in page.
+echo "Checking packages..."
+if ! xcodebuild -resolvePackageDependencies -project AmiseMedFlow.xcodeproj -scheme AmiseMedFlow \
+     > ~/packages.log 2>&1; then
+  if ! xcodebuild -resolvePackageDependencies -scmProvider system -project AmiseMedFlow.xcodeproj \
+       -scheme AmiseMedFlow > ~/packages.log 2>&1; then
+    echo "RESULT: PACKAGE DOWNLOAD FAILED — send a photo of these lines:"
+    grep -iE "error|fatal|could not|failed|authentication|403|404|timed out" ~/packages.log | tail -15
+    exit 1
+  fi
+fi
+
 echo "Building (3–5 min)..."
 xcodebuild -project AmiseMedFlow.xcodeproj -scheme AmiseMedFlow \
   -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO build > ~/build-full.log 2>&1
