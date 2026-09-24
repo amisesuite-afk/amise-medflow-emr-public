@@ -381,7 +381,7 @@ struct DocumentsView: View {
             parts.append("Category: \(category)")
             let df = DateFormatter()
             df.dateStyle = .medium; df.timeStyle = .none
-            df.timeZone = TimeZone(identifier: "America/St_Lucia")
+            df.timeZone = TimeZone.ect
             parts.append("Uploaded: \(df.string(from: doc.uploadedAt))")
             if !textSnippet.isEmpty {
                 parts.append("")

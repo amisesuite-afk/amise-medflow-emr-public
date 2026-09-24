@@ -22,7 +22,7 @@ extension ProcedureFormPDF {
 
             let df = DateFormatter()
             df.locale = Locale(identifier: "en_LC")
-            df.timeZone = TimeZone(identifier: "America/St_Lucia") ?? .current
+            df.timeZone = TimeZone.ect
             df.dateFormat = "dd MMM yyyy  HH:mm"
 
             // Build timeline events inline (mirrors PatientJourneyView.allEvents)
@@ -318,7 +318,7 @@ extension ProcedureFormPDF {
                 y = drawTextSection(ctx: ctx, title: "Notes", body: data.notes, y: y)
             }
 
-            drawSignatureBlock(ctx: ctx, surgeon: "Dr Dawit Daniel Kabiye, MD, DM", y: y)
+            drawSignatureBlock(ctx: ctx, surgeon: PracticeProfile.current.clinicianNameWithCredentials, y: y)
             drawFooter()
         }
     }

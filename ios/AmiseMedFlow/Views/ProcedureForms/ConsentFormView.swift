@@ -5,7 +5,7 @@ import SwiftData
 
 struct ConsentFormData: Codable {
     var consentDate: Date = .now
-    var surgeonName: String = "Dr Dawit Daniel Kabiye, MD, DM"
+    var surgeonName: String = PracticeProfile.current.clinicianNameWithCredentials
     var anaesthetistName: String = ""
     var consentType: String = "Elective"
 

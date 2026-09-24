@@ -6,7 +6,7 @@ import SwiftData
 struct PreOpChecklistData: Codable {
     var checklistDate: Date = .now
     var location: String = ""
-    var surgeonName: String = "Dr Dawit Daniel Kabiye, MD, DM"
+    var surgeonName: String = PracticeProfile.current.clinicianNameWithCredentials
     var anaesthetistName: String = ""
     var scrubNurseName: String = ""
     var circulatingNurseName: String = ""

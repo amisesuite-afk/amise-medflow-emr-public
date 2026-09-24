@@ -232,7 +232,11 @@ extension PreConsultQuestionnairePDF {
 
     static func drawFooter(page: CGRect) {
         let footerY = page.height - 20
-        let footerText = "Amise Medical Services  ·  Saint Lucia  ·  Administrative form — not a clinical record  ·  For appointment scheduling purposes only"
+        let profile = PracticeProfile.current
+        let footerText = PracticeProfile.join(
+            [profile.practiceName, profile.country,
+             "Administrative form — not a clinical record", "For appointment scheduling purposes only"],
+            separator: "  ·  ")
         footerText.draw(
             in: CGRect(x: lm, y: footerY, width: usableW, height: 12),
             withAttributes: [.font: UIFont.systemFont(ofSize: 7),

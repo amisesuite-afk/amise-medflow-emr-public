@@ -5,7 +5,7 @@ import SwiftData
 
 struct PatientInstructionsData: Codable {
     var dischargeDate: Date = .now
-    var surgeonName: String = "Dr Dawit Daniel Kabiye, MD, DM"
+    var surgeonName: String = PracticeProfile.current.clinicianNameWithCredentials
     var procedurePerformed: String = ""
     var procedureExplanation: String = ""
 
@@ -30,8 +30,8 @@ struct PatientInstructionsData: Codable {
     var additionalWarnings: String = ""
 
     // Contact
-    var contactPhone: String = "+1 (758) 284-0557"
-    var contactAddress: String = "Amise Medical Services, Saint Lucia"
+    var contactPhone: String = PracticeProfile.current.primaryPhone
+    var contactAddress: String = PracticeProfile.current.practiceNameWithCountry
 
     // Additional notes
     var additionalNotes: String = ""

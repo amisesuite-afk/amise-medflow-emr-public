@@ -24,7 +24,7 @@ struct LoginView: View {
                         Image(systemName: "cross.case.fill")
                             .font(.system(size: 44))
                             .foregroundStyle(.tint)
-                        Text("Amise Medical Services")
+                        Text(PracticeProfile.current.practiceName)
                             .font(.title2.weight(.semibold))
                         Text("Sign in with your staff account")
                             .font(.subheadline)

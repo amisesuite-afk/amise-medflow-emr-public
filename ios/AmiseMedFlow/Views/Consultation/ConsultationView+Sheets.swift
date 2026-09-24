@@ -183,12 +183,13 @@ extension ConsultationView {
     func generateLetter() async {
         let df = DateFormatter()
         df.dateStyle = .long; df.timeStyle = .none
-        df.timeZone = TimeZone(identifier: "America/St_Lucia")
+        df.timeZone = TimeZone.ect
 
+        let profile = PracticeProfile.current
         var lines: [String] = []
-        lines.append("Amise Medical Services")
-        lines.append("Dr Dawit Daniel Kabiye  MD · DM")
-        lines.append("General & Endoscopic Surgery, Saint Lucia")
+        lines.append(profile.practiceName)
+        lines.append(profile.clinicianLetterheadName)
+        lines.append(PracticeProfile.join([profile.specialty, profile.country], separator: ", "))
         lines.append("")
         lines.append(df.string(from: .now))
         lines.append("")
@@ -230,9 +231,11 @@ extension ConsultationView {
         lines.append("")
         lines.append("Yours sincerely,")
         lines.append("")
-        lines.append("Dr Dawit Daniel Kabiye  MD · DM")
-        lines.append("Consultant General & Endoscopic Surgeon")
-        lines.append("Amise Medical Services, Saint Lucia")
+        lines.append(contentsOf: profile.signOff([
+            profile.clinicianLetterheadName,
+            profile.consultantTitle,
+            profile.practiceNameWithCountry
+        ]))
 
         generatedLetterText = lines.joined(separator: "\n")
         showLetterSheet = true

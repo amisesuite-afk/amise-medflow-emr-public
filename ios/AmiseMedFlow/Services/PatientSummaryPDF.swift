@@ -36,18 +36,15 @@ enum PatientSummaryPDF {
         teal.setFill()
         UIRectFill(CGRect(x: 0, y: 0, width: pageW, height: h))
 
-        // "AMISE" brand mark
-        "AMISE".draw(at: CGPoint(x: margin, y: 8),
-                     withAttributes: [.font: UIFont.systemFont(ofSize: 22, weight: .black),
-                                      .foregroundColor: UIColor.white,
-                                      .kern: 4])
+        // Brand mark (e.g. "AMISE")
+        PracticeLetterhead.drawBrandMark(at: CGPoint(x: margin, y: 8))
 
-        "Amise Medical Services".draw(
+        PracticeProfile.current.practiceName.draw(
             in: CGRect(x: margin, y: 34, width: 230, height: 14),
             withAttributes: [.font: UIFont.systemFont(ofSize: 9, weight: .semibold),
                              .foregroundColor: UIColor.white.withAlphaComponent(0.92)])
 
-        "Dr Dawit Daniel Kabiye  MD · DM  ·  General & Endoscopic Surgery".draw(
+        PracticeProfile.current.clinicianLetterheadLine.draw(
             in: CGRect(x: margin, y: 50, width: 330, height: 12),
             withAttributes: [.font: UIFont.systemFont(ofSize: 7.5),
                              .foregroundColor: UIColor.white.withAlphaComponent(0.78)])
@@ -111,7 +108,7 @@ enum PatientSummaryPDF {
         y += 18
 
         "Name:".draw(at: CGPoint(x: margin, y: y), withAttributes: labelAttrs)
-        "Dr Dawit Daniel Kabiye  MD · DM".draw(
+        PracticeProfile.current.clinicianLetterheadName.draw(
             in: CGRect(x: margin + 62, y: y, width: 280, height: 13), withAttributes: nameAttrs)
         y += 16
 

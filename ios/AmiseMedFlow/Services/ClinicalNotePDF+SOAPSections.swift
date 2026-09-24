@@ -144,7 +144,8 @@ extension ClinicalNotePDF {
 
         let isDraft = note.status == .draft
         let suffix  = isDraft ? " · DRAFT — NOT VALID UNTIL SIGNED" : ""
-        let text    = "Generated \(DateFormatter.ectDateTime.string(from: .now)) ECT · Dr Dawit Daniel Kabiye MD DM · Amise Medical Services, Saint Lucia\(suffix)"
+        let profile = PracticeProfile.current
+        let text    = "Generated \(DateFormatter.ectDateTime.string(from: .now)) ECT · \(profile.clinicianSignature) · \(profile.practiceNameWithCountry)\(suffix)"
         text.draw(
             in: CGRect(x: 24, y: footerY, width: page.width - 48, height: 14),
             withAttributes: [.font: UIFont.systemFont(ofSize: 7),

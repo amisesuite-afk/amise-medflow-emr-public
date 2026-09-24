@@ -65,7 +65,7 @@ enum ClinicalScoresPDF {
         teal.setFill()
         UIRectFill(CGRect(x: 0, y: 0, width: page.width, height: h))
 
-        "Amise Medical Services".draw(
+        PracticeProfile.current.practiceName.draw(
             in: CGRect(x: 24, y: 10, width: page.width - 160, height: 22),
             withAttributes: [.font: UIFont.systemFont(ofSize: 16, weight: .bold),
                              .foregroundColor: UIColor.white])
@@ -123,7 +123,7 @@ enum ClinicalScoresPDF {
 
     @discardableResult
     private static func drawMeta(page: CGRect, y: CGFloat, teal: UIColor) -> CGFloat {
-        "Generated: \(DateFormatter.ectLong.string(from: .now)) ECT   ·   Dr Dawit Daniel Kabiye MD DM".draw(
+        "Generated: \(DateFormatter.ectLong.string(from: .now)) ECT   ·   \(PracticeProfile.current.clinicianSignature)".draw(
             in: CGRect(x: 24, y: y, width: page.width - 48, height: 13),
             withAttributes: [.font: UIFont.systemFont(ofSize: 8.5),
                              .foregroundColor: UIColor.secondaryLabel])
@@ -248,7 +248,8 @@ enum ClinicalScoresPDF {
         UIColor.separator.withAlphaComponent(0.4).setFill()
         UIRectFill(CGRect(x: 24, y: footerY - 5, width: page.width - 48, height: 0.5))
 
-        let text = "Generated \(DateFormatter.ectDateTime.string(from: .now)) ECT · Dr Dawit Daniel Kabiye MD DM · Amise Medical Services, Saint Lucia"
+        let profile = PracticeProfile.current
+        let text = "Generated \(DateFormatter.ectDateTime.string(from: .now)) ECT · \(profile.clinicianSignature) · \(profile.practiceNameWithCountry)"
         text.draw(
             in: CGRect(x: 24, y: footerY, width: page.width - 48, height: 14),
             withAttributes: [.font: UIFont.systemFont(ofSize: 7),

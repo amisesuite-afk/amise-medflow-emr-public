@@ -5,8 +5,8 @@ import SwiftData
 
 struct ReferralLetterData: Codable {
     var letterDate: Date = .now
-    var fromDoctor: String = "Dr Dawit Daniel Kabiye, MD, DM"
-    var fromPractice: String = "Amise Medical Services, Saint Lucia"
+    var fromDoctor: String = PracticeProfile.current.clinicianNameWithCredentials
+    var fromPractice: String = PracticeProfile.current.practiceNameWithCountry
     var toDoctor: String = ""
     var toPractice: String = ""
     var letterType: String = "Referral"

@@ -9,7 +9,7 @@ struct DischargeSummaryData: Codable {
     var admissionDiagnosis: String = ""
     var dischargeDiagnosis: String = ""
     var icdCode: String = ""
-    var surgeonName: String = "Dr Dawit Daniel Kabiye MD DM"
+    var surgeonName: String = PracticeProfile.current.clinicianSignature
     var admittingDoctor: String = ""
     var anaesthetistName: String = ""
     var ward: String = ""

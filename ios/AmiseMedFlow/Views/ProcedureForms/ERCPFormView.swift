@@ -85,7 +85,7 @@ struct ERCPFormView: View {
 
             // Pre-fill operator from the registry (most recently used surgeon)
             if data.operator_.isEmpty {
-                data.operator_ = StaffRegistry.shared.names(for: .surgeon).first ?? "Dr Dawit Daniel Kabiye"
+                data.operator_ = StaffRegistry.shared.names(for: .surgeon).first ?? PracticeProfile.current.clinicianName
             }
 
             // Pre-fill indication chips from working diagnosis + chief complaint

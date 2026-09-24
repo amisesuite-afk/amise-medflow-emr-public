@@ -134,7 +134,7 @@ extension ProcedureFormPDF {
                 y = drawTextSection(ctx: ctx, title: "Clinician Summary", body: summary, y: y)
             }
 
-            drawSignatureBlock(ctx: ctx, surgeon: "Dr Dawit Daniel Kabiye  MD · DM", y: y)
+            drawSignatureBlock(ctx: ctx, surgeon: PracticeProfile.current.clinicianLetterheadName, y: y)
             drawFooter()
         }
     }
@@ -315,7 +315,7 @@ extension ProcedureFormPDF {
                 withAttributes: [.font: UIFont.italicSystemFont(ofSize: 7), .foregroundColor: UIColor.tertiaryLabel])
             y += 30
 
-            drawSignatureBlock(ctx: ctx, surgeon: "Dr Dawit Daniel Kabiye  MD · DM", y: y)
+            drawSignatureBlock(ctx: ctx, surgeon: PracticeProfile.current.clinicianLetterheadName, y: y)
             drawFooter()
         }
     }

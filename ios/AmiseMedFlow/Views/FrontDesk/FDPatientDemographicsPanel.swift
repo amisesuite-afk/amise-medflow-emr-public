@@ -176,7 +176,7 @@ struct FDPatientDemographicsPanel: View {
             if let email = patient.email, !email.isEmpty {
                 MailComposer(
                     to: [email],
-                    subject: "Your appointment — Amise Medical Services",
+                    subject: "Your appointment — \(PracticeProfile.current.practiceName)",
                     body: AppointmentMessage.preConsultEmailBody(
                         patientName: patient.fullName,
                         date: .now.addingTimeInterval(86400)
@@ -189,7 +189,7 @@ struct FDPatientDemographicsPanel: View {
             if let phone = patient.phone, !phone.isEmpty {
                 SMSComposer(
                     recipients: [phone],
-                    body: "Amise Medical: Please complete your pre-visit questionnaire with our front desk staff. Call +1(758)284-0557 for info.",
+                    body: AppointmentMessage.preConsultSMSBody(),
                     isPresented: $showSMSComposer
                 )
             }

@@ -45,36 +45,22 @@ enum ClinicalNotePDF {
         teal.setFill()
         UIRectFill(CGRect(x: 0, y: 0, width: page.width, height: h))
 
-        // "AMISE" brand mark
-        "AMISE".draw(at: CGPoint(x: 24, y: 8),
-                     withAttributes: [.font: UIFont.systemFont(ofSize: 22, weight: .black),
-                                      .foregroundColor: UIColor.white,
-                                      .kern: 4])
+        // Brand mark (e.g. "AMISE")
+        PracticeLetterhead.drawBrandMark(at: CGPoint(x: 24, y: 8))
 
-        "Amise Medical Services".draw(
+        PracticeProfile.current.practiceName.draw(
             in: CGRect(x: 24, y: 34, width: 230, height: 14),
             withAttributes: [.font: UIFont.systemFont(ofSize: 9, weight: .semibold),
                              .foregroundColor: UIColor.white.withAlphaComponent(0.92)])
 
-        "Dr Dawit Daniel Kabiye  MD · DM  ·  General & Endoscopic Surgery".draw(
+        PracticeProfile.current.clinicianLetterheadLine.draw(
             in: CGRect(x: 24, y: 50, width: 330, height: 12),
             withAttributes: [.font: UIFont.systemFont(ofSize: 7.5),
                              .foregroundColor: UIColor.white.withAlphaComponent(0.78)])
 
         // Right contact block
         let rightX = page.width - 24 - 160
-        "Amise Medical Services".draw(
-            in: CGRect(x: rightX, y: 18, width: 160, height: 12),
-            withAttributes: [.font: UIFont.systemFont(ofSize: 7.5, weight: .semibold),
-                             .foregroundColor: UIColor.white.withAlphaComponent(0.90)])
-        "Saint Lucia, West Indies".draw(
-            in: CGRect(x: rightX, y: 31, width: 160, height: 11),
-            withAttributes: [.font: UIFont.systemFont(ofSize: 7),
-                             .foregroundColor: UIColor.white.withAlphaComponent(0.72)])
-        "+1 758 284 0557  ·  amisemedical.com".draw(
-            in: CGRect(x: rightX, y: 43, width: 160, height: 11),
-            withAttributes: [.font: UIFont.systemFont(ofSize: 7),
-                             .foregroundColor: UIColor.white.withAlphaComponent(0.72)])
+        PracticeLetterhead.drawContactBlock(x: rightX)
 
         // Separator
         UIColor.white.withAlphaComponent(0.25).setFill()
@@ -135,7 +121,7 @@ enum ClinicalNotePDF {
         y += 18
 
         "Name:".draw(at: CGPoint(x: 24, y: y), withAttributes: labelAttrs)
-        "Dr Dawit Daniel Kabiye  MD · DM".draw(
+        PracticeProfile.current.clinicianLetterheadName.draw(
             in: CGRect(x: 86, y: y, width: 280, height: 13), withAttributes: nameAttrs)
         y += 16
 
@@ -180,7 +166,7 @@ enum ClinicalNotePDF {
     @discardableResult
     private static func drawMeta(page: CGRect, y: CGFloat, note: ClinicalNote, teal: UIColor) -> CGFloat {
         let dateStr = DateFormatter.ectLong.string(from: note.createdAt)
-        "Created: \(dateStr) ECT   ·   Author: Dr Dawit Daniel Kabiye MD DM".draw(
+        "Created: \(dateStr) ECT   ·   Author: \(PracticeProfile.current.clinicianSignature)".draw(
             in: CGRect(x: 24, y: y, width: page.width - 48, height: 13),
             withAttributes: [.font: UIFont.systemFont(ofSize: 8.5),
                              .foregroundColor: UIColor.secondaryLabel])

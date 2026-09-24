@@ -16,13 +16,17 @@ import Foundation
 
 // MARK: - Practice timezone + shared formatters
 //
-// Saint Lucia — Eastern Caribbean Time, UTC-4, no DST.
+// Default: Saint Lucia — Eastern Caribbean Time, UTC-4, no DST.
 // All clinical documents and display strings must use this timezone so
 // that timestamps are correct regardless of the device's regional setting.
+// The zone comes from PracticeProfile.timeZoneIdentifier (default
+// "America/St_Lucia") and is read once, at first use — a change in
+// Settings takes effect after the app is relaunched.
+// NOTE: document strings still label times "ECT" / "Eastern Caribbean Time".
 
 extension TimeZone {
-    /// Eastern Caribbean Time — the practice's canonical timezone.
-    static let ect = TimeZone(identifier: "America/St_Lucia")!
+    /// The practice's canonical timezone (Eastern Caribbean Time by default).
+    static let ect: TimeZone = PracticeProfile.current.timeZone
 }
 
 extension Calendar {

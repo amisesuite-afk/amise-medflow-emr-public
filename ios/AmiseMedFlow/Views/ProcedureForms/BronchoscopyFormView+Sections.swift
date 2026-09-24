@@ -313,7 +313,7 @@ extension BronchoscopyFormView {
     func buildReportText() -> String {
         let fmt = DateFormatter()
         fmt.dateStyle = .long; fmt.timeStyle = .short
-        fmt.timeZone = TimeZone(identifier: "America/St_Lucia")
+        fmt.timeZone = TimeZone.ect
         let dateStr = data.dateOfProcedure.map { fmt.string(from: $0) } ?? "—"
 
         var lines: [String] = [

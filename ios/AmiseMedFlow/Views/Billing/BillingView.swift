@@ -304,7 +304,7 @@ struct BillingView: View {
             parts.append("TOTAL                                    XCD \(String(format: "%.2f", totalXCD))")
         }
         parts.append("")
-        parts.append("Surgeon: Dr Dawit Daniel Kabiye · Amise Medical Services, Saint Lucia")
+        parts.append("Surgeon: \(PracticeProfile.current.clinicianName) · \(PracticeProfile.current.practiceNameWithCountry)")
         return parts.joined(separator: "\n")
     }
 }

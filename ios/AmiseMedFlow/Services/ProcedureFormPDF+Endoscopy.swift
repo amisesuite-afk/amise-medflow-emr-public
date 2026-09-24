@@ -283,7 +283,7 @@ extension ProcedureFormPDF {
             if !data.impression.isEmpty      { y = drawTextSection(ctx: ctx, title: "Impression",      body: data.impression,      y: y) }
             if !data.recommendations.isEmpty { y = drawTextSection(ctx: ctx, title: "Recommendations", body: data.recommendations, y: y) }
             if !data.followUpWeeks.isEmpty   { y = drawTextSection(ctx: ctx, title: "Follow-up",       body: "\(data.followUpWeeks) weeks", y: y) }
-            y = drawSignatureBlock(ctx: ctx, surgeon: data.operator_.isEmpty ? "Dr Dawit Daniel Kabiye" : data.operator_, y: y)
+            y = drawSignatureBlock(ctx: ctx, surgeon: data.operator_.isEmpty ? PracticeProfile.current.clinicianName : data.operator_, y: y)
             _ = y
             drawFooter()
         }

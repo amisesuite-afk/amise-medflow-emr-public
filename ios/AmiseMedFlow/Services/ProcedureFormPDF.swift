@@ -18,40 +18,24 @@ enum ProcedureFormPDF {
         teal.setFill()
         UIRectFill(CGRect(x: 0, y: 0, width: page.width, height: h))
 
-        // LEFT — "AMISE" brand mark (large, bold, tracked)
-        let amiseAttrs: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 22, weight: .black),
-            .foregroundColor: UIColor.white,
-            .kern: 4,
-        ]
-        "AMISE".draw(at: CGPoint(x: lm, y: 8), withAttributes: amiseAttrs)
+        // LEFT — brand mark (e.g. "AMISE"; large, bold, tracked)
+        PracticeLetterhead.drawBrandMark(at: CGPoint(x: lm, y: 8))
 
-        // LEFT — "Amise Medical Services" subtitle
-        "Amise Medical Services".draw(
+        // LEFT — practice name subtitle
+        PracticeProfile.current.practiceName.draw(
             in: CGRect(x: lm, y: 34, width: 230, height: 14),
             withAttributes: [.font: UIFont.systemFont(ofSize: 9, weight: .semibold),
                              .foregroundColor: UIColor.white.withAlphaComponent(0.92)])
 
         // LEFT — surgeon + specialty
-        "Dr Dawit Daniel Kabiye  MD · DM  ·  General & Endoscopic Surgery".draw(
+        PracticeProfile.current.clinicianLetterheadLine.draw(
             in: CGRect(x: lm, y: 50, width: 330, height: 12),
             withAttributes: [.font: UIFont.systemFont(ofSize: 7.5),
                              .foregroundColor: UIColor.white.withAlphaComponent(0.78)])
 
         // RIGHT — practice contact block
         let rightX = page.width - lm - 160
-        "Amise Medical Services".draw(
-            in: CGRect(x: rightX, y: 18, width: 160, height: 12),
-            withAttributes: [.font: UIFont.systemFont(ofSize: 7.5, weight: .semibold),
-                             .foregroundColor: UIColor.white.withAlphaComponent(0.90)])
-        "Saint Lucia, West Indies".draw(
-            in: CGRect(x: rightX, y: 31, width: 160, height: 11),
-            withAttributes: [.font: UIFont.systemFont(ofSize: 7),
-                             .foregroundColor: UIColor.white.withAlphaComponent(0.72)])
-        "+1 758 284 0557  ·  amisemedical.com".draw(
-            in: CGRect(x: rightX, y: 43, width: 160, height: 11),
-            withAttributes: [.font: UIFont.systemFont(ofSize: 7),
-                             .foregroundColor: UIColor.white.withAlphaComponent(0.72)])
+        PracticeLetterhead.drawContactBlock(x: rightX)
 
         // Separator line
         UIColor.white.withAlphaComponent(0.25).setFill()
@@ -130,7 +114,7 @@ enum ProcedureFormPDF {
     }
 
     static func drawMeta(date: Date, y: CGFloat) -> CGFloat {
-        let str = DateFormatter.ectLong.string(from: date) + " ECT   ·   Amise Medical Services, Saint Lucia"
+        let str = DateFormatter.ectLong.string(from: date) + " ECT   ·   " + PracticeProfile.current.practiceNameWithCountry
         str.draw(in: CGRect(x: lm, y: y, width: bodyW, height: 13),
                  withAttributes: [.font: UIFont.systemFont(ofSize: 8), .foregroundColor: UIColor.secondaryLabel])
         let rule = y + 14
@@ -185,7 +169,10 @@ enum ProcedureFormPDF {
 
 
     static func drawFooter() {
-        let txt = "Amise Medical Services · Dr Dawit Daniel Kabiye MD DM · Saint Lucia · Confidential clinical document"
+        let profile = PracticeProfile.current
+        let txt = PracticeProfile.join(
+            [profile.practiceName, profile.clinicianSignature, profile.country, "Confidential clinical document"],
+            separator: " · ")
         teal.withAlphaComponent(0.15).setFill()
         UIRectFill(CGRect(x: 0, y: page.height - 26, width: page.width, height: 26))
         txt.draw(in: CGRect(x: lm, y: page.height - 18, width: bodyW, height: 12),

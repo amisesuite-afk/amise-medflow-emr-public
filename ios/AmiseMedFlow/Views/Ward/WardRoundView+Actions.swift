@@ -13,7 +13,7 @@ extension WardRoundView {
         let today = Date.now.formatted(date: .abbreviated, time: .shortened)
         var lines: [String] = []
         lines.append("WARD ROUND HANDOVER — \(today)")
-        lines.append("Amise Medical Services · Dr Dawit Daniel Kabiye MD DM")
+        lines.append("\(PracticeProfile.current.practiceName) · \(PracticeProfile.current.clinicianSignature)")
         lines.append(String(repeating: "═", count: 48))
 
         let locationGroups = grouped
@@ -198,7 +198,7 @@ extension WardRoundView {
 
         return """
         DISCHARGE SUMMARY  ·  \(today)
-        Consultant: Dr Dawit Daniel Kabiye
+        Consultant: \(PracticeProfile.current.clinicianName)
         Patient: \(patient.fullName) · \(patient.sex.rawValue.prefix(1)), \(patient.ageYears > 0 ? "\(patient.ageYears)y" : "age unknown")
         \(mrnLine)\([patient.ward.map { "Ward: \($0)" }, patient.bedNumber.map { "Bed: \($0)" }].compactMap { $0 }.joined(separator: "  "))\(gpLine)
 

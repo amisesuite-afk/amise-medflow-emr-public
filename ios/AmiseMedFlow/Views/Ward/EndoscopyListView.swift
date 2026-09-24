@@ -126,7 +126,7 @@ struct EndoscopyListView: View {
         let today = Date.now.formatted(date: .abbreviated, time: .shortened)
         var lines: [String] = []
         lines.append("ENDOSCOPY LIST — \(today)")
-        lines.append("Amise Medical Services · Dr Dawit Daniel Kabiye MD DM")
+        lines.append("\(PracticeProfile.current.practiceName) · \(PracticeProfile.current.clinicianSignature)")
         lines.append(String(repeating: "═", count: 48))
         lines.append("")
 

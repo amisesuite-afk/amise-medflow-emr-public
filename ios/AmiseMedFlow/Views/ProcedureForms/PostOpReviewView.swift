@@ -6,7 +6,7 @@ import SwiftData
 struct PostOpReviewData: Codable {
     var reviewDate: Date?
     var postOpDay: Int = 1
-    var reviewedBy: String = "Dr Dawit Daniel Kabiye MD DM"
+    var reviewedBy: String = PracticeProfile.current.clinicianSignature
     var procedure: String = ""
     var procedureDate: Date?
 

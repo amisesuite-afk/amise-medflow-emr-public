@@ -137,6 +137,14 @@ final class PracticeProfileTests: XCTestCase {
         XCTAssertEqual(p.consultantTitle, "Consultant General & Endoscopic Surgeon")
         XCTAssertNil(p.registrationLine)
         XCTAssertEqual(p.signOff(["A"]), ["A"])
+        // Referral-letter template sign-off (NoteEditorView+Generation.templateFor).
+        XCTAssertEqual(
+            p.signOff([p.clinicianName, p.clinicianTitle, p.practiceNameWithCountry]).joined(separator: "\n"),
+            "Dr Dawit Daniel Kabiye\nGeneral & Endoscopic Surgeon\nAmise Medical Services, Saint Lucia")
+        // Consultation letter sign-off (ConsultationView+Sheets.generateLetter).
+        XCTAssertEqual(
+            p.signOff([p.clinicianLetterheadName, p.consultantTitle, p.practiceNameWithCountry]).joined(separator: "\n"),
+            "Dr Dawit Daniel Kabiye  MD · DM\nConsultant General & Endoscopic Surgeon\nAmise Medical Services, Saint Lucia")
         XCTAssertEqual(
             PracticeProfile.join([p.clinicianSignature, p.specialty], separator: " — "),
             "Dr Dawit Daniel Kabiye MD DM — General & Endoscopic Surgery")

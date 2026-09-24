@@ -100,7 +100,7 @@ struct PrescriptionView: View {
             let icd = patient.workingDiagnosisICD.map { " (\($0))" } ?? ""
             lines.append("Diagnosis: \(dx)\(icd)")
         }
-        lines.append("Prescribed by: Dr Dawit Daniel Kabiye")
+        lines.append("Prescribed by: \(PracticeProfile.current.clinicianName)")
         lines.append(String(repeating: "─", count: 48))
         lines.append("")
 

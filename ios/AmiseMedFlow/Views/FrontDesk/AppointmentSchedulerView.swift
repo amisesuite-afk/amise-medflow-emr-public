@@ -136,7 +136,7 @@ struct AppointmentSchedulerView: View {
                 if let p = selectedPatient, let email = p.email, !email.isEmpty {
                     MailComposer(
                         to: [email],
-                        subject: "Appointment Confirmation — Amise Medical",
+                        subject: "Appointment Confirmation — \(PracticeProfile.current.displayShortPracticeName)",
                         body: AppointmentMessage.emailBody(
                             patientName: p.fullName,
                             date: apptDate,
@@ -259,6 +259,12 @@ struct AppointmentSchedulerView: View {
         }
     }
 
+    private var calendarAccountHint: String {
+        let email = PracticeProfile.current.email
+        let account = email.isEmpty ? "your practice Google account" : email
+        return "Events sync to Google Calendar when \(account) is added in iOS Settings → Calendar → Accounts."
+    }
+
     private var calendarSection: some View {
         Section {
             let cals = calendarService.availableCalendars()
@@ -279,7 +285,7 @@ struct AppointmentSchedulerView: View {
         } header: {
             Text("Google Calendar")
         } footer: {
-            Text("Events sync to Google Calendar when amisesuite@gmail.com is added in iOS Settings → Calendar → Accounts.")
+            Text(calendarAccountHint)
                 .font(.caption2)
         }
     }

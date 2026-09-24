@@ -52,7 +52,7 @@ extension NoteEditorView {
 
         let df = DateFormatter()
         df.dateStyle = .long; df.timeStyle = .none
-        df.timeZone = TimeZone(identifier: "America/St_Lucia")
+        df.timeZone = TimeZone.ect
 
         var lines: [String] = []
         lines.append("Dear \(specialty) Colleague,")
@@ -98,9 +98,12 @@ extension NoteEditorView {
         lines.append("")
         lines.append("Yours sincerely,")
         lines.append("")
-        lines.append("Dr Dawit Daniel Kabiye  MD · DM")
-        lines.append("General & Endoscopic Surgery")
-        lines.append("Amise Medical Services, Saint Lucia")
+        let profile = PracticeProfile.current
+        lines.append(contentsOf: profile.signOff([
+            profile.clinicianLetterheadName,
+            profile.specialty,
+            profile.practiceNameWithCountry
+        ]))
 
         note.freeText     = lines.joined(separator: "\n")
         note.updatedAt    = .now
@@ -114,7 +117,7 @@ extension NoteEditorView {
 
         let df = DateFormatter()
         df.dateStyle = .long; df.timeStyle = .none
-        df.timeZone = TimeZone(identifier: "America/St_Lucia")
+        df.timeZone = TimeZone.ect
 
         var lines: [String] = []
         lines.append("DISCHARGE SUMMARY")
@@ -164,8 +167,9 @@ extension NoteEditorView {
             lines.append("Please arrange outpatient review in 2–4 weeks.")
         }
         lines.append("")
-        lines.append("Dr Dawit Daniel Kabiye  MD · DM")
-        lines.append("General & Endoscopic Surgery, Amise Medical Services, Saint Lucia")
+        let profile = PracticeProfile.current
+        lines.append(profile.clinicianLetterheadName)
+        lines.append(PracticeProfile.join([profile.specialty, profile.practiceName, profile.country], separator: ", "))
 
         note.freeText     = lines.joined(separator: "\n")
         note.updatedAt    = .now
@@ -232,11 +236,13 @@ extension NoteEditorView {
 
     func templateFor(_ type: NoteType, patient: Patient? = nil) -> String {
         let today = Date.now.formatted(date: .abbreviated, time: .omitted)
+        let profile = PracticeProfile.current
+        let clinician = profile.clinicianName
         switch type {
         case .operative:
             return """
             OPERATIVE NOTE  ·  \(today)
-            Surgeon: Dr Dawit Daniel Kabiye
+            Surgeon: \(clinician)
 
             Procedure:
             Indication:
@@ -267,7 +273,7 @@ extension NoteEditorView {
         case .endoscopy:
             return """
             ENDOSCOPY REPORT  ·  \(today)
-            Endoscopist: Dr Dawit Daniel Kabiye
+            Endoscopist: \(clinician)
 
             Procedure:
             Indication:
@@ -291,7 +297,7 @@ extension NoteEditorView {
         case .discharge:
             return """
             DISCHARGE SUMMARY  ·  \(today)
-            Consultant: Dr Dawit Daniel Kabiye
+            Consultant: \(clinician)
 
             Admitted:
             Discharged:
@@ -316,7 +322,7 @@ extension NoteEditorView {
             let refCC = patient?.chiefComplaint ?? ""
             return """
             CONSULTATION NOTE  ·  \(today)
-            Consultant: Dr Dawit Daniel Kabiye
+            Consultant: \(clinician)
 
             Referring doctor: \(refDr)
             Reason for referral: \(refCC)
@@ -380,9 +386,7 @@ extension NoteEditorView {
             I would appreciate your assessment and management.
 
             Yours sincerely,
-            Dr Dawit Daniel Kabiye
-            General & Endoscopic Surgeon
-            Amise Medical Services, Saint Lucia
+            \(profile.signOff([clinician, profile.clinicianTitle, profile.practiceNameWithCountry]).joined(separator: "\n"))
             """
 
         default:

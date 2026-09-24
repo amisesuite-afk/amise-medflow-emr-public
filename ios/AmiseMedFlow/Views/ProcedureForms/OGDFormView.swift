@@ -77,7 +77,7 @@ struct OGDFormView: View {
                 hasProcedureDate = true
             }
             if data.operator_.isEmpty {
-                data.operator_ = StaffRegistry.shared.names(for: .surgeon).first ?? "Dr Dawit Daniel Kabiye"
+                data.operator_ = StaffRegistry.shared.names(for: .surgeon).first ?? PracticeProfile.current.clinicianName
             }
             if data.indication.isEmpty {
                 let sources = [patient.workingDiagnosis, patient.chiefComplaint].compactMap { $0 }

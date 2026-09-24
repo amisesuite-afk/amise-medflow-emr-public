@@ -226,7 +226,7 @@ extension ProcedureFormPDF {
                 in: CGRect(x: lm, y: 8, width: bodyW, height: 18),
                 withAttributes: [.font: UIFont.systemFont(ofSize: 14, weight: .bold),
                                  .foregroundColor: UIColor.white])
-            "Amise Medical Services · Saint Lucia".draw(
+            PracticeProfile.current.practiceNameAndCountryDotted.draw(
                 in: CGRect(x: lm, y: 28, width: bodyW, height: 14),
                 withAttributes: [.font: UIFont.systemFont(ofSize: 9),
                                  .foregroundColor: UIColor.white.withAlphaComponent(0.85)])

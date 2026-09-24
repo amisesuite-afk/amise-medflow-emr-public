@@ -84,12 +84,13 @@ enum PreConsultQuestionnairePDF {
         teal.setFill()
         UIRectFill(CGRect(x: 0, y: 0, width: pageW, height: h))
 
-        "Amise Medical Services".draw(
+        let profile = PracticeProfile.current
+        profile.practiceName.draw(
             in: CGRect(x: lm, y: 10, width: 260, height: 20),
             withAttributes: [.font: UIFont.systemFont(ofSize: 14, weight: .bold),
                              .foregroundColor: UIColor.white])
 
-        "Dr Dawit Daniel Kabiye MD DM — General & Endoscopic Surgery".draw(
+        PracticeProfile.join([profile.clinicianSignature, profile.specialty], separator: " — ").draw(
             in: CGRect(x: lm, y: 31, width: pageW - lm * 2, height: 14),
             withAttributes: [.font: UIFont.systemFont(ofSize: 8),
                              .foregroundColor: UIColor.white.withAlphaComponent(0.85)])

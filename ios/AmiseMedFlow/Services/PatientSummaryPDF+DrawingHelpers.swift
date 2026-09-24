@@ -69,7 +69,8 @@ extension PatientSummaryPDF {
     }
 
     static func drawFooter(pageRect: CGRect) {
-        let text = "Generated \(DateFormatter.ectDateTime.string(from: .now)) ECT · Dr Dawit Daniel Kabiye MD DM · Amise Medical Services, Saint Lucia · CONFIDENTIAL — AI-assisted draft, clinician review required"
+        let profile = PracticeProfile.current
+        let text = "Generated \(DateFormatter.ectDateTime.string(from: .now)) ECT · \(profile.clinicianSignature) · \(profile.practiceNameWithCountry) · CONFIDENTIAL — AI-assisted draft, clinician review required"
         text.draw(
             in: CGRect(x: margin, y: pageRect.height - 22, width: pageRect.width - margin * 2, height: 18),
             withAttributes: [.font: UIFont.systemFont(ofSize: 6.5), .foregroundColor: UIColor.secondaryLabel])
