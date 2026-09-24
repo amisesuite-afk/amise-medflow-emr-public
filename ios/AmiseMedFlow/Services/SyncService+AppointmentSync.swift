@@ -135,7 +135,8 @@ extension SyncService {
             // pendingSync is what protects these edits from the pull (PatientPullMerge), so it is
             // cleared only when the server confirms the update. An update the server does not
             // apply (RLS, or the row is gone) returns no rows without an error; the edit then
-            // stays pending locally rather than being reverted by the next pull. A 42501 (not
+            // stays pending locally rather than being reverted by the next pull (and is marked
+            // refused when the row is still there: markRefusedIfUpdateNotApplied). A 42501 (not
             // permitted for this role) marks the patient refused: it stays pending and is not
             // retried until the next sign-in. Same rule as pushPendingNotes.
             let editedAt = patient.updatedAt
@@ -148,6 +149,10 @@ extension SyncService {
                     .select("id")
                     .execute()
                     .value
+                // 0 rows back with the row still there: not permitted for this role (marked
+                // refused, like a 42501).
+                try await markRefusedIfUpdateNotApplied(rowsReturned: updated.count, table: "patients",
+                                                        remoteId: remoteId, id: localId, kind: .patient)
                 // The await above may have outlived a delete; and an edit made while it ran was
                 // not in this request, so it keeps the patient pending for the next sync.
                 guard patient.isLive, !updated.isEmpty, patient.updatedAt == editedAt else { continue }

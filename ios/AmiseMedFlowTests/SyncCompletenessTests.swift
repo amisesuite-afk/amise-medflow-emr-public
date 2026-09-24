@@ -4,6 +4,8 @@ import XCTest
 /// Sync completeness (pure helpers, no network, no store):
 /// 1. Prescription route: local labels ("Oral", "PO/IV") are sent as the lowercase values the
 ///    server's CHECK constraint allows (PrescriptionRoute).
+/// 2. An UPDATE that RLS filters out returns no row and no error: while the row still exists
+///    and the user is signed in, that is a refusal (SyncZeroRowUpdate).
 final class SyncCompletenessTests: XCTestCase {
 
     // MARK: - Prescription route
@@ -76,5 +78,35 @@ final class SyncCompletenessTests: XCTestCase {
         XCTAssertTrue(PrescriptionRoute.sameRoute(local: "PR", server: "per_rectum"))
         XCTAssertFalse(PrescriptionRoute.sameRoute(local: "Oral", server: "iv"))
         XCTAssertFalse(PrescriptionRoute.sameRoute(local: "", server: "oral"))
+    }
+
+    // MARK: - UPDATE that returned no row
+
+    func testRowReturnedMeansApplied() {
+        for exists in [true, false] {
+            for signedIn in [true, false] {
+                XCTAssertEqual(SyncZeroRowUpdate.outcome(rowsReturned: 1, signedIn: signedIn,
+                                                         rowStillExists: exists), .applied)
+            }
+        }
+    }
+
+    func testNoRowWhileTheRowExistsIsARefusal() {
+        XCTAssertEqual(SyncZeroRowUpdate.outcome(rowsReturned: 0, signedIn: true, rowStillExists: true),
+                       .refused,
+                       "e.g. a nurse's prescription edit under doctors_update_prescriptions")
+    }
+
+    func testNoRowBecauseTheRowIsGoneIsNotARefusal() {
+        XCTAssertEqual(SyncZeroRowUpdate.outcome(rowsReturned: 0, signedIn: true, rowStillExists: false),
+                       .rowGone, "deleted on the server: no \"not permitted\" notice")
+    }
+
+    func testNoRowWhileSignedOutIsNeverARefusal() {
+        for exists in [true, false] {
+            XCTAssertEqual(SyncZeroRowUpdate.outcome(rowsReturned: 0, signedIn: false,
+                                                     rowStillExists: exists),
+                           .retryLater, "requests run as anon: not this user's role")
+        }
     }
 }

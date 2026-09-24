@@ -171,7 +171,8 @@ extension SyncService {
                     guard !tombstoned.contains(remoteId) else { continue }
                     // Edit to a prescription already in the cloud: update it in place. RLS
                     // (doctors_update_prescriptions) allows doctor/admin; 0 rows back means not
-                    // applied — it stays pending locally rather than losing the edit.
+                    // applied — it stays pending locally rather than losing the edit, and is
+                    // marked refused when the row is still there (a nurse's or front desk's edit).
                     let updated: [RxResponse] = try await SupabaseConfig.client
                         .from("prescriptions")
                         .update(PrescriptionUpdateRow(rx, iso: iso))
@@ -179,6 +180,9 @@ extension SyncService {
                         .select("id")
                         .execute()
                         .value
+                    try await markRefusedIfUpdateNotApplied(rowsReturned: updated.count,
+                                                            table: "prescriptions", remoteId: remoteId,
+                                                            id: localId, kind: .prescription)
                     guard rx.isLive else { continue }
                     if SyncPushConfirmation.mayClearPending(rowsReturned: updated.count,
                                                             editedAtBeforeRequest: editedAt,

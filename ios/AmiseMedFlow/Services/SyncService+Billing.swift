@@ -81,7 +81,12 @@ extension SyncService {
                         .select("id")
                         .execute()
                         .value
-                    // 0 rows back: not applied (RLS, or the row is gone). It stays pending.
+                    // 0 rows back: not applied (RLS, or the row is gone). It stays pending, and is
+                    // marked refused when the row is still there.
+                    try await markRefusedIfUpdateNotApplied(rowsReturned: updated.count,
+                                                            table: "patient_billing_items",
+                                                            remoteId: remoteId,
+                                                            id: localId, kind: .billingItem)
                     guard item.isLive else { continue }
                     if SyncPushConfirmation.mayClearPending(rowsReturned: updated.count,
                                                             editedAtBeforeRequest: editedAt,

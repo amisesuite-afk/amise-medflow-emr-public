@@ -99,6 +99,11 @@ extension SyncService {
                         .select("id")
                         .execute()
                         .value
+                    // 0 rows back with the row still there: not permitted for this role.
+                    try await markRefusedIfUpdateNotApplied(rowsReturned: confirmed.count,
+                                                            table: "patient_operative_plans",
+                                                            remoteId: remoteId,
+                                                            id: localId, kind: .operativePlan)
                 } else {
                     // Insert new row
                     confirmed = try await SupabaseConfig.client

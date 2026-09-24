@@ -54,7 +54,8 @@ extension SyncService {
                 if let remoteId = noteRemoteId {
                     // Edit to a note that is already in the cloud: update it in place. RLS allows the
                     // author or an admin; 0 rows back means not permitted — keep it pending locally
-                    // (the pull below will not overwrite it) rather than lose the edit.
+                    // (the pull below will not overwrite it) rather than lose the edit, and mark it
+                    // refused when the row is still there (markRefusedIfUpdateNotApplied).
                     struct NoteUpdate: Encodable {
                         let note_type: String
                         let status: String
@@ -75,6 +76,9 @@ extension SyncService {
                         .select("id")
                         .execute()
                         .value
+                    try await markRefusedIfUpdateNotApplied(rowsReturned: updated.count,
+                                                            table: "clinical_notes", remoteId: remoteId,
+                                                            id: localId, kind: .clinicalNote)
                     guard note.isLive else { continue }
                     if !updated.isEmpty && note.updatedAt == editedAt {
                         note.pendingSync = false

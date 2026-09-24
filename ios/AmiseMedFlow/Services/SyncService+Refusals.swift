@@ -81,7 +81,64 @@ enum SyncPushConfirmation {
     }
 }
 
+/// What an UPDATE that returned no row means. RLS filters an UPDATE's rows silently: a policy
+/// whose USING clause excludes this user (e.g. `doctors_update_prescriptions`, doctor or admin
+/// only) matches 0 rows, with no error. Without this the record stayed pending and was sent again
+/// every sync, for ever, and the user was never told. Pure; tested in SyncCompletenessTests.
+enum SyncZeroRowUpdate {
+    enum Outcome: Equatable {
+        /// A row came back: the update was applied.
+        case applied
+        /// Signed out: requests run as `anon`, which matches nothing. Not a role refusal.
+        case retryLater
+        /// The row is still there (a select by id finds it) but the update matched nothing: not
+        /// permitted for this user's role. Marked refused like a 42501.
+        case refused
+        /// No such row (deleted on the server, or not visible to this user). Not a refusal: the
+        /// record keeps its local changes and stays pending.
+        case rowGone
+    }
+
+    /// - rowStillExists: whether a select by id found the row (only asked when it matters).
+    static func outcome(rowsReturned: Int, signedIn: Bool, rowStillExists: Bool) -> Outcome {
+        if rowsReturned > 0 { return .applied }
+        guard signedIn else { return .retryLater }
+        return rowStillExists ? .refused : .rowGone
+    }
+}
+
 extension SyncService {
+
+    /// Call after every UPDATE of a record that has a server row (patients, notes, prescriptions,
+    /// vitals, billing items, operative plans). When it returned no row and the user is signed in,
+    /// a select by id tells a refusal (row there: marked refused, so it is skipped until the next
+    /// sign-in and "not permitted for your role" shows) from a row that is gone (left pending).
+    /// Throws only what the select throws (the caller's per-record catch handles it).
+    func markRefusedIfUpdateNotApplied(rowsReturned: Int, table: String, remoteId: String,
+                                       id: UUID, kind: SyncRefusals.Kind) async throws {
+        guard rowsReturned == 0 else { return }
+        // Same guard as markIfRefused: signed out, a request runs as `anon`.
+        let signedIn = isSignedIn && SupabaseConfig.client.auth.currentUser != nil
+        guard signedIn else { return }
+        struct IdRow: Decodable { let id: String }
+        let found: [IdRow] = try await SupabaseConfig.client
+            .from(table)
+            .select("id")
+            .eq("id", value: remoteId)
+            .limit(1)
+            .execute()
+            .value
+        switch SyncZeroRowUpdate.outcome(rowsReturned: 0, signedIn: true, rowStillExists: !found.isEmpty) {
+        case .refused:
+            SyncRefusals.mark(id, as: kind)
+            CrashReporting.breadcrumb("Sync: \(kind.rawValue) change not permitted (0 rows)",
+                                      category: "sync")
+        case .rowGone:
+            CrashReporting.breadcrumb("Sync: \(kind.rawValue) update matched no row", category: "sync")
+        case .applied, .retryLater:
+            break
+        }
+    }
 
     /// Handles an error from pushing ONE record. Returns true when the loop should go on to the
     /// next record, false when it should stop (transport error). Errors other than a refusal are
