@@ -79,6 +79,8 @@ extension PreConsultEntrySheet {
             )
             rx.patient = patient
             context.insert(rx)
+            AuditLog.record("create", "prescription", patient: patient, resourceId: rx.syncCode,
+                            details: ["source": "pre_consult"])
         }
 
         // Allergies

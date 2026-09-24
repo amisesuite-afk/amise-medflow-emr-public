@@ -119,6 +119,7 @@ struct PatientDetailView: View {
             .background(Color(.systemBackground))
             .navigationTitle(patient.fullName)
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear { AuditLog.record("view", "patient", patient: patient) }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(role: .destructive) { showDeleteConfirm = true } label: {

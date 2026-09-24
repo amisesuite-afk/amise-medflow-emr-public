@@ -49,6 +49,9 @@ struct DischargeFlowSheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Sign & Discharge") {
                         note.freeText = text
+                        AuditLog.record("sign", "clinical_note", patient: patient,
+                                        resourceId: note.remoteId ?? note.syncCode,
+                                        details: ["note_type": "discharge"])
                         note.status = .signed
                         note.updatedAt = .now
                         note.pendingSync = true

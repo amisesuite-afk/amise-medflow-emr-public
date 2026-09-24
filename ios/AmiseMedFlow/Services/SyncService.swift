@@ -99,6 +99,7 @@ final class SyncService: ObservableObject {
 
     func signIn(email: String, password: String) async throws {
         let session = try await SupabaseConfig.client.auth.signIn(email: email, password: password)
+        AuditLog.record("login", "user", details: ["client": "ios"])
         currentUserEmail = session.user.email
         currentUserId = session.user.id.uuidString
         await fetchUserRole(userId: session.user.id)
@@ -107,6 +108,8 @@ final class SyncService: ObservableObject {
     }
 
     func signOut() async throws {
+        AuditLog.record("logout", "user", details: ["client": "ios"])
+        await AuditLog.flush()   // upload while still signed in
         try await SupabaseConfig.client.auth.signOut()
         currentUserEmail = nil
         currentUserId = nil
@@ -168,6 +171,7 @@ final class SyncService: ObservableObject {
             // Own requests, never throws: a server without the column (migration 86) must not
             // break the rest of the sync.
             await syncPathwayData(context: context)
+            await AuditLog.flush()
             lastSyncedAt = .now
             recountPending(context: context)
         } catch {

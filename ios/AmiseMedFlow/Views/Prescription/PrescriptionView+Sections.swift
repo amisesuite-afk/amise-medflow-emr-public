@@ -260,7 +260,10 @@ extension PrescriptionView {
                 }
                 .onDelete { indexSet in
                     let sorted = patient.prescriptions.sorted { $0.prescribedAt > $1.prescribedAt }
-                    indexSet.forEach { context.delete(sorted[$0]) }
+                    indexSet.forEach {
+                        AuditLog.record("delete", "prescription", patient: patient, resourceId: sorted[$0].syncCode)
+                        context.delete(sorted[$0])
+                    }
                     patient.updatedAt = .now
                     patient.pendingSync = true
                 }

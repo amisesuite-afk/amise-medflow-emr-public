@@ -258,6 +258,8 @@ struct ConsultationView: View {
         pathway = p
         let vt = p.visitType(keeping: patient.visitType)
         if patient.visitType != vt {
+            AuditLog.record("update", "patient", patient: patient,
+                            details: ["field": "visit_type", "to": vt.rawValue])
             patient.visitType = vt
             patient.updatedAt = .now
             patient.pendingSync = true
@@ -341,6 +343,8 @@ struct ConsultationView: View {
                             isPresented: $showCompleteEncounterConfirm,
                             titleVisibility: .visible) {
             Button("Mark as Complete") {
+                AuditLog.record("state_transition", "encounter", patient: patient,
+                                details: ["to": "complete"])
                 patient.encounterStatus = .complete
                 patient.updatedAt = .now
                 patient.pendingSync = true
@@ -379,6 +383,8 @@ struct ConsultationView: View {
         encounter.isComplete = true
         patient.encounters.append(encounter)
         context.insert(encounter)
+        AuditLog.record("create", "encounter", patient: patient, resourceId: encounter.syncCode,
+                        details: ["visit_type": encounter.visitType.rawValue])
         try? context.save()
         encounterSavedFeedback = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {

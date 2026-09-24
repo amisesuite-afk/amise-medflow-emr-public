@@ -222,6 +222,7 @@ struct AddPrescriptionSheet: View {
         rx.instructions = instructions.isEmpty ? nil : instructions
         rx.patient = patient
         context.insert(rx)
+        AuditLog.record("create", "prescription", patient: patient, resourceId: rx.syncCode)
         patient.updatedAt = .now
         patient.pendingSync = true
         dismiss()

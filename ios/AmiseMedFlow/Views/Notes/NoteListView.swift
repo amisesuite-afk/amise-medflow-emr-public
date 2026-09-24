@@ -169,6 +169,8 @@ struct NoteListView: View {
     }
 
     private func signNote(_ note: ClinicalNote) {
+        AuditLog.record("sign", "clinical_note", patient: patient, resourceId: note.remoteId ?? note.syncCode,
+                        details: ["note_type": note.noteType.rawValue])
         note.status = .signed
         note.updatedAt = .now
         note.pendingSync = true

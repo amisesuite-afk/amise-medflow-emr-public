@@ -77,6 +77,7 @@ struct PatientDetailPadView: View {
             PatientSummaryEditorView(patient: patient)
         }
         .onAppear {
+            AuditLog.record("view", "patient", patient: patient)
             // If the saved selection is not visible for this role, reset to the first allowed section
             if let sel = selectedSection, !rightSections.contains(sel) {
                 selectedSection = rightSections.first
@@ -315,6 +316,8 @@ struct PatientDetailPadView: View {
         encounter.isComplete = true
         patient.encounters.append(encounter)
         context.insert(encounter)
+        AuditLog.record("create", "encounter", patient: patient, resourceId: encounter.syncCode,
+                        details: ["visit_type": encounter.visitType.rawValue])
         try? context.save()
         saveVisitFeedback = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { saveVisitFeedback = false }

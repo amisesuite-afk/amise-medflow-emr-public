@@ -525,6 +525,7 @@ struct QuickAddSheet: View {
 
         context.insert(p)
         try? context.save()
+        AuditLog.record("create", "patient", patient: p)
 
         if (section == .theatre || section == .endoscopy) && hasDate && !keyField.isEmpty {
             Task {

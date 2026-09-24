@@ -359,6 +359,7 @@ struct VitalsEntryView: View {
         entry.notes              = notes.isEmpty ? nil : notes
         context.insert(entry)
         try? context.save()
+        AuditLog.record("create", "vitals", patient: patient, resourceId: entry.syncCode)
         dismiss()
     }
 }

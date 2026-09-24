@@ -161,6 +161,7 @@ extension AddPatientView {
             p.operationDate = operationDate
         }
         context.insert(p)
+        AuditLog.record("create", "patient", patient: p)
         try? context.save()
 
         // Mirror to iOS Calendar (syncs to Google Calendar via account settings)

@@ -220,7 +220,10 @@ extension ConsultationView {
                     }
                 }
                 .onDelete { idxSet in
-                    for i in idxSet { context.delete(sortedRx[i]) }
+                    for i in idxSet {
+                        AuditLog.record("delete", "prescription", patient: patient, resourceId: sortedRx[i].syncCode)
+                        context.delete(sortedRx[i])
+                    }
                     touch()
                 }
             }

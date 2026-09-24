@@ -192,7 +192,9 @@ enum PatientIdentityStore {
 
 extension ModelContext {
     /// Delete a patient on this device and remember it so sync does not bring it back.
+    @MainActor
     func deletePatient(_ patient: Patient) {
+        AuditLog.record("delete", "patient", patient: patient)
         CrashReporting.breadcrumb("Deleted a patient record", category: "action")
         let others = ((try? fetch(FetchDescriptor<Patient>())) ?? []).filter(\.isLive)
         PatientIdentityStore.markDeleted(patient, survivors: others)
