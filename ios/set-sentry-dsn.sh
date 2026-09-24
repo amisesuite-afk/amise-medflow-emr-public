@@ -5,6 +5,11 @@
 set -e
 cd "$(dirname "$0")"
 DSN="$1"
+# Tolerate stray punctuation/whitespace from copy-paste (e.g. a trailing full stop).
+DSN="$(printf '%s' "$DSN" | tr -d '[:space:]' | sed -E 's/[.,;:]+$//')"
+if [[ ! "$DSN" =~ ^https://[0-9a-f]+@[A-Za-z0-9.-]+/[0-9]+$ ]]; then
+  echo "That doesn't look like a Sentry DSN (expected https://<key>@<host>/<number>): $DSN"; exit 1
+fi
 if [[ "$DSN" != https://* ]]; then
   echo "Usage: $0 'https://<key>@<org>.ingest.sentry.io/<project>'"; exit 1
 fi

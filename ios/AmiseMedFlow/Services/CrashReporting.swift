@@ -16,15 +16,27 @@ import Sentry
 
 enum CrashReporting {
 
-    /// The DSN from Info.plist, or nil when reporting is not configured.
+    /// Raw value from Info.plist (after the build expands $(SENTRY_DSN)).
+    private static var rawDSN: String {
+        ((Bundle.main.object(forInfoDictionaryKey: "SENTRY_DSN") as? String) ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .trimmingCharacters(in: CharacterSet(charactersIn: ".,;:"))   // stray paste punctuation
+    }
+
+    /// The DSN, or nil when reporting is not configured or the value is not a valid DSN.
     static var dsn: String? {
-        guard let raw = Bundle.main.object(forInfoDictionaryKey: "SENTRY_DSN") as? String else { return nil }
-        let dsn = raw.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard dsn.hasPrefix("https://"), !dsn.contains("$(") else { return nil }
+        let dsn = rawDSN
+        guard dsn.wholeMatch(of: #/https://[0-9a-f]+@[A-Za-z0-9.\-]+/[0-9]+/#) != nil else { return nil }
         return dsn
     }
 
     static var isEnabled: Bool { dsn != nil }
+
+    /// Shown in Settings → Diagnostics.
+    static var statusText: String {
+        if isEnabled { return "On" }
+        return rawDSN.isEmpty || rawDSN.contains("$(") ? "Off — not set" : "Off — key invalid"
+    }
 
     static func start() {
         guard let dsn else { return }

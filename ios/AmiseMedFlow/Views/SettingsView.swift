@@ -298,8 +298,7 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    LabeledContent("Crash & freeze reporting",
-                                   value: CrashReporting.isEnabled ? "On" : "Off")
+                    LabeledContent("Crash & freeze reporting", value: CrashReporting.statusText)
                     LabeledContent("Audit events waiting to upload", value: "\(AuditLog.pendingCount)")
                     if CrashReporting.isEnabled {
                         Button(testReportSent ? "Test report sent" : "Send test report") {
