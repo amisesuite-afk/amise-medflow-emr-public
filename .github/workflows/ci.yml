@@ -57,6 +57,11 @@ jobs:
       - name: Lint for third-party QR/chart services (token leak, S-4)
         run: pnpm --filter @workspace/scripts run lint:no-external-qr
 
+      # Parses the web (TS) and iOS (Swift) interaction engines and fails if a rule pair,
+      # a term or a class member list exists on one platform only (hazard H-07).
+      - name: Lint drug-interaction parity, web vs iOS (H-07)
+        run: pnpm --filter @workspace/scripts run lint:interaction-parity
+
       - name: Build all packages
         env:
           VITE_SUPABASE_URL: https://placeholder.supabase.co

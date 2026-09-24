@@ -327,6 +327,191 @@ final class DrugInteractionTests: XCTestCase {
             .contains("Absence of an alert does not mean there is no interaction."))
     }
 
+    // MARK: - 5. Rules ported from the web (platform parity)
+
+    private struct PortedRule {
+        let a: String
+        let b: String
+        let severity: DrugInteraction.Severity
+        let effect: String
+        let management: String
+        /// Medication lists that must raise this rule (generics, old INNs, brands).
+        let positives: [[String]]
+    }
+
+    /// Same terms, grade and wording as the web `drug-interactions.ts`
+    /// (web `effect` = `clinicalEffect`, web `action` = `management`).
+    private let portedRules: [PortedRule] = [
+        PortedRule(a: "metronidazole", b: "alcohol", severity: .contraindicated,
+                   effect: "Disulfiram-like reaction (flushing, vomiting)",
+                   management: "Abstain from alcohol during and 48 h after course",
+                   positives: [["Metronidazole 400mg tds", "Alcohol excess"], ["Flagyl 400mg", "Ethanol"]]),
+        PortedRule(a: "ciprofloxacin", b: "theophylline", severity: .major,
+                   effect: "Theophylline toxicity",
+                   management: "Halve theophylline dose; monitor levels",
+                   positives: [["Ciprofloxacin 500mg bd", "Theophylline MR 200mg"], ["Cipro 500mg", "Aminophylline infusion"]]),
+        PortedRule(a: "ciprofloxacin", b: "antacid", severity: .moderate,
+                   effect: "Reduced ciprofloxacin absorption",
+                   management: "Separate doses by ≥2 hours",
+                   positives: [["Ciprofloxacin 500mg", "Gaviscon 10ml qds"], ["Ciproxin 250mg", "Magnesium hydroxide"]]),
+        PortedRule(a: "clindamycin", b: "neuromuscular blocking", severity: .moderate,
+                   effect: "Enhanced neuromuscular blockade",
+                   management: "Monitor for prolonged paralysis",
+                   positives: [["Clindamycin 600mg IV", "Rocuronium 50mg"], ["Dalacin C 300mg", "Suxamethonium 100mg"]]),
+        PortedRule(a: "warfarin", b: "amiodarone", severity: .major,
+                   effect: "Potentiates anticoagulation significantly",
+                   management: "Reduce warfarin by 30–50%; frequent INR",
+                   positives: [["Warfarin 5mg", "Amiodarone 200mg"], ["Coumadin 3mg", "Cordarone X 200mg"]]),
+        PortedRule(a: "digoxin", b: "amiodarone", severity: .major,
+                   effect: "Digoxin toxicity (↑ digoxin levels)",
+                   management: "Halve digoxin dose when adding amiodarone; monitor levels",
+                   positives: [["Digoxin 125mcg", "Amiodarone 200mg"], ["Lanoxin 62.5mcg", "Pacerone 200mg"]]),
+        PortedRule(a: "digoxin", b: "furosemide", severity: .major,
+                   effect: "Hypokalaemia potentiates digoxin toxicity",
+                   management: "Monitor potassium; replace aggressively",
+                   positives: [["Digoxin 125mcg", "Furosemide 40mg"], ["Lanoxin", "Frusemide 40mg"], ["Lanoxin", "Lasix 40mg"]]),
+        PortedRule(a: "ace inhibitor", b: "potassium", severity: .major,
+                   effect: "Hyperkalaemia",
+                   management: "Monitor potassium closely; avoid potassium supplements unless clearly necessary",
+                   positives: [["Ramipril 5mg", "Potassium chloride 600mg"], ["Coversyl 4mg", "Sando-K 2 tabs"],
+                               ["Lisinopril 10mg", "Slow-K 600mg"]]),
+        // Always shown through ace inhibitor + potassium (same effect, earlier rule) on both
+        // platforms, so it has no positive list here; see testLisinoprilPlusPotassium.
+        PortedRule(a: "lisinopril", b: "potassium", severity: .major,
+                   effect: "Hyperkalaemia",
+                   management: "Monitor potassium",
+                   positives: []),
+        PortedRule(a: "amlodipine", b: "simvastatin", severity: .major,
+                   effect: "Increased simvastatin plasma level → myopathy",
+                   management: "Limit simvastatin to 20 mg/day or switch to rosuvastatin",
+                   positives: [["Amlodipine 5mg", "Simvastatin 40mg"], ["Norvasc 10mg", "Zocor 20mg"]]),
+        PortedRule(a: "nsaid", b: "steroid", severity: .major,
+                   effect: "Increased risk of peptic ulceration and GI bleed",
+                   management: "Co-prescribe PPI (omeprazole 20mg od)",
+                   positives: [["Naproxen 500mg bd", "Prednisolone 40mg"], ["Voltarol 50mg", "Dexamethasone 8mg IV"]]),
+        PortedRule(a: "paracetamol", b: "alcohol", severity: .major,
+                   effect: "Hepatotoxicity risk in chronic alcohol use",
+                   management: "Reduce paracetamol to 2g/day max in alcoholic patients",
+                   positives: [["Paracetamol 1g qds", "Alcohol excess"], ["Panadol 500mg", "Ethanol"]]),
+        PortedRule(a: "metformin", b: "alcohol", severity: .moderate,
+                   effect: "Increased lactic acidosis risk",
+                   management: "Advise alcohol reduction",
+                   positives: [["Metformin 500mg bd", "Alcohol"], ["Glucophage 850mg", "Alcohol excess"]]),
+        PortedRule(a: "insulin", b: "beta blocker", severity: .moderate,
+                   effect: "Hypoglycaemia masked; delayed recovery",
+                   management: "Monitor BGL closely; use cardioselective beta-blocker",
+                   positives: [["NovoRapid sliding scale", "Bisoprolol 5mg"], ["Insulin glargine 20 units", "Atenolol 50mg"]]),
+        PortedRule(a: "steroid", b: "insulin", severity: .moderate,
+                   effect: "Corticosteroids raise blood glucose",
+                   management: "Increase insulin monitoring; may need steroid cover protocol",
+                   positives: [["Dexamethasone 8mg IV", "Lantus 20 units"], ["Hydrocortisone 100mg IV", "Actrapid sliding scale"]]),
+        PortedRule(a: "maoi", b: "tramadol", severity: .contraindicated,
+                   effect: "Severe serotonin syndrome",
+                   management: "Contraindicated; do not co-administer",
+                   positives: [["Phenelzine 15mg", "Tramadol 50mg"], ["Nardil 15mg", "Zydol 50mg"],
+                               ["Linezolid 600mg bd", "Tramadol 50mg"]]),
+        PortedRule(a: "maoi", b: "pethidine", severity: .contraindicated,
+                   effect: "Life-threatening serotonin crisis",
+                   management: "Contraindicated; use morphine instead",
+                   positives: [["Selegiline 5mg", "Pethidine 50mg IM"], ["Moclobemide 150mg", "Demerol 50mg"]]),
+        PortedRule(a: "lithium", b: "nsaid", severity: .major,
+                   effect: "Lithium toxicity (NSAIDs reduce renal lithium clearance)",
+                   management: "Avoid NSAIDs; monitor lithium levels",
+                   positives: [["Lithium carbonate 400mg", "Ibuprofen 400mg"], ["Priadel 400mg", "Naproxen 500mg bd"]]),
+        PortedRule(a: "lithium", b: "diuretic", severity: .major,
+                   effect: "Lithium toxicity",
+                   management: "Monitor lithium levels closely; maintain adequate fluid intake",
+                   positives: [["Lithium carbonate 400mg", "Bendroflumethiazide 2.5mg"], ["Priadel", "Frusemide 40mg"]]),
+    ]
+
+    /// The rule with exactly these terms (either order) among every rule shown for `meds`.
+    private func rule(_ meds: [String], _ a: String, _ b: String) -> DrugInteraction? {
+        check(meds).flatMap { allRules($0) }.first { r in
+            (r.drug1Pattern == a && r.drug2Pattern == b) || (r.drug1Pattern == b && r.drug2Pattern == a)
+        }
+    }
+
+    func testPortedRulesAreListedWithTheWebGradeAndWording() {
+        let rules = DrugInteractionService.rules
+        XCTAssertEqual(portedRules.count, 19)
+        for p in portedRules {
+            let hits = rules.enumerated().filter { $0.element.drug1Pattern == p.a && $0.element.drug2Pattern == p.b }
+            XCTAssertEqual(hits.count, 1, "\(p.a) + \(p.b) should be listed once")
+            guard let hit = hits.first else { continue }
+            XCTAssertEqual(hit.element.severity, p.severity, "\(p.a) + \(p.b)")
+            XCTAssertEqual(hit.element.clinicalEffect, p.effect, "\(p.a) + \(p.b)")
+            XCTAssertEqual(hit.element.management, p.management, "\(p.a) + \(p.b)")
+            XCTAssertFalse(hit.element.mechanism.isEmpty, "\(p.a) + \(p.b)")
+            // Appended after the original block, so `legacyTerms` is unchanged.
+            XCTAssertGreaterThanOrEqual(hit.offset, DrugInteractionService.originalRuleCount)
+        }
+    }
+
+    func testPortedRulesFire() {
+        for p in portedRules {
+            for meds in p.positives {
+                guard let r = rule(meds, p.a, p.b) else {
+                    XCTFail("\(p.a) + \(p.b) did not fire for \(meds): got \(check(meds).map { $0.pairDisplay })")
+                    continue
+                }
+                XCTAssertEqual(r.severity, p.severity, "\(meds)")
+                XCTAssertEqual(r.clinicalEffect, p.effect, "\(meds)")
+                XCTAssertEqual(r.management, p.management, "\(meds)")
+                XCTAssertNotNil(rule(Array(meds.reversed()), p.a, p.b), "reversed \(meds)")
+            }
+        }
+    }
+
+    func testLisinoprilPlusPotassium() {
+        // Same pair also hits ace inhibitor + potassium with the same effect; the earlier rule's
+        // wording is the one shown (same merging as the web).
+        guard let alert = find(["Zestril 10mg", "Slow-K 600mg"], "zestril", "slow-k") else {
+            return XCTFail("no alert")
+        }
+        XCTAssertEqual(alert.interaction.severity, .major)
+        XCTAssertEqual(alert.interaction.clinicalEffect, "Hyperkalaemia")
+        XCTAssertEqual(alert.interaction.drug1Pattern, "ace inhibitor")
+        XCTAssertEqual(DrugClasses.match(term: "lisinopril", in: "Zestril 10mg")?.canonical, "lisinopril")
+        XCTAssertNil(DrugClasses.match(term: "lisinopril", in: "Enalapril 10mg"))
+    }
+
+    /// (label, medication list, rule terms that must NOT fire)
+    private let portedFalseMatchCases: [(String, [String], String, String)] = [
+        // "Ethanolamine oleate" (variceal sclerotherapy) is not ethanol.
+        ("ethanolamine + metronidazole", ["Metronidazole 400mg", "Ethanolamine oleate 5% injection"], "metronidazole", "alcohol"),
+        ("ethanolamine + paracetamol", ["Paracetamol 1g", "Ethanolamine oleate 5% injection"], "paracetamol", "alcohol"),
+        ("ethanolamine + metformin", ["Metformin 500mg", "Ethanolamine oleate 5% injection"], "metformin", "alcohol"),
+        ("gliclazide is not metformin", ["Gliclazide 80mg", "Alcohol excess"], "metformin", "alcohol"),
+        // Look-alike / sound-alike names.
+        ("trazodone is not tramadol", ["Phenelzine 15mg", "Trazodone 50mg"], "maoi", "tramadol"),
+        ("amlodipine is not amiodarone (warfarin)", ["Warfarin 5mg", "Amlodipine 5mg"], "warfarin", "amiodarone"),
+        ("amlodipine is not amiodarone (digoxin)", ["Digoxin 125mcg", "Amlodipine 5mg"], "digoxin", "amiodarone"),
+        // Related drugs outside the rule term or class.
+        ("morphine is not pethidine", ["Phenelzine 15mg", "Morphine 10mg"], "maoi", "pethidine"),
+        ("spironolactone is not furosemide", ["Digoxin 125mcg", "Spironolactone 25mg"], "digoxin", "furosemide"),
+        ("amoxicillin is not ciprofloxacin", ["Amoxicillin 500mg", "Theophylline MR 200mg"], "ciprofloxacin", "theophylline"),
+        ("a PPI is not an antacid", ["Ciprofloxacin 500mg", "Omeprazole 20mg"], "ciprofloxacin", "antacid"),
+        ("sugammadex is not a neuromuscular blocker", ["Clindamycin 600mg", "Sugammadex 200mg"], "clindamycin", "neuromuscular blocking"),
+        ("an ARB is not an ACE inhibitor", ["Losartan 50mg", "Slow-K 600mg"], "ace inhibitor", "potassium"),
+        ("rosuvastatin is not simvastatin", ["Amlodipine 5mg", "Rosuvastatin 10mg"], "amlodipine", "simvastatin"),
+        ("inhaled steroid is not systemic", ["Ibuprofen 400mg", "Beclometasone inhaler"], "nsaid", "steroid"),
+        ("nasal steroid is not systemic", ["Naproxen 500mg", "Fluticasone nasal spray"], "nsaid", "steroid"),
+        ("inhaled steroid + insulin", ["Fluticasone inhaler", "Lantus 20 units"], "steroid", "insulin"),
+        ("an alpha-blocker is not a beta-blocker", ["Insulin glargine 20 units", "Tamsulosin 400mcg"], "insulin", "beta blocker"),
+        ("aspirin is not an NSAID (lithium)", ["Lithium carbonate 400mg", "Aspirin 75mg"], "lithium", "nsaid"),
+        ("amlodipine is not a diuretic", ["Lithium carbonate 400mg", "Amlodipine 5mg"], "lithium", "diuretic"),
+    ]
+
+    func testPortedRulesDoNotFalseMatch() {
+        for (label, meds, a, b) in portedFalseMatchCases {
+            XCTAssertNil(rule(meds, a, b), label)
+        }
+        // The recommended alternatives raise nothing at all.
+        XCTAssertEqual(check(["Amlodipine 5mg", "Rosuvastatin 10mg"]).count, 0)
+        XCTAssertEqual(check(["Metronidazole 400mg", "Paracetamol 1g", "Metformin 500mg",
+                              "Ethanolamine oleate 5% injection"]).count, 0)
+    }
+
     // MARK: - 4. Never remove an alert
 
     private struct LegacyAlert {

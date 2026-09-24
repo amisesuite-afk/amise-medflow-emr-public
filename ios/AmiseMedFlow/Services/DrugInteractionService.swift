@@ -14,6 +14,10 @@ import SwiftUI
 // Parity: the dashboard's `artifacts/dashboard/src/lib/drug-interactions.ts` (same vocabulary,
 // same merging, same severity ordering; see `DrugClasses.swift` for two matching details that
 // differ). Each rule keeps its own iOS severity grade; the surgeon reviews grades separately.
+// Every rule pair on either platform is raised on the other (same pair, or a broader class
+// rule); CI checks this with `pnpm --filter @workspace/scripts run lint:interaction-parity`.
+// One grade differs and is pending a surgeon decision: opioid + benzodiazepine (web
+// contraindicated, iOS major).
 
 struct DrugInteraction: Identifiable {
     let id = UUID()
@@ -552,5 +556,133 @@ enum DrugInteractionService {
               mechanism: "NSAIDs blunt prostaglandin-mediated renal vasodilation and antagonise the antihypertensive effect (BNF)",
               clinicalEffect: "Risk of acute kidney injury; reduced antihypertensive effect",
               management: "Avoid in CKD, dehydration or with a diuretic; monitor renal function and potassium"),
+
+        // ── Rules ported from the dashboard's original list (platform parity) ──────────────
+        // Same terms, grade, effect (`clinicalEffect`) and action (`management`) as the web
+        // `drug-interactions.ts`, grouped as on the web. The web has no mechanism field; each
+        // mechanism here is a short BNF / Stockley's / SmPC summary. Every other web-only rule
+        // is already raised here by a broader class rule (e.g. web tramadol + sertraline ⊂
+        // tramadol + ssri). `lint:interaction-parity` (CI) fails if either platform has a rule
+        // pair the other cannot raise. These terms are not in `legacyTerms`, so they match
+        // through their `DrugClasses` members as whole words only.
+
+        // Antibiotics
+        .init(drug1Pattern: "metronidazole", drug2Pattern: "alcohol",
+              severity: .contraindicated,
+              mechanism: "Metronidazole inhibits aldehyde dehydrogenase, so acetaldehyde accumulates after alcohol (BNF; metronidazole SmPC)",
+              clinicalEffect: "Disulfiram-like reaction (flushing, vomiting)",
+              management: "Abstain from alcohol during and 48 h after course"),
+
+        .init(drug1Pattern: "ciprofloxacin", drug2Pattern: "theophylline",
+              severity: .major,
+              mechanism: "Ciprofloxacin inhibits CYP1A2, reducing theophylline clearance (BNF)",
+              clinicalEffect: "Theophylline toxicity",
+              management: "Halve theophylline dose; monitor levels"),
+
+        .init(drug1Pattern: "ciprofloxacin", drug2Pattern: "antacid",
+              severity: .moderate,
+              mechanism: "Aluminium, magnesium and calcium chelate ciprofloxacin in the gut (BNF; ciprofloxacin SmPC)",
+              clinicalEffect: "Reduced ciprofloxacin absorption",
+              management: "Separate doses by ≥2 hours"),
+
+        .init(drug1Pattern: "clindamycin", drug2Pattern: "neuromuscular blocking",
+              severity: .moderate,
+              mechanism: "Clindamycin has intrinsic neuromuscular blocking activity (BNF; clindamycin SmPC)",
+              clinicalEffect: "Enhanced neuromuscular blockade",
+              management: "Monitor for prolonged paralysis"),
+
+        // Anticoagulants / cardiovascular
+        .init(drug1Pattern: "warfarin", drug2Pattern: "amiodarone",
+              severity: .major,
+              mechanism: "Amiodarone inhibits CYP2C9 and CYP3A4, reducing warfarin metabolism; the effect persists for weeks after stopping (BNF)",
+              clinicalEffect: "Potentiates anticoagulation significantly",
+              management: "Reduce warfarin by 30–50%; frequent INR"),
+
+        .init(drug1Pattern: "digoxin", drug2Pattern: "amiodarone",
+              severity: .major,
+              mechanism: "Amiodarone reduces digoxin clearance (P-glycoprotein inhibition) (BNF)",
+              clinicalEffect: "Digoxin toxicity (↑ digoxin levels)",
+              management: "Halve digoxin dose when adding amiodarone; monitor levels"),
+
+        .init(drug1Pattern: "digoxin", drug2Pattern: "furosemide",
+              severity: .major,
+              mechanism: "Loop-diuretic hypokalaemia increases myocardial sensitivity to digoxin (BNF)",
+              clinicalEffect: "Hypokalaemia potentiates digoxin toxicity",
+              management: "Monitor potassium; replace aggressively"),
+
+        .init(drug1Pattern: "ace inhibitor", drug2Pattern: "potassium",
+              severity: .major,
+              mechanism: "ACE inhibitors reduce aldosterone and renal potassium excretion; the supplement adds potassium (BNF)",
+              clinicalEffect: "Hyperkalaemia",
+              management: "Monitor potassium closely; avoid potassium supplements unless clearly necessary"),
+
+        .init(drug1Pattern: "lisinopril", drug2Pattern: "potassium",
+              severity: .major,
+              mechanism: "ACE inhibitors reduce aldosterone and renal potassium excretion; the supplement adds potassium (BNF)",
+              clinicalEffect: "Hyperkalaemia",
+              management: "Monitor potassium"),
+
+        .init(drug1Pattern: "amlodipine", drug2Pattern: "simvastatin",
+              severity: .major,
+              mechanism: "Amlodipine inhibits CYP3A4, raising simvastatin exposure (BNF; simvastatin SmPC)",
+              clinicalEffect: "Increased simvastatin plasma level → myopathy",
+              management: "Limit simvastatin to 20 mg/day or switch to rosuvastatin"),
+
+        // Analgesics / anaesthesia
+        .init(drug1Pattern: "nsaid", drug2Pattern: "steroid",
+              severity: .major,
+              mechanism: "Additive GI mucosal injury: NSAIDs inhibit protective prostaglandins and corticosteroids impair mucosal healing (BNF)",
+              clinicalEffect: "Increased risk of peptic ulceration and GI bleed",
+              management: "Co-prescribe PPI (omeprazole 20mg od)"),
+
+        .init(drug1Pattern: "paracetamol", drug2Pattern: "alcohol",
+              severity: .major,
+              mechanism: "Chronic alcohol use induces CYP2E1 and depletes glutathione, increasing the toxic paracetamol metabolite (NAPQI) (BNF)",
+              clinicalEffect: "Hepatotoxicity risk in chronic alcohol use",
+              management: "Reduce paracetamol to 2g/day max in alcoholic patients"),
+
+        // Endocrine / metabolic
+        .init(drug1Pattern: "metformin", drug2Pattern: "alcohol",
+              severity: .moderate,
+              mechanism: "Alcohol impairs hepatic lactate clearance (BNF; metformin SmPC)",
+              clinicalEffect: "Increased lactic acidosis risk",
+              management: "Advise alcohol reduction"),
+
+        .init(drug1Pattern: "insulin", drug2Pattern: "beta blocker",
+              severity: .moderate,
+              mechanism: "Beta-blockers mask the adrenergic warning signs of hypoglycaemia (tremor, tachycardia) and may delay glucose recovery (BNF)",
+              clinicalEffect: "Hypoglycaemia masked; delayed recovery",
+              management: "Monitor BGL closely; use cardioselective beta-blocker"),
+
+        .init(drug1Pattern: "steroid", drug2Pattern: "insulin",
+              severity: .moderate,
+              mechanism: "Corticosteroids antagonise insulin action and increase hepatic glucose output (BNF)",
+              clinicalEffect: "Corticosteroids raise blood glucose",
+              management: "Increase insulin monitoring; may need steroid cover protocol"),
+
+        // Psychiatric / neurological
+        .init(drug1Pattern: "maoi", drug2Pattern: "tramadol",
+              severity: .contraindicated,
+              mechanism: "Tramadol inhibits serotonin re-uptake; with monoamine-oxidase inhibition the serotonergic effect is additive (BNF; tramadol SmPC)",
+              clinicalEffect: "Severe serotonin syndrome",
+              management: "Contraindicated; do not co-administer"),
+
+        .init(drug1Pattern: "maoi", drug2Pattern: "pethidine",
+              severity: .contraindicated,
+              mechanism: "Pethidine inhibits serotonin re-uptake; with monoamine-oxidase inhibition it causes serotonergic excitation or CNS depression (BNF; pethidine SmPC)",
+              clinicalEffect: "Life-threatening serotonin crisis",
+              management: "Contraindicated; use morphine instead"),
+
+        .init(drug1Pattern: "lithium", drug2Pattern: "nsaid",
+              severity: .major,
+              mechanism: "NSAIDs reduce renal lithium excretion (BNF)",
+              clinicalEffect: "Lithium toxicity (NSAIDs reduce renal lithium clearance)",
+              management: "Avoid NSAIDs; monitor lithium levels"),
+
+        .init(drug1Pattern: "lithium", drug2Pattern: "diuretic",
+              severity: .major,
+              mechanism: "Diuretics (especially thiazides) reduce renal lithium excretion (BNF)",
+              clinicalEffect: "Lithium toxicity",
+              management: "Monitor lithium levels closely; maintain adequate fluid intake"),
     ]
 }

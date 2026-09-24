@@ -322,6 +322,106 @@ describe('false-match guards (iOS parity)', () => {
   });
 });
 
+// ── 3b. Rules ported from iOS (platform parity) ─────────────────────────────
+
+/** The rule with exactly these terms (either order) among every rule shown for `meds`. */
+function ruleFor(meds: string[], a: string, b: string) {
+  return checkInteractions(meds).flatMap(allRules)
+    .find(r => (r.drugs[0] === a && r.drugs[1] === b) || (r.drugs[0] === b && r.drugs[1] === a));
+}
+
+describe('rules ported from iOS — same grade and wording as DrugInteractionService.swift', () => {
+  // [terms, severity, effect, action, positive medication lists (generic + brand)]
+  const PORTED: [[string, string], DrugInteraction['severity'], string, string, string[][]][] = [
+    [['gentamicin', 'vancomycin'], 'major',
+      'Acute kidney injury — additive renal tubular toxicity',
+      'Monitor renal function and drug levels closely; ensure adequate hydration',
+      [['Gentamicin 5mg/kg IV', 'Vancomycin 1g IV bd'], ['Cidomycin 80mg', 'Vancocin 1g']]],
+    [['gentamicin', 'nsaid'], 'moderate',
+      'Increased nephrotoxicity and ototoxicity',
+      'Avoid if possible; monitor renal function and gentamicin levels',
+      [['gentamicin 5mg/kg', 'naproxen 500mg bd'], ['Genticin', 'Voltarol 50mg']]],
+    [['methotrexate', 'ciprofloxacin'], 'major',
+      'Methotrexate toxicity',
+      'Avoid; use alternative antibiotic',
+      [['Methotrexate 15mg weekly', 'Ciprofloxacin 500mg bd'], ['Metoject 15mg', 'Ciproxin 500mg']]],
+    [['methotrexate', 'co-amoxiclav'], 'moderate',
+      'Risk of methotrexate accumulation and toxicity',
+      'Use alternative antibiotic where possible; monitor FBC',
+      [['methotrexate', 'Co-amoxiclav 625mg tds'], ['Maxtrex 2.5mg', 'Augmentin 1.2g IV']]],
+    [['clopidogrel', 'lansoprazole'], 'moderate',
+      'Reduced antiplatelet effect',
+      'Prefer pantoprazole; cardiologist input for dual antiplatelet patients',
+      [['Clopidogrel 75mg od', 'Lansoprazole 30mg od'], ['Plavix 75mg', 'Zoton FasTab 15mg']]],
+  ];
+
+  for (const [[a, b], severity, effect, action, lists] of PORTED) {
+    it(`${a} + ${b} is on the rule list with the iOS grade and wording`, () => {
+      const rule = INTERACTIONS.find(r => r.drugs[0] === a && r.drugs[1] === b);
+      expect(rule).toEqual({ drugs: [a, b], severity, effect, action });
+      // Appended after the original block: the legacy substring set is unchanged.
+      expect(INTERACTIONS.indexOf(rule!)).toBeGreaterThanOrEqual(ORIGINAL_RULE_COUNT);
+    });
+    for (const meds of lists) {
+      it(`${a} + ${b} fires for ${meds.join(' + ')}`, () => {
+        expect(ruleFor(meds, a, b), JSON.stringify(checkInteractions(meds))).toBeDefined();
+        expect(ruleFor([...meds].reverse(), a, b)).toBeDefined();
+      });
+    }
+  }
+
+  it('false-match guards: related drugs that are NOT the rule term do not fire it', () => {
+    // Teicoplanin is a different glycopeptide; the rule names vancomycin only.
+    expect(ruleFor(['Gentamicin 5mg/kg', 'Teicoplanin 400mg'], 'gentamicin', 'vancomycin')).toBeUndefined();
+    // Aspirin is deliberately not in the NSAID class (BNF: antiplatelet).
+    expect(ruleFor(['Gentamicin 5mg/kg', 'Aspirin 75mg'], 'gentamicin', 'nsaid')).toBeUndefined();
+    // Levofloxacin is not ciprofloxacin ("floxacin" is never a substring match).
+    expect(ruleFor(['Methotrexate 15mg weekly', 'Levofloxacin 500mg'], 'methotrexate', 'ciprofloxacin')).toBeUndefined();
+    // "co-am…" diuretic combinations are not co-amoxiclav.
+    expect(ruleFor(['Methotrexate 15mg weekly', 'Co-amilofruse 5/40'], 'methotrexate', 'co-amoxiclav')).toBeUndefined();
+    expect(ruleFor(['Methotrexate 15mg weekly', 'Co-amilozide 2.5/25'], 'methotrexate', 'co-amoxiclav')).toBeUndefined();
+    // Pantoprazole is the recommended alternative: no alert at all.
+    expect(checkInteractions(['Clopidogrel 75mg', 'Pantoprazole 40mg'])).toEqual([]);
+    // Dexlansoprazole is a different product name; "lansoprazole" must match as a whole word.
+    expect(matchTerm('lansoprazole', 'dexlansoprazole 60mg')).toBeNull();
+  });
+
+  it('one entry naming both drugs is never paired with itself', () => {
+    expect(checkInteractions(['Gentamicin + vancomycin cement spacer'])).toEqual([]);
+    expect(checkInteractions(['Gentamicin + vancomycin cement spacer', 'Paracetamol 1g'])).toEqual([]);
+  });
+});
+
+describe('specific-drug synonym lists shared with iOS', () => {
+  const CASES: [string, string, string][] = [
+    ['diclofenac', 'Voltarol 50mg', 'diclofenac'],
+    ['diclofenac', 'Arthrotec 50', 'diclofenac'],
+    ['ketorolac', 'Toradol 10mg', 'ketorolac'],
+    ['enoxaparin', 'Clexane 40mg sc', 'enoxaparin'],
+    ['enoxaparin', 'Inhixa 40mg', 'enoxaparin'],
+    ['venlafaxine', 'Efexor XL 75mg', 'venlafaxine'],
+    ['fentanyl', 'Durogesic 12mcg/h', 'fentanyl'],
+    ['vancomycin', 'Vancocin 125mg qds', 'vancomycin'],
+    ['co-amoxiclav', 'Augmentin 625mg', 'co-amoxiclav'],
+    ['co-amoxiclav', 'amoxicillin-clavulanate 875/125', 'co-amoxiclav'],
+    ['lansoprazole', 'Prevacid 30mg', 'lansoprazole'],
+    ['ondansetron', 'Zofran 4mg', 'ondansetron'],
+  ];
+  for (const [term, entry, canonical] of CASES) {
+    it(`${term} ← ${entry}`, () => {
+      expect(DRUG_TERMS[term]?.kind).toBe('drug');
+      expect(matchTerm(term, entry.toLowerCase())?.canonical).toBe(canonical);
+    });
+  }
+
+  it('the new synonym lists match whole words only', () => {
+    expect(matchTerm('co-amoxiclav', 'amoxicillin 500mg tds')).toBeNull();
+    expect(matchTerm('diclofenac', 'aceclofenac 100mg')).toBeNull();
+    expect(matchTerm('fentanyl', 'alfentanil 500mcg')).toBeNull();
+    expect(matchTerm('fentanyl', 'remifentanil infusion')).toBeNull();
+  });
+});
+
 // ── 4. Never remove an alert ────────────────────────────────────────────────
 
 /** Verbatim copy of the pre-H-07 matcher, run over the original 36 rules. */

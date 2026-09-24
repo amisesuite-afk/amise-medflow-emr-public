@@ -8,9 +8,11 @@
 // names a term that is not mapped, or a class that has no members.
 //
 // Ported from the dashboard's `artifacts/dashboard/src/lib/drug-classes.ts` (same members,
-// brands and citations). The iOS rule list also names nine specific drugs the web list does not
-// (diclofenac, ketorolac, enoxaparin, venlafaxine, fentanyl, vancomycin, co-amoxiclav,
-// lansoprazole, ondansetron); they are appended at the end with their synonyms/brands.
+// brands and citations). The iOS rule list first named nine specific drugs (diclofenac,
+// ketorolac, enoxaparin, venlafaxine, fentanyl, vancomycin, co-amoxiclav, lansoprazole,
+// ondansetron); they are appended at the end with their synonyms/brands, and the web file now
+// carries the same nine. `lint:interaction-parity` (CI) fails if any term's kind or members
+// differ between the two files.
 //
 // Member syntax: "generic|synonym|Brand|Brand". The first name is the canonical generic (used
 // to tell two different drugs of the same class apart); the rest are older/other INN spellings
@@ -742,7 +744,7 @@ enum DrugClasses {
             source: bnf,
             members: [erythromycinNames]),
 
-        // ── iOS-only specific-drug terms (named by the iOS rule list, not by the web list) ──
+        // ── Specific-drug terms first named by the iOS rule list (the web map has the same) ──
 
         "diclofenac": DrugTermDef(
             kind: .drug, label: "diclofenac",

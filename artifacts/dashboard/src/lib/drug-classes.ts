@@ -17,6 +17,10 @@
  * substring-matched only for terms the original 36 rules use; newer terms ("arb") match as
  * whole words only. Both rules match the iOS port (`ios/AmiseMedFlow/Services/DrugClasses.swift`).
  *
+ * Parity: every term here has the same kind and the same members/brands as the iOS map, and
+ * both platforms carry the same rule pairs. `pnpm --filter @workspace/scripts run
+ * lint:interaction-parity` (CI) parses both sources and fails on any drift.
+ *
  * Class membership follows the BNF (British National Formulary, BNF online — drug monographs
  * and "Interactions" appendix) and Stockley's Drug Interactions; brand names from the
  * product SmPCs (UK eMC) / US labels. QT-prolonging membership follows CredibleMeds
@@ -488,6 +492,18 @@ export const DRUG_TERMS: Record<string, DrugTermDef> = {
   methotrexate:  { kind: 'drug', label: 'methotrexate',  source: BNF, members: ['methotrexate|maxtrex|metoject|trexall|otrexup'] },
   clarithromycin:{ kind: 'drug', label: 'clarithromycin',source: BNF, members: [CLARITHROMYCIN] },
   erythromycin:  { kind: 'drug', label: 'erythromycin',  source: BNF, members: [ERYTHROMYCIN] },
+
+  // ── Specific-drug terms first named by the iOS rule list ──
+  // Same members/brands as `DrugClasses.swift`; `lint:interaction-parity` fails if they drift.
+  diclofenac:    { kind: 'drug', label: 'diclofenac',    source: BNF, members: ['diclofenac|voltaren|voltarol|cataflam|arthrotec|dyloject'] },
+  ketorolac:     { kind: 'drug', label: 'ketorolac',     source: BNF, members: ['ketorolac|toradol'] },
+  enoxaparin:    { kind: 'drug', label: 'enoxaparin',    source: BNF, members: ['enoxaparin|clexane|lovenox|inhixa'] },
+  venlafaxine:   { kind: 'drug', label: 'venlafaxine',   source: BNF, members: ['venlafaxine|effexor|efexor'] },
+  fentanyl:      { kind: 'drug', label: 'fentanyl',      source: BNF, members: ['fentanyl|durogesic|actiq|abstral|sublimaze'] },
+  vancomycin:    { kind: 'drug', label: 'vancomycin',    source: BNF, members: ['vancomycin|vancocin'] },
+  'co-amoxiclav':{ kind: 'drug', label: 'co-amoxiclav',  source: BNF, members: ['co-amoxiclav|augmentin|amoxicillin-clavulanate'] },
+  lansoprazole:  { kind: 'drug', label: 'lansoprazole',  source: BNF, members: ['lansoprazole|zoton|prevacid'] },
+  ondansetron:   { kind: 'drug', label: 'ondansetron',   source: BNF, members: ['ondansetron|zofran'] },
 };
 
 // ── Parsing / matching ──────────────────────────────────────────────────────────

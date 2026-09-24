@@ -7,6 +7,10 @@
  * `__tests__/drug-interactions.test.ts` fails if a rule names an unmapped term. Before
  * H-07 the class names were only substring-matched, so "warfarin" + "diclofenac" raised
  * no alert.
+ *
+ * Parity with iOS (`ios/AmiseMedFlow/Services/DrugInteractionService.swift`): every rule pair
+ * on either platform is raised on the other (same pair, or a broader class rule). Checked in
+ * CI by `pnpm --filter @workspace/scripts run lint:interaction-parity`.
  */
 import { matchTerm } from './drug-classes';
 
@@ -105,6 +109,20 @@ export const INTERACTIONS: DrugInteraction[] = [
   { drugs: ['nsaid', 'arb'],               severity: 'moderate',        effect: 'Risk of acute kidney injury; reduced antihypertensive effect', action: 'Avoid in CKD, dehydration or with a diuretic; monitor renal function and potassium' },
   // Methotrexate — BNF: NSAIDs reduce methotrexate excretion (also on the iOS rule list).
   { drugs: ['methotrexate', 'nsaid'],      severity: 'major',           effect: 'Methotrexate toxicity (reduced renal clearance)', action: 'Avoid; if unavoidable, monitor FBC, renal and liver function' },
+
+  // ── Rules ported from the iOS list (platform parity) ──────────────────────────────────
+  // Same terms, grade, effect and action as `DrugInteractionService.swift` (its effect is
+  // `clinicalEffect`, its action `management`). Every other iOS-only rule is already raised here
+  // by a broader class rule (e.g. iOS warfarin + clopidogrel ⊂ anticoagulant + antiplatelet).
+  // `lint:interaction-parity` fails if either platform has a rule pair the other cannot raise.
+  // Aminoglycosides — BNF: additive nephrotoxicity (vancomycin); NSAIDs reduce renal perfusion.
+  { drugs: ['gentamicin', 'vancomycin'],   severity: 'major',           effect: 'Acute kidney injury — additive renal tubular toxicity', action: 'Monitor renal function and drug levels closely; ensure adequate hydration' },
+  { drugs: ['gentamicin', 'nsaid'],        severity: 'moderate',        effect: 'Increased nephrotoxicity and ototoxicity', action: 'Avoid if possible; monitor renal function and gentamicin levels' },
+  // Methotrexate — BNF: ciprofloxacin and penicillins reduce methotrexate excretion.
+  { drugs: ['methotrexate', 'ciprofloxacin'], severity: 'major',        effect: 'Methotrexate toxicity', action: 'Avoid; use alternative antibiotic' },
+  { drugs: ['methotrexate', 'co-amoxiclav'], severity: 'moderate',      effect: 'Risk of methotrexate accumulation and toxicity', action: 'Use alternative antibiotic where possible; monitor FBC' },
+  // Clopidogrel + PPI — CYP2C19 inhibition (see also clopidogrel + omeprazole above).
+  { drugs: ['clopidogrel', 'lansoprazole'], severity: 'moderate',       effect: 'Reduced antiplatelet effect', action: 'Prefer pantoprazole; cardiologist input for dual antiplatelet patients' },
 ];
 
 export interface FoundInteraction {

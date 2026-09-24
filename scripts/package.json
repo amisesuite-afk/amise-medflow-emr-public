@@ -12,6 +12,7 @@
     "lint:patient-instructions": "tsx ./src/lint-patient-instructions.ts",
     "scan:nav-lockout": "tsx ./src/scan-nav-lockout-patterns.ts",
     "lint:no-external-qr": "tsx ./src/lint-no-external-qr.ts",
+    "lint:interaction-parity": "tsx ./src/lint-interaction-parity.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
