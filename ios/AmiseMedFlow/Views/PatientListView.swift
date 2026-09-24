@@ -166,7 +166,13 @@ struct PatientRow: View {
         }
     }
 
+    // Rows are built lazily; a patient deleted meanwhile must not be read (SwiftData crash).
     var body: some View {
+        if patient.isLive { content }
+    }
+
+    @ViewBuilder
+    private var content: some View {
         HStack(spacing: 0) {
             // Left accent stripe (mirrors web border-left)
             Rectangle()

@@ -101,43 +101,64 @@ struct DuplicatePatientsSheet: View {
         return group.filter { $0.id != keep.id && !$0.hasClinicalData }
     }
 
+    /// Plain values read from a patient while it is certainly live. List rows are built
+    /// lazily, possibly after a record in the group has been deleted, so rows, headers and
+    /// footers use these snapshots and never touch the model objects.
+    private struct RowSnapshot: Identifiable {
+        let id: UUID
+        let mrn: String
+        let setting: String
+        let detail: String
+        let summary: String
+        let hasClinicalData: Bool
+        let isKeeper: Bool
+    }
+
     @ViewBuilder
     private func groupSection(_ group: [Patient]) -> some View {
         let keep = keeper(of: group)
         let extra = removable(in: group)
+        let rows = group.map { p in
+            RowSnapshot(id: p.id, mrn: p.mrn ?? "No MRN", setting: p.setting.rawValue,
+                        detail: detailLine(p), summary: p.clinicalDataSummary,
+                        hasClinicalData: p.hasClinicalData, isKeeper: p.id == keep.id)
+        }
+        let title = "\(group[0].fullName) — \(group.count) records"
+        let keepLabel = keep.mrn ?? "first record"
+        let severalWithData = rows.filter(\.hasClinicalData).count > 1
         Section {
-            ForEach(group) { p in
-                row(p, isKeeper: p.id == keep.id)
+            ForEach(rows) { r in
+                row(r)
             }
             if !extra.isEmpty {
                 Button(role: .destructive) {
                     pendingRemoval = extra
                     confirmRemoval = true
                 } label: {
-                    Label("Keep \(keep.mrn ?? "first record"), remove \(extra.count) empty \(extra.count == 1 ? "copy" : "copies")",
+                    Label("Keep \(keepLabel), remove \(extra.count) empty \(extra.count == 1 ? "copy" : "copies")",
                           systemImage: "trash")
                 }
             }
             Button {
-                PatientIdentityStore.markDistinct(group)
+                PatientIdentityStore.markDistinct(group.filter(\.isLive))
             } label: {
                 Label("These are different people", systemImage: "person.2")
             }
         } header: {
-            Text("\(group[0].fullName) — \(group.count) records")
+            Text(title)
         } footer: {
-            if group.filter(\.hasClinicalData).count > 1 {
+            if severalWithData {
                 Text("More than one of these records has clinical data. Open each chart to check; they cannot be removed from here.")
             }
         }
     }
 
-    private func row(_ p: Patient, isKeeper: Bool) -> some View {
+    private func row(_ r: RowSnapshot) -> some View {
         VStack(alignment: .leading, spacing: 3) {
             HStack(spacing: 6) {
-                Text(p.mrn ?? "No MRN")
+                Text(r.mrn)
                     .font(.subheadline.weight(.semibold).monospacedDigit())
-                if isKeeper {
+                if r.isKeeper {
                     Text("KEEP")
                         .font(.system(size: 9, weight: .heavy))
                         .foregroundStyle(AMColor.accent)
@@ -145,16 +166,16 @@ struct DuplicatePatientsSheet: View {
                         .background(AMColor.accentLt, in: RoundedRectangle(cornerRadius: 4))
                 }
                 Spacer()
-                Text(p.setting.rawValue)
+                Text(r.setting)
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
-            Text(detailLine(p))
+            Text(r.detail)
                 .font(.caption)
                 .foregroundStyle(.secondary)
-            Text(p.clinicalDataSummary)
+            Text(r.summary)
                 .font(.caption2.weight(.medium))
-                .foregroundStyle(p.hasClinicalData ? AMColor.accent : .secondary)
+                .foregroundStyle(r.hasClinicalData ? AMColor.accent : .secondary)
         }
         .padding(.vertical, 2)
     }

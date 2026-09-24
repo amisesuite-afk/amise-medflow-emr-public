@@ -207,7 +207,13 @@ struct TriagePatientRow: View {
         patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
     }
 
+    // Rows are built lazily; a patient deleted meanwhile must not be read (SwiftData crash).
     var body: some View {
+        if patient.isLive { liveBody }
+    }
+
+    @ViewBuilder
+    private var liveBody: some View {
         HStack(spacing: 12) {
             ZStack {
                 Circle()

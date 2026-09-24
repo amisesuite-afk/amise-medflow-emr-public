@@ -220,7 +220,13 @@ struct TheatreRow: View {
         }
     }
 
+    // Rows are built lazily; a patient deleted meanwhile must not be read (SwiftData crash).
     var body: some View {
+        if patient.isLive { liveBody }
+    }
+
+    @ViewBuilder
+    private var liveBody: some View {
         HStack(spacing: 0) {
             Rectangle()
                 .fill(Color(hex: "8B5CF6"))

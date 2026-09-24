@@ -59,7 +59,13 @@ struct TodayPatientRow: View {
         }
     }
 
+    // Rows are built lazily; a patient deleted meanwhile must not be read (SwiftData crash).
     var body: some View {
+        if patient.isLive { liveBody }
+    }
+
+    @ViewBuilder
+    private var liveBody: some View {
         HStack(spacing: 10) {
             // Accent stripe
             RoundedRectangle(cornerRadius: 2)
