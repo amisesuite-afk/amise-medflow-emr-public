@@ -73,7 +73,7 @@ enum ConsultPathway: String, CaseIterable, Identifiable {
         case .wardReview:
             return [.ward, .hpi, .exam, .investigations, .diagnosis, .plan]
         case .procedure:
-            return [.risk, .cc, .allergies, .meds, .pmh, .pshx, .investigations, .plan]
+            return [.risk, .cc, .allergies, .meds, .pmh, .pshx, .investigations, .preop, .consent, .plan]
         case .trauma:
             return [.trauma, .allergies, .meds, .pmh, .exam, .investigations, .diagnosis, .plan]
         case .burns:

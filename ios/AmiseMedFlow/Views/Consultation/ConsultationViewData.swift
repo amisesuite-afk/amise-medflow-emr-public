@@ -288,4 +288,6 @@ enum ConsultTab: String, CaseIterable {
     case trauma    = "ATLS"
     case burns     = "Burns"
     case screening = "Screening"
+    case preop     = "Pre-op"
+    case consent   = "Consent"
 }

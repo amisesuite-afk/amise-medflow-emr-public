@@ -75,6 +75,10 @@ final class ConsultPathwayTests: XCTestCase {
         XCTAssertEqual(ConsultPathway.burns.steps.first, .burns)
         XCTAssertEqual(ConsultPathway.wellness.steps.first, .screening)
         XCTAssertEqual(ConsultPathway.wardReview.steps.first, .ward)
+        // Procedure pathway walks through the pre-op checklist and consent before the plan.
+        let proc = ConsultPathway.procedure.steps
+        XCTAssertLessThan(proc.firstIndex(of: .preop)!, proc.firstIndex(of: .consent)!)
+        XCTAssertLessThan(proc.firstIndex(of: .consent)!, proc.firstIndex(of: .plan)!)
     }
 
     // MARK: - Risk snapshot

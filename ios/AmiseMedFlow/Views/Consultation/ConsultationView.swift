@@ -61,6 +61,7 @@ struct ConsultationView: View {
     // Visit pathway ("first door") — orders the steps in the tab bar
     @State var pathway: ConsultPathway = .firstVisit
     @State var showPathwayPicker = false
+    @State var lastVisitShown: Encounter? = nil   // follow-up "Last visit" card → Open
 
     enum ExamMode { case short, full }
 
@@ -133,6 +134,7 @@ struct ConsultationView: View {
             if !embeddedInNav { completenessBar }
             tabBar
             Divider()
+            lastVisitCard
             tabContent
                 .frame(maxHeight: .infinity)
             stepFooter
@@ -256,6 +258,9 @@ struct ConsultationView: View {
 
     private func withSheetsAndAlerts(_ content: some View) -> some View {
         content
+        .sheet(item: $lastVisitShown) { enc in
+            EncounterDetailSheet(encounter: enc)
+        }
         .sheet(isPresented: $showPathwayPicker) {
             VisitPathwaySheet(patient: patient,
                               current: ConsultPathway.from(patient.visitType),

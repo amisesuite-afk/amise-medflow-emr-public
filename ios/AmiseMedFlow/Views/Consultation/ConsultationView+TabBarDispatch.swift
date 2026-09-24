@@ -166,6 +166,8 @@ extension ConsultationView {
         case .trauma:    return patient.traumaDataJson != nil
         case .burns:     return !patient.pathwayData.burns.regionFractions.values.filter { $0 > 0 }.isEmpty
         case .screening: return !patient.pathwayData.wellness.statuses.isEmpty
+        case .preop:     return patient.preOpChecklistDataJson != nil
+        case .consent:   return patient.consentFormDataJson != nil
         }
     }
 
@@ -191,6 +193,38 @@ extension ConsultationView {
         case .trauma:    TraumaAssessmentView(patient: patient)
         case .burns:     BurnsAssessmentView(patient: patient)
         case .screening: WellnessScreeningView(patient: patient)
+        case .preop:     PreOpChecklistView(patient: patient)
+        case .consent:   ConsentFormView(patient: patient)
+        }
+    }
+
+    // MARK: - Follow-up: last visit reference
+
+    /// Shown above the Interval-history step of a follow-up so the previous diagnosis and
+    /// plan are in view while taking the interval history.
+    @ViewBuilder
+    var lastVisitCard: some View {
+        if pathway == .followUp, activeTab == .hpi,
+           let last = patient.encounters.filter(\.isComplete).max(by: { $0.encounterDate < $1.encounterDate }) {
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 6) {
+                    Image(systemName: "clock.arrow.circlepath").foregroundStyle(AMColor.accent)
+                    Text("Last visit \(last.encounterDate.formatted(date: .abbreviated, time: .omitted)) · \(last.visitType.shortLabel)")
+                        .font(.caption.weight(.semibold))
+                    Spacer()
+                    Button("Open") { lastVisitShown = last }
+                        .font(.caption.weight(.semibold))
+                }
+                if let dx = last.workingDiagnosis, !dx.isEmpty {
+                    Text("Dx: \(dx)").font(.caption)
+                }
+                if let plan = last.managementPlan, !plan.isEmpty {
+                    Text("Plan: \(plan)").font(.caption).foregroundStyle(.secondary).lineLimit(3)
+                }
+            }
+            .padding(.horizontal, 14).padding(.vertical, 8)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(AMColor.accentLt.opacity(0.5))
         }
     }
 
