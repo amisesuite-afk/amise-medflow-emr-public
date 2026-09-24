@@ -41,12 +41,18 @@ extension SyncService {
         }
 
         let allLocal = try context.fetch(FetchDescriptor<Patient>())
+        let linked = AppointmentLinks.ids()
 
         for appt in rows {
             guard let name = appt.patient_name, !name.isEmpty else { continue }
-            guard !PatientIdentityStore.isDeleted("appt:\(appt.id)") else { continue }
+            let placeholder = SyncRemoteId.placeholder(forAppointment: appt.id)
+            guard !PatientIdentityStore.isDeleted(placeholder) else { continue }
+            // Its placeholder patient already has a real patients row (pushPendingPatients or the
+            // pull linked it). That patient no longer carries the placeholder, and may have been
+            // renamed or deleted since: never create it again.
+            guard !linked.contains(appt.id) else { continue }
             // One patient per name: match by appointment_id stored in remoteId, or by name.
-            let existing = allLocal.first { $0.remoteId == "appt:\(appt.id)" }
+            let existing = allLocal.first { $0.remoteId == placeholder }
                 ?? allLocal.registeredMatches(name: name, dateOfBirth: nil).first
             guard existing == nil else { continue }
 
@@ -55,7 +61,10 @@ extension SyncService {
             p.phone = appt.patient_phone
             p.email = appt.patient_email
             p.chiefComplaint = appt.reason
-            p.remoteId = "appt:\(appt.id)"  // sentinel so we don't push this back
+            // Placeholder, not a row id (SyncRemoteIds.swift): an untouched booking is not pushed
+            // back. Once it has local work to upload, pushPendingPatients links or inserts the
+            // patients row and replaces this with the real id.
+            p.remoteId = placeholder
             p.pendingSync = false
             p.syncedAt = .now
             context.insert(p)
@@ -63,12 +72,51 @@ extension SyncService {
         try context.save()
     }
 
+    /// The patients row the server already links to a booking (appointment_requests.patient_id,
+    /// written by the web check-in in api-server visit-lifecycle.ts) and that row's MRN, or nil.
+    /// No migration in this repo adds that column, so a deployment without it (42703), a row this
+    /// user cannot read, or any other server error gives nil and the caller links by MRN or
+    /// inserts. Only a transport error is thrown: the push loop stops, as every later request
+    /// would fail too.
+    func serverPatientLink(forAppointment appointmentId: String) async throws
+        -> (id: String, mrn: String?)? {
+        guard SyncRemoteId.isValidUUID(appointmentId) else { return nil }
+        struct BookingRow: Decodable { let patient_id: String? }
+        struct PatientRow: Decodable { let id: String; let mrn: String? }
+        do {
+            let bookings: [BookingRow] = try await SupabaseConfig.client
+                .from("appointment_requests")
+                .select("patient_id")
+                .eq("id", value: appointmentId)
+                .limit(1)
+                .execute()
+                .value
+            guard let patientId = SyncRemoteId.serverId(bookings.first?.patient_id) else { return nil }
+            let patients: [PatientRow] = try await SupabaseConfig.client
+                .from("patients")
+                .select("id, mrn")
+                .eq("id", value: patientId)
+                .limit(1)
+                .execute()
+                .value
+            guard let row = patients.first, SyncRemoteId.serverId(row.id) != nil else { return nil }
+            return (id: row.id, mrn: row.mrn)
+        } catch {
+            if error is URLError || error is CancellationError { throw error }
+            return nil
+        }
+    }
+
     // MARK: - Push edits to existing synced patients
 
     func pushPatientEdits(context: ModelContext) async throws {
         let refused = SyncRefusals.ids(.patient)
+        // Only patients with a server row id. A booking placeholder ("appt:…") is not a row id
+        // (Postgres rejects it as a uuid): pushPendingPatients, earlier in the same sync, replaces
+        // it with the real id first. A malformed id is never sent.
         let dirty = try context.fetch(FetchDescriptor<Patient>())
-            .filter { $0.pendingSync && $0.remoteId != nil && !refused.contains($0.id.uuidString) }
+            .filter { $0.pendingSync && SyncRemoteId.serverId($0.remoteId) != nil
+                      && !refused.contains($0.id.uuidString) }
         guard !dirty.isEmpty else { return }
 
         // Front desk may change only the columns on the Migration 89 allow-list. Leaving the rest
@@ -81,7 +129,7 @@ extension SyncService {
 
         for patient in dirty {
             // The loop awaits the network; a patient deleted meanwhile must not be read.
-            guard patient.isLive, let remoteId = patient.remoteId else { continue }
+            guard patient.isLive, let remoteId = SyncRemoteId.serverId(patient.remoteId) else { continue }
             let localId = patient.id
             let row = PatientUpdateRow(patient, frontDeskOnly: frontDeskOnly, iso: iso)
             // pendingSync is what protects these edits from the pull (PatientPullMerge), so it is

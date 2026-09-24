@@ -35,7 +35,8 @@ extension SyncService {
         for rx in pending {
             // The loop awaits the network; a prescription deleted meanwhile must not be read.
             guard rx.isLive else { continue }
-            guard let patientId = rx.patient?.remoteId else { continue }
+            // UUID guard: never a booking placeholder or malformed id as patient_id.
+            guard let patientId = SyncRemoteId.serverId(rx.patient?.remoteId) else { continue }
             guard let prescriberId = currentUserId else { continue }
             let localId = rx.id
 

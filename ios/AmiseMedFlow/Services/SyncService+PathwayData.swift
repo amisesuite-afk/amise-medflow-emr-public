@@ -23,7 +23,7 @@ extension SyncService {
         // Migration 89) is skipped until the next sign-in and does not stop the others.
         let refused = SyncRefusals.ids(.pathwayData)
         for p in all where p.isLive {
-            guard let rid = p.remoteId, !rid.isEmpty, !rid.hasPrefix("appt:"),
+            guard let rid = SyncRemoteId.serverId(p.remoteId),   // never a placeholder or malformed id
                   !refused.contains(p.id.uuidString),
                   let json = p.pathwayDataJson, json != p.pathwaySyncedJson else { continue }
             let localId = p.id

@@ -21,7 +21,15 @@ extension SyncService {
         for plan in pending {
             // The loop awaits the network; a plan deleted meanwhile must not be read.
             guard plan.isLive else { continue }
-            guard let patientId = plan.patient?.remoteId else { continue }
+            // UUID guard: no placeholder ("appt:…") or malformed id is ever sent, as patient_id or
+            // as the plan's row id (SyncRemoteIds.swift).
+            guard let patientId = SyncRemoteId.serverId(plan.patient?.remoteId) else { continue }
+            let planRemoteId: String?
+            switch SyncRemoteId.kind(plan.remoteId) {
+            case .server(let id):                   planRemoteId = id
+            case .none:                             planRemoteId = nil
+            case .appointmentPlaceholder, .invalid: continue
+            }
             let localId = plan.id
 
             let whoDict: [String: Bool] = [
@@ -82,7 +90,7 @@ extension SyncService {
             // Per-record: one refused or rejected plan stays pending and does not hold back the
             // rest (SyncService+Refusals.swift).
             do {
-                if let remoteId = plan.remoteId {
+                if let remoteId = planRemoteId {
                     // Update existing row
                     confirmed = try await SupabaseConfig.client
                         .from("patient_operative_plans")

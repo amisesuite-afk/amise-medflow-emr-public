@@ -288,7 +288,9 @@ struct DocumentsView: View {
     }
 
     private func uploadToStorage(doc: PatientDocument, data: Data) async {
-        guard let remotePatientId = patient.remoteId else { return }
+        // UUID guard: a booking placeholder ("appt:…") or malformed id is not a patients row, so
+        // it is never used as a storage folder or a patient_id (SyncRemoteIds.swift).
+        guard let remotePatientId = SyncRemoteId.serverId(patient.remoteId) else { return }
         let path = "\(remotePatientId)/\(doc.fileName)"
         do {
             try await SupabaseConfig.client.storage

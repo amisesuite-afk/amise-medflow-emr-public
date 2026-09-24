@@ -272,12 +272,16 @@ extension SyncService {
             if PatientIdentityStore.isDeleted(row.id) { continue }
             // Match the Supabase row; else adopt a local record with the same MRN that has not
             // received its remoteId yet (e.g. its insert reached the server but the app was
-            // closed before the id was saved), instead of creating a second copy.
+            // closed before the id was saved), instead of creating a second copy. A booking
+            // placeholder ("appt:…") counts as no remoteId: it is not a row id.
             let existing = allLocal.first { $0.remoteId == row.id }
                 ?? allLocal.first { p in
-                    p.remoteId == nil && !(p.mrn ?? "").isEmpty && p.mrn == row.mrn &&
-                    p.normalizedName == Patient.normalize(row.full_name)
+                    SyncRemoteId.needsServerRow(p.remoteId) && !(p.mrn ?? "").isEmpty &&
+                    p.mrn == row.mrn && p.normalizedName == Patient.normalize(row.full_name)
                 }
+            // Replacing a placeholder: remember the booking so the appointment pull does not
+            // create the patient again.
+            if let existing { AppointmentLinks.rememberIfPlaceholder(existing.remoteId) }
             let patient = existing ?? {
                 let p = Patient(fullName: row.full_name)
                 context.insert(p)
@@ -314,8 +318,19 @@ extension SyncService {
 
     func pushPendingPatients(context: ModelContext) async throws {
         let refused = SyncRefusals.ids(.patient)
+        // Patients without a server row. A booking placeholder ("appt:…", SyncRemoteIds.swift) is
+        // one: it gets its row once it has local work to upload (its own edits, or a note,
+        // prescription, vitals, billing item or operative plan that needs a patient_id). An
+        // untouched booking stays local, as before.
         let pending = try context.fetch(FetchDescriptor<Patient>())
-            .filter { $0.pendingSync && $0.remoteId == nil && !refused.contains($0.id.uuidString) }
+            .filter { p in
+                guard !refused.contains(p.id.uuidString) else { return false }
+                switch SyncRemoteId.kind(p.remoteId) {
+                case .none:                   return p.pendingSync
+                case .appointmentPlaceholder: return p.pendingSync || p.hasPendingChildRecords
+                case .server, .invalid:       return false
+                }
+            }
         guard !pending.isEmpty else { return }
         var firstError: Error?
 
@@ -323,6 +338,10 @@ extension SyncService {
             // The loop awaits the network; a patient deleted meanwhile must not be read.
             guard patient.isLive else { continue }
             let localId = patient.id
+            let bookingId: String? = {
+                if case .appointmentPlaceholder(let id) = SyncRemoteId.kind(patient.remoteId) { return id }
+                return nil
+            }()
             struct InsertRow: Encodable {
                 let full_name: String
                 let sex: String
@@ -444,6 +463,30 @@ extension SyncService {
             // One patient the server refuses (or rejects) must not hold back the others: errors
             // are handled per patient (SyncService+Refusals.swift). It stays pending either way.
             do {
+                // A booking the web check-in already linked to a patients row: link to that row
+                // rather than inserting a second copy of the same person.
+                if let bookingId, let link = try await serverPatientLink(forAppointment: bookingId) {
+                    guard patient.isLive else { continue }
+                    // remoteId is unique on this device: when another local record already holds
+                    // that row, linking would collide with it. This one keeps its data and stays
+                    // as it is (the duplicate review shows both); nothing is inserted.
+                    let claimed = Set(try context.fetch(FetchDescriptor<Patient>()).compactMap(\.remoteId))
+                    if claimed.contains(link.id) {
+                        CrashReporting.breadcrumb("Sync: booking patient already held by another local record",
+                                                  category: "sync")
+                        continue
+                    }
+                    patient.adoptServerId(link.id)
+                    // The server assigned that row its MRN; the local one was generated on this
+                    // device when the booking was pulled. Take the server's, so the edit push
+                    // below does not overwrite it.
+                    if let mrn = link.mrn, !mrn.isEmpty { patient.mrn = mrn }
+                    // Link only, as for the MRN match below: a patient with local edits stays
+                    // pending and pushPatientEdits sends them; one without (only child records
+                    // to upload) takes the server's values at the next pull.
+                    try context.save()
+                    continue
+                }
                 // Idempotent push: if an earlier insert for this MRN already reached the server
                 // (response lost, app killed before save), adopt that row instead of inserting
                 // again. MRN AND name must both match: MRN counters are per-device, so an MRN
@@ -465,7 +508,7 @@ extension SyncService {
                         // made on this device since, so the patient stays pending: pushPatientEdits
                         // (next in the same sync) sends the local values and clears it once
                         // confirmed.
-                        patient.remoteId = row.id
+                        patient.adoptServerId(row.id)
                         try context.save()
                         continue
                     }
@@ -477,7 +520,7 @@ extension SyncService {
                     .execute()
                     .value
                 if let first = response.first, patient.isLive {
-                    patient.remoteId = first.id
+                    patient.adoptServerId(first.id)
                     // An edit made while the requests ran was not in the insert: stay pending, so
                     // pushPatientEdits (next in the same sync) sends it and the pull never
                     // reverts it.

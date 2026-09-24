@@ -19,11 +19,27 @@ extension SyncService {
         var firstError: Error?
 
         struct NoteResponse: Decodable { let id: String }
+        let tombstoned = SyncTombstones.ids(in: .clinicalNotes)
 
         for note in pending {
             // The loop awaits the network; a note deleted meanwhile must not be read.
             guard note.isLive else { continue }
-            guard let patientRemoteId = note.patient?.remoteId, !note.isEmpty else { continue }
+            // UUID guard: a patient with only a booking placeholder ("appt:…") has no patients
+            // row yet (pushPendingPatients creates it first), and a malformed id is never sent.
+            guard let patientRemoteId = SyncRemoteId.serverId(note.patient?.remoteId),
+                  !note.isEmpty else { continue }
+            // Same guard for the note's own id: update a server row, insert when there is none,
+            // never send anything else. A row deleted on this device is never updated.
+            let noteRemoteId: String?
+            switch SyncRemoteId.kind(note.remoteId) {
+            case .server(let id):
+                guard !tombstoned.contains(id) else { continue }
+                noteRemoteId = id
+            case .none:
+                noteRemoteId = nil
+            case .appointmentPlaceholder, .invalid:
+                continue
+            }
             let localId = note.id
             let signed = note.status == .signed
             let signedAt = signed ? iso.string(from: note.updatedAt) : nil
@@ -35,7 +51,7 @@ extension SyncService {
             // (e.g. inserted by a role that may not write notes) stays pending locally and does
             // not hold back the others.
             do {
-                if let remoteId = note.remoteId {
+                if let remoteId = noteRemoteId {
                     // Edit to a note that is already in the cloud: update it in place. RLS allows the
                     // author or an admin; 0 rows back means not permitted — keep it pending locally
                     // (the pull below will not overwrite it) rather than lose the edit.

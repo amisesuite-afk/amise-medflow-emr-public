@@ -22,7 +22,8 @@ extension SyncService {
         for v in pending {
             // The loop awaits the network; an entry deleted meanwhile must not be read.
             guard v.isLive else { continue }
-            guard let patientId = v.patient?.remoteId else { continue }
+            // UUID guard: never a booking placeholder or malformed id as patient_id.
+            guard let patientId = SyncRemoteId.serverId(v.patient?.remoteId) else { continue }
             let localId = v.id
 
             struct VRow: Encodable {
