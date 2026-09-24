@@ -20,6 +20,7 @@ import {
   type BisapInputs, type ErpRiskInputs,
   type ExtractedLabs, type ScoringVitals,
 } from '@/lib/clinical-scores';
+import { NEWS2_AVPU_LABELS, type News2Avpu } from '@workspace/triage-engine';
 
 // ── Colour tokens ─────────────────────────────────────────────────────────────
 const BADGE: Record<'green' | 'amber' | 'red', React.CSSProperties> = {
@@ -414,16 +415,38 @@ function PepRiskCard() {
 // ═══════════════════════════════════════════════════════════════════════════════
 // NEWS2 PANEL (emergency)
 // ═══════════════════════════════════════════════════════════════════════════════
+// Royal College of Physicians NEWS2 (2017), scored by the shared `evaluateNews2` (via
+// `scoreNews2`). Consciousness and air/oxygen are not part of the saved vitals set, so they
+// are captured here and start as "not recorded": the score is then marked incomplete
+// rather than silently assuming Alert / room air (hazard log H-04). SpO₂ Scale 2 is an
+// explicit clinician opt-in, never inferred from oxygen use. Display only.
+function vitalNum(v: string | undefined): number | undefined {
+  if (!v || !v.trim()) return undefined;
+  const x = Number(v);
+  return Number.isFinite(x) ? x : undefined;
+}
+
+const NEWS2_SELECT: React.CSSProperties = {
+  fontSize: 11, padding: '3px 6px', borderRadius: 5,
+  background: 'var(--btn-bg, #2d3748)', color: 'var(--text, #e2e8f0)',
+  border: '1px solid var(--border, #2d3748)',
+};
+
 function News2Card() {
   const { vitals } = useAppContext();
-  const sv: ScoringVitals = {
-    temperatureC:    vitals.temperatureC    ? +vitals.temperatureC    : undefined,
-    heartRate:       vitals.heartRate       ? +vitals.heartRate       : undefined,
-    respiratoryRate: vitals.respiratoryRate ? +vitals.respiratoryRate : undefined,
-    systolicBp:      vitals.systolicBp      ? +vitals.systolicBp      : undefined,
-    spo2:            vitals.spo2            ? +vitals.spo2            : undefined,
-  };
-  const result = useMemo(() => scoreNews2(sv), [vitals]);
+  const [avpu, setAvpu] = useState<News2Avpu | null>(null);
+  const [onOxygen, setOnOxygen] = useState<boolean | null>(null);
+  const [useScale2, setUseScale2] = useState(false);
+  const result = useMemo(() => {
+    const sv: ScoringVitals = {
+      temperatureC:    vitalNum(vitals.temperatureC),
+      heartRate:       vitalNum(vitals.heartRate),
+      respiratoryRate: vitalNum(vitals.respiratoryRate),
+      systolicBp:      vitalNum(vitals.systolicBp),
+      spo2:            vitalNum(vitals.spo2),
+    };
+    return scoreNews2(sv, { avpu, onOxygen, useSpO2Scale2: useScale2 });
+  }, [vitals, avpu, onOxygen, useScale2]);
 
   return (
     <div style={PANEL}>
@@ -433,6 +456,48 @@ function News2Card() {
         result.colour,
         `${result.clinical_risk.replace('_', '-').toUpperCase()} risk — ${result.response}`,
       )}
+      {result.has_single_parameter_3 && (
+        <div style={{ fontSize: 11, color: '#fca5a5', fontWeight: 700, marginBottom: 4 }}>
+          ⚠ Single parameter scoring 3 — RCP: urgent ward-based response
+        </div>
+      )}
+      {result.incomplete_note && (
+        <div style={{ fontSize: 11, color: '#fde047', fontWeight: 600, marginBottom: 4 }}>
+          ⚠ {result.incomplete_note} — the score may under-estimate risk
+        </div>
+      )}
+      <div style={{ ...ROW, gap: 6, marginBottom: 6, alignItems: 'center' }}>
+        <label style={{ fontSize: 11, color: 'var(--text-muted, #94a3b8)', display: 'flex', gap: 4, alignItems: 'center' }}>
+          ACVPU
+          <select
+            style={NEWS2_SELECT}
+            value={avpu ?? ''}
+            onChange={e => setAvpu(e.target.value ? e.target.value as News2Avpu : null)}
+          >
+            <option value="">Not recorded</option>
+            {(Object.keys(NEWS2_AVPU_LABELS) as News2Avpu[]).map(k => (
+              <option key={k} value={k}>{k} — {NEWS2_AVPU_LABELS[k]}</option>
+            ))}
+          </select>
+        </label>
+        <label style={{ fontSize: 11, color: 'var(--text-muted, #94a3b8)', display: 'flex', gap: 4, alignItems: 'center' }}>
+          Air/O₂
+          <select
+            style={NEWS2_SELECT}
+            value={onOxygen === null ? '' : onOxygen ? 'o2' : 'air'}
+            onChange={e => setOnOxygen(e.target.value === '' ? null : e.target.value === 'o2')}
+          >
+            <option value="">Not recorded</option>
+            <option value="air">Room air</option>
+            <option value="o2">Supplemental O₂ (+2)</option>
+          </select>
+        </label>
+        <Toggle
+          label="SpO₂ Scale 2 (confirmed hypercapnic resp. failure only)"
+          value={useScale2}
+          onChange={setUseScale2}
+        />
+      </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
         {Object.entries(result.breakdown).map(([k, v]) => (
           <span key={k} style={{
@@ -442,6 +507,9 @@ function News2Card() {
             {k}: {v}
           </span>
         ))}
+      </div>
+      <div style={{ marginTop: 6, fontSize: 10, color: '#94a3b8' }}>
+        RCP NEWS2 (2017) · SpO₂ Scale {result.spo2_scale} · decision support only; escalation is a clinical decision
       </div>
     </div>
   );

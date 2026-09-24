@@ -4,6 +4,8 @@
  * Inputs come from vitals (AppContext) + extractedLabs (referral/in-house results).
  */
 
+import { evaluateNews2, type News2Avpu, type News2Band } from '@workspace/triage-engine';
+
 // ── Extracted lab values ──────────────────────────────────────────────────────
 export interface ExtractedLabs {
   wbc?: number | null;            // ×10⁹/L
@@ -529,70 +531,58 @@ export function scorePepRisk(inputs: Partial<ErpRiskInputs>, labs: ExtractedLabs
 // ═══════════════════════════════════════════════════════════════════════════════
 // NEWS2 — NATIONAL EARLY WARNING SCORE 2 (emergency fast-track)
 // ═══════════════════════════════════════════════════════════════════════════════
-export interface News2Result {
-  score: number;
-  clinical_risk: 'low' | 'low_medium' | 'medium' | 'high';
-  response: string;
-  colour: 'green' | 'amber' | 'red';
-  breakdown: Record<string, number>;
+// Royal College of Physicians, NEWS2, December 2017. Thin adapter over the ONE shared
+// implementation in `@workspace/triage-engine` (`evaluateNews2`, parity with iOS
+// NEWS2Chart.swift). The previous local copy omitted consciousness (ACVPU, 3 points) and
+// supplemental oxygen (2 points) and skipped SpO₂ entirely on Scale 2 — hazard log H-04.
+export interface News2Options {
+  /** ACVPU. Not recorded (null/undefined) → 0 points and listed as missing. */
+  avpu?: News2Avpu | null;
+  /** Supplemental oxygen. Not recorded (null/undefined) → 0 points and listed as missing. */
+  onOxygen?: boolean | null;
+  /** SpO₂ Scale 2 — explicit clinician opt-in only (confirmed hypercapnic respiratory failure). */
+  useSpO2Scale2?: boolean;
 }
 
-export function scoreNews2(vitals: ScoringVitals, spo2Scale2 = false): News2Result {
-  const breakdown: Record<string, number> = {};
-  let total = 0;
+export interface News2Result {
+  score: number;
+  clinical_risk: News2Band;
+  response: string;
+  monitoring: string;
+  colour: 'green' | 'amber' | 'red';
+  breakdown: Record<string, number>;
+  has_single_parameter_3: boolean;
+  missing_inputs: string[];
+  complete: boolean;
+  /** "incomplete: RR, SpO₂ not recorded", or null when complete. */
+  incomplete_note: string | null;
+  summary: string;
+  spo2_scale: 1 | 2;
+}
 
-  // Respiratory rate
-  const rr = n(vitals.respiratoryRate);
-  if (rr !== null) {
-    const s = rr <= 8 ? 3 : rr <= 11 ? 1 : rr <= 20 ? 0 : rr <= 24 ? 2 : 3;
-    breakdown['RR'] = s; total += s;
-  }
-
-  // SpO2 (Scale 1 — no hypercapnic resp failure)
-  const spo2 = n(vitals.spo2);
-  if (spo2 !== null && !spo2Scale2) {
-    const s = spo2 <= 91 ? 3 : spo2 <= 93 ? 2 : spo2 <= 95 ? 1 : 0;
-    breakdown['SpO₂'] = s; total += s;
-  }
-
-  // Systolic BP
-  const sbp = n(vitals.systolicBp);
-  if (sbp !== null) {
-    const s = sbp <= 90 ? 3 : sbp <= 100 ? 2 : sbp <= 110 ? 1 : sbp <= 219 ? 0 : 3;
-    breakdown['SBP'] = s; total += s;
-  }
-
-  // Pulse
-  const hr = n(vitals.heartRate);
-  if (hr !== null) {
-    const s = hr <= 40 ? 3 : hr <= 50 ? 1 : hr <= 90 ? 0 : hr <= 110 ? 1 : hr <= 130 ? 2 : 3;
-    breakdown['HR'] = s; total += s;
-  }
-
-  // Temperature
-  const temp = n(vitals.temperatureC);
-  if (temp !== null) {
-    const s = temp <= 35.0 ? 3 : temp <= 36.0 ? 1 : temp <= 38.0 ? 0 : temp <= 39.0 ? 1 : 2;
-    breakdown['Temp'] = s; total += s;
-  }
-
-  let clinical_risk: News2Result['clinical_risk'];
-  let response: string;
-  let colour: 'green' | 'amber' | 'red';
-
-  if (total <= 4 && !Object.values(breakdown).some(v => v === 3)) {
-    clinical_risk = 'low'; colour = 'green';
-    response = 'Minimum 12-hourly observations.';
-  } else if (total <= 4) {
-    clinical_risk = 'low_medium'; colour = 'amber';
-    response = 'Inform nurse. Increase frequency of monitoring.';
-  } else if (total <= 6) {
-    clinical_risk = 'medium'; colour = 'amber';
-    response = 'Urgent review by clinician. Increase monitoring.';
-  } else {
-    clinical_risk = 'high'; colour = 'red';
-    response = 'Emergency review immediately. Consider critical care.';
-  }
-
-  return { score: total, clinical_risk, response, colour, breakdown };
+export function scoreNews2(vitals: ScoringVitals, opts: News2Options = {}): News2Result {
+  const r = evaluateNews2({
+    respiratoryRate: n(vitals.respiratoryRate),
+    spo2: n(vitals.spo2),
+    onOxygen: opts.onOxygen ?? null,
+    useSpO2Scale2: opts.useSpO2Scale2 === true,
+    systolicBP: n(vitals.systolicBp),
+    heartRate: n(vitals.heartRate),
+    temperatureCelsius: n(vitals.temperatureC),
+    avpu: opts.avpu ?? null,
+  });
+  return {
+    score: r.total,
+    clinical_risk: r.band,
+    response: `${r.clinicalResponse}. ${r.monitoringFrequency} observations.`,
+    monitoring: r.monitoringFrequency,
+    colour: r.colour,
+    breakdown: r.breakdown,
+    has_single_parameter_3: r.hasSingleParameterScore3,
+    missing_inputs: r.missingParameters,
+    complete: r.isComplete,
+    incomplete_note: r.incompleteNote,
+    summary: r.summary,
+    spo2_scale: r.spo2Scale,
+  };
 }

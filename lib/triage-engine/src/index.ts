@@ -8,3 +8,4 @@ export * from './formulary';
 export * from './condition-codes';
 export * from './pathways';
 export * from './pathway-matcher';
+export * from './news2';

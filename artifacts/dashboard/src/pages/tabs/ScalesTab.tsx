@@ -10,7 +10,7 @@ import {
   tg18CholangitisGrade, interpretTg18Cholangitis, type Tg18CholangitisInputs,
   asgeCbdProbability,   interpretAsgeCbd,          type AsgeCbdInputs,
   interpretWagner, WAGNER_GRADES, type WagnerGrade,
-  news2Score, interpretNews2, type News2Inputs,
+  evaluateNews2Inputs, interpretNews2, type News2Inputs,
   curb65Score, interpretCurb65, type Curb65Inputs,
   glasgowBlatchfordScore, interpretGlasgowBlatchford, type GlasgowBlatchfordInputs,
   preRockallScore, interpretPreRockall, type PreRockallInputs,
@@ -129,20 +129,25 @@ function ScoreRow({ label, value }: { label: string; value: string | number }) {
 
 // ── Scale card components ─────────────────────────────────────────────────────
 
+// RCP NEWS2 (2017) via the shared `evaluateNews2`. Vitals not yet charted start EMPTY and are
+// reported as "not recorded" — they used to be pre-filled with normal values (RR 15, SpO₂ 98…),
+// which scored an unmeasured parameter as reassuringly normal (hazard log H-04).
 function News2Card() {
   const ctx = useAppContext();
   const [v, setV] = useState<News2Inputs>(() => ({
-    respiratoryRate: _vn(ctx, 'respiratoryRate') ?? 15,
-    spo2:            _vn(ctx, 'spo2')            ?? 98,
+    respiratoryRate: _vn(ctx, 'respiratoryRate'),
+    spo2:            _vn(ctx, 'spo2'),
     supplementalO2:  false,
-    systolicBp:      _vn(ctx, 'systolicBp')      ?? 120,
-    heartRate:       _vn(ctx, 'heartRate')        ?? 75,
+    useSpO2Scale2:   false,
+    systolicBp:      _vn(ctx, 'systolicBp'),
+    heartRate:       _vn(ctx, 'heartRate'),
     consciousnessAvpu: 'A' as const,
-    temperatureC:    _vn(ctx, 'temperatureC')     ?? 37.0,
+    temperatureC:    _vn(ctx, 'temperatureC'),
   }));
   const prePop = !!(ctx.vitals.respiratoryRate || ctx.vitals.spo2 || ctx.vitals.systolicBp || ctx.vitals.heartRate || ctx.vitals.temperatureC);
-  const score = news2Score(v);
-  const result = interpretNews2(score);
+  const evaluation = evaluateNews2Inputs(v);
+  const score = evaluation.total;
+  const result = interpretNews2(evaluation);
   const num = (k: keyof News2Inputs) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setV(p => ({ ...p, [k]: e.target.value ? parseFloat(e.target.value) : null }));
   const gridStyle: React.CSSProperties = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 };
@@ -167,8 +172,23 @@ function News2Card() {
           </select>
         </label>
       </div>
-      <Chk label="On supplemental O₂" checked={v.supplementalO2} onChange={() => setV(p => ({ ...p, supplementalO2: !p.supplementalO2 }))} />
+      <Chk label="On supplemental O₂" checked={v.supplementalO2} onChange={() => setV(p => ({ ...p, supplementalO2: !p.supplementalO2 }))} pts={2} />
+      <Chk
+        label="Use SpO₂ Scale 2 — ONLY for confirmed hypercapnic respiratory failure, on a clinician's decision (oxygen alone does not switch the scale)"
+        checked={v.useSpO2Scale2 === true}
+        onChange={() => setV(p => ({ ...p, useSpO2Scale2: !p.useSpO2Scale2 }))}
+      />
       <ScoreRow label="NEWS2 Score" value={score} />
+      {evaluation.hasSingleParameterScore3 && (
+        <div style={{ marginTop: 6, fontSize: 12, fontWeight: 700, color: '#b91c1c' }}>
+          ⚠ Single parameter scoring 3 — RCP: urgent ward-based response
+        </div>
+      )}
+      {evaluation.incompleteNote && (
+        <div style={{ marginTop: 6, fontSize: 12, fontWeight: 600, color: '#92400e' }}>
+          ⚠ {evaluation.incompleteNote} — the score may under-estimate risk
+        </div>
+      )}
       <ResultBadge result={result} />
     </div>
   );

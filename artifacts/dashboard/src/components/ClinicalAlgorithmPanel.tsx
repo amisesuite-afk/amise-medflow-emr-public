@@ -1,6 +1,10 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { useAppContext } from '@/context/AppContext';
+import {
+  evaluateNews2, NEWS2_AVPU_LABELS, NEWS2_PARAMETER_LABELS,
+  type News2Avpu, type News2Band,
+} from '@workspace/triage-engine';
 
 // ── Shared helpers ────────────────────────────────────────────────────────────
 
@@ -681,80 +685,78 @@ function QsofaCalc() {
 // ══════════════════════════════════════════════════════════════════════════════
 // NEWS2 — National Early Warning Score 2
 // ══════════════════════════════════════════════════════════════════════════════
+// Royal College of Physicians NEWS2 (2017), scored by the ONE shared implementation
+// (`evaluateNews2`, @workspace/triage-engine — parity with iOS NEWS2Chart.swift). The
+// previous local copy banded 1–4 as "low-medium" and any single 3 as "medium", which
+// disagreed with RCP Chart 3 and with the other two dashboard NEWS2 panels (H-04).
 
-function news2RR(v: number) { return v <= 8 ? 3 : v <= 11 ? 1 : v <= 20 ? 0 : v <= 24 ? 2 : 3; }
-function news2SpO2(v: number) { return v <= 91 ? 3 : v <= 93 ? 2 : v <= 95 ? 1 : 0; }
-function news2SBP(v: number) { return v <= 90 ? 3 : v <= 100 ? 2 : v <= 110 ? 1 : v <= 219 ? 0 : 3; }
-function news2HR(v: number) { return v <= 40 ? 3 : v <= 50 ? 1 : v <= 90 ? 0 : v <= 110 ? 1 : v <= 130 ? 2 : 3; }
-function news2Temp(v: number) { return v <= 35.0 ? 3 : v <= 36.0 ? 1 : v <= 38.0 ? 0 : v <= 39.0 ? 1 : 2; }
+const NEWS2_BADGE: Record<News2Band, { label: string; bg: string; color: string; border: string }> = {
+  high:       { label: 'HIGH — urgent or emergency response',               bg: '#fef2f2', color: '#991b1b', border: '#fca5a5' },
+  medium:     { label: 'MEDIUM — key threshold for urgent response',        bg: '#fff7ed', color: '#9a3412', border: '#fdba74' },
+  low_medium: { label: 'LOW-MEDIUM — single parameter 3: urgent ward-based response', bg: '#fffbeb', color: '#92400e', border: '#fcd34d' },
+  low:        { label: 'LOW — ward-based response',                          bg: '#f0fdf4', color: '#166534', border: '#86efac' },
+};
+
+const NEWS2_DETAIL: Record<News2Band, string> = {
+  high: 'Inform the medical team immediately (at least specialist registrar level). Emergency assessment by a team with critical-care competencies; consider level 2/3 care.',
+  medium: 'Inform the medical team immediately. Urgent assessment by a clinician with core competencies in acute illness.',
+  low_medium: 'Inform the medical team, who will review and decide whether escalation of care is necessary.',
+  low: 'Registered nurse to assess; decide whether monitoring frequency and/or escalation should increase.',
+};
 
 function NEWS2Calc() {
   const [rr,      setRr]      = useState('');
   const [spo2,    setSpo2]    = useState('');
   const [onO2,    setOnO2]    = useState(false);
+  const [scale2,  setScale2]  = useState(false);
   const [sbp,     setSbp]     = useState('');
   const [hr,      setHr]      = useState('');
   const [temp,    setTemp]    = useState('');
-  const [cvpu,    setCvpu]    = useState(false);
+  const [avpu,    setAvpu]    = useState<News2Avpu>('A');
 
-  const rrV   = parseFloat(rr);
-  const spo2V = parseFloat(spo2);
-  const sbpV  = parseFloat(sbp);
-  const hrV   = parseFloat(hr);
-  const tempV = parseFloat(temp);
-
-  const scores = {
-    rr:   !isNaN(rrV)   ? news2RR(rrV)     : null,
-    spo2: !isNaN(spo2V) ? news2SpO2(spo2V) : null,
-    o2:   onO2 ? 2 : 0,
-    sbp:  !isNaN(sbpV)  ? news2SBP(sbpV)   : null,
-    hr:   !isNaN(hrV)   ? news2HR(hrV)      : null,
-    temp: !isNaN(tempV) ? news2Temp(tempV)  : null,
-    cons: cvpu ? 3 : 0,
+  const parse = (s: string): number | null => {
+    const v = parseFloat(s);
+    return Number.isFinite(v) ? v : null;
   };
 
-  const filledScores = Object.values(scores).filter(s => s !== null) as number[];
-  const total = filledScores.reduce((a, b) => a + b, 0);
-  const hasAny3 = filledScores.some(s => s === 3);
-  const anyFilled = filledScores.length > 0;
+  const r = evaluateNews2({
+    respiratoryRate: parse(rr),
+    spo2: parse(spo2),
+    onOxygen: onO2,
+    useSpO2Scale2: scale2,
+    systolicBP: parse(sbp),
+    heartRate: parse(hr),
+    temperatureCelsius: parse(temp),
+    avpu,
+  });
 
-  const risk = anyFilled
-    ? (total >= 7 || (hasAny3 && total >= 5)) ? 'high'
-    : (total >= 5 || hasAny3) ? 'medium'
-    : total >= 1 ? 'low-medium'
-    : 'low'
-    : null;
-
-  const badge = risk === 'high'
-    ? { label: 'HIGH RISK — emergency assessment', bg: '#fef2f2', color: '#991b1b', border: '#fca5a5' }
-    : risk === 'medium'
-    ? { label: 'MEDIUM — urgent review within 30 min', bg: '#fffbeb', color: '#92400e', border: '#fcd34d' }
-    : risk === 'low-medium'
-    ? { label: 'LOW-MEDIUM — reassess 4–6 hourly', bg: '#eff6ff', color: '#1e40af', border: '#bfdbfe' }
-    : { label: 'LOW — minimum monitoring (12 hourly)', bg: '#f0fdf4', color: '#166534', border: '#86efac' };
+  const L = NEWS2_PARAMETER_LABELS;
+  const pts = (label: string) => (label in r.breakdown ? `+${r.breakdown[label]}` : '');
+  const anyFilled = [rr, spo2, sbp, hr, temp].some(s => parse(s) !== null) || onO2 || avpu !== 'A';
+  const badge = NEWS2_BADGE[r.band];
 
   const PARAMS: { label: string; value: string; unit: string; onChange: (v: string) => void; hint: string }[] = [
-    { label: 'Respiratory Rate', value: rr,   unit: '/min', onChange: setRr,   hint: scores.rr !== null ? `+${scores.rr}` : '' },
-    { label: 'SpO₂',            value: spo2,  unit: '%',    onChange: setSpo2, hint: scores.spo2 !== null ? `+${scores.spo2}` : '' },
-    { label: 'Systolic BP',     value: sbp,   unit: 'mmHg', onChange: setSbp,  hint: scores.sbp !== null ? `+${scores.sbp}` : '' },
-    { label: 'Heart Rate',      value: hr,    unit: 'bpm',  onChange: setHr,   hint: scores.hr !== null ? `+${scores.hr}` : '' },
-    { label: 'Temperature',     value: temp,  unit: '°C',   onChange: setTemp, hint: scores.temp !== null ? `+${scores.temp}` : '' },
+    { label: 'Respiratory Rate', value: rr,   unit: '/min', onChange: setRr,   hint: pts(L.respiration) },
+    { label: 'SpO₂',            value: spo2,  unit: '%',    onChange: setSpo2, hint: pts(L.spo2) },
+    { label: 'Systolic BP',     value: sbp,   unit: 'mmHg', onChange: setSbp,  hint: pts(L.systolicBP) },
+    { label: 'Heart Rate',      value: hr,    unit: 'bpm',  onChange: setHr,   hint: pts(L.heartRate) },
+    { label: 'Temperature',     value: temp,  unit: '°C',   onChange: setTemp, hint: pts(L.temperature) },
   ];
 
   return (
     <div>
       <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 14 }}>
-        <strong>NEWS2 (Royal College of Physicians 2017)</strong> — aggregate score: Low=0, Low-Med=1–4,
-        Medium=5–6 or any single 3, High≥7. Any single parameter score of 3 alone warrants urgent review.
+        <strong>NEWS2 (Royal College of Physicians 2017)</strong> — Low 0–4; Low-medium = a score of 3 in
+        any single parameter (urgent ward-based response); Medium 5–6; High ≥7.
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(185px, 1fr))', gap: 10, marginBottom: 14 }}>
         {PARAMS.map(p => <Num key={p.label} {...p} />)}
       </div>
 
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
         <label style={{
-          display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', flex: 1,
+          display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', flex: 1, minWidth: 180,
           padding: '7px 11px', borderRadius: 7, fontSize: 12,
           background: onO2 ? '#fef9c312' : '#f9fafb',
           border: `1px solid ${onO2 ? '#fcd34d' : '#e5e7eb'}`,
@@ -765,25 +767,37 @@ function NEWS2Calc() {
           Supplemental O₂ (+2)
         </label>
         <label style={{
-          display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', flex: 1,
+          display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 180,
           padding: '7px 11px', borderRadius: 7, fontSize: 12,
-          background: cvpu ? '#fef2f212' : '#f9fafb',
-          border: `1px solid ${cvpu ? '#fca5a5' : '#e5e7eb'}`,
-          color: cvpu ? '#dc2626' : '#374151', fontWeight: cvpu ? 600 : 400,
+          background: avpu !== 'A' ? '#fef2f212' : '#f9fafb',
+          border: `1px solid ${avpu !== 'A' ? '#fca5a5' : '#e5e7eb'}`,
+          color: avpu !== 'A' ? '#dc2626' : '#374151', fontWeight: avpu !== 'A' ? 600 : 400,
         }}>
-          <input type="checkbox" checked={cvpu} onChange={e => setCvpu(e.target.checked)}
-            style={{ accentColor: '#dc2626', flexShrink: 0 }} />
-          New confusion / CVPU (+3)
+          ACVPU
+          <select value={avpu} onChange={e => setAvpu(e.target.value as News2Avpu)}
+            style={{ fontSize: 12, flex: 1 }}>
+            {(Object.keys(NEWS2_AVPU_LABELS) as News2Avpu[]).map(k => (
+              <option key={k} value={k}>{k} — {NEWS2_AVPU_LABELS[k]}{k === 'A' ? '' : ' (+3)'}</option>
+            ))}
+          </select>
         </label>
       </div>
+      <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', marginBottom: 16, fontSize: 11, color: '#6b7280' }}>
+        <input type="checkbox" checked={scale2} onChange={e => setScale2(e.target.checked)} style={{ flexShrink: 0 }} />
+        Use SpO₂ Scale 2 — ONLY for confirmed hypercapnic respiratory failure, on a clinician's decision
+        (being on oxygen does not switch the scale)
+      </label>
 
-      {anyFilled && badge ? (
-        <ScoreBadge score={total} max={20} {...badge}
-          detail={risk === 'high'
-            ? 'Continuous monitoring. Emergency assessment by competent clinician. Consider HDU/ICU.'
-            : risk === 'medium'
-            ? 'Urgent review by clinician competent in acute illness. Consider critical care liaison.'
-            : 'Increase frequency of monitoring. Inform nurse in charge.'} />
+      {anyFilled ? (
+        <>
+          <ScoreBadge score={r.total} max={20} {...badge}
+            detail={`${NEWS2_DETAIL[r.band]} ${r.monitoringFrequency} observations.`} />
+          {r.incompleteNote && (
+            <div style={{ marginTop: 8, fontSize: 12, fontWeight: 600, color: '#92400e' }}>
+              ⚠ {r.incompleteNote} — the score may under-estimate risk
+            </div>
+          )}
+        </>
       ) : (
         <div style={{ padding: '12px 16px', borderRadius: 10, background: '#f9fafb', border: '2px solid #e5e7eb', color: '#6b7280', fontSize: 13 }}>
           Enter vital signs to calculate NEWS2 score
