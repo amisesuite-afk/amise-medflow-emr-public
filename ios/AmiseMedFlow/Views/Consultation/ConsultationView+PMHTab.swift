@@ -222,6 +222,7 @@ extension ConsultationView {
                 .onDelete { idxSet in
                     for i in idxSet {
                         AuditLog.record("delete", "prescription", patient: patient, resourceId: sortedRx[i].syncCode)
+                        SyncTombstones.add(sortedRx[i].remoteId, in: .prescriptions)
                         context.delete(sortedRx[i])
                     }
                     touch()

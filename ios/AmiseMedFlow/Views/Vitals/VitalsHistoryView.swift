@@ -58,6 +58,8 @@ struct VitalsHistoryView: View {
                         VitalsRow(entry: entry)
                             .swipeActions(edge: .trailing) {
                                 Button(role: .destructive) {
+                                    SyncTombstones.add(entry.remoteId, in: .vitals)
+                                    AuditLog.record("delete", "vitals", patient: patient, resourceId: entry.remoteId ?? entry.syncCode)
                                     context.delete(entry)
                                 } label: {
                                     Label("Delete", systemImage: "trash")

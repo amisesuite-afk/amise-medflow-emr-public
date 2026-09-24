@@ -177,6 +177,8 @@ struct NoteListView: View {
     }
 
     private func delete(_ note: ClinicalNote) {
+        AuditLog.record("delete", "clinical_note", patient: patient, resourceId: note.remoteId ?? note.syncCode)
+        SyncTombstones.add(note.remoteId, in: .clinicalNotes)
         context.delete(note)
     }
 }

@@ -231,7 +231,10 @@ struct DocumentsView: View {
                                 onSummarise: { Task { await summarise(doc) } })
                 }
                 .onDelete { indexSet in
-                    indexSet.forEach { context.delete(docs[$0]) }
+                    indexSet.forEach {
+                        SyncTombstones.add(docs[$0].remoteId, in: .documents)
+                        context.delete(docs[$0])
+                    }
                 }
             }
         }

@@ -95,7 +95,9 @@ extension SyncService {
         let allPatients = try context.fetch(FetchDescriptor<Patient>())
         let iso = ISO8601DateFormatter()
 
+        let deletedVitals = SyncTombstones.ids(in: .vitals)
         for row in rows {
+            guard !deletedVitals.contains(row.id) else { continue }   // deleted on this device
             guard allLocal.first(where: { $0.remoteId == row.id }) == nil else { continue }
             guard let patient = allPatients.first(where: { $0.remoteId == row.patient_id }) else { continue }
 

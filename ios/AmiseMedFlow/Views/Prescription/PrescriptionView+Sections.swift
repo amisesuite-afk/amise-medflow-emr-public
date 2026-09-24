@@ -262,6 +262,7 @@ extension PrescriptionView {
                     let sorted = patient.prescriptions.sorted { $0.prescribedAt > $1.prescribedAt }
                     indexSet.forEach {
                         AuditLog.record("delete", "prescription", patient: patient, resourceId: sorted[$0].syncCode)
+                        SyncTombstones.add(sorted[$0].remoteId, in: .prescriptions)
                         context.delete(sorted[$0])
                     }
                     patient.updatedAt = .now

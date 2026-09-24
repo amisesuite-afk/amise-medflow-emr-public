@@ -11,11 +11,50 @@ extension SyncService {
 
     func pushPendingNotes(context: ModelContext) async throws {
         let pending = try context.fetch(FetchDescriptor<ClinicalNote>())
-            .filter { $0.pendingSync && $0.remoteId == nil }
+            .filter { $0.pendingSync }
         guard !pending.isEmpty else { return }
+        let userId = SupabaseConfig.client.auth.currentUser?.id.uuidString
+        let iso = ISO8601DateFormatter()
+
+        struct NoteResponse: Decodable { let id: String }
 
         for note in pending {
             guard let patientRemoteId = note.patient?.remoteId, !note.isEmpty else { continue }
+            let signed = note.status == .signed
+            let signedAt = signed ? iso.string(from: note.updatedAt) : nil
+
+            if let remoteId = note.remoteId {
+                // Edit to a note that is already in the cloud: update it in place. RLS allows the
+                // author or an admin; 0 rows back means not permitted — keep it pending locally
+                // (the pull below will not overwrite it) rather than lose the edit.
+                struct NoteUpdate: Encodable {
+                    let note_type: String
+                    let status: String
+                    let content: String
+                    let updated_by: String?
+                    let updated_at: String
+                    let signed_by: String?
+                    let signed_at: String?
+                }
+                let row = NoteUpdate(note_type: note.noteType.rawValue, status: note.status.rawValue,
+                                     content: note.contentForSync, updated_by: userId,
+                                     updated_at: iso.string(from: note.updatedAt),
+                                     signed_by: signed ? userId : nil, signed_at: signedAt)
+                let updated: [NoteResponse] = try await SupabaseConfig.client
+                    .from("clinical_notes")
+                    .update(row)
+                    .eq("id", value: remoteId)
+                    .select("id")
+                    .execute()
+                    .value
+                guard note.isLive else { continue }
+                if !updated.isEmpty {
+                    note.pendingSync = false
+                    note.syncedAt = .now
+                    try? context.save()
+                }
+                continue
+            }
 
             struct NoteRow: Encodable {
                 let patient_id: String
@@ -23,25 +62,32 @@ extension SyncService {
                 let status: String
                 let content: String
                 let ai_assisted: Bool
+                let created_by: String?     // lets the author edit it later (RLS)
+                let signed_by: String?
+                let signed_at: String?
             }
             let row = NoteRow(
                 patient_id: patientRemoteId,
                 note_type: note.noteType.rawValue,
                 status: note.status.rawValue,
                 content: note.contentForSync,
-                ai_assisted: note.isAIAssisted
+                ai_assisted: note.isAIAssisted,
+                created_by: userId,
+                signed_by: signed ? userId : nil,
+                signed_at: signedAt
             )
-            struct NoteResponse: Decodable { let id: String }
             let response: [NoteResponse] = try await SupabaseConfig.client
                 .from("clinical_notes")
                 .insert(row)
                 .select("id")
                 .execute()
                 .value
+            guard note.isLive else { continue }
             if let first = response.first {
                 note.remoteId = first.id
                 note.pendingSync = false
                 note.syncedAt = .now
+                try? context.save()   // persist the id at once so a crash can't cause a re-insert
             }
         }
         try context.save()
@@ -70,13 +116,17 @@ extension SyncService {
         let allLocalNotes  = try context.fetch(FetchDescriptor<ClinicalNote>())
         let allLocalPatients = try context.fetch(FetchDescriptor<Patient>())
 
+        let deleted = SyncTombstones.ids(in: .clinicalNotes)
         for row in rows {
+            guard !deleted.contains(row.id) else { continue }   // deleted on this device
             let patient = allLocalPatients.first { $0.remoteId == row.patient_id }
             guard let patient else { continue }
 
             let existing = allLocalNotes.first { $0.remoteId == row.id }
             let note: ClinicalNote
             if let e = existing {
+                // Local edits not yet uploaded win: never overwrite them with the server copy.
+                if e.pendingSync { continue }
                 note = e
             } else {
                 let noteType = NoteType(rawValue: row.note_type) ?? .other

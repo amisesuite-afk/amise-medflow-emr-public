@@ -230,7 +230,10 @@ struct BillingView: View {
                 BillingItemRow(item: item)
             }
             .onDelete { indexSet in
-                indexSet.forEach { context.delete(items[$0]) }
+                indexSet.forEach {
+                    SyncTombstones.add(items[$0].remoteId, in: .billingItems)
+                    context.delete(items[$0])
+                }
             }
         }
 
