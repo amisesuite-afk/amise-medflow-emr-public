@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useMemo, useRef, useState,
 import { enqueue, flush, type SyncStatus } from '@/lib/sync-outbox';
 import '@/lib/sync-executors'; // registers outbox executors — side-effect import, must run before any save can fail
 import { registerBeforeSignOut } from '@/lib/secure-sign-out';
+import { loadLifestyleHistory, saveLifestyleHistory } from '@/lib/lifestyle-history-db';
+import { emptyLifestyleHistory, parseLifestyleHistory, type LifestyleHistory } from '@workspace/triage-engine/lifestyle-practices';
 import { EMPTY_VITALS, restoreVitalsState, type VitalsState, type VitalKey } from '@/lib/vitals-state';
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns, type News2Avpu } from '@workspace/triage-engine';
 import { type SiteCode, supabase } from '@/lib/supabase';
@@ -302,6 +304,10 @@ interface CtxValue {
   medicationsText: string; setMedicationsText(v: string): void;
   allergies: string; setAllergies(v: string): void;
   toxicHabits: string[]; setToxicHabits(v: string[]): void; toggleToxicHabit(v: string): void;
+  /** Ritual fasting, complementary therapies, night-shift work, usual sleep (lifestyle-practices.ts). */
+  lifestyleHistory: LifestyleHistory; setLifestyleHistory(v: LifestyleHistory): void;
+  /** false = patients.pathway_data_json is missing on this database: kept in this browser only. */
+  lifestyleStorageAvailable: boolean | null;
   occupation: string; setOccupation(v: string): void;
   hpiNotes: string; setHpiNotes(v: string): void;
 
@@ -613,6 +619,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [medicationsText, setMedicationsText] = useState('');
   const [allergies, setAllergies] = useState('');
   const [toxicHabits, setToxicHabits] = useState<string[]>([]);
+  const [lifestyleHistory, setLifestyleHistoryState] = useState<LifestyleHistory>(emptyLifestyleHistory);
+  const [lifestyleStorageAvailable, setLifestyleStorageAvailable] = useState<boolean | null>(null);
+  // True once the clinician edits the lifestyle history (a server load never overwrites an edit).
+  const lifestyleDirtyRef = useRef(false);
+  const setLifestyleHistory = useCallback((v: LifestyleHistory) => {
+    lifestyleDirtyRef.current = true;
+    setLifestyleHistoryState(v);
+  }, []);
   const [occupation, setOccupation] = useState('');
   const [hpiNotes, setHpiNotes] = useState('');
 
@@ -922,6 +936,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (typeof d.familyHistoryNotes === 'string') setFamilyHistoryNotes(d.familyHistoryNotes as string);
       if (Array.isArray(d.toxicHabits)) setToxicHabits(d.toxicHabits as string[]);
       if (typeof d.occupation === 'string') setOccupation(d.occupation);
+      if (d.lifestyleHistory && typeof d.lifestyleHistory === 'object') setLifestyleHistoryState(parseLifestyleHistory(d.lifestyleHistory));
       if (typeof d.hpiNotes === 'string') setHpiNotes(d.hpiNotes);
       if (typeof d.patientName === 'string') setPatientName(d.patientName);
       if (typeof d.age === 'string') setAge(d.age);
@@ -1049,7 +1064,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       assessment, differentials, plan, followUpNotes, referralNotes, procedures, billing, documents, surgicalClassifications,
       insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
       comorbidities, pmhNotes, surgicalHistory, surgicalNotes, recentSurgeryDate,
-      medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits, occupation, hpiNotes,
+      medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits, occupation, lifestyleHistory, hpiNotes,
       pendingPrescriptions,
       patientId, encounterId,
       patientName, age, sex, dob, phone, email, address, quarter, referredBy,
@@ -1074,7 +1089,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     assessment, differentials, plan, followUpNotes, referralNotes, procedures, billing, documents, surgicalClassifications,
     insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
     comorbidities, pmhNotes, surgicalHistory, surgicalNotes, recentSurgeryDate,
-    medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits, occupation, hpiNotes,
+    medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits, occupation, lifestyleHistory, hpiNotes,
     pendingPrescriptions,
     patientId, encounterId,
     patientName, age, sex, dob, phone, email, address, quarter, referredBy,
@@ -1110,6 +1125,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const examTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const surgicalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const toxicTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lifestyleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const rosTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const procedureTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const traumaTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1178,6 +1194,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (examTimerRef.current) { clearTimeout(examTimerRef.current); examTimerRef.current = null; }
     if (surgicalTimerRef.current) { clearTimeout(surgicalTimerRef.current); surgicalTimerRef.current = null; }
     if (toxicTimerRef.current) { clearTimeout(toxicTimerRef.current); toxicTimerRef.current = null; }
+    if (lifestyleTimerRef.current) { clearTimeout(lifestyleTimerRef.current); lifestyleTimerRef.current = null; }
     if (rosTimerRef.current) { clearTimeout(rosTimerRef.current); rosTimerRef.current = null; }
     if (procedureTimerRef.current) { clearTimeout(procedureTimerRef.current); procedureTimerRef.current = null; }
     if (traumaTimerRef.current) { clearTimeout(traumaTimerRef.current); traumaTimerRef.current = null; }
@@ -1197,6 +1214,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setAllergies(''); setToxicHabits([]);
     setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber('');
     setMrNumber(''); setBloodGroup(''); setNokName(''); setNokRelation(''); setNokTel('');
+    lifestyleDirtyRef.current = false; setLifestyleHistoryState(emptyLifestyleHistory()); setLifestyleStorageAvailable(null);
     setProblems([]);
     try {
       localStorage.removeItem(ENC_KEY);
@@ -1420,6 +1438,44 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId, toxicHabits]);
 
+  // ── Lifestyle history (patient-level; patients.pathway_data_json → lifestyle) ──
+  // Load once per patient. A server copy never replaces an edit made here (lifestyleDirtyRef).
+  // Opening a different patient without clearPatient() must never carry this one's record over
+  // (the autosave below would otherwise write it to the new patient).
+  const lifestylePatientRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!patientId) return;
+    if (lifestylePatientRef.current && lifestylePatientRef.current !== patientId) {
+      if (lifestyleTimerRef.current) { clearTimeout(lifestyleTimerRef.current); lifestyleTimerRef.current = null; }
+      lifestyleDirtyRef.current = false;
+      setLifestyleHistoryState(emptyLifestyleHistory());
+    }
+    lifestylePatientRef.current = patientId;
+    let cancelled = false;
+    void loadLifestyleHistory(patientId).then(r => {
+      if (cancelled) return;
+      setLifestyleStorageAvailable(r.available);
+      if (r.lifestyle && !lifestyleDirtyRef.current) setLifestyleHistoryState(r.lifestyle);
+    });
+    return () => { cancelled = true; };
+  }, [patientId]);
+
+  // Autosave (debounced 3 s), only after an edit here.
+  useEffect(() => {
+    if (!patientId || !lifestyleDirtyRef.current) return;
+    if (lifestyleTimerRef.current) clearTimeout(lifestyleTimerRef.current);
+    lifestyleTimerRef.current = setTimeout(() => {
+      lifestyleTimerRef.current = null;
+      void trackedSave(async () => {
+        const r = await saveLifestyleHistory(patientId, lifestyleHistory);
+        setLifestyleStorageAvailable(r.available);
+        return r;
+      }, { entityType: 'lifestyle_history', entityId: patientId, payload: { patientId, lifestyle: lifestyleHistory } });
+    }, 3000);
+    return () => { if (lifestyleTimerRef.current) clearTimeout(lifestyleTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, lifestyleHistory]);
+
   // ── Autosave ROS findings (encounter-level, debounced 3 s) ────────────────
   useEffect(() => {
     if (!patientId || !encounterId) return;
@@ -1598,6 +1654,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       void trackedSave(() => syncToxicHabits(patientId, toxicHabits),
         { entityType: 'toxic_habits', entityId: patientId, payload: { patientId, habits: toxicHabits } });
     }
+    if (lifestyleTimerRef.current && patientId) {
+      clearTimeout(lifestyleTimerRef.current);
+      lifestyleTimerRef.current = null;
+      void trackedSave(() => saveLifestyleHistory(patientId, lifestyleHistory),
+        { entityType: 'lifestyle_history', entityId: patientId, payload: { patientId, lifestyle: lifestyleHistory } });
+    }
     if (rosTimerRef.current && patientId && encounterId) {
       clearTimeout(rosTimerRef.current);
       rosTimerRef.current = null;
@@ -1669,7 +1731,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     assessmentUpdatedAt, planUpdatedAt,
     triageResult.acuity, triageResult.score, medications, medicationsText,
     allergies, examFindings, examNotes, surgicalHistory, surgicalNotes,
-    toxicHabits, rosFindings, procedureData, traumaData,
+    toxicHabits, lifestyleHistory, rosFindings, procedureData, traumaData,
     hpiNotes, pmhNotes, familyHistoryNotes, orderedInvestigations, encounterType, encounterMode,
     ward, dateAdmission, dateDischarge, admittingSurgeon, referringPhysician,
     nokName, nokRelation, nokTel, bloodGroup, mrNumber,
@@ -1683,7 +1745,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Track whether any debounce timer is pending (for beforeunload confirmation)
   const hasPendingTimers = useCallback(() =>
     !!(autoSaveTimerRef.current || allergyTimerRef.current || examTimerRef.current ||
-       surgicalTimerRef.current || toxicTimerRef.current || rosTimerRef.current ||
+       surgicalTimerRef.current || toxicTimerRef.current || lifestyleTimerRef.current || rosTimerRef.current ||
        procedureTimerRef.current || traumaTimerRef.current ||
        hpiTimerRef.current || pmhTimerRef.current || investigationTimerRef.current ||
        encounterTypeTimerRef.current || inpatientTimerRef.current ||
@@ -1790,6 +1852,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     medicationsText, setMedicationsText,
     allergies, setAllergies,
     toxicHabits, setToxicHabits, toggleToxicHabit,
+    lifestyleHistory, setLifestyleHistory, lifestyleStorageAvailable,
     occupation, setOccupation,
     hpiNotes, setHpiNotes,
     clearPatient,
