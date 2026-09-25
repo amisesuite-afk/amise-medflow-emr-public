@@ -312,7 +312,7 @@ enum DiagnosisRadiationEngine {
             RS(specialty: "Intensive Care", urgency: .emergency, reason: "Post-operative ICU — peritonitis with septic shock", notes: nil)
         ],
         "Renal Colic / Ureteric Calculus": [
-            RS(specialty: "Urology", urgency: .urgent, reason: "Stone >5 mm or obstructing — ureteroscopy / laser lithotripsy", notes: "ESWL for stones ≤2 cm renal pelvis"),
+            RS(specialty: "Urology", urgency: .urgent, reason: "Stone >5 mm or obstructing — ureteroscopy / laser lithotripsy; if infected or obstructed, decompression (stent / nephrostomy) first and stone treatment after decompression (EAU 2024)", notes: "ESWL for stones ≤2 cm renal pelvis — not while infected or obstructed"),
             RS(specialty: "Nephrology", urgency: .routine, reason: "Metabolic stone workup for recurrent calculi", notes: nil)
         ],
         "Acute Kidney Injury": [

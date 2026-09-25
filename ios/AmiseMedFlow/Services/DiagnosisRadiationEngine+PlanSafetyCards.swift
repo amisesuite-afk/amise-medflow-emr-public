@@ -73,11 +73,13 @@ extension DiagnosisRadiationEngine {
 
         psCard(["femoral hernia"], "Femoral Hernia", icd: "K41.90",
              inv: [SI(name: "Groin ultrasound if the diagnosis is uncertain", category: .imaging, rationale: "Femoral vs inguinal vs lymph node"),
-                   SI(name: "Obstruction / strangulation: FBC, U&E, lactate, group and save; CT only if it will not delay surgery", category: .blood, rationale: "Resuscitation and ischaemia")],
+                   SI(name: "Obstruction / strangulation: FBC, U&E, lactate, group and save", category: .blood, rationale: "Resuscitation and ischaemia"),
+                   SI(name: "CT abdomen/pelvis if obstruction is suspected — only if it will not delay surgery", category: .imaging, rationale: "Obstruction, hernia content, bowel viability (WSES 2017)")],
              plan: """
 - Femoral hernia: prompt (early) repair recommended regardless of symptoms — high strangulation risk (HerniaSurge 2018)
 - Elective: laparoscopic TEP/TAPP or open repair (low / Lockwood approach; McEvedy / high approach if bowel resection is likely)
 - Strangulated / obstructed (tender irreducible lump, small bowel obstruction, Richter's): emergency surgery — emergency repair with inspection of bowel viability ± resection; do not attempt reduction if strangulation is suspected (WSES 2017)
+- Obstructed: nil by mouth, IV fluids, nasogastric (NG) tube decompression and analgesia while theatre is arranged
 - Obstruction from a hernia is not managed with a water-soluble contrast or conservative trial
 """, consent: "Femoral hernia repair", urgency: "Irreducible / tender femoral hernia: same-day surgical review.",
              redFlags: ["Tender, irreducible or obstructed → emergency theatre"],

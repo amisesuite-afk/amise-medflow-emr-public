@@ -179,6 +179,12 @@ extension DiagnosisRadiationEngine {
         let herniaCard = r.conditionName.lowercased().contains("hernia")
         plan = PlanSafetyFilter.adaptText(plan, s, pregnancySpecific: shape.pregnancySpecific, herniaCard: herniaCard)
         followUp = PlanSafetyFilter.adaptText(followUp, s, pregnancySpecific: shape.pregnancySpecific, herniaCard: herniaCard)
+        // iOS: referral reasons carry drug and procedure text too ("thrombolysis window 4.5 h").
+        referrals = referrals.map {
+            .init(specialty: $0.specialty, urgency: $0.urgency,
+                  reason: PlanSafetyFilter.adaptLine($0.reason, s, pregnancySpecific: shape.pregnancySpecific, herniaCard: herniaCard).text,
+                  notes: $0.notes.map { PlanSafetyFilter.adaptLine($0, s, pregnancySpecific: shape.pregnancySpecific, herniaCard: herniaCard).text })
+        }
         let evaluation = PlanSafetyFilter.evaluate(s, shape: shape)
         if evaluation.notes.contains(where: { $0.kind == .vte }) {
             // The patient-specific NICE NG89 line replaces the generic one (withVTELine).
