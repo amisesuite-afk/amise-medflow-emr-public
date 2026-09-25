@@ -156,6 +156,13 @@ struct PatientDetailPadView: View {
                 }
             }
 
+            // NEWS2 in the iPad header (it was missing; UX review M3): score, band colour and the
+            // incomplete marker, at a readable Dynamic Type size.
+            RecordHeaderNEWS2(patient: patient)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3)
+                .background(Color(.secondarySystemBackground), in: Capsule())
+
             if let dx = patient.workingDiagnosis {
                 Text(dx)
                     .font(.caption2.weight(.semibold))

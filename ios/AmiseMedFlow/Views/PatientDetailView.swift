@@ -81,14 +81,6 @@ struct PatientDetailView: View {
         .accessibilityIdentifier("patient.quick.\(label)")
     }
 
-    private var latestNews2: (score: Int, color: Color, risk: String)? {
-        // One pass and one NEWS2 evaluation (was a full sort and three evaluations).
-        guard let v = ListPerf.newest(patient.vitalsEntries.filter(\.isLive), by: { $0.recordedAt }),
-              v.hasAnyValue else { return nil }
-        let n = News2Snapshot(v)
-        return (n.score, Color(hex: n.colorHex), n.riskDisplay)
-    }
-
     var body: some View {
         // Reading a deleted model's attributes crashes SwiftData (record deleted here, or removed
         // or merged by sync or duplicate clean-up while this sheet was open). Same screen as iPad.
@@ -145,24 +137,13 @@ struct PatientDetailView: View {
                 ToolbarItem(placement: .principal) {
                     VStack(spacing: 1) {
                         Text(patient.fullName)
-                            .font(.system(size: 14, weight: .semibold))
+                            .scaledFont(size: 15, weight: .semibold, relativeTo: .subheadline)
                             .lineLimit(1)
-                        if let n = latestNews2 {
-                            HStack(spacing: 3) {
-                                Circle().fill(n.color).frame(width: 5, height: 5)
-                                Text("NEWS2 \(n.score) · \(n.risk)")
-                                    .font(.system(size: 9, weight: .semibold))
-                                    .foregroundStyle(n.color)
-                            }
-                        } else {
-                            HStack(spacing: 3) {
-                                Circle().fill(Color.secondary.opacity(0.4)).frame(width: 5, height: 5)
-                                Text("No vitals")
-                                    .font(.system(size: 9))
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
+                        // NEWS2 at a readable Dynamic Type size (was fixed 9 pt), with the
+                        // incomplete marker (UX review M3). Capped so the nav bar keeps its height.
+                        RecordHeaderNEWS2(patient: patient)
                     }
+                    .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }

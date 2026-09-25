@@ -2,7 +2,7 @@ import XCTest
 import SwiftData
 @testable import AmiseMedFlow
 
-/// Consultation patient identity and allergy banner (UX review M1–M2).
+/// Consultation identity, allergy banner and NEWS2 header text (UX review M1–M3).
 @MainActor
 final class ConsultationHeaderTests: XCTestCase {
 
@@ -75,5 +75,25 @@ final class ConsultationHeaderTests: XCTestCase {
                        AllergyEntry(name: "Penicillin", severity: "Severe", reaction: "Anaphylaxis")]
         XCTAssertEqual(p.consultationAllergyBanner, .alert(["Penicillin"]))
         XCTAssertEqual(ConsultationHeader.allergyBanner(recorded: ["Latex"], hasNKDAMarker: false), .alert(["Latex"]))
+    }
+
+    // MARK: - M3: NEWS2 header text
+
+    func testNEWS2TextCarriesTheIncompleteMarker() {
+        XCTAssertEqual(ConsultationHeader.news2Text(score: 5, risk: "Medium", incomplete: false), "NEWS2 5 · Medium")
+        XCTAssertEqual(ConsultationHeader.news2Text(score: 3, risk: "Low-medium", incomplete: true),
+                       "NEWS2 3 · Low-medium · incomplete")
+        XCTAssertEqual(ConsultationHeader.news2Text(score: nil, risk: nil, incomplete: false), "No vitals")
+    }
+
+    func testNEWS2TextFromRecordedVitals() throws {
+        let p = patient()
+        let v = VitalsEntry(patient: p)
+        v.heartRate = 135          // NEWS2 3 for HR ≥ 131; other parameters not recorded
+        context.insert(v)
+        let n = News2Snapshot(v)
+        let text = ConsultationHeader.news2Text(score: n.score, risk: n.risk, incomplete: !n.isComplete)
+        XCTAssertTrue(text.hasPrefix("NEWS2 \(n.score)"), text)
+        XCTAssertTrue(text.hasSuffix("· incomplete"), text)
     }
 }

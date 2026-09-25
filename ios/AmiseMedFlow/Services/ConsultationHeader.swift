@@ -1,11 +1,12 @@
 // ConsultationHeader.swift
-// Patient identity and allergy status for the consultation screens (UX review M1–M2).
+// Patient identity and safety text for the consultation screens (UX review M1–M3).
 //
 // - M1: the consultation never showed whose record was open (title "Consultation"), a
 //   wrong-patient risk. The title is now the patient's name and a persistent header shows
 //   name, age/sex and MRN on iPhone and iPad.
 // - M2: a recorded "NKDA" raised the red "ALLERGY ALERT" banner. Red is for real allergies only;
 //   NKDA is a neutral "No known drug allergies" line; an empty list is "Allergies not recorded".
+// - M3: NEWS2 text for the record headers (score, band, incomplete marker).
 //
 // Pure helpers (no SwiftUI) so they can be unit-tested: AmiseMedFlowTests/ConsultationHeaderTests.swift.
 
@@ -56,6 +57,18 @@ enum ConsultationHeader {
 
     static let noKnownAllergiesText = "No known drug allergies"
     static let allergiesNotRecordedText = "Allergies not recorded"
+
+    // MARK: NEWS2 (M3)
+
+    /// "NEWS2 5 · Medium" or "NEWS2 5 · Medium · incomplete" (the incomplete marker when a
+    /// parameter was not recorded); "No vitals" when there is no score.
+    static func news2Text(score: Int?, risk: String?, incomplete: Bool) -> String {
+        guard let score else { return "No vitals" }
+        let band = (risk ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        var text = band.isEmpty ? "NEWS2 \(score)" : "NEWS2 \(score) · \(band)"
+        if incomplete { text += " · incomplete" }
+        return text
+    }
 }
 
 extension Patient {
