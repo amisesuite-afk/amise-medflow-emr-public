@@ -24,6 +24,8 @@ registerModule({
       features: { postop_fever: 0.60, tachycardia: 0.75, abdominal_tenderness: 0.75, guarding: 0.50, diffuse_abdominal_pain: 0.50, elevated_wbc: 0.75, raised_crp: 0.85, previous_surgery: 0.99, recent_surgery: 0.98, bowel_resection: 0.90, haemodynamic_instability: 0.30, hypotension: 0.25, confusion: 0.20, abdominal_distension: 0.40, ileus_signs: 0.40, tachypnoea: 0.40 },
     },
     {
+      // WSES 2017 management of intra-abdominal infections (Sartelli et al., World J Emerg Surg
+      // 2017): swinging fever, pain, ileus and rising CRP days 5–10 after surgery; CT confirms.
       id: 'postop_collection', label: 'Post-operative Intra-abdominal Collection / Abscess / Bile Leak', icd10: 'K65.1', prior: T.rare, course: 'acute',
       features: { postop_fever: 0.75, abdominal_tenderness: 0.60, elevated_wbc: 0.75, raised_crp: 0.85, previous_surgery: 0.99, recent_surgery: 0.97, tachycardia: 0.50, rigors: 0.30, abdominal_pain: 0.70, shoulder_tip_pain: 0.15, nausea_vomiting: 0.35, ileus_signs: 0.25 },
     },

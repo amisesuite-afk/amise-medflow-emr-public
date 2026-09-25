@@ -872,7 +872,7 @@ function resultFeatures(results: Record<string, string>, out: FeatureMap): void 
  * @param cc        Chief complaint template label (e.g. "Acute abdominal pain")
  * @param answers   Record<socratesKey, answerText> from ChiefComplaintStrip
  * @param context   Symptom chips, vitals, history, results and free text (PaneFeatureContext)
- * @returns         Record<featureId, boolean>: true = present; false only for the two gates
+ * @returns         Record<featureId, boolean>: true = present; false only for the four gates
  */
 export function extractFeaturesFromSocrates(
   cc: string,
