@@ -159,11 +159,7 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "proposedFix": "Parenthesise the colorectal condition (c.met && (… || … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.triage)"
+          "proposedFix": "Parenthesise the colorectal condition (c.met && (… || … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen."
         }
       ]
     },
@@ -182,11 +178,7 @@
           "guidelineRefs": [
             "nice-ng12",
             "abs-best-practice-2010"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          ]
         },
         {
           "id": "inv-core-biopsy",

@@ -207,11 +207,7 @@
             "nice-dg56",
             "bsg-acpgbi-fit-2022"
           ],
-          "note": "The FIT result is the only red flag; the engines must read it.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)"
+          "note": "The FIT result is the only red flag; the engines must read it."
         }
       ]
     },
@@ -246,11 +242,7 @@
           ],
           "guidelineRefs": [
             "nice-dg56"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 20 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+          ]
         }
       ]
     }

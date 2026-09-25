@@ -157,11 +157,7 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "note": "NICE NG12: aged 50 and over with, in one breast only, nipple discharge, retraction or other changes of concern.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.triage)"
+          "note": "NICE NG12: aged 50 and over with, in one breast only, nipple discharge, retraction or other changes of concern."
         }
       ]
     },
@@ -176,11 +172,7 @@
           "guidelineRefs": [
             "nccn-breast-dx-2025",
             "abs-best-practice-2010"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          ]
         },
         {
           "id": "inv-uss",
@@ -193,11 +185,7 @@
           ],
           "guidelineRefs": [
             "nccn-breast-dx-2025"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          ]
         }
       ]
     },

@@ -159,11 +159,7 @@
           ],
           "guidelineRefs": [
             "eau-nmibc-2024"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.voi, ios.pipeline.actions)"
+          ]
         },
         {
           "id": "inv-upper-tract-imaging",
@@ -176,11 +172,7 @@
           ],
           "guidelineRefs": [
             "eau-nmibc-2024"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.voi, ios.pipeline.actions)"
+          ]
         }
       ]
     },
@@ -200,11 +192,7 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+          ]
         },
         {
           "id": "mgmt-smoking-cessation",

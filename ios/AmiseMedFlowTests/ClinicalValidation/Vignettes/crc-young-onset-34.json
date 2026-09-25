@@ -254,11 +254,7 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "note": "NG12: consider (not \"refer\") a suspected cancer referral under 50 — quality.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+          "note": "NG12: consider (not \"refer\") a suspected cancer referral under 50 — quality."
         }
       ]
     }
