@@ -1213,6 +1213,7 @@
     { "path": "ios/AmiseMedFlow/Services/QuestionnairePatientSearch.swift", "reason": "Patient search (privacy), not clinical content." },
     { "path": "ios/AmiseMedFlow/Services/SyncService+PathwayData.swift", "reason": "Sync of stored pathway data, not clinical content." },
     { "path": "ios/AmiseMedFlow/Services/AIService.swift", "reason": "Disabled (AIError.disabled); prompts to be registered if AI is re-enabled." },
-    { "path": "lib/triage-engine/src/negation.ts", "reason": "Negation-aware text matching used by the registered rule sets; no clinical rules, terms or thresholds of its own." }
+    { "path": "lib/triage-engine/src/negation.ts", "reason": "Negation-aware text matching used by the registered rule sets; no clinical rules, terms or thresholds of its own." },
+    { "path": "lib/triage-engine/src/visit-continuity.ts", "reason": "Visit-type workflow default (follow-up of the last problem vs new complaint, by word / body-region overlap with the last visit); no diagnostic, triage or treatment rules. Twin of ios VisitContinuity.swift; the clinician confirms or changes the visit type." }
   ]
 }
