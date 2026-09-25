@@ -17,6 +17,8 @@ struct SettingsView: View {
     @State private var isCheckingBackup = false
     @State private var showRestoreConfirm = false
     @State private var showClearNASConfirm = false
+    @State private var showPairing = false
+    @State private var deviceToForget: PairedPeerDevice?
 
     var body: some View {
         NavigationStack {
@@ -92,9 +94,9 @@ struct SettingsView: View {
                     }
                 }
 
-                // MARK: Proximity Sync
+                // MARK: Nearby devices (proximity sync)
                 Section {
-                    LabeledContent("Nearby devices") {
+                    LabeledContent("Status") {
                         HStack(spacing: 6) {
                             Circle()
                                 .fill(peerSync.connectedCount > 0 ? Color.green : Color.secondary.opacity(0.4))
@@ -104,6 +106,45 @@ struct SettingsView: View {
                                  : (peerSync.nearbyCount > 0 ? "\(peerSync.nearbyCount) found" : "None"))
                         }
                     }
+
+                    // One-time pairing needed (e.g. after updating from a build without it).
+                    if let prompt = peerSync.pairingPrompt {
+                        HStack(alignment: .firstTextBaseline) {
+                            Label(prompt, systemImage: "link.badge.plus")
+                                .font(.caption.weight(.medium))
+                                .foregroundStyle(.orange)
+                            Spacer()
+                            Button("Not now") { peerSync.dismissPairingPrompt() }
+                                .buttonStyle(.borderless)
+                                .font(.caption)
+                        }
+                    }
+
+                    ForEach(peerSync.pairedDevices) { device in
+                        HStack(spacing: 10) {
+                            Image(systemName: Self.deviceSymbol(device.name))
+                                .foregroundStyle(AMColor.accent)
+                                .frame(width: 22)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(device.name)
+                                if let pairedAt = device.pairedAt {
+                                    Text("Paired \(pairedAt.formatted(date: .abbreviated, time: .omitted))")
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            Spacer()
+                            Button("Forget", role: .destructive) { deviceToForget = device }
+                                .buttonStyle(.borderless)
+                        }
+                    }
+
+                    Button {
+                        showPairing = true
+                    } label: {
+                        Label("Pair a device", systemImage: "plus.circle")
+                    }
+                    .disabled(!peerSync.isRunning)
 
                     if !peerSync.peerSyncStatus.isEmpty {
                         Text(peerSync.peerSyncStatus)
@@ -153,9 +194,9 @@ struct SettingsView: View {
                         .foregroundStyle(.orange)
                     }
                 } header: {
-                    Text("Proximity Sync")
+                    Text("Nearby devices")
                 } footer: {
-                    Text("Syncs directly between your iPhone and iPad over Bluetooth or WiFi — no internet required.")
+                    Text("Syncs directly between your paired iPhone and iPad over Bluetooth or WiFi — no internet required. Pair each device once with a 6-digit code; both must be signed in to the same account. Forget a device you no longer use.")
                 }
 
                 // MARK: NAS Backup
@@ -354,6 +395,22 @@ struct SettingsView: View {
                 Text("Adds patients, notes, prescriptions, vitals and billing from the latest NAS backup that are missing on this device. Nothing already on the device is replaced by older backup data.")
             }
             .sheet(isPresented: $showLogin) { LoginView() }
+            .sheet(isPresented: $showPairing) {
+                PeerPairingSheet().environmentObject(peerSync)
+            }
+            .confirmationDialog("Forget this device?",
+                                isPresented: Binding(get: { deviceToForget != nil },
+                                                     set: { if !$0 { deviceToForget = nil } }),
+                                titleVisibility: .visible,
+                                presenting: deviceToForget) { device in
+                Button("Forget \(device.name)", role: .destructive) {
+                    peerSync.forgetDevice(device)
+                    deviceToForget = nil
+                }
+                Button("Cancel", role: .cancel) { deviceToForget = nil }
+            } message: { _ in
+                Text("It will no longer sync with this device until you pair it again. Records already on either device are kept.")
+            }
             .sheet(isPresented: $showAIDisclosure) {
                 AIConsentSheet(
                     accepted: Binding(
@@ -386,6 +443,13 @@ struct SettingsView: View {
                 sync.setModelContext(context)
             }
         }
+    }
+
+    private static func deviceSymbol(_ name: String) -> String {
+        let lower = name.lowercased()
+        if lower.contains("ipad")   { return "ipad" }
+        if lower.contains("iphone") { return "iphone" }
+        return "ipad.and.iphone"
     }
 
     private var nasStatusColor: Color {

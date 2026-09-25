@@ -305,7 +305,7 @@ struct DashboardView: View {
                          ? "\(peerSync.connectedCount) device\(peerSync.connectedCount == 1 ? "" : "s") connected"
                          : peerSync.nearbyCount > 0
                          ? "\(peerSync.nearbyCount) nearby"
-                         : peerSync.isRunning ? "Scanning…" : "No devices nearby")
+                         : peerSync.pairingPrompt ?? (peerSync.isRunning ? "Scanning…" : "No devices nearby"))
                         .font(.system(size: 13))
                     Spacer()
                 }
