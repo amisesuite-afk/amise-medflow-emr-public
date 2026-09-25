@@ -7,6 +7,7 @@ import { google } from 'googleapis';
 import { getInstructionsForAppointment, type ProcedureInstructions } from '@/lib/instructions';
 import { LOCATION_LABELS } from '@/lib/calendar';
 import type { BookingTrack } from '@/lib/scheduling';
+import { outboundBlocked } from '@/lib/outbound';
 
 const GMAIL_FROM = process.env.GMAIL_USER ?? 'noreply@amisemedicalservices.com';
 const GMAIL_FROM_NAME = 'Amise Medical Services';
@@ -229,7 +230,9 @@ export async function sendConfirmationEmail(opts: {
   track: BookingTrack;
   isConfirmed: boolean;
 }): Promise<boolean> {
-  if (process.env.MODE === 'dry_run') {
+  // Fail closed: unset / misspelt MODE is dry_run (lib/outbound.ts, G-17).
+  // Previously this sent unless MODE was exactly 'dry_run'.
+  if (outboundBlocked('email')) {
     console.log(`[email dry_run] Would send to ${opts.to} — ${opts.patientName} / ${opts.appointmentType}`);
     return true;
   }
