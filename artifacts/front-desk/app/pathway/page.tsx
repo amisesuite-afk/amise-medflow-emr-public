@@ -3,6 +3,7 @@ import Link from 'next/link';
 import '../subpage-mobile.css';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/pathway' },
   title: 'Patient Care Pathway — Amise Medical Services',
   description:
     'How patients move through Amise Medical Services — from first contact through triage, appointment, procedure, and follow-up. Condition-specific surgical and endoscopy care chains.',

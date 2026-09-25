@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { WA_TAPION, WA_RODNEY, PHONE_TAPION, PHONE_RODNEY, WaSvg } from '@/app/components/shared';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/services/ercp' },
   title: 'ERCP & Biliary Services — Advanced Bile Duct Procedures',
   description: 'Expert ERCP and biliary procedures in Saint Lucia — gallstones, bile duct stenting, sphincterotomy, and cholangitis treatment by Dr Dawit Daniel Kabiye, MD, DM at Tapion Hospital.',
 };

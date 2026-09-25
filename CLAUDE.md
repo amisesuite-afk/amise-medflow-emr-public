@@ -113,6 +113,7 @@ pnpm run test:e2e                              # Playwright walkthrough — requ
 | `VITE_SENTRY_DSN` | Sentry DSN for dashboard error monitoring (optional). Init options are PHI-safe (`src/lib/sentry.ts` + `src/lib/sentry-scrub.ts`: no default PII, no replay, no request/user/extra, no console or DOM breadcrumbs, tracing off) — don't add `replayIntegration`, `setUser` with an email, or raise `tracesSampleRate` without a compliance review |
 | `VITE_IDLE_TIMEOUT_MINUTES` | Dashboard idle auto sign-out, in minutes (default `15`; clamped to 2–120; unset, `0`, negative or non-numeric → 15, so it cannot be switched off). A 60-second "Stay signed in" warning comes first. On expiry the app flushes pending saves and the offline outbox, then signs out this browser only (`scope: 'local'`) and clears PHI from browser storage — or, if unsynced clinical data remains, locks the screen instead of discarding it (`src/components/IdleLock.tsx`, `src/lib/idle-timeout.ts`) |
 | `NEXT_PUBLIC_IDLE_TIMEOUT_MINUTES` | Same, for the front-desk staff pages (`artifacts/front-desk/app/staff/StaffIdleTimeout.tsx`, set on the front-desk Vercel project). Inlined at build time, so a change needs a redeploy |
+| `NEXT_PUBLIC_SITE_URL` | Front-desk canonical public origin (default `https://amisemedical.com`), read only through `artifacts/front-desk/lib/site.ts` `siteUrl()`: sitemap, robots, JSON-LD, `metadataBase` and the `<link rel="canonical">` on every page, so whichever domain (amisemedical.com / amisesuite.com / www / vercel.app) serves a page, search engines see one URL. Set it on the front-desk Vercel project (the deploy workflow no longer overwrites it). Inlined at build time — redeploy after a change. See `docs/DOMAINS.md` |
 
 ### Backend
 
@@ -154,8 +155,8 @@ pnpm run test:e2e                              # Playwright walkthrough — requ
 | `TWILIO_TRANSCRIPTION` | `true` to enable Twilio's own transcription on voicemail recordings (English only, less accurate than Whisper) |
 | `SMS_PROVIDER` | `dry_run` (default) / `twilio` / `digicel` |
 | `SENTRY_DSN` | Sentry DSN for API error monitoring (optional). Init options are PHI-safe (`src/lib/sentry.ts` + `src/lib/sentry-scrub.ts`, the same code as the dashboard scrubber apart from the header comment — a dashboard test fails if they drift): no default PII, no RequestData, no console/HTTP breadcrumbs, no local variables, tracing off |
-| `PORTAL_URL` | Front-desk portal URL for CORS and WhatsApp links |
-| `DASHBOARD_URL` | Dashboard URL for CORS |
+| `PORTAL_URL` | Front-desk (public website) origin(s) for CORS and patient links. Accepts a comma-separated list (`https://amisemedical.com,https://www.amisemedical.com,https://amisesuite.com,…`): CORS allows every entry, and links sent to patients (SMS, WhatsApp, email, portal invites) use the **first** entry only, via `patientSiteBaseUrl()` in `artifacts/api-server/src/lib/site-urls.ts` (falls back to `FRONTEND_URL`, then the vercel.app address). A single value works as before. See `docs/DOMAINS.md` |
+| `DASHBOARD_URL` | Dashboard origin(s) for CORS (comma-separated list accepted) |
 | `CLAUDE_MODEL` | Override Claude model (default `claude-haiku-4-5-20251001`) |
 | `LOG_LEVEL` | Pino log level (default `info`) |
 

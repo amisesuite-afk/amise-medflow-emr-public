@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { WA_TAPION, WA_RODNEY, PHONE_TAPION, PHONE_RODNEY, WaSvg } from '@/app/components/shared';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/services/endoscopy' },
   title: 'Endoscopy Services — Colonoscopy, Gastroscopy & More',
   description: 'Expert endoscopy in Saint Lucia — colonoscopy, gastroscopy (OGD), flexible sigmoidoscopy, polypectomy, and capsule endoscopy, performed by Dr Dawit Daniel Kabiye, MD, DM at Tapion Hospital.',
 };

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import '../subpage-mobile.css';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/guidance' },
   title: 'Health Guidance & Preventive Screening — Amise Medical Services',
   description:
     'General health guidance and preventive screening information from Amise Medical Services. Dr Dawit Daniel Kabiye, MD, DM — General & Endoscopic Surgery, Saint Lucia.',

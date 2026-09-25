@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import BookingForm from './BookingForm';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/book' },
   title: 'Book an Appointment',
   description: 'Arrange an appointment with Dr Dawit Daniel Kabiye, general and endoscopic surgeon, Saint Lucia. Routine visits, referrals, and urgent triage.',
   openGraph: {

@@ -1,12 +1,18 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { siteUrl } from '@/lib/site';
 
 export const viewport: Viewport = {
   themeColor: '#0d9488',
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://amisemedical.com'),
+  // Canonical origin (lib/site.ts, NEXT_PUBLIC_SITE_URL). Relative canonical
+  // and Open Graph URLs resolve against it, whichever domain served the page.
+  // No `alternates.canonical` here: a root-layout canonical would be inherited
+  // by every page that does not set its own and point them all at "/". Each
+  // public page sets its own (test/site.test.ts checks this).
+  metadataBase: new URL(siteUrl()),
   title: {
     default: 'Amise Medical Services — General & Endoscopic Surgery, Saint Lucia',
     template: '%s | Amise Medical Services',

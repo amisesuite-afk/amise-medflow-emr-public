@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AmsiseLogo } from './components/AmsiseLogo';
 import { MobileNavMenu } from './components/MobileNavMenu';
+import { siteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/' },
   title: 'Amise Medical Services — Expert Surgical & Endoscopy Care, Saint Lucia',
   description:
     'Amise Medical Services — expert surgical and endoscopy care in Saint Lucia, led by Dr Dawit Daniel Kabiye, MD, DM. Colonoscopy, ERCP, hernia repair, breast clinic, thyroid surgery, diabetic foot care and more.',
@@ -926,7 +928,7 @@ const jsonLd = {
   '@type': 'MedicalBusiness',
   name: 'Amise Medical Services',
   description: 'Expert surgical and endoscopy care in Saint Lucia, led by Dr Dawit Daniel Kabiye, MD, DM.',
-  url: 'https://amisemedical.com',
+  url: siteUrl(),
   telephone: ['+17582840557', '+17587207111'],
   email: 'amisesuite@gmail.com',
   address: [

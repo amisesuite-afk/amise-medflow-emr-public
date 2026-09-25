@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { WA_TAPION, WA_RODNEY, PHONE_TAPION, PHONE_RODNEY, WaSvg } from '@/app/components/shared';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/services/diabetic-foot' },
   title: 'Diabetic Foot Clinic — Wound Care, Prevention & Surgery',
   description: 'Specialist diabetic foot care in Saint Lucia — wound assessment, debridement, infection management, vascular review, and limb-salvage surgery by Dr Dawit Daniel Kabiye, MD, DM.',
 };
