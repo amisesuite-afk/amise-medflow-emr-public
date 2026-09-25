@@ -89,6 +89,16 @@ struct PatientDetailView: View {
     }
 
     var body: some View {
+        // Reading a deleted model's attributes crashes SwiftData (record deleted here, or removed
+        // or merged by sync or duplicate clean-up while this sheet was open). Same screen as iPad.
+        if patient.isLive {
+            liveBody
+        } else {
+            PatientRecordUnavailableView(onClose: { dismiss() })
+        }
+    }
+
+    private var liveBody: some View {
         NavigationStack {
             TabView(selection: $selectedTab) {
                 VStack(spacing: 0) {

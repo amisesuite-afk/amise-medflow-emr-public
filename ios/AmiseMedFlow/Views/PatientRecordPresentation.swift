@@ -104,8 +104,9 @@ private struct FullScreenConsultationView: View {
     }
 }
 
-/// Shown in a full-screen cover when its patient was deleted (or merged away) while open.
-private struct PatientRecordUnavailableView: View {
+/// Shown in place of a patient record whose patient was deleted (or merged away) while open:
+/// the iPad full-screen cover and the iPhone PatientDetailView sheet.
+struct PatientRecordUnavailableView: View {
     let onClose: () -> Void
 
     var body: some View {
