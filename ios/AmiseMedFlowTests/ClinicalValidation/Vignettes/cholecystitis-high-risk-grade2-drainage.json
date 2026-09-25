@@ -465,10 +465,6 @@
       "guidelineRefs": [
         "tg18-mgmt-cholecystitis"
       ],
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "Grade I variant selected (\"cholecystitis\" keyword first).",
       "proposedFix": "dx-variants.ts: check Grade III → II → I."
     }
   },

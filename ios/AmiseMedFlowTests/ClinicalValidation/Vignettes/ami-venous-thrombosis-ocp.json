@@ -345,13 +345,9 @@
             "esvs-2017"
           ],
           "note": "Without peritonitis or infarction, MVT is treated with anticoagulation; resection is reserved for non-viable bowel.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: 'no guarding or peritonism' triggers the peritonism prompt ('Emergency laparotomy consent') in a patient to be treated with anticoagulation."
+          ]
         }
       ]
     }

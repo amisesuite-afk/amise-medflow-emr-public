@@ -198,10 +198,6 @@
         "guidelineRefs": [
           "esc-ncs-2022"
         ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Triage emergency_now: 'Possible biliary obstruction' (urgent) fires on the negated 'no jaundice' in the HPI.",
         "unverified": [
           "ios"
         ],

@@ -148,10 +148,6 @@
         "unverified": [
           "ios"
         ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Web run 2026-09-25: web.triage: emergency (acuity=urgent, action=emergency_now, score=64); expected ≤ priority. Triage reasons: Possible cardiac event; Age 70 or older; Anticoagulant or antiplatelet medication mentioned.",
         "proposedFix": "Negation-aware red-flag scan (rules.ts): \"No palpitations, chest pain\" must not match the cardiac rule."
       }
     },

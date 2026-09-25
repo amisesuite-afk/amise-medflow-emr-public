@@ -219,11 +219,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No plan (no protocol for N64.52)."
+          ]
         }
       ],
       "mustExclude": [

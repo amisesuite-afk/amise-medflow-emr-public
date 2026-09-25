@@ -301,10 +301,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web 2026-09-25: passed before pane model 1.0.0 only because the wrong PANE top 3 (cholecystitis) seeded that protocol's tests; PANE now ranks appendicitis with sepsis and perforation, which has no management protocol yet, so nothing seeds blood cultures.",
           "proposedFix": "Blood cultures in the appendicitis protocol for the generalised-peritonitis / septic variant (WSES 2020), or a sepsis protocol for the PANE node sepsis."
         },
         {
@@ -405,10 +401,6 @@
       "guidelineRefs": [
         "wses-2020"
       ],
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "Web: Same first-match problem: 'appendicitis' in the uncomplicated variant wins over 'generalised peritonitis'; the plan header says 'ideally within 12 h' instead of the emergency note.",
       "proposedFix": "Same as the abscess fix: specific-first ordering; uncomplicated as fallback."
     }
   },

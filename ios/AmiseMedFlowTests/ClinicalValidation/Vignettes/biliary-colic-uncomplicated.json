@@ -272,10 +272,6 @@
             "nice-cg188"
           ],
           "note": "Afebrile, anicteric, pain-free: the HPI records \"No fever, no jaundice\". A Charcot/cholangitis alarm here comes from negated words.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "\"Charcot's triad → Acute Cholangitis\" fires: hasFever matches \"afebrile\" (contains \"febrile\"), hasJaundice matches \"not jaundiced\".",
           "unverified": [
             "ios"
           ],
@@ -423,10 +419,6 @@
             "exclude appendicitis"
           ],
           "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Full LAPAROSCOPIC APPENDICECTOMY operative plan prompt: hasAppendicitisIndication fires on \"no guarding\" in the exam text.",
           "unverified": [
             "ios"
           ],

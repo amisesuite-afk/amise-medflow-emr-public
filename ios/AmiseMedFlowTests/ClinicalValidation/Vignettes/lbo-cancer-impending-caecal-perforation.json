@@ -294,11 +294,7 @@
       "equals": "lbo_malignant",
       "guidelineRefs": [
         "wses-lbo-2018"
-      ],
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "Web: The word 'closed-loop' selects sbo_strangulation (a small-bowel variant) before lbo_malignant."
+      ]
     }
   },
   "guideline": [

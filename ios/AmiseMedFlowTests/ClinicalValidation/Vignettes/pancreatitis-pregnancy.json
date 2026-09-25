@@ -408,10 +408,6 @@
             "aga-2018"
           ],
           "note": "Prophylactic antibiotics are not recommended in acute pancreatitis, including predicted severe disease and sterile necrosis; they are reserved for infected necrosis or a concurrent infection such as cholangitis.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Peritonism prompt (\"no peritonism\") adds pip-tazo + metronidazole.",
           "unverified": [
             "ios"
           ],
@@ -508,10 +504,6 @@
       "guidelineRefs": [
         "atlanta-2012"
       ],
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "Assessment \"…No cholangitis\" selects the Cholangitis group by text; no pancreatitis variant.",
       "proposedFix": "dx-variants.ts detectDxVariants: pick the group by diseaseId/ICD across all groups first and use the text fallback only if nothing matched (and make it negation-aware). Today \"No cholangitis\"/\"no pancreatitis\" in the assessment selects the earlier Cholangitis/Pancreatitis group by text before the Pancreatitis group is checked by disease id."
     }
   },

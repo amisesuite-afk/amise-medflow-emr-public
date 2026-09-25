@@ -389,10 +389,6 @@
             "exclude appendicitis"
           ],
           "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Appendicectomy operative plan fires on \"no guarding\".",
           "unverified": [
             "ios"
           ],

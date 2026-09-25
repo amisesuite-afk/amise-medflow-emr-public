@@ -484,10 +484,6 @@
       "guidelineRefs": [
         "tg18-mgmt-cholecystitis"
       ],
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "Grade I variant lists the bare keyword \"cholecystitis\" and is checked first (seed finding).",
       "proposedFix": "dx-variants.ts: check Grade III → II → I, and remove the bare \"cholecystitis\" keyword from Grade I."
     }
   },

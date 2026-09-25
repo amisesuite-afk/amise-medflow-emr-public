@@ -450,10 +450,6 @@
             "if "
           ],
           "note": "No gallstones.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Gallstone operative plan and consent fire from the US text \"no gallstones or sludge\".",
           "unverified": [
             "ios"
           ],

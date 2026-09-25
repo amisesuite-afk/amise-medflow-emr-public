@@ -334,10 +334,6 @@
       "severity": "critical",
       "equals": "hernia_incarcerated",
       "note": "The documented plan must be the incarcerated-hernia plan (reduction attempt, then early repair), not the elective plan.",
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "detectDxVariants uses plain substring matching and the first variant with any keyword wins: \"Irreducible inguinal hernia\" contains the hernia_reducible keyword \"reducible inguinal\", so the plan gets the ELECTIVE prefix (\"Day-case laparoscopic repair preferred\") and loses the immediate/conservative phases.",
       "proposedFix": "Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' (\"irreducible\" contains \"reducible\"); \"bethesda vi\" contains \"bethesda v\"."
     }
   },

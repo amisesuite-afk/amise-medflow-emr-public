@@ -387,13 +387,9 @@
             "ada-hhc-2024"
           ],
           "note": "DKA pseudo-peritonitis resolves with treatment; an operative plan before correcting the acidosis is dangerous.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
           ],
-          "knownGapNote": "Web: 'no rigidity, no rebound' triggers the peritonism prompt ('Emergency laparotomy consent — source control') and 'guarding' triggers the appendicectomy template in DKA.",
           "proposedFix": "Negation-aware exam matching, and suppress operative templates while a DKA prompt is active (reassess the abdomen after correction)."
         }
       ]

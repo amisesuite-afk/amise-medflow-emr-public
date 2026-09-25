@@ -308,10 +308,6 @@
             "wses-diverticulitis-2020"
           ],
           "note": "The Plan tab text is what gets documented; for a 6 cm abscess it must contain drainage, not an outpatient oral-antibiotic plan.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: Assessment says 'modified Hinchey Ib'; the uncomplicated variant lists 'hinchey ib' (in the modified Hinchey scale Ib is a pericolic abscess) and is checked first, so the documented plan is the outpatient oral co-amoxiclav plan with no drainage.",
           "proposedFix": "Use the modified Hinchey scale in dx-variants: move 'hinchey ib' to the abscess variant, use word-boundary matching (so 'hinchey i' does not match 'hinchey ii/iii/iv') and check peritonitis → abscess → uncomplicated."
         }
       ]
@@ -323,11 +319,7 @@
       "guidelineRefs": [
         "wses-diverticulitis-2020",
         "hinchey-mod-1999"
-      ],
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "Web: 'hinchey ib' is a keyword of diverticulitis_uncomplicated."
+      ]
     }
   },
   "guideline": [

@@ -395,10 +395,6 @@
             "if generalised peritonitis"
           ],
           "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The pneumoperitoneum rule (hasRadResult 'subdiaphragmatic') fires on the CXR report 'No free subdiaphragmatic gas beyond expected post-operative', adding 'Emergency laparotomy consent — source control' and 'Do NOT delay theatre' to a post-operative pneumonia.",
           "unverified": [
             "ios"
           ],

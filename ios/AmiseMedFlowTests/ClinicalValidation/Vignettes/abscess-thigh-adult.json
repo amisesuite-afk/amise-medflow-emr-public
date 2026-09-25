@@ -184,10 +184,6 @@
             "idsa-ssti-2014"
           ],
           "note": "IDSA: incision and drainage is the recommended treatment for a formed abscess; antibiotics alone are inadequate.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD L02.415 matches no pane-engine protocol (skin abscess protocol registered as L02.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
           ],

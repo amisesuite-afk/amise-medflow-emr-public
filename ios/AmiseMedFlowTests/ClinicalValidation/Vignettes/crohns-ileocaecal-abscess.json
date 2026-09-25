@@ -252,10 +252,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "computeClinicalPrompts \"Pneumoperitoneum on imaging → emergency laparotomy\" fires on the CT text \"No free gas\" (hasRadResult substring match, no negation).",
           "proposedFix": "Add negation handling to hasRadResult (no/without/absent … free gas/free air)."
         }
       ],

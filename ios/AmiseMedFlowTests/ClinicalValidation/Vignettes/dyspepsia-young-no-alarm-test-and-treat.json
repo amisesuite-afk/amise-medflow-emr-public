@@ -163,10 +163,6 @@
           "nice-cg184"
         ],
         "note": "No alarm features: routine primary/secondary care management.",
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Same-day call: adaptiveTriage reads CC+HPI free text without negation — \"No family history of stomach cancer\" gives \"Possible malignancy\" (the word \"cancer\") and \"No vomiting\" gives \"Vomiting or possible dehydration\".",
         "proposedFix": "adaptive-triage: negation handling (see gord-no-alarm-empirical-ppi).",
         "unverified": [
           "ios"

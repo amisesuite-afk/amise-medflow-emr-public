@@ -325,10 +325,6 @@
             "if generalised peritonitis"
           ],
           "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "'no peritonism' in the exam fires the peritonism prompt: 'Emergency laparotomy consent — source control; ICU post-operatively' and pip-tazo for an uncomplicated ileus.",
           "unverified": [
             "ios"
           ],

@@ -237,10 +237,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: forbidden management item present in web.clinicalPrompts: \"• emergency laparoscopic appendicectomy - consent obtained, theatre booked.\" (+1 more).",
           "proposedFix": "Gate the appendicectomy operative-plan cascade on the working diagnosis (see HPB findings gap 1) and a negation-aware exam matcher (\"no guarding\")."
         },
         {
@@ -256,10 +252,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: forbidden management item present in web.managementPanel: \"[surgical] early laparoscopic cholecystectomy within 72 h (grade i-ii).\" (+2 more).",
           "proposedFix": "The Assessment panel follows the PANE top (cholecystitis 0.299) instead of the confirmed diagnosis (J18.1); prefer the locked working diagnosis (HPB findings gap 7)."
         }
       ]

@@ -182,10 +182,6 @@
         "unverified": [
           "ios"
         ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Triage same_day_call: adaptiveTriage RED_FLAGS regexes have no negation handling (\"No family history of thyroid cancer\" → \"Possible malignancy\").",
         "proposedFix": "Add a negation window (\"no\", \"denies\", \"never\", \"non-\") before RED_FLAGS / symptom regex matches in adaptive-triage."
       }
     }

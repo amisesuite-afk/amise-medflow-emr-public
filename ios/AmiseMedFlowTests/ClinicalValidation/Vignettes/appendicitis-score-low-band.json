@@ -214,10 +214,6 @@
           "wses-2020"
         ],
         "note": "Low-risk score band: observation/outpatient review is appropriate; an emergency triage is over-triage.",
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Web: adaptiveTriage returns emergency_now because the HPI negative 'No vaginal bleeding' matches the 'GI or other bleeding' red flag (no negation handling).",
         "proposedFix": "Add negation handling to scanRedFlags (skip matches preceded within a few words by 'no', 'denies', 'without', 'negative')."
       }
     },
@@ -328,13 +324,9 @@
             "wses-2020"
           ],
           "note": "An operative plan for a low-risk score band (and with 'no guarding, no rebound' in the exam text) risks a negative appendicectomy.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
           ],
-          "knownGapNote": "Web: The appendicitis prompt fires on the substrings 'guarding'/'rebound' in 'No guarding, no rebound' and adds 'Emergency laparoscopic appendicectomy — consent obtained, theatre booked' for an AIR 1 patient.",
           "proposedFix": "Negation-aware exam() matching in computeClinicalPrompts; gate the operative template on a confirmed appendicitis diagnosis, not on exam substrings."
         }
       ]

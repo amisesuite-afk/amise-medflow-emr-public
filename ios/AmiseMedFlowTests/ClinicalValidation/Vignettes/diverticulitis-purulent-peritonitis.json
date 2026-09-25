@@ -313,10 +313,6 @@
             "wses-diverticulitis-2020"
           ],
           "note": "The documented plan must contain the emergency operation for Hinchey III.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: 'hinchey iii' contains the abscess keyword 'hinchey i', and the abscess variant is checked before the peritonitis variant, so the documented plan (immediate/conservative/follow-up phases) has no emergency operation — only 'interval sigmoid colectomy 6–8 weeks'.",
           "proposedFix": "Word-boundary Hinchey matching and specific-first variant order (peritonitis before abscess)."
         },
         {
@@ -363,11 +359,7 @@
       "guidelineRefs": [
         "wses-diverticulitis-2020",
         "hinchey-mod-1999"
-      ],
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "Web: Substring 'hinchey i' ⊂ 'hinchey iii' selects diverticulitis_abscess."
+      ]
     }
   },
   "guideline": [

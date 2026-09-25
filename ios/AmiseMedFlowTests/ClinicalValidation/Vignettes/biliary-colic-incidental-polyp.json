@@ -192,10 +192,6 @@
         "id": "level-not-emergency",
         "severity": "quality",
         "atMost": "priority",
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "adaptiveTriage emergency_now (score 125) for a pain-free outpatient: \"No fever, jaundice or weight loss\" fires biliary-obstruction and malignancy rules.",
         "unverified": [
           "ios"
         ],

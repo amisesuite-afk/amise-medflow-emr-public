@@ -6,31 +6,70 @@
   "permutationOf": "cholecystitis-tg18-grade1",
   "permutationLabel": "TG18 Grade II (moderate) — palpable tender RUQ mass is the only Grade II criterion",
   "summary": "57-year-old diabetic man, 60 h of RUQ pain, fever 38.6 °C, tender palpable RUQ mass, WBC 15.6, CRP 188; ultrasound shows a distended, thick-walled gallbladder with pericholecystic inflammation. No organ dysfunction.",
-  "tags": ["biliary", "surgical", "diabetes"],
+  "tags": [
+    "biliary",
+    "surgical",
+    "diabetes"
+  ],
   "inputs": {
     "patient": {
       "ageYears": 57,
       "sex": "male",
-      "pregnancy": { "status": "not-applicable" },
+      "pregnancy": {
+        "status": "not-applicable"
+      },
       "heightCm": 175,
       "weightKg": 92
     },
-    "encounter": { "setting": "emergency", "visitType": "urgentReview", "acuity": "urgent" },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
     "chiefComplaint": "Right upper quadrant pain with fever",
     "hpi": "Two and a half days of constant right upper quadrant pain with fevers and vomiting. Known gallstones, awaiting elective cholecystectomy. Type 2 diabetic on metformin; sugars running high since the pain started. No jaundice.",
     "socrates": {
-      "onset": ["2–3 days ago"],
-      "site": ["RUQ"],
-      "character": ["Aching", "Sharp"],
-      "radiation": ["Right shoulder"],
-      "associations": ["Nausea", "Vomiting", "Fever"],
-      "timing": ["Constant", "Progressive"],
-      "exacerbating": ["Movement", "Deep breathing"],
-      "relieving": ["Nothing"],
-      "severity": ["Severe (7–9/10)"]
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "RUQ"
+      ],
+      "character": [
+        "Aching",
+        "Sharp"
+      ],
+      "radiation": [
+        "Right shoulder"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting",
+        "Fever"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement",
+        "Deep breathing"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
     },
-    "symptoms": ["right upper quadrant pain", "fever", "vomiting"],
-    "negatives": ["jaundice"],
+    "symptoms": [
+      "right upper quadrant pain",
+      "fever",
+      "vomiting"
+    ],
+    "negatives": [
+      "jaundice"
+    ],
     "exam": {
       "general": "Unwell, alert. Temperature 38.6°C, pulse 104/min, BP 142/88.",
       "abdomen": "Tender palpable mass in the right upper quadrant (inflamed gallbladder with omental phlegmon), positive Murphy's sign, localised guarding. No generalised peritonism."
@@ -50,14 +89,62 @@
       }
     ],
     "labs": [
-      { "analyte": "wbc", "name": "WBC", "value": 15.6, "unit": "×10⁹/L", "minutesAgo": 40 },
-      { "analyte": "crp", "name": "CRP", "value": 188, "unit": "mg/L", "minutesAgo": 40 },
-      { "analyte": "bilirubin", "name": "Bilirubin", "value": 22, "unit": "µmol/L", "minutesAgo": 40 },
-      { "analyte": "alp", "name": "ALP", "value": 140, "unit": "U/L", "minutesAgo": 40 },
-      { "analyte": "alt", "name": "ALT", "value": 55, "unit": "U/L", "minutesAgo": 40 },
-      { "analyte": "creatinine", "name": "Creatinine", "value": 88, "unit": "µmol/L", "minutesAgo": 40 },
-      { "analyte": "glucose", "name": "Glucose", "value": 13.2, "unit": "mmol/L", "minutesAgo": 40 },
-      { "analyte": "lipase", "name": "Lipase", "value": 42, "unit": "U/L", "minutesAgo": 40 }
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 15.6,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 188,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 22,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 140,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 55,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 88,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 13.2,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 42,
+        "unit": "U/L",
+        "minutesAgo": 40
+      }
     ],
     "imaging": [
       {
@@ -68,11 +155,24 @@
         "minutesAgo": 15
       }
     ],
-    "comorbidities": ["Type 2 diabetes mellitus", "Hypertension"],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Hypertension"
+    ],
     "surgicalHistory": [],
     "medications": [
-      { "drug": "Metformin", "dose": "1 g", "frequency": "BD", "indication": "Type 2 diabetes" },
-      { "drug": "Lisinopril", "dose": "10 mg", "frequency": "OD", "indication": "Hypertension" }
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Lisinopril",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
     ],
     "allergies": [],
     "nkda": true,
@@ -98,7 +198,12 @@
     "platform": {
       "web": {
         "ccTemplate": "Acute abdominal pain",
-        "symptoms": ["abdominal pain", "right upper quadrant pain", "fever", "vomiting"],
+        "symptoms": [
+          "abdominal pain",
+          "right upper quadrant pain",
+          "fever",
+          "vomiting"
+        ],
         "symptomDetails": {
           "abdominal pain": [
             "RUQ",
@@ -114,7 +219,14 @@
             "Movement"
           ]
         },
-        "examFindings": { "abdomen": ["Tender RUQ", "Murphy's sign +", "Guarding", "Mass palpable"] },
+        "examFindings": {
+          "abdomen": [
+            "Tender RUQ",
+            "Murphy's sign +",
+            "Guarding",
+            "Mass palpable"
+          ]
+        },
         "durationDays": 2.5,
         "painScore": 8
       }
@@ -126,11 +238,21 @@
         {
           "id": "dx-cholecystitis-top3",
           "severity": "critical",
-          "match": ["acute cholecystitis", "calculous cholecystitis", "re:^cholecystitis"],
-          "unless": ["acalculous"],
+          "match": [
+            "acute cholecystitis",
+            "calculous cholecystitis",
+            "re:^cholecystitis"
+          ],
+          "unless": [
+            "acalculous"
+          ],
           "k": 3,
-          "guidelineRefs": ["tg18-dx-cholecystitis"],
-          "knownGap": ["ios"],
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ],
+          "knownGap": [
+            "ios"
+          ],
           "knownGapNote": "iOS: fallback mode (DiagnosticDatabase.json does not decode): the gallstone ultrasound text is appended to the CC for routing and selects the biliaryColic pool, which has no built-in list (`?? []`), so the differential is empty."
         }
       ],
@@ -141,15 +263,21 @@
         "id": "level-at-least-urgent",
         "severity": "critical",
         "atLeast": "urgent",
-        "guidelineRefs": ["tg18-mgmt-cholecystitis"],
-        "knownGap": ["ios"],
+        "guidelineRefs": [
+          "tg18-mgmt-cholecystitis"
+        ],
+        "knownGap": [
+          "ios"
+        ],
         "knownGapNote": "iOS ClinicalPathwayEngine leaves RUQ pain + fever at routine."
       },
       "redFlags": [
         {
           "id": "flag-diabetes",
           "severity": "quality",
-          "match": ["diabet"],
+          "match": [
+            "diabet"
+          ],
           "note": "Diabetes: infection risk, glycaemic control and metformin plan around theatre."
         }
       ]
@@ -160,8 +288,12 @@
           "id": "score-rec-tg18-cholecystitis",
           "severity": "quality",
           "score": "tg18-cholecystitis",
-          "guidelineRefs": ["tg18-dx-cholecystitis"],
-          "knownGap": ["web"],
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ],
+          "knownGap": [
+            "web"
+          ],
           "knownGapNote": "No TG18 cholecystitis CDS rule on web."
         }
       ],
@@ -172,9 +304,13 @@
           "score": "tg18-cholecystitis",
           "mode": "calculator",
           "equals": 2,
-          "guidelineRefs": ["tg18-dx-cholecystitis"],
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ],
           "note": "TG18: a palpable tender mass in the RUQ is on its own a Grade II criterion. Under-grading to Grade I changes the management flowchart (Grade II: early cholecystectomy only in an experienced centre if fit; otherwise antibiotics ± gallbladder drainage; blood cultures).",
-          "knownGap": ["ios"],
+          "knownGap": [
+            "ios"
+          ],
           "knownGapNote": "Neither calculator has a \"palpable tender RUQ mass\" Grade II criterion (iOS folds it into Grade I local signs; web grades II only on WBC >18)."
         }
       ]
@@ -184,15 +320,26 @@
         {
           "id": "inv-blood-cultures",
           "severity": "quality",
-          "match": ["blood culture"],
-          "guidelineRefs": ["tg18-antimicrobial"],
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "tg18-antimicrobial"
+          ],
           "note": "TG18: blood cultures are recommended in Grade II and III."
         },
         {
           "id": "inv-glucose",
           "severity": "quality",
-          "match": ["glucose", "hba1c", "blood sugar", "cbg"],
-          "unverified": ["ios"]
+          "match": [
+            "glucose",
+            "hba1c",
+            "blood sugar",
+            "cbg"
+          ],
+          "unverified": [
+            "ios"
+          ]
         }
       ],
       "mustExclude": []
@@ -202,14 +349,26 @@
         {
           "id": "mgmt-lap-cholecystectomy",
           "severity": "critical",
-          "match": ["laparoscopic cholecystectomy", "lap chole", "re:lap(\\.|aroscopic)? cholecystectomy"],
-          "guidelineRefs": ["tg18-mgmt-cholecystitis"]
+          "match": [
+            "laparoscopic cholecystectomy",
+            "lap chole",
+            "re:lap(\\.|aroscopic)? cholecystectomy"
+          ],
+          "guidelineRefs": [
+            "tg18-mgmt-cholecystitis"
+          ]
         },
         {
           "id": "mgmt-gb-drainage-option",
           "severity": "quality",
-          "match": ["cholecystostomy", "gallbladder drainage", "ptgbd"],
-          "guidelineRefs": ["tg18-mgmt-cholecystitis"],
+          "match": [
+            "cholecystostomy",
+            "gallbladder drainage",
+            "ptgbd"
+          ],
+          "guidelineRefs": [
+            "tg18-mgmt-cholecystitis"
+          ],
           "note": "TG18 Grade II: gallbladder drainage if the patient does not respond to initial treatment or is not fit for early surgery."
         },
         {
@@ -223,26 +382,40 @@
             "cefuroxime",
             "ceftriaxone"
           ],
-          "guidelineRefs": ["tg18-antimicrobial"]
+          "guidelineRefs": [
+            "tg18-antimicrobial"
+          ]
         },
         {
           "id": "mgmt-diabetes-plan",
           "severity": "quality",
-          "match": ["metformin", "insulin", "glucose", "glycaemic", "diabet"],
-          "unverified": ["ios"],
+          "match": [
+            "metformin",
+            "insulin",
+            "glucose",
+            "glycaemic",
+            "diabet"
+          ],
+          "unverified": [
+            "ios"
+          ],
           "note": "Peri-operative glycaemic and metformin plan."
         }
       ],
       "mustExclude": []
     },
-    "pathway": { "id": "pathway-first-visit", "severity": "quality", "equals": "firstVisit" },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit"
+    },
     "dxVariant": {
       "id": "variant-grade2",
       "severity": "quality",
       "equals": "cholecystitis_grade2",
-      "guidelineRefs": ["tg18-mgmt-cholecystitis"],
-      "knownGap": ["web"],
-      "knownGapNote": "dx-variants: the Grade I variant lists the bare keyword 'cholecystitis' and is checked first, so any cholecystitis assessment selects Grade I."
+      "guidelineRefs": [
+        "tg18-mgmt-cholecystitis"
+      ]
     }
   },
   "guideline": [

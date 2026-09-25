@@ -189,10 +189,6 @@
         "id": "level-not-emergency",
         "severity": "quality",
         "atMost": "priority",
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "adaptiveTriage emergency_now: \"No jaundice, dark urine, pale stools or fever since\" fires biliary-obstruction and cholangitis-pattern rules.",
         "unverified": [
           "ios"
         ],

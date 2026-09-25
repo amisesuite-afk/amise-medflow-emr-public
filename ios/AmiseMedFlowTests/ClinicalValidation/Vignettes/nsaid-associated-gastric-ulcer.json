@@ -194,10 +194,6 @@
         "guidelineRefs": [
           "nice-cg184"
         ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Emergency now (score 52): adaptiveTriage reads CC+HPI free text without negation — \"No bleeding\" matches the \"GI or other bleeding\" urgent red flag; exam \"no peritonism\" also fires the \"Generalised peritonism\" safety prompt.",
         "proposedFix": "Negation handling in adaptive-triage and computeClinicalPrompts exam-text rules.",
         "unverified": [
           "ios"

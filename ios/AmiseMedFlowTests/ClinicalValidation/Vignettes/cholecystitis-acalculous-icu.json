@@ -402,10 +402,6 @@
       "guidelineRefs": [
         "tg18-mgmt-cholecystitis"
       ],
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "Grade I variant selected (bare \"cholecystitis\" keyword checked first), so the Plan tab drops the conservative phase that holds percutaneous cholecystostomy.",
       "proposedFix": "dx-variants.ts: check Grade III → II → I; add \"acalculous\" to Grade III keywords when organ dysfunction is documented."
     }
   },

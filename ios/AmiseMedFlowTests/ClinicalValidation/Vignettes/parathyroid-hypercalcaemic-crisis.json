@@ -276,10 +276,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Same dx-variant substring bug: the crisis plan opens with the elective Total Thyroidectomy template.",
           "proposedFix": "Add a Parathyroid dx-variant group ahead of Thyroid; word-boundary matching."
         },
         {

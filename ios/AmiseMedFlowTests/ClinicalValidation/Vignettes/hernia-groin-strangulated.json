@@ -400,10 +400,6 @@
       "severity": "critical",
       "equals": "hernia_strangulated",
       "note": "The strangulated variant is the one without a reduction attempt (immediate + surgical phases only).",
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "detectDxVariants uses plain substring matching and the first variant with any keyword wins: the assessment says \"strangulated\" and \"irreducible\"; hernia_incarcerated is checked before hernia_strangulated, so the plan says \"Attempt gentle manual reduction\" (contraindicated in strangulation).",
       "proposedFix": "Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' (\"irreducible\" contains \"reducible\"); \"bethesda vi\" contains \"bethesda v\"."
     }
   },

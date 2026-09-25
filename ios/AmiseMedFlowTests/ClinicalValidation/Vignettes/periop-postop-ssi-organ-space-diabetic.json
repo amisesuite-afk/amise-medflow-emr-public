@@ -348,10 +348,6 @@
             "if generalised peritonitis"
           ],
           "note": "Contained collection with an intact anastomosis and no generalised peritonitis: percutaneous drainage is first-line source control (WSES 2017); relaparotomy is not the default.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Peritonism prompt fired by 'no generalised peritonism' → 'Emergency laparotomy consent' for a contained collection with an intact anastomosis.",
           "unverified": [
             "ios"
           ],

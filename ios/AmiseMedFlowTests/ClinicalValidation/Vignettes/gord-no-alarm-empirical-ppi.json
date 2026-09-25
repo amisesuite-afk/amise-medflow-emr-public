@@ -154,10 +154,6 @@
           "nice-cg184"
         ],
         "note": "The HPI lists alarm features as absent (\"no difficulty swallowing, no weight loss…\"); negated features must not escalate.",
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Emergency now (score 65): adaptiveTriage reads CC+HPI free text without negation — \"no weight loss\" → Possible malignancy, \"no vomiting\" → vomiting, \"no black stools\" → Possible GI bleeding.",
         "proposedFix": "adaptive-triage: strip negated clauses (\"no/denies/without X\") before RED_FLAGS, GI_BLEED_TERMS and vomiting rules.",
         "unverified": [
           "ios"

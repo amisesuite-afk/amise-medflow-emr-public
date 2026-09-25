@@ -264,10 +264,6 @@
             "esvs-aaa-2024",
             "nice-ng156"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD I71.3 matches no pane-engine protocol (aortic aneurysm protocol registered as I71.9; the panel shows pancreatitis from PANE) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
           ],
@@ -285,10 +281,6 @@
             "esvs-aaa-2024",
             "nice-ng156"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD I71.3 matches no pane-engine protocol (aortic aneurysm protocol registered as I71.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
           ],

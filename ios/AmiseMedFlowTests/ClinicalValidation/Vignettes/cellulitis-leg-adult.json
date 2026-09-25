@@ -243,10 +243,6 @@
             "nice-ng141"
           ],
           "note": "NICE NG141 first-choice oral antibiotic for non-severe cellulitis.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD L03.115 matches no pane-engine protocol (cellulitis protocol registered as L03.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
           ],
@@ -266,10 +262,6 @@
           "guidelineRefs": [
             "nice-ng141"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD L03.115 matches no pane-engine protocol (cellulitis protocol registered as L03.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
           ],

@@ -364,10 +364,6 @@
             "wses-sbo-2018"
           ],
           "note": "The Plan tab text is the documented plan; for strangulation it must contain the operation.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: detectDxVariants picks 'sbo_adhesional' (keyword 'small bowel obstruction' is checked before 'strangulation'), whose allowed phases exclude 'surgical'; the documented plan has no operation.",
           "proposedFix": "Same ordering fix; the strangulation variant's surgical phase then carries the operation into the documented plan."
         },
         {
@@ -436,11 +432,7 @@
       "equals": "sbo_strangulation",
       "guidelineRefs": [
         "wses-sbo-2018"
-      ],
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "Web: First-match order: sbo_adhesional ('small bowel obstruction', 'adhesion') is tested before sbo_strangulation."
+      ]
     }
   },
   "guideline": [

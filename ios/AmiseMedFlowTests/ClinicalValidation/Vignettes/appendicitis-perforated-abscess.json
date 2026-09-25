@@ -299,13 +299,9 @@
             "wses-2020"
           ],
           "note": "WSES 2020: non-operative management with antibiotics and percutaneous drainage (if available) is reasonable for a periappendiceal abscess; laparoscopic surgery in experienced hands is an alternative. Quality because both are acceptable.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
           ],
-          "knownGapNote": "Web: PANE converges on 'Acute Appendicitis' (≥0.85), so PlanTab uses the appendicitis protocol, which has no drainage step; the appendix_mass protocol (with drainage) is used only if PANE picks it.",
           "proposedFix": "When the confirmed ICD is K35.3x or the assessment names an abscess/phlegmon, use the appendix_mass protocol for the Plan tab instead of the converged PANE disease."
         },
         {
@@ -320,13 +316,9 @@
             "wses-2020"
           ],
           "note": "WSES 2020: after non-operative management in patients over 40, interval colonoscopy/imaging because of the neoplasm rate.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Appendicitis protocol has no interval colonoscopy/CT; only the appendix_mass protocol does."
+          ]
         }
       ]
     },
@@ -337,10 +329,6 @@
       "guidelineRefs": [
         "wses-2020"
       ],
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "Web: detectDxVariants: 'appendicitis_uncomplicated' is checked first and its keyword list contains the bare word 'appendicitis', so any assessment mentioning appendicitis (here 'perforated appendicitis with a 5.5 cm pericaecal abscess') selects the uncomplicated variant.",
       "proposedFix": "Order the appendicitis variants from most to least specific (generalised peritonitis, abscess, phlegmon, localised peritonitis, uncomplicated) and remove the bare 'appendicitis' keyword from the uncomplicated variant (make it the fallback when no other variant matches)."
     }
   },

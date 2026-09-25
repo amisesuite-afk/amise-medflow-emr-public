@@ -301,10 +301,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web 2026-09-25: passed before pane model 1.0.0 only because the wrong PANE top 3 (cholecystitis) seeded that protocol's tests; PANE now ranks infected obstructed kidney, which has no management protocol yet, so nothing seeds blood and urine cultures.",
           "proposedFix": "A protocol for the PANE node infected_obstructed_kidney (EAU Urolithiasis 2024: cultures, antibiotics, urgent decompression)."
         }
       ]

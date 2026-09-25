@@ -177,10 +177,6 @@
             "if generalised peritonitis"
           ],
           "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The CT report 'no current abscess or free air' matches hasRadResult('free air'), so the pneumoperitoneum prompt adds 'Emergency laparotomy consent', IV pip-tazo and 'Do NOT delay theatre' to an elective planning visit.",
           "unverified": [
             "ios"
           ],

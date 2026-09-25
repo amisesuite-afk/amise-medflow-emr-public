@@ -187,10 +187,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Consequence of the variant bug: the plan opens with \"Hemithyroidectomy (ipsilateral lobe + isthmus)\" above the protocol's total-thyroidectomy steps.",
           "proposedFix": "Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' (\"irreducible\" contains \"reducible\"); \"bethesda vi\" contains \"bethesda v\"."
         }
       ]
@@ -203,10 +199,6 @@
         "unverified": [
           "ios"
         ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Triage same_day_call: adaptiveTriage RED_FLAGS regexes have no negation handling (\"No family history of thyroid cancer\" → \"Possible malignancy\").",
         "proposedFix": "Add a negation window (\"no\", \"denies\", \"never\", \"non-\") before RED_FLAGS / symptom regex matches in adaptive-triage."
       }
     },
@@ -215,10 +207,6 @@
       "severity": "critical",
       "equals": "thyroid_total",
       "note": "cN1b papillary carcinoma needs the total-thyroidectomy plan; \"Bethesda VI\" must not be read as \"Bethesda V\".",
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "detectDxVariants uses plain substring matching and the first variant with any keyword wins: \"bethesda vi\" contains the hemithyroidectomy keyword \"bethesda v\", so cN1b papillary carcinoma gets the hemithyroidectomy plan prefix.",
       "proposedFix": "Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' (\"irreducible\" contains \"reducible\"); \"bethesda vi\" contains \"bethesda v\"."
     }
   },

@@ -366,10 +366,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: forbidden management item present in web.managementPanel: \"[surgical] laparoscopic appendicectomy (gold standard; reduces wound infection and los).\" (+3 more).",
           "proposedFix": "Assessment panel follows the PANE top (appendicitis 0.261) instead of the confirmed E11.10; \"no guarding, no peritonism\" fires the generalised-peritonism prompt (negation). Prefer the locked working diagnosis and a negation-aware exam matcher."
         }
       ]

@@ -136,10 +136,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web 2026-09-25: passed before pane model 1.0.0 only because the wrong PANE top 3 (cholecystitis) seeded that protocol's tests; PANE now ranks sepsis, meningitis and UTI, which has no management protocol yet, so nothing seeds blood cultures.",
           "proposedFix": "A febrile-infant pathway / protocol for the PANE nodes sepsis and meningitis (NICE NG143: blood culture, urine, LP in infants under 3 months)."
         },
         {

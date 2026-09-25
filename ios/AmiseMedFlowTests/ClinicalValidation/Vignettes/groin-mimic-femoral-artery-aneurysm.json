@@ -236,11 +236,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No vascular referral in any output (the inguinal_hernia panel is shown instead)."
+          ]
         }
       ]
     }

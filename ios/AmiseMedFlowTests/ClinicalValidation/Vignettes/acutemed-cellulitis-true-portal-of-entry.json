@@ -173,10 +173,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: no antibiotic in any output. PANE ranks Acute Cholecystitis first (0.152) and Cellulitis second, so the Assessment panel shows no cellulitis protocol, and the confirmed ICD L03.116 (cellulitis of left lower limb) has no getProtocolByIcd mapping (the cellulitis node is L03.90). The only management items are generic prompts.",
           "proposedFix": "Map L03.11x (cellulitis of lower limb) to the cellulitis protocol in getProtocolByIcd; let the Assessment panel follow the confirmed diagnosis rather than the PANE top (cholecystitis 0.152 for a leg cellulitis)."
         }
       ],

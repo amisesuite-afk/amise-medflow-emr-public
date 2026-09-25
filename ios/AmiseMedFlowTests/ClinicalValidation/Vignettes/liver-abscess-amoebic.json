@@ -258,10 +258,6 @@
             "review-amoebiasis-2003"
           ],
           "note": "Amoebicidal metronidazole (e.g. 750–800 mg TDS). A generic anaerobic-cover metronidazole in a sepsis or peritonism bundle does not count.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "A06.4 has no protocol mapping (getProtocolByIcd) and PANE ranks appendicitis first (0.38), so the Assessment panel shows the appendicitis protocol; the only metronidazole is anaerobic cover in a sepsis bundle.",
           "unverified": [
             "ios"
           ],
@@ -334,10 +330,6 @@
             "exclude appendicitis"
           ],
           "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Assessment panel shows the appendicitis protocol (\"Laparoscopic appendicectomy\") because PANE ranks appendicitis first for fever + RUQ pain.",
           "unverified": [
             "ios"
           ],

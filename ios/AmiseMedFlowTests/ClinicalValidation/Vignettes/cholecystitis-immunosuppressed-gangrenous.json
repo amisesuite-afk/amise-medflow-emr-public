@@ -414,10 +414,6 @@
             "exclude appendicitis"
           ],
           "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Appendicectomy operative plan fires on \"No guarding\" in the exam text.",
           "unverified": [
             "ios"
           ],
@@ -432,10 +428,6 @@
       "guidelineRefs": [
         "tg18-mgmt-cholecystitis"
       ],
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "Grade I variant selected (\"cholecystitis\" keyword first; \"gangrenous cholecystitis\" is a Grade III keyword in dx-variants although TG18 grades it II).",
       "proposedFix": "dx-variants.ts: check Grade III → II → I and move \"gangrenous cholecystitis\" to Grade II (TG18 marked local inflammation), keeping Grade III for organ dysfunction."
     }
   },

@@ -6,30 +6,66 @@
   "permutationOf": "cholecystitis-tg18-grade1",
   "permutationLabel": "TG18 Grade III (severe) — septic shock, confusion, AKI, thrombocytopenia; penicillin anaphylaxis",
   "summary": "71-year-old man, 4 days of RUQ pain and fever, new confusion, oliguria, BP 82/48 on noradrenaline, creatinine 238, platelets 88, lactate 4.6. Ultrasound: acute calculous cholecystitis, CBD not dilated. Penicillin anaphylaxis.",
-  "tags": ["biliary", "surgical", "sepsis", "allergy"],
+  "tags": [
+    "biliary",
+    "surgical",
+    "sepsis",
+    "allergy"
+  ],
   "inputs": {
     "patient": {
       "ageYears": 71,
       "sex": "male",
-      "pregnancy": { "status": "not-applicable" },
+      "pregnancy": {
+        "status": "not-applicable"
+      },
       "heightCm": 172,
       "weightKg": 80
     },
-    "encounter": { "setting": "emergency", "visitType": "urgentReview", "acuity": "emergency" },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
     "chiefComplaint": "Right upper quadrant pain, confusion and low blood pressure",
     "hpi": "Brought in by family. Four days of right upper quadrant pain and fever; increasingly drowsy with new confusion since this morning and passing little urine. Known gallstones.",
     "socrates": {
-      "onset": ["4–7 days ago"],
-      "site": ["RUQ"],
-      "character": ["Aching"],
-      "radiation": ["No radiation"],
-      "associations": ["Fever", "Nausea"],
-      "timing": ["Constant", "Progressive"],
-      "exacerbating": ["Movement"],
-      "relieving": ["Nothing"],
-      "severity": ["Severe (7–9/10)"]
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "RUQ"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever",
+        "Nausea"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
     },
-    "symptoms": ["right upper quadrant pain", "fever", "confusion", "oliguria"],
+    "symptoms": [
+      "right upper quadrant pain",
+      "fever",
+      "confusion",
+      "oliguria"
+    ],
     "negatives": [],
     "exam": {
       "general": "Drowsy with new confusion (GCS 13). Temperature 39.1°C, pulse 124/min. Septic shock: hypotension 82/48 despite 2 L crystalloid, now on noradrenaline 0.1 microgram/kg/min. Haemodynamically unstable. Cool peripheries.",
@@ -49,18 +85,90 @@
       }
     ],
     "labs": [
-      { "analyte": "wbc", "name": "WBC", "value": 22.4, "unit": "×10⁹/L", "minutesAgo": 30 },
-      { "analyte": "crp", "name": "CRP", "value": 310, "unit": "mg/L", "minutesAgo": 30 },
-      { "analyte": "creatinine", "name": "Creatinine", "value": 238, "unit": "µmol/L", "minutesAgo": 30 },
-      { "analyte": "urea", "name": "Urea", "value": 18.2, "unit": "mmol/L", "minutesAgo": 30 },
-      { "analyte": "bilirubin", "name": "Bilirubin", "value": 38, "unit": "µmol/L", "minutesAgo": 30 },
-      { "analyte": "alp", "name": "ALP", "value": 180, "unit": "U/L", "minutesAgo": 30 },
-      { "analyte": "alt", "name": "ALT", "value": 90, "unit": "U/L", "minutesAgo": 30 },
-      { "analyte": "platelets", "name": "Platelets", "value": 88, "unit": "×10⁹/L", "minutesAgo": 30 },
-      { "analyte": "inr", "name": "INR", "value": 1.4, "unit": "", "minutesAgo": 30 },
-      { "analyte": "lactate", "name": "Lactate", "value": 4.6, "unit": "mmol/L", "minutesAgo": 30 },
-      { "analyte": "albumin", "name": "Albumin", "value": 26, "unit": "g/L", "minutesAgo": 30 },
-      { "analyte": "lipase", "name": "Lipase", "value": 60, "unit": "U/L", "minutesAgo": 30 }
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 22.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 310,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 238,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 18.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 38,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 180,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 90,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 88,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.4,
+        "unit": "",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 4.6,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 26,
+        "unit": "g/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 60,
+        "unit": "U/L",
+        "minutesAgo": 30
+      }
     ],
     "imaging": [
       {
@@ -71,14 +179,38 @@
         "minutesAgo": 20
       }
     ],
-    "comorbidities": ["Hypertension", "Ischaemic heart disease"],
+    "comorbidities": [
+      "Hypertension",
+      "Ischaemic heart disease"
+    ],
     "surgicalHistory": [],
     "medications": [
-      { "drug": "Aspirin", "dose": "75 mg", "frequency": "OD", "indication": "Ischaemic heart disease" },
-      { "drug": "Atorvastatin", "dose": "40 mg", "frequency": "ON", "indication": "Ischaemic heart disease" },
-      { "drug": "Ramipril", "dose": "5 mg", "frequency": "OD", "indication": "Hypertension" }
+      {
+        "drug": "Aspirin",
+        "dose": "75 mg",
+        "frequency": "OD",
+        "indication": "Ischaemic heart disease"
+      },
+      {
+        "drug": "Atorvastatin",
+        "dose": "40 mg",
+        "frequency": "ON",
+        "indication": "Ischaemic heart disease"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
     ],
-    "allergies": [{ "name": "Penicillin", "severity": "Severe", "reaction": "Anaphylaxis" }],
+    "allergies": [
+      {
+        "name": "Penicillin",
+        "severity": "Severe",
+        "reaction": "Anaphylaxis"
+      }
+    ],
     "nkda": false,
     "socialHistory": "Retired fisherman. Ex-smoker. Lives with wife.",
     "scoreForms": {
@@ -90,9 +222,19 @@
         "palpableTenderRUQMass": false,
         "durationOver72h": true,
         "markedLocalInflammation": false,
-        "organDysfunction": ["cardiovascular", "neurological", "renal", "haematological"]
+        "organDysfunction": [
+          "cardiovascular",
+          "neurological",
+          "renal",
+          "haematological"
+        ]
       },
-      "qsofa": { "alteredMentation": true, "rrAtLeast22": true, "sbpAtMost100": true, "suspectedInfection": true }
+      "qsofa": {
+        "alteredMentation": true,
+        "rrAtLeast22": true,
+        "sbpAtMost100": true,
+        "suspectedInfection": true
+      }
     },
     "confirmedDiagnosis": {
       "name": "Acute calculous cholecystitis",
@@ -103,7 +245,12 @@
     "platform": {
       "web": {
         "ccTemplate": "Acute abdominal pain",
-        "symptoms": ["abdominal pain", "right upper quadrant pain", "fever", "confusion"],
+        "symptoms": [
+          "abdominal pain",
+          "right upper quadrant pain",
+          "fever",
+          "confusion"
+        ],
         "symptomDetails": {
           "abdominal pain": [
             "RUQ",
@@ -116,7 +263,13 @@
             "Worsening over time"
           ]
         },
-        "examFindings": { "abdomen": ["Tender RUQ", "Murphy's sign +", "Guarding"] },
+        "examFindings": {
+          "abdomen": [
+            "Tender RUQ",
+            "Murphy's sign +",
+            "Guarding"
+          ]
+        },
         "durationDays": 4,
         "painScore": 8
       }
@@ -128,11 +281,21 @@
         {
           "id": "dx-cholecystitis-top3",
           "severity": "critical",
-          "match": ["acute cholecystitis", "calculous cholecystitis", "re:^cholecystitis"],
-          "unless": ["acalculous"],
+          "match": [
+            "acute cholecystitis",
+            "calculous cholecystitis",
+            "re:^cholecystitis"
+          ],
+          "unless": [
+            "acalculous"
+          ],
           "k": 3,
-          "guidelineRefs": ["tg18-dx-cholecystitis"],
-          "knownGap": ["ios"],
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ],
+          "knownGap": [
+            "ios"
+          ],
           "knownGapNote": "iOS: fallback mode (DiagnosticDatabase.json does not decode): the gallstone ultrasound text is appended to the CC for routing and selects the biliaryColic pool, which has no built-in list (`?? []`), so the differential is empty."
         }
       ],
@@ -140,9 +303,13 @@
         {
           "id": "mnm-cholangitis",
           "severity": "quality",
-          "match": ["cholangitis"],
+          "match": [
+            "cholangitis"
+          ],
           "note": "Fever, RUQ pain and confusion with a raised bilirubin: cholangitis must be considered (CBD normal on US makes it less likely).",
-          "knownGap": ["ios"],
+          "knownGap": [
+            "ios"
+          ],
           "knownGapNote": "iOS: fallback mode (DiagnosticDatabase.json does not decode): the gallstone ultrasound text is appended to the CC for routing and selects the biliaryColic pool, which has no built-in list (`?? []`), so the differential is empty."
         }
       ]
@@ -152,40 +319,66 @@
         "id": "level-emergency",
         "severity": "critical",
         "atLeast": "emergency",
-        "guidelineRefs": ["tg18-mgmt-cholecystitis", "ssc-2021"],
+        "guidelineRefs": [
+          "tg18-mgmt-cholecystitis",
+          "ssc-2021"
+        ],
         "note": "Septic shock with organ dysfunction: immediate resuscitation and critical care.",
-        "knownGap": ["ios"],
+        "knownGap": [
+          "ios"
+        ],
         "knownGapNote": "iOS ClinicalPathwayEngine reads only CC/PMH text for emergency keywords; this CC yields routine."
       },
       "mustAlarm": [
         {
           "id": "alarm-sepsis",
           "severity": "critical",
-          "match": ["sepsis", "septic"],
-          "guidelineRefs": ["ssc-2021", "sepsis-3"],
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "guidelineRefs": [
+            "ssc-2021",
+            "sepsis-3"
+          ],
           "note": "Hypotension needing vasopressor with lactate >2 after fluids meets Sepsis-3 septic shock."
         },
         {
           "id": "alarm-haemodynamic",
           "severity": "critical",
-          "match": ["haemodynamic", "hemodynamic", "hypotension", "shock"],
-          "guidelineRefs": ["ssc-2021"]
+          "match": [
+            "haemodynamic",
+            "hemodynamic",
+            "hypotension",
+            "shock"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
         }
       ],
       "redFlags": [
         {
           "id": "flag-penicillin-allergy",
           "severity": "critical",
-          "match": ["penicillin", "allerg"],
+          "match": [
+            "penicillin",
+            "allerg"
+          ],
           "note": "Severe penicillin allergy must be surfaced before antibiotics are chosen."
         },
         {
           "id": "flag-organ-support",
           "severity": "quality",
-          "match": ["icu", "intensive care", "critical care", "organ"],
-          "guidelineRefs": ["tg18-mgmt-cholecystitis"],
-          "knownGap": ["web"],
-          "knownGapNote": "No ICU/organ-support flag among web red flags."
+          "match": [
+            "icu",
+            "intensive care",
+            "critical care",
+            "organ"
+          ],
+          "guidelineRefs": [
+            "tg18-mgmt-cholecystitis"
+          ]
         }
       ]
     },
@@ -195,15 +388,22 @@
           "id": "score-rec-tg18-cholecystitis",
           "severity": "quality",
           "score": "tg18-cholecystitis",
-          "guidelineRefs": ["tg18-dx-cholecystitis"],
-          "knownGap": ["web"],
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ],
+          "knownGap": [
+            "web"
+          ],
           "knownGapNote": "No TG18 cholecystitis CDS rule on web."
         },
         {
           "id": "score-rec-news2",
           "severity": "quality",
           "score": "news2",
-          "guidelineRefs": ["ssc-2021", "rcp-news2-2017"],
+          "guidelineRefs": [
+            "ssc-2021",
+            "rcp-news2-2017"
+          ],
           "note": "SSC 2021 recommends against qSOFA as a single screening tool, in favour of SIRS/NEWS/MEWS; NEWS2 is the UK/Caribbean ward standard."
         }
       ],
@@ -214,7 +414,9 @@
           "score": "tg18-cholecystitis",
           "mode": "calculator",
           "equals": 3,
-          "guidelineRefs": ["tg18-dx-cholecystitis"]
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ]
         },
         {
           "id": "score-tg18-autofill",
@@ -222,9 +424,14 @@
           "score": "tg18-cholecystitis",
           "mode": "autofill",
           "equals": 3,
-          "guidelineRefs": ["tg18-dx-cholecystitis"],
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ],
           "note": "The record holds SBP 82 on noradrenaline, AVPU 'C', creatinine 238 and platelets 88. An auto-filled grade below III under-grades a patient in septic shock until every organ box is ticked by hand.",
-          "knownGap": ["ios", "web"],
+          "knownGap": [
+            "ios",
+            "web"
+          ],
           "knownGapNote": "iOS auto-fill ignores the organ-dysfunction data in the record (SBP 82 on noradrenaline, AVPU C, creatinine 238, platelets 88) and returns Grade II from WBC alone; web returns \"criteria not met\"."
         },
         {
@@ -233,8 +440,12 @@
           "score": "qsofa",
           "mode": "autofill",
           "equals": 3,
-          "platforms": ["ios"],
-          "guidelineRefs": ["sepsis-3"]
+          "platforms": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "sepsis-3"
+          ]
         }
       ]
     },
@@ -243,22 +454,39 @@
         {
           "id": "inv-blood-cultures",
           "severity": "critical",
-          "match": ["blood culture"],
-          "guidelineRefs": ["ssc-2021", "tg18-antimicrobial"],
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021",
+            "tg18-antimicrobial"
+          ],
           "note": "Blood cultures before antimicrobials, without delaying them."
         },
         {
           "id": "inv-lactate",
           "severity": "quality",
-          "match": ["lactate"],
-          "guidelineRefs": ["ssc-2021"],
-          "unverified": ["ios"]
+          "match": [
+            "lactate"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
         },
         {
           "id": "inv-coagulation",
           "severity": "quality",
-          "match": ["inr", "coagulation", "clotting"],
-          "unverified": ["ios"],
+          "match": [
+            "inr",
+            "coagulation",
+            "clotting"
+          ],
+          "unverified": [
+            "ios"
+          ],
           "note": "Before percutaneous drainage."
         }
       ],
@@ -275,29 +503,58 @@
             "ptgbd",
             "re:percutaneous[^.;\\n]{0,30}(gallbladder|gb) drain"
           ],
-          "guidelineRefs": ["tg18-mgmt-cholecystitis"],
+          "guidelineRefs": [
+            "tg18-mgmt-cholecystitis"
+          ],
           "note": "TG18 Grade III with a negative predictive factor (neurological dysfunction): organ support + antibiotics + urgent/early gallbladder drainage; delayed cholecystectomy once recovered."
         },
         {
           "id": "mgmt-gb-drainage-in-generated-plan",
           "severity": "quality",
-          "match": ["cholecystostomy", "gallbladder drainage", "ptgbd"],
-          "sources": ["web.plan", "ios.radiation.plan"],
+          "match": [
+            "cholecystostomy",
+            "gallbladder drainage",
+            "ptgbd"
+          ],
+          "sources": [
+            "web.plan",
+            "ios.radiation.plan"
+          ],
           "note": "The drainage step must reach the generated plan text, not only a side panel.",
-          "knownGap": ["ios", "web"],
+          "knownGap": [
+            "ios"
+          ],
           "knownGapNote": "iOS radiation plan text has no drainage step (only an IR referral chip); web PlanTab selects the Grade I variant, which filters out the conservative-phase cholecystostomy line."
         },
         {
           "id": "mgmt-organ-support",
           "severity": "critical",
-          "match": ["icu", "intensive care", "hdu", "critical care", "organ support"],
-          "guidelineRefs": ["tg18-mgmt-cholecystitis", "ssc-2021"]
+          "match": [
+            "icu",
+            "intensive care",
+            "hdu",
+            "critical care",
+            "organ support"
+          ],
+          "guidelineRefs": [
+            "tg18-mgmt-cholecystitis",
+            "ssc-2021"
+          ]
         },
         {
           "id": "mgmt-non-penicillin-antibiotic",
           "severity": "quality",
-          "match": ["aztreonam", "ciprofloxacin", "levofloxacin", "meropenem", "re:non-?penicillin", "metronidazole"],
-          "guidelineRefs": ["tg18-antimicrobial"],
+          "match": [
+            "aztreonam",
+            "ciprofloxacin",
+            "levofloxacin",
+            "meropenem",
+            "re:non-?penicillin",
+            "metronidazole"
+          ],
+          "guidelineRefs": [
+            "tg18-antimicrobial"
+          ],
           "note": "An antibiotic regimen usable in penicillin anaphylaxis should be offered. Quality: the exact alternative is a local antimicrobial-policy decision."
         }
       ],
@@ -305,16 +562,35 @@
         {
           "id": "mgmt-no-penicillin-in-anaphylaxis",
           "severity": "critical",
-          "match": ["co-amoxiclav", "amoxicillin", "augmentin", "piperacillin", "tazocin", "penicillin"],
-          "unless": ["allerg", "if not allergic", "non-penicillin", "avoid", "anaphylaxis"],
+          "match": [
+            "co-amoxiclav",
+            "amoxicillin",
+            "augmentin",
+            "piperacillin",
+            "tazocin",
+            "penicillin"
+          ],
+          "unless": [
+            "allerg",
+            "if not allergic",
+            "non-penicillin",
+            "avoid",
+            "anaphylaxis"
+          ],
           "note": "The patient has penicillin anaphylaxis. A penicillin in the suggested plan (without an allergy caveat) is a prescribing hazard.",
-          "knownGap": ["ios", "web"],
+          "knownGap": [
+            "ios",
+            "web"
+          ],
           "knownGapNote": "Plan templates suggest co-amoxiclav / piperacillin-tazobactam regardless of the recorded penicillin anaphylaxis."
         },
         {
           "id": "mgmt-no-early-cholecystectomy-in-shock",
           "severity": "quality",
-          "match": ["re:emergency (laparoscopic )?cholecystectomy", "re:early lap(aroscopic)? cholecystectomy"],
+          "match": [
+            "re:emergency (laparoscopic )?cholecystectomy",
+            "re:early lap(aroscopic)? cholecystectomy"
+          ],
           "unless": [
             "grade i–ii",
             "grade i-ii",
@@ -325,22 +601,33 @@
             "delayed",
             "after recovery"
           ],
-          "guidelineRefs": ["tg18-mgmt-cholecystitis"],
-          "unverified": ["ios"],
+          "guidelineRefs": [
+            "tg18-mgmt-cholecystitis"
+          ],
+          "unverified": [
+            "ios"
+          ],
           "note": "TG18 allows early cholecystectomy in Grade III only with favourable organ failure and no negative predictive factor; neurological dysfunction is a negative predictive factor.",
-          "knownGap": ["ios", "web"],
+          "knownGap": [
+            "ios",
+            "web"
+          ],
           "knownGapNote": "iOS TG18 Grade III recommendation offers 'emergency cholecystectomy' as an equal alternative; web key points recommend early cholecystectomy without grade qualification."
         }
       ]
     },
-    "pathway": { "id": "pathway-first-visit", "severity": "quality", "equals": "firstVisit" },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit"
+    },
     "dxVariant": {
       "id": "variant-grade3",
       "severity": "quality",
       "equals": "cholecystitis_grade3",
-      "guidelineRefs": ["tg18-mgmt-cholecystitis"],
-      "knownGap": ["web"],
-      "knownGapNote": "dx-variants selects Grade I ('cholecystitis' keyword checked first)."
+      "guidelineRefs": [
+        "tg18-mgmt-cholecystitis"
+      ]
     }
   },
   "guideline": [

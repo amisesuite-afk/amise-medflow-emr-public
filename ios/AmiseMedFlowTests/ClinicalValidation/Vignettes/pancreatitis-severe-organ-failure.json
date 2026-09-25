@@ -524,10 +524,6 @@
       "guidelineRefs": [
         "atlanta-2012"
       ],
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "Assessment \"…no cholangitis\" selects the Cholangitis group by text; had it reached the Pancreatitis group, \"40% pancreatic necrosis\" would select the moderately severe variant first.",
       "proposedFix": "dx-variants.ts detectDxVariants: pick the group by diseaseId/ICD across all groups first and use the text fallback only if nothing matched (and make it negation-aware). Today \"No cholangitis\"/\"no pancreatitis\" in the assessment selects the earlier Cholangitis/Pancreatitis group by text before the Pancreatitis group is checked by disease id. dx-variants.ts pancreatitis group: test severe → moderately severe → mild with Atlanta phrases that cannot be substrings of each other (e.g. match \"moderately severe\" before \"severe acute pancreatitis\"; move \"pancreatic necrosis\" out of the moderate list or check persistent organ failure first), and accept qualifiers between \"mild\" and \"pancreatitis\" (e.g. \"mild acute biliary pancreatitis\")."
     }
   },

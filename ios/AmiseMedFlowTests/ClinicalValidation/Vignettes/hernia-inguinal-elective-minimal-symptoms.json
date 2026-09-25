@@ -169,10 +169,6 @@
         "unverified": [
           "ios"
         ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Triage emergency_now (score 80): adaptiveTriage RED_FLAGS regexes have no negation handling — \"no episodes of severe pain\" → \"Acute abdominal pain\" (urgent), \"No weight loss\" → \"Possible malignancy\", \"No vomiting\" → +15.",
         "proposedFix": "Add a negation window (\"no\", \"denies\", \"never\", \"non-\") before RED_FLAGS / symptom regex matches in adaptive-triage."
       },
       "mustNotAlarm": [
@@ -186,11 +182,7 @@
           "note": "No strangulation features; an emergency alarm would be noise.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Same negation false positives raise the triage \"Emergency now\" alarm; the prompt engine also raises \"Strangulated Hernia → Emergency Repair\"."
+          ]
         },
         {
           "id": "no-strangulation-prompt",
@@ -206,10 +198,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "computeClinicalPrompts isIncarcerated tests exam text for \"tender\" — \"non-tender\" matches, so a reducible hernia gets the \"Incarcerated / strangulated hernia\" safety prompt.",
           "proposedFix": "Use word-boundary + negation-aware matching for \"tender\" in the hernia prompt (exclude \"non-tender\", \"not tender\")."
         }
       ]
@@ -269,11 +257,7 @@
           "note": "An emergency operative plan for a reducible minimally symptomatic hernia would be wrong.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The negation bug above (\"non-tender\") adds \"Emergency Theatre: irreducible / strangulated hernia\" to the plan actions."
+          ]
         }
       ]
     },

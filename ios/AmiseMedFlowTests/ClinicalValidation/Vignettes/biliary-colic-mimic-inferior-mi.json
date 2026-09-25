@@ -362,10 +362,6 @@
             "once recovered"
           ],
           "note": "A cholecystectomy plan for a patient with an evolving STEMI is a wrong-diagnosis operative plan.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Gallstone operative-plan prompt fires (\"Plan laparoscopic cholecystectomy — early or interval\") because \"Murphy's sign negative\" matches \"murphy\".",
           "unverified": [
             "ios"
           ],
@@ -384,10 +380,6 @@
             "exclude appendicitis"
           ],
           "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Appendicectomy operative plan fires on \"no guarding\".",
           "unverified": [
             "ios"
           ],

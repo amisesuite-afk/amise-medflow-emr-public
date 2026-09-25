@@ -282,10 +282,6 @@
           "guidelineRefs": [
             "idsa-ssti-2014"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD L02.214 matches no pane-engine protocol (skin abscess protocol registered as L02.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The management panel shows the appendicitis protocol (PANE top 0.21).",
           "unverified": [
             "ios"
           ],
@@ -307,10 +303,6 @@
             "idsa-ssti-2014"
           ],
           "note": "IDSA: abscess with SIRS → antibiotic active against MRSA in addition to drainage.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD L02.214 matches no pane-engine protocol (skin abscess protocol registered as L02.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The management panel shows the appendicitis protocol (PANE top 0.21, groin site → groin_swelling).",
           "unverified": [
             "ios"
           ],

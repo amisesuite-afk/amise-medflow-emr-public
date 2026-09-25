@@ -268,10 +268,6 @@
             "ogrady-fever-2008"
           ],
           "note": "No broad-spectrum antibiotics for a day-1 fever without a source.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Assessment panel (cholecystitis protocol from PANE top): '[immediate] IV antibiotics: co-amoxiclav 1.2 g TDS or piperacillin-tazobactam for severe' for a day-1 fever after cholecystectomy.",
           "unverified": [
             "ios"
           ],

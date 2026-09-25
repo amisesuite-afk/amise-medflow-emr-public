@@ -271,10 +271,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web computeClinicalPrompts fires \"Appendicitis — emergency surgical indication\" and adds the full \"LAPAROSCOPIC APPENDICECTOMY — OPERATIVE PLAN\" whenever examAbdomen contains \"guarding\" or \"rebound\" — including negated text (\"no guarding\") and localised guarding from other causes.",
           "proposedFix": "Gate the appendicectomy operative-plan prompt on the confirmed working diagnosis (appendicitis) or imaging, not on the words \"guarding\"/\"rebound\"; add negation handling (no/without/absent) to exam() matching."
         },
         {
@@ -340,11 +336,7 @@
           "note": "IDSA 2017: avoid antibiotics when STEC is possible (increased HUS risk).",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The appendicectomy operative-plan prompt adds \"IV Pip-Tazo + metronidazole\" (see mgmt-no-appendicectomy)."
+          ]
         }
       ]
     }

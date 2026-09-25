@@ -165,10 +165,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Triggered but labelled colorectal. cancer-screening.ts labels every triggered screen \"colorectal\": the colorectal block tests `c.met && c.rule.includes('colorectal') || c.rule.includes('bowel') || …` (operator precedence), which is true whenever any colorectal rule exists, and the breast block keeps the first label (cancerType ?? \"breast\").",
           "proposedFix": "Parenthesise the colorectal condition (c.met && (… || … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen."
         }
       ]

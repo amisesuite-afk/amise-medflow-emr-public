@@ -519,10 +519,6 @@
             "aga-2018"
           ],
           "note": "Prophylactic antibiotics are not recommended in acute pancreatitis, including predicted severe disease and sterile necrosis; they are reserved for infected necrosis or a concurrent infection such as cholangitis.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Assessment panel shows the cholecystitis protocol (PANE top: cholecystitis 0.29 > pancreatitis 0.19) with IV co-amoxiclav/pip-tazo, and the peritonism prompt (fired by \"No peritonism\") adds pip-tazo + metronidazole.",
           "unverified": [
             "ios"
           ],

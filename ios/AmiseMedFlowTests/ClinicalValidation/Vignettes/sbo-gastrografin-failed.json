@@ -293,13 +293,9 @@
             "appendicectomy"
           ],
           "note": "An appendicectomy operative plan in an SBO patient can only come from the negated exam text ('no guarding or rebound').",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: 'no guarding or rebound' in the exam triggers the appendicectomy operative-plan prompt in an SBO patient."
+          ]
         }
       ]
     },

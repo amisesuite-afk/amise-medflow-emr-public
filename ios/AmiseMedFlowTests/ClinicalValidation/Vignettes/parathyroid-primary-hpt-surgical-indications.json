@@ -230,10 +230,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "detectDxVariants falls back to lower.includes(\"thyroid\") for the Thyroid group: \"parathyroidectomy\"/\"hyperparathyroidism\" contain \"thyroid\", and \"parathyroidectomy\" contains the thyroid_total keyword \"thyroidectomy\", so the documented plan opens with \"Total Thyroidectomy … levothyroxine replacement (lifelong)\".",
           "proposedFix": "Add a Parathyroid dx-variant group (E21, primary_hyperparathyroidism, parathyroid_adenoma) ahead of Thyroid, and match baseDiagnosis/keywords on word boundaries."
         }
       ],

@@ -254,10 +254,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: no thrombolysis anywhere. The confirmed ICD I26.09 (PE with acute cor pulmonale, i.e. the high-risk PE code) has no getProtocolByIcd mapping (I26.9/I26.99 do), and the PANE top is not PE, so the PE protocol, which lists alteplase, is never shown. Management comes only from the shock/hypoxia/tachycardia prompts: \"Hartmann's 1L bolus\", \"12-lead ECG\", \"CTPA if Wells score ≥ 2\".",
           "proposedFix": "Map I26.0x (PE with acute cor pulmonale) to the pulmonary_embolism protocol; in the shock prompt, when PE is suspected (hypoxia + raised JVP/DVT signs), add \"high-risk PE: UFH, bedside echo, systemic thrombolysis\"."
         },
         {

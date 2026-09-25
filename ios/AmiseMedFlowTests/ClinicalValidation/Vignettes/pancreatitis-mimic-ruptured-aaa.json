@@ -307,10 +307,6 @@
           "guidelineRefs": [
             "esvs-2024-aaa"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No vascular/EVAR/theatre output.",
           "unverified": [
             "ios"
           ],

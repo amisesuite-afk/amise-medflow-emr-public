@@ -281,10 +281,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: forbidden management item present in web.clinicalPrompts: \"laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •...\".",
           "proposedFix": "Gate the appendicectomy cascade on the working diagnosis; negation-aware exam matching (\"no guarding\")."
         },
         {
@@ -326,10 +322,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: forbidden management item present in web.clinicalPrompts: \"... convert to oral when tolerating po. • paracetamol 1g qds + ibuprofen 400mg tds (regular). • morphine 5mg prn if pain > 5/10. • regular diet as toler...\".",
           "proposedFix": "Strip NSAIDs from operative templates from 20 weeks of gestation (HPB findings gap 6), and suppress operative templates here altogether."
         },
         {

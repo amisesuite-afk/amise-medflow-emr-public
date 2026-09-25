@@ -353,11 +353,7 @@
       "guidelineRefs": [
         "wses-diverticulitis-2020",
         "hinchey-mod-1999"
-      ],
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "Web: Substring 'hinchey i' ⊂ 'hinchey iv' selects diverticulitis_abscess."
+      ]
     }
   },
   "guideline": [

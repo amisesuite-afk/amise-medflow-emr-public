@@ -6,30 +6,67 @@
   "permutationOf": "cholangitis-tg18-charcot-sepsis",
   "permutationLabel": "TG18 Grade III (severe) — Reynolds' pentad, septic shock, on apixaban",
   "summary": "82-year-old woman found confused: fever 39.6 °C, jaundice, BP 78/44 needing noradrenaline, oliguria, creatinine 212, INR 1.8, platelets 74, lactate 5.2; CBD 14 mm with stones. On apixaban for AF.",
-  "tags": ["biliary", "sepsis", "ercp", "anticoagulated", "elderly"],
+  "tags": [
+    "biliary",
+    "sepsis",
+    "ercp",
+    "anticoagulated",
+    "elderly"
+  ],
   "inputs": {
     "patient": {
       "ageYears": 82,
       "sex": "female",
-      "pregnancy": { "status": "not-applicable" },
+      "pregnancy": {
+        "status": "not-applicable"
+      },
       "heightCm": 155,
       "weightKg": 58
     },
-    "encounter": { "setting": "emergency", "visitType": "urgentReview", "acuity": "emergency" },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
     "chiefComplaint": "Jaundice, fever and confusion",
     "hpi": "Found confused at home by her son. Two days of fever, rigors and abdominal pain; yellow eyes noticed yesterday. Not passing much urine. Known atrial fibrillation on apixaban and type 2 diabetes.",
     "socrates": {
-      "onset": ["2–3 days ago"],
-      "site": ["RUQ"],
-      "character": ["Aching"],
-      "radiation": ["No radiation"],
-      "associations": ["Fever", "Rigors", "Jaundice"],
-      "timing": ["Constant"],
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "RUQ"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors",
+        "Jaundice"
+      ],
+      "timing": [
+        "Constant"
+      ],
       "exacerbating": [],
-      "relieving": ["Nothing"],
-      "severity": ["Severe (7–9/10)"]
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
     },
-    "symptoms": ["right upper quadrant pain", "fever", "rigors", "jaundice", "confusion", "oliguria"],
+    "symptoms": [
+      "right upper quadrant pain",
+      "fever",
+      "rigors",
+      "jaundice",
+      "confusion",
+      "oliguria"
+    ],
     "negatives": [],
     "exam": {
       "general": "Jaundiced, drowsy with new confusion (GCS 12). Temperature 39.6°C with rigors. Tachycardia 128/min. Haemodynamically unstable: hypotension 78/44 despite 30 mL/kg crystalloid, noradrenaline started. Cool, mottled peripheries. Reynolds' pentad.",
@@ -49,18 +86,90 @@
       }
     ],
     "labs": [
-      { "analyte": "wbc", "name": "WBC", "value": 24.8, "unit": "×10⁹/L", "minutesAgo": 25 },
-      { "analyte": "crp", "name": "CRP", "value": 280, "unit": "mg/L", "minutesAgo": 25 },
-      { "analyte": "bilirubin", "name": "Bilirubin", "value": 142, "unit": "µmol/L", "minutesAgo": 25 },
-      { "analyte": "alp", "name": "ALP", "value": 520, "unit": "U/L", "minutesAgo": 25 },
-      { "analyte": "alt", "name": "ALT", "value": 260, "unit": "U/L", "minutesAgo": 25 },
-      { "analyte": "albumin", "name": "Albumin", "value": 24, "unit": "g/L", "minutesAgo": 25 },
-      { "analyte": "creatinine", "name": "Creatinine", "value": 212, "unit": "µmol/L", "minutesAgo": 25 },
-      { "analyte": "urea", "name": "Urea", "value": 16.4, "unit": "mmol/L", "minutesAgo": 25 },
-      { "analyte": "platelets", "name": "Platelets", "value": 74, "unit": "×10⁹/L", "minutesAgo": 25 },
-      { "analyte": "inr", "name": "INR", "value": 1.8, "unit": "", "minutesAgo": 25 },
-      { "analyte": "lactate", "name": "Lactate", "value": 5.2, "unit": "mmol/L", "minutesAgo": 25 },
-      { "analyte": "glucose", "name": "Glucose", "value": 14.6, "unit": "mmol/L", "minutesAgo": 25 }
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 24.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 280,
+        "unit": "mg/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 142,
+        "unit": "µmol/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 520,
+        "unit": "U/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 260,
+        "unit": "U/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 24,
+        "unit": "g/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 212,
+        "unit": "µmol/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 16.4,
+        "unit": "mmol/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 74,
+        "unit": "×10⁹/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.8,
+        "unit": "",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 5.2,
+        "unit": "mmol/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 14.6,
+        "unit": "mmol/L",
+        "minutesAgo": 25
+      }
     ],
     "imaging": [
       {
@@ -71,12 +180,30 @@
         "minutesAgo": 15
       }
     ],
-    "comorbidities": ["Atrial fibrillation", "Type 2 diabetes mellitus"],
+    "comorbidities": [
+      "Atrial fibrillation",
+      "Type 2 diabetes mellitus"
+    ],
     "surgicalHistory": [],
     "medications": [
-      { "drug": "Apixaban", "dose": "2.5 mg", "frequency": "BD", "indication": "Atrial fibrillation" },
-      { "drug": "Bisoprolol", "dose": "2.5 mg", "frequency": "OD", "indication": "Atrial fibrillation" },
-      { "drug": "Metformin", "dose": "500 mg", "frequency": "BD", "indication": "Type 2 diabetes" }
+      {
+        "drug": "Apixaban",
+        "dose": "2.5 mg",
+        "frequency": "BD",
+        "indication": "Atrial fibrillation"
+      },
+      {
+        "drug": "Bisoprolol",
+        "dose": "2.5 mg",
+        "frequency": "OD",
+        "indication": "Atrial fibrillation"
+      },
+      {
+        "drug": "Metformin",
+        "dose": "500 mg",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      }
     ],
     "allergies": [],
     "nkda": true,
@@ -91,9 +218,20 @@
         "ageAtLeast75": true,
         "bilirubinAtLeast5mgdl": true,
         "albuminBelow07LLN": true,
-        "organDysfunction": ["cardiovascular", "neurological", "renal", "hepatic", "haematological"]
+        "organDysfunction": [
+          "cardiovascular",
+          "neurological",
+          "renal",
+          "hepatic",
+          "haematological"
+        ]
       },
-      "qsofa": { "alteredMentation": true, "rrAtLeast22": true, "sbpAtMost100": true, "suspectedInfection": true }
+      "qsofa": {
+        "alteredMentation": true,
+        "rrAtLeast22": true,
+        "sbpAtMost100": true,
+        "suspectedInfection": true
+      }
     },
     "confirmedDiagnosis": {
       "name": "Acute cholangitis",
@@ -104,9 +242,30 @@
     "platform": {
       "web": {
         "ccTemplate": "Obstructive jaundice",
-        "symptoms": ["jaundice", "right upper quadrant pain", "fever", "rigors", "confusion"],
-        "symptomDetails": { "jaundice": ["Fever", "Rigors", "Abdominal pain", "Known gallstones"] },
-        "examFindings": { "abdomen": ["Tender RUQ", "Guarding"], "general": ["Jaundiced"] },
+        "symptoms": [
+          "jaundice",
+          "right upper quadrant pain",
+          "fever",
+          "rigors",
+          "confusion"
+        ],
+        "symptomDetails": {
+          "jaundice": [
+            "Fever",
+            "Rigors",
+            "Abdominal pain",
+            "Known gallstones"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RUQ",
+            "Guarding"
+          ],
+          "general": [
+            "Jaundiced"
+          ]
+        },
         "durationDays": 2,
         "painScore": 7
       }
@@ -118,19 +277,32 @@
         {
           "id": "dx-cholangitis-top3",
           "severity": "critical",
-          "match": ["cholangitis"],
-          "unless": ["sclerosing"],
+          "match": [
+            "cholangitis"
+          ],
+          "unless": [
+            "sclerosing"
+          ],
           "k": 3,
-          "guidelineRefs": ["tg18-dx-cholangitis"],
-          "unverified": ["ios"]
+          "guidelineRefs": [
+            "tg18-dx-cholangitis"
+          ],
+          "unverified": [
+            "ios"
+          ]
         }
       ],
       "mustNotMiss": [
         {
           "id": "mnm-septic-shock",
           "severity": "quality",
-          "match": ["sepsis", "septic"],
-          "knownGap": ["ios"],
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "knownGap": [
+            "ios"
+          ],
           "knownGapNote": "PANE has no sepsis node; symptom inference ranks sepsis #2. iOS: fallback mode: the built-in jaundice list (5 candidates) does not contain this diagnosis."
         }
       ]
@@ -140,33 +312,61 @@
         "id": "level-emergency",
         "severity": "critical",
         "atLeast": "emergency",
-        "guidelineRefs": ["tg18-mgmt-cholangitis", "ssc-2021"],
+        "guidelineRefs": [
+          "tg18-mgmt-cholangitis",
+          "ssc-2021"
+        ],
         "note": "Grade III cholangitis in septic shock: resuscitation, critical care and urgent drainage.",
-        "knownGap": ["ios"],
+        "knownGap": [
+          "ios"
+        ],
         "knownGapNote": "iOS ClinicalPathwayEngine: 'jaundice' gives urgent; no emergency keyword in CC/PMH."
       },
       "mustAlarm": [
         {
           "id": "alarm-sepsis",
           "severity": "critical",
-          "match": ["sepsis", "septic"],
-          "guidelineRefs": ["ssc-2021"]
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
         },
         {
           "id": "alarm-haemodynamic",
           "severity": "critical",
-          "match": ["haemodynamic", "hemodynamic", "hypotension", "shock"],
-          "guidelineRefs": ["ssc-2021"]
+          "match": [
+            "haemodynamic",
+            "hemodynamic",
+            "hypotension",
+            "shock"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
         }
       ],
       "redFlags": [
         {
           "id": "flag-anticoagulant",
           "severity": "quality",
-          "match": ["anticoag", "apixaban"],
+          "match": [
+            "anticoag",
+            "apixaban"
+          ],
           "note": "DOAC plus INR 1.8 and platelets 74 before ERCP/sphincterotomy."
         },
-        { "id": "flag-reynolds", "severity": "quality", "match": ["reynolds", "septic shock", "organ"] }
+        {
+          "id": "flag-reynolds",
+          "severity": "quality",
+          "match": [
+            "reynolds",
+            "septic shock",
+            "organ"
+          ]
+        }
       ]
     },
     "scores": {
@@ -175,7 +375,9 @@
           "id": "score-rec-tg18-cholangitis",
           "severity": "quality",
           "score": "tg18-cholangitis",
-          "guidelineRefs": ["tg18-dx-cholangitis"]
+          "guidelineRefs": [
+            "tg18-dx-cholangitis"
+          ]
         }
       ],
       "values": [
@@ -185,7 +387,9 @@
           "score": "tg18-cholangitis",
           "mode": "calculator",
           "equals": 3,
-          "guidelineRefs": ["tg18-dx-cholangitis"]
+          "guidelineRefs": [
+            "tg18-dx-cholangitis"
+          ]
         },
         {
           "id": "score-tg18-autofill",
@@ -193,9 +397,14 @@
           "score": "tg18-cholangitis",
           "mode": "autofill",
           "equals": 3,
-          "guidelineRefs": ["tg18-dx-cholangitis"],
+          "guidelineRefs": [
+            "tg18-dx-cholangitis"
+          ],
           "note": "The record holds SBP 78 on noradrenaline, AVPU 'V', creatinine 212, INR 1.8 and platelets 74; auto-fill below Grade III under-grades septic shock.",
-          "knownGap": ["ios", "web"],
+          "knownGap": [
+            "ios",
+            "web"
+          ],
           "knownGapNote": "iOS auto-fill never sets organ-dysfunction fields (returns Grade II from age/temperature/WBC/bilirubin); web returns \"criteria not met\"."
         },
         {
@@ -204,8 +413,12 @@
           "score": "qsofa",
           "mode": "autofill",
           "equals": 3,
-          "platforms": ["ios"],
-          "guidelineRefs": ["sepsis-3"]
+          "platforms": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "sepsis-3"
+          ]
         }
       ]
     },
@@ -214,11 +427,33 @@
         {
           "id": "inv-blood-cultures",
           "severity": "critical",
-          "match": ["blood culture"],
-          "guidelineRefs": ["ssc-2021", "tg18-antimicrobial"]
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021",
+            "tg18-antimicrobial"
+          ]
         },
-        { "id": "inv-lactate", "severity": "quality", "match": ["lactate"], "guidelineRefs": ["ssc-2021"] },
-        { "id": "inv-coagulation", "severity": "quality", "match": ["inr", "coagulation", "clotting"] }
+        {
+          "id": "inv-lactate",
+          "severity": "quality",
+          "match": [
+            "lactate"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        },
+        {
+          "id": "inv-coagulation",
+          "severity": "quality",
+          "match": [
+            "inr",
+            "coagulation",
+            "clotting"
+          ]
+        }
       ],
       "mustExclude": []
     },
@@ -227,33 +462,74 @@
         {
           "id": "mgmt-urgent-biliary-drainage",
           "severity": "critical",
-          "match": ["ercp", "biliary drainage", "biliary decompression", "percutaneous transhepatic", "re:\\bptc\\b"],
-          "guidelineRefs": ["tg18-mgmt-cholangitis", "tg18-drainage"],
+          "match": [
+            "ercp",
+            "biliary drainage",
+            "biliary decompression",
+            "percutaneous transhepatic",
+            "re:\\bptc\\b"
+          ],
+          "guidelineRefs": [
+            "tg18-mgmt-cholangitis",
+            "tg18-drainage"
+          ],
           "note": "TG18 Grade III: urgent biliary drainage as soon as the patient is resuscitated."
         },
         {
           "id": "mgmt-organ-support",
           "severity": "critical",
-          "match": ["icu", "intensive care", "hdu", "critical care", "organ support"],
-          "guidelineRefs": ["tg18-mgmt-cholangitis", "ssc-2021"]
+          "match": [
+            "icu",
+            "intensive care",
+            "hdu",
+            "critical care",
+            "organ support"
+          ],
+          "guidelineRefs": [
+            "tg18-mgmt-cholangitis",
+            "ssc-2021"
+          ]
         },
         {
           "id": "mgmt-broad-spectrum-antibiotics",
           "severity": "critical",
-          "match": ["antibiotic", "piperacillin", "tazocin", "meropenem"],
-          "guidelineRefs": ["tg18-antimicrobial", "ssc-2021"]
+          "match": [
+            "antibiotic",
+            "piperacillin",
+            "tazocin",
+            "meropenem"
+          ],
+          "guidelineRefs": [
+            "tg18-antimicrobial",
+            "ssc-2021"
+          ]
         },
         {
           "id": "mgmt-vasopressor-fluids",
           "severity": "quality",
-          "match": ["noradrenaline", "norepinephrine", "vasopressor", "fluid resuscitation", "crystalloid"],
-          "guidelineRefs": ["ssc-2021"]
+          "match": [
+            "noradrenaline",
+            "norepinephrine",
+            "vasopressor",
+            "fluid resuscitation",
+            "crystalloid"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
         },
         {
           "id": "mgmt-anticoagulant-plan",
           "severity": "quality",
-          "match": ["apixaban", "anticoag", "doac", "reversal"],
-          "unverified": ["ios"],
+          "match": [
+            "apixaban",
+            "anticoag",
+            "doac",
+            "reversal"
+          ],
+          "unverified": [
+            "ios"
+          ],
           "note": "Hold the DOAC; plan drainage (stent without sphincterotomy, or percutaneous) around the coagulopathy."
         }
       ],
@@ -265,22 +541,37 @@
             "re:(emergency|urgent) (open )?(cbd|bile duct) exploration",
             "re:emergency (laparotomy|cholecystectomy)"
           ],
-          "unless": ["if ercp fails", "if ercp unavailable", "ercp fails", "unavailable"],
-          "guidelineRefs": ["tg18-drainage"],
-          "unverified": ["ios"],
-          "note": "Operative drainage is reserved for failed or unavailable endoscopic/percutaneous drainage.",
-          "knownGap": ["web"],
-          "knownGapNote": "Web clinical prompt: 'Emergency laparotomy consent — source control' for Grade III cholangitis, instead of drainage first."
+          "unless": [
+            "if ercp fails",
+            "if ercp unavailable",
+            "ercp fails",
+            "unavailable"
+          ],
+          "guidelineRefs": [
+            "tg18-drainage"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "note": "Operative drainage is reserved for failed or unavailable endoscopic/percutaneous drainage."
         }
       ]
     },
-    "pathway": { "id": "pathway-first-visit", "severity": "quality", "equals": "firstVisit" },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit"
+    },
     "dxVariant": {
       "id": "variant-grade3",
       "severity": "quality",
       "equals": "cholangitis_grade3",
-      "guidelineRefs": ["tg18-mgmt-cholangitis"],
-      "knownGap": ["web"],
+      "guidelineRefs": [
+        "tg18-mgmt-cholangitis"
+      ],
+      "knownGap": [
+        "web"
+      ],
       "knownGapNote": "dx-variants needs 'severe cholangitis' word order; 'Severe acute cholangitis' selects no variant."
     }
   },

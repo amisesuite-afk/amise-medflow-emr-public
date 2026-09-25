@@ -339,10 +339,6 @@
           "guidelineRefs": [
             "wses-sis-ssti-2018"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD N49.3 matches no pane-engine protocol (NSTI protocol registered as M72.6 only) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
           ],
@@ -358,10 +354,6 @@
             "wses-sis-ssti-2018",
             "idsa-ssti-2014"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD N49.3 matches no pane-engine protocol (NSTI protocol registered as M72.6 only) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
           ],
@@ -398,10 +390,6 @@
             "wses-sis-ssti-2018"
           ],
           "note": "Urology input for testes/urethra; faecal diversion when the perineal wound will be soiled.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD N49.3 matches no pane-engine protocol and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
           ]

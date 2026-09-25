@@ -273,13 +273,9 @@
             "perforated viscus"
           ],
           "note": "The exam text says 'No guarding, no rebound, no peritonism'; an alarm for generalised peritonism is a negation error that leads to an emergency-laparotomy prompt.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
           ],
-          "knownGapNote": "Web: computeClinicalPrompts fires 'Generalised peritonism → Perforated viscus' on the substring 'peritonism' in 'no peritonism'.",
           "proposedFix": "Negation-aware exam() matching ('no peritonism', 'no guarding', 'no rigidity')."
         }
       ]
@@ -419,13 +415,9 @@
             "re:emergency laparotomy consent"
           ],
           "note": "No appendicitis or peritonitis here: an appendicectomy or emergency-laparotomy template can only come from misread negatives ('no guarding, no rebound').",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Negated exam text ('No guarding, no rebound, no peritonism') triggers both the peritonism prompt ('Emergency laparotomy consent') and the appendicectomy operative-plan prompt."
+          ]
         }
       ]
     },

@@ -226,10 +226,6 @@
             "burns-fluid-threshold",
             "aba-fluid-2008"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
           ],
@@ -248,10 +244,6 @@
             "burns-fluid-threshold",
             "atls-10-burns"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
           ],
@@ -269,10 +261,6 @@
             "aba-fluid-2008",
             "atls-10-burns"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
           ],
@@ -310,10 +298,6 @@
           "guidelineRefs": [
             "atls-10-burns"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
           ],

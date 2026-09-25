@@ -493,10 +493,6 @@
           "guidelineRefs": [
             "idsa-2010-ciai"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Peritonism prompt (\"No peritonism\" in the exam text) adds \"Emergency laparotomy consent — source control\".",
           "unverified": [
             "ios"
           ],

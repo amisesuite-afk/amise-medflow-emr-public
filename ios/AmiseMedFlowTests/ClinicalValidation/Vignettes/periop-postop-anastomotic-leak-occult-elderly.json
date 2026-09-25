@@ -297,10 +297,6 @@
             "exclude appendicitis"
           ],
           "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The appendicectomy plan is triggered by 'no rebound' ('rebound' substring). 'mild generalised tenderness' also fires the peritonism prompt ('Emergency laparotomy consent'), which may be defensible here but is not derived from peritonitis.",
           "unverified": [
             "ios"
           ],

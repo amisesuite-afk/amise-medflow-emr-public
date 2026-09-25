@@ -483,10 +483,6 @@
         "wses-iai-2017"
       ],
       "note": "Faecal peritonitis (Hinchey IV): the Plan tab must keep the surgical phase (Hartmann's).",
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "detectDxVariants picks 'diverticulitis_abscess' because its keyword 'hinchey i' is a substring of 'hinchey iv' and the abscess variant is checked before the peritonitis variant. The Plan tab therefore shows the Hinchey I/II prefix (IV antibiotics, CT-guided drainage, interval colectomy) and drops the 'surgical' phase: no Hartmann's procedure for faecal peritonitis. Hartmann's survives only in the Assessment panel.",
       "proposedFix": "Match Hinchey keywords on word boundaries (\\bhinchey (i|1)\\b) and check the peritonitis variant first (dx-variants.ts diverticulitis group); add a vector to lint:dx-phases."
     }
   },
