@@ -68,7 +68,7 @@ export interface HealthArticle {
 }
 
 /** Library version — bump with any article change; mirrored in clinical-content/registry.json. */
-export const HEALTH_INFO_LIBRARY_VERSION = '0.1.0';
+export const HEALTH_INFO_LIBRARY_VERSION = '0.2.0';
 
 /** Shown on every article and on the index page. */
 export const GENERAL_INFORMATION_NOTICE =
@@ -853,6 +853,157 @@ export const HEALTH_ARTICLES: HealthArticle[] = [
       { name: 'NICE NG45: Routine preoperative tests for elective surgery', year: '2016', url: 'https://www.nice.org.uk/guidance/ng45' },
       { name: 'NICE NG180: Perioperative care in adults', year: '2020', url: 'https://www.nice.org.uk/guidance/ng180' },
       { name: 'World Health Organization: Surgical Safety Checklist', year: '2009' },
+    ],
+    ...DRAFT,
+  },
+
+  // 11 ────────────────────────────────────────────────────────────────────────
+  // Lifestyle and ritual practices (practice evidence briefing, Sept 2026, §4, §6, §8, §10).
+  // Information only: no medicine instructions; the reader is asked to speak to the clinic.
+  {
+    id: 'religious-fasting-diabetes',
+    slug: 'fasting-for-religious-reasons-with-diabetes',
+    title: 'Fasting for religious reasons when you have diabetes',
+    summary:
+      'Many people fast for religious reasons, for example during Ramadan, Lent or a Daniel Fast. If you have diabetes, fasting can affect your blood sugar and the amount of fluid in your body, so it is worth planning ahead with your doctor.',
+    sections: [
+      {
+        heading: 'Why fasting needs planning when you have diabetes',
+        paragraphs: [
+          'Going without food for long hours can make your blood sugar fall too low. This is called hypoglycaemia. Going without drinks during the day, especially in hot weather, can also lead to dehydration.',
+          'The risk is not the same for everyone. It depends on your health and on the kind of treatment you have for your diabetes.',
+        ],
+      },
+      {
+        heading: 'Speak to your doctor or clinic well before the fast begins',
+        paragraphs: [
+          'Please contact your doctor or the clinic well before the fast begins, ideally a few weeks ahead. The team can go through your health, your diabetes treatment and your plans for the fast, and talk with you about how to fast as safely as possible.',
+        ],
+        bullets: [
+          'Bring a list of all your medicines, including herbal and bush remedies.',
+          'Tell the team which fast you keep, when it begins and how long it lasts.',
+          'If a procedure or operation is planned, tell the team about your fast. The fast and the time without food before an anaesthetic can add together, so the team will plan this with you.',
+        ],
+      },
+      {
+        heading: 'Signs of low blood sugar',
+        bullets: [
+          'Shaking, sweating or feeling anxious.',
+          'Feeling hungry, dizzy or faint.',
+          'A fast or pounding heartbeat.',
+          'Confusion or unusual behaviour.',
+        ],
+      },
+    ],
+    whenToSeekUrgentCare: {
+      intro: SEEK_URGENT_CARE,
+      signs: [
+        'Signs of low blood sugar that do not settle, or confusion.',
+        'Fainting, severe drowsiness or being difficult to wake.',
+        'Signs of severe dehydration: passing very little urine, extreme thirst, dizziness on standing, or being unable to keep fluids down.',
+      ],
+    },
+    sources: [
+      { name: 'International Diabetes Federation and DAR International Alliance: Diabetes and Ramadan — Practical Guidelines', year: '2021' },
+    ],
+    ...DRAFT,
+  },
+
+  // 12 ────────────────────────────────────────────────────────────────────────
+  {
+    id: 'mind-body-practices',
+    slug: 'exercise-and-mind-body-practices',
+    title: 'Exercise and mind-body practices with good evidence',
+    summary:
+      'Some traditional exercise and mind-body practices have been tested in good-quality studies. Tai chi, yoga, mindfulness-based therapy and slow breathing have the best evidence for the problems described here.',
+    sections: [
+      {
+        heading: 'About these practices',
+        paragraphs: [
+          'The practices below are generally low risk. They work alongside the care your doctor recommends, not instead of it. Please tell your doctor about any health problems before joining a new exercise class.',
+        ],
+      },
+      {
+        heading: 'Tai chi: balance and falls',
+        paragraphs: [
+          'In older adults, tai chi classes improve balance and lower the risk of falls. A 2023 review of 24 trials found about a quarter fewer falls among people who practised tai chi, and the benefit grew with more regular practice. It can also help with getting moving again after an operation.',
+        ],
+      },
+      {
+        heading: 'Yoga: long-term low back pain',
+        paragraphs: [
+          'For long-term low back pain without a serious underlying cause, a structured yoga programme helped pain and day-to-day function about as much as physiotherapy in a 2017 trial, and the benefit lasted for a year. Minor muscle strain can happen, so begin gently and tell the instructor about any health problems.',
+        ],
+      },
+      {
+        heading: 'Mindfulness-based therapy: preventing depression from returning',
+        paragraphs: [
+          'For people who have had depression more than once, a course of mindfulness-based cognitive therapy (MBCT) lowered the chance of depression coming back in a large analysis of trials. It is usually offered as a group course. Ask your doctor whether a referral would suit you.',
+        ],
+      },
+      {
+        heading: 'Slow breathing: short-term calm',
+        paragraphs: [
+          'Breathing slowly, at about six breaths a minute, can bring a short-term sense of calm and a small, short-lived fall in blood pressure. Some people find it helpful before a procedure. It is not a treatment for high blood pressure.',
+        ],
+      },
+    ],
+    whenToSeekUrgentCare: {
+      intro: SEEK_URGENT_CARE,
+      signs: [
+        'Chest pain, severe shortness of breath or fainting during exercise.',
+        'A fall with a head injury, or a fall after which you cannot get up or put weight on a leg.',
+      ],
+    },
+    sources: [
+      { name: 'Huang ZG et al. Tai Chi for fall prevention and balance improvement in older adults: systematic review and meta-analysis. Front Public Health', year: '2023' },
+      { name: 'Saper RB et al. Yoga, physical therapy, or education for chronic low back pain: a randomized noninferiority trial. Ann Intern Med 167:85-94', year: '2017' },
+      { name: 'Kuyken W et al. Efficacy of mindfulness-based cognitive therapy in prevention of depressive relapse: an individual patient data meta-analysis. JAMA Psychiatry 73:565-74', year: '2016' },
+    ],
+    ...DRAFT,
+  },
+
+  // 13 ────────────────────────────────────────────────────────────────────────
+  {
+    id: 'detox-cleanses-drips',
+    slug: 'detox-teas-cleanses-and-vitamin-drips',
+    title: 'Detox teas, cleanses and vitamin drips',
+    summary:
+      'Detox teas, colon cleanses and vitamin drips are widely advertised. This page explains what the evidence shows, the possible harms, and why it helps to tell your doctor if you use them.',
+    sections: [
+      {
+        heading: 'What the evidence shows',
+        paragraphs: [
+          'There is no reliable evidence that detox teas or colon cleanses remove toxins or improve health. The liver and kidneys already clear waste products from the body.',
+          'Vitamin drips given into a vein have little evidence of benefit for healthy people when there is no specific medical reason for them.',
+        ],
+      },
+      {
+        heading: 'Possible harms',
+        bullets: [
+          'Dehydration.',
+          'Upsetting the balance of salts in the blood (electrolytes).',
+          'Laxative dependence: the bowel can come to rely on laxatives to work.',
+          'With any drip into a vein: infection, and too much fluid.',
+        ],
+      },
+      {
+        heading: 'Tell your doctor',
+        paragraphs: [
+          'Please tell your doctor or the clinic if you use detox teas, cleanses, vitamin drips or any other traditional or complementary treatment, including bush teas. Some of these matter before tests, procedures and operations, and your doctor can only take them into account if they know.',
+        ],
+      },
+    ],
+    whenToSeekUrgentCare: {
+      intro: SEEK_URGENT_CARE,
+      signs: [
+        'Severe or bloody diarrhoea, or being unable to keep fluids down.',
+        'Dizziness, fainting, or a very fast or irregular heartbeat.',
+        'Fever, or redness, swelling or pain spreading from the place where a drip was put in.',
+      ],
+    },
+    sources: [
+      { name: 'Amise Medical Services evidence briefing on traditional and complementary medicine (Dr Dawit Daniel Kabiye), sections 6 and 8', year: '2026' },
     ],
     ...DRAFT,
   },

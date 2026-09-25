@@ -44,8 +44,8 @@ describe('the library as shipped', () => {
     expect(auditHealthLibrary(HEALTH_ARTICLES, todayInStLucia()).failures).toEqual([]);
   });
 
-  it('has the ten drafted topics, each with urgent-care signs and at least one source', () => {
-    expect(HEALTH_ARTICLES).toHaveLength(10);
+  it('has the thirteen drafted topics, each with urgent-care signs and at least one source', () => {
+    expect(HEALTH_ARTICLES).toHaveLength(13);
     for (const a of HEALTH_ARTICLES) {
       expect(a.whenToSeekUrgentCare.intro, a.id).toBe(SEEK_URGENT_CARE);
       expect(a.whenToSeekUrgentCare.signs.length, a.id).toBeGreaterThan(0);
