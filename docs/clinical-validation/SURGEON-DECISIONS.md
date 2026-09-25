@@ -88,15 +88,36 @@ Reply with the item numbers you approve (for example "approve A1–A12, B1–B6;
 | D5 | Exact NICE NG232 wording for CT within 8 hours on anticoagulants |
 | D6 | Who signs off clinical content, and review dates for P1/P2/P3 items |
 
-## E. Software bugs being fixed now (no clinical decision needed)
+## E. Keyword rules that need a clinical call (found while fixing the matching bugs)
 
-- Negated findings read as positive ("no guarding" → appendicectomy plan; "no black stools" →
-  emergency; "Murphy's sign negative" → cholecystectomy plan).
-- Keywords matched inside other words ("irreducible" matches "reducible"; "Bethesda VI" read as V;
-  "hinchey i" matches "hinchey iii"; iOS "mi" inside "abdominal" and "pe" inside "penetrating", which
-  can attach MI/PE antithrombotic plans to bleeding trauma patients).
-- Every two-week-wait referral labelled "colorectal" (operator-precedence bug).
-- The Assessment management panel follows the differential's top guess instead of the diagnosis
-  the clinician confirmed.
+| # | Now | Question |
+|---|---|---|
+| E1 | "Paraumbilical hernia … strangulation not excluded" now selects the strangulated plan | Is the strangulated plan right when strangulation is only "not excluded"? |
+| E2 | Triage cardiac rule fires on "radiating to"; "left arm" in past surgical history counts as cardiac | Narrow the cardiac rule to chest pain radiating to arm/jaw? |
+| E3 | "Dilated CBD" prompt fires on any mention of "CBD" (even 4 mm) | Fire only when a diameter above a threshold is written? (which threshold) |
+| E4 | Variant keywords miss common wording: cholangitis grades, "Hinchey Ib" listed as uncomplicated, "uncomplicated acute sigmoid diverticulitis" and "mild acute biliary pancreatitis" select nothing | Approve a keyword list per variant |
+| E5 | Thyroid group ICD prefix D44 also catches adrenal masses; no parathyroid group | Split D44 and add a parathyroid group? |
+| E6 | iOS lookups: parathyroid disease → renal colic (via "nephrolithiasis"); cellulitis with type 2 diabetes → diabetes; large bowel obstruction → small bowel obstruction entry | Map these three explicitly |
 
-After these land the suite is re-run; this list and `REPORT.md` are updated with what remains.
+## F. Software bugs fixed (no clinical decision needed)
+
+Done 2026-09-25 (web and shared engines; iOS lookup):
+
+- Negated findings no longer fire ("no guarding" → no appendicectomy plan; "no black stools" → no
+  emergency; "Murphy's sign negative" → no cholecystectomy plan). Rule: a negation cue within 5 words
+  in the same clause; when uncertain ("cannot be excluded", "?appendicitis") the finding is kept.
+- Whole-word matching: "irreducible" no longer matches "reducible"; "Bethesda VI" no longer read as
+  V; "hinchey i" no longer matches "hinchey iii"; "moderately severe" no longer read as severe. When
+  several variants match, the most specific wins.
+- iOS: "mi" inside "abdominal" and "pe" inside "penetrating" no longer attach MI/PE antithrombotic
+  plans (ruptured AAA now gets the AAA entry).
+- Two-week-wait referrals labelled by the right cancer (the "colorectal" label bug).
+- The Assessment management panel follows the diagnosis the clinician confirmed.
+- A written temperature counts as fever only at 38.0 °C or above, or when described as raised.
+
+Effect on the web suite: 1178 → 1265 checks passing; critical failures 312 → 281; 114 previously
+failing checks now pass. 27 checks that had passed only because of the bugs (for example an
+emergency reached only through "No vomiting") now fail and are listed as known gaps.
+
+In progress: the same negation handling for the iOS text parser ("No crepitus" still raises the
+necrotising-fasciitis alarm on iOS) and "Heartburn" opening the Burns pathway on iOS.
