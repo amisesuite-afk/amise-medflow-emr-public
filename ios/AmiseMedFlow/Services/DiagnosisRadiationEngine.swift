@@ -133,6 +133,10 @@ struct DiagnosisRadiation {
 
 enum DiagnosisRadiationEngine {
 
+    /// Content version (clinical-content/registry.json `ios-diagnosis-radiation-engine`). Bump it
+    /// with the registry entry and a changelog line whenever a card or the safety filter changes.
+    static let contentVersion = "1.1.0"
+
     // MARK: Public API
 
     /// The card for a working diagnosis. `context` (age, pregnancy, allergies, medications)

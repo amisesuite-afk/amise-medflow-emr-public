@@ -132,7 +132,10 @@
       "reviewPriority": "P2",
       "nextReviewDue": "2026-12-31",
       "changeAuthority": "Any repository committer. Ships with an iOS app release.",
-      "notes": "Uses the Bayesian output and the scores to suggest the next question or investigation. Inline guideline names in a few rules; no years recorded."
+      "notes": "Uses the Bayesian output and the scores to suggest the next question or investigation. Inline guideline names in a few rules; no years recorded.",
+      "changelog": [
+        { "version": "unversioned", "date": "2026-09-25", "change": "ClinicalPathwayEngine: PMH perforation/peritonitis no longer escalates the current visit; \"ischaemia\" spelling added; the keyword level is now one input of ClinicalAcuityEngine. Pipeline: critical alerts are never hidden by the visit-type filter." }
+      ]
     },
     {
       "id": "ios-bayesian-input-mapping",
@@ -156,7 +159,10 @@
       "reviewPriority": "P2",
       "nextReviewDue": "2026-12-31",
       "changeAuthority": "Any repository committer. Ships with an iOS app release.",
-      "notes": "A chip or parsed phrase only fires a feature when its text matches the feature value by substring; a feature key the engine does not recognise never fires (6,136 distinct keys in the database)."
+      "notes": "A chip or parsed phrase only fires a feature when its text matches the feature value by substring; a feature key the engine does not recognise never fires (6,136 distinct keys in the database).",
+      "changelog": [
+        { "version": "unversioned", "date": "2026-09-25", "change": "ClinicalTextParser: \"rest\" matches whole words only (not inside \"arrest\"); a written temperature counts as fever only at >=38.0 C (or when described as raised); recordedTemperatures() added." }
+      ]
     },
     {
       "id": "ios-clinical-scoring-engine",
@@ -180,7 +186,10 @@
       "reviewPriority": "P2",
       "nextReviewDue": "2026-12-31",
       "changeAuthority": "Any repository committer. Ships with an iOS app release.",
-      "notes": "Recommendations text includes directive actions (e.g. cross-match units, ITU admission): see medical-device-positioning.md §4 item 5."
+      "notes": "Recommendations text includes directive actions (e.g. cross-match units, ITU admission): see medical-device-positioning.md §4 item 5.",
+      "changelog": [
+        { "version": "unversioned", "date": "2026-09-25", "change": "LRINEC <6 no longer suggests cellulitis: a low score does not exclude NSTI (WSES 2018); Parkland rate accounts for time since burn and fluid given, one threshold (>=15% adult, >=10% child), electrical injury fluids regardless of TBSA, ATLS 10 rates as a note; TG18 cholangitis Grade II needs two criteria; TG18 cholecystitis palpable tender RUQ mass; ABCD2 NICE NG128 note; sPESI oxygen target BTS 2017." }
+      ]
     },
     {
       "id": "ios-score-autopopulator",
@@ -199,7 +208,10 @@
       "reviewPriority": "P2",
       "nextReviewDue": "2026-12-31",
       "changeAuthority": "Any repository committer. Ships with an iOS app release.",
-      "notes": "Keyword lists are copied into LabAnalyteCatalog's LabScoreKeywords (kept in step by hand)."
+      "notes": "Keyword lists are copied into LabAnalyteCatalog's LabScoreKeywords (kept in step by hand).",
+      "changelog": [
+        { "version": "unversioned", "date": "2026-09-25", "change": "All keyword checks read the record through NegationMatcher (ScoreText): \"no rebound\", \"no vomiting\" no longer tick criteria. Parkland auto-fill: child, electrical injury, time of burn pending." }
+      ]
     },
     {
       "id": "news2",
@@ -266,7 +278,10 @@
       "reviewPriority": "P2",
       "nextReviewDue": "2026-12-31",
       "changeAuthority": "Any repository committer. Ships with an iOS app release.",
-      "notes": "Thresholds (e.g. BMI, age) are inline constants without sources."
+      "notes": "Thresholds (e.g. BMI, age) are inline constants without sources.",
+      "changelog": [
+        { "version": "unversioned", "date": "2026-09-25", "change": "Procedure-specific antithrombotic wording (no blanket hold/bridge), coronary stent windows (ESC/ESAIC 2022), SGLT2 inhibitor rule (CPOC 2021), steroid cover, MH / suxamethonium / latex hazards (AAGBI), pregnancy from the record, under-16 flag." }
+      ]
     },
     {
       "id": "ios-screening-engine",
@@ -287,7 +302,10 @@
       "reviewPriority": "P2",
       "nextReviewDue": "2026-12-31",
       "changeAuthority": "Any repository committer. Ships with an iOS app release.",
-      "notes": "Diabetes from 35 and PSA from 45 for African-Caribbean men are local adaptations: record who decided them. Parkland burns fluid calculation is in the same file."
+      "notes": "Diabetes from 35 and PSA from 45 for African-Caribbean men are local adaptations: record who decided them. Parkland burns fluid calculation is in the same file.",
+      "changelog": [
+        { "version": "unversioned", "date": "2026-09-25", "change": "Parity with the web preventive-screening module (fix-web-screening.md): Lynch, US MSTF 2020 polyp intervals, family-history split, 76-85 individualised, BRCA carrier, hysterectomy, PSA from 55 (45 higher risk), HBV, diabetes risk rule, lipids/statin wording, H. pylori with gastric-cancer family history, NICE NG136 ABPM." }
+      ]
     },
     {
       "id": "drug-interactions",
@@ -906,13 +924,11 @@
       "title": "Diagnosis radiation: suggested investigations, plan templates, billing codes, consent category, score criteria",
       "platforms": ["ios"],
       "kind": "decision-support-rules",
-      "contentVersion": "unversioned",
-      "files": [
-        "ios/AmiseMedFlow/Services/DiagnosisRadiationEngine.swift",
-        "ios/AmiseMedFlow/Services/DiagnosisRadiationEngine+DiseaseDictionary*.swift"
-      ],
-      "tests": [],
-      "ciChecks": [],
+      "contentVersion": "1.1.0",
+      "versionStamp": { "file": "ios/AmiseMedFlow/Services/DiagnosisRadiationEngine.swift", "type": "regex", "pattern": "contentVersion\\s*=\\s*\"([^\"]+)\"" },
+      "files": ["ios/AmiseMedFlow/Services/DiagnosisRadiationEngine*.swift"],
+      "tests": ["ios/AmiseMedFlowTests/DiagnosisRadiationKeywordTests.swift", "ios/AmiseMedFlowTests/RadiationSafetyAndScoresTests.swift"],
+      "ciChecks": ["ios-build-check.yml unit tests", "clinval iOS (CI)"],
       "guidelines": [],
       "citationStatus": "partial",
       "lastReviewed": "unknown",
@@ -921,7 +937,42 @@
       "reviewPriority": "P2",
       "nextReviewDue": "2026-12-31",
       "changeAuthority": "Any repository committer. Ships with an iOS app release.",
-      "notes": "Suggestions are presented, never auto-applied. Guideline names appear in many rationale strings without years."
+      "notes": "Suggestions are presented, never auto-applied. Guideline names appear in many rationale strings without years.",
+      "changelog": [
+        { "version": "1.1.0", "date": "2026-09-25", "change": "Clinical validation fixes (SURGEON-DECISIONS A, C5, C7, E6, G2): hyperkalaemia calcium gluconate 10% 30 mL (UKKA 2023); SAH nimodipine oral 60 mg 4-hourly (NICE NG228); ABCD2 removed (NICE NG128); LMWH bridging lines removed; COPD oxygen 88-92% (BTS 2017); pancreatitis moderate goal-directed fluids, no prophylactic antibiotics, ERCP within 24 h only with cholangitis (WATERFALL 2022, ACG 2024); cholangitis drainage within 24 h (TG18); PE thrombolysis contraindicated after recent surgery (ESC 2019); pregnancy VTE = LMWH (RCOG GTG 37b); penicillin-free H. pylori regimen (Maastricht VI). New patient safety filter: under-16 dose suppression (BNFc), pregnancy filtering, class-aware allergy cross-check, procedure-specific antithrombotic plan (PAUSE, BSG/ESGE 2021, ESC/ESAIC 2022). VTE line on operative cards (NICE NG89). E6 explicit mappings (parathyroid, cellulitis with diabetes, large bowel obstruction). About 45 new cards (non-surgical emergencies with the 911 / OKEU, St Jude's or Tapion redirect). Versioned from unversioned." }
+      ]
+    },
+    {
+      "id": "ios-clinical-acuity-engine",
+      "title": "iOS triage level (max of CC keywords, vitals/NEWS2, BP, critical labs, ECG, text alarms, recognition rules, confirmed diagnosis), recognise-and-redirect alerts, pregnancy context",
+      "platforms": ["ios"],
+      "kind": "triage-rules",
+      "contentVersion": "1.0.0",
+      "versionStamp": { "file": "ios/AmiseMedFlow/Services/ClinicalAcuityEngine.swift", "type": "regex", "pattern": "rulesVersion\\s*=\\s*\"([^\"]+)\"" },
+      "files": ["ios/AmiseMedFlow/Services/ClinicalAcuityEngine*.swift", "ios/AmiseMedFlow/Services/PregnancyContext.swift"],
+      "tests": ["ios/AmiseMedFlowTests/ClinicalAcuityEngineTests.swift", "ios/AmiseMedFlowTests/TriageInputFixesTests.swift"],
+      "ciChecks": ["ios-build-check.yml unit tests", "clinval iOS (CI) emergencyLevel / mustAlarm expectations"],
+      "guidelines": [
+        { "name": "RCP National Early Warning Score (NEWS) 2", "version": "2017", "section": "Clinical response bands", "citation": "https://www.rcp.ac.uk/improving-care/resources/national-early-warning-score-news-2/" },
+        { "name": "NICE NG51 Suspected sepsis", "version": "2016, updated 2024", "section": "High-risk criteria", "citation": "https://www.nice.org.uk/guidance/ng51" },
+        { "name": "APLS (ALSG) normal ranges; NICE NG143 Fever in under 5s", "version": "6th ed.; 2019, updated 2021", "section": "Paediatric vital signs; red/amber features", "citation": "https://www.nice.org.uk/guidance/ng143" },
+        { "name": "NICE NG136 Hypertension in adults; NICE NG133 Hypertension in pregnancy", "version": "2019, updated 2023", "section": ">=180/120; >=160/110 severe in pregnancy", "citation": "https://www.nice.org.uk/guidance/ng133" },
+        { "name": "UK Kidney Association Treatment of acute hyperkalaemia in adults", "version": "2023", "section": "Severity bands; calcium gluconate 10% 30 mL", "citation": "https://ukkidney.org" },
+        { "name": "JBDS-IP DKA, HHS and hypoglycaemia guidelines", "version": "2023 / 2022 / 2023", "section": "Diagnostic thresholds and first actions", "citation": "https://abcd.care/joint-british-diabetes-societies-jbds-inpatient-care-group" },
+        { "name": "Resuscitation Council UK Emergency treatment of anaphylaxis", "version": "2021", "section": "IM adrenaline", "citation": "https://www.resus.org.uk" },
+        { "name": "Sepsis-3; Surviving Sepsis Campaign", "version": "2016; 2021", "section": "qSOFA; Sepsis Six", "citation": "Singer M, et al. JAMA 2016;315:801" }
+      ],
+      "citationStatus": "per-rule",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewEvidence": "None. Clinical-validation vignettes exercise the rules on iOS CI; not a clinical review.",
+      "reviewPriority": "P1",
+      "nextReviewDue": "2026-10-31",
+      "changeAuthority": "Any repository committer. Ships with an iOS app release.",
+      "notes": "The confirmed-diagnosis severity table and the recognition thresholds are a practice triage mapping pending surgeon sign-off (docs/clinical-validation/changes/fix-ios-triage-cards.md, Needs sign-off).",
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-09-25", "change": "New (SURGEON-DECISIONS C2, G1.3, G3): iOS triage level from all components instead of chief-complaint keywords only; recognise-and-redirect alerts for non-surgical emergencies; paediatric thresholds; pregnancy context." }
+      ]
     },
     {
       "id": "ios-surgical-vademecum",

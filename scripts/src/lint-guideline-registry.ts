@@ -82,6 +82,8 @@ const KNOWN_RULE_SET_FILES: string[] = [
   // iOS — diagnosis radiation, mappers, management, risk, templates, lab catalogue
   'ios/AmiseMedFlow/Services/DiagnosisScoreMapper*.swift',
   'ios/AmiseMedFlow/Services/DiagnosisRadiationEngine*.swift',
+  'ios/AmiseMedFlow/Services/ClinicalAcuityEngine*.swift',
+  'ios/AmiseMedFlow/Services/PregnancyContext.swift',
   'ios/AmiseMedFlow/Services/SurgicalVademecum*.swift',
   'ios/AmiseMedFlow/Services/ManagementEngine*.swift',
   'ios/AmiseMedFlow/Services/SurgicalRiskEngine*.swift',
