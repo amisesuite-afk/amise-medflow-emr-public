@@ -1,0 +1,249 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-af-incidental-preop-elderly",
+  "condition": "Atrial fibrillation found at pre-operative assessment",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-af-new-onset-rapid",
+  "permutationLabel": "Asymptomatic, found at pre-op assessment, elderly",
+  "summary": "81-year-old woman at pre-operative assessment for elective inguinal hernia repair: asymptomatic irregular pulse 92, previous TIA, hypertension, not anticoagulated. CHA2DS2-VA 5.",
+  "tags": [
+    "af",
+    "pre-operative",
+    "elderly",
+    "anticoagulation"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 81,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 156,
+      "weightKg": 60
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Pre-operative assessment for groin hernia repair",
+    "hpi": "Listed for elective open repair of a left inguinal hernia. No palpitations, chest pain or breathlessness. Pre-op nurse found an irregular pulse. TIA in 2019 treated with clopidogrel. Hypertension.",
+    "symptoms": [
+      "groin lump"
+    ],
+    "negatives": [
+      "palpitations",
+      "chest pain",
+      "breathlessness",
+      "syncope",
+      "focal weakness"
+    ],
+    "exam": {
+      "general": "Well.",
+      "cardiovascular": "Pulse 92 irregularly irregular, BP 138/80, heart sounds normal.",
+      "respiratory": "Chest clear.",
+      "abdomen": "Reducible left inguinal hernia."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 92,
+        "systolicBp": 138,
+        "diastolicBp": 80,
+        "respiratoryRate": 16,
+        "temperatureC": 36.6,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension",
+      "Transient ischaemic attack 2019",
+      "Left inguinal hernia"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Clopidogrel",
+        "dose": "75 mg",
+        "frequency": "OD",
+        "indication": "Secondary prevention after TIA"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD"
+      },
+      {
+        "drug": "Atorvastatin",
+        "dose": "40 mg",
+        "frequency": "ON"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Independent, lives with husband.",
+    "confirmedDiagnosis": {
+      "name": "Atrial fibrillation, newly detected (asymptomatic)",
+      "icd10": "I48.91",
+      "assessmentText": "Newly detected asymptomatic atrial fibrillation at pre-op assessment, rate 92, CHA2DS2-VA 5 (age >=75, TIA, hypertension) - ECG confirmation, anticoagulation discussion, defer elective hernia repair pending cardiology/GP plan."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Inguinal / groin hernia",
+        "symptoms": [
+          "pre-op assessment",
+          "groin swelling"
+        ],
+        "examFindings": {
+          "cardiovascular": [
+            "Irregular rhythm"
+          ]
+        },
+        "durationDays": 365,
+        "painScore": 1
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-af",
+          "severity": "quality",
+          "match": [
+            "atrial fibrillation",
+            "re:\\baf\\b",
+            "icd:I48",
+            "flutter"
+          ],
+          "guidelineRefs": [
+            "esc-af-2024"
+          ],
+          "note": "The hernia is the referral diagnosis; this checks whether the new AF is surfaced anywhere.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. Acute Diverticulitis | 3. GORD / Reflux Oesophagitis. PANE has no atrial fibrillation (or any arrhythmia) node.",
+          "proposedFix": "lib/pane-engine: add an atrial fibrillation node (palpitations, irregular pulse, dyspnoea, age/hypertension modifiers) with an AF-CARE protocol (ECG confirmation, rate control, CHA2DS2-VA/DOAC, TFT) and map I48."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "priority",
+        "guidelineRefs": [
+          "esc-af-2024"
+        ],
+        "note": "Asymptomatic, rate-controlled AF is not an emergency.",
+        "unverified": [
+          "ios"
+        ],
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Web run 2026-09-25: web.triage: emergency (acuity=urgent, action=emergency_now, score=64); expected ≤ priority. Triage reasons: Possible cardiac event; Age 70 or older; Anticoagulant or antiplatelet medication mentioned.",
+        "proposedFix": "Negation-aware red-flag scan (rules.ts): \"No palpitations, chest pain\" must not match the cardiac rule."
+      }
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-cha2ds2vasc",
+          "severity": "quality",
+          "score": "cha2ds2-vasc",
+          "guidelineRefs": [
+            "esc-af-2024"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: cha2ds2-vasc not recommended; recommended: news2, caprini, asa, rcri, cfs.",
+          "proposedFix": "clinical-cds.ts CHA2DS2-VASc trigger: also fire on an \"Irregular rhythm\" exam chip or an AF working diagnosis/ICD I48 (today it needs AF in the comorbidity list or palpitations + a risk factor); update the label to the ESC 2024 CHA2DS2-VA."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ecg",
+          "severity": "critical",
+          "match": [
+            "ecg",
+            "electrocardiogram",
+            "re:12.lead",
+            "ekg"
+          ],
+          "guidelineRefs": [
+            "esc-af-2024"
+          ],
+          "note": "12-lead ECG to confirm AF before any decision (ESC 2024).",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 25 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). It appears only as plan text: \"• 12-lead ECG — pre-operative cardiac baseline (age ≥ 40).\" (web.clinicalPrompts).",
+          "proposedFix": "Pre-operative prompt: an \"Irregular rhythm\" exam chip should add a 12-lead ECG investigation and an AF prompt (anticoagulation, rate, defer elective surgery)."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-anticoagulation",
+          "severity": "quality",
+          "match": [
+            "anticoag",
+            "doac",
+            "apixaban",
+            "rivaroxaban",
+            "edoxaban",
+            "dabigatran"
+          ],
+          "guidelineRefs": [
+            "esc-af-2024"
+          ],
+          "note": "CHA2DS2-VA 5: oral anticoagulation recommended (and the peri-operative plan changes).",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 13 management items matched (sources: web.clinicalPrompts). First items: • Erect CXR — exclude free air and basal pneumonia. | • 12-lead ECG — pre-operative cardiac baseline (age ≥ 40). | • Document: side, type (inguinal direct/indirect/femoral), reducibility, skin changes, sc… | • Consent: hernia repair — recurrence (1–2% TAPP), chronic groin pain (5%), mesh infectio….",
+          "proposedFix": "lib/pane-engine: add an atrial fibrillation node (palpitations, irregular pulse, dyspnoea, age/hypertension modifiers) with an AF-CARE protocol (ECG confirmation, rate control, CHA2DS2-VA/DOAC, TFT) and map I48."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-af-2024",
+      "verified": false,
+      "name": "2024 ESC Guidelines for the management of atrial fibrillation",
+      "year": 2024,
+      "section": "AF-CARE: 12-lead ECG to confirm AF; emergency electrical cardioversion for haemodynamic instability; rate control (beta-blocker, diltiazem/verapamil, digoxin); stroke risk with CHA2DS2-VA - oral anticoagulation recommended for score >=2 and considered for 1; DOAC preferred over VKA; look for precipitants (thyroid function, infection)",
+      "citation": "Van Gelder IC, Rienstra M, Bunting KV, et al. 2024 ESC Guidelines for the management of atrial fibrillation developed in collaboration with EACTS. Eur Heart J. 2024;45:3314-3414."
+    }
+  ],
+  "rationale": "Surgical-clinic permutation: AF discovered incidentally before elective surgery. Checks that an irregular pulse on examination surfaces the stroke-risk decision, without over-triaging to emergency.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

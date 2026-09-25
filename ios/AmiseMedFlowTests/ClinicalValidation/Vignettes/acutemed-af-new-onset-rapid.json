@@ -1,0 +1,298 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-af-new-onset-rapid",
+  "condition": "New-onset atrial fibrillation with rapid ventricular rate",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "68-year-old man with hypertension and type 2 diabetes: 2 days of palpitations and mild exertional breathlessness; irregularly irregular pulse 138, BP 126/84. CHA2DS2-VA 3.",
+  "tags": [
+    "af",
+    "arrhythmia",
+    "anticoagulation"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 68,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 174,
+      "weightKg": 90
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Palpitations",
+    "hpi": "Referred for an inguinal hernia. Mentions two days of a fast, irregular heartbeat and getting breathless on the stairs. No chest pain, no blackouts. Drinks 3-4 beers at weekends. Hypertension and type 2 diabetes. No previous stroke.",
+    "symptoms": [
+      "palpitations",
+      "exertional breathlessness"
+    ],
+    "negatives": [
+      "chest pain",
+      "syncope",
+      "orthopnoea",
+      "focal weakness",
+      "weight loss",
+      "heat intolerance"
+    ],
+    "exam": {
+      "general": "Comfortable at rest.",
+      "cardiovascular": "Pulse 138 irregularly irregular, BP 126/84, JVP not raised, no murmur.",
+      "respiratory": "Chest clear.",
+      "abdomen": "Reducible right inguinal hernia."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 138,
+        "systolicBp": 126,
+        "diastolicBp": 84,
+        "respiratoryRate": 18,
+        "temperatureC": 36.8,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension",
+      "Type 2 diabetes mellitus",
+      "Right inguinal hernia"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD"
+      },
+      {
+        "drug": "Lisinopril",
+        "dose": "10 mg",
+        "frequency": "OD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker. Alcohol about 12 units a week.",
+    "confirmedDiagnosis": {
+      "name": "New-onset atrial fibrillation with rapid ventricular response",
+      "icd10": "I48.91",
+      "assessmentText": "New atrial fibrillation, rate 138, haemodynamically stable, onset about 48 hours; CHA2DS2-VA 3. Same-day ED/medical assessment; defer hernia surgery."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "palpitations",
+          "dyspnoea on exertion"
+        ],
+        "examFindings": {
+          "cardiovascular": [
+            "Irregular rhythm",
+            "Tachycardia"
+          ]
+        },
+        "durationDays": 2,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-af-top3",
+          "severity": "critical",
+          "match": [
+            "atrial fibrillation",
+            "re:\\baf\\b",
+            "icd:I48",
+            "flutter"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "esc-af-2024"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Inguinal / Femoral Hernia | 2. Acute Cholecystitis | 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#2. PANE has no atrial fibrillation (or any arrhythmia) node.",
+          "proposedFix": "lib/pane-engine: add an atrial fibrillation node (palpitations, irregular pulse, dyspnoea, age/hypertension modifiers) with an AF-CARE protocol (ECG confirmation, rate control, CHA2DS2-VA/DOAC, TFT) and map I48."
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-af-symptom-inference",
+          "severity": "quality",
+          "match": [
+            "atrial fibrillation",
+            "re:\\baf\\b",
+            "icd:I48",
+            "flutter"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ],
+          "guidelineRefs": [
+            "esc-af-2024"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "esc-af-2024"
+        ],
+        "note": "New AF at 138/min: same-day assessment, not a routine booking. Stable, so not necessarily emergency.",
+        "unverified": [
+          "ios"
+        ]
+      }
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-cha2ds2vasc",
+          "severity": "quality",
+          "score": "cha2ds2-vasc",
+          "guidelineRefs": [
+            "esc-af-2024"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ecg",
+          "severity": "critical",
+          "match": [
+            "ecg",
+            "electrocardiogram",
+            "re:12.lead",
+            "ekg"
+          ],
+          "guidelineRefs": [
+            "esc-af-2024"
+          ],
+          "note": "A 12-lead ECG is required to confirm AF (ESC 2024).",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 20 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). It appears only as plan text: \"• 12-lead ECG — pre-operative cardiac baseline (age ≥ 40).\" (web.clinicalPrompts); \"• 12-lead ECG — arrhythmia, right heart strain pattern (PE).\" (web.clinicalPrompts).",
+          "proposedFix": "A prompt already offers this as plan text (\"• 12-lead ECG — arrhythmia, right heart strain pattern (PE).\"): emit it as an addToInvestigations action so it reaches the investigation list."
+        },
+        {
+          "id": "inv-tft",
+          "severity": "quality",
+          "match": [
+            "thyroid function",
+            "re:\\btfts?\\b",
+            "tsh"
+          ],
+          "guidelineRefs": [
+            "esc-af-2024"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 20 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). First items: FBC, U&E (pre-operative bloods) (inguinal_hernia) | FBC, CRP (cholecystitis) | LFTs, bilirubin, ALP, GGT (cholecystitis) | Amylase / lipase (exclude pancreatitis) (cholecystitis).",
+          "proposedFix": "AF prompt/protocol with thyroid function (ESC 2024 precipitant screen); the tachycardia prompt mentions TFTs in its action text but emits only D-dimer as an investigation."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-rate-control",
+          "severity": "quality",
+          "match": [
+            "rate control",
+            "bisoprolol",
+            "metoprolol",
+            "beta-blocker",
+            "beta blocker",
+            "diltiazem",
+            "verapamil",
+            "digoxin"
+          ],
+          "guidelineRefs": [
+            "esc-af-2024"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 13 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — pre-operative cardiac baseline (age ≥ 40). | • 12-lead ECG — arrhythmia, right heart strain pattern (PE). | • CTPA if Wells score ≥ 2 — exclude pulmonary embolism. | • IV fluid challenge 500ml if hypovolaemia likely — reassess HR at 30 min..",
+          "proposedFix": "lib/pane-engine: add an atrial fibrillation node (palpitations, irregular pulse, dyspnoea, age/hypertension modifiers) with an AF-CARE protocol (ECG confirmation, rate control, CHA2DS2-VA/DOAC, TFT) and map I48."
+        },
+        {
+          "id": "mgmt-anticoagulation",
+          "severity": "quality",
+          "match": [
+            "anticoag",
+            "doac",
+            "apixaban",
+            "rivaroxaban",
+            "edoxaban",
+            "dabigatran"
+          ],
+          "guidelineRefs": [
+            "esc-af-2024"
+          ],
+          "note": "CHA2DS2-VA 3 (hypertension, diabetes, age 65-74): oral anticoagulation recommended.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 13 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — pre-operative cardiac baseline (age ≥ 40). | • 12-lead ECG — arrhythmia, right heart strain pattern (PE). | • CTPA if Wells score ≥ 2 — exclude pulmonary embolism. | • IV fluid challenge 500ml if hypovolaemia likely — reassess HR at 30 min..",
+          "proposedFix": "lib/pane-engine: add an atrial fibrillation node (palpitations, irregular pulse, dyspnoea, age/hypertension modifiers) with an AF-CARE protocol (ECG confirmation, rate control, CHA2DS2-VA/DOAC, TFT) and map I48."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-af-2024",
+      "verified": false,
+      "name": "2024 ESC Guidelines for the management of atrial fibrillation",
+      "year": 2024,
+      "section": "AF-CARE: 12-lead ECG to confirm AF; emergency electrical cardioversion for haemodynamic instability; rate control (beta-blocker, diltiazem/verapamil, digoxin); stroke risk with CHA2DS2-VA - oral anticoagulation recommended for score >=2 and considered for 1; DOAC preferred over VKA; look for precipitants (thyroid function, infection)",
+      "citation": "Van Gelder IC, Rienstra M, Bunting KV, et al. 2024 ESC Guidelines for the management of atrial fibrillation developed in collaboration with EACTS. Eur Heart J. 2024;45:3314-3414."
+    }
+  ],
+  "rationale": "Base AF case. PANE has no AF node; the symptom inference does. Web tachycardia prompt fires at HR >110 without fever. CHA2DS2-VA (ESC 2024, sex removed): hypertension 1 + diabetes 1 + age 65-74 1 = 3.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

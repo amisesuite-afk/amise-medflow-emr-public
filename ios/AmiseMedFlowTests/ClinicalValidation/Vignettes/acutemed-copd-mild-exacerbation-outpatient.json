@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-copd-mild-exacerbation-outpatient",
+  "condition": "Mild COPD exacerbation (outpatient management)",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-copd-hypercapnic-exacerbation",
+  "permutationLabel": "Mild, outpatient",
+  "summary": "66-year-old woman with moderate COPD: 2 days of more cough and white sputum, mildly more breathless; SpO₂ 94 % (her baseline), RR 20, afebrile. GOLD 2025: short-acting bronchodilators at home; antibiotics only for purulent sputum.",
+  "tags": [
+    "copd",
+    "over-triage"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 66,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 160,
+      "weightKg": 66
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "followUp",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Chesty cough",
+    "hpi": "Moderate COPD. Two days of more coughing and more white sputum after her grandson's cold; a little more breathless on hills. Sputum not discoloured. Sleeping normally. Follow-up after laparoscopic umbilical hernia repair (healed).",
+    "symptoms": [
+      "increased cough",
+      "white sputum",
+      "mildly increased breathlessness"
+    ],
+    "negatives": [
+      "purulent sputum",
+      "fever",
+      "chest pain",
+      "haemoptysis",
+      "drowsiness",
+      "leg swelling"
+    ],
+    "exam": {
+      "general": "Comfortable, speaking easily.",
+      "respiratory": "Scattered expiratory wheeze, no crackles, RR 20.",
+      "cardiovascular": "HR 92, BP 134/78."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 92,
+        "systolicBp": 134,
+        "diastolicBp": 78,
+        "respiratoryRate": 20,
+        "temperatureC": 36.9,
+        "spo2": 94,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Chronic obstructive pulmonary disease (moderate)"
+    ],
+    "surgicalHistory": [
+      "Laparoscopic umbilical hernia repair (6 weeks ago)"
+    ],
+    "medications": [
+      {
+        "drug": "Umeclidinium/vilanterol",
+        "dose": "55/22 micrograms",
+        "frequency": "OD"
+      },
+      {
+        "drug": "Salbutamol inhaler",
+        "dose": "100 micrograms",
+        "frequency": "PRN"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker, 30 pack-years.",
+    "confirmedDiagnosis": {
+      "name": "Mild exacerbation of COPD",
+      "icd10": "J44.1",
+      "assessmentText": "Mild COPD exacerbation (non-purulent sputum, SpO2 at baseline): increase salbutamol, safety-net; antibiotics not indicated."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "productive cough",
+          "wheeze",
+          "dyspnoea on exertion"
+        ],
+        "examFindings": {
+          "respiratory": [
+            "Wheeze"
+          ]
+        },
+        "toxicHabits": [
+          "Ex-smoker"
+        ],
+        "durationDays": 2,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-copd",
+          "severity": "quality",
+          "match": [
+            "copd",
+            "chronic obstructive",
+            "icd:J44"
+          ],
+          "guidelineRefs": [
+            "gold-2025"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. GORD / Reflux Oesophagitis | 3. Acute Diverticulitis; also in web.symptomInference#1, web.passive#1. PANE has no COPD node.",
+          "proposedFix": "lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "priority",
+        "guidelineRefs": [
+          "gold-2025"
+        ],
+        "note": "Mild exacerbation: home management.",
+        "unverified": [
+          "ios"
+        ],
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Web run 2026-09-25: web.triage: emergency (acuity=urgent, action=emergency_now, score=47); expected ≤ priority. Triage reasons: Post-operative concern; Age 60 or older.",
+        "proposedFix": "rules.ts: \"breathless / shortness of breath\" is classified as \"Post-operative concern\" (urgent) in every context; restrict it to post-operative patients and grade breathlessness by physiology."
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-bronchodilator",
+          "severity": "quality",
+          "match": [
+            "salbutamol",
+            "bronchodilator",
+            "beta-2 agonist",
+            "β2",
+            "beta2",
+            "albuterol",
+            "nebulis"
+          ],
+          "guidelineRefs": [
+            "gold-2025"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 10 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — pre-operative cardiac baseline (age ≥ 40). | • Document last mammogram date — refer to radiology if overdue. | • Arrange bilateral mammogram — screening protocol. | • Faecal occult blood test — CRC screening (if colonoscopy declined)..",
+          "proposedFix": "lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-uncontrolled-oxygen",
+          "severity": "quality",
+          "match": [
+            "re:titrate to spo₂ ≥ ?94",
+            "re:titrate to spo2 ≥ ?94",
+            "re:15 ?l/min",
+            "non-rebreather",
+            "high-flow o2",
+            "high flow oxygen",
+            "high-flow oxygen"
+          ],
+          "guidelineRefs": [
+            "bts-o2-2017"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-iv-antibiotics",
+          "severity": "quality",
+          "match": [
+            "piperacillin",
+            "meropenem",
+            "vancomycin",
+            "tazocin"
+          ],
+          "guidelineRefs": [
+            "gold-2025"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "gold-2025",
+      "verified": false,
+      "name": "GOLD 2025 report - Global strategy for the prevention, diagnosis and management of COPD",
+      "year": 2025,
+      "section": "Chapter 5 exacerbations: controlled oxygen to SpO2 88-92%; arterial blood gas; non-invasive ventilation for acute respiratory acidosis (PaCO2 >=6.0 kPa / 45 mmHg and pH <=7.35); short-acting bronchodilators; systemic corticosteroids (prednisone 40 mg/day for 5 days); antibiotics when sputum purulence increases",
+      "citation": "Global Initiative for Chronic Obstructive Lung Disease. GOLD 2025 report. www.goldcopd.org."
+    },
+    {
+      "id": "bts-o2-2017",
+      "verified": false,
+      "name": "BTS guideline for oxygen use in healthcare and emergency settings",
+      "year": 2017,
+      "section": "Target SpO2 94-98% for most acutely ill patients; 88-92% for patients at risk of hypercapnic respiratory failure (e.g. COPD) pending blood gases",
+      "citation": "O'Driscoll BR, Howard LS, Earis J, Mak V. Thorax. 2017;72(Suppl 1):ii1-90."
+    }
+  ],
+  "rationale": "Over-triage / over-treatment control for the COPD base case.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

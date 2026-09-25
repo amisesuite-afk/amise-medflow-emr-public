@@ -1,0 +1,302 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-acs-atypical-diabetic-woman",
+  "condition": "Acute coronary syndrome (atypical, older diabetic woman)",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-acs-typical-chest-pain",
+  "permutationLabel": "Elderly diabetic woman, no chest pain",
+  "summary": "74-year-old woman with long-standing type 2 diabetes and CKD: 6 hours of breathlessness on minimal exertion, fatigue, nausea and a jaw ache on walking; no chest pain.",
+  "tags": [
+    "acs",
+    "atypical",
+    "women",
+    "diabetes",
+    "elderly"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 74,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 160,
+      "weightKg": 79
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Breathless and tired",
+    "hpi": "Six hours of breathlessness walking across the room, unusual tiredness, nausea and an ache in the jaw when she walks, easing when she stops. Denies chest pain. Sweaty at onset. Type 2 diabetes for 20 years with neuropathy, CKD stage 3, hypertension. Attending for review of a diabetic foot ulcer that is healing.",
+    "symptoms": [
+      "exertional breathlessness",
+      "fatigue",
+      "nausea",
+      "exertional jaw ache",
+      "sweating"
+    ],
+    "negatives": [
+      "chest pain",
+      "cough",
+      "fever",
+      "leg swelling",
+      "haemoptysis"
+    ],
+    "exam": {
+      "general": "Tired, slightly clammy.",
+      "cardiovascular": "Pulse 104 regular, BP 132/78, heart sounds normal, JVP not raised.",
+      "respiratory": "Chest clear, no crackles.",
+      "msk": "Healing neuropathic ulcer left first metatarsal head, no cellulitis. Calves soft."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 104,
+        "systolicBp": 132,
+        "diastolicBp": 78,
+        "respiratoryRate": 22,
+        "temperatureC": 36.7,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 138,
+        "unit": "µmol/L",
+        "minutesAgo": 4320
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 13.2,
+        "unit": "mmol/L",
+        "minutesAgo": 15
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Chronic kidney disease stage 3",
+      "Hypertension",
+      "Diabetic peripheral neuropathy"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Insulin glargine",
+        "dose": "24 units",
+        "frequency": "ON",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Metformin",
+        "dose": "500 mg",
+        "frequency": "BD",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      },
+      {
+        "drug": "Atorvastatin",
+        "dose": "40 mg",
+        "frequency": "ON"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Never smoked. Lives with her daughter.",
+    "confirmedDiagnosis": {
+      "name": "Suspected acute coronary syndrome (atypical presentation)",
+      "icd10": "I24.9",
+      "assessmentText": "Exertional dyspnoea, jaw ache and fatigue in an older diabetic woman - anginal equivalent; acute coronary syndrome until ECG and troponin exclude it."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "shortness of breath",
+          "fatigue",
+          "nausea",
+          "jaw pain"
+        ],
+        "symptomDetails": {
+          "shortness of breath": [
+            "Gradual",
+            "Worsening on exertion"
+          ]
+        },
+        "examFindings": {
+          "general": [
+            "Diaphoretic"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "durationDays": 0.25,
+        "painScore": 3
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-acs",
+          "severity": "critical",
+          "match": [
+            "coronary",
+            "myocardial",
+            "re:\\bacs\\b",
+            "stemi",
+            "nstemi",
+            "infarct",
+            "icd:I21",
+            "icd:I20",
+            "icd:I24"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. GORD / Reflux Oesophagitis | 3. Acute Diverticulitis; also in web.symptomInference#3, web.passive#4. PANE (lib/pane-engine, 131 diseases) has no acute coronary syndrome node.",
+          "proposedFix": "lib/pane-engine: add an acute coronary syndrome node (chest pain / pressure, radiation to arm or jaw, diaphoresis, dyspnoea; age, diabetes and smoking modifiers) or a must-not-miss cross-check, and map I20-I24 in getProtocolByIcd."
+        },
+        {
+          "id": "mnm-acs-symptom-inference",
+          "severity": "quality",
+          "match": [
+            "coronary",
+            "myocardial",
+            "re:\\bacs\\b",
+            "stemi",
+            "nstemi",
+            "infarct",
+            "icd:I21",
+            "icd:I20",
+            "icd:I24"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esc-acs-2023"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-cardiac",
+          "severity": "critical",
+          "match": [
+            "cardiac",
+            "coronary",
+            "re:\\bacs\\b",
+            "myocardial",
+            "ecg",
+            "chest pain pathway"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: no alarm names a cardiac cause. The only cardiac signals are the triage reason \"Possible cardiac event\" and the Chest Pain Pathway panel title; every safety prompt raised is non-cardiac (Emergency now, Pre-operative assessment, and e.g. \"Hernia - elective repair indicated\", \"Reproductive-age female with abdominal complaint\", \"Creatinine elevated\").",
+          "proposedFix": "rules.ts / clinical-inference.ts: an ACS rule that fires on chest pain/pressure OR (dyspnoea, jaw/arm pain, epigastric pain, sweating or unexplained fatigue in a patient >=50, diabetic or female) -> emergency_now with \"12-lead ECG within 10 minutes + hs-troponin; 999/ED transfer\"."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ecg",
+          "severity": "critical",
+          "match": [
+            "ecg",
+            "electrocardiogram",
+            "re:12.lead",
+            "ekg"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: no ECG investigation. The triage Chest Pain Pathway panel does fire here and its checklist text reads \"ECG within 10 minutes\", \"Troponin (hs-cTnI/T) at 0h and 3h\" and \"Aspirin 300mg if ACS suspected\" (the harness records panels by title only), but nothing turns them into an investigation order or plan action: the only ECG action anywhere is the \"12-lead ECG - pre-operative cardiac baseline (age >= 40)\" prompt line (or none at 36 years).",
+          "proposedFix": "Add ECG and hs-troponin as investigation actions of the chest-pain pathway / ACS prompt (today the Chest Pain Pathway checklist is shown as a panel but emits no investigation actions)."
+        },
+        {
+          "id": "inv-troponin",
+          "severity": "critical",
+          "match": [
+            "troponin"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: no troponin investigation. The triage Chest Pain Pathway panel does fire here and its checklist text reads \"ECG within 10 minutes\", \"Troponin (hs-cTnI/T) at 0h and 3h\" and \"Aspirin 300mg if ACS suspected\" (the harness records panels by title only), but nothing turns them into an investigation order or plan action: no troponin in any investigation, plan or prompt output. (The checklist 0 h/3 h sampling also differs from the ESC 2023 0 h/1 h or 0 h/2 h algorithm.)",
+          "proposedFix": "Add ECG and hs-troponin as investigation actions of the chest-pain pathway / ACS prompt (today the Chest Pain Pathway checklist is shown as a panel but emits no investigation actions)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-acs-2023",
+      "verified": false,
+      "name": "2023 ESC Guidelines for the management of acute coronary syndromes",
+      "year": 2023,
+      "section": "Section 3 (triage and diagnosis): 12-lead ECG within 10 minutes of first medical contact; hs-cTn 0 h/1 h (or 0 h/2 h) algorithm; atypical presentations (epigastric pain, dyspnoea, fatigue, nausea) more common in women, older people and people with diabetes; aspirin loading dose for all patients without contraindication; STEMI: immediate reperfusion strategy",
+      "citation": "Byrne RA, Rossello X, Coughlan JJ, et al. 2023 ESC Guidelines for the management of acute coronary syndromes. Eur Heart J. 2023;44:3720-3826."
+    }
+  ],
+  "rationale": "Atypical ACS: ESC 2023 notes dyspnoea, fatigue and nausea without chest pain are more common in women, older people and diabetics. Engines keyed on \"chest pain\" will miss her.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

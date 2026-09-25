@@ -1,0 +1,410 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-ahf-pulmonary-oedema",
+  "condition": "Acute heart failure with pulmonary oedema",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "77-year-old man with previous MI: 3 nights of orthopnoea and PND, worse today with frothy sputum; RR 30, SpO₂ 88 %, BP 172/96, bibasal crackles, raised JVP, oedema to the knees.",
+  "tags": [
+    "heart-failure",
+    "pulmonary-oedema",
+    "elderly"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 77,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 170,
+      "weightKg": 92
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Breathless, cannot lie flat",
+    "hpi": "Three nights sleeping upright in a chair and waking gasping for breath; today breathless at rest with frothy white sputum. Ankles swollen for two weeks. MI in 2018. Ran out of his furosemide last week. Attending to plan surgery for a large incisional hernia.",
+    "symptoms": [
+      "breathlessness at rest",
+      "orthopnoea",
+      "paroxysmal nocturnal dyspnoea",
+      "frothy sputum",
+      "ankle swelling"
+    ],
+    "negatives": [
+      "chest pain",
+      "fever",
+      "haemoptysis",
+      "palpitations"
+    ],
+    "exam": {
+      "general": "Sitting upright, distressed, speaking in short phrases.",
+      "respiratory": "Coarse crackles to the mid-zones bilaterally, RR 30.",
+      "cardiovascular": "HR 112 regular, BP 172/96, JVP raised to the earlobes, third heart sound.",
+      "msk": "Pitting oedema to the knees.",
+      "abdomen": "Large incisional hernia, soft."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 112,
+        "systolicBp": 172,
+        "diastolicBp": 96,
+        "respiratoryRate": 30,
+        "temperatureC": 36.9,
+        "spo2": 88,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Ischaemic heart disease (MI 2018)",
+      "Heart failure with reduced ejection fraction",
+      "Hypertension",
+      "Incisional hernia"
+    ],
+    "surgicalHistory": [
+      "Laparotomy (perforated ulcer) 2015"
+    ],
+    "medications": [
+      {
+        "drug": "Furosemide",
+        "dose": "40 mg",
+        "frequency": "OD (ran out 1 week ago)"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD"
+      },
+      {
+        "drug": "Bisoprolol",
+        "dose": "5 mg",
+        "frequency": "OD"
+      },
+      {
+        "drug": "Aspirin",
+        "dose": "75 mg",
+        "frequency": "OD"
+      },
+      {
+        "drug": "Atorvastatin",
+        "dose": "80 mg",
+        "frequency": "ON"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Acute decompensated heart failure with pulmonary oedema",
+      "icd10": "I50.1",
+      "assessmentText": "Acute pulmonary oedema (decompensated HFrEF, off diuretics): oxygen, IV furosemide, consider NIV; exclude ACS precipitant."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "shortness of breath",
+          "orthopnoea",
+          "nocturnal dyspnoea",
+          "ankle oedema",
+          "productive cough"
+        ],
+        "symptomDetails": {
+          "shortness of breath": [
+            "At rest",
+            "Nocturnal",
+            "Oedema"
+          ]
+        },
+        "examFindings": {
+          "respiratory": [
+            "Crackles (L)",
+            "Crackles (R)"
+          ],
+          "cardiovascular": [
+            "JVP elevated",
+            "Peripheral oedema",
+            "Tachycardia"
+          ],
+          "general": [
+            "In distress"
+          ]
+        },
+        "paneAnswers": {
+          "leg_swelling": true,
+          "dyspnoea_pe": true
+        },
+        "durationDays": 3,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-hf-top3",
+          "severity": "critical",
+          "match": [
+            "heart failure",
+            "pulmonary oedema",
+            "pulmonary edema",
+            "re:\\blvf\\b",
+            "cardiac failure",
+            "icd:I50",
+            "icd:J81"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "esc-hf-2021"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Inguinal / Femoral Hernia | 2. GORD / Reflux Oesophagitis | 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1. PANE has no heart failure node.",
+          "proposedFix": "lib/pane-engine: add an acute heart failure node (orthopnoea, PND, bilateral crackles, raised JVP, oedema) with a protocol (oxygen if SpO2 <90%, IV loop diuretic, NIV, NT-proBNP, ECG/troponin for ACS precipitant, echo) and map I50/J81."
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-hf-symptom-inference",
+          "severity": "quality",
+          "match": [
+            "heart failure",
+            "pulmonary oedema",
+            "pulmonary edema",
+            "re:\\blvf\\b",
+            "cardiac failure",
+            "icd:I50",
+            "icd:J81"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ],
+          "guidelineRefs": [
+            "esc-hf-2021"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esc-hf-2021"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hypoxia",
+          "severity": "critical",
+          "match": [
+            "hypox",
+            "spo₂",
+            "spo2",
+            "oxygen",
+            "saturation"
+          ],
+          "guidelineRefs": [
+            "esc-hf-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-natriuretic-peptide",
+          "severity": "quality",
+          "match": [
+            "bnp",
+            "natriuretic"
+          ],
+          "guidelineRefs": [
+            "esc-hf-2021",
+            "nice-cg187"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 22 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). First items: FBC, U&E (pre-operative bloods) (inguinal_hernia) | OGD (alarm features or PPI failure) (gord) | FBC, CRP (cholecystitis) | LFTs, bilirubin, ALP, GGT (cholecystitis).",
+          "proposedFix": "Heart-failure protocol with NT-proBNP (the shock prompt lists BNP only when hypotensive)."
+        },
+        {
+          "id": "inv-ecg",
+          "severity": "quality",
+          "match": [
+            "ecg",
+            "electrocardiogram",
+            "re:12.lead",
+            "ekg"
+          ],
+          "guidelineRefs": [
+            "esc-hf-2021"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 22 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). It appears only as plan text: \"• 12-lead ECG — pre-operative cardiac baseline (age ≥ 40).\" (web.clinicalPrompts); \"• 12-lead ECG — arrhythmia, right heart strain pattern (PE).\" (web.clinicalPrompts).",
+          "proposedFix": "A prompt already offers this as plan text (\"• 12-lead ECG — arrhythmia, right heart strain pattern (PE).\"): emit it as an addToInvestigations action so it reaches the investigation list."
+        },
+        {
+          "id": "inv-cxr",
+          "severity": "quality",
+          "match": [
+            "re:\\bcxr\\b",
+            "chest x-ray",
+            "chest x ray",
+            "chest radiograph",
+            "re:\\bx-?ray\\b[^.;]{0,15}chest"
+          ],
+          "guidelineRefs": [
+            "esc-hf-2021"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 22 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). It appears only as plan text: \"• CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly.\" (web.clinicalPrompts).",
+          "proposedFix": "A prompt already offers this as plan text (\"• CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly.\"): emit it as an addToInvestigations action so it reaches the investigation list."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-iv-diuretic",
+          "severity": "critical",
+          "match": [
+            "furosemide",
+            "frusemide",
+            "loop diuretic",
+            "bumetanide",
+            "diuretic"
+          ],
+          "guidelineRefs": [
+            "esc-hf-2021",
+            "nice-cg187"
+          ],
+          "note": "IV loop diuretic for congestion (ESC 2021, class I).",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 16 management items matched (sources: web.clinicalPrompts). First items: • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. | • CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly. | • Escalate: CPAP/NIV if SpO₂ < 90% or increasing respiratory effort — ITU review. | • CTPA if Wells score ≥ 2 and D-dimer positive — exclude pulmonary embolism..",
+          "proposedFix": "lib/pane-engine: add an acute heart failure node (orthopnoea, PND, bilateral crackles, raised JVP, oedema) with a protocol (oxygen if SpO2 <90%, IV loop diuretic, NIV, NT-proBNP, ECG/troponin for ACS precipitant, echo) and map I50/J81."
+        },
+        {
+          "id": "mgmt-niv",
+          "severity": "quality",
+          "match": [
+            "re:\\bniv\\b",
+            "non-invasive ventilation",
+            "bipap",
+            "noninvasive ventilation",
+            "cpap"
+          ],
+          "guidelineRefs": [
+            "esc-hf-2021"
+          ],
+          "note": "RR >25 and SpO2 <90%: consider NIV.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-large-fluid-bolus",
+          "severity": "critical",
+          "match": [
+            "30ml/kg",
+            "30 ml/kg",
+            "30 mL/kg",
+            "re:1 ?l[^.;]{0,25}bolus",
+            "re:bolus[^.;]{0,20}1 ?l"
+          ],
+          "guidelineRefs": [
+            "esc-hf-2021"
+          ],
+          "note": "A litre bolus or 30 mL/kg in florid pulmonary oedema is harmful.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-fluid-challenge",
+          "severity": "quality",
+          "match": [
+            "fluid challenge"
+          ],
+          "guidelineRefs": [
+            "esc-hf-2021"
+          ],
+          "note": "Even a conditional 500 mL fluid challenge is inappropriate with pulmonary oedema on examination.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: forbidden management item present in web.clinicalPrompts: \"• iv fluid challenge 500ml if hypovolaemia likely - reassess hr at 30 min.\".",
+          "proposedFix": "tachycardia_afebrile prompt: do not offer a fluid challenge when heart failure signs are recorded; offer ECG, BNP and diuretic review instead."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-hf-2021",
+      "verified": false,
+      "name": "2021 ESC Guidelines for the diagnosis and treatment of acute and chronic heart failure (and 2023 focused update)",
+      "year": 2021,
+      "section": "Section 11 acute heart failure: natriuretic peptides, ECG, CXR, echocardiography; IV loop diuretics for congestion; oxygen if SpO2 <90%; non-invasive ventilation for respiratory distress (RR >25/min, SpO2 <90%); identify precipitants (ACS, arrhythmia, infection, hypertension)",
+      "citation": "McDonagh TA, Metra M, Adamo M, et al. Eur Heart J. 2021;42:3599-3726; 2023 focused update Eur Heart J. 2023;44:3627-3639."
+    },
+    {
+      "id": "nice-cg187",
+      "verified": false,
+      "name": "NICE CG187 - Acute heart failure: diagnosis and management",
+      "year": 2014,
+      "section": "1.2 diagnosis: natriuretic peptide in suspected acute heart failure, echocardiography; 1.3 treatment: IV diuretic; do not routinely offer opiates; NIV for cardiogenic pulmonary oedema with severe dyspnoea and acidaemia",
+      "citation": "National Institute for Health and Care Excellence. CG187. London: NICE; 2014 (updated 2021)."
+    }
+  ],
+  "rationale": "Base acute heart failure case. Tachycardia and hypoxia prompts fire on web; the question is whether any engine names heart failure and offers diuretics rather than fluids.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

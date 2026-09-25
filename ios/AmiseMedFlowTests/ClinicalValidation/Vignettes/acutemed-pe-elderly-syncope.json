@@ -1,0 +1,248 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-pe-elderly-syncope",
+  "condition": "Pulmonary embolism presenting as syncope (elderly)",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-pe-ocp-long-haul",
+  "permutationLabel": "Elderly, presenting as syncope",
+  "summary": "79-year-old woman, largely immobile for 2 weeks with flu, collapsed without warning getting off the toilet; now breathless, HR 118, SBP 96, SpO₂ 91 %.",
+  "tags": [
+    "pe",
+    "syncope",
+    "elderly",
+    "mimic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 79,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 155,
+      "weightKg": 62
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Collapse",
+    "hpi": "Brought by her son. Mostly in bed for two weeks with a flu-like illness. This morning blacked out without warning as she got up from the toilet, came round within a minute. Since then breathless at rest. No chest pain, no palpitations, no incontinence or tongue biting. Awaiting elective repair of a femoral hernia.",
+    "symptoms": [
+      "collapse without warning",
+      "breathlessness at rest"
+    ],
+    "negatives": [
+      "chest pain",
+      "palpitations",
+      "tongue biting",
+      "incontinence",
+      "head injury",
+      "melaena"
+    ],
+    "exam": {
+      "general": "Breathless, pale.",
+      "cardiovascular": "HR 118 regular, BP 96/60, JVP raised, heart sounds normal.",
+      "respiratory": "Chest clear, RR 26.",
+      "neuro": "GCS 15, no focal deficit.",
+      "msk": "Left calf slightly fuller than right, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 118,
+        "systolicBp": 96,
+        "diastolicBp": 60,
+        "respiratoryRate": 26,
+        "temperatureC": 37.0,
+        "spo2": 91,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension",
+      "Osteoarthritis",
+      "Left femoral hernia"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives alone, independent until two weeks ago.",
+    "confirmedDiagnosis": {
+      "name": "Syncope with hypoxia - suspected pulmonary embolism",
+      "icd10": "I26.99",
+      "paneDiseaseId": "pulmonary_embolism",
+      "assessmentText": "Syncope without prodrome, new breathlessness, hypoxia and relative hypotension after immobility - suspected pulmonary embolism; high-risk syncope."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "syncope",
+          "shortness of breath"
+        ],
+        "symptomDetails": {
+          "syncope": [
+            "During micturition / defaecation",
+            "No warning",
+            "Shortness of breath"
+          ],
+          "shortness of breath": [
+            "Sudden",
+            "At rest"
+          ]
+        },
+        "examFindings": {
+          "cardiovascular": [
+            "Tachycardia",
+            "JVP elevated"
+          ],
+          "respiratory": [
+            "Clear to auscultation"
+          ]
+        },
+        "paneAnswers": {
+          "dyspnoea_pe": true,
+          "loss_of_consciousness": true,
+          "mechanism_blunt": false
+        },
+        "durationDays": 0,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-pe",
+          "severity": "critical",
+          "match": [
+            "pulmonary embol",
+            "re:\\bpe\\b",
+            "icd:I26"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019",
+            "esc-syncope-2018"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. GORD / Reflux Oesophagitis | 3. Acute Diverticulitis; also in web.symptomInference#5, web.passive#3. PANE has a pulmonary_embolism node, but the CC template carries no chest/respiratory hint and surgical priors dominate.",
+          "proposedFix": "PANE: let loss_of_consciousness + dyspnoea_pe + hypoxia raise PE; add a syncope chip/SOCRATES hint in socrates-to-features; a hard rule \"syncope + hypoxia or new dyspnoea -> consider PE\"."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esc-syncope-2018",
+          "esc-pe-2019"
+        ],
+        "note": "High-risk syncope (no prodrome, new breathlessness, relative hypotension) with hypoxia.",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hypoxia",
+          "severity": "critical",
+          "match": [
+            "hypox",
+            "spo₂",
+            "spo2",
+            "oxygen",
+            "saturation"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ecg",
+          "severity": "critical",
+          "match": [
+            "ecg",
+            "electrocardiogram",
+            "re:12.lead",
+            "ekg"
+          ],
+          "guidelineRefs": [
+            "esc-syncope-2018"
+          ],
+          "note": "ECG in every syncope (ESC 2018).",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-ctpa",
+          "severity": "critical",
+          "match": [
+            "ctpa",
+            "ct pulmonary angiogra",
+            "pulmonary angiogra",
+            "re:v/?q scan",
+            "ventilation.perfusion"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-pe-2019",
+      "verified": false,
+      "name": "2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism",
+      "year": 2019,
+      "section": "Sections 4-6: clinical probability (Wells/Geneva), PERC in low probability, D-dimer only when probability is not high, CTPA; anticoagulation while awaiting results in high/intermediate probability; high-risk (haemodynamically unstable) PE: UFH, bedside echocardiography if CTPA not immediately feasible, systemic thrombolysis; Section 9 pregnancy: D-dimer/CUS/CTPA or V/Q, LMWH (NOACs not recommended in pregnancy)",
+      "citation": "Konstantinides SV, Meyer G, Becattini C, et al. Eur Heart J. 2020;41:543-603."
+    },
+    {
+      "id": "esc-syncope-2018",
+      "verified": false,
+      "name": "2018 ESC Guidelines for the diagnosis and management of syncope",
+      "year": 2018,
+      "section": "Table 5 risk stratification: high-risk - syncope during exertion or supine, absence of prodrome, new chest discomfort/breathlessness, structural heart disease, ECG with Mobitz II or third-degree AV block or bradycardia <40 bpm, unexplained SBP <90 mmHg, GI bleeding; low-risk - typical reflex prodrome and triggers; low-risk patients discharged, high-risk patients need early intensive evaluation; brain imaging not recommended in uncomplicated syncope",
+      "citation": "Brignole M, Moya A, de Lange FJ, et al. Eur Heart J. 2018;39:1883-1948."
+    }
+  ],
+  "rationale": "Elderly permutation and syncope mimic. The web symptom detail \"During micturition / defaecation\" describes situational (reflex) syncope; this checks that a benign-sounding label does not override hypoxia and absent prodrome.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

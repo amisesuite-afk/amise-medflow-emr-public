@@ -1,0 +1,504 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-cap-high-severity-elderly",
+  "condition": "Community-acquired pneumonia (high severity, CURB65 5) with sepsis",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-cap-low-severity",
+  "permutationLabel": "Elderly, CURB65 5, septic",
+  "summary": "81-year-old woman with 2 days of cough and new confusion: RR 32, BP 86/54, HR 112, T 38.6, SpO₂ 90 %, urea 11.4. CURB65 5, qSOFA 3: hospital/critical-care assessment, blood cultures and IV antibiotics within 1 hour.",
+  "tags": [
+    "pneumonia",
+    "sepsis",
+    "elderly",
+    "curb65",
+    "qsofa"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 81,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 152,
+      "weightKg": 55
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Cough and confusion",
+    "hpi": "Brought by her daughter: two days of cough with rusty sputum and fevers, today muddled and not recognising the grandchildren. Not eating. Attends our clinic for surveillance after a sigmoid colectomy.",
+    "symptoms": [
+      "productive cough",
+      "fever",
+      "new confusion",
+      "reduced oral intake"
+    ],
+    "negatives": [
+      "chest pain",
+      "abdominal pain",
+      "diarrhoea",
+      "urinary symptoms"
+    ],
+    "exam": {
+      "general": "Drowsy but rousable, confused (AMT 6/10), dry mucous membranes.",
+      "respiratory": "Bronchial breathing and coarse crackles left base, RR 32.",
+      "cardiovascular": "HR 112 regular, BP 86/54, cool peripheries.",
+      "abdomen": "Soft, non-tender, healed laparotomy scar."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 112,
+        "systolicBp": 86,
+        "diastolicBp": 54,
+        "respiratoryRate": 32,
+        "temperatureC": 38.6,
+        "spo2": 90,
+        "avpu": "C",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 11.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 142,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 18.6,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 246,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension",
+      "Sigmoid cancer (resected 2024)"
+    ],
+    "surgicalHistory": [
+      "Open sigmoid colectomy 2024"
+    ],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with daughter.",
+    "scoreForms": {
+      "qsofa": {
+        "alteredMentation": true,
+        "rrAtLeast22": true,
+        "sbpAtMost100": true,
+        "suspectedInfection": true
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Severe community-acquired pneumonia with sepsis",
+      "icd10": "J18.9",
+      "assessmentText": "Left basal pneumonia, CURB65 5, with sepsis and hypotension: sepsis bundle, IV antibiotics within 1 hour, critical-care review."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "productive cough",
+          "fever",
+          "confusion"
+        ],
+        "examFindings": {
+          "respiratory": [
+            "Crackles (L)",
+            "Dull to percussion"
+          ],
+          "general": [
+            "In distress"
+          ],
+          "neurology": [
+            "Confused"
+          ]
+        },
+        "paneAnswers": {
+          "fever": true,
+          "mechanism_blunt": false
+        },
+        "durationDays": 2,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-pneumonia",
+          "severity": "critical",
+          "match": [
+            "pneumonia",
+            "icd:J18",
+            "icd:J15",
+            "icd:J13",
+            "chest infection",
+            "lower respiratory tract infection"
+          ],
+          "guidelineRefs": [
+            "nice-ng250"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. Acute Diverticulitis | 3. Acute Cholangitis; also in web.symptomInference#2, web.passive#1. PANE has no pneumonia node.",
+          "proposedFix": "lib/pane-engine: add a community-acquired pneumonia node (productive cough, fever, pleuritic pain, focal crackles/bronchial breathing, hypoxia) with a protocol (CURB65/CRB65 severity, CXR, amoxicillin for low severity, blood cultures + IV co-amoxiclav/clarithromycin for high severity) and map J18/J15."
+        },
+        {
+          "id": "mnm-sepsis",
+          "severity": "quality",
+          "match": [
+            "sepsis",
+            "septic",
+            "icd:A41",
+            "icd:A40"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. Acute Diverticulitis | 3. Acute Cholangitis; also in web.symptomInference#3, web.passive#3. PANE has no sepsis node.",
+          "proposedFix": "lib/pane-engine: add sepsis (source-agnostic) as a must-not-miss node driven by physiology, or show a sepsis banner above the PANE list when NEWS2 >=5 with a suspected infection."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "bts-cap-2009",
+          "ssc-2021"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic",
+            "icd:A41",
+            "icd:A40"
+          ],
+          "guidelineRefs": [
+            "ssc-2021",
+            "nice-ng51"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "alarm-hypoxia",
+          "severity": "critical",
+          "match": [
+            "hypox",
+            "spo₂",
+            "spo2",
+            "oxygen",
+            "saturation"
+          ],
+          "guidelineRefs": [
+            "bts-o2-2017"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-curb65",
+          "severity": "quality",
+          "score": "curb65",
+          "guidelineRefs": [
+            "bts-cap-2009"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "score-rec-news2",
+          "severity": "quality",
+          "score": "news2",
+          "guidelineRefs": [
+            "rcp-news2-2017",
+            "nice-ng51"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "values": [
+        {
+          "id": "score-qsofa-calculator",
+          "severity": "quality",
+          "score": "qsofa",
+          "mode": "calculator",
+          "platforms": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "sepsis3-2016"
+          ],
+          "equals": 3,
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "score-qsofa-autofill",
+          "severity": "quality",
+          "score": "qsofa",
+          "mode": "autofill",
+          "platforms": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "sepsis3-2016"
+          ],
+          "note": "RR 32, SBP 86 and AVPU C are all on the record; auto-fill reads vitals.",
+          "min": 2,
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "critical",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "bts-cap-2009",
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-cxr",
+          "severity": "quality",
+          "match": [
+            "re:\\bcxr\\b",
+            "chest x-ray",
+            "chest x ray",
+            "chest radiograph",
+            "re:\\bx-?ray\\b[^.;]{0,15}chest"
+          ],
+          "guidelineRefs": [
+            "nice-ng250"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 32 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). It appears only as plan text: \"• Identify source of infection: CXR + urine dipstick + abdominal CT if no clear focus.\" (web.clinicalPrompts); \"• CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly.\" (web.clinicalPrompts).",
+          "proposedFix": "A prompt already offers this as plan text (\"• Identify source of infection: CXR + urine dipstick + abdominal CT if no clear focus.\"): emit it as an addToInvestigations action so it reaches the investigation list."
+        },
+        {
+          "id": "inv-lactate",
+          "severity": "quality",
+          "match": [
+            "lactate"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "antimicrobial",
+            "piperacillin",
+            "tazobactam",
+            "co-amoxiclav",
+            "amoxicillin",
+            "ceftriaxone",
+            "cefotaxime",
+            "meropenem",
+            "clarithromycin",
+            "doxycycline",
+            "gentamicin",
+            "cefuroxime",
+            "benzylpenicillin"
+          ],
+          "unless": [
+            "before antibiotic",
+            "before first antibiotic",
+            "at induction",
+            "prophyla"
+          ],
+          "guidelineRefs": [
+            "nice-ng250",
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-critical-care",
+          "severity": "quality",
+          "match": [
+            "re:\\bicu\\b",
+            "re:\\bitu\\b",
+            "re:\\bhdu\\b",
+            "intensive care",
+            "critical care",
+            "high dependency"
+          ],
+          "guidelineRefs": [
+            "bts-cap-2009"
+          ],
+          "note": "CURB65 3-5: assess for critical care.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-oxygen",
+          "severity": "quality",
+          "match": [
+            "oxygen",
+            "re:\\bo2\\b",
+            "o₂"
+          ],
+          "guidelineRefs": [
+            "bts-o2-2017"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng250",
+      "verified": false,
+      "name": "NICE NG250 - Pneumonia: diagnosis and management",
+      "year": 2025,
+      "section": "Community-acquired pneumonia: severity assessment with clinical judgement and CRB65 (community) / CURB65 (hospital); low severity managed in the community with oral amoxicillin; higher severity: hospital assessment, microbiology, antibiotics within 4 hours of presentation (1 hour if sepsis suspected)",
+      "citation": "National Institute for Health and Care Excellence. Pneumonia: diagnosis and management (NG250). London: NICE; 2025 (replaces CG191 and NG138)."
+    },
+    {
+      "id": "bts-cap-2009",
+      "verified": false,
+      "name": "BTS guidelines for the management of community acquired pneumonia in adults: update 2009",
+      "year": 2009,
+      "section": "Severity assessment: CURB65 (confusion; urea >7 mmol/L; RR >=30/min; SBP <90 or DBP <=60 mmHg; age >=65); 0-1 low severity (home), 2 moderate (consider hospital), 3-5 high severity (hospital, assess for critical care); blood cultures for moderate and high severity",
+      "citation": "Lim WS, Baudouin SV, George RC, et al. Thorax. 2009;64(Suppl 3):iii1-55."
+    },
+    {
+      "id": "ssc-2021",
+      "verified": false,
+      "name": "Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021",
+      "year": 2021,
+      "section": "Screening: recommend against qSOFA alone compared with SIRS, NEWS or MEWS; antimicrobials within 1 h for possible septic shock or high likelihood of sepsis; blood cultures before antimicrobials; lactate measurement; 30 mL/kg IV crystalloid within 3 h for sepsis-induced hypoperfusion or septic shock; noradrenaline first-line vasopressor, MAP target 65 mmHg",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063-e1143."
+    },
+    {
+      "id": "nice-ng51",
+      "verified": false,
+      "name": "NICE NG51 - Suspected sepsis: recognition, diagnosis and early management",
+      "year": 2024,
+      "section": "Think sepsis in anyone with a possible infection, including people who are afebrile, older or frail; NEWS2 used for risk stratification in adults in acute hospital settings; high risk -> senior review, blood cultures, lactate and antibiotics within 1 hour",
+      "citation": "National Institute for Health and Care Excellence. NG51. London: NICE; 2016 (updated 2024)."
+    },
+    {
+      "id": "sepsis3-2016",
+      "verified": false,
+      "name": "Third International Consensus Definitions for Sepsis and Septic Shock (Sepsis-3)",
+      "year": 2016,
+      "section": "qSOFA: respiratory rate >=22/min, altered mentation, systolic BP <=100 mmHg; >=2 identifies infected patients at risk of poor outcome outside the ICU",
+      "citation": "Singer M, Deutschman CS, Seymour CW, et al. JAMA. 2016;315:801-10."
+    },
+    {
+      "id": "rcp-news2-2017",
+      "verified": false,
+      "name": "Royal College of Physicians - National Early Warning Score (NEWS) 2",
+      "year": 2017,
+      "section": "Clinical response thresholds: aggregate 5-6 or a single parameter scoring 3 -> urgent response; aggregate >=7 -> emergency response; SpO2 Scale 2 only for confirmed hypercapnic respiratory failure",
+      "citation": "Royal College of Physicians. National Early Warning Score (NEWS) 2: standardising the assessment of acute-illness severity in the NHS. London: RCP; 2017."
+    },
+    {
+      "id": "bts-o2-2017",
+      "verified": false,
+      "name": "BTS guideline for oxygen use in healthcare and emergency settings",
+      "year": 2017,
+      "section": "Target SpO2 94-98% for most acutely ill patients; 88-92% for patients at risk of hypercapnic respiratory failure (e.g. COPD) pending blood gases",
+      "citation": "O'Driscoll BR, Howard LS, Earis J, Mak V. Thorax. 2017;72(Suppl 1):ii1-90."
+    }
+  ],
+  "rationale": "High-severity permutation: CURB65 5 (confusion, urea >7, RR >=30, SBP <90, age >=65) with septic shock physiology. Every engine should escalate to emergency.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

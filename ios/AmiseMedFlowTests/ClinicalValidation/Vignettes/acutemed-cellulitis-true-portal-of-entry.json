@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-cellulitis-true-portal-of-entry",
+  "condition": "Lower-limb cellulitis with a portal of entry (DVT unlikely)",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-dvt-labelled-cellulitis",
+  "permutationLabel": "True cellulitis, DVT unlikely",
+  "summary": "45-year-old woman with 2 days of spreading, well-demarcated, hot erythema of the left shin from a toe-web fissure (tinea); T 38.2, HR 96, no calf swelling. Eron class I-II: oral antibiotics; DVT not suspected.",
+  "tags": [
+    "cellulitis",
+    "over-treatment"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 45,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 166,
+      "weightKg": 76
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Red hot leg",
+    "hpi": "Two days of a spreading red, hot, painful patch on the front of the left shin, started from cracked skin between the toes (athlete's foot). Feverish last night. No calf swelling, no recent travel or immobility. Seen previously for a sebaceous cyst.",
+    "symptoms": [
+      "spreading erythema left shin",
+      "fever",
+      "pain",
+      "toe-web fissure"
+    ],
+    "negatives": [
+      "calf swelling",
+      "breathlessness",
+      "blistering",
+      "pain out of proportion",
+      "recent immobility"
+    ],
+    "exam": {
+      "general": "Well.",
+      "skin": "Hot, tender, well-demarcated erythema over the left anterior shin (10 x 8 cm), marked; macerated fissured 4th toe web with scaling (tinea pedis). No bullae, no crepitus.",
+      "msk": "Calves equal and soft, no pitting oedema.",
+      "cardiovascular": "HR 96, BP 128/78."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 96,
+        "systolicBp": 128,
+        "diastolicBp": 78,
+        "respiratoryRate": 16,
+        "temperatureC": 38.2,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 88,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 13.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Tinea pedis"
+    ],
+    "surgicalHistory": [
+      "Excision of sebaceous cyst 2024"
+    ],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Nurse. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Cellulitis of the left lower leg",
+      "icd10": "L03.116",
+      "paneDiseaseId": "cellulitis",
+      "assessmentText": "Cellulitis left shin, Eron class I-II, portal of entry tinea pedis; DVT unlikely (no swelling, no risk factors): oral flucloxacillin, mark the edge, treat tinea, review at 48 hours."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "cellulitis",
+          "fever",
+          "limb pain"
+        ],
+        "examFindings": {
+          "extremities": [
+            "Pulses present"
+          ]
+        },
+        "paneAnswers": {
+          "erythema_surrounding": true,
+          "fever": true,
+          "leg_swelling": false
+        },
+        "durationDays": 2,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-cellulitis-top3",
+          "severity": "critical",
+          "match": [
+            "cellulitis",
+            "icd:L03"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng141"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "urgent",
+        "guidelineRefs": [
+          "nice-ng141"
+        ],
+        "note": "Eron I-II cellulitis: outpatient oral antibiotics; an emergency redirect is over-triage.",
+        "unverified": [
+          "ios"
+        ],
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Web run 2026-09-25: web.triage: emergency (acuity=urgent, action=emergency_now, score=48); expected ≤ urgent. Triage reasons: Systemic red flag symptom; Fever; Moderate pain score.",
+        "proposedFix": "Tier fever without physiological derangement (NEWS2 <5) below emergency_now."
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-antibiotic",
+          "severity": "critical",
+          "match": [
+            "flucloxacillin",
+            "phenoxymethylpenicillin",
+            "clarithromycin",
+            "doxycycline",
+            "antibiotic",
+            "co-amoxiclav"
+          ],
+          "guidelineRefs": [
+            "nice-ng141"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: no antibiotic in any output. PANE ranks Acute Cholecystitis first (0.152) and Cellulitis second, so the Assessment panel shows no cellulitis protocol, and the confirmed ICD L03.116 (cellulitis of left lower limb) has no getProtocolByIcd mapping (the cellulitis node is L03.90). The only management items are generic prompts.",
+          "proposedFix": "Map L03.11x (cellulitis of lower limb) to the cellulitis protocol in getProtocolByIcd; let the Assessment panel follow the confirmed diagnosis rather than the PANE top (cholecystitis 0.152 for a leg cellulitis)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-empirical-anticoagulation",
+          "severity": "quality",
+          "match": [
+            "re:anticoagulate immediately",
+            "rivaroxaban",
+            "apixaban"
+          ],
+          "guidelineRefs": [
+            "nice-ng158",
+            "nice-ng141"
+          ],
+          "note": "DVT is not suspected (no swelling, no risk factors); empirical anticoagulation would be harm without benefit.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng141",
+      "verified": false,
+      "name": "NICE NG141 - Cellulitis and erysipelas: antimicrobial prescribing",
+      "year": 2019,
+      "section": "Exclude other causes of skin redness (e.g. inflammatory reaction, chronic venous insufficiency, DVT) before prescribing; cellulitis is usually unilateral; admit if severely unwell (Eron III-IV)",
+      "citation": "National Institute for Health and Care Excellence. NG141. London: NICE; 2019."
+    },
+    {
+      "id": "nice-ng158",
+      "verified": false,
+      "name": "NICE NG158 - Venous thromboembolic diseases: diagnosis, management and thrombophilia testing",
+      "year": 2020,
+      "section": "1.1 DVT: two-level Wells; likely -> proximal leg vein ultrasound within 4 h (interim anticoagulation if delayed); 1.1 PE: two-level Wells; likely (>4) -> CTPA immediately (interim anticoagulation if delayed); unlikely -> D-dimer; PERC when pre-test probability is low",
+      "citation": "National Institute for Health and Care Excellence. NG158. London: NICE; 2020 (updated 2023)."
+    }
+  ],
+  "rationale": "The other arm of the pair: true cellulitis with a clear portal of entry and no DVT features; checks for over-triage and unnecessary anticoagulation.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

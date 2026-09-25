@@ -1,0 +1,427 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-gastroenteritis-mimic-euglycaemic-dka",
+  "condition": "Euglycaemic DKA on an SGLT2 inhibitor mimicking gastroenteritis",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-gastroenteritis-elderly-aki",
+  "permutationLabel": "Diabetic on SGLT2 inhibitor, euglycaemic DKA mimic",
+  "summary": "56-year-old man with type 2 diabetes on empagliflozin: 2 days of vomiting and abdominal pain labelled gastroenteritis; glucose 11.8, RR 28, HR 116, ketones 5.2, pH 7.12, bicarbonate 9. JBDS 2023/MHRA: check ketones regardless of glucose.",
+  "tags": [
+    "dka",
+    "sglt2",
+    "diabetes",
+    "mimic",
+    "gastroenteritis-mimic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 56,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 175,
+      "weightKg": 84
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Vomiting and tummy pain",
+    "hpi": "GP thinks gastroenteritis. Two days of vomiting, generalised abdominal pain and feeling breathless; hardly eating. Type 2 diabetes on empagliflozin and metformin; still taking both. Referred with a query of gallstones. No diarrhoea.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Diffuse"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting",
+        "Anorexia"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "vomiting",
+      "diffuse abdominal pain",
+      "breathlessness",
+      "anorexia"
+    ],
+    "negatives": [
+      "diarrhoea",
+      "fever",
+      "jaundice",
+      "melaena"
+    ],
+    "exam": {
+      "general": "Dry, deep sighing respirations, ketotic breath.",
+      "abdomen": "Soft, mild diffuse tenderness, no guarding, no peritonism.",
+      "cardiovascular": "HR 116, BP 108/66.",
+      "respiratory": "Chest clear, RR 28 deep (Kussmaul)."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 116,
+        "systolicBp": 108,
+        "diastolicBp": 66,
+        "respiratoryRate": 28,
+        "temperatureC": 36.9,
+        "spo2": 98,
+        "glucoseMmol": 11.8,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 11.8,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ketones",
+        "name": "Blood ketones",
+        "value": 5.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ph",
+        "name": "pH (venous)",
+        "value": 7.12,
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bicarbonate",
+        "name": "Bicarbonate",
+        "value": 9,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 4.9,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 48,
+        "unit": "U/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Empagliflozin",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker, occasional alcohol.",
+    "confirmedDiagnosis": {
+      "name": "Euglycaemic diabetic ketoacidosis (SGLT2 inhibitor)",
+      "icd10": "E11.10",
+      "assessmentText": "Euglycaemic DKA on empagliflozin (glucose 11.8, ketones 5.2, pH 7.12, bicarbonate 9): stop the SGLT2 inhibitor, fixed-rate insulin with glucose, fluids, emergency transfer."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Nausea / vomiting",
+        "symptoms": [
+          "vomiting",
+          "abdominal pain",
+          "shortness of breath",
+          "anorexia"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Diffuse",
+            "1–3 days",
+            "Constant",
+            "Moderate (4–6)",
+            "Nausea",
+            "Vomiting",
+            "Anorexia"
+          ],
+          "vomiting": [
+            "Food",
+            "Multiple episodes daily"
+          ]
+        },
+        "paneAnswers": {
+          "nausea_vomiting": true,
+          "anorexia": true
+        },
+        "durationDays": 2,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-dka",
+          "severity": "critical",
+          "match": [
+            "ketoacidosis",
+            "re:\\bdka\\b",
+            "icd:E11.1",
+            "icd:E10.1",
+            "icd:E13.1"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Appendicitis | 2. Acute Cholecystitis | 3. Inguinal / Femoral Hernia. PANE has no DKA node; the web symptom inference has one (dka_hhs) but it did not rank.",
+          "proposedFix": "Add a ketone check to the vomiting/abdominal-pain + diabetes cascade: any patient on an SGLT2 inhibitor (empagliflozin, dapagliflozin, canagliflozin, ertugliflozin) with vomiting, abdominal pain or Kussmaul breathing -> blood ketones and venous gas regardless of glucose (JBDS 2023, MHRA 2020)."
+        },
+        {
+          "id": "mnm-dka-symptom-inference",
+          "severity": "quality",
+          "match": [
+            "ketoacidosis",
+            "re:\\bdka\\b",
+            "icd:E11.1",
+            "icd:E10.1",
+            "icd:E13.1",
+            "dka_hhs",
+            "hyperglyc"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: not in top 5 of web.symptomInference: 1. Acute appendicitis (paediatric) | 2. Gallstone pancreatitis | 3. Acute cholecystitis | 4. Acute alcoholic pancreatitis | 5. Acute appendicitis.",
+          "proposedFix": "symptom-inference dka_hhs: weight vomiting + abdominal pain + breathlessness in a known diabetic, and read SGLT2-inhibitor medication."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "jbds-dka-2023"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-dka",
+          "severity": "critical",
+          "match": [
+            "ketoacidosis",
+            "re:\\bdka\\b",
+            "icd:E11.1",
+            "icd:E10.1",
+            "icd:E13.1",
+            "ketone"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023",
+            "mhra-sglt2-2020"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: no matching alarm. Alarms raised: Tachypnoea; Emergency now; Generalised peritonism (guarding / rigidity); Appendicitis — emergency surgical indication; Acute abdominal presentation; Pre-operative assessment; HR 116 bpm — unexplained tachycardia.",
+          "proposedFix": "Add a ketone check to the vomiting/abdominal-pain + diabetes cascade: any patient on an SGLT2 inhibitor (empagliflozin, dapagliflozin, canagliflozin, ertugliflozin) with vomiting, abdominal pain or Kussmaul breathing -> blood ketones and venous gas regardless of glucose (JBDS 2023, MHRA 2020)."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ketones",
+          "severity": "critical",
+          "match": [
+            "ketone"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023",
+            "mhra-sglt2-2020"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 32 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). It appears only as plan text: \"• Urine ketones — exclude diabetic ketoacidosis.\" (web.clinicalPrompts).",
+          "proposedFix": "Add a ketone check to the vomiting/abdominal-pain + diabetes cascade: any patient on an SGLT2 inhibitor (empagliflozin, dapagliflozin, canagliflozin, ertugliflozin) with vomiting, abdominal pain or Kussmaul breathing -> blood ketones and venous gas regardless of glucose (JBDS 2023, MHRA 2020)."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-stop-sglt2",
+          "severity": "quality",
+          "match": [
+            "re:(stop|withhold|hold|suspend|omit)[^.;]{0,30}(sglt2|empagliflozin|gliflozin)"
+          ],
+          "guidelineRefs": [
+            "mhra-sglt2-2020"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 34 management items matched (sources: web.clinicalPrompts, web.managementPanel, web.managementPanel.keyPoints). First items: [immediate] IV access, adequate analgesia (IV morphine titrated), NBM. | [immediate] IV crystalloid resuscitation (Hartmann's or 0.9% NaCl). | [immediate] IV antibiotics: co-amoxiclav 1.2 g TDS or cefuroxime 750 mg TDS + metronidazo… | [surgical] Laparoscopic appendicectomy (gold standard; reduces wound infection and LOS)..",
+          "proposedFix": "Add a ketone check to the vomiting/abdominal-pain + diabetes cascade: any patient on an SGLT2 inhibitor (empagliflozin, dapagliflozin, canagliflozin, ertugliflozin) with vomiting, abdominal pain or Kussmaul breathing -> blood ketones and venous gas regardless of glucose (JBDS 2023, MHRA 2020)."
+        },
+        {
+          "id": "mgmt-insulin",
+          "severity": "quality",
+          "match": [
+            "fixed-rate",
+            "fixed rate",
+            "re:\\bfriii\\b"
+          ],
+          "unless": [
+            "variable-rate",
+            "variable rate",
+            "vriii"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023"
+          ],
+          "note": "JBDS: fixed-rate IV insulin (with glucose once below 14 mmol/L) for DKA; a variable-rate regimen is the wrong protocol.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 34 management items matched (sources: web.clinicalPrompts, web.managementPanel, web.managementPanel.keyPoints). First items: [immediate] IV access, adequate analgesia (IV morphine titrated), NBM. | [immediate] IV crystalloid resuscitation (Hartmann's or 0.9% NaCl). | [immediate] IV antibiotics: co-amoxiclav 1.2 g TDS or cefuroxime 750 mg TDS + metronidazo… | [surgical] Laparoscopic appendicectomy (gold standard; reduces wound infection and LOS)..",
+          "proposedFix": "Add a ketone check to the vomiting/abdominal-pain + diabetes cascade: any patient on an SGLT2 inhibitor (empagliflozin, dapagliflozin, canagliflozin, ertugliflozin) with vomiting, abdominal pain or Kussmaul breathing -> blood ketones and venous gas regardless of glucose (JBDS 2023, MHRA 2020)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-cholecystectomy",
+          "severity": "critical",
+          "match": [
+            "cholecystectomy"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023"
+          ],
+          "note": "Wrong procedure: medical cause of abdominal pain.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "re:laparoscopic append(ic)?ectomy",
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023"
+          ],
+          "note": "Wrong procedure.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: forbidden management item present in web.managementPanel: \"[surgical] laparoscopic appendicectomy (gold standard; reduces wound infection and los).\" (+3 more).",
+          "proposedFix": "Assessment panel follows the PANE top (appendicitis 0.261) instead of the confirmed E11.10; \"no guarding, no peritonism\" fires the generalised-peritonism prompt (negation). Prefer the locked working diagnosis and a negation-aware exam matcher."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "jbds-dka-2023",
+      "verified": false,
+      "name": "JBDS-IP - The management of diabetic ketoacidosis in adults",
+      "year": 2023,
+      "section": "DKA = ketonaemia >=3.0 mmol/L (or ketonuria 2+), blood glucose >11.0 mmol/L or known diabetes, and bicarbonate <15.0 mmol/L and/or venous pH <7.3; euglycaemic DKA occurs with SGLT2 inhibitors - glucose may be near normal; fixed-rate IV insulin with glucose-containing fluid",
+      "citation": "Joint British Diabetes Societies for Inpatient Care. The management of diabetic ketoacidosis in adults (JBDS 02). 2023 update."
+    },
+    {
+      "id": "mhra-sglt2-2020",
+      "verified": false,
+      "name": "MHRA Drug Safety Update - SGLT2 inhibitors: risk of diabetic ketoacidosis",
+      "year": 2020,
+      "section": "Measure ketones in patients on SGLT2 inhibitors with symptoms of DKA (nausea, vomiting, abdominal pain) even if glucose is near normal; interrupt treatment in acute illness",
+      "citation": "Medicines and Healthcare products Regulatory Agency. Drug Safety Update, March 2020 (update of April 2016 advice)."
+    }
+  ],
+  "rationale": "Diabetic permutation and dangerous mimic: SGLT2-inhibitor euglycaemic DKA looks like gastroenteritis, and glucose-keyed rules (the web hyperglycaemia cascade needs >15 mmol/L) stay silent.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

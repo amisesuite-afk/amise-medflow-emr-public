@@ -1,0 +1,272 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-dvt-labelled-cellulitis",
+  "condition": "Deep vein thrombosis referred as cellulitis",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "57-year-old man referred as \"calf cellulitis not responding to flucloxacillin\": 4 days of right calf swelling (4 cm), pitting oedema, tenderness along the deep veins, faint erythema, afebrile; ankle immobilised in a boot for 2 weeks. Wells DVT likely.",
+  "tags": [
+    "dvt",
+    "cellulitis-mimic",
+    "wells"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 57,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 180,
+      "weightKg": 95
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Red swollen calf",
+    "hpi": "GP referral for right calf cellulitis, on flucloxacillin for 3 days with no change. Four days of swelling and aching of the right calf. Right ankle sprain two weeks ago, in a walking boot since, mostly sitting. No fever, no broken skin, no insect bite.",
+    "symptoms": [
+      "right calf swelling",
+      "calf aching",
+      "mild redness"
+    ],
+    "negatives": [
+      "fever",
+      "rigors",
+      "broken skin",
+      "breathlessness",
+      "chest pain",
+      "haemoptysis"
+    ],
+    "exam": {
+      "general": "Well.",
+      "msk": "Right calf 4 cm larger than left, pitting oedema to the ankle, tender along the deep veins, faint diffuse erythema without a defined edge, warm, no portal of entry; ankle in a walking boot.",
+      "cardiovascular": "HR 88, BP 136/82.",
+      "respiratory": "Chest clear."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 88,
+        "systolicBp": 136,
+        "diastolicBp": 82,
+        "respiratoryRate": 16,
+        "temperatureC": 37.3,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 18,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 8.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Obesity",
+      "Right ankle sprain (immobilised in boot)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Flucloxacillin",
+        "dose": "500 mg",
+        "frequency": "QDS (day 3)"
+      },
+      {
+        "drug": "Ibuprofen",
+        "dose": "400 mg",
+        "frequency": "TDS PRN"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lorry driver.",
+    "confirmedDiagnosis": {
+      "name": "Suspected right calf deep vein thrombosis",
+      "icd10": "I82.401",
+      "paneDiseaseId": "deep_vein_thrombosis",
+      "assessmentText": "Unilateral calf swelling with pitting oedema and deep-vein tenderness after immobilisation - DVT likely (Wells 4), cellulitis less likely: proximal leg vein ultrasound, interim anticoagulation if delayed."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "leg swelling",
+          "limb pain",
+          "cellulitis"
+        ],
+        "examFindings": {
+          "extremities": [
+            "DVT signs",
+            "Oedema present"
+          ]
+        },
+        "paneAnswers": {
+          "leg_swelling": true,
+          "calf_tenderness": true,
+          "erythema_surrounding": true,
+          "fever": false
+        },
+        "durationDays": 4,
+        "painScore": 4
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-dvt-top3",
+          "severity": "critical",
+          "match": [
+            "deep vein thromb",
+            "deep venous thromb",
+            "re:\\bdvt\\b",
+            "icd:I80",
+            "icd:I82"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng158"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-dvt-symptom-inference",
+          "severity": "quality",
+          "match": [
+            "deep vein thromb",
+            "deep venous thromb",
+            "re:\\bdvt\\b",
+            "icd:I80",
+            "icd:I82"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ],
+          "guidelineRefs": [
+            "nice-ng158"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "quality",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "nice-ng158"
+        ],
+        "note": "NICE NG158: ultrasound within 4 hours (interim anticoagulation if delayed).",
+        "unverified": [
+          "ios"
+        ]
+      }
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-wells-dvt",
+          "severity": "quality",
+          "score": "wells-dvt",
+          "guidelineRefs": [
+            "nice-ng158"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-leg-ultrasound",
+          "severity": "critical",
+          "match": [
+            "duplex",
+            "compression ultrasound",
+            "venous ultrasound",
+            "re:ultrasound[^.;]{0,30}(leg|limb|vein|venous)",
+            "re:\\bcus\\b"
+          ],
+          "guidelineRefs": [
+            "nice-ng158"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-anticoagulation",
+          "severity": "quality",
+          "match": [
+            "anticoag",
+            "heparin",
+            "lmwh",
+            "enoxaparin",
+            "dalteparin",
+            "tinzaparin",
+            "apixaban",
+            "rivaroxaban"
+          ],
+          "guidelineRefs": [
+            "nice-ng158"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng158",
+      "verified": false,
+      "name": "NICE NG158 - Venous thromboembolic diseases: diagnosis, management and thrombophilia testing",
+      "year": 2020,
+      "section": "1.1 DVT: two-level Wells; likely -> proximal leg vein ultrasound within 4 h (interim anticoagulation if delayed); 1.1 PE: two-level Wells; likely (>4) -> CTPA immediately (interim anticoagulation if delayed); unlikely -> D-dimer; PERC when pre-test probability is low",
+      "citation": "National Institute for Health and Care Excellence. NG158. London: NICE; 2020 (updated 2023)."
+    },
+    {
+      "id": "nice-ng141",
+      "verified": false,
+      "name": "NICE NG141 - Cellulitis and erysipelas: antimicrobial prescribing",
+      "year": 2019,
+      "section": "Exclude other causes of skin redness (e.g. inflammatory reaction, chronic venous insufficiency, DVT) before prescribing; cellulitis is usually unilateral; admit if severely unwell (Eron III-IV)",
+      "citation": "National Institute for Health and Care Excellence. NG141. London: NICE; 2019."
+    }
+  ],
+  "rationale": "Base for the cellulitis-vs-DVT pair: the referral label is cellulitis, the findings are DVT (Wells DVT: calf swelling >3 cm 1, pitting oedema 1, deep-vein tenderness 1, immobilisation in a boot 1 = 4). PANE has a DVT node.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

@@ -1,0 +1,353 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-pe-high-risk-shock",
+  "condition": "High-risk (massive) pulmonary embolism",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-pe-ocp-long-haul",
+  "permutationLabel": "High-risk PE with shock, active cancer",
+  "summary": "68-year-old man with pancreatic cancer on chemotherapy, collapsed at home: SBP 82, HR 128, RR 30, SpO₂ 86 %, raised JVP. ESC 2019 high-risk PE: UFH, bedside echo, systemic thrombolysis.",
+  "tags": [
+    "pe",
+    "shock",
+    "cancer",
+    "thrombolysis"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 68,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 64
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Collapse and severe breathlessness",
+    "hpi": "Known locally advanced pancreatic cancer on gemcitabine, under our follow-up after biliary stenting. Collapsed at home this morning after getting up; now severely breathless at rest and grey. No chest pain. Right calf swollen for a week.",
+    "symptoms": [
+      "collapse",
+      "severe breathlessness",
+      "right calf swelling"
+    ],
+    "negatives": [
+      "chest pain",
+      "fever",
+      "haematemesis",
+      "melaena"
+    ],
+    "exam": {
+      "general": "Grey, sweaty, cool peripheries.",
+      "cardiovascular": "HR 128 regular, BP 82/50, JVP raised to the earlobe, loud P2.",
+      "respiratory": "Chest clear, RR 30.",
+      "msk": "Right calf swollen and tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 3,
+        "heartRate": 128,
+        "systolicBp": 82,
+        "diastolicBp": 50,
+        "respiratoryRate": 30,
+        "temperatureC": 36.9,
+        "spo2": 86,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.2,
+        "unit": "g/dL",
+        "minutesAgo": 2880
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 196,
+        "unit": "×10⁹/L",
+        "minutesAgo": 2880
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Locally advanced pancreatic adenocarcinoma",
+      "Biliary stent in situ"
+    ],
+    "surgicalHistory": [
+      "ERCP and biliary metal stent 2 months ago"
+    ],
+    "medications": [
+      {
+        "drug": "Gemcitabine",
+        "dose": "cycle 3",
+        "frequency": "3-weekly",
+        "indication": "Pancreatic cancer"
+      },
+      {
+        "drug": "Creon",
+        "dose": "25000 units",
+        "frequency": "with meals"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker.",
+    "confirmedDiagnosis": {
+      "name": "High-risk (massive) pulmonary embolism",
+      "icd10": "I26.09",
+      "paneDiseaseId": "pulmonary_embolism",
+      "assessmentText": "Suspected high-risk pulmonary embolism with shock and RV strain in active cancer: resuscitation, UFH, bedside echocardiography, systemic thrombolysis if RV dysfunction confirmed."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "shortness of breath",
+          "syncope",
+          "leg swelling"
+        ],
+        "symptomDetails": {
+          "shortness of breath": [
+            "Sudden",
+            "At rest"
+          ],
+          "syncope": [
+            "On standing from lying",
+            "No warning",
+            "Shortness of breath"
+          ]
+        },
+        "examFindings": {
+          "general": [
+            "Diaphoretic",
+            "Cyanosed"
+          ],
+          "cardiovascular": [
+            "Tachycardia",
+            "JVP elevated"
+          ],
+          "extremities": [
+            "DVT signs"
+          ]
+        },
+        "paneAnswers": {
+          "dyspnoea_pe": true,
+          "haemodynamic_instability": true,
+          "leg_swelling": true,
+          "calf_tenderness": true,
+          "mechanism_blunt": false
+        },
+        "durationDays": 0,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-pe-top3",
+          "severity": "critical",
+          "match": [
+            "pulmonary embol",
+            "re:\\bpe\\b",
+            "icd:I26"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Inguinal / Femoral Hernia | 2. Deep Vein Thrombosis | 3. Acute Cholecystitis; also in web.symptomInference#2, web.passive#1. PANE has a pulmonary_embolism node, but the CC template carries no chest/respiratory hint and surgical priors dominate.",
+          "proposedFix": "Calibrate PANE for PE when haemodynamic_instability + dyspnoea_pe + DVT signs are present (DVT is #2, PE absent); map I26.0x in getProtocolByIcd."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esc-pe-2019"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-shock",
+          "severity": "critical",
+          "match": [
+            "hypotension",
+            "shock",
+            "haemodynamic"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "alarm-hypoxia",
+          "severity": "critical",
+          "match": [
+            "hypox",
+            "spo₂",
+            "spo2",
+            "oxygen",
+            "saturation"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-echo",
+          "severity": "quality",
+          "match": [
+            "echocardiogra",
+            "re:\\becho\\b",
+            "re:\\btte\\b"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "note": "Bedside echo when CTPA is not immediately feasible in suspected high-risk PE.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 24 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). First items: FBC, U&E (pre-operative bloods) (inguinal_hernia) | D-dimer (only if pre-test probability low/intermediate) (deep_vein_thrombosis) | Venous duplex ultrasound of affected limb (deep_vein_thrombosis) | FBC, coagulation screen (APTT, PT, fibrinogen) (deep_vein_thrombosis).",
+          "proposedFix": "Emit the POCUS/echo action of the shock prompt as an investigation, and map I26.0x so the PE protocol echo line appears."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-thrombolysis",
+          "severity": "critical",
+          "match": [
+            "thrombolys",
+            "alteplase",
+            "tenecteplase"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "note": "Systemic thrombolysis for high-risk PE (ESC 2019, class I).",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: no thrombolysis anywhere. The confirmed ICD I26.09 (PE with acute cor pulmonale, i.e. the high-risk PE code) has no getProtocolByIcd mapping (I26.9/I26.99 do), and the PANE top is not PE, so the PE protocol, which lists alteplase, is never shown. Management comes only from the shock/hypoxia/tachycardia prompts: \"Hartmann's 1L bolus\", \"12-lead ECG\", \"CTPA if Wells score ≥ 2\".",
+          "proposedFix": "Map I26.0x (PE with acute cor pulmonale) to the pulmonary_embolism protocol; in the shock prompt, when PE is suspected (hypoxia + raised JVP/DVT signs), add \"high-risk PE: UFH, bedside echo, systemic thrombolysis\"."
+        },
+        {
+          "id": "mgmt-ufh",
+          "severity": "quality",
+          "match": [
+            "unfractionated heparin",
+            "re:\\bufh\\b"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: no UFH. Same cause as mgmt-thrombolysis: I26.09 unmapped, so the PE protocol (UFH 80 units/kg bolus) is not shown.",
+          "proposedFix": "Map I26.0x to the pulmonary_embolism protocol."
+        },
+        {
+          "id": "mgmt-critical-care",
+          "severity": "quality",
+          "match": [
+            "re:\\bicu\\b",
+            "re:\\bitu\\b",
+            "re:\\bhdu\\b",
+            "intensive care",
+            "critical care",
+            "high dependency"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-large-fluid-bolus",
+          "severity": "quality",
+          "match": [
+            "30ml/kg",
+            "30 ml/kg",
+            "re:1 ?l[^.;]{0,25}bolus",
+            "re:bolus[^.;]{0,20}1 ?l"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "note": "ESC 2019: aggressive volume expansion can worsen RV function; cautious volume loading only.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: forbidden management item present in web.clinicalPrompts: \"• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min.\".",
+          "proposedFix": "shock_non_infective prompt: when PE is suspected (dyspnoea/hypoxia + raised JVP/DVT signs), replace the 1 L bolus with cautious fluid (≤500 mL) and early vasopressor/thrombolysis discussion."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-pe-2019",
+      "verified": false,
+      "name": "2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism",
+      "year": 2019,
+      "section": "Sections 4-6: clinical probability (Wells/Geneva), PERC in low probability, D-dimer only when probability is not high, CTPA; anticoagulation while awaiting results in high/intermediate probability; high-risk (haemodynamically unstable) PE: UFH, bedside echocardiography if CTPA not immediately feasible, systemic thrombolysis; Section 9 pregnancy: D-dimer/CUS/CTPA or V/Q, LMWH (NOACs not recommended in pregnancy)",
+      "citation": "Konstantinides SV, Meyer G, Becattini C, et al. Eur Heart J. 2020;41:543-603."
+    }
+  ],
+  "rationale": "High-risk PE: obstructive shock in active cancer. Tests whether the web shock prompt and the PE protocol reach thrombolysis, and whether a generic 1 L bolus is suggested.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

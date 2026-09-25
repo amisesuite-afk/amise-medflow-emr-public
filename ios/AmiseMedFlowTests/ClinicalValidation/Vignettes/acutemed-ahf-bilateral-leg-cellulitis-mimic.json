@@ -1,0 +1,314 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-ahf-bilateral-leg-cellulitis-mimic",
+  "condition": "Decompensated heart failure presenting as \"bilateral leg cellulitis\"",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-ahf-pulmonary-oedema",
+  "permutationLabel": "Elderly HFpEF, referred as bilateral cellulitis",
+  "summary": "88-year-old woman with HFpEF and AF on apixaban referred with \"bilateral leg cellulitis\": two weeks of increasing bilateral leg swelling, red shiny shins, weight up 4 kg, breathless on minimal exertion, afebrile.",
+  "tags": [
+    "heart-failure",
+    "mimic",
+    "cellulitis-mimic",
+    "elderly",
+    "anticoagulated"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 88,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 152,
+      "weightKg": 71
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Red swollen legs",
+    "hpi": "GP referral: \"bilateral leg cellulitis, not settling on flucloxacillin\". Two weeks of both legs swelling up, shins red and tight, weight up 4 kg, breathless walking to the bathroom, sleeping on three pillows. No fever, no rigors. Heart failure with preserved ejection fraction and AF on apixaban.",
+    "symptoms": [
+      "bilateral leg swelling",
+      "bilateral shin redness",
+      "weight gain",
+      "exertional breathlessness",
+      "orthopnoea"
+    ],
+    "negatives": [
+      "fever",
+      "rigors",
+      "leg pain",
+      "broken skin",
+      "chest pain"
+    ],
+    "exam": {
+      "general": "Comfortable at rest, breathless on moving.",
+      "skin": "Symmetrical erythema and shiny skin over both shins, warm but not hot, no blisters, no breaks; haemosiderin staining.",
+      "msk": "Pitting oedema to mid-thigh bilaterally, non-tender calves.",
+      "cardiovascular": "Pulse 94 irregularly irregular, BP 142/80, JVP raised 6 cm.",
+      "respiratory": "Fine bibasal crackles, RR 22."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 94,
+        "systolicBp": 142,
+        "diastolicBp": 80,
+        "respiratoryRate": 22,
+        "temperatureC": 36.7,
+        "spo2": 93,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 7.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 8,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Heart failure with preserved ejection fraction",
+      "Atrial fibrillation",
+      "Hypertension",
+      "Chronic venous insufficiency"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Apixaban",
+        "dose": "2.5 mg",
+        "frequency": "BD"
+      },
+      {
+        "drug": "Furosemide",
+        "dose": "20 mg",
+        "frequency": "OD"
+      },
+      {
+        "drug": "Flucloxacillin",
+        "dose": "500 mg",
+        "frequency": "QDS (day 6)"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with daughter, walks with a frame.",
+    "confirmedDiagnosis": {
+      "name": "Decompensated heart failure with venous stasis changes (not cellulitis)",
+      "icd10": "I50.3",
+      "assessmentText": "Bilateral symmetrical leg erythema and oedema with weight gain, orthopnoea and raised JVP, normal CRP - decompensated heart failure with venous stasis, not bilateral cellulitis; stop antibiotics, increase diuretic, heart-failure review."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "bilateral leg oedema",
+          "skin discolouration",
+          "dyspnoea on exertion",
+          "orthopnoea",
+          "weight gain"
+        ],
+        "examFindings": {
+          "extremities": [
+            "Oedema present"
+          ],
+          "cardiovascular": [
+            "JVP elevated",
+            "Peripheral oedema",
+            "Irregular rhythm"
+          ],
+          "respiratory": [
+            "Crackles (L)",
+            "Crackles (R)"
+          ]
+        },
+        "paneAnswers": {
+          "leg_swelling": true,
+          "erythema_surrounding": true,
+          "fever": false
+        },
+        "durationDays": 14,
+        "painScore": 1
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-hf",
+          "severity": "critical",
+          "match": [
+            "heart failure",
+            "pulmonary oedema",
+            "pulmonary edema",
+            "re:\\blvf\\b",
+            "cardiac failure",
+            "icd:I50",
+            "icd:J81"
+          ],
+          "guidelineRefs": [
+            "esc-hf-2021",
+            "crest-2005"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. GORD / Reflux Oesophagitis | 3. Colorectal Cancer; also in web.symptomInference#1, web.passive#1. PANE has no heart failure node.",
+          "proposedFix": "lib/pane-engine: add an acute heart failure node (orthopnoea, PND, bilateral crackles, raised JVP, oedema) with a protocol (oxygen if SpO2 <90%, IV loop diuretic, NIV, NT-proBNP, ECG/troponin for ACS precipitant, echo) and map I50/J81."
+        },
+        {
+          "id": "mnm-hf-symptom-inference",
+          "severity": "quality",
+          "match": [
+            "heart failure",
+            "pulmonary oedema",
+            "pulmonary edema",
+            "re:\\blvf\\b",
+            "cardiac failure",
+            "icd:I50",
+            "icd:J81"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ],
+          "guidelineRefs": [
+            "esc-hf-2021"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "quality",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "esc-hf-2021"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-natriuretic-peptide",
+          "severity": "quality",
+          "match": [
+            "bnp",
+            "natriuretic"
+          ],
+          "guidelineRefs": [
+            "esc-hf-2021"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 25 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). First items: FBC, CRP (cholecystitis) | LFTs, bilirubin, ALP, GGT (cholecystitis) | Amylase / lipase (exclude pancreatitis) (cholecystitis) | Blood cultures × 2 (before antibiotics) (cholecystitis).",
+          "proposedFix": "Heart-failure protocol with NT-proBNP."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-diuretic",
+          "severity": "quality",
+          "match": [
+            "furosemide",
+            "frusemide",
+            "loop diuretic",
+            "bumetanide",
+            "diuretic"
+          ],
+          "guidelineRefs": [
+            "esc-hf-2021"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 13 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — pre-operative cardiac baseline (age ≥ 40). | • Anticoagulant bridging: hold DOAC 48–72h pre-op (renal-adjusted); warfarin — bridge wit… | • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. | • CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly..",
+          "proposedFix": "lib/pane-engine: add an acute heart failure node (orthopnoea, PND, bilateral crackles, raised JVP, oedema) with a protocol (oxygen if SpO2 <90%, IV loop diuretic, NIV, NT-proBNP, ECG/troponin for ACS precipitant, echo) and map I50/J81."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-iv-antibiotics",
+          "severity": "quality",
+          "match": [
+            "benzylpenicillin",
+            "re:flucloxacillin[^.;]{0,10}2 ?g",
+            "re:iv[^.;]{0,20}(antibiotic|flucloxacillin|co-amoxiclav)"
+          ],
+          "guidelineRefs": [
+            "crest-2005",
+            "nice-ng141"
+          ],
+          "note": "Bilateral symmetrical erythema with normal inflammatory markers is rarely cellulitis; escalating to IV antibiotics is the failure mode.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-hf-2021",
+      "verified": false,
+      "name": "2021 ESC Guidelines for the diagnosis and treatment of acute and chronic heart failure (and 2023 focused update)",
+      "year": 2021,
+      "section": "Section 11 acute heart failure: natriuretic peptides, ECG, CXR, echocardiography; IV loop diuretics for congestion; oxygen if SpO2 <90%; non-invasive ventilation for respiratory distress (RR >25/min, SpO2 <90%); identify precipitants (ACS, arrhythmia, infection, hypertension)",
+      "citation": "McDonagh TA, Metra M, Adamo M, et al. Eur Heart J. 2021;42:3599-3726; 2023 focused update Eur Heart J. 2023;44:3627-3639."
+    },
+    {
+      "id": "crest-2005",
+      "verified": false,
+      "name": "CREST - Guidelines on the management of cellulitis in adults",
+      "year": 2005,
+      "section": "Bilateral lower-limb cellulitis is rare; consider venous stasis dermatitis, lipodermatosclerosis, oedema and DVT as alternatives before treating with antibiotics",
+      "citation": "Clinical Resource Efficiency Support Team (CREST). Guidelines on the management of cellulitis in adults. Belfast: CREST; 2005."
+    },
+    {
+      "id": "nice-ng141",
+      "verified": false,
+      "name": "NICE NG141 - Cellulitis and erysipelas: antimicrobial prescribing",
+      "year": 2019,
+      "section": "Exclude other causes of skin redness (e.g. inflammatory reaction, chronic venous insufficiency, DVT) before prescribing; cellulitis is usually unilateral; admit if severely unwell (Eron III-IV)",
+      "citation": "National Institute for Health and Care Excellence. NG141. London: NICE; 2019."
+    }
+  ],
+  "rationale": "Elderly, anticoagulated permutation and a common referral mimic. The referral label (\"cellulitis\") competes with the heart-failure picture.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

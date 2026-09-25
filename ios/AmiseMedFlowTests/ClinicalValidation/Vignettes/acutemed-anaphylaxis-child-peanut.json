@@ -1,0 +1,255 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-anaphylaxis-child-peanut",
+  "condition": "Anaphylaxis (child, peanut)",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-anaphylaxis-adult-amoxicillin",
+  "permutationLabel": "Child (7 years), food trigger",
+  "summary": "7-year-old girl with known peanut allergy, 15 minutes after a biscuit at a party: stridor, wheeze, facial swelling, urticaria, vomiting; HR 150, RR 36, SpO₂ 92 %, BP 88/50, 24 kg. RCUK 2021: IM adrenaline 300 micrograms (6-12 years).",
+  "tags": [
+    "anaphylaxis",
+    "paediatric",
+    "food-allergy"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 7,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 122,
+      "weightKg": 24
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Swollen face and noisy breathing after eating",
+    "hpi": "Here with her father for review after an umbilical hernia repair. Ate a biscuit at a party 15 minutes ago; it contained peanut. Known peanut allergy, auto-injector left at home. Now swollen face, rash, vomited twice, noisy breathing.",
+    "symptoms": [
+      "stridor",
+      "wheeze",
+      "facial swelling",
+      "urticaria",
+      "vomiting"
+    ],
+    "negatives": [
+      "fever",
+      "choking episode"
+    ],
+    "exam": {
+      "general": "Frightened, facial angioedema, widespread urticaria.",
+      "respiratory": "Inspiratory stridor, bilateral wheeze, RR 36.",
+      "cardiovascular": "HR 150, BP 88/50, CRT 3 s."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 2,
+        "heartRate": 150,
+        "systolicBp": 88,
+        "diastolicBp": 50,
+        "respiratoryRate": 36,
+        "temperatureC": 37.0,
+        "spo2": 92,
+        "weightKg": 24,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Peanut allergy",
+      "Asthma (mild)"
+    ],
+    "surgicalHistory": [
+      "Umbilical hernia repair (2 weeks ago)"
+    ],
+    "medications": [
+      {
+        "drug": "Adrenaline auto-injector",
+        "dose": "300 micrograms",
+        "frequency": "PRN (not with her)"
+      },
+      {
+        "drug": "Salbutamol inhaler",
+        "dose": "100 micrograms",
+        "frequency": "PRN"
+      }
+    ],
+    "allergies": [
+      {
+        "name": "Peanut",
+        "severity": "Severe",
+        "reaction": "Anaphylaxis"
+      }
+    ],
+    "socialHistory": "Lives with parents.",
+    "confirmedDiagnosis": {
+      "name": "Anaphylaxis (peanut) in a child",
+      "icd10": "T78.01",
+      "assessmentText": "Food anaphylaxis with stridor, wheeze and hypotension in a 7-year-old: IM adrenaline 300 micrograms now, 999, repeat after 5 minutes if no improvement."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "stridor",
+          "wheeze",
+          "rash",
+          "vomiting",
+          "shortness of breath"
+        ],
+        "symptomDetails": {
+          "rash": [
+            "Face",
+            "Generalised",
+            "Urticarial (wheals)"
+          ],
+          "shortness of breath": [
+            "Sudden",
+            "Wheeze"
+          ]
+        },
+        "examFindings": {
+          "respiratory": [
+            "Wheeze"
+          ],
+          "cardiovascular": [
+            "Tachycardia",
+            "Capillary refill > 2s"
+          ],
+          "general": [
+            "In distress"
+          ]
+        },
+        "durationDays": 0.01,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-anaphylaxis",
+          "severity": "critical",
+          "match": [
+            "anaphyla",
+            "icd:T78.2",
+            "icd:T88.6",
+            "icd:T78.0"
+          ],
+          "guidelineRefs": [
+            "rcuk-anaphylaxis-2021"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. GORD / Reflux Oesophagitis | 3. Peptic Ulcer Disease. PANE has no anaphylaxis node.",
+          "proposedFix": "Add an anaphylaxis rule/prompt (acute urticaria/angioedema + airway, breathing or circulation compromise, especially after a drug or food) -> emergency with \"IM adrenaline (1 mg/mL): 500 micrograms adult / 300 micrograms 6-12 y / 150 micrograms <6 y, repeat after 5 min; call 999; lie flat; oxygen; IV fluid\"; and a PANE/triage node so it can appear in the differential."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "rcuk-anaphylaxis-2021"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-anaphylaxis",
+          "severity": "critical",
+          "match": [
+            "anaphyla",
+            "icd:T78.2",
+            "icd:T88.6",
+            "icd:T78.0",
+            "adrenaline"
+          ],
+          "guidelineRefs": [
+            "rcuk-anaphylaxis-2021"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: nothing names anaphylaxis; hypotension is read as haemorrhagic/cardiogenic/obstructive shock and the vomiting adds \"Acute abdominal presentation\". Alarms raised: Hypotension; Tachycardia; Tachypnoea; Low SpO2; Emergency now; SBP 88 mmHg - hypotension; Acute abdominal presentation; Pre-operative assessment; SpO2 92% - hypoxia; HR 150 bpm - unexplained tachycardia.",
+          "proposedFix": "Add an anaphylaxis rule/prompt (acute urticaria/angioedema + airway, breathing or circulation compromise, especially after a drug or food) -> emergency with \"IM adrenaline (1 mg/mL): 500 micrograms adult / 300 micrograms 6-12 y / 150 micrograms <6 y, repeat after 5 min; call 999; lie flat; oxygen; IV fluid\"; and a PANE/triage node so it can appear in the differential."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-adrenaline",
+          "severity": "critical",
+          "match": [
+            "adrenaline",
+            "epinephrine"
+          ],
+          "guidelineRefs": [
+            "rcuk-anaphylaxis-2021"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 12 management items matched (sources: web.clinicalPrompts). First items: • 2 × large-bore IV cannulae, Hartmann's 1L bolus — reassess BP and HR at 15 min. | • 12-lead ECG — ST elevation MI, arrhythmia, right heart strain (PE). | • Portable CXR — cardiac outline, pulmonary oedema, pneumothorax. | • POCUS: cardiac (effusion/tamponade), aorta (AAA), IVC collapsibility..",
+          "proposedFix": "Add an anaphylaxis rule/prompt (acute urticaria/angioedema + airway, breathing or circulation compromise, especially after a drug or food) -> emergency with \"IM adrenaline (1 mg/mL): 500 micrograms adult / 300 micrograms 6-12 y / 150 micrograms <6 y, repeat after 5 min; call 999; lie flat; oxygen; IV fluid\"; and a PANE/triage node so it can appear in the differential."
+        },
+        {
+          "id": "mgmt-adrenaline-im-dose-child",
+          "severity": "quality",
+          "match": [
+            "re:300 ?(micrograms|mcg|µg)",
+            "re:0\\.3 ?mg"
+          ],
+          "guidelineRefs": [
+            "rcuk-anaphylaxis-2021"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 12 management items matched (sources: web.clinicalPrompts). First items: • 2 × large-bore IV cannulae, Hartmann's 1L bolus — reassess BP and HR at 15 min. | • 12-lead ECG — ST elevation MI, arrhythmia, right heart strain (PE). | • Portable CXR — cardiac outline, pulmonary oedema, pneumothorax. | • POCUS: cardiac (effusion/tamponade), aorta (AAA), IVC collapsibility..",
+          "proposedFix": "Add an anaphylaxis rule/prompt (acute urticaria/angioedema + airway, breathing or circulation compromise, especially after a drug or food) -> emergency with \"IM adrenaline (1 mg/mL): 500 micrograms adult / 300 micrograms 6-12 y / 150 micrograms <6 y, repeat after 5 min; call 999; lie flat; oxygen; IV fluid\"; and a PANE/triage node so it can appear in the differential."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "rcuk-anaphylaxis-2021",
+      "verified": false,
+      "name": "Resuscitation Council UK - Emergency treatment of anaphylaxis: guidelines for healthcare providers",
+      "year": 2021,
+      "section": "IM adrenaline (1 mg/mL) is the first-line treatment: adult and child >12 years 500 micrograms, child 6-12 years 300 micrograms, 6 months-6 years 150 micrograms; repeat after 5 minutes if no improvement; refractory anaphylaxis (no improvement after two IM doses) -> adrenaline infusion with critical care; antihistamines are not first-line and corticosteroids are no longer advised routinely; IV fluid bolus for shock",
+      "citation": "Resuscitation Council UK. Emergency treatment of anaphylaxis: guidelines for healthcare providers. London: RCUK; May 2021."
+    }
+  ],
+  "rationale": "Paediatric permutation: the adrenaline dose is age-banded (RCUK 2021: 300 micrograms at 6-12 years), and adult shock thresholds do not apply.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

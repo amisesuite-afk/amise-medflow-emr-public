@@ -1,0 +1,383 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-copd-hypercapnic-exacerbation",
+  "condition": "COPD exacerbation with hypercapnic respiratory failure",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "72-year-old man with severe COPD: 3 days of more breathlessness and purulent sputum, now drowsy; RR 28, SpO₂ 85 %, pH 7.29, PaCO₂ 8.4 kPa. GOLD 2025/BTS: controlled oxygen 88-92 %, NIV.",
+  "tags": [
+    "copd",
+    "hypercapnia",
+    "oxygen-safety"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 72,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 170,
+      "weightKg": 58
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "More breathless with green phlegm",
+    "hpi": "Severe COPD (FEV1 38%), two admissions last year, one with NIV. Three days of more breathlessness, more sputum, now green. Wife says he has been drowsy since this morning. Attending for review of a large inguinal hernia. 45 pack-years, still smoking.",
+    "symptoms": [
+      "increased breathlessness",
+      "increased purulent sputum",
+      "drowsiness"
+    ],
+    "negatives": [
+      "chest pain",
+      "haemoptysis",
+      "leg swelling"
+    ],
+    "exam": {
+      "general": "Drowsy but rousable to voice, flapping tremor, using accessory muscles.",
+      "respiratory": "Hyperexpanded, quiet breath sounds, scattered wheeze and coarse crackles, RR 28.",
+      "cardiovascular": "HR 110, BP 150/88, bounding pulse."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 110,
+        "systolicBp": 150,
+        "diastolicBp": 88,
+        "respiratoryRate": 28,
+        "temperatureC": 37.8,
+        "spo2": 85,
+        "avpu": "V",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "ph",
+        "name": "pH (arterial)",
+        "value": 7.29,
+        "minutesAgo": 5
+      },
+      {
+        "analyte": "pco2",
+        "name": "PaCO2",
+        "value": 8.4,
+        "unit": "kPa",
+        "minutesAgo": 5
+      },
+      {
+        "analyte": "po2",
+        "name": "PaO2",
+        "value": 6.9,
+        "unit": "kPa",
+        "minutesAgo": 5
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Chronic obstructive pulmonary disease (severe, previous NIV)",
+      "Right inguinal hernia"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Tiotropium",
+        "dose": "18 micrograms",
+        "frequency": "OD"
+      },
+      {
+        "drug": "Fluticasone/salmeterol",
+        "dose": "500/50",
+        "frequency": "BD"
+      },
+      {
+        "drug": "Salbutamol inhaler",
+        "dose": "100 micrograms",
+        "frequency": "PRN"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Current smoker, 45 pack-years.",
+    "confirmedDiagnosis": {
+      "name": "Acute exacerbation of COPD with hypercapnic respiratory failure",
+      "icd10": "J44.1",
+      "assessmentText": "Infective exacerbation of COPD with acute hypercapnic respiratory failure (pH 7.29, PaCO2 8.4): controlled oxygen 88-92%, nebulised bronchodilators, prednisolone, antibiotics, NIV."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "shortness of breath",
+          "productive cough",
+          "wheeze",
+          "confusion"
+        ],
+        "symptomDetails": {
+          "shortness of breath": [
+            "Gradual",
+            "At rest",
+            "Cough",
+            "Wheeze"
+          ]
+        },
+        "examFindings": {
+          "respiratory": [
+            "Wheeze",
+            "Crackles (L)",
+            "Crackles (R)"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "toxicHabits": [
+          "Smoking"
+        ],
+        "durationDays": 3,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-copd-top3",
+          "severity": "critical",
+          "match": [
+            "copd",
+            "chronic obstructive",
+            "icd:J44"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "gold-2025"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Inguinal / Femoral Hernia | 2. GORD / Reflux Oesophagitis | 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1. PANE has no COPD node.",
+          "proposedFix": "lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46."
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-copd-symptom-inference",
+          "severity": "quality",
+          "match": [
+            "copd",
+            "chronic obstructive",
+            "icd:J44"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ],
+          "guidelineRefs": [
+            "gold-2025"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "gold-2025"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hypoxia",
+          "severity": "critical",
+          "match": [
+            "hypox",
+            "spo₂",
+            "spo2",
+            "oxygen",
+            "saturation"
+          ],
+          "guidelineRefs": [
+            "bts-o2-2017"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-abg",
+          "severity": "quality",
+          "match": [
+            "re:\\babg\\b",
+            "arterial blood gas",
+            "blood gas",
+            "re:\\bvbg\\b"
+          ],
+          "guidelineRefs": [
+            "gold-2025",
+            "bts-o2-2017"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-controlled-oxygen",
+          "severity": "critical",
+          "match": [
+            "re:88\\s*[-–]\\s*92"
+          ],
+          "guidelineRefs": [
+            "bts-o2-2017",
+            "gold-2025"
+          ],
+          "note": "Controlled oxygen, target SpO2 88-92%, in hypercapnic COPD.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 11 management items matched (sources: web.clinicalPrompts). First items: • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. | • CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly. | • Escalate: CPAP/NIV if SpO₂ < 90% or increasing respiratory effort — ITU review. | • CTPA if Wells score ≥ 2 and D-dimer positive — exclude pulmonary embolism..",
+          "proposedFix": "clinical-inference.ts hypoxia prompt: when COPD / hypercapnic risk is recorded, the plan action should read \"controlled oxygen via Venturi, target SpO2 88-92%, ABG\" instead of \"Hudson mask 5-10 L/min, titrate to SpO2 >=94%\" (BTS 2017, GOLD 2025)."
+        },
+        {
+          "id": "mgmt-niv",
+          "severity": "quality",
+          "match": [
+            "re:\\bniv\\b",
+            "non-invasive ventilation",
+            "bipap",
+            "noninvasive ventilation"
+          ],
+          "guidelineRefs": [
+            "gold-2025"
+          ],
+          "note": "Acute respiratory acidosis (pH <=7.35, PaCO2 >=6.0 kPa): NIV.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-bronchodilator",
+          "severity": "quality",
+          "match": [
+            "salbutamol",
+            "bronchodilator",
+            "beta-2 agonist",
+            "β2",
+            "beta2",
+            "albuterol",
+            "nebulis"
+          ],
+          "guidelineRefs": [
+            "gold-2025"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 11 management items matched (sources: web.clinicalPrompts). First items: • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. | • CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly. | • Escalate: CPAP/NIV if SpO₂ < 90% or increasing respiratory effort — ITU review. | • CTPA if Wells score ≥ 2 and D-dimer positive — exclude pulmonary embolism..",
+          "proposedFix": "lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46."
+        },
+        {
+          "id": "mgmt-steroid",
+          "severity": "quality",
+          "match": [
+            "prednisolone",
+            "hydrocortisone",
+            "corticosteroid",
+            "steroid",
+            "methylprednisolone"
+          ],
+          "guidelineRefs": [
+            "gold-2025"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 11 management items matched (sources: web.clinicalPrompts). First items: • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. | • CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly. | • Escalate: CPAP/NIV if SpO₂ < 90% or increasing respiratory effort — ITU review. | • CTPA if Wells score ≥ 2 and D-dimer positive — exclude pulmonary embolism..",
+          "proposedFix": "lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-uncontrolled-oxygen",
+          "severity": "critical",
+          "match": [
+            "re:titrate to spo₂ ≥ ?94",
+            "re:titrate to spo2 ≥ ?94",
+            "re:15 ?l/min",
+            "non-rebreather",
+            "high-flow o2",
+            "high flow oxygen",
+            "high-flow oxygen"
+          ],
+          "guidelineRefs": [
+            "bts-o2-2017",
+            "gold-2025"
+          ],
+          "note": "High-flow oxygen / a >=94% target in hypercapnic COPD worsens CO2 retention.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: forbidden management item present in web.clinicalPrompts: \"• supplemental o₂: hudson mask 5-10l/min, titrate to spo₂ ≥ 94%.\".",
+          "proposedFix": "clinical-inference.ts hypoxia prompt: when COPD / hypercapnic risk is recorded, the plan action should read \"controlled oxygen via Venturi, target SpO2 88-92%, ABG\" instead of \"Hudson mask 5-10 L/min, titrate to SpO2 >=94%\" (BTS 2017, GOLD 2025)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "gold-2025",
+      "verified": false,
+      "name": "GOLD 2025 report - Global strategy for the prevention, diagnosis and management of COPD",
+      "year": 2025,
+      "section": "Chapter 5 exacerbations: controlled oxygen to SpO2 88-92%; arterial blood gas; non-invasive ventilation for acute respiratory acidosis (PaCO2 >=6.0 kPa / 45 mmHg and pH <=7.35); short-acting bronchodilators; systemic corticosteroids (prednisone 40 mg/day for 5 days); antibiotics when sputum purulence increases",
+      "citation": "Global Initiative for Chronic Obstructive Lung Disease. GOLD 2025 report. www.goldcopd.org."
+    },
+    {
+      "id": "bts-o2-2017",
+      "verified": false,
+      "name": "BTS guideline for oxygen use in healthcare and emergency settings",
+      "year": 2017,
+      "section": "Target SpO2 94-98% for most acutely ill patients; 88-92% for patients at risk of hypercapnic respiratory failure (e.g. COPD) pending blood gases",
+      "citation": "O'Driscoll BR, Howard LS, Earis J, Mak V. Thorax. 2017;72(Suppl 1):ii1-90."
+    }
+  ],
+  "rationale": "Base COPD case with the classic oxygen hazard. NEWS2 Scale 2 is a clinician opt-in; here the question is only what the plan text tells staff to do with oxygen.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

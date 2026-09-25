@@ -1,0 +1,292 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-pe-pregnancy-30wk",
+  "condition": "Pulmonary embolism in pregnancy",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-pe-ocp-long-haul",
+  "permutationLabel": "Pregnant, 30 weeks",
+  "summary": "31-year-old woman at 30 weeks with one day of sudden breathlessness and left pleuritic chest pain; HR 115, SpO₂ 94 %; no leg symptoms. ESC 2019: CTPA or V/Q, LMWH (NOACs not recommended in pregnancy).",
+  "tags": [
+    "pe",
+    "pregnancy",
+    "contraindicated-drug"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 31,
+      "sex": "female",
+      "pregnancy": {
+        "status": "pregnant",
+        "gestationWeeks": 30
+      },
+      "heightCm": 162,
+      "weightKg": 84
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Breathless and sharp chest pain in pregnancy",
+    "hpi": "30 weeks pregnant. Since yesterday sudden breathlessness and sharp left-sided chest pain on breathing in. No cough, no fever, no haemoptysis. No calf pain or swelling. BMI 32. Referred to surgical clinic for a pilonidal sinus. Attributed the breathlessness to pregnancy.",
+    "symptoms": [
+      "sudden breathlessness",
+      "left pleuritic chest pain"
+    ],
+    "negatives": [
+      "cough",
+      "fever",
+      "haemoptysis",
+      "calf swelling",
+      "headache"
+    ],
+    "exam": {
+      "general": "Breathless on walking into the room.",
+      "respiratory": "Chest clear.",
+      "cardiovascular": "HR 115 regular, BP 118/72.",
+      "abdomen": "Gravid, fundus consistent with dates.",
+      "msk": "Calves soft, equal, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 115,
+        "systolicBp": 118,
+        "diastolicBp": 72,
+        "respiratoryRate": 22,
+        "temperatureC": 37.1,
+        "spo2": 94,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Obesity (BMI 32)",
+      "Pilonidal sinus"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Folic acid",
+        "dose": "400 micrograms",
+        "frequency": "OD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Suspected pulmonary embolism in pregnancy",
+      "icd10": "I26.99",
+      "paneDiseaseId": "pulmonary_embolism",
+      "assessmentText": "Suspected pulmonary embolism at 30 weeks: CTPA or V/Q scan, LMWH while awaiting imaging, obstetric team informed."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "shortness of breath",
+          "pleuritic chest pain"
+        ],
+        "symptomDetails": {
+          "shortness of breath": [
+            "Sudden",
+            "Chest pain"
+          ]
+        },
+        "examFindings": {
+          "respiratory": [
+            "Clear to auscultation"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "paneAnswers": {
+          "dyspnoea_pe": true,
+          "pleuritic_chest_pain": true,
+          "leg_swelling": false,
+          "mechanism_blunt": false,
+          "chest_wall_tenderness": false
+        },
+        "durationDays": 1,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-pe",
+          "severity": "critical",
+          "match": [
+            "pulmonary embol",
+            "re:\\bpe\\b",
+            "icd:I26"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. Acute Appendicitis | 3. GORD / Reflux Oesophagitis; also in web.symptomInference#3, web.passive#3. PANE has a pulmonary_embolism node, but the CC template carries no chest/respiratory hint and surgical priors dominate.",
+          "proposedFix": "socrates-to-features: map the \"shortness of breath\" / \"pleuritic chest pain\" chips to dyspnoea_pe / pleuritic_chest_pain even without a PE-named CC template; reduce the appendicitis/cholecystitis prior uplift in pregnancy without abdominal features."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "esc-pe-2019"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "rf-pregnancy",
+          "severity": "quality",
+          "match": [
+            "pregnan"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ctpa-or-vq",
+          "severity": "critical",
+          "match": [
+            "ctpa",
+            "ct pulmonary angiogra",
+            "pulmonary angiogra",
+            "re:v/?q scan",
+            "ventilation.perfusion"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-lmwh",
+          "severity": "quality",
+          "match": [
+            "lmwh",
+            "low molecular weight heparin",
+            "enoxaparin",
+            "dalteparin",
+            "tinzaparin"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-obstetric",
+          "severity": "quality",
+          "match": [
+            "obstetric",
+            "maternity",
+            "midwife",
+            "fetal",
+            "foetal",
+            "ctg"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 37 management items matched (sources: web.clinicalPrompts, web.managementPanel, web.managementPanel.keyPoints, web.plan, web.protocol.medications). First items: [immediate] High-flow O2; IV access; haemodynamic monitoring; alert anaesthetics/ICU if u… | [immediate] Massive PE: alteplase 10 mg IV bolus then 90 mg over 2 h (if no contraindicat… | [conservative] Anticoagulation: rivaroxaban 15 mg BD × 21 days then 20 mg OD; or LMWH/war… | [conservative] Low-risk PE (PESI I–II, normal troponin/BNP, adequate home support): early….",
+          "proposedFix": "When pregnancyPossible and an emergency presentation, add an obstetric review / fetal monitoring action."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-doac-or-warfarin-in-pregnancy",
+          "severity": "critical",
+          "match": [
+            "rivaroxaban",
+            "apixaban",
+            "edoxaban",
+            "dabigatran",
+            "warfarin"
+          ],
+          "unless": [
+            "pregnan",
+            "contraindicated",
+            "avoid"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "note": "NOACs are not recommended in pregnancy and VKAs cross the placenta (ESC 2019, class III): a plan offering them without a pregnancy caveat is contraindicated.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: forbidden management item present in web.plan: \"[conservative] anticoagulation: rivaroxaban 15 mg bd × 21 days then 20 mg od; or lmwh/warfarin.\" (+5 more).",
+          "proposedFix": "Pregnancy-aware PE protocol: LMWH (weight-adjusted) instead of DOACs/warfarin when pregnancyPossible; add CUS first if leg symptoms, then CTPA or V/Q; obstetric involvement."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-pe-2019",
+      "verified": false,
+      "name": "2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism",
+      "year": 2019,
+      "section": "Sections 4-6: clinical probability (Wells/Geneva), PERC in low probability, D-dimer only when probability is not high, CTPA; anticoagulation while awaiting results in high/intermediate probability; high-risk (haemodynamically unstable) PE: UFH, bedside echocardiography if CTPA not immediately feasible, systemic thrombolysis; Section 9 pregnancy: D-dimer/CUS/CTPA or V/Q, LMWH (NOACs not recommended in pregnancy)",
+      "citation": "Konstantinides SV, Meyer G, Becattini C, et al. Eur Heart J. 2020;41:543-603."
+    },
+    {
+      "id": "nice-ng158",
+      "verified": false,
+      "name": "NICE NG158 - Venous thromboembolic diseases: diagnosis, management and thrombophilia testing",
+      "year": 2020,
+      "section": "1.1 DVT: two-level Wells; likely -> proximal leg vein ultrasound within 4 h (interim anticoagulation if delayed); 1.1 PE: two-level Wells; likely (>4) -> CTPA immediately (interim anticoagulation if delayed); unlikely -> D-dimer; PERC when pre-test probability is low",
+      "citation": "National Institute for Health and Care Excellence. NG158. London: NICE; 2020 (updated 2023)."
+    }
+  ],
+  "rationale": "Pregnancy permutation. Wells is not validated in pregnancy; ESC 2019 uses D-dimer/CUS/CTPA or V/Q with LMWH treatment. The web PE protocol lists rivaroxaban/apixaban as first-line: this checks whether pregnancy changes the plan.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

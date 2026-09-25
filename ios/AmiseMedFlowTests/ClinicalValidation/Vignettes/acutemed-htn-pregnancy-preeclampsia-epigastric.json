@@ -1,0 +1,389 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-htn-pregnancy-preeclampsia-epigastric",
+  "condition": "Severe pre-eclampsia / HELLP presenting with epigastric pain",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-htn-emergency-encephalopathy",
+  "permutationLabel": "Pregnant, 35 weeks, HELLP mimicking biliary pain",
+  "summary": "29-year-old primigravida at 35 weeks with a day of epigastric/RUQ pain, vomiting, headache and flashing lights; BP 172/114, proteinuria 3+, ALT 212, platelets 88. Biliary mimic; NICE NG133: same-day obstetric admission.",
+  "tags": [
+    "hypertension",
+    "pregnancy",
+    "pre-eclampsia",
+    "mimic",
+    "biliary-mimic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 29,
+      "sex": "female",
+      "pregnancy": {
+        "status": "pregnant",
+        "gestationWeeks": 35
+      },
+      "heightCm": 163,
+      "weightKg": 82
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Upper abdominal pain and vomiting in pregnancy",
+    "hpi": "First pregnancy, 35 weeks. Referred as ?biliary colic: one day of constant pain in the upper abdomen and under the right ribs, vomiting, a frontal headache and flashing lights. Swollen face and hands this week. Missed her last antenatal visit.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Epigastric",
+        "RUQ"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "epigastric pain",
+      "right upper quadrant pain",
+      "vomiting",
+      "headache",
+      "visual disturbance",
+      "facial swelling"
+    ],
+    "negatives": [
+      "fever",
+      "jaundice",
+      "vaginal bleeding",
+      "reduced fetal movements"
+    ],
+    "exam": {
+      "general": "Uncomfortable, facial oedema.",
+      "abdomen": "Tender epigastrium and right upper quadrant, no guarding, gravid uterus consistent with dates, non-tender.",
+      "cardiovascular": "BP 172/114 (repeat 168/112), HR 98.",
+      "neuro": "Brisk reflexes, 3 beats of ankle clonus."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 98,
+        "systolicBp": 172,
+        "diastolicBp": 114,
+        "respiratoryRate": 18,
+        "temperatureC": 36.9,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 212,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 88,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 10.8,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Protein 3+",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Folic acid",
+        "dose": "400 micrograms",
+        "frequency": "OD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Severe pre-eclampsia with suspected HELLP syndrome",
+      "icd10": "O14.2",
+      "assessmentText": "Severe pre-eclampsia with suspected HELLP (epigastric pain, BP 172/114, proteinuria, ALT 212, platelets 88) - not biliary: same-day obstetric admission, antihypertensive treatment."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "epigastric pain",
+          "right upper quadrant pain",
+          "vomiting",
+          "headache",
+          "visual loss"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Epigastric",
+            "RUQ",
+            "6–24 hours",
+            "Constant",
+            "Severe (7–9)",
+            "Nausea",
+            "Vomiting"
+          ],
+          "headache": [
+            "Frontal",
+            "Visual aura"
+          ]
+        },
+        "paneAnswers": {
+          "epigastric_pain": true,
+          "ruq_pain": true,
+          "nausea_vomiting": true
+        },
+        "durationDays": 1,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-preeclampsia",
+          "severity": "critical",
+          "match": [
+            "pre-eclampsia",
+            "preeclampsia",
+            "eclampsia",
+            "hellp",
+            "icd:O14",
+            "icd:O11",
+            "icd:O15"
+          ],
+          "guidelineRefs": [
+            "nice-ng133"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. Acute Pancreatitis | 3. Peptic Ulcer Disease. PANE has no hypertensive-disorder-of-pregnancy node (obstetric nodes: ectopic pregnancy only).",
+          "proposedFix": "Pregnancy branch in the hypertension prompt: BP >=160/110 at >=20 weeks -> suspected severe pre-eclampsia, same-day obstetric admission, labetalol/nifedipine/methyldopa (no ACE inhibitors, ARBs or amlodipine first-line); suppress cholecystectomy/appendicectomy cascades; add pre-eclampsia/HELLP to the differential."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "nice-ng133"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hypertension",
+          "severity": "critical",
+          "match": [
+            "hypertensi",
+            "pre-eclampsia",
+            "preeclampsia"
+          ],
+          "guidelineRefs": [
+            "nice-ng133"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: no hypertension alarm. The web hypertension prompt fires only at SBP >=180; 172/114 at 35 weeks (NICE NG133 severe hypertension >=160/110) raises nothing. Alarms raised: Emergency now; Reproductive-age female with abdominal complaint; Appendicitis - emergency surgical indication; Acute abdominal presentation; Pre-operative assessment; Cholecystitis / gallstone disease - surgical indication.",
+          "proposedFix": "Pregnancy-specific BP threshold (>=160/110, NICE NG133) in the hypertension prompt and triage."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-obstetric",
+          "severity": "critical",
+          "match": [
+            "obstetric",
+            "maternity",
+            "midwife",
+            "fetal",
+            "foetal",
+            "ctg"
+          ],
+          "guidelineRefs": [
+            "nice-ng133"
+          ],
+          "note": "Same-day obstetric assessment/admission (NICE NG133).",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 20 management items matched (sources: web.clinicalPrompts, web.managementPanel, web.managementPanel.keyPoints). First items: [immediate] NBM, IV analgesia (morphine + antiemetic), IV fluids. | [immediate] IV antibiotics: co-amoxiclav 1.2 g TDS or piperacillin-tazobactam for severe. | [surgical] Early laparoscopic cholecystectomy within 72 h (Grade I–II). | [surgical] Delayed cholecystectomy 6–8 weeks if patient unfit for early surgery..",
+          "proposedFix": "Pregnancy branch in the hypertension prompt: BP >=160/110 at >=20 weeks -> suspected severe pre-eclampsia, same-day obstetric admission, labetalol/nifedipine/methyldopa (no ACE inhibitors, ARBs or amlodipine first-line); suppress cholecystectomy/appendicectomy cascades; add pre-eclampsia/HELLP to the differential."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-cholecystectomy",
+          "severity": "critical",
+          "match": [
+            "cholecystectomy"
+          ],
+          "guidelineRefs": [
+            "nice-ng133"
+          ],
+          "note": "Wrong procedure: HELLP mimicking biliary pain.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: forbidden management item present in web.managementPanel: \"[surgical] early laparoscopic cholecystectomy within 72 h (grade i-ii).\" (+4 more).",
+          "proposedFix": "Pregnancy branch in the hypertension prompt: BP >=160/110 at >=20 weeks -> suspected severe pre-eclampsia, same-day obstetric admission, labetalol/nifedipine/methyldopa (no ACE inhibitors, ARBs or amlodipine first-line); suppress cholecystectomy/appendicectomy cascades; add pre-eclampsia/HELLP to the differential."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "re:laparoscopic append(ic)?ectomy",
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "guidelineRefs": [
+            "nice-ng133"
+          ],
+          "note": "Wrong procedure.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: forbidden management item present in web.clinicalPrompts: \"laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •...\".",
+          "proposedFix": "Gate the appendicectomy cascade on the working diagnosis; negation-aware exam matching (\"no guarding\")."
+        },
+        {
+          "id": "mgmt-no-ace-arb",
+          "severity": "critical",
+          "match": [
+            "ramipril",
+            "lisinopril",
+            "enalapril",
+            "losartan",
+            "candesartan",
+            "ace inhibitor"
+          ],
+          "guidelineRefs": [
+            "nice-ng133"
+          ],
+          "note": "ACE inhibitors/ARBs are contraindicated in pregnancy.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-nsaid",
+          "severity": "critical",
+          "match": [
+            "ibuprofen",
+            "diclofenac",
+            "naproxen",
+            "ketorolac"
+          ],
+          "unless": [
+            "avoid",
+            "no nsaid"
+          ],
+          "guidelineRefs": [
+            "nice-ng133"
+          ],
+          "note": "NSAIDs after 20 weeks and with thrombocytopenia/HELLP are contraindicated.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: forbidden management item present in web.clinicalPrompts: \"... convert to oral when tolerating po. • paracetamol 1g qds + ibuprofen 400mg tds (regular). • morphine 5mg prn if pain > 5/10. • regular diet as toler...\".",
+          "proposedFix": "Strip NSAIDs from operative templates from 20 weeks of gestation (HPB findings gap 6), and suppress operative templates here altogether."
+        },
+        {
+          "id": "mgmt-no-amlodipine-first-line",
+          "severity": "quality",
+          "match": [
+            "amlodipine",
+            "bisoprolol"
+          ],
+          "guidelineRefs": [
+            "nice-ng133"
+          ],
+          "note": "NICE NG133 first-line agents are labetalol, nifedipine or methyldopa.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng133",
+      "verified": false,
+      "name": "NICE NG133 - Hypertension in pregnancy: diagnosis and management",
+      "year": 2019,
+      "section": "Severe hypertension = BP >=160/110 mmHg; pre-eclampsia features include severe headache, visual disturbance, severe pain below the ribs or epigastric pain, vomiting, and HELLP (haemolysis, elevated liver enzymes, low platelets); severe hypertension or suspected severe pre-eclampsia -> same-day obstetric assessment/admission and antihypertensive treatment",
+      "citation": "National Institute for Health and Care Excellence. NG133. London: NICE; 2019 (updated 2023)."
+    }
+  ],
+  "rationale": "Pregnancy permutation and a biliary mimic: epigastric/RUQ pain is a severe pre-eclampsia feature (HELLP). The surgical engines are expected to reach for gallstones; the blood pressure and pregnancy should redirect.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

@@ -1,0 +1,236 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-asthma-pregnancy-moderate",
+  "condition": "Moderate asthma exacerbation in pregnancy",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-asthma-acute-severe",
+  "permutationLabel": "Pregnant, 24 weeks, moderate",
+  "summary": "30-year-old woman at 24 weeks who stopped her inhaled steroid for fear of harming the baby: 3 days of wheeze, PEF 60 % of predicted, speaking in sentences, SpO₂ 96 %. BTS/SIGN: treat as non-pregnant, do not withhold steroids.",
+  "tags": [
+    "asthma",
+    "pregnancy"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 30,
+      "sex": "female",
+      "pregnancy": {
+        "status": "pregnant",
+        "gestationWeeks": 24
+      },
+      "heightCm": 168,
+      "weightKg": 74
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Wheezy and chesty in pregnancy",
+    "hpi": "24 weeks pregnant. Stopped her preventer inhaler at 10 weeks, worried about the baby. Three days of wheeze and night-time cough, using salbutamol 4-6 times a day. Referred for perianal pain (thrombosed haemorrhoid, settling).",
+    "symptoms": [
+      "wheeze",
+      "nocturnal cough",
+      "chest tightness"
+    ],
+    "negatives": [
+      "fever",
+      "chest pain",
+      "haemoptysis",
+      "calf swelling",
+      "headache"
+    ],
+    "exam": {
+      "general": "Speaking in full sentences.",
+      "respiratory": "Scattered expiratory wheeze, RR 22.",
+      "cardiovascular": "HR 102, BP 112/68.",
+      "abdomen": "Gravid, fundus at umbilicus."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 102,
+        "systolicBp": 112,
+        "diastolicBp": 68,
+        "respiratoryRate": 22,
+        "temperatureC": 36.9,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "pef",
+        "name": "Peak expiratory flow",
+        "value": 270,
+        "unit": "L/min (60% predicted)",
+        "minutesAgo": 5
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Asthma"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Salbutamol inhaler",
+        "dose": "100 micrograms",
+        "frequency": "PRN"
+      },
+      {
+        "drug": "Budesonide inhaler",
+        "dose": "200 micrograms",
+        "frequency": "BD (stopped at 10 weeks)"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Moderate asthma exacerbation in pregnancy",
+      "icd10": "O99.51",
+      "assessmentText": "Moderate asthma exacerbation at 24 weeks (PEF 60%): salbutamol, prednisolone course, restart inhaled steroid - treat as for a non-pregnant woman; obstetric team informed."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "wheeze",
+          "dry cough",
+          "chest tightness"
+        ],
+        "examFindings": {
+          "respiratory": [
+            "Wheeze"
+          ]
+        },
+        "durationDays": 3,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-asthma",
+          "severity": "quality",
+          "match": [
+            "asthma",
+            "icd:J45",
+            "icd:J46",
+            "reactive airway"
+          ],
+          "guidelineRefs": [
+            "sign158-2019"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. Acute Appendicitis | 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1. PANE has no asthma node.",
+          "proposedFix": "lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "quality",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "sign158-2019"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-bronchodilator",
+          "severity": "critical",
+          "match": [
+            "salbutamol",
+            "bronchodilator",
+            "beta-2 agonist",
+            "β2",
+            "beta2",
+            "albuterol",
+            "nebulis"
+          ],
+          "guidelineRefs": [
+            "sign158-2019"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 4 management items matched (sources: web.clinicalPrompts). First items: • If urine β-HCG positive: serum quantitative β-HCG + urgent TVS — exclude ectopic. | • If ectopic suspected: emergency gynaecology referral — surgical or medical management. | • Confirm cervical smear date — document last result. | • Refer gynaecology — cervical smear overdue (> 3 years)..",
+          "proposedFix": "lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46."
+        },
+        {
+          "id": "mgmt-steroid",
+          "severity": "quality",
+          "match": [
+            "prednisolone",
+            "hydrocortisone",
+            "corticosteroid",
+            "steroid",
+            "methylprednisolone"
+          ],
+          "guidelineRefs": [
+            "sign158-2019"
+          ],
+          "note": "Oral and inhaled steroids should not be withheld in pregnancy.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web run 2026-09-25: none of 4 management items matched (sources: web.clinicalPrompts). First items: • If urine β-HCG positive: serum quantitative β-HCG + urgent TVS — exclude ectopic. | • If ectopic suspected: emergency gynaecology referral — surgical or medical management. | • Confirm cervical smear date — document last result. | • Refer gynaecology — cervical smear overdue (> 3 years)..",
+          "proposedFix": "lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-steroid-withholding",
+          "severity": "quality",
+          "match": [
+            "re:(avoid|withhold|stop)[^.;]{0,30}(steroid|prednisolone|budesonide)"
+          ],
+          "guidelineRefs": [
+            "sign158-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "sign158-2019",
+      "verified": false,
+      "name": "BTS/SIGN 158 - British guideline on the management of asthma",
+      "year": 2019,
+      "section": "Section 9 acute asthma in adults: acute severe = PEF 33-50% best/predicted, RR >=25/min, HR >=110/min or inability to complete sentences; life-threatening = PEF <33%, SpO2 <92%, silent chest, cyanosis, poor respiratory effort, arrhythmia, exhaustion, altered consciousness, hypotension; oxygen to SpO2 94-98%, high-dose inhaled beta2 agonist, ipratropium in severe/life-threatening, prednisolone 40-50 mg, IV magnesium sulphate for severe asthma not responding; Section 12 pregnancy: treat as in non-pregnant patients, do not withhold steroids, fetal monitoring in acute severe asthma",
+      "citation": "British Thoracic Society / Scottish Intercollegiate Guidelines Network. SIGN 158. Edinburgh: SIGN; 2019."
+    }
+  ],
+  "rationale": "Pregnancy permutation: undertreatment (stopping inhaled steroids) is the commonest harm; guidelines say treat as non-pregnant.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}
