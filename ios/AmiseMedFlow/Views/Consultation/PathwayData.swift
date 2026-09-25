@@ -19,6 +19,9 @@ struct PathwayData: Codable {
     /// usual sleep (LifestylePractices.swift). Also read and written by the dashboard, under the
     /// same "lifestyle" key of patients.pathway_data_json.
     var lifestyle = LifestyleHistory()
+    /// "Herbs, teas, bush remedies & supplements" (SupplementHistory.swift). The dashboard reads
+    /// and writes the same key in patients.pathway_data_json.
+    var supplements = SupplementHistory()
 
     init() {}
 
@@ -29,6 +32,7 @@ struct PathwayData: Codable {
         ward     = (try? c.decodeIfPresent(WardReview.self, forKey: .ward)) ?? WardReview()
         bowelPrep = (try? c.decodeIfPresent(BowelPrepPlan.self, forKey: .bowelPrep)) ?? BowelPrepPlan()
         lifestyle = (try? c.decodeIfPresent(LifestyleHistory.self, forKey: .lifestyle)) ?? LifestyleHistory()
+        supplements = (try? c.decodeIfPresent(SupplementHistory.self, forKey: .supplements)) ?? SupplementHistory()
     }
 }
 
