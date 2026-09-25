@@ -221,6 +221,15 @@ function TokyoCholecystitisCard() {
         </div>
       </div>
 
+      <div style={{ marginBottom: 8 }}>
+        <div style={{ fontSize: 10, color: '#94a3b8', marginBottom: 4 }}>Grade II criteria (TG18) — besides WBC &gt; 18</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+          <Toggle label="Palpable tender RUQ mass" value={!!inputs.palpable_tender_mass} onChange={v => set('palpable_tender_mass', v)} />
+          <Toggle label="Duration > 72 h" value={!!inputs.duration_over_72h} onChange={v => set('duration_over_72h', v)} />
+          <Toggle label="Marked local inflammation (gangrenous / emphysematous / abscess)" value={!!inputs.marked_local_inflammation} onChange={v => set('marked_local_inflammation', v)} />
+        </div>
+      </div>
+
       <div>
         <div style={{ fontSize: 10, color: '#94a3b8', marginBottom: 4 }}>Organ dysfunction (→ Grade III)</div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>

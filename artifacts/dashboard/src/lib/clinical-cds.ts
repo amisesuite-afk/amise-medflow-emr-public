@@ -244,21 +244,10 @@ const RULES: CdsRule[] = [
     },
   },
 
-  // ── ABCD2 ─────────────────────────────────────────────────────────────────────
-  {
-    scaleKey: 'abcd2',
-    title: 'ABCD² Score — TIA Stroke Risk',
-    urgency: 'urgent',
-    needsLabs: false,
-    categoryTag: 'Neurology',
-    trigger: ctx => {
-      const triggers: string[] = [];
-      if (hasSym(ctx, 'TIA', 'transient', 'facial weakness', 'speech difficulty', 'word-finding')) triggers.push('neurological symptoms consistent with TIA');
-      if (hasRos(ctx, 'neurological', 'speech', 'facial', 'weakness')) triggers.push('positive neurological ROS');
-      if (triggers.length > 0) return triggers.join(', ');
-      return null;
-    },
-  },
+  // ABCD2 is no longer suggested: NICE NG128 (2019, updated 2022) advises against using ABCD2
+  // or other risk scores to decide the urgency of TIA assessment — every suspected TIA gets
+  // aspirin 300 mg and specialist assessment within 24 hours (SURGEON-DECISIONS G2.15). The
+  // stroke / TIA recognition and actions live in the emergency layer (emergency-recognition.ts).
 
   // ── Glasgow-Blatchford — GI bleed ────────────────────────────────────────────
   {

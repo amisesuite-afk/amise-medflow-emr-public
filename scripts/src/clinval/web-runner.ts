@@ -388,8 +388,8 @@ export function runWeb(v: Vignette): EngineOutputs {
   if (tgc) {
     const org = organs(tgc);
     const g = tg18CholangitisGrade({
-      // ScalesTab label: "Fever / rigors (temp ≥ 38°C)" — the clinician ticks it for any temperature ≥ 38.
-      fever: tempAtLeast38 || bool(tgc, 'feverAtLeast39'),
+      // ScalesTab label: "High fever (temp ≥ 39°C)" — the TG18 Grade II fever criterion.
+      fever: (sv.temperatureC ?? 0) >= 39 || bool(tgc, 'feverAtLeast39'),
       wbcAbnormal: bool(tgc, 'wbcAbnormal'), age, bilirubinHighGrade2: bool(tgc, 'bilirubinAtLeast5mgdl'),
       albuminLow: bool(tgc, 'albuminBelow07LLN'),
       organDysfunctionCv: org.includes('cardiovascular'), organDysfunctionCns: org.includes('neurological'),
@@ -423,6 +423,10 @@ export function runWeb(v: Vignette): EngineOutputs {
       ruq_pain_mass_tenderness: bool(tgk, 'localSigns') || bool(tgk, 'palpableTenderRUQMass'),
       fever: bool(tgk, 'systemicSigns') && tempAtLeast38,
       us_wall_thickening: bool(tgk, 'imagingCharacteristic'),
+      // ClinicalScoresPanel Grade II toggles (TG18).
+      palpable_tender_mass: bool(tgk, 'palpableTenderRUQMass'),
+      duration_over_72h: bool(tgk, 'durationOver72h'),
+      marked_local_inflammation: bool(tgk, 'markedLocalInflammation'),
       organ_dysfunction: organs(tgk),
     }, labs, sv);
     scoreValues.push({ score: 'tg18-cholecystitis', mode: 'calculator', source: 'web.scoreCalculator.tg18-cholecystitis', value: full.score, label: full.label });

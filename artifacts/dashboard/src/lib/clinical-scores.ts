@@ -163,7 +163,10 @@ export function scoreTokyoCholangitis(
     };
   }
 
-  const gradeIIMod = [highFever, ageMod, bilirubinHigh, albuminLow].filter(Boolean).length;
+  // TG18 Grade II = any two of: WBC > 12 or < 4 ×10⁹/L, fever ≥ 39 °C, age ≥ 75, bilirubin ≥ 5 mg/dL,
+  // albumin < 0.7 × LLN (Kiriyama 2018). The WBC criterion was missing.
+  const wbcGrade2 = n(labs.wbc) !== null ? (labs.wbc! > 12 || labs.wbc! < 4) : !!inputs.wbc_abnormal;
+  const gradeIIMod = [wbcGrade2, highFever, ageMod, bilirubinHigh, albuminLow].filter(Boolean).length;
   if (gradeIIMod >= 2) {
     return {
       score: 2, grade: 'II', label: 'Moderate cholangitis — early biliary drainage recommended',
@@ -194,6 +197,10 @@ export interface TokyoCholecystitisInputs {
   us_gb_enlargement?: boolean;     // >8 cm long or >4 cm wide
   us_echo_slurry?: boolean;
   us_non_enhanced_area?: boolean;  // CT gangrenous/ischaemic
+  // TG18 Grade II criteria (Yokoe 2018) besides WBC > 18: (C8)
+  palpable_tender_mass?: boolean;       // palpable tender mass in the RUQ
+  duration_over_72h?: boolean;          // duration of complaints > 72 h
+  marked_local_inflammation?: boolean;  // gangrenous / emphysematous cholecystitis, pericholecystic or hepatic abscess, biliary peritonitis
   organ_dysfunction?: Array<'cardiovascular' | 'neurological' | 'respiratory' | 'renal' | 'hepatic' | 'haematological'>;
 }
 
@@ -217,7 +224,7 @@ export function scoreTokyoCholecystitis(
   const tempC = n(vitals.temperatureC);
   const fever = inputs.fever || (tempC !== null && tempC >= 38.0);
 
-  const localA = inputs.murphy_sign || inputs.ruq_pain_mass_tenderness;
+  const localA = inputs.murphy_sign || inputs.ruq_pain_mass_tenderness || inputs.palpable_tender_mass;
   const systemicB = fever || wbcAbnormal === true || crpElevated === true;
   const imagingC = inputs.us_wall_thickening || inputs.us_pericholecystic_fluid
     || inputs.us_gb_enlargement || inputs.us_echo_slurry || inputs.us_non_enhanced_area;
@@ -247,11 +254,18 @@ export function scoreTokyoCholecystitis(
     };
   }
 
-  // Grade II: elevated WBC >18, palpable tender mass, >72h, marked local inflammation
-  if (wbcAbnormal && (labs.wbc && labs.wbc > 18)) {
+  // Grade II (TG18, Yokoe 2018): any of WBC > 18 ×10⁹/L, palpable tender RUQ mass, duration
+  // > 72 h, or marked local inflammation (gangrenous / emphysematous cholecystitis, pericholecystic
+  // or hepatic abscess, biliary peritonitis). Only the WBC criterion was read before (C8).
+  const gradeII: string[] = [];
+  if (labs.wbc && labs.wbc > 18) gradeII.push('WBC > 18');
+  if (inputs.palpable_tender_mass) gradeII.push('palpable tender RUQ mass');
+  if (inputs.duration_over_72h) gradeII.push('duration > 72 h');
+  if (inputs.marked_local_inflammation || inputs.us_non_enhanced_area) gradeII.push('marked local inflammation (gangrenous / emphysematous / abscess)');
+  if (gradeII.length > 0) {
     return {
-      score: 2, grade: 'II', label: 'Moderate cholecystitis — early laparoscopic cholecystectomy',
-      colour: 'amber', criteria_met: criteriaMet,
+      score: 2, grade: 'II', label: `Moderate cholecystitis (${gradeII.join(', ')}) — early laparoscopic cholecystectomy if fit, otherwise drainage`,
+      colour: 'amber', criteria_met: [...criteriaMet, ...gradeII.map(g => `Grade II: ${g}`)],
       missing_inputs: missing, complete: missing.length === 0,
     };
   }

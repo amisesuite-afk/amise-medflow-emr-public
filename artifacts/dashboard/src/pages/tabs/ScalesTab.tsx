@@ -421,7 +421,8 @@ function Tg18Card() {
   return (
     <div>
       <div style={hdr}>Grade I / II criteria</div>
-      <Chk label="Fever / rigors (temp ≥ 38°C)" checked={v.fever} onChange={() => tog('fever')} />
+      <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Grade II needs any two of the five criteria below (TG18).</div>
+      <Chk label="High fever (temp ≥ 39°C)" checked={v.fever} onChange={() => tog('fever')} />
       <Chk label="WBC abnormal (< 4k or > 12k)" checked={v.wbcAbnormal} onChange={() => tog('wbcAbnormal')} />
       <label style={lblStyle}>Age (years) — ≥ 75 is Grade II criterion
         <input style={inpStyle} type="number" value={v.age ?? ''} onChange={e => setV(p => ({ ...p, age: e.target.value ? +e.target.value : null }))} />

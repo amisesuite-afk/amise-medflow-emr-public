@@ -210,32 +210,24 @@ export function abcd2Score(i: Abcd2Inputs): number {
   );
 }
 
+/**
+ * ABCD2 is kept for documentation only. NICE NG128 (2019, updated 2022) advises against using
+ * ABCD2 or other risk scores to decide urgency: every suspected TIA gets aspirin 300 mg (unless
+ * contraindicated) and specialist assessment within 24 hours, whatever the score (G2.15).
+ */
 export function interpretAbcd2(score: number): ScaleResult {
-  const evidence = 'Johnston et al., Lancet 2007; ABCD2 validation';
-  if (score <= 3) return {
-    score, band: 'LOW RISK', color: 'green',
-    description: '~1% 2-day stroke risk.',
-    action: 'Outpatient TIA clinic within 24–48h. Dual antiplatelet. MRI-DWI if available.',
-    evidence,
-  };
-  if (score <= 5) return {
-    score, band: 'MODERATE RISK', color: 'amber',
-    description: '~4% 2-day stroke risk.',
-    action: 'Urgent TIA assessment within 24h. Consider hospital admission for monitoring.',
-    evidence,
-  };
-  return {
-    score, band: 'HIGH RISK', color: 'red',
-    description: '~8% 2-day stroke risk.',
-    action: 'Admit and investigate urgently. MRI-DWI, carotid imaging, cardiac monitoring.',
-    evidence,
-  };
+  const evidence = 'Johnston et al., Lancet 2007 (derivation); NICE NG128 (2019, updated 2022) — do not use to decide urgency';
+  const action = 'NICE NG128: do not use ABCD2 to decide urgency. Every suspected TIA: aspirin 300 mg now unless contraindicated, and specialist stroke assessment within 24 hours of symptom onset. Persisting or recurrent symptoms: treat as acute stroke (911 / emergency department).';
+  if (score <= 3) return { score, band: 'SCORE ≤ 3 — not for triage', color: 'amber', description: 'A low score does not make a TIA low risk (NICE NG128).', action, evidence };
+  if (score <= 5) return { score, band: 'SCORE 4–5 — not for triage', color: 'amber', description: 'Urgency is not set by the score (NICE NG128).', action, evidence };
+  return { score, band: 'SCORE ≥ 6 — not for triage', color: 'red', description: 'Urgency is not set by the score (NICE NG128).', action, evidence };
 }
 
 // ─── 5. TG18 Cholangitis Severity ──────────────────────────────────────────
 
 export interface Tg18CholangitisInputs {
-  fever: boolean;            // temp ≥ 38°C — auto from vitals
+  /** HIGH fever ≥ 39 °C (TG18 Grade II criterion; fever ≥ 38 °C is only a diagnostic A criterion). */
+  fever: boolean;
   wbcAbnormal: boolean;      // < 4k or > 12k
   age: number | null;        // ≥ 75 = moderate criterion
   bilirubinHighGrade2: boolean;   // bilirubin ≥ 85 µmol/L
@@ -260,6 +252,8 @@ export function tg18CholangitisGrade(i: Tg18CholangitisInputs): 'I' | 'II' | 'II
 
   if (organCount >= 1) return 'III';
 
+  // TG18 (Kiriyama 2018) Grade II = any TWO of: WBC > 12 or < 4 ×10⁹/L, fever ≥ 39 °C, age ≥ 75,
+  // total bilirubin ≥ 5 mg/dL (85 µmol/L), albumin < 0.7 × lower limit. One criterion is Grade I.
   const grade2Criteria = [
     i.wbcAbnormal,
     i.fever,
@@ -268,7 +262,7 @@ export function tg18CholangitisGrade(i: Tg18CholangitisInputs): 'I' | 'II' | 'II
     i.albuminLow,
   ].filter(Boolean).length;
 
-  if (grade2Criteria >= 1) return 'II';
+  if (grade2Criteria >= 2) return 'II';
   return 'I';
 }
 
