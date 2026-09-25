@@ -1,0 +1,302 @@
+{
+  "schemaVersion": 1,
+  "id": "hernia-inguinal-elective-minimal-symptoms",
+  "condition": "Inguinal hernia (elective, minimally symptomatic)",
+  "category": "hernia",
+  "permutationOf": null,
+  "summary": "58-year-old man with a 6-month reducible right groin bulge, a dragging ache after work, no episodes of irreducibility. Classic elective inguinal hernia: watchful waiting is a legitimate option for minimally symptomatic men; mesh repair (open Lichtenstein or laparoscopic TEP/TAPP) if repair is chosen.",
+  "tags": [
+    "elective",
+    "groin"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 58,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 82
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Lump in the right groin",
+    "hpi": "Six-month history of a right groin lump that appears on standing and straining and disappears when lying down. Mild dragging ache at the end of a working day (warehouse supervisor), 2/10, does not limit activity. Never stuck out, no episodes of severe pain. No vomiting, bowels normal, no urinary symptoms. No weight loss.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago",
+        "Gradual"
+      ],
+      "site": [
+        "Right inguinal"
+      ],
+      "character": [
+        "Soft",
+        "Non-tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [
+        "Straining / Valsalva",
+        "Standing"
+      ],
+      "relieving": [
+        "Lying down",
+        "Manual reduction"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "groin swelling",
+      "groin ache"
+    ],
+    "negatives": [
+      "vomiting",
+      "irreducibility",
+      "weight loss",
+      "urinary symptoms"
+    ],
+    "exam": {
+      "general": "Well. BMI 26.",
+      "abdomen": "Soft, non-tender. Right inguinal hernia: reducible swelling above and medial to the pubic tubercle with a cough impulse, controlled at the deep ring; not extending into the scrotum. Left groin normal. Testes normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 72,
+        "systolicBp": 134,
+        "diastolicBp": 82,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker. Warehouse supervisor (lifting).",
+    "confirmedDiagnosis": {
+      "name": "Right inguinal hernia, reducible, minimally symptomatic",
+      "icd10": "K40.90",
+      "paneDiseaseId": "inguinal_hernia",
+      "assessmentText": "Reducible inguinal hernia (right), minimally symptomatic. Options discussed: watchful waiting vs elective mesh repair (Lichtenstein or laparoscopic TEP/TAPP)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Inguinal / groin hernia",
+        "symptoms": [
+          "hernia",
+          "groin swelling"
+        ],
+        "symptomDetails": {
+          "hernia": [
+            "Right groin",
+            "Easily reducible"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "Hernia present"
+          ]
+        },
+        "paneAnswers": {
+          "groin_lump_reducible": true,
+          "cough_impulse": true,
+          "hernia_irreducible": false
+        },
+        "durationDays": 180,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-inguinal-hernia-top3",
+          "severity": "critical",
+          "match": [
+            "inguinal",
+            "icd:K40"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "herniasurge-2018"
+          ],
+          "note": "Reducible groin lump with cough impulse above the pubic tubercle.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine",
+        "severity": "quality",
+        "atMost": "priority",
+        "guidelineRefs": [
+          "herniasurge-2018"
+        ],
+        "note": "Minimally symptomatic reducible hernia: routine elective pathway. Over-triage is a quality issue only.",
+        "unverified": [
+          "ios"
+        ],
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Triage emergency_now (score 80): adaptiveTriage RED_FLAGS regexes have no negation handling — \"no episodes of severe pain\" → \"Acute abdominal pain\" (urgent), \"No weight loss\" → \"Possible malignancy\", \"No vomiting\" → +15.",
+        "proposedFix": "Add a negation window (\"no\", \"denies\", \"never\", \"non-\") before RED_FLAGS / symptom regex matches in adaptive-triage."
+      },
+      "mustNotAlarm": [
+        {
+          "id": "no-emergency-alarm",
+          "severity": "quality",
+          "match": [
+            "emergency now",
+            "strangulat"
+          ],
+          "note": "No strangulation features; an emergency alarm would be noise.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Same negation false positives raise the triage \"Emergency now\" alarm; the prompt engine also raises \"Strangulated Hernia → Emergency Repair\"."
+        },
+        {
+          "id": "no-strangulation-prompt",
+          "severity": "quality",
+          "match": [
+            "strangulat",
+            "incarcerat"
+          ],
+          "sources": [
+            "web.clinicalPrompts"
+          ],
+          "note": "\"Soft, non-tender\" must not be read as a tender (incarcerated) hernia.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "computeClinicalPrompts isIncarcerated tests exam text for \"tender\" — \"non-tender\" matches, so a reducible hernia gets the \"Incarcerated / strangulated hernia\" safety prompt.",
+          "proposedFix": "Use word-boundary + negation-aware matching for \"tender\" in the hernia prompt (exclude \"non-tender\", \"not tender\")."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-mesh-repair",
+          "severity": "quality",
+          "match": [
+            "mesh",
+            "lichtenstein",
+            "re:\\b(tep|tapp)\\b",
+            "laparoscopic"
+          ],
+          "guidelineRefs": [
+            "herniasurge-2018"
+          ],
+          "note": "HerniaSurge: mesh-based repair (Lichtenstein or laparoscopic) is recommended when repair is chosen.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-watchful-waiting-option",
+          "severity": "quality",
+          "match": [
+            "watchful waiting",
+            "active observation",
+            "re:observ(e|ation)[^.]{0,40}(minimal|asymptomatic)"
+          ],
+          "guidelineRefs": [
+            "herniasurge-2018"
+          ],
+          "note": "HerniaSurge: watchful waiting is an acceptable option in men with minimally symptomatic or asymptomatic inguinal hernias.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Neither the inguinal_hernia protocol nor the prompts mention watchful waiting (only \"truss for unfit patients declining surgery\").",
+          "proposedFix": "Add the HerniaSurge watchful-waiting option for minimally symptomatic men to the inguinal_hernia protocol (conservative phase)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-emergency-repair",
+          "severity": "quality",
+          "match": [
+            "re:emergency (theatre|laparoscopic inguinal|repair)"
+          ],
+          "unless": [
+            "if ",
+            "strangulated hernia: resuscitate"
+          ],
+          "note": "An emergency operative plan for a reducible minimally symptomatic hernia would be wrong.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The negation bug above (\"non-tender\") adds \"Emergency Theatre: irreducible / strangulated hernia\" to the plan actions."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-reducible",
+      "severity": "quality",
+      "equals": "hernia_reducible"
+    }
+  },
+  "guideline": [
+    {
+      "id": "herniasurge-2018",
+      "name": "HerniaSurge — International guidelines for groin hernia management",
+      "year": 2018,
+      "section": "Diagnosis (clinical examination, ultrasound for uncertain swellings); watchful waiting in minimally symptomatic men; mesh repair (Lichtenstein, TEP/TAPP); groin hernia in women; femoral hernia; emergency repair",
+      "citation": "HerniaSurge Group. International guidelines for groin hernia management. Hernia. 2018;22:1–165.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base case for the groin cluster. Tests that a reducible, minimally symptomatic inguinal hernia ranks top, is not escalated, and that the plan offers the HerniaSurge options (watchful waiting or mesh repair). The web CC template is the only groin template available (\"Inguinal / groin hernia\"); it does not match any PANE CC hint, so PANE must infer from the site answer and Q&A.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

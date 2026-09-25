@@ -1,0 +1,375 @@
+{
+  "schemaVersion": 1,
+  "id": "thyroid-rapid-enlargement-stridor",
+  "condition": "Rapidly enlarging thyroid mass with stridor (anaplastic carcinoma / lymphoma)",
+  "category": "breast-endocrine",
+  "permutationOf": null,
+  "summary": "76-year-old woman with Hashimoto's thyroiditis and a hard neck mass that has doubled in 3 weeks, now with stridor, hoarseness and dysphagia. Anaplastic carcinoma or thyroid lymphoma: airway first (senior anaesthesia/ENT), urgent core biopsy (FNA may miss lymphoma), rapid staging; not an elective thyroidectomy pathway.",
+  "tags": [
+    "thyroid",
+    "emergency",
+    "airway",
+    "must-not-miss",
+    "malignancy"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 76,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 158,
+      "weightKg": 60
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Neck swelling growing fast and noisy breathing",
+    "hpi": "Known Hashimoto's thyroiditis on levothyroxine. Neck swelling on the left has doubled in size over 3 weeks. Voice hoarse for 2 weeks, food sticking, and noisy breathing at night for 3 days, now also when walking. Lost 5 kg.",
+    "socrates": {
+      "onset": [
+        "1–4 weeks ago",
+        "Gradual"
+      ],
+      "site": [
+        "Thyroid (left lobe)",
+        "Thyroid isthmus"
+      ],
+      "character": [
+        "Hard",
+        "Fixed",
+        "Irregular"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Stridor",
+        "Hoarseness / voice change",
+        "Dysphagia",
+        "Weight loss",
+        "Shortness of breath"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "neck swelling",
+      "stridor",
+      "hoarse voice",
+      "dysphagia",
+      "weight loss",
+      "shortness of breath"
+    ],
+    "negatives": [
+      "fever"
+    ],
+    "exam": {
+      "general": "Audible inspiratory stridor at rest, speaking in sentences, RR 26, SpO2 93% on air. 7 cm hard, fixed, irregular left thyroid mass extending across the midline, trachea deviated to the right. Hard left cervical nodes. Unable to get below the mass.",
+      "respiratory": "Inspiratory stridor; chest clear."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 108,
+        "systolicBp": 148,
+        "diastolicBp": 86,
+        "respiratoryRate": 26,
+        "temperatureC": 37.0,
+        "spo2": 93,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "tsh",
+        "name": "TSH",
+        "value": 3.1,
+        "unit": "mU/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "ldh",
+        "name": "LDH",
+        "value": 612,
+        "unit": "U/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "calcium",
+        "name": "Calcium (adjusted)",
+        "value": 2.41,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Hashimoto thyroiditis",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Levothyroxine",
+        "dose": "75 mcg",
+        "frequency": "OD",
+        "indication": "Hypothyroidism"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with husband.",
+    "confirmedDiagnosis": {
+      "name": "Rapidly enlarging thyroid mass with stridor — suspected anaplastic thyroid carcinoma vs primary thyroid lymphoma",
+      "icd10": "C73",
+      "paneDiseaseId": "thyroid_carcinoma",
+      "assessmentText": "Rapidly enlarging hard thyroid mass with stridor at rest, hoarseness and dysphagia on a background of Hashimoto's — anaplastic carcinoma vs lymphoma. Airway: senior anaesthetic and ENT review now, humidified oxygen, dexamethasone. Urgent core biopsy, CT neck/chest, haematology/oncology MDT."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Neck lump",
+        "symptoms": [
+          "neck swelling",
+          "stridor",
+          "hoarse voice",
+          "dysphagia",
+          "weight loss",
+          "shortness of breath"
+        ],
+        "symptomDetails": {
+          "dysphagia": [
+            "Solids only",
+            "Progressive",
+            "Weight loss",
+            "Hoarse voice"
+          ],
+          "weight loss": [
+            "< 5 kg",
+            "< 1 month",
+            "Unintentional"
+          ]
+        },
+        "durationDays": 21,
+        "painScore": 3
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-anaplastic-or-lymphoma",
+          "severity": "critical",
+          "match": [
+            "anaplastic",
+            "lymphoma"
+          ],
+          "guidelineRefs": [
+            "ata-atc-2021",
+            "bta-2014"
+          ],
+          "note": "Rapid growth over weeks with stridor in an older patient (Hashimoto's): anaplastic carcinoma and thyroid lymphoma are the diagnoses to name.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE has no anaplastic thyroid carcinoma or thyroid lymphoma disease; top 3 = cholecystitis, colorectal cancer, GORD. The thyroid_carcinoma protocol is papillary-oriented.",
+          "proposedFix": "Add anaplastic carcinoma and primary thyroid lymphoma to PANE and a rapid-growth feature; add an ATC/lymphoma branch to the thyroid carcinoma protocol."
+        },
+        {
+          "id": "mnm-thyroid-malignancy",
+          "severity": "quality",
+          "match": [
+            "thyroid carcinoma",
+            "thyroid cancer",
+            "icd:C73"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Thyroid carcinoma not in the PANE top 3 (see above)."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "ata-atc-2021",
+          "bta-2014"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-emergency",
+          "severity": "critical",
+          "match": [
+            "airway",
+            "stridor",
+            "tracheal compression",
+            "intubat",
+            "emergency now"
+          ],
+          "guidelineRefs": [
+            "ata-atc-2021"
+          ],
+          "note": "Any emergency alarm counts here (the generic triage alarm included).",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "alarm-airway-specific",
+          "severity": "quality",
+          "match": [
+            "airway",
+            "stridor",
+            "tracheal compression",
+            "intubat"
+          ],
+          "guidelineRefs": [
+            "ata-atc-2021"
+          ],
+          "note": "An alarm that names the airway problem, so the response is airway-directed.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The only alarm is the generic triage \"Emergency now\" (vital signs); nothing names stridor or the airway."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-core-biopsy",
+          "severity": "critical",
+          "match": [
+            "core biopsy",
+            "core needle",
+            "open biopsy",
+            "incisional biopsy",
+            "urgent biopsy"
+          ],
+          "guidelineRefs": [
+            "ata-atc-2021"
+          ],
+          "note": "ATA 2021: core or open biopsy when FNA cannot distinguish anaplastic carcinoma from lymphoma.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Only FNAC is proposed (protocol and prompt); no core/open biopsy to distinguish anaplastic carcinoma from lymphoma."
+        },
+        {
+          "id": "inv-ct-neck-chest",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b[^.;]{0,30}(neck|chest|thorax)"
+          ],
+          "guidelineRefs": [
+            "ata-atc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-airway",
+          "severity": "critical",
+          "match": [
+            "airway",
+            "anaesthe",
+            "ent review",
+            "tracheostomy",
+            "intubation"
+          ],
+          "guidelineRefs": [
+            "ata-atc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No airway step in any web output: triage has no stridor rule (the emergency comes from RR/SpO2), prompts have no airway rule, and the C73 protocol lists stridor only as a red flag.",
+          "proposedFix": "Add a stridor/airway safety rule (triage + prompts): senior anaesthetic/ENT airway review, oxygen, steroids, no elective pathway."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-elective-thyroidectomy-plan",
+          "severity": "quality",
+          "match": [
+            "re:total thyroidectomy\\s*-\\s*operative plan"
+          ],
+          "guidelineRefs": [
+            "ata-atc-2021"
+          ],
+          "note": "A templated elective total-thyroidectomy plan is not the next step for a stridulous, probably unresectable anaplastic/lymphoma mass.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ata-atc-2021",
+      "name": "2021 ATA guidelines — anaplastic thyroid cancer",
+      "year": 2021,
+      "section": "Rapid diagnosis (core or open biopsy when FNA is non-diagnostic; exclude lymphoma), airway assessment and management, rapid staging, BRAF testing, multidisciplinary decision on resection",
+      "citation": "Bible KC, Kebebew E, Brierley J, et al. 2021 American Thyroid Association guidelines for management of patients with anaplastic thyroid cancer. Thyroid. 2021;31:337–386.",
+      "verified": false
+    },
+    {
+      "id": "bta-2014",
+      "name": "British Thyroid Association guidelines — management of thyroid cancer",
+      "year": 2014,
+      "section": "Investigation of thyroid nodules (TFTs, ultrasound, FNAC); urgent referral features (stridor, rapidly enlarging mass, voice change); anaplastic carcinoma and lymphoma",
+      "citation": "Perros P, Boelaert K, Colley S, et al. Guidelines for the management of thyroid cancer. Clin Endocrinol (Oxf). 2014;81(Suppl 1):1–122.",
+      "verified": false
+    }
+  ],
+  "rationale": "Must-not-miss thyroid emergency. Tests the airway alarm, emergency level, naming of anaplastic carcinoma/lymphoma, and biopsy strategy (core rather than FNA).",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

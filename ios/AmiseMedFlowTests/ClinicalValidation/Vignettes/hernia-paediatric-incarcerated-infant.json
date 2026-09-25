@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 1,
+  "id": "hernia-paediatric-incarcerated-infant",
+  "condition": "Incarcerated paediatric inguinal hernia",
+  "category": "hernia",
+  "permutationOf": "hernia-paediatric-inguinal-infant",
+  "permutationLabel": "Incarcerated, 7-month-old girl",
+  "summary": "7-month-old girl with a hard, tender left groin swelling for 5 hours, inconsolable, vomited twice. Incarcerated inguinal hernia (may contain ovary): same-day paediatric surgical care; reduction under analgesia/sedation if no peritonitis, then early repair.",
+  "tags": [
+    "paediatric",
+    "emergency",
+    "groin"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 0,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "weightKg": 7.8
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Hard lump in the groin and crying",
+    "hpi": "Hard lump in the left groin since this morning (5 hours), crying inconsolably, vomited twice, refusing feeds. Had a soft lump there that came and went for a few weeks.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Left inguinal"
+      ],
+      "character": [
+        "Hard",
+        "Tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "groin swelling",
+      "inconsolable crying",
+      "vomiting",
+      "poor feeding"
+    ],
+    "negatives": [
+      "fever",
+      "bloody stool"
+    ],
+    "exam": {
+      "general": "Irritable, pulse 168, capillary refill 2 s, temperature 37.3°C.",
+      "abdomen": "Mildly distended, soft. Tense, tender, irreducible 2 cm left inguinal swelling; no overlying discolouration."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 168,
+        "respiratoryRate": 40,
+        "temperatureC": 37.3,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "confirmedDiagnosis": {
+      "name": "Incarcerated left inguinal hernia (infant)",
+      "icd10": "K40.30",
+      "paneDiseaseId": "inguinal_hernia",
+      "assessmentText": "Incarcerated left inguinal hernia in a 7-month-old girl, 5 h, vomiting, no peritonitis. Analgesia/sedation and attempted reduction by the paediatric surgical team; repair within 24–48 h, or emergency operation if reduction fails."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Strangulated / irreducible hernia",
+        "symptoms": [
+          "hernia",
+          "groin swelling",
+          "inconsolable crying",
+          "vomiting",
+          "poor feeding"
+        ],
+        "symptomDetails": {
+          "hernia": [
+            "Left groin",
+            "Irreducible",
+            "Tenderness",
+            "Hard",
+            "Vomiting"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Hernia present"
+          ]
+        },
+        "durationDays": 0.2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-hernia-top3",
+          "severity": "critical",
+          "match": [
+            "hernia",
+            "icd:K40"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "eupsa-paed-hernia-2022"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3 = cholecystitis, appendicitis, PUD for a 7-month-old girl (female inguinal x0.3; no age modifier removes adult biliary disease in infants). PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.",
+          "proposedFix": "Add age modifiers (infants/children) to PANE priors, e.g. suppress cholecystitis/GORD/PUD under 12 and boost paediatric inguinal hernia."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "eupsa-paed-hernia-2022"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-incarcerated",
+          "severity": "critical",
+          "match": [
+            "irreducib",
+            "incarcerat",
+            "strangulat",
+            "complicated hernia"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-reduction-then-repair",
+          "severity": "critical",
+          "match": [
+            "reduc",
+            "re:emergency (theatre|surgery|repair)"
+          ],
+          "guidelineRefs": [
+            "eupsa-paed-hernia-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-adult-plan",
+          "severity": "quality",
+          "match": [
+            "lichtenstein",
+            "psa if male",
+            "re:ecg \\(if"
+          ],
+          "note": "Adult pre-operative checks and mesh templates are wrong for an infant.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Adult inguinal protocol and TAPP template for an infant (see the base paediatric vignette)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "eupsa-paed-hernia-2022",
+      "name": "EUPSA guideline — surgical management of paediatric inguinal hernia",
+      "year": 2022,
+      "section": "Timing of repair (infants: early repair; incarceration risk while waiting); open vs laparoscopic herniotomy; management of incarcerated hernia (reduction then repair)",
+      "citation": "Morini F, Dreuning KMA, Janssen Lok MJH, et al. Surgical management of pediatric inguinal hernia: a systematic review and guideline from the European Pediatric Surgeons' Association Evidence and Guideline Committee. Eur J Pediatr Surg. 2022;32:219–232.",
+      "verified": false
+    },
+    {
+      "id": "wses-hernia-2017",
+      "name": "WSES guidelines — emergency repair of complicated abdominal wall hernias (2017 update)",
+      "year": 2017,
+      "section": "Diagnosis of strangulation (clinical signs, lactate, CPK, D-dimer, CT); timing of surgery; manual reduction only without strangulation; mesh in clean (CDC I) and clean-contaminated fields",
+      "citation": "Birindelli A, Sartelli M, Di Saverio S, et al. 2017 update of the WSES guidelines for emergency repair of complicated abdominal wall hernias. World J Emerg Surg. 2017;12:37.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: incarceration in an infant (female — ovary may be in the sac). Web uses the \"Strangulated / irreducible hernia\" template, the one a clinician would pick.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

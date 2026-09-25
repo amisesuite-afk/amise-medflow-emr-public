@@ -1,0 +1,285 @@
+{
+  "schemaVersion": 1,
+  "id": "groin-mimic-lymphadenopathy",
+  "condition": "Inguinal lymphadenopathy (suspected lymphoma) mimicking a hernia",
+  "category": "hernia",
+  "permutationOf": null,
+  "summary": "46-year-old man referred as a \"right inguinal hernia\": firm, rubbery, non-reducible lumps with no cough impulse, night sweats and 6 kg weight loss. A lymph-node mass, not a hernia: ultrasound and biopsy, NICE NG12 suspected-lymphoma pathway; no hernia repair.",
+  "tags": [
+    "groin-mimic",
+    "must-not-miss",
+    "malignancy"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 46,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 181,
+      "weightKg": 74
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Lump in the right groin — referred as hernia",
+    "hpi": "GP referral \"right inguinal hernia\". Lump present for 2 months, slowly enlarging, does not change with coughing or lying down, painless. Drenching night sweats for 6 weeks, lost 6 kg without trying, itchy skin. No foot or leg wounds.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago",
+        "Gradual"
+      ],
+      "site": [
+        "Right inguinal"
+      ],
+      "character": [
+        "Firm",
+        "Non-tender",
+        "Matted"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Progressive"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "groin swelling",
+      "night sweats",
+      "weight loss",
+      "pruritus"
+    ],
+    "negatives": [
+      "cough impulse",
+      "reducibility",
+      "leg wounds"
+    ],
+    "exam": {
+      "general": "Well. Small left supraclavicular node palpable.",
+      "abdomen": "Soft. Right groin: matted, rubbery, non-tender lumps 3–4 cm below the inguinal ligament along the femoral vessels; irreducible, no cough impulse. Splenic tip palpable. Legs and feet normal skin."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 82,
+        "systolicBp": 126,
+        "diastolicBp": 78,
+        "respiratoryRate": 14,
+        "temperatureC": 37.2,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Right inguinal lymphadenopathy with B symptoms — suspected lymphoma (not a hernia)",
+      "icd10": "R59.1",
+      "paneDiseaseId": "neck_lymphadenopathy",
+      "assessmentText": "Not a hernia: matted irreducible inguinal nodes without cough impulse, B symptoms, splenomegaly and supraclavicular node — suspected lymphoma. Urgent USS groin and core/excision biopsy; FBC, LDH; haematology referral (suspected cancer pathway)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Inguinal / groin hernia",
+        "symptoms": [
+          "groin swelling",
+          "lymphadenopathy",
+          "night sweats",
+          "weight loss",
+          "pruritus"
+        ],
+        "symptomDetails": {
+          "weight loss": [
+            "5–10 kg",
+            "1–3 months",
+            "Unintentional",
+            "Night sweats"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "Splenomegaly"
+          ]
+        },
+        "durationDays": 60,
+        "painScore": 1
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-lymphoma-or-nodes",
+          "severity": "critical",
+          "match": [
+            "lymphoma",
+            "lymphaden",
+            "icd:R59",
+            "icd:C8"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "note": "Non-reducible groin lumps without a cough impulse plus B symptoms: lymphadenopathy/lymphoma must be on the list.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3 = inguinal hernia, cholecystitis, GORD. PANE has no lymphadenopathy feature from the groin site and its only node disease is \"Cervical Lymphadenopathy\"; the symptom engine ranks lymphoma #1. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.",
+          "proposedFix": "Model P(feature | not disease) or use a low default sensitivity (e.g. <=0.05) for features outside a disease's system; restrict the candidate set by the presenting system (breast / neck / groin)."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "quality",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "nice-ng12"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-malignancy",
+          "severity": "critical",
+          "match": [
+            "malignan",
+            "lymphoma",
+            "night sweats",
+            "b symptoms",
+            "weight loss",
+            "cancer"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-uss-or-biopsy",
+          "severity": "critical",
+          "match": [
+            "re:(uss|ultrasound)[^.;\\n]{0,30}(groin|inguinal|node|lymph)",
+            "biopsy",
+            "fnac"
+          ],
+          "guidelineRefs": [
+            "nice-ng12",
+            "herniasurge-2018"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No groin ultrasound or node biopsy is proposed; the confirmed ICD R59.1 has no protocol (R59.9 → cervical lymphadenopathy only).",
+          "proposedFix": "Map R59.x to a generic lymphadenopathy protocol (USS, FBC/LDH, core/excision biopsy, NG12 referral) regardless of site."
+        },
+        {
+          "id": "inv-ldh",
+          "severity": "quality",
+          "match": [
+            "ldh",
+            "lactate dehydrogenase"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No LDH (same cause as above)."
+        }
+      ]
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-hernia-repair",
+          "severity": "critical",
+          "match": [
+            "hernia repair",
+            "herniorrhaphy",
+            "lichtenstein",
+            "re:\\b(tep|tapp)\\b"
+          ],
+          "guidelineRefs": [
+            "herniasurge-2018"
+          ],
+          "note": "The referral label (\"hernia\") must not drive a hernia repair plan once the examination says lymph nodes.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Assessment ManagementPanel follows the PANE top disease (≥0.20), which is the inguinal hernia because the only groin CC template is \"Inguinal / groin hernia\" and site \"groin\" maps to groin_swelling; the surgeon's confirmed diagnosis (ICD) is not used for the panel while PANE is ≥0.20. The panel shows \"Elective: Lichtenstein mesh herniorrhaphy … TEP/TAPP\" and the TAPP prompt fires from the CC template name.",
+          "proposedFix": "Let the confirmed working diagnosis (ICD / paneDiseaseId) override the PANE top for the ManagementPanel, and add a neutral \"Groin lump\" CC template."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral",
+      "year": 2015,
+      "section": "Site-specific recommendations: breast cancer (age ≥30 unexplained lump; ≥50 unilateral nipple discharge/retraction; skin changes; men ≥50 subareolar mass), haematological cancers (unexplained lymphadenopathy), head and neck (unexplained thyroid lump)",
+      "citation": "National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated).",
+      "verified": false
+    },
+    {
+      "id": "herniasurge-2018",
+      "name": "HerniaSurge — International guidelines for groin hernia management",
+      "year": 2018,
+      "section": "Diagnosis (clinical examination, ultrasound for uncertain swellings); watchful waiting in minimally symptomatic men; mesh repair (Lichtenstein, TEP/TAPP); groin hernia in women; femoral hernia; emergency repair",
+      "citation": "HerniaSurge Group. International guidelines for groin hernia management. Hernia. 2018;22:1–165.",
+      "verified": false
+    }
+  ],
+  "rationale": "Groin mimic. The referral and the only groin CC template both say \"hernia\"; the examination and B symptoms say lymph nodes. Tests anchoring: the plan and differential must follow the findings, not the referral label.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

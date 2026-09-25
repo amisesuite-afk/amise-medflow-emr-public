@@ -1,0 +1,227 @@
+{
+  "schemaVersion": 1,
+  "id": "breast-male-gynaecomastia",
+  "condition": "Gynaecomastia (drug-induced)",
+  "category": "breast-endocrine",
+  "permutationOf": null,
+  "summary": "63-year-old man with heart failure on spironolactone and 3 months of bilateral tender, rubbery, concentric subareolar discs. Gynaecomastia: medication review, examine the testes, endocrine bloods if no cause; no core biopsy for typical bilateral disease.",
+  "tags": [
+    "breast",
+    "male"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 63,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      }
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Tender swelling behind both nipples",
+    "hpi": "Three months of tender swelling behind both nipples, right slightly more than left. Heart failure diagnosed 6 months ago, started on spironolactone then. No nipple discharge. No weight loss. Drinks 10 units a week.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago"
+      ],
+      "site": [
+        "Bilateral"
+      ],
+      "character": [
+        "Firm",
+        "Tender",
+        "Mobile"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "breast lump",
+      "breast pain"
+    ],
+    "negatives": [
+      "nipple discharge",
+      "weight loss",
+      "testicular lump"
+    ],
+    "exam": {
+      "general": "Well. No stigmata of liver disease.",
+      "other": "Breasts: bilateral 3 cm rubbery, tender, concentric subareolar discs, mobile, no skin change or nipple retraction, no axillary nodes. Testes normal size, no masses."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 68,
+        "systolicBp": 118,
+        "diastolicBp": 70,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Heart failure with reduced ejection fraction"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Spironolactone",
+        "dose": "25 mg",
+        "frequency": "OD",
+        "indication": "Heart failure"
+      },
+      {
+        "drug": "Bisoprolol",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Heart failure"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Heart failure"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Bilateral gynaecomastia, probably spironolactone-induced",
+      "icd10": "N62",
+      "paneDiseaseId": "gynaecomastia",
+      "assessmentText": "Bilateral tender gynaecomastia, probably spironolactone-related. Discuss switching to eplerenone with cardiology; testes normal; LFT, TFT, testosterone, oestradiol, LH/FSH, hCG if persists."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Breast lump",
+        "symptoms": [
+          "breast lump",
+          "breast pain"
+        ],
+        "symptomDetails": {
+          "breast lump": [
+            "Both",
+            "Soft",
+            "Mobile",
+            "Tender",
+            "Months"
+          ]
+        },
+        "durationDays": 90,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-gynaecomastia-top3",
+          "severity": "quality",
+          "match": [
+            "gynaecomastia",
+            "gynecomastia",
+            "icd:N62"
+          ],
+          "k": 3,
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine",
+        "severity": "quality",
+        "atMost": "priority",
+        "unverified": [
+          "ios"
+        ],
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Triage same_day_call: \"breast lump\" → Possible malignancy (priority) and the cancer screen triggers (age ≥30 + breast lump, applied to men)."
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-medication-review",
+          "severity": "quality",
+          "match": [
+            "spironolactone",
+            "offending drug",
+            "review medications",
+            "drug cause"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-testes",
+          "severity": "quality",
+          "match": [
+            "testes",
+            "testicular"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral",
+      "year": 2015,
+      "section": "Site-specific recommendations: breast cancer (age ≥30 unexplained lump; ≥50 unilateral nipple discharge/retraction; skin changes; men ≥50 subareolar mass), haematological cancers (unexplained lymphadenopathy), head and neck (unexplained thyroid lump)",
+      "citation": "National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated).",
+      "verified": false
+    },
+    {
+      "id": "abs-best-practice-2010",
+      "name": "Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health)",
+      "year": 2010,
+      "section": "Triple assessment (clinical examination, age-appropriate imaging, needle biopsy); imaging by age; nipple discharge; breast infection; breast pain",
+      "citation": "Willett AM, Michell MJ, Lee MJR (eds). Best practice diagnostic guidelines for patients presenting with breast symptoms. London: Department of Health / Association of Breast Surgery; 2010.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base male-breast case: typical bilateral drug-induced gynaecomastia (quality expectations only).",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

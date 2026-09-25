@@ -1,0 +1,335 @@
+{
+  "schemaVersion": 1,
+  "id": "parathyroid-hypercalcaemic-crisis",
+  "condition": "Hypercalcaemic crisis (primary hyperparathyroidism)",
+  "category": "breast-endocrine",
+  "permutationOf": "parathyroid-primary-hpt-surgical-indications",
+  "permutationLabel": "Hypercalcaemic crisis (Ca 3.84, AKI, drowsy)",
+  "summary": "71-year-old woman brought in drowsy and confused with 5 days of vomiting and abdominal pain: adjusted calcium 3.84 mmol/L, PTH 38 pmol/L, creatinine 196. Hypercalcaemic crisis: emergency IV 0.9% saline, IV bisphosphonate after rehydration, stop contributing drugs, cardiac monitoring; parathyroidectomy once stable.",
+  "tags": [
+    "parathyroid",
+    "emergency",
+    "metabolic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 71,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 158,
+      "weightKg": 58
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Confusion, vomiting and tummy pain",
+    "hpi": "Daughter reports 5 days of vomiting, constipation, vague abdominal pain and increasing thirst; confused and drowsy since yesterday. Takes bendroflumethiazide and calcium/vitamin D tablets. Known \"slightly high calcium\" 3 years ago, not followed up.",
+    "symptoms": [
+      "confusion",
+      "vomiting",
+      "abdominal pain",
+      "constipation",
+      "excessive thirst",
+      "polyuria"
+    ],
+    "negatives": [
+      "fever",
+      "head injury"
+    ],
+    "exam": {
+      "general": "Drowsy (responds to voice), GCS 13, dry mucous membranes. Pulse 104, BP 102/60.",
+      "abdomen": "Soft, mild diffuse tenderness, no peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 104,
+        "systolicBp": 102,
+        "diastolicBp": 60,
+        "respiratoryRate": 20,
+        "temperatureC": 36.9,
+        "spo2": 96,
+        "avpu": "V",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "calcium",
+        "name": "Calcium (adjusted)",
+        "value": 3.84,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "pth",
+        "name": "PTH",
+        "value": 38,
+        "unit": "pmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 196,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 18.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 3.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ecg",
+        "name": "ECG",
+        "resultText": "Sinus tachycardia, short QT",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension",
+      "Hypercalcaemia (not investigated)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Bendroflumethiazide",
+        "dose": "2.5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      },
+      {
+        "drug": "Calcium carbonate / colecalciferol",
+        "dose": "1.5 g / 400 IU",
+        "frequency": "BD",
+        "indication": "Bone health"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with daughter.",
+    "confirmedDiagnosis": {
+      "name": "Hypercalcaemic crisis due to primary hyperparathyroidism with acute kidney injury",
+      "icd10": "E21.0",
+      "paneDiseaseId": "primary_hyperparathyroidism",
+      "assessmentText": "Hypercalcaemic crisis (adjusted Ca 3.84) from primary hyperparathyroidism (PTH 38) with AKI and reduced consciousness. IV 0.9% saline, then IV bisphosphonate; stop thiazide and calcium/vitamin D; cardiac monitoring; HDU; urgent parathyroidectomy when stable (consider parathyroid carcinoma)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Nausea / vomiting",
+        "symptoms": [
+          "confusion",
+          "vomiting",
+          "abdominal pain",
+          "constipation",
+          "excessive thirst",
+          "polyuria"
+        ],
+        "symptomDetails": {
+          "vomiting": [
+            "Food",
+            "Multiple episodes daily"
+          ],
+          "abdominal pain": [
+            "Diffuse",
+            "Gradual",
+            "> 3 days",
+            "Dull",
+            "Moderate (4–6)",
+            "Vomiting",
+            "Constipation"
+          ]
+        },
+        "durationDays": 5,
+        "painScore": 4
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-hypercalcaemia",
+          "severity": "critical",
+          "match": [
+            "hypercalc",
+            "hyperparathyroid",
+            "parathyroid",
+            "icd:E21",
+            "icd:E83.52"
+          ],
+          "guidelineRefs": [
+            "sfe-hypercalcaemia-2016"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE applied no feature (\"Nausea / vomiting\" template, SOCRATES empty); calcium is a lab value. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "sfe-hypercalcaemia-2016"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-severe-hypercalcaemia",
+          "severity": "critical",
+          "match": [
+            "hypercalc",
+            "calcium"
+          ],
+          "guidelineRefs": [
+            "sfe-hypercalcaemia-2016"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-iv-saline",
+          "severity": "critical",
+          "match": [
+            "0.9% saline",
+            "iv saline",
+            "normal saline",
+            "iv fluid",
+            "rehydrat"
+          ],
+          "guidelineRefs": [
+            "sfe-hypercalcaemia-2016"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-bisphosphonate",
+          "severity": "quality",
+          "match": [
+            "zoledron",
+            "pamidron",
+            "bisphosphonate"
+          ],
+          "guidelineRefs": [
+            "sfe-hypercalcaemia-2016"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-stop-calcium-thiazide",
+          "severity": "critical",
+          "match": [
+            "re:(avoid|stop|discontinu|withhold|withdraw)[^.]{0,40}(thiazide|calcium supplement|vitamin d)"
+          ],
+          "guidelineRefs": [
+            "sfe-hypercalcaemia-2016"
+          ],
+          "note": "Thiazide and calcium/vitamin D supplements must be stopped.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-thyroidectomy-template",
+          "severity": "critical",
+          "match": [
+            "re:^total thyroidectomy$",
+            "levothyroxine replacement (lifelong)",
+            "re:^hemithyroidectomy$"
+          ],
+          "sources": [
+            "web.plan"
+          ],
+          "note": "A parathyroid patient's documented plan must not contain a thyroidectomy operation or lifelong levothyroxine (wrong operation in the record).",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Same dx-variant substring bug: the crisis plan opens with the elective Total Thyroidectomy template.",
+          "proposedFix": "Add a Parathyroid dx-variant group ahead of Thyroid; word-boundary matching."
+        },
+        {
+          "id": "mgmt-no-early-loop-diuretic",
+          "severity": "quality",
+          "match": [
+            "re:furosemide"
+          ],
+          "unless": [
+            "after",
+            "once rehydrated",
+            "fluid overload"
+          ],
+          "guidelineRefs": [
+            "sfe-hypercalcaemia-2016"
+          ],
+          "note": "Loop diuretics only after rehydration (or for fluid overload).",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "sfe-hypercalcaemia-2016",
+      "name": "Society for Endocrinology emergency guidance — acute hypercalcaemia in adults",
+      "year": 2016,
+      "section": "Severe or symptomatic hypercalcaemia: IV 0.9% saline rehydration, IV bisphosphonate after rehydration, stop contributing drugs, monitor renal function",
+      "citation": "Walsh J, Gittoes N, Selby P; Society for Endocrinology Clinical Committee. Society for Endocrinology Endocrine Emergency Guidance: Emergency management of acute hypercalcaemia in adult patients. Endocr Connect. 2016;5:G9–G11.",
+      "verified": false
+    },
+    {
+      "id": "phpt-workshop-2022",
+      "name": "Fifth International Workshop — evaluation and management of primary hyperparathyroidism",
+      "year": 2022,
+      "section": "Diagnosis (PTH, exclude FHH, vitamin D); surgical indications (serum calcium >0.25 mmol/L above ULN, osteoporosis T-score ≤−2.5 or vertebral fracture, eGFR <60 mL/min, nephrolithiasis/nephrocalcinosis, hypercalciuria, age <50); localisation only once surgery is decided",
+      "citation": "Bilezikian JP, Khan AA, Silverberg SJ, et al. Evaluation and management of primary hyperparathyroidism: summary statement and guidelines from the Fifth International Workshop. J Bone Miner Res. 2022;37:2293–2314.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: metabolic emergency. Reduced consciousness (AVPU V), AKI, vomiting. Tests emergency escalation from labs and the drug-stopping step.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

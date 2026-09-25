@@ -1,0 +1,281 @@
+{
+  "schemaVersion": 1,
+  "id": "thyroid-nodule-hyperthyroid-hot",
+  "condition": "Hyperfunctioning thyroid nodule (toxic adenoma)",
+  "category": "breast-endocrine",
+  "permutationOf": "thyroid-nodule-euthyroid-tirads4",
+  "permutationLabel": "Suppressed TSH (toxic adenoma)",
+  "summary": "39-year-old woman with a 2.8 cm nodule and suppressed TSH. ATA 2015/2016: subnormal TSH → radionuclide scan; a hyperfunctioning (\"hot\") nodule does not need FNA; symptomatic beta-blockade; definitive radioiodine or surgery.",
+  "tags": [
+    "thyroid",
+    "nodule",
+    "hyperthyroid"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 39,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 165,
+      "weightKg": 68
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Lump in the front of the neck",
+    "hpi": "Right-sided neck lump for 4 months. Over the last 2 months: palpitations, heat intolerance, tremor and 4 kg weight loss. No eye symptoms. No voice change or swallowing difficulty.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago",
+        "Gradual"
+      ],
+      "site": [
+        "Thyroid (right lobe)"
+      ],
+      "character": [
+        "Smooth",
+        "Firm",
+        "Non-tender",
+        "Mobile"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "neck lump",
+      "palpitations",
+      "heat intolerance",
+      "tremor",
+      "weight loss"
+    ],
+    "negatives": [
+      "eye symptoms",
+      "hoarseness",
+      "dysphagia"
+    ],
+    "exam": {
+      "general": "Fine tremor, warm sweaty palms, pulse 104 regular. 3 cm smooth right thyroid nodule, rest of gland impalpable. No eye signs. No lymphadenopathy."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 104,
+        "systolicBp": 134,
+        "diastolicBp": 70,
+        "respiratoryRate": 16,
+        "temperatureC": 37.1,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "tsh",
+        "name": "TSH",
+        "value": 0.02,
+        "unit": "mU/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "ft4",
+        "name": "Free T4",
+        "value": 28.5,
+        "unit": "pmol/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "ft3",
+        "name": "Free T3",
+        "value": 9.8,
+        "unit": "pmol/L",
+        "minutesAgo": 10080
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS thyroid",
+        "modality": "US",
+        "region": "Neck",
+        "result": "Right lobe 2.8 cm solid isoechoic nodule with peripheral vascularity, smooth margins (TI-RADS TR3). Left lobe small. No abnormal nodes.",
+        "minutesAgo": 10080
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "platform": {
+      "web": {
+        "ccTemplate": "Neck lump",
+        "symptoms": [
+          "neck swelling",
+          "palpitations",
+          "tremor",
+          "weight loss",
+          "drenching sweats"
+        ],
+        "durationDays": 120,
+        "painScore": 0
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Probable toxic adenoma (right) — suppressed TSH, 2.8 cm nodule",
+      "icd10": "E05.10",
+      "paneDiseaseId": "hyperthyroidism",
+      "assessmentText": "Hyperthyroidism with a solitary 2.8 cm right nodule (TSH suppressed) — probable toxic adenoma. Radionuclide uptake scan before any FNA; beta-blocker for symptoms; definitive treatment with radioiodine or hemithyroidectomy."
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-hyperthyroid-top3",
+          "severity": "quality",
+          "match": [
+            "hyperthyroid",
+            "thyrotox",
+            "toxic",
+            "icd:E05"
+          ],
+          "k": 3,
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3 = cholecystitis, GORD, PUD: SOCRATES answers carry no thyrotoxic features (heat intolerance/palpitations are chips, not SOCRATES text). PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-radionuclide-scan",
+          "severity": "quality",
+          "match": [
+            "radionuclide",
+            "isotope",
+            "technetium",
+            "scintigra",
+            "uptake scan",
+            "tc-99m",
+            "thyroid scan"
+          ],
+          "guidelineRefs": [
+            "ata-2015",
+            "ata-hyper-2016"
+          ],
+          "note": "ATA 2015: if the serum TSH is subnormal, a radionuclide thyroid scan should be obtained.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "inv-no-fna-first",
+          "severity": "quality",
+          "match": [
+            "fna",
+            "fnac"
+          ],
+          "unless": [
+            "if ",
+            "after",
+            "cold",
+            "not hyperfunction"
+          ],
+          "guidelineRefs": [
+            "ata-2015"
+          ],
+          "note": "Hyperfunctioning nodules are rarely malignant and do not need FNA.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-beta-blocker",
+          "severity": "quality",
+          "match": [
+            "propranolol",
+            "atenolol",
+            "beta-block",
+            "β-block"
+          ],
+          "guidelineRefs": [
+            "ata-hyper-2016"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-definitive",
+          "severity": "quality",
+          "match": [
+            "radioiodine",
+            "i-131",
+            "thyroidectomy",
+            "hemithyroidectomy"
+          ],
+          "guidelineRefs": [
+            "ata-hyper-2016"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ata-2015",
+      "name": "2015 American Thyroid Association guidelines — thyroid nodules and differentiated thyroid cancer",
+      "year": 2016,
+      "section": "Nodule evaluation (TSH first; radionuclide scan when TSH is subnormal; hyperfunctioning nodules do not need FNA); cytology-directed management; extent of surgery (total thyroidectomy for cN1 disease)",
+      "citation": "Haugen BR, Alexander EK, Bible KC, et al. 2015 American Thyroid Association management guidelines for adult patients with thyroid nodules and differentiated thyroid cancer. Thyroid. 2016;26:1–133.",
+      "verified": false
+    },
+    {
+      "id": "ata-hyper-2016",
+      "name": "2016 ATA guidelines — hyperthyroidism and other causes of thyrotoxicosis",
+      "year": 2016,
+      "section": "Toxic adenoma: radionuclide uptake scan, beta-blockade, definitive treatment (radioactive iodine or surgery)",
+      "citation": "Ross DS, Burch HB, Cooper DS, et al. 2016 American Thyroid Association guidelines for diagnosis and management of hyperthyroidism and other causes of thyrotoxicosis. Thyroid. 2016;26:1343–1421.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: suppressed TSH. The work-up order changes (scan before cytology). Quality only: the risk is unnecessary FNA and missed hyperthyroidism treatment, not immediate harm.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

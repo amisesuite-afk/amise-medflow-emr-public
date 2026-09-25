@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 1,
+  "id": "breast-abscess-lactational",
+  "condition": "Lactational breast abscess",
+  "category": "breast-endocrine",
+  "permutationOf": null,
+  "summary": "28-year-old breastfeeding mother, 4 weeks post-partum, with a 4 cm tender fluctuant mass after 5 days of mastitis on flucloxacillin, fever 38.4. Ultrasound confirms a collection: ultrasound-guided needle aspiration (repeated as needed), antibiotics, continue breastfeeding/expressing.",
+  "tags": [
+    "breast",
+    "infection",
+    "lactation"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 28,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      }
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Painful hot lump in the right breast while breastfeeding",
+    "hpi": "Baby 4 weeks old, breastfeeding. Red painful right breast for 8 days; GP started flucloxacillin 5 days ago. Now a very painful swollen lump, fevers and shivers since yesterday.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago",
+        "Gradual"
+      ],
+      "site": [
+        "Upper outer (right)"
+      ],
+      "character": [
+        "Cystic",
+        "Tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "breast lump",
+      "breast pain",
+      "breast redness",
+      "fever"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Flushed. Temperature 38.4°C, pulse 102.",
+      "other": "Right breast: 4 cm tender, fluctuant mass in the upper outer quadrant with overlying erythema; skin intact, no necrosis. Nipple cracked. Tender axillary node."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 102,
+        "systolicBp": 118,
+        "diastolicBp": 70,
+        "respiratoryRate": 18,
+        "temperatureC": 38.4,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 15.6,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 121,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS right breast",
+        "modality": "US",
+        "region": "Breast",
+        "result": "Multiloculated 3.8 cm fluid collection in the upper outer quadrant consistent with abscess; surrounding inflammatory change.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Flucloxacillin",
+        "dose": "500 mg",
+        "frequency": "QDS",
+        "indication": "Mastitis"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker. Breastfeeding.",
+    "confirmedDiagnosis": {
+      "name": "Right lactational breast abscess",
+      "icd10": "N61.1",
+      "paneDiseaseId": "breast_abscess",
+      "assessmentText": "Lactational breast abscess (right), 3.8 cm on ultrasound, systemically unwell. Ultrasound-guided needle aspiration, send pus for culture, continue antibiotics, continue breastfeeding/expressing from the affected side."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Breast lump",
+        "symptoms": [
+          "breast lump",
+          "breast pain",
+          "breast redness",
+          "fever"
+        ],
+        "symptomDetails": {
+          "breast lump": [
+            "Right",
+            "Tender",
+            "< 2 weeks"
+          ],
+          "breast pain": [
+            "Localised"
+          ]
+        },
+        "paneAnswers": {
+          "post_lactation": true,
+          "fever": true
+        },
+        "durationDays": 8,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-abscess-top3",
+          "severity": "critical",
+          "match": [
+            "abscess",
+            "mastitis",
+            "icd:N61"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "abs-best-practice-2010"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "quality",
+        "atLeast": "urgent",
+        "unverified": [
+          "ios"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-uss",
+          "severity": "critical",
+          "match": [
+            "re:(uss|ultrasound|\\bus\\b)[^.;\\n]{0,30}(breast|subareolar|retroareolar|axilla)",
+            "re:(breast|subareolar|retroareolar)[^.;\\n]{0,30}(uss|ultrasound)",
+            "mammography + uss",
+            "mammogram/uss"
+          ],
+          "guidelineRefs": [
+            "abs-best-practice-2010"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-pus-culture",
+          "severity": "quality",
+          "match": [
+            "c&s",
+            "culture"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-aspiration",
+          "severity": "critical",
+          "match": [
+            "aspiration",
+            "aspirate"
+          ],
+          "guidelineRefs": [
+            "abs-best-practice-2010"
+          ],
+          "note": "Ultrasound-guided needle aspiration is first-line for breast abscess; open drainage for failures, large or skin-compromised abscesses.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-continue-breastfeeding",
+          "severity": "quality",
+          "match": [
+            "continue breastfeeding",
+            "continued breastfeeding",
+            "regular expression",
+            "continue breast-feeding"
+          ],
+          "guidelineRefs": [
+            "abs-best-practice-2010"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-stop-breastfeeding",
+          "severity": "quality",
+          "match": [
+            "stop breastfeeding",
+            "cease breastfeeding",
+            "suppress lactation"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "abs-best-practice-2010",
+      "name": "Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health)",
+      "year": 2010,
+      "section": "Triple assessment (clinical examination, age-appropriate imaging, needle biopsy); imaging by age; nipple discharge; breast infection; breast pain",
+      "citation": "Willett AM, Michell MJ, Lee MJR (eds). Best practice diagnostic guidelines for patients presenting with breast symptoms. London: Department of Health / Association of Breast Surgery; 2010.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base breast-infection case: lactational abscess with sepsis features but no skin necrosis. The ultrasound result is recorded, as it usually is before the surgical review.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

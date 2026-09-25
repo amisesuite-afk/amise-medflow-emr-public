@@ -1,0 +1,280 @@
+{
+  "schemaVersion": 1,
+  "id": "breast-lump-pregnant",
+  "condition": "Breast lump in pregnancy",
+  "category": "breast-endocrine",
+  "permutationOf": "breast-lump-under-30",
+  "permutationLabel": "Pregnant, 22 weeks",
+  "summary": "33-year-old at 22 weeks of pregnancy with a persistent firm lump and an axillary node, told it is \"pregnancy changes\". Pregnancy-associated breast cancer is diagnosed late: ultrasound and core biopsy are safe in pregnancy and must not be deferred; tamoxifen is contraindicated in pregnancy.",
+  "tags": [
+    "breast",
+    "lump",
+    "pregnancy",
+    "malignancy"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 33,
+      "sex": "female",
+      "pregnancy": {
+        "status": "pregnant",
+        "gestationWeeks": 22
+      }
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "New lump in the left breast during pregnancy",
+    "hpi": "Twenty-two weeks pregnant with her second child. Noticed a firm lump in the left breast 3 weeks ago that has not gone away; midwife said it is probably \"pregnancy changes\". Painless. Sister diagnosed with breast cancer at 41.",
+    "socrates": {
+      "onset": [
+        "1–4 weeks ago"
+      ],
+      "site": [
+        "Upper outer (left)"
+      ],
+      "character": [
+        "Firm",
+        "Irregular",
+        "Non-tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "breast lump"
+    ],
+    "negatives": [
+      "nipple discharge",
+      "skin change"
+    ],
+    "exam": {
+      "general": "Well.",
+      "other": "Breasts: engorged pregnant breasts. 2.5 cm firm, ill-defined lump at 1 o'clock left breast, not tethered. No nipple change. Small firm left axillary node."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 74,
+        "systolicBp": 118,
+        "diastolicBp": 72,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "platform": {
+      "web": {
+        "ccTemplate": "Breast lump",
+        "symptoms": [
+          "breast lump",
+          "axillary lump"
+        ],
+        "symptomDetails": {
+          "breast lump": [
+            "Left",
+            "Hard",
+            "Non-tender",
+            "2–6 weeks",
+            "Axillary lump",
+            "Family history"
+          ]
+        },
+        "durationDays": 21,
+        "painScore": 1
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Persistent left breast lump in pregnancy (22 weeks) — exclude pregnancy-associated breast cancer",
+      "icd10": "N63.0",
+      "assessmentText": "Persistent breast lump (left) at 22 weeks of pregnancy with an axillary node — must exclude pregnancy-associated breast cancer. Ultrasound breast and axilla and core biopsy now; do not defer until after delivery."
+    }
+  },
+  "expected": {
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-2ww",
+          "severity": "critical",
+          "match": [
+            "cancer screening triggered (breast)",
+            "re:(2-week|two-week|two week|2ww|suspected cancer)[^\\n]{0,60}breast",
+            "re:breast[^\\n]{0,60}(2-week|two-week|two week|2ww|suspected cancer)"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Triggered but labelled colorectal. cancer-screening.ts labels every triggered screen \"colorectal\": the colorectal block tests `c.met && c.rule.includes('colorectal') || c.rule.includes('bowel') || …` (operator precedence), which is true whenever any colorectal rule exists, and the breast block keeps the first label (cancerType ?? \"breast\").",
+          "proposedFix": "Parenthesise the colorectal condition (c.met && (… || … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen."
+        },
+        {
+          "id": "flag-pregnancy",
+          "severity": "quality",
+          "match": [
+            "pregnan"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-uss",
+          "severity": "critical",
+          "match": [
+            "re:(uss|ultrasound|\\bus\\b)[^.;\\n]{0,30}(breast|subareolar|retroareolar|axilla)",
+            "re:(breast|subareolar|retroareolar)[^.;\\n]{0,30}(uss|ultrasound)",
+            "mammography + uss",
+            "mammogram/uss"
+          ],
+          "guidelineRefs": [
+            "rcog-gtg12-2011",
+            "nccn-breast-2025"
+          ],
+          "note": "Ultrasound is the first-line imaging in pregnancy.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreast: \"\" (the vignette schema has no breast exam field), so the dashboard prompt \"Breast Mass → Triple Assessment\" (USS, mammogram ≥35, core biopsy) is not exercised.",
+          "proposedFix": "Map N63 (unspecified breast lump) to a \"breast lump — triple assessment\" protocol with age-banded imaging; add exam.breast to the vignette schema and pass it as examBreast in web-runner.ts."
+        },
+        {
+          "id": "inv-core-biopsy",
+          "severity": "critical",
+          "match": [
+            "core biopsy",
+            "core needle",
+            "re:\\bcnb\\b",
+            "vacuum-assisted biopsy",
+            "core (needle )?biopsy"
+          ],
+          "guidelineRefs": [
+            "rcog-gtg12-2011"
+          ],
+          "note": "Core biopsy is safe in pregnancy; delaying diagnosis worsens stage.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreast: \"\" (the vignette schema has no breast exam field), so the dashboard prompt \"Breast Mass → Triple Assessment\" (USS, mammogram ≥35, core biopsy) is not exercised.",
+          "proposedFix": "Map N63 (unspecified breast lump) to a \"breast lump — triple assessment\" protocol with age-banded imaging; add exam.breast to the vignette schema and pass it as examBreast in web-runner.ts."
+        }
+      ]
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-tamoxifen",
+          "severity": "critical",
+          "match": [
+            "tamoxifen"
+          ],
+          "unless": [
+            "contraindicated",
+            "avoid",
+            "not in pregnancy",
+            "after delivery"
+          ],
+          "guidelineRefs": [
+            "rcog-gtg12-2011",
+            "nccn-breast-2025"
+          ],
+          "note": "Tamoxifen is teratogenic; it must not be proposed during pregnancy.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-deferral",
+          "severity": "critical",
+          "match": [
+            "re:(defer|delay|wait)[^.]{0,40}(deliver|post-?partum|after (the )?birth)",
+            "pregnancy changes"
+          ],
+          "unless": [
+            "do not",
+            "must not"
+          ],
+          "guidelineRefs": [
+            "rcog-gtg12-2011"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "rcog-gtg12-2011",
+      "name": "RCOG Green-top Guideline No. 12 — Pregnancy and breast cancer",
+      "year": 2011,
+      "section": "Diagnosis of a breast lump in pregnancy (ultrasound, core biopsy; delay in diagnosis); treatment during pregnancy (tamoxifen contraindicated)",
+      "citation": "Royal College of Obstetricians and Gynaecologists. Pregnancy and Breast Cancer. Green-top Guideline No. 12. London: RCOG; 2011.",
+      "verified": false
+    },
+    {
+      "id": "nccn-breast-2025",
+      "name": "NCCN Guidelines — Breast Cancer (inflammatory breast cancer; breast cancer during pregnancy)",
+      "year": 2025,
+      "section": "Inflammatory breast cancer: core biopsy of breast and skin, staging, neoadjuvant systemic therapy before modified radical mastectomy (breast conservation and sentinel node biopsy not recommended); breast cancer during pregnancy (no tamoxifen, no radiotherapy during pregnancy)",
+      "citation": "National Comprehensive Cancer Network. NCCN Clinical Practice Guidelines in Oncology: Breast Cancer (current version at authoring).",
+      "verified": false
+    },
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral",
+      "year": 2015,
+      "section": "Site-specific recommendations: breast cancer (age ≥30 unexplained lump; ≥50 unilateral nipple discharge/retraction; skin changes; men ≥50 subareolar mass), haematological cancers (unexplained lymphadenopathy), head and neck (unexplained thyroid lump)",
+      "citation": "National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated).",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: pregnancy. Tests pregnancy-aware work-up (ultrasound, biopsy not deferred) and that pregnancy-contraindicated drugs are not proposed. Web receives pregnancy through pregnancyPossible; iOS only through free text.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

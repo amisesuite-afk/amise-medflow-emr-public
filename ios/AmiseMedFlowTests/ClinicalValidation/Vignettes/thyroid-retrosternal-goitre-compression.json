@@ -1,0 +1,277 @@
+{
+  "schemaVersion": 1,
+  "id": "thyroid-retrosternal-goitre-compression",
+  "condition": "Retrosternal multinodular goitre with tracheal compression",
+  "category": "breast-endocrine",
+  "permutationOf": null,
+  "summary": "68-year-old woman with a long-standing multinodular goitre, now breathless lying flat, positive Pemberton sign; CT: retrosternal extension 5 cm below the thoracic inlet, trachea narrowed to 8 mm. Compressive goitre: TFTs, CT (done), airway planning, total thyroidectomy (possible sternotomy) — urgent, not routine.",
+  "tags": [
+    "thyroid",
+    "goitre",
+    "airway"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 68,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 160,
+      "weightKg": 72
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Breathless lying flat and swelling in the neck",
+    "hpi": "Goitre for 15 years. Over 4 months: breathless lying flat, wakes choking, noisy breathing when she raises her arms, food sticking occasionally. Voice normal. No palpitations.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago",
+        "Gradual"
+      ],
+      "site": [
+        "Diffuse neck",
+        "Thyroid isthmus"
+      ],
+      "character": [
+        "Firm",
+        "Non-tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Shortness of breath",
+        "Dysphagia"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "neck swelling",
+      "shortness of breath",
+      "orthopnoea",
+      "dysphagia"
+    ],
+    "negatives": [
+      "hoarseness",
+      "stridor at rest",
+      "thyrotoxic symptoms"
+    ],
+    "exam": {
+      "general": "Large multinodular goitre, lower border not palpable. Pemberton sign positive (facial plethora on raising arms). Trachea deviated to the left. No stridor at rest. SpO2 96%.",
+      "respiratory": "Chest clear."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 86,
+        "systolicBp": 146,
+        "diastolicBp": 84,
+        "respiratoryRate": 18,
+        "temperatureC": 36.6,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "tsh",
+        "name": "TSH",
+        "value": 0.6,
+        "unit": "mU/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "ft4",
+        "name": "Free T4",
+        "value": 16.1,
+        "unit": "pmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT neck and thorax",
+        "modality": "CT",
+        "region": "Neck/thorax",
+        "result": "Large multinodular goitre with retrosternal extension 5 cm below the thoracic inlet into the anterior mediastinum; trachea deviated and narrowed to 8 mm at the inlet. No lymphadenopathy.",
+        "minutesAgo": 4320
+      }
+    ],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Losartan",
+        "dose": "50 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Retrosternal multinodular goitre with tracheal compression (8 mm)",
+      "icd10": "E04.2",
+      "assessmentText": "Compressive retrosternal multinodular goitre — orthopnoea, positive Pemberton sign, trachea narrowed to 8 mm on CT. Euthyroid. Plan total thyroidectomy (cervical approach ± sternotomy, cardiothoracic back-up); anaesthetic airway assessment; vocal cord check."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Thyroid nodule / goitre",
+        "symptoms": [
+          "neck swelling",
+          "shortness of breath",
+          "orthopnoea",
+          "dysphagia"
+        ],
+        "symptomDetails": {
+          "shortness of breath": [],
+          "dysphagia": [
+            "Solids only",
+            "Intermittent"
+          ]
+        },
+        "durationDays": 120,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "quality",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "nice-ng145-2019"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-compression",
+          "severity": "critical",
+          "match": [
+            "compress",
+            "airway",
+            "tracheal",
+            "stridor",
+            "retrosternal"
+          ],
+          "guidelineRefs": [
+            "nice-ng145-2019"
+          ],
+          "note": "Tracheal narrowing with positional dyspnoea is a red flag that must be surfaced.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No red flag names tracheal compression, stridor or retrosternal extension; triage escalates only because \"breathless\" matches the post-operative-concern rule. E04.2 maps to no protocol.",
+          "proposedFix": "Add compressive-goitre red flags (orthopnoea, Pemberton, tracheal narrowing on CT) and map E04.2 to a goitre protocol."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-tfts",
+          "severity": "quality",
+          "match": [
+            "tsh",
+            "thyroid function",
+            "re:\\btfts?\\b"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-ct",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b[^.;]{0,30}(neck|chest|thora)"
+          ],
+          "guidelineRefs": [
+            "nice-ng145-2019"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "CT neck/thorax appears only inside the thyroidectomy prompt plan text, not as an investigation."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-thyroidectomy",
+          "severity": "critical",
+          "match": [
+            "thyroidectomy"
+          ],
+          "guidelineRefs": [
+            "nice-ng145-2019"
+          ],
+          "note": "Surgery is the treatment for a compressive retrosternal goitre.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-airway-planning",
+          "severity": "quality",
+          "match": [
+            "airway",
+            "anaesthe",
+            "sternotomy",
+            "cardiothoracic"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng145-2019",
+      "name": "NICE NG145 — Thyroid disease: assessment and management",
+      "year": 2019,
+      "section": "Non-malignant thyroid enlargement: investigation and referral (compressive symptoms, stridor); surgery for compressive goitre",
+      "citation": "National Institute for Health and Care Excellence. Thyroid disease: assessment and management. NICE guideline NG145. London: NICE; 2019.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base compressive-goitre case: urgent surgical but not an emergency today (no stridor at rest). Tests that tracheal compression is flagged and surgery is planned.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

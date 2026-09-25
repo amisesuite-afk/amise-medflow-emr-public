@@ -1,0 +1,291 @@
+{
+  "schemaVersion": 1,
+  "id": "groin-mimic-femoral-artery-aneurysm",
+  "condition": "Common femoral artery aneurysm mimicking a groin hernia",
+  "category": "hernia",
+  "permutationOf": null,
+  "summary": "74-year-old male ex-smoker with a known 4.6 cm AAA under surveillance and a pulsatile, expansile right groin swelling below the inguinal ligament. Needs duplex/CT angiography before anyone puts a needle or a knife in it; no hernia repair.",
+  "tags": [
+    "groin-mimic",
+    "must-not-miss",
+    "vascular"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 74,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 174,
+      "weightKg": 80
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Lump in the right groin",
+    "hpi": "Painless right groin lump noticed 3 months ago, feels like it \"throbs\". Known abdominal aortic aneurysm 4.6 cm on surveillance. Ex-smoker 50 pack-years. No leg pain at rest, walks 200 yards before calf pain.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago",
+        "Gradual"
+      ],
+      "site": [
+        "Right femoral"
+      ],
+      "character": [
+        "Pulsatile",
+        "Firm",
+        "Non-tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "groin swelling",
+      "pulsatile mass",
+      "claudication"
+    ],
+    "negatives": [
+      "groin pain",
+      "cough impulse",
+      "reducibility"
+    ],
+    "exam": {
+      "general": "Pulse 72 regular, BP 152/88.",
+      "abdomen": "Expansile pulsatile epigastric mass. Right groin: 4 cm pulsatile, expansile swelling below the inguinal ligament over the femoral artery, with a bruit; not reducible, no cough impulse. Popliteal pulses prominent bilaterally. Foot pulses weak."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 72,
+        "systolicBp": 152,
+        "diastolicBp": 88,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [
+      {
+        "name": "USS abdominal aorta (surveillance, 6 months ago)",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Infrarenal AAA, maximum AP diameter 4.6 cm.",
+        "minutesAgo": 262800
+      }
+    ],
+    "comorbidities": [
+      "Abdominal aortic aneurysm",
+      "Peripheral arterial disease",
+      "Hypertension",
+      "COPD"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Atorvastatin",
+        "dose": "80 mg",
+        "frequency": "ON",
+        "indication": "Vascular risk"
+      },
+      {
+        "drug": "Clopidogrel",
+        "dose": "75 mg",
+        "frequency": "OD",
+        "indication": "Peripheral arterial disease"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker, 50 pack-years.",
+    "confirmedDiagnosis": {
+      "name": "Right common femoral artery aneurysm (with known AAA)",
+      "icd10": "I72.4",
+      "paneDiseaseId": "aortic_aneurysm",
+      "assessmentText": "Pulsatile expansile right groin mass with bruit in a patient with AAA: common femoral artery aneurysm, not a hernia. Arterial duplex / CT angiography and vascular surgery referral. Do not aspirate or explore as a hernia."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Inguinal / groin hernia",
+        "symptoms": [
+          "groin swelling",
+          "pulsatile mass",
+          "claudication"
+        ],
+        "examFindings": {
+          "abdomen": [
+            "Mass palpable"
+          ]
+        },
+        "durationDays": 90,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-aneurysm",
+          "severity": "critical",
+          "match": [
+            "aneurysm",
+            "icd:I72",
+            "icd:I71"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "note": "Pulsatile expansile groin mass with AAA: femoral aneurysm must be on the differential.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3 = inguinal hernia, GORD, cholecystitis. PANE has only \"Aortic Aneurysm\" and no pulsatile-mass feature; the symptom engine ranks AAA #1 from the \"pulsatile mass\" chip. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.",
+          "proposedFix": "Add a femoral/peripheral aneurysm disease and a \"pulsatile / expansile mass\" feature to PANE, mapped from the SOCRATES \"Pulsatile\" character chip."
+        }
+      ]
+    },
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-pulsatile",
+          "severity": "critical",
+          "match": [
+            "pulsatile",
+            "aneurysm",
+            "vascular"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No red flag or alarm for a pulsatile groin mass: triage has no pulsatile/aneurysm rule and the prompts have none.",
+          "proposedFix": "Add a triage/prompt safety rule: pulsatile or expansile groin mass → do not needle or explore; duplex/CTA and vascular referral."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-duplex-or-cta",
+          "severity": "critical",
+          "match": [
+            "duplex",
+            "re:ct angiogra",
+            "re:\\bcta\\b",
+            "arterial ultrasound",
+            "re:(uss|ultrasound)[^.;\\n]{0,30}(groin|femoral|arter)"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024",
+            "herniasurge-2018"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No duplex/CT angiography proposed; I72.4 has no protocol."
+        }
+      ]
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-hernia-repair",
+          "severity": "critical",
+          "match": [
+            "hernia repair",
+            "herniorrhaphy",
+            "lichtenstein",
+            "re:\\b(tep|tapp)\\b"
+          ],
+          "guidelineRefs": [
+            "herniasurge-2018"
+          ],
+          "note": "A hernia operative plan on a femoral aneurysm is dangerous.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Assessment ManagementPanel follows the PANE top disease (≥0.20), which is the inguinal hernia because the only groin CC template is \"Inguinal / groin hernia\" and site \"groin\" maps to groin_swelling; the surgeon's confirmed diagnosis (ICD) is not used for the panel while PANE is ≥0.20. The panel shows the Lichtenstein/TEP/TAPP repair and the TAPP operative-plan prompt fires from the CC template name.",
+          "proposedFix": "Let the confirmed working diagnosis (ICD / paneDiseaseId) override the PANE top for the ManagementPanel, and add a neutral \"Groin lump\" CC template."
+        }
+      ],
+      "mustInclude": [
+        {
+          "id": "mgmt-vascular-referral",
+          "severity": "quality",
+          "match": [
+            "vascular"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No vascular referral in any output (the inguinal_hernia panel is shown instead)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esvs-aaa-2024",
+      "name": "ESVS 2024 clinical practice guidelines — abdominal aorto-iliac artery aneurysms",
+      "year": 2024,
+      "section": "Associated peripheral (femoral / popliteal) aneurysms in patients with AAA; duplex ultrasound assessment",
+      "citation": "Wanhainen A, Van Herzeele I, Bastos Goncalves F, et al. European Society for Vascular Surgery (ESVS) 2024 Clinical Practice Guidelines on the Management of Abdominal Aorto-Iliac Artery Aneurysms. Eur J Vasc Endovasc Surg. 2024;67:192–331.",
+      "verified": false
+    },
+    {
+      "id": "herniasurge-2018",
+      "name": "HerniaSurge — International guidelines for groin hernia management",
+      "year": 2018,
+      "section": "Diagnosis (clinical examination, ultrasound for uncertain swellings); watchful waiting in minimally symptomatic men; mesh repair (Lichtenstein, TEP/TAPP); groin hernia in women; femoral hernia; emergency repair",
+      "citation": "HerniaSurge Group. International guidelines for groin hernia management. Hernia. 2018;22:1–165.",
+      "verified": false
+    }
+  ],
+  "rationale": "Groin mimic with a catastrophic failure mode (exploring or aspirating an aneurysm as a hernia). The \"pulsatile mass\" chip exists on web; the CC template says hernia.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

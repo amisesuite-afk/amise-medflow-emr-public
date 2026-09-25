@@ -1,0 +1,342 @@
+{
+  "schemaVersion": 1,
+  "id": "hernia-paraumbilical-incarcerated-obese",
+  "condition": "Incarcerated paraumbilical hernia",
+  "category": "hernia",
+  "permutationOf": "hernia-umbilical-adult-elective",
+  "permutationLabel": "Incarcerated, obese, penicillin-allergic",
+  "summary": "53-year-old woman, BMI 39, paraumbilical hernia irreducible and tender for 14 hours with vomiting; HR 106, lactate 2.9. Strangulation cannot be excluded: emergency surgery (CT helpful in obesity if it does not delay theatre).",
+  "tags": [
+    "emergency",
+    "ventral",
+    "obesity",
+    "allergy"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 53,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 162,
+      "weightKg": 102
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Painful lump above the belly button and vomiting",
+    "hpi": "Known paraumbilical hernia for 5 years. Since last night (14 hours) it is stuck, hard and very sore; vomited four times. Passing some wind. Post-menopausal.",
+    "socrates": {
+      "onset": [
+        "Yesterday",
+        "Sudden"
+      ],
+      "site": [
+        "Umbilical"
+      ],
+      "character": [
+        "Hard",
+        "Tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "umbilical swelling",
+      "abdominal pain",
+      "vomiting"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "In pain. Pulse 106, BP 136/82, temperature 37.8°C.",
+      "abdomen": "Obese. Tender, tense, irreducible 6 cm paraumbilical swelling with a dusky pink overlying skin; surrounding tenderness, no generalised peritonism. Bowel sounds present."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 106,
+        "systolicBp": 136,
+        "diastolicBp": 82,
+        "respiratoryRate": 20,
+        "temperatureC": 37.8,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 14.9,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 64,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.9,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 79,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Obesity",
+      "Type 2 diabetes",
+      "Obstructive sleep apnoea"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Gliclazide",
+        "dose": "80 mg",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      }
+    ],
+    "allergies": [
+      {
+        "name": "Penicillin",
+        "severity": "Moderate",
+        "reaction": "Urticarial rash"
+      }
+    ],
+    "nkda": false,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Incarcerated paraumbilical hernia — strangulation not excluded",
+      "icd10": "K42.0",
+      "paneDiseaseId": "umbilical_hernia",
+      "assessmentText": "Incarcerated paraumbilical hernia, 14 h, tender with skin change, vomiting, tachycardia and lactate 2.9 — strangulation not excluded. Emergency repair."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Umbilical / paraumbilical hernia",
+        "symptoms": [
+          "hernia",
+          "umbilical swelling",
+          "abdominal pain",
+          "vomiting"
+        ],
+        "symptomDetails": {
+          "hernia": [
+            "Umbilical",
+            "Irreducible",
+            "Pain",
+            "Tenderness",
+            "Hard",
+            "Vomiting",
+            "Redness"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Hernia present",
+            "Guarding"
+          ]
+        },
+        "durationDays": 0.6,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-umbilical-top3",
+          "severity": "critical",
+          "match": [
+            "umbilical",
+            "icd:K42",
+            "hernia"
+          ],
+          "k": 3,
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3 = cholecystitis, GORD, PUD (female: inguinal x0.3, cholecystitis x2). PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.",
+          "proposedFix": "Model P(feature | not disease) or use a low default sensitivity (e.g. <=0.05) for features outside a disease's system; restrict the candidate set by the presenting system (breast / neck / groin)."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-hernia-2017"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-complicated-hernia",
+          "severity": "critical",
+          "match": [
+            "strangulat",
+            "incarcerat",
+            "complicated hernia",
+            "emergency now"
+          ],
+          "guidelineRefs": [
+            "wses-hernia-2017"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-penicillin-allergy",
+          "severity": "quality",
+          "match": [
+            "penicillin"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-lactate",
+          "severity": "quality",
+          "match": [
+            "lactate"
+          ],
+          "guidelineRefs": [
+            "wses-hernia-2017"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No lactate in the umbilical_hernia protocol or the hernia prompts."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-emergency-surgery",
+          "severity": "critical",
+          "match": [
+            "re:emergency (theatre|surgery|surgical|repair|operat|laparotomy|exploration)",
+            "prompt surgery",
+            "re:urgent (surgery|surgical repair|operat|exploration)",
+            "return to theatre",
+            "re:emergency[^.]{0,30}repair",
+            "fails: emergency surgery"
+          ],
+          "guidelineRefs": [
+            "wses-hernia-2017"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-penicillin",
+          "severity": "quality",
+          "match": [
+            "co-amoxiclav",
+            "piperacillin",
+            "flucloxacillin",
+            "amoxicillin"
+          ],
+          "note": "Penicillin allergy recorded; plans should not propose penicillins without an allergy check.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The recorded penicillin allergy is not cross-checked: prompts propose piperacillin-tazobactam and co-amoxiclav (as found for the seed vignettes).",
+          "proposedFix": "Filter protocol medications and prompt templates against recorded allergies (drug-class aware) and show the alternative."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-incarcerated-or-worse",
+      "severity": "quality",
+      "equals": "hernia_incarcerated"
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-hernia-2017",
+      "name": "WSES guidelines — emergency repair of complicated abdominal wall hernias (2017 update)",
+      "year": 2017,
+      "section": "Diagnosis of strangulation (clinical signs, lactate, CPK, D-dimer, CT); timing of surgery; manual reduction only without strangulation; mesh in clean (CDC I) and clean-contaminated fields",
+      "citation": "Birindelli A, Sartelli M, Di Saverio S, et al. 2017 update of the WSES guidelines for emergency repair of complicated abdominal wall hernias. World J Emerg Surg. 2017;12:37.",
+      "verified": false
+    },
+    {
+      "id": "ehs-ahs-umbilical-2020",
+      "name": "EHS/AHS guidelines — treatment of umbilical and epigastric hernias",
+      "year": 2020,
+      "section": "Indication for repair; mesh vs suture by defect size; open preperitoneal flat mesh; patients with liver cirrhosis and ascites",
+      "citation": "Henriksen NA, Montgomery A, Kaufmann R, et al. Guidelines for treatment of umbilical and epigastric hernias from the European Hernia Society and Americas Hernia Society. Br J Surg. 2020;107:171–190.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: incarceration with possible strangulation, obesity, diabetes, penicillin allergy. Tests escalation and the allergy cross-check that the seed vignettes found missing on both platforms.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

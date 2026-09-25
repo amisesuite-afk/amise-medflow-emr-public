@@ -1,0 +1,305 @@
+{
+  "schemaVersion": 1,
+  "id": "breast-nipple-discharge-bloody-single-duct",
+  "condition": "Bloody single-duct nipple discharge",
+  "category": "breast-endocrine",
+  "permutationOf": null,
+  "summary": "52-year-old woman with spontaneous blood-stained discharge from a single duct of the left nipple for 5 weeks, no palpable lump. NICE NG12: ≥50 with unilateral nipple discharge → suspected cancer pathway; mammography + ultrasound; duct excision (microdochectomy) for diagnosis.",
+  "tags": [
+    "breast",
+    "nipple-discharge"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      }
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Blood-stained discharge from the left nipple",
+    "hpi": "Five weeks of spontaneous blood-stained discharge from the left nipple, staining her bra. Comes from one spot on the nipple. No lump noticed, no pain. Postmenopausal. Not on any medicines.",
+    "socrates": {
+      "onset": [
+        "1–4 weeks ago"
+      ],
+      "site": [
+        "Central / areola"
+      ],
+      "character": [
+        "Non-tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nipple discharge"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "nipple discharge"
+    ],
+    "negatives": [
+      "breast lump",
+      "skin change",
+      "nipple inversion"
+    ],
+    "exam": {
+      "general": "Well.",
+      "other": "Breasts: no palpable mass. Left nipple: spontaneous and expressible blood-stained discharge from a single duct at 3 o'clock; trigger point at the areolar margin. No skin change, no axillary nodes."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 70,
+        "systolicBp": 124,
+        "diastolicBp": 78,
+        "respiratoryRate": 14,
+        "temperatureC": 36.5,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "urinalysis",
+        "name": "Nipple discharge dipstick",
+        "resultText": "Blood +++",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Spontaneous bloody single-duct nipple discharge (left) — ?intraductal papilloma, exclude DCIS/carcinoma",
+      "icd10": "N64.52",
+      "paneDiseaseId": "duct_ectasia",
+      "assessmentText": "Spontaneous blood-stained single-duct nipple discharge (left), age 52, no mass. Suspected cancer pathway. Bilateral mammography and retroareolar ultrasound; microdochectomy for histology if imaging normal."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Nipple discharge",
+        "symptoms": [
+          "nipple discharge"
+        ],
+        "symptomDetails": {
+          "nipple discharge": [
+            "Bloody",
+            "Spontaneous",
+            "Left",
+            "Single duct"
+          ]
+        },
+        "durationDays": 35,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-malignancy",
+          "severity": "critical",
+          "match": [
+            "dcis",
+            "carcinoma",
+            "cancer",
+            "papilloma",
+            "icd:D05",
+            "icd:C50"
+          ],
+          "guidelineRefs": [
+            "nccn-breast-dx-2025"
+          ],
+          "note": "Bloody single-duct discharge: papilloma is commonest but DCIS/carcinoma must be excluded.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE applied no feature: the \"Nipple discharge\" template has no CC hint and ASSOC_RULES has no nipple-discharge pattern, so the priors alone give cholecystitis, GORD, PUD.",
+          "proposedFix": "Add a CC hint for \"Nipple discharge\" (nipple_discharge) and an ASSOC_RULES/SITE_RULES pattern for nipple discharge / bloody discharge."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "quality",
+        "atLeast": "priority",
+        "unverified": [
+          "ios"
+        ],
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Triage routine (score 0): no rule for blood-stained nipple discharge."
+      },
+      "redFlags": [
+        {
+          "id": "flag-2ww",
+          "severity": "critical",
+          "match": [
+            "cancer screening triggered (breast)",
+            "re:(2-week|two-week|two week|2ww|suspected cancer)[^\\n]{0,60}breast",
+            "re:breast[^\\n]{0,60}(2-week|two-week|two week|2ww|suspected cancer)"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "note": "NICE NG12: aged 50 and over with, in one breast only, nipple discharge, retraction or other changes of concern.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "screenForCancer only counts nipple discharge together with a lump; NICE NG12 (≥50, unilateral nipple discharge) is not implemented. Triage score 0, routine.",
+          "proposedFix": "Add the NG12 criterion \"aged ≥50 with nipple discharge, retraction or other changes of concern in one breast only\" to screenForCancer."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-mammogram",
+          "severity": "critical",
+          "match": [
+            "mammogra"
+          ],
+          "guidelineRefs": [
+            "nccn-breast-dx-2025",
+            "abs-best-practice-2010"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "N64.52 maps to no protocol and PANE did not reach duct_ectasia, so no imaging is proposed.",
+          "proposedFix": "Map N64.5x (nipple discharge) to the duct_ectasia / nipple-discharge protocol."
+        },
+        {
+          "id": "inv-uss",
+          "severity": "critical",
+          "match": [
+            "re:(uss|ultrasound|\\bus\\b)[^.;\\n]{0,30}(breast|subareolar|retroareolar|axilla)",
+            "re:(breast|subareolar|retroareolar)[^.;\\n]{0,30}(uss|ultrasound)",
+            "mammography + uss",
+            "mammogram/uss"
+          ],
+          "guidelineRefs": [
+            "nccn-breast-dx-2025"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "As above: no retroareolar ultrasound proposed."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-duct-excision",
+          "severity": "quality",
+          "match": [
+            "microdochectomy",
+            "duct excision",
+            "ductoscopy"
+          ],
+          "guidelineRefs": [
+            "abs-best-practice-2010"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No plan (no protocol for N64.52)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-reassurance-only",
+          "severity": "critical",
+          "match": [
+            "reassurance"
+          ],
+          "unless": [
+            "bilateral",
+            "if ",
+            "once",
+            "after"
+          ],
+          "note": "Reassurance without imaging is inappropriate for spontaneous bloody single-duct discharge.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral",
+      "year": 2015,
+      "section": "Site-specific recommendations: breast cancer (age ≥30 unexplained lump; ≥50 unilateral nipple discharge/retraction; skin changes; men ≥50 subareolar mass), haematological cancers (unexplained lymphadenopathy), head and neck (unexplained thyroid lump)",
+      "citation": "National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated).",
+      "verified": false
+    },
+    {
+      "id": "nccn-breast-dx-2025",
+      "name": "NCCN Guidelines — Breast Cancer Screening and Diagnosis",
+      "year": 2025,
+      "section": "Palpable mass: age <30 ultrasound first; age ≥30 diagnostic mammography + ultrasound; tissue sampling of suspicious findings; nipple discharge (spontaneous, unilateral, single duct, bloody); skin changes",
+      "citation": "National Comprehensive Cancer Network. NCCN Clinical Practice Guidelines in Oncology: Breast Cancer Screening and Diagnosis (current version at authoring).",
+      "verified": false
+    },
+    {
+      "id": "abs-best-practice-2010",
+      "name": "Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health)",
+      "year": 2010,
+      "section": "Triple assessment (clinical examination, age-appropriate imaging, needle biopsy); imaging by age; nipple discharge; breast infection; breast pain",
+      "citation": "Willett AM, Michell MJ, Lee MJR (eds). Best practice diagnostic guidelines for patients presenting with breast symptoms. London: Department of Health / Association of Breast Surgery; 2010.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base nipple-discharge case with the high-risk pattern (spontaneous, unilateral, single duct, bloody, age ≥50). The ICD N64.52 (nipple discharge) is how this is coded before histology.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

@@ -1,0 +1,340 @@
+{
+  "schemaVersion": 1,
+  "id": "breast-lump-over-35-suspicious",
+  "condition": "Suspicious breast lump, age over 35",
+  "category": "breast-endocrine",
+  "permutationOf": "breast-lump-under-30",
+  "permutationLabel": "Age 58, suspicious features",
+  "summary": "58-year-old postmenopausal woman: hard irregular lump with skin tethering, nipple retraction and an axillary node. Urgent triple assessment: bilateral mammography, ultrasound (breast and axilla), core biopsy; suspected cancer pathway.",
+  "tags": [
+    "breast",
+    "lump",
+    "age-series",
+    "malignancy"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 58,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      }
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Hard lump in the right breast",
+    "hpi": "Hard lump in the right breast for 2 months, getting bigger. Skin over it looks puckered when she lifts her arm. Nipple has started to pull in. Postmenopausal, took HRT for 6 years. No discharge.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago"
+      ],
+      "site": [
+        "Upper outer (right)"
+      ],
+      "character": [
+        "Hard",
+        "Irregular",
+        "Fixed to skin",
+        "Non-tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "breast lump"
+    ],
+    "negatives": [
+      "nipple discharge",
+      "bone pain"
+    ],
+    "exam": {
+      "general": "Well.",
+      "other": "Breasts: 3 cm hard, irregular mass at 10 o'clock right breast, tethered to skin with dimpling on arm elevation; recent nipple retraction. 1.5 cm firm mobile right axillary node. Left breast normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 74,
+        "systolicBp": 118,
+        "diastolicBp": 72,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "platform": {
+      "web": {
+        "ccTemplate": "Breast lump",
+        "symptoms": [
+          "breast lump",
+          "skin changes breast",
+          "nipple inversion",
+          "axillary lump"
+        ],
+        "symptomDetails": {
+          "breast lump": [
+            "Right",
+            "Hard",
+            "Fixed",
+            "Non-tender",
+            "Months",
+            "Skin tethering",
+            "Nipple inversion",
+            "Axillary lump",
+            "HRT / OCP"
+          ]
+        },
+        "durationDays": 60,
+        "painScore": 1,
+        "paneAnswers": {
+          "skin_dimpling": true,
+          "axillary_nodes": true
+        }
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Suspicious right breast mass with skin tethering and axillary node — probable carcinoma",
+      "icd10": "N63.0",
+      "paneDiseaseId": "invasive_ductal_carcinoma",
+      "assessmentText": "Suspicious breast mass (right), 3 cm, skin tethering, nipple retraction and palpable axillary node in a 58-year-old — probable carcinoma. Urgent triple assessment: bilateral mammography, ultrasound breast and axilla, core biopsy (+ axillary node sampling)."
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-carcinoma-top3",
+          "severity": "critical",
+          "match": [
+            "carcinoma",
+            "cancer",
+            "icd:C50",
+            "dcis"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "note": "Hard, fixed, tethered lump with nipple retraction and a node.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "critical",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "nice-ng12"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-2ww",
+          "severity": "critical",
+          "match": [
+            "cancer screening triggered (breast)",
+            "re:(2-week|two-week|two week|2ww|suspected cancer)[^\\n]{0,60}breast",
+            "re:breast[^\\n]{0,60}(2-week|two-week|two week|2ww|suspected cancer)"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Triggered but labelled colorectal. cancer-screening.ts labels every triggered screen \"colorectal\": the colorectal block tests `c.met && c.rule.includes('colorectal') || c.rule.includes('bowel') || …` (operator precedence), which is true whenever any colorectal rule exists, and the breast block keeps the first label (cancerType ?? \"breast\").",
+          "proposedFix": "Parenthesise the colorectal condition (c.met && (… || … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen."
+        },
+        {
+          "id": "flag-suspicious",
+          "severity": "quality",
+          "match": [
+            "malignan",
+            "cancer",
+            "suspicious"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-mammogram",
+          "severity": "critical",
+          "match": [
+            "mammogra"
+          ],
+          "guidelineRefs": [
+            "abs-best-practice-2010",
+            "nccn-breast-dx-2025"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-uss",
+          "severity": "critical",
+          "match": [
+            "re:(uss|ultrasound|\\bus\\b)[^.;\\n]{0,30}(breast|subareolar|retroareolar|axilla)",
+            "re:(breast|subareolar|retroareolar)[^.;\\n]{0,30}(uss|ultrasound)",
+            "mammography + uss",
+            "mammogram/uss"
+          ],
+          "guidelineRefs": [
+            "abs-best-practice-2010"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-core-biopsy",
+          "severity": "critical",
+          "match": [
+            "core biopsy",
+            "core needle",
+            "re:\\bcnb\\b",
+            "vacuum-assisted biopsy",
+            "core (needle )?biopsy"
+          ],
+          "guidelineRefs": [
+            "abs-best-practice-2010"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-axilla",
+          "severity": "quality",
+          "match": [
+            "axilla"
+          ],
+          "guidelineRefs": [
+            "nccn-breast-dx-2025"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-mdt",
+          "severity": "quality",
+          "match": [
+            "mdt",
+            "multidisciplinary"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreast: \"\" (the vignette schema has no breast exam field), so the dashboard prompt \"Breast Mass → Triple Assessment\" (USS, mammogram ≥35, core biopsy) is not exercised."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-surgery-before-histology",
+          "severity": "quality",
+          "match": [
+            "wide local excision",
+            "mastectomy"
+          ],
+          "unless": [
+            "mdt",
+            "after",
+            "if ",
+            "before any definitive"
+          ],
+          "note": "Definitive surgery is planned after histology and MDT, not at the first visit.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-triple-assessment",
+      "severity": "quality",
+      "equals": "breast_triple_assessment"
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral",
+      "year": 2015,
+      "section": "Site-specific recommendations: breast cancer (age ≥30 unexplained lump; ≥50 unilateral nipple discharge/retraction; skin changes; men ≥50 subareolar mass), haematological cancers (unexplained lymphadenopathy), head and neck (unexplained thyroid lump)",
+      "citation": "National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated).",
+      "verified": false
+    },
+    {
+      "id": "abs-best-practice-2010",
+      "name": "Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health)",
+      "year": 2010,
+      "section": "Triple assessment (clinical examination, age-appropriate imaging, needle biopsy); imaging by age; nipple discharge; breast infection; breast pain",
+      "citation": "Willett AM, Michell MJ, Lee MJR (eds). Best practice diagnostic guidelines for patients presenting with breast symptoms. London: Department of Health / Association of Breast Surgery; 2010.",
+      "verified": false
+    },
+    {
+      "id": "nccn-breast-dx-2025",
+      "name": "NCCN Guidelines — Breast Cancer Screening and Diagnosis",
+      "year": 2025,
+      "section": "Palpable mass: age <30 ultrasound first; age ≥30 diagnostic mammography + ultrasound; tissue sampling of suspicious findings; nipple discharge (spontaneous, unilateral, single duct, bloody); skin changes",
+      "citation": "National Comprehensive Cancer Network. NCCN Clinical Practice Guidelines in Oncology: Breast Cancer Screening and Diagnosis (current version at authoring).",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: age 58 and suspicious features. The three imaging/biopsy arms are critical because omitting any of them from triple assessment can miss or understage a cancer.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

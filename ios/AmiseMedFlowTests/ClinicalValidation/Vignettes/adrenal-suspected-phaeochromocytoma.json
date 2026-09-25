@@ -1,0 +1,281 @@
+{
+  "schemaVersion": 1,
+  "id": "adrenal-suspected-phaeochromocytoma",
+  "condition": "Adrenal mass with suspected phaeochromocytoma before surgery",
+  "category": "breast-endocrine",
+  "permutationOf": "adrenal-incidentaloma-indeterminate",
+  "permutationLabel": "Suspected phaeochromocytoma, on a beta-blocker",
+  "summary": "44-year-old woman with a 4.6 cm heterogeneous right adrenal mass (38 HU) and paroxysms of headache, palpitations and sweating, BP 182/104; referred \"for laparoscopic adrenalectomy\". Phaeochromocytoma must be biochemically confirmed or excluded first; if confirmed, alpha-blockade for 7–14 days before surgery (beta-blocker only after alpha); never biopsy.",
+  "tags": [
+    "adrenal",
+    "must-not-miss",
+    "peri-operative"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 44,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 168,
+      "weightKg": 58
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Episodes of headache, racing heart and sweating; adrenal lump on scan",
+    "hpi": "Six months of attacks lasting 10–20 minutes: pounding headache, racing heart, drenching sweats and pallor, sometimes after bending. Lost 4 kg. BP up to 190 systolic in attacks. MRI of the head for headaches was normal; CT abdomen showed a right adrenal lump. GP letter asks for laparoscopic adrenalectomy. Started on atenolol by the GP last week.",
+    "symptoms": [
+      "headache",
+      "palpitations",
+      "drenching sweats",
+      "weight loss",
+      "anxiety"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Thin, pale, tremulous. BP 182/104, pulse 108."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 108,
+        "systolicBp": 182,
+        "diastolicBp": 104,
+        "respiratoryRate": 16,
+        "temperatureC": 36.9,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 8.9,
+        "unit": "mmol/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 4.1,
+        "unit": "mmol/L",
+        "minutesAgo": 10080
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen with contrast",
+        "modality": "CT",
+        "region": "Abdomen",
+        "result": "Right adrenal mass 4.6 cm, heterogeneous with cystic areas, unenhanced attenuation 38 HU, avid enhancement. Left adrenal normal. No metastases.",
+        "minutesAgo": 20160
+      }
+    ],
+    "comorbidities": [
+      "Hypertension (new)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Atenolol",
+        "dose": "50 mg",
+        "frequency": "OD",
+        "indication": "Hypertension (started last week)"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Right adrenal mass 4.6 cm with paroxysmal symptoms — suspected phaeochromocytoma",
+      "icd10": "D44.10",
+      "paneDiseaseId": "adrenal_incidentaloma",
+      "assessmentText": "Right adrenal mass 4.6 cm (38 HU, heterogeneous) with paroxysmal headache, palpitations, sweating and hypertension — suspected phaeochromocytoma. Plasma free metanephrines first; if positive, alpha-blockade (phenoxybenzamine or doxazosin) 7–14 days before laparoscopic adrenalectomy; stop the beta-blocker until alpha-blocked. No biopsy. Genetic testing."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Abdominal mass (incidental / new)",
+        "symptoms": [
+          "headache",
+          "palpitations",
+          "drenching sweats",
+          "weight loss",
+          "anxiety"
+        ],
+        "symptomDetails": {
+          "headache": [],
+          "weight loss": [
+            "< 5 kg",
+            "3–6 months",
+            "Unintentional"
+          ]
+        },
+        "durationDays": 180,
+        "painScore": 3
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-phaeochromocytoma",
+          "severity": "critical",
+          "match": [
+            "phaeochromocytoma",
+            "pheochromocytoma",
+            "paraganglioma"
+          ],
+          "guidelineRefs": [
+            "es-phaeo-2014",
+            "ese-adrenal-2023"
+          ],
+          "note": "Classic paroxysms with an enhancing heterogeneous adrenal mass.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE has no phaeochromocytoma disease (only adrenal_incidentaloma) and applied no feature; the symptom engine ranks phaeochromocytoma #1 from the chips.",
+          "proposedFix": "Add phaeochromocytoma to PANE with paroxysmal headache/palpitations/sweating features (the existing hypertension_symptom feature)."
+        }
+      ]
+    },
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-phaeo",
+          "severity": "critical",
+          "match": [
+            "phaeochromocytoma",
+            "pheochromocytoma",
+            "alpha-blockade",
+            "alpha blockade"
+          ],
+          "guidelineRefs": [
+            "es-phaeo-2014"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-metanephrines",
+          "severity": "critical",
+          "match": [
+            "metanephrine"
+          ],
+          "guidelineRefs": [
+            "es-phaeo-2014",
+            "ese-adrenal-2023"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "inv-no-adrenal-biopsy",
+          "severity": "critical",
+          "match": [
+            "re:adrenal (biopsy|fna)",
+            "re:(biopsy|fna)[^.]{0,20}adrenal",
+            "re:ct-guided biopsy"
+          ],
+          "unless": [
+            "not ",
+            "no biopsy",
+            "avoid",
+            "before"
+          ],
+          "guidelineRefs": [
+            "ese-adrenal-2023",
+            "es-phaeo-2014"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-alpha-blockade",
+          "severity": "critical",
+          "match": [
+            "alpha-blockade",
+            "alpha blockade",
+            "phenoxybenzamine",
+            "doxazosin",
+            "α-blockade"
+          ],
+          "guidelineRefs": [
+            "es-phaeo-2014"
+          ],
+          "note": "Endocrine Society 2014: pre-operative alpha-adrenoceptor blockade for 7–14 days.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-beta-blocker-first",
+          "severity": "critical",
+          "match": [
+            "re:(start|commence|continue)[^.]{0,30}(atenolol|propranolol|bisoprolol|beta-block)"
+          ],
+          "unless": [
+            "after alpha",
+            "once alpha",
+            "only after"
+          ],
+          "guidelineRefs": [
+            "es-phaeo-2014"
+          ],
+          "note": "Unopposed beta-blockade in phaeochromocytoma can precipitate a hypertensive crisis.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "es-phaeo-2014",
+      "name": "Endocrine Society guideline — phaeochromocytoma and paraganglioma",
+      "year": 2014,
+      "section": "Biochemical testing (plasma free or urinary fractionated metanephrines); pre-operative alpha-adrenoceptor blockade for 7–14 days; beta-blockade only after alpha-blockade",
+      "citation": "Lenders JWM, Duh QY, Eisenhofer G, et al. Pheochromocytoma and paraganglioma: an Endocrine Society clinical practice guideline. J Clin Endocrinol Metab. 2014;99:1915–1942.",
+      "verified": false
+    },
+    {
+      "id": "ese-adrenal-2023",
+      "name": "ESE/ENSAT guidelines — adrenal incidentalomas (2023 update)",
+      "year": 2023,
+      "section": "Imaging (unenhanced CT HU ≤10 benign; indeterminate masses); hormonal work-up (1 mg dexamethasone suppression test in all; plasma/urine metanephrines unless HU ≤10; aldosterone/renin in hypertension or hypokalaemia); no adrenal biopsy before phaeochromocytoma is excluded; surgery for indeterminate or functioning masses",
+      "citation": "Fassnacht M, Tsagarakis S, Terzolo M, et al. European Society of Endocrinology clinical practice guidelines on the management of adrenal incidentalomas, in collaboration with the European Network for the Study of Adrenal Tumors. Eur J Endocrinol. 2023;189:G1–G42.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: symptomatic, larger, heterogeneous mass with a referral asking for surgery and a GP-started beta-blocker. Tests the \"exclude phaeochromocytoma before surgery\" rule, alpha-before-beta and no biopsy.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

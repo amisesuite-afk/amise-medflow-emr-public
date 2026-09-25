@@ -1,0 +1,353 @@
+{
+  "schemaVersion": 1,
+  "id": "thyroid-post-op-neck-haematoma",
+  "condition": "Neck haematoma after thyroidectomy with airway compromise",
+  "category": "breast-endocrine",
+  "permutationOf": null,
+  "summary": "51-year-old woman 5 hours after total thyroidectomy: rapidly enlarging tense neck swelling, stridor, SpO2 90%. DAS/BAETS 2022: call for help and decompress at the bedside immediately (SCOOP: skin exposure, cut sutures, open skin, open muscles, pack), then theatre; do not wait for imaging.",
+  "tags": [
+    "thyroid",
+    "post-op",
+    "emergency",
+    "airway",
+    "must-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 51,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 163,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "emergency",
+      "isPostOp": true,
+      "postOpDays": 0
+    },
+    "chiefComplaint": "Neck swelling and difficulty breathing after thyroid surgery",
+    "hpi": "Total thyroidectomy for Graves' disease this morning, returned to the ward 3 hours ago. Nurse called: over 20 minutes the neck has swollen, she feels her throat is tight, cannot swallow her saliva and has noisy breathing. Drain not placed.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Midline",
+        "Anterior triangle (right)",
+        "Anterior triangle (left)"
+      ],
+      "character": [
+        "Firm",
+        "Tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Stridor",
+        "Shortness of breath",
+        "Dysphagia"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "neck swelling",
+      "stridor",
+      "shortness of breath",
+      "dysphagia"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Anxious, sitting up, inspiratory stridor, drooling. Tense, rapidly enlarging swelling under the thyroidectomy wound with bruising; wound closed with subcuticular suture and skin glue. Pulse 122, BP 172/96, RR 28, SpO2 90% on 4 L oxygen.",
+      "respiratory": "Stridor; air entry reduced bilaterally."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 2,
+        "heartRate": 122,
+        "systolicBp": 172,
+        "diastolicBp": 96,
+        "respiratoryRate": 28,
+        "temperatureC": 36.9,
+        "spo2": 90,
+        "avpu": "A",
+        "onSupplementalO2": true
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 12.4,
+        "unit": "g/dL",
+        "minutesAgo": 300
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Graves' disease"
+    ],
+    "surgicalHistory": [
+      "Total thyroidectomy (today)"
+    ],
+    "medications": [
+      {
+        "drug": "Enoxaparin",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "VTE prophylaxis (due this evening)"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "confirmedDiagnosis": {
+      "name": "Post-thyroidectomy neck haematoma with airway compromise",
+      "icd10": "T81.0XXA",
+      "paneDiseaseId": "postop_haematoma",
+      "assessmentText": "Expanding neck haematoma 5 h after total thyroidectomy with stridor and desaturation — airway emergency. Call for help (anaesthesia, ENT/surgeon), SCOOP bedside decompression now, then theatre for haemostasis. Hold enoxaparin."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Post-op wound concern",
+        "symptoms": [
+          "neck swelling",
+          "stridor",
+          "shortness of breath",
+          "wound swelling"
+        ],
+        "examFindings": {
+          "general": [
+            "In distress"
+          ]
+        },
+        "durationDays": 0,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-haematoma-top3",
+          "severity": "critical",
+          "match": [
+            "haematoma",
+            "hematoma",
+            "icd:T81.0"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "das-baets-haematoma-2022"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3 = cholecystitis, surgical site infection, GORD: the \"Post-op wound concern\" template hints wound_erythema/wound_discharge (infection features), and no neck-swelling feature exists. The T81.0 plan itself is correct (bedside wound opening).",
+          "proposedFix": "Map \"wound swelling\"/\"neck swelling\" after surgery to wound_seroma (haematoma) rather than infection features."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "das-baets-haematoma-2022"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-emergency",
+          "severity": "critical",
+          "match": [
+            "airway",
+            "stridor",
+            "tracheal compression",
+            "intubat",
+            "haematoma",
+            "emergency now"
+          ],
+          "guidelineRefs": [
+            "das-baets-haematoma-2022"
+          ],
+          "note": "Any emergency alarm counts here (the generic triage alarm included).",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "alarm-airway-specific",
+          "severity": "quality",
+          "match": [
+            "airway",
+            "stridor",
+            "tracheal compression",
+            "intubat",
+            "haematoma"
+          ],
+          "guidelineRefs": [
+            "das-baets-haematoma-2022"
+          ],
+          "note": "An alarm that names the neck haematoma / airway, so the response is SCOOP rather than generic resuscitation.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The alarm is the generic triage \"Emergency now\" (RR, SpO2, HR); no alarm names the neck haematoma or airway."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-bedside-decompression",
+          "severity": "critical",
+          "match": [
+            "scoop",
+            "wound opening at bedside",
+            "bedside wound opening",
+            "open the wound",
+            "re:(undo|cut|remove)[^.]{0,20}(sutures|clips)",
+            "bedside decompression"
+          ],
+          "guidelineRefs": [
+            "das-baets-haematoma-2022"
+          ],
+          "note": "DAS/BAETS 2022: immediate bedside decompression (SCOOP) when a post-thyroidectomy haematoma compromises the airway.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-return-to-theatre",
+          "severity": "quality",
+          "match": [
+            "theatre",
+            "re-operation",
+            "reoperation"
+          ],
+          "guidelineRefs": [
+            "das-baets-haematoma-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-conservative-first",
+          "severity": "critical",
+          "match": [
+            "pressure dressing",
+            "observe 24 h",
+            "elevate, pressure"
+          ],
+          "unless": [
+            "small haematoma (<5 cm)"
+          ],
+          "guidelineRefs": [
+            "das-baets-haematoma-2022"
+          ],
+          "note": "Conservative care of a small wound haematoma must not be offered for a neck haematoma with stridor.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-thyroidectomy-prefix",
+          "severity": "quality",
+          "match": [
+            "re:^total thyroidectomy$",
+            "levothyroxine replacement (lifelong)"
+          ],
+          "sources": [
+            "web.plan"
+          ],
+          "note": "The documented plan for a post-operative airway emergency should not open with an elective total-thyroidectomy template.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The assessment mentions \"thyroidectomy\", so detectDxVariants selects thyroid_total and prepends the elective Total Thyroidectomy template to the haematoma plan.",
+          "proposedFix": "Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' (\"irreducible\" contains \"reducible\"); \"bethesda vi\" contains \"bethesda v\"."
+        }
+      ]
+    },
+    "investigations": {
+      "mustExclude": [
+        {
+          "id": "inv-no-imaging-before-decompression",
+          "severity": "quality",
+          "match": [
+            "re:\\b(uss|ultrasound|ct)\\b"
+          ],
+          "sources": [
+            "web.plan.investigations",
+            "web.pane.seeded"
+          ],
+          "unless": [
+            "if stable",
+            "after"
+          ],
+          "guidelineRefs": [
+            "das-baets-haematoma-2022"
+          ],
+          "note": "Imaging has no place before decompression of a haematoma with airway compromise.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The generic postop_haematoma investigations include \"USS wound (confirm haematoma …)\" with no exception for a neck haematoma with airway compromise."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "das-baets-haematoma-2022",
+      "name": "DAS / BAETS / ENT UK consensus — management of haematoma after thyroid surgery",
+      "year": 2022,
+      "section": "Recognition (neck swelling, stridor, respiratory distress); SCOOP (Skin exposure, Cut sutures, Open skin, Open muscles, Pack) bedside decompression; call for help; airway management and return to theatre",
+      "citation": "Iliff HA, El-Boghdadly K, Ahmad I, et al. Management of haematoma after thyroid surgery: systematic review and multidisciplinary consensus guidelines from the Difficult Airway Society, the British Association of Endocrine and Thyroid Surgeons and the British Association of Otorhinolaryngology, Head and Neck Surgery. Anaesthesia. 2022;77:82–95.",
+      "verified": false
+    }
+  ],
+  "rationale": "Post-operative airway emergency (day 0). Tests that the plan leads with bedside decompression and that generic wound-haematoma advice (pressure dressing, ultrasound) does not appear.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}
