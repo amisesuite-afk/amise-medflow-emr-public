@@ -1,8 +1,8 @@
 # Clinical validation — web engines (latest local run)
 
-Generated 2026-09-25T14:22:20.408Z.
+Generated 2026-09-25T14:26:44.235Z.
 
-- Harness clinval-web/1; 170 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
+- Harness clinval-web/1; 202 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
 
 Status legend: PASS; FAIL — BLOCKING (critical, not flagged: fails the test run); FAIL (known gap) and
 FAIL (unverified) are reported only; "PASS (gap resolved)" means the flag can be removed from the vignette;
@@ -12,7 +12,7 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
-| web | 170 | 1280 | 797 | 446 | 37 | 201 | 0 | 443 | 3 | 0 |
+| web | 202 | 1598 | 996 | 563 | 39 | 255 | 0 | 560 | 3 | 0 |
 
 ## Blocking failures
 
@@ -45,6 +45,13 @@ None.
 - `appendicitis-paediatric-9y` / **mgmt-no-adult-fixed-doses** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or cefuroxime 750 mg tds + metronidazole 500 mg tds." (+7 more) [known gap: Web: Protocol steps, protocol medications and the appendicectomy prompt carry adult fixed doses (co-amoxiclav 1.2 g TDS, paracetamol 1 g, ibuprofen 400 mg TDS, pip-tazo 4.5 g) with no weight or age adjustment for a 30 kg child.]
 - `appendicitis-pregnant-t2` / **inv-mri-after-inconclusive-us** (web, FAIL (known gap)): no investigation matched among 42 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Neither the iOS radiation card nor the web appendicitis protocol mentions MRI; CT with contrast is the only second-line imaging offered.]
 - `appendicitis-pregnant-t2` / **mgmt-no-nsaid-after-20-weeks** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "... convert to oral when tolerating po. • paracetamol 1g qds + ibuprofen 400mg tds (regular). • morphine 5mg prn if pain > 5/10. • regular diet as toler..." [known gap: Web appendicectomy operative-plan prompt orders 'Paracetamol 1g QDS + Ibuprofen 400mg TDS (regular)' for a 22-week pregnant patient.]
+- `biliary-colic-mimic-inferior-mi` / **mnm-acs** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE has no ACS/MI node (top 3: inguinal hernia, cholecystitis, GORD); symptom inference top 5 has no cardiac diagnosis either.]
+- `biliary-colic-mimic-inferior-mi` / **inv-ecg** (web, FAIL (known gap)): no investigation matched among 26 (web.pane.seeded, web.clinicalPrompts) [known gap: The only ECG is a plan line "12-lead ECG — pre-operative cardiac baseline (age ≥ 40)", not an urgent investigation for ACS.]
+- `biliary-colic-mimic-inferior-mi` / **inv-troponin** (web, FAIL (known gap)): no investigation matched among 26 (web.pane.seeded, web.clinicalPrompts) [known gap: No troponin anywhere.]
+- `biliary-colic-mimic-inferior-mi` / **mgmt-reperfusion-cardiology** (web, FAIL (known gap)): no management item matched among 26 (web.clinicalPrompts) [known gap: No protocol for I21.1 and no prompt: no cardiology/reperfusion/antiplatelet output.]
+- `biliary-colic-mimic-inferior-mi` / **mgmt-no-cholecystectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• plan laparoscopic cholecystectomy - early (< 72h onset) or interval (≥ 6 weeks)." (+3 more) [known gap: Gallstone operative-plan prompt fires ("Plan laparoscopic cholecystectomy — early or interval") because "Murphy's sign negative" matches "murphy".]
+- `biliary-colic-mimic-inferior-mi` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "no guarding".]
+- `biliary-colic-uncomplicated` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Full LAPAROSCOPIC APPENDICECTOMY operative plan prompt: hasAppendicitisIndication fires on "no guarding" in the exam text.]
 - `boerhaave-classic-mackler` / **dx-perforation-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis [known gap: PANE top 3: pancreatitis, inguinal hernia, cholecystitis. Subcutaneous emphysema, chest_pain_oesophageal and vomiting_effortless never reach PANE (no SOCRATES rules; radiation "Back" gives radiation_to_back → pancreatitis). Symptom inference ranks STEMI/ACS first.]
 - `boerhaave-presenting-as-chest-pain` / **mnm-perforation** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. Acute Pancreatitis [known gap: PANE top 3: inguinal hernia, cholecystitis, pancreatitis; no oesophageal features reach PANE. Symptom inference ranks STEMI/ACS first and has no perforation entry.]
 - `boerhaave-presenting-as-chest-pain` / **inv-ecg** (web, FAIL (known gap)): no investigation matched among 31 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No investigation output mentions an ECG: the triage chest_pain pathway checklist ("ECG within 10 minutes") is not surfaced, and the oesophageal_perforation protocol omits it.]
@@ -70,9 +77,22 @@ None.
 - `cdiff-fulminant-colitis` / **mgmt-surgical-consult** (web, FAIL (known gap)): no management item matched among 39 (web.clinicalPrompts) [known gap: No surgical consultation/colectomy output for fulminant CDI (no protocol; prompts cover sepsis only).]
 - `cholangitis-tg18-charcot-sepsis` / **score-tg18-calculator** (web, FAIL (known gap)): expected = 2; got web.scaleCalculator.tg18-cholangitis=2 (Grade II — MODERATE); web.scoreCalculator.tg18-cholangitis=1 (Mild cholangitis — antibiotics ± elective drainage) [known gap: Web clinical-scores.ts (ClinicalScoresPanel) omits the WBC criterion from the Grade II count and returns Grade I; clinical-scales.ts is correct here.]
 - `cholangitis-tg18-grade3-reynolds` / **score-tg18-autofill** (web, FAIL (known gap)): expected = 3; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: iOS auto-fill never sets organ-dysfunction fields (returns Grade II from age/temperature/WBC/bilirubin); web returns "criteria not met".]
+- `cholecystitis-high-risk-grade2-drainage` / **score-tg18-calculator** (web, FAIL (known gap)): expected = 2; got web.scoreCalculator.tg18-cholecystitis=1 (Mild cholecystitis — elective laparoscopic cholecystectomy) [known gap: Web calculator returns Grade I: it has no "duration >72 h" criterion (Grade II only on WBC >18).]
+- `cholecystitis-immunosuppressed-gangrenous` / **score-tg18-calculator** (web, FAIL (known gap)): expected = 2; got web.scoreCalculator.tg18-cholecystitis=1 (Mild cholecystitis — elective laparoscopic cholecystectomy) [known gap: Web calculator returns Grade I: no "marked local inflammation" (gangrenous) criterion.]
+- `cholecystitis-immunosuppressed-gangrenous` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "No guarding" in the exam text.]
+- `cholecystitis-mimic-rll-pneumonia` / **mnm-pneumonia** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Liver Abscess \| 2. Acute Appendicitis \| 3. Inguinal / Femoral Hernia; also in web.symptomInference#1, web.passive#2 [known gap: PANE has no pneumonia node (top 3: liver abscess, appendicitis, inguinal hernia). Symptom inference ranks community-acquired pneumonia #1 but it is a secondary view.]
+- `cholecystitis-mimic-rll-pneumonia` / **inv-chest-xray** (web, FAIL (known gap)): no investigation matched among 33 (web.pane.seeded, web.clinicalPrompts) [known gap: No CXR investigation for pneumonia; a CXR appears only as plan text in the hypoxia/sepsis prompts ("CXR — identify cause", "Erect CXR — exclude free air and basal pneumonia"). Partial mitigation.]
+- `cholecystitis-mimic-rll-pneumonia` / **mgmt-no-cholecystectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• consent: laparoscopic cholecystectomy - bile duct injury (0.3%), haemorrhage, conversion to open, bile leak, retained..." (+3 more) [known gap: Gallstone operative plan and consent prompt fire (hasGallstoneIndication: the "right upper quadrant pain" symptom chip, and "Murphy's sign negative" matches "murphy") despite a normal gallbladder on US.]
+- `cholecystitis-mimic-rll-pneumonia` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "without guarding".]
+- `cholecystitis-pregnancy-t2` / **mgmt-no-nsaid-after-20-weeks** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "... 2. post-operative orders: • paracetamol 1g qds (regular) + ibuprofen 400mg tds (if egfr normal). • morphine 2.5-5mg sc/iv prn for pain > 5/10. • fre..." [known gap: Lap chole operative-plan post-op orders: "Ibuprofen 400mg TDS (if eGFR normal)" at 22 weeks.]
 - `cholecystitis-tg18-grade2` / **score-tg18-calculator** (web, FAIL (known gap)): expected = 2; got web.scoreCalculator.tg18-cholecystitis=1 (Mild cholecystitis — elective laparoscopic cholecystectomy) [known gap: Neither calculator has a "palpable tender RUQ mass" Grade II criterion (iOS folds it into Grade I local signs; web grades II only on WBC >18).]
 - `cholecystitis-tg18-grade3-organ-dysfunction` / **score-tg18-autofill** (web, FAIL (known gap)): expected = 3; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: iOS auto-fill ignores the organ-dysfunction data in the record (SBP 82 on noradrenaline, AVPU C, creatinine 238, platelets 88) and returns Grade II from WBC alone; web returns "criteria not met".]
 - `cholecystitis-tg18-grade3-organ-dysfunction` / **mgmt-no-penicillin-in-anaphylaxis** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or piperacillin-tazobactam for severe." (+5 more) [known gap: Plan templates suggest co-amoxiclav / piperacillin-tazobactam regardless of the recorded penicillin anaphylaxis.]
+- `choledocholithiasis-asge-high-risk` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "no guarding".]
+- `choledocholithiasis-asge-intermediate` / **mgmt-no-unconditional-ercp** (web, FAIL (known gap)): forbidden management item present in web.plan: "[surgical] ercp + sphincterotomy and stone extraction." (+3 more) [known gap: Plan tab: "[surgical] ERCP + sphincterotomy and stone extraction." unconditionally for ASGE intermediate risk (no stone seen), before MRCP/EUS.]
+- `choledocholithiasis-asge-low-risk` / **mgmt-no-ercp** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• ercp - therapeutic: stone extraction (choledocholithiasis) or stenting (malignant st..." [known gap: "ERCP — therapeutic: stone extraction or stenting" from the false dilated-CBD prompt.]
+- `choledocholithiasis-pregnancy` / **mgmt-no-nsaid-after-20-weeks** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "... 2. post-operative orders: • paracetamol 1g qds (regular) + ibuprofen 400mg tds (if egfr normal). • morphine 2.5-5mg sc/iv prn for pain > 5/10. • fre..." (+1 more) [known gap: Operative-plan post-op orders (lap chole and appendicectomy templates) include ibuprofen at 26 weeks.]
+- `choledocholithiasis-pregnancy` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "no guarding".]
 - `crc-fit-positive-abdominal-pain` / **mnm-crc** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#3 [known gap: PANE top 3 is cholecystitis/GORD/PUD (the "Acute abdominal pain" template with a suprapubic site gives no colorectal features); the FIT result is not a PANE input. Symptom inference ranks colorectal carcinoma #3.]
 - `crc-fit-positive-abdominal-pain` / **flag-fit-positive** (web, FAIL (known gap)): no red flag matched among 13 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No engine reads a FIT result: the lab is recorded but neither the triage cancer screen, clinical prompts nor PANE/CDS use it, and no rule implements the NICE DG56 threshold (≥ 10 µg Hb/g).]
 - `crc-fit-positive-abdominal-pain` / **inv-colonoscopy** (web, FAIL (known gap)): no investigation matched among 23 (web.pane.seeded, web.clinicalPrompts) [known gap: Nothing requests colonoscopy: R19.5 has no protocol and no rule reads the FIT. No engine reads a FIT result: the lab is recorded but neither the triage cancer screen, clinical prompts nor PANE/CDS use it, and no rule implements the NICE DG56 threshold (≥ 10 µg Hb/g).]
@@ -136,12 +156,16 @@ None.
 - `ischaemic-colitis-left` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web computeClinicalPrompts fires "Appendicitis — emergency surgical indication" and adds the full "LAPAROSCOPIC APPENDICECTOMY — OPERATIVE PLAN" whenever examAbdomen contains "guarding" or "rebound" — including negated text ("no guarding") and localised guarding from other causes.]
 - `ischaemic-colitis-right-af-ami` / **mnm-ami** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#2 [known gap: Acute mesenteric ischaemia is not a PANE disease (top 3: appendicitis, hernia, cholecystitis); symptom inference ranks it #1. Same gap as the appendicitis seed vignettes.]
 - `ischaemic-colitis-right-af-ami` / **inv-cta** (web, FAIL (known gap)): no investigation matched among 41 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: K55.0 maps to the ischaemic_colitis protocol, whose imaging is "CT abdomen/pelvis with IV contrast"; nothing asks for CT angiography when the ischaemia is right-sided or embolic.]
+- `jaundice-mimic-acute-hepatitis-a` / **mgmt-no-ercp** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• arrange urgent ercp - biliary decompression (tokyo grade ii/iii cholangitis)." (+1 more) [known gap: "Charcot's triad → Acute Cholangitis" prompt: "Arrange urgent ERCP — biliary decompression" for a hepatocellular picture with a 4 mm CBD (fever + RUQ pain + jaundice with no duct check).]
+- `jaundice-mimic-acute-hepatitis-a` / **mgmt-no-cholecystectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• consent: laparoscopic cholecystectomy - bile duct injury (0.3%), haemorrhage, conversion to open, bile leak, retained..." (+3 more) [known gap: Gallstone operative plan and consent prompt fire (hasGallstoneIndication: the "right upper quadrant pain" symptom chip, and "Murphy's sign negative" matches "murphy"), even though the duct is normal and there are no stones.]
 - `lbo-cancer-impending-caecal-perforation` / **mgmt-no-stent-with-impending-perforation** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• if lbo due to colonic malignancy: colonic stent as bridge to elective resection (vs emergency hartmann's)." [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to colonic malignancy: colonic stent as bridge to elective resection' is shown with no contraindication for caecal pneumatosis/closed loop (the dx-variant note mentions perforation only as 'If unavailable or perforated').]
 - `lgib-angiodysplasia-aspirin` / **mgmt-no-heparin** (web, FAIL (known gap)): forbidden management item present in web.protocol.medications: "heparin weight-based per local protocol iv (intravenous) continuous infusion - mesenter..." [known gap: ICD K55.21 (angiodysplasia of colon with haemorrhage) matches the ischaemic_colitis protocol (prefix K55), whose medications include a therapeutic heparin infusion (for mesenteric venous thrombosis) — offered to a bleeding patient.]
 - `lgib-diverticular-apixaban` / **mgmt-hold-doac** (web, FAIL (known gap)): no management item matched among 37 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The only DOAC text is the generic peri-operative bridging prompt ("hold DOAC 48–72 h pre-op"); nothing says to interrupt the DOAC at presentation of a bleed.]
 - `lgib-unstable-cta-first` / **inv-cta-first** (web, FAIL (known gap)): no investigation matched among 28 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No output recommends CT angiography for unstable haematochezia: the plan is the UGIB protocol (OGD) and the GI-bleed prompt offers "urgent OGD / colonoscopy". The confirmed ICD K92.2 (GI haemorrhage, unspecified) matches the upper_gi_bleed protocol (icd10Prefixes K92) and the "Upper GI Bleed" dx-variant group; there is no lower GI bleeding protocol, so the plan is the variceal/non-variceal UGIB plan.]
 - `lgib-unstable-cta-first` / **mgmt-no-terlipressin** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] suspected varices: terlipressin 2 mg qds + prophylactic iv ceftriaxone." (+1 more) [known gap: The confirmed ICD K92.2 (GI haemorrhage, unspecified) matches the upper_gi_bleed protocol (icd10Prefixes K92) and the "Upper GI Bleed" dx-variant group; there is no lower GI bleeding protocol, so the plan is the variceal/non-variceal UGIB plan. The plan text includes "Suspected varices: terlipressin" and variceal steps for a patient without liver disease.]
 - `lgib-unstable-warfarin` / **inv-cta-first** (web, FAIL (known gap)): no investigation matched among 39 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No CT angiography output (see lgib-unstable-cta-first). The confirmed ICD K92.2 (GI haemorrhage, unspecified) matches the upper_gi_bleed protocol (icd10Prefixes K92) and the "Upper GI Bleed" dx-variant group; there is no lower GI bleeding protocol, so the plan is the variceal/non-variceal UGIB plan.]
+- `liver-abscess-amoebic` / **mgmt-metronidazole** (web, FAIL (known gap)): no management item matched among 28 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: A06.4 has no protocol mapping (getProtocolByIcd) and PANE ranks appendicitis first (0.38), so the Assessment panel shows the appendicitis protocol; the only metronidazole is anaerobic cover in a sepsis bundle.]
+- `liver-abscess-amoebic` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.managementPanel: "[surgical] laparoscopic appendicectomy (gold standard; reduces wound infection and los)." (+2 more) [known gap: Assessment panel shows the appendicitis protocol ("Laparoscopic appendicectomy") because PANE ranks appendicitis first for fever + RUQ pain.]
 - `mi-presenting-as-epigastric-pain` / **mnm-acs** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. GORD / Reflux Oesophagitis [known gap: PANE has no cardiac disease; top 3 cholecystitis, peptic ulcer, GORD.]
 - `mi-presenting-as-epigastric-pain` / **level-emergency** (web, FAIL (known gap)): web.triage: urgent (acuity=priority, action=same_day_call, score=33); expected ≥ emergency [known gap: Same-day call only (score 33): CHEST_PAIN_TERMS and the cardiac red flag need the words "chest pain/crushing/left arm/jaw"; epigastric pain with sweating in a diabetic scores age and comorbidity only.]
 - `mi-presenting-as-epigastric-pain` / **alarm-cardiac** (web, FAIL (known gap)): no alarm matched among 3 (web.clinicalPrompts.safety) [known gap: Safety prompts fired are "Appendicitis — emergency surgical indication" (from "Acute abdominal pain" CC) and "Acute abdominal presentation"; nothing cardiac.]
@@ -168,6 +192,36 @@ None.
 - `mimic-ruptured-aaa` / **mgmt-vascular-repair** (web, FAIL (known gap)): no management item matched among 22 (web.clinicalPrompts) [known gap: Web: No protocol reaches the plan: ICD I71.3 does not start with the aortic protocol's only prefix 'I71.9', and PANE does not select aortic_aneurysm. Only prompts remain (no vascular surgery).]
 - `mimic-testicular-torsion` / **dx-torsion-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3: appendicitis, inguinal/femoral hernia, cholecystitis; the SOCRATES site text 'right testicle (scrotal)' adds testicular features but not enough. Symptom inference ranks torsion #1.]
 - `mimic-testicular-torsion` / **level-emergency** (web, FAIL (known gap)): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 35). No torsion/testicular rule; the scrotal-swelling chip does not raise acuity. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Right lower abdominal pain and vomiting' gives 'routine'.]
+- `pancreatitis-alcohol` / **mgmt-thiamine** (web, FAIL (known gap)): no management item matched among 46 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No thiamine anywhere for an alcohol-dependent, vomiting patient in early withdrawal.]
+- `pancreatitis-alcohol` / **mgmt-no-aggressive-fluids** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
+- `pancreatitis-alcohol` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "guarding".]
+- `pancreatitis-drug-induced-immunosuppressed` / **mgmt-stop-azathioprine** (web, FAIL (known gap)): no management item matched among 45 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No output advises stopping azathioprine.]
+- `pancreatitis-drug-induced-immunosuppressed` / **mgmt-no-aggressive-fluids** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
+- `pancreatitis-elderly-bisap-heart-failure` / **mgmt-no-aggressive-fluids** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)" for a 79-year-old with EF 30% — no heart-failure caveat.]
+- `pancreatitis-elderly-bisap-heart-failure` / **mgmt-no-prophylactic-antibiotics** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• iv piperacillin-tazobactam 4.5g tds + metronidazole 500mg tds." [known gap: Peritonism prompt ("No peritonism") adds pip-tazo + metronidazole.]
+- `pancreatitis-elderly-bisap-heart-failure` / **mgmt-no-routine-ercp** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• ercp - therapeutic: stone extraction (choledocholithiasis) or stenting (malignant st..." [known gap: Dilated-CBD prompt ERCP (CBD 6 mm, no stone, no cholangitis).]
+- `pancreatitis-elderly-bisap-heart-failure` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "guarding".]
+- `pancreatitis-gallstone-cholangitis` / **mgmt-no-aggressive-fluids** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+1 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
+- `pancreatitis-gallstone-cholangitis` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "guarding".]
+- `pancreatitis-gallstone-mild` / **mgmt-no-aggressive-fluids** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+1 more) [known gap: Plan tab and Assessment panel: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h initial)"; protocol medication "Hartmann's 500 ml Q2H — aggressive fluid resuscitation"; lipase prompt "NBM + aggressive IV fluid resuscitation".]
+- `pancreatitis-gallstone-mild` / **mgmt-no-prophylactic-antibiotics** (web, FAIL (known gap)): forbidden management item present in web.managementPanel: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or piperacillin-tazobactam for severe." (+1 more) [known gap: Assessment panel shows the cholecystitis protocol (PANE top: cholecystitis 0.29 > pancreatitis 0.19) with IV co-amoxiclav/pip-tazo, and the peritonism prompt (fired by "No peritonism") adds pip-tazo + metronidazole.]
+- `pancreatitis-gallstone-mild` / **mgmt-no-routine-ercp** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• ercp - therapeutic: stone extraction (choledocholithiasis) or stenting (malignant st..." [known gap: "ERCP — therapeutic: stone extraction" from the dilated-CBD prompt (CBD 6 mm, no stone, no cholangitis).]
+- `pancreatitis-gallstone-mild` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "voluntary guarding" (any guarding).]
+- `pancreatitis-hypertriglyceridaemia` / **flag-hypertriglyceridaemia** (web, FAIL (known gap)): no red flag matched among 29 (web.triage.reasons, web.protocol.redFlags, web.dxVariant.urgencyNote, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: TG 31.4 mmol/L is not flagged by any output (no TG rule in prompts, triage or protocol); the lipase prompt reads the first lab named amylase/lipase (amylase 140), so no pancreatitis prompt fires either.]
+- `pancreatitis-hypertriglyceridaemia` / **mgmt-no-aggressive-fluids** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
+- `pancreatitis-hypertriglyceridaemia` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "guarding".]
+- `pancreatitis-mimic-ruptured-aaa` / **mnm-aaa** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Inguinal / Femoral Hernia \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE ranks acute pancreatitis first; aortic_aneurysm has a post-modifier prior of 0.0024 for a 74-year-old male smoker and stays out of the top 3 even with the PANE answers pulsatile_mass and haemodynamic_instability = true. Symptom inference ranks ruptured AAA #1 (secondary view).]
+- `pancreatitis-mimic-ruptured-aaa` / **inv-aortic-imaging** (web, FAIL (known gap)): no investigation matched among 23 (web.pane.seeded, web.clinicalPrompts) [known gap: No aortic imaging suggested (the protocol for the confirmed I71.3 is not reached: no ICD mapping for I71.3, PANE not converged).]
+- `pancreatitis-mimic-ruptured-aaa` / **mgmt-vascular-emergency** (web, FAIL (known gap)): no management item matched among 23 (web.clinicalPrompts) [known gap: No vascular/EVAR/theatre output.]
+- `pancreatitis-moderately-severe` / **mgmt-no-prophylactic-antibiotics** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• iv piperacillin-tazobactam 4.5g tds + metronidazole 500mg tds." [known gap: "IV piperacillin-tazobactam 4.5g TDS + metronidazole" from the peritonism prompt, fired by "no peritonism" in the exam text (sterile necrosis, cultures negative).]
+- `pancreatitis-moderately-severe` / **mgmt-no-early-cholecystectomy-with-collection** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• plan interval laparoscopic cholecystectomy - same admission or within 2 weeks (gallstone pancreatitis)." [known gap: Lipase prompt (300–1000 U/L band): "Plan interval laparoscopic cholecystectomy — same admission or within 2 weeks" despite a 6 × 4 cm necrotic collection.]
+- `pancreatitis-pregnancy` / **mgmt-no-aggressive-fluids** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
+- `pancreatitis-pregnancy` / **mgmt-no-prophylactic-antibiotics** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• iv piperacillin-tazobactam 4.5g tds + metronidazole 500mg tds." [known gap: Peritonism prompt ("no peritonism") adds pip-tazo + metronidazole.]
+- `pancreatitis-pregnancy` / **mgmt-no-routine-ercp** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• ercp - therapeutic: stone extraction (choledocholithiasis) or stenting (malignant st..." [known gap: Dilated-CBD prompt ERCP (CBD 5 mm).]
+- `pancreatitis-pregnancy` / **mgmt-no-nsaid-after-20-weeks** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "... 2. post-operative orders: • paracetamol 1g qds (regular) + ibuprofen 400mg tds (if egfr normal). • morphine 2.5-5mg sc/iv prn for pain > 5/10. • fre..." [known gap: Lap chole operative-plan post-op orders include ibuprofen at 21 weeks.]
+- `pancreatitis-severe-organ-failure` / **mgmt-no-aggressive-fluids** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)" in established respiratory failure with pleural effusions.]
+- `pancreatitis-severe-organ-failure` / **mgmt-no-prophylactic-antibiotics** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• iv piperacillin-tazobactam 4.5g tds + metronidazole 500mg tds." (+3 more) [known gap: Peritonism prompt ("no peritonism") pip-tazo + metronidazole, and the SIRS sepsis bundle "Sepsis-6 … antibiotics" — no infection documented.]
+- `pancreatitis-severe-organ-failure` / **mgmt-no-routine-ercp** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• ercp - therapeutic: stone extraction (choledocholithiasis) or stenting (malignant st..." [known gap: Dilated-CBD prompt: "ERCP — therapeutic" (CBD 6 mm, no cholangitis) — APEC: no benefit.]
 - `parathyroid-hypercalcaemic-crisis` / **mnm-hypercalcaemia** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.symptomInference#2, web.passive#3 [known gap: PANE applied no feature ("Nausea / vomiting" template, SOCRATES empty); calcium is a lab value. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
 - `parathyroid-hypercalcaemic-crisis` / **mgmt-no-thyroidectomy-template** (web, FAIL (known gap)): forbidden management item present in web.plan: "total thyroidectomy" (+1 more) [known gap: Same dx-variant substring bug: the crisis plan opens with the elective Total Thyroidectomy template.]
 - `parathyroid-primary-hpt-surgical-indications` / **mgmt-no-thyroidectomy-template** (web, FAIL (known gap)): forbidden management item present in web.plan: "total thyroidectomy" (+1 more) [known gap: detectDxVariants falls back to lower.includes("thyroid") for the Thyroid group: "parathyroidectomy"/"hyperparathyroidism" contain "thyroid", and "parathyroidectomy" contains the thyroid_total keyword "thyroidectomy", so the documented plan opens with "Total Thyroidectomy … levothyroxine replacement (lifelong)".]
@@ -1374,6 +1428,204 @@ Guidelines:
 
 </details>
 
+### Asymptomatic gallstones (incidental)
+
+#### `biliary-colic-asymptomatic-incidental-gallstones` — Incidental finding — asymptomatic gallstones (no treatment)
+
+47-year-old woman referred after gallstones were seen on an ultrasound done for microscopic haematuria; no biliary symptoms, normal gallbladder wall, CBD and LFTs.
+
+Permutation of `biliary-colic-uncomplicated`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+| level-routine | emergencyLevel | quality | FAIL (known gap) | NICE CG188 2014 | clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches "temp" and "afebrile") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text. |
+| no-alarm | mustNotAlarm | quality | FAIL (known gap) |  | clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches "temp" and "afebrile") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text. |
+| mgmt-reassure-safety-net | managementInclude | quality | FAIL (known gap) | NICE CG188 2014 | Add a biliary-colic/asymptomatic-cholelithiasis protocol (see biliary-colic-uncomplicated) with the NICE CG188 "no treatment for asymptomatic stones in a normal gallbladder" branch. |
+| mgmt-no-cholecystectomy | managementExclude | quality | FAIL (known gap) | NICE CG188 2014 | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
+| mgmt-no-antibiotics | managementExclude | quality | FAIL (known gap) |  | AssessmentTab ManagementPanel: when the clinician has confirmed/locked a working diagnosis (ICD or disease id), show that protocol instead of the PANE top (≥0.20). Today a confirmed pancreatitis/amoebic abscess shows the cholecystitis or appendicitis protocol. |
+
+Failure details:
+
+- **level-routine** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=100); expected ≤ routine [known gap: adaptiveTriage emergency_now (score 100) for an asymptomatic referral: "never had … jaundice or fever" fires biliary-obstruction and cholangitis-pattern rules.]
+- **no-alarm** (web): forbidden alarm present in web.triage.emergency: "emergency now - do not auto-book. advise urgent emergency assessment / tapion contact and..." (+1 more) [known gap: "Emergency now" and "Dilated CBD" alarms fire on negated history and "CBD 4 mm".]
+- **mgmt-reassure-safety-net** (web): no management item matched among 20 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No output recommends reassurance/no treatment for asymptomatic stones.]
+- **mgmt-no-cholecystectomy** (web): forbidden management item present in web.managementPanel: "[surgical] early laparoscopic cholecystectomy within 72 h (grade i-ii)." (+4 more) [known gap: With no features applied, PANE still ranks cholecystitis first (0.27 ≥ 0.20), so the Assessment panel shows early LC within 72 h; the gallstone operative-plan prompt fires on "gallstones" in the US report.]
+- **mgmt-no-antibiotics** (web): forbidden management item present in web.managementPanel: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or piperacillin-tazobactam for severe." (+1 more) [known gap: Assessment panel (cholecystitis protocol from PANE top) lists IV co-amoxiclav/pip-tazo.]
+
+Guidelines:
+
+- **nice-cg188** — NICE CG188 — Gallstone disease: diagnosis and management (2014), Asymptomatic gallbladder stones in a normal gallbladder and biliary tree: reassure, no treatment; symptomatic gallbladder stones: offer laparoscopic cholecystectomy; LFTs and ultrasound for suspected gallstone disease. National Institute for Health and Care Excellence. Clinical guideline CG188, October 2014. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. GORD / Reflux Oesophagitis; 3. Choledocholithiasis
+- differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Systemic lupus erythematosus; 5. CBD stone / obstructive jaundice
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: 1. Acute cholangitis
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=100)
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]
+- recommended scores: news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: (none)
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from PANE top)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
+
+</details>
+
+### Biliary colic (symptomatic gallstones)
+
+#### `biliary-colic-uncomplicated` — Base case — uncomplicated biliary colic, outpatient
+
+38-year-old woman with four post-prandial episodes of RUQ pain over three months, pain-free now; normal observations, WBC, CRP and LFTs; ultrasound shows gallstones with a normal wall and a 4 mm CBD.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mgmt-no-appendicectomy | managementExclude | critical | FAIL (known gap) |  | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
+| dx-biliary-colic-top3 | mustRankTopK | quality | FAIL (known gap) | NICE CG188 2014 | lib/pane-engine vademecum hepatobiliary.ts: add a "biliary_colic" (symptomatic cholelithiasis, K80.20) disease with episodic post-prandial RUQ pain, us_gallstones, absent fever/elevated WBC, and a protocol (elective lap chole, NICE CG188). |
+| level-not-emergency | emergencyLevel | quality | FAIL (known gap) | NICE CG188 2014 | lib/triage-engine rules.ts RED_FLAGS and adaptive-triage.ts: negation-aware matching; restrict the cardiac rule's "radiating to" to chest-pain context. |
+| no-sepsis-alarm | mustNotAlarm | quality | FAIL (known gap) |  | clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches "temp" and "afebrile") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text. |
+| no-dilated-cbd-alarm | mustNotAlarm | quality | FAIL (known gap) |  | clinical-inference.ts dilated_cbd prompt: parse the CBD diameter from the report (dilated only if >6 mm with gallbladder in situ, or the report says "dilated" without negation) instead of firing on any "cbd"/"common bile duct" mention; make its ERCP action conditional ("if a stone is confirmed/ASGE high risk"). |
+| no-cholangitis-alarm | mustNotAlarm | quality | FAIL (known gap) | NICE CG188 2014 | clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches "temp" and "afebrile") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text. |
+| flag-return-precautions | redFlags | quality | PASS | NICE CG188 2014 |  |
+| score-rec-asge-cbd | scoreRecommended | quality | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 |  |
+| inv-lfts | investigationInclude | quality | PASS | NICE CG188 2014 |  |
+| inv-ultrasound | investigationInclude | quality | PASS | NICE CG188 2014 |  |
+| mgmt-elective-lap-chole | managementInclude | quality | PASS | NICE CG188 2014 |  |
+| mgmt-no-antibiotics | managementExclude | quality | FAIL (known gap) |  | clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches "temp" and "afebrile") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text. |
+
+Failure details:
+
+- **dx-biliary-colic-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. Sphincter of Oddi Dysfunction [known gap: PANE has no biliary colic / symptomatic cholelithiasis node: ranks Acute Cholecystitis (0.73) first for a pain-free outpatient with normal WBC/CRP.]
+- **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=140); expected ≤ priority [known gap: adaptiveTriage returns emergency_now (score 140): "No fever, no jaundice" in the HPI fires "Possible biliary obstruction" and "Possible cholangitis pattern", and "radiating to the right shoulder blade" fires "Possible cardiac event".]
+- **no-sepsis-alarm** (web): forbidden alarm present in web.triage.emergency: "emergency now - do not auto-book. advise urgent emergency assessment / tapion contact and ale..." [known gap: Triage "Emergency now" alarm fires (negated fever/jaundice in the HPI).]
+- **no-dilated-cbd-alarm** (web): forbidden alarm present in web.clinicalPrompts.safety: "dilated common bile duct on imaging - dilated cbd → mrcp + ercp" [known gap: "Dilated CBD → MRCP + ERCP" safety prompt fires on "CBD 4 mm" (any mention of the CBD).]
+- **no-cholangitis-alarm** (web): forbidden alarm present in web.clinicalPrompts.safety: "...iad (ruq pain + fever + jaundice) - charcot's triad → acute cholangitis" [known gap: "Charcot's triad → Acute Cholangitis" fires: hasFever matches "afebrile" (contains "febrile"), hasJaundice matches "not jaundiced".]
+- **mgmt-no-antibiotics** (web): forbidden management item present in web.managementPanel: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or piperacillin-tazobactam for severe." (+6 more) [known gap: Assessment panel shows the cholecystitis protocol (PANE top) with IV co-amoxiclav/pip-tazo; the Murphy's-sign prompt (fired by "Murphy's sign negative") adds IV co-amoxiclav.]
+- **mgmt-no-appendicectomy** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Full LAPAROSCOPIC APPENDICECTOMY operative plan prompt: hasAppendicitisIndication fires on "no guarding" in the exam text.]
+
+Guidelines:
+
+- **nice-cg188** — NICE CG188 — Gallstone disease: diagnosis and management (2014), Asymptomatic gallbladder stones in a normal gallbladder and biliary tree: reassure, no treatment; symptomatic gallbladder stones: offer laparoscopic cholecystectomy; LFTs and ultrasound for suspected gallstone disease. National Institute for Health and Care Excellence. Clinical guideline CG188, October 2014. *(statement wording/numbering not yet verified against the source)*
+- **asge-2019** — ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis (2019), Risk strata. High: CBD stone on US/cross-sectional imaging, or total bilirubin >4 mg/dL with dilated CBD, or ascending cholangitis → ERCP. Intermediate: abnormal liver tests, age >55, or dilated CBD → EUS/MRCP or intra-operative cholangiography/laparoscopic US. Low: none → cholecystectomy without further CBD evaluation. Buxbaum JL, Abbas Fehmi SM, Sultan S, et al. Gastrointest Endosc. 2019;89:1075–1105.e15. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Peptic Ulcer Disease; 3. Sphincter of Oddi Dysfunction
+- differential web.symptomInference: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Acute mesenteric ischaemia; 5. Adhesive small bowel obstruction
+- differential web.passive: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Acute mesenteric ischaemia; 5. Adhesive small bowel obstruction
+- differential web.triageSurgical: 1. Acute cholangitis
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=140)
+- alarms: Emergency now [web.triage.emergency]; Charcot's triad (RUQ pain + fever + jaundice) [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, asge-cbd, news2, asa, stop-bang
+- score values: (none)
+- dx variant: (none) (Pancreatitis)
+- note: PANE features applied: ruq_pain, epigastric_pain, nausea_vomiting, fatty_food_trigger
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from PANE top)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (24), Jaundice Workup (15), Pancreatic Mass / Cyst (14)
+
+</details>
+
+#### `biliary-colic-incidental-polyp` — Incidental finding — 12 mm gallbladder polyp alongside gallstones
+
+56-year-old man with typical biliary colic; ultrasound shows gallstones and an incidental 12 mm sessile gallbladder polyp. Normal bloods.
+
+Permutation of `biliary-colic-uncomplicated`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mgmt-cholecystectomy | managementInclude | critical | PASS | ESGAR/EAES/EFISDS/ESGE joint guideline 2022; NICE CG188 2014 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+| level-not-emergency | emergencyLevel | quality | FAIL (known gap) |  | clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches "temp" and "afebrile") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text. |
+| flag-polyp | redFlags | quality | FAIL (known gap) | ESGAR/EAES/EFISDS/ESGE joint guideline 2022 | clinical-inference.ts: add a radiology-result prompt for gallbladder polyp with size parsing (≥10 mm → cholecystectomy if fit; 6–9 mm → surveillance; ESGAR/EAES/EFISDS/ESGE 2022). |
+| mgmt-histology | managementInclude | quality | PASS | ESGAR/EAES/EFISDS/ESGE joint guideline 2022 |  |
+
+Failure details:
+
+- **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=125); expected ≤ priority [known gap: adaptiveTriage emergency_now (score 125) for a pain-free outpatient: "No fever, jaundice or weight loss" fires biliary-obstruction and malignancy rules.]
+- **flag-polyp** (web): no red flag matched among 20 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No engine mentions the 12 mm polyp (no polyp rule in triage, prompts or protocols).]
+
+Guidelines:
+
+- **esgar-polyp-2022** — ESGAR/EAES/EFISDS/ESGE joint guideline — management and follow-up of gallbladder polyps (update) (2022), Cholecystectomy for polyps ≥10 mm (if fit), and for polyps with gallbladder symptoms; histology of the specimen. Foley KG, Lahaye MJ, Thoeni RF, et al. Eur Radiol. 2022;32:3358–3368. *(statement wording/numbering not yet verified against the source)*
+- **nice-cg188** — NICE CG188 — Gallstone disease: diagnosis and management (2014), Asymptomatic gallbladder stones in a normal gallbladder and biliary tree: reassure, no treatment; symptomatic gallbladder stones: offer laparoscopic cholecystectomy; LFTs and ultrasound for suspected gallstone disease. National Institute for Health and Care Excellence. Clinical guideline CG188, October 2014. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Inguinal / Femoral Hernia; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Hepatocellular carcinoma (HCC); 4. Acute gastroenteritis; 5. Acute alcoholic pancreatitis
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Adhesive small bowel obstruction; 5. Perforated peptic ulcer
+- differential web.triageSurgical: 1. Acute cholangitis; 2. Unexplained weight loss / GI alarm symptoms — endoscopy workup
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=125)
+- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]
+- recommended scores: alvarado, asge-cbd, news2, caprini, asa, rcri
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: ruq_pain, nausea_vomiting, fatty_food_trigger
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from PANE top)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (29), Pancreatic Mass / Cyst (21), IBD — Surgical Complications (Crohn's / UC) (14)
+
+</details>
+
+### Inferior ST-elevation myocardial infarction (mimic of biliary pain)
+
+#### `biliary-colic-mimic-inferior-mi` — Dangerous mimic — inferior STEMI presenting as epigastric pain in a diabetic with known gallstones
+
+63-year-old diabetic smoker with known gallstones: 2 h of epigastric pressure, nausea and sweating; pale, clammy, HR 54, BP 98/60. Lipase and LFTs normal. No ECG yet.
+
+Permutation of `biliary-colic-uncomplicated`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-acs | mustNotMiss | critical | FAIL (known gap) | ESC Guidelines for the management of acute coronary syndromes 2023 | lib/pane-engine: add an "acute_coronary_syndrome" mimic node (epigastric pain, diaphoresis, age, diabetes, smoking modifiers) or a hard safety rule in clinical-inference.ts: epigastric/upper abdominal pain + (diaphoresis or HR <60/>100 or SBP <100) + age ≥40/diabetes → "Exclude ACS: ECG within 10 min + troponin". |
+| level-emergency | emergencyLevel | critical | PASS | ESC Guidelines for the management of acute coronary syndromes 2023 |  |
+| inv-ecg | investigationInclude | critical | FAIL (known gap) | ESC Guidelines for the management of acute coronary syndromes 2023 | See mnm-acs: ECG as a stat investigation for epigastric pain with cardiac risk features. |
+| inv-troponin | investigationInclude | critical | FAIL (known gap) | ESC Guidelines for the management of acute coronary syndromes 2023 | See mnm-acs. |
+| mgmt-reperfusion-cardiology | managementInclude | critical | FAIL (known gap) | ESC Guidelines for the management of acute coronary syndromes 2023 | getProtocolByIcd: map I20–I24 to an ACS protocol (or a "not a surgical diagnosis — refer cardiology" stub). |
+| mgmt-no-cholecystectomy | managementExclude | critical | FAIL (known gap) |  | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
+| mgmt-no-appendicectomy | managementExclude | critical | FAIL (known gap) |  | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
+| alarm-cardiac-or-haemodynamic | mustAlarm | quality | FAIL (known gap) | ESC Guidelines for the management of acute coronary syndromes 2023 | See mnm-acs. |
+
+Failure details:
+
+- **mnm-acs** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE has no ACS/MI node (top 3: inguinal hernia, cholecystitis, GORD); symptom inference top 5 has no cardiac diagnosis either.]
+- **alarm-cardiac-or-haemodynamic** (web): no alarm matched among 6 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Only the generic "Emergency now" alarm; no cardiac or haemodynamic alarm (SBP 98 and HR 54 are above the vital red-flag cut-offs).]
+- **inv-ecg** (web): no investigation matched among 26 (web.pane.seeded, web.clinicalPrompts) [known gap: The only ECG is a plan line "12-lead ECG — pre-operative cardiac baseline (age ≥ 40)", not an urgent investigation for ACS.]
+- **inv-troponin** (web): no investigation matched among 26 (web.pane.seeded, web.clinicalPrompts) [known gap: No troponin anywhere.]
+- **mgmt-reperfusion-cardiology** (web): no management item matched among 26 (web.clinicalPrompts) [known gap: No protocol for I21.1 and no prompt: no cardiology/reperfusion/antiplatelet output.]
+- **mgmt-no-cholecystectomy** (web): forbidden management item present in web.clinicalPrompts: "• plan laparoscopic cholecystectomy - early (< 72h onset) or interval (≥ 6 weeks)." (+3 more) [known gap: Gallstone operative-plan prompt fires ("Plan laparoscopic cholecystectomy — early or interval") because "Murphy's sign negative" matches "murphy".]
+- **mgmt-no-appendicectomy** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "no guarding".]
+
+Guidelines:
+
+- **esc-2023-acs** — ESC Guidelines for the management of acute coronary syndromes (2023), 12-lead ECG within 10 minutes of first medical contact; high-sensitivity troponin; immediate reperfusion strategy for STEMI; atypical (epigastric) presentations in women, older and diabetic patients. Byrne RA, Rossello X, Coughlan JJ, et al. Eur Heart J. 2023;44:3720–3826. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. Acute Cholecystitis; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Gallstone pancreatitis; 4. Peptic ulcer disease; 5. Acute mesenteric ischaemia
+- differential web.passive: 1. Acute cholecystitis; 2. Perforated peptic ulcer; 3. Acute alcoholic pancreatitis; 4. Acute appendicitis (paediatric); 5. Chronic pancreatitis
+- differential web.triageSurgical: 1. Acute cholangitis
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=160)
+- alarms: Emergency now [web.triage.emergency]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, qsofa, bisap, web:wagner, news2, caprini, web:gerdq, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: epigastric_pain, nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
+
+</details>
+
 ### Spontaneous oesophageal perforation (Boerhaave's syndrome)
 
 #### `boerhaave-classic-mackler` — 
@@ -2382,6 +2634,60 @@ Guidelines:
 
 </details>
 
+### Acute acalculous cholecystitis
+
+#### `cholecystitis-acalculous-icu` — Acalculous, critically ill (ICU day 9 after polytrauma) — TG18 Grade III
+
+44-year-old ventilated polytrauma patient on ICU day 9 on parenteral nutrition: new fever 38.9 °C, rising noradrenaline, bilirubin 48, WBC 22; ultrasound shows a distended gallbladder with sludge, 6 mm wall and pericholecystic fluid, no stones.
+
+Permutation of `cholecystitis-tg18-grade1`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-cholecystitis-top3 | mustRankTopK | critical | PASS | Tokyo Guidelines 2018 2018 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | Tokyo Guidelines 2018 2018; Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| alarm-sepsis | mustAlarm | critical | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| score-tg18-calculator | scoreValue | critical | PASS | Tokyo Guidelines 2018 2018 |  |
+| inv-blood-cultures | investigationInclude | critical | PASS | Surviving Sepsis Campaign guidelines 2021 2021; Tokyo Guidelines 2018 2018 |  |
+| mgmt-gallbladder-drainage | managementInclude | critical | PASS | Tokyo Guidelines 2018 2018; Tokyo Guidelines 2018 2018 |  |
+| mgmt-antibiotics | managementInclude | critical | PASS | Tokyo Guidelines 2018 2018; Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+| mgmt-no-unqualified-early-lc | managementExclude | quality | FAIL (known gap) | Tokyo Guidelines 2018 2018 | Cholecystitis protocol key points: qualify early LC by grade and fitness (TG18: CCI/ASA-PS; drainage for Grade III/unfit/acalculous critically ill). |
+| pathway-ward-review | pathway | quality | n/a |  |  |
+| variant-grade3 | dxVariant | quality | FAIL (known gap) | Tokyo Guidelines 2018 2018 | dx-variants.ts: check Grade III → II → I; add "acalculous" to Grade III keywords when organ dysfunction is documented. |
+
+Failure details:
+
+- **mgmt-no-unqualified-early-lc** (web): forbidden management item present in web.managementPanel.keyPoints: "early laparoscopic cholecystectomy (within 72 h) reduces complications vs interval surgery." [known gap: Assessment panel key point "Early laparoscopic cholecystectomy (within 72 h) reduces complications" is shown unqualified for a ventilated Grade III patient.]
+- **variant-grade3** (web): detected cholecystitis_grade1 in group Acute Cholecystitis; expected cholecystitis_grade3 [known gap: Grade I variant selected (bare "cholecystitis" keyword checked first), so the Plan tab drops the conservative phase that holds percutaneous cholecystostomy.]
+
+Guidelines:
+
+- **tg18-dx-cholecystitis** — Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholecystitis (2018), Diagnostic criteria (A local + B systemic + C imaging); Grade II: WBC >18,000/mm³, palpable tender RUQ mass, duration >72 h, marked local inflammation (gangrenous, emphysematous, abscess, biliary peritonitis); Grade III: organ dysfunction. Yokoe M, Hata J, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:41–54. *(statement wording/numbering not yet verified against the source)*
+- **tg18-mgmt-cholecystitis** — Tokyo Guidelines 2018 — flowchart for the management of acute cholecystitis (2018), Grade I: early LC if CCI ≤5 / ASA-PS ≤2; Grade II: early LC in an advanced centre if fit, otherwise antibiotics and urgent/early gallbladder drainage when not responding; Grade III: organ support, antibiotics, drainage unless favourable organ dysfunction. Okamoto K, Suzuki K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:55–72. *(statement wording/numbering not yet verified against the source)*
+- **tg18-gb-drainage** — Tokyo Guidelines 2018 — management strategies for gallbladder drainage in acute cholecystitis (2018), Percutaneous transhepatic gallbladder drainage (PTGBD) as first-line drainage in high-risk surgical patients; acalculous cholecystitis in the critically ill. Mori Y, Itoi T, Baron TH, et al. J Hepatobiliary Pancreat Sci. 2018;25:87–95. *(statement wording/numbering not yet verified against the source)*
+- **tg18-antimicrobial** — Tokyo Guidelines 2018 — antimicrobial therapy for acute cholangitis and cholecystitis (2018), Blood cultures in Grade II/III; antimicrobial choice by severity; duration after source control. Gomi H, Solomkin JS, Schlossberg D, et al. J Hepatobiliary Pancreat Sci. 2018;25:3–16. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign guidelines 2021 (2021), Blood cultures before antimicrobials; antimicrobials within 1 h for shock; source control; noradrenaline first-line vasopressor. Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. Acute Cholecystitis; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. CBD stone / obstructive jaundice; 2. Leptospirosis; 3. Liver disease / hepatitis / cirrhosis; 4. Infective endocarditis; 5. Neonatal jaundice
+- differential web.passive: 1. CBD stone / obstructive jaundice; 2. Leptospirosis; 3. Neonatal jaundice; 4. Febrile convulsion; 5. Sickle cell crisis
+- differential web.triageSurgical: 1. Acute cholangitis
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=180)
+- alarms: Emergency now [web.triage.emergency]; Courvoisier's sign (palpable non-tender gallbladder + jaundice) [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 22.1 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.9°C + HR 118 bpm [web.clinicalPrompts.safety]
+- recommended scores: tg18-cholangitis, qsofa, asge-cbd, news2
+- score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=3; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=0
+- dx variant: cholecystitis_grade1 (Acute Cholecystitis)
+- note: PANE features applied: (none)
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from ICD)
+- note: PlanTab protocol: cholecystitis (from ICD)
+- note: matchPathways: Jaundice Workup (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10)
+
+</details>
+
 ### Acute calculous cholecystitis
 
 #### `cholecystitis-tg18-grade1` — TG18 Grade I (mild) — base case
@@ -2435,6 +2741,222 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from PANE top)
 - note: PlanTab protocol: cholecystitis (from ICD)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (17), Jaundice Workup (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (7)
+
+</details>
+
+#### `cholecystitis-elderly-diabetic-atypical` — Elderly (81) diabetic, atypical — afebrile, vague pain, off food; TG18 Grade II by WBC >18
+
+81-year-old insulin-treated diabetic woman, 3 days off her food with vague upper abdominal discomfort; T 37.4 °C, equivocal Murphy’s, WBC 19.4, CRP 210; ultrasound shows a distended thick-walled gallbladder with stones and pericholecystic fluid.
+
+Permutation of `cholecystitis-tg18-grade1`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-cholecystitis-top3 | mustRankTopK | critical | PASS | Tokyo Guidelines 2018 2018 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | Tokyo Guidelines 2018 2018 |  |
+| score-tg18-calculator | scoreValue | critical | PASS | Tokyo Guidelines 2018 2018 |  |
+| mgmt-definitive-or-drainage | managementInclude | critical | PASS | Tokyo Guidelines 2018 2018 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+| mnm-mesenteric-ischaemia | mustNotMiss | quality | FAIL (known gap) |  | PANE: age ≥75 / vascular risk modifier for mesenteric ischaemia. |
+| flag-diabetes-elderly | redFlags | quality | PASS |  |  |
+| score-tg18-autofill | scoreValue | quality | FAIL (known gap) | Tokyo Guidelines 2018 2018 | clinical-scores.ts: derive the TG18 imaging criterion from the radiology result text (wall thickening, pericholecystic fluid, sonographic Murphy's) and local signs from exam chips. |
+| inv-blood-cultures | investigationInclude | quality | PASS | Tokyo Guidelines 2018 2018 |  |
+| mgmt-antibiotics | managementInclude | quality | PASS | Tokyo Guidelines 2018 2018 |  |
+| mgmt-glycaemic-plan | managementInclude | quality | PASS |  |  |
+| mgmt-no-nsaid-ckd | managementExclude | quality | FAIL (known gap) |  | Operative-plan templates: omit NSAIDs when comorbidities include CKD or age ≥75, rather than a free-text "if eGFR normal" caveat. |
+| variant-grade2 | dxVariant | quality | FAIL (known gap) | Tokyo Guidelines 2018 2018 | dx-variants.ts: check Grade III → II → I, and remove the bare "cholecystitis" keyword from Grade I. |
+
+Failure details:
+
+- **mnm-mesenteric-ischaemia** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3: cholecystitis, peptic ulcer, GORD (symptom inference #4 has mesenteric ischaemia).]
+- **score-tg18-autofill** (web): expected ≥ 2; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: clinical-scores auto-derived grade = 0 "criteria not met" despite WBC 19.4 and a characteristic US report (needs manual imaging ticks).]
+- **mgmt-no-nsaid-ckd** (web): forbidden management item present in web.clinicalPrompts: "... 2. post-operative orders: • paracetamol 1g qds (regular) + ibuprofen 400mg tds (if egfr normal). • morphine 2.5-5mg sc/iv prn for pain > 5/10. • fre..." [known gap: Lap chole operative-plan post-op orders: "Ibuprofen 400mg TDS (if eGFR normal)" in an 81-year-old with CKD 3a (conditional on eGFR, but the plan text is inserted regardless).]
+- **variant-grade2** (web): detected cholecystitis_grade1 in group Acute Cholecystitis; expected cholecystitis_grade2 [known gap: Grade I variant lists the bare keyword "cholecystitis" and is checked first (seed finding).]
+
+Guidelines:
+
+- **tg18-dx-cholecystitis** — Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholecystitis (2018), Diagnostic criteria (A local + B systemic + C imaging); Grade II: WBC >18,000/mm³, palpable tender RUQ mass, duration >72 h, marked local inflammation (gangrenous, emphysematous, abscess, biliary peritonitis); Grade III: organ dysfunction. Yokoe M, Hata J, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:41–54. *(statement wording/numbering not yet verified against the source)*
+- **tg18-mgmt-cholecystitis** — Tokyo Guidelines 2018 — flowchart for the management of acute cholecystitis (2018), Grade I: early LC if CCI ≤5 / ASA-PS ≤2; Grade II: early LC in an advanced centre if fit, otherwise antibiotics and urgent/early gallbladder drainage when not responding; Grade III: organ support, antibiotics, drainage unless favourable organ dysfunction. Okamoto K, Suzuki K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:55–72. *(statement wording/numbering not yet verified against the source)*
+- **tg18-antimicrobial** — Tokyo Guidelines 2018 — antimicrobial therapy for acute cholangitis and cholecystitis (2018), Blood cultures in Grade II/III; antimicrobial choice by severity; duration after source control. Gomi H, Solomkin JS, Schlossberg D, et al. J Hepatobiliary Pancreat Sci. 2018;25:3–16. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Peptic Ulcer Disease; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Acute cholecystitis; 2. Gallstone pancreatitis; 3. Peptic ulcer disease; 4. CBD stone / obstructive jaundice; 5. Obstructed / strangulated hernia
+- differential web.passive: 1. Acute cholecystitis; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute appendicitis (paediatric); 5. Intussusception
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=70)
+- alarms: Emergency now [web.triage.emergency]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; BGL 17.8 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, asge-cbd, web:wagner, news2, caprini, asa, rcri, cfs
+- score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=2; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=0
+- dx variant: cholecystitis_grade1 (Acute Cholecystitis)
+- note: PANE features applied: ruq_pain, epigastric_pain, nausea_vomiting, anorexia
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from PANE top)
+- note: PlanTab protocol: cholecystitis (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (5), IBD — Surgical Complications (Crohn's / UC) (5)
+
+</details>
+
+#### `cholecystitis-high-risk-grade2-drainage` — High surgical risk (84, CCI 8, ASA IV) — TG18 Grade II not responding to antibiotics → percutaneous drainage
+
+84-year-old man with HFrEF (EF 25%), severe COPD and CKD 3b; 4 days of RUQ pain, fever 38.4 °C, WBC 16, CRP 230, characteristic ultrasound; still febrile after 48 h of IV co-amoxiclav.
+
+Permutation of `cholecystitis-tg18-grade1`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-cholecystitis-top3 | mustRankTopK | critical | PASS | Tokyo Guidelines 2018 2018 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | Tokyo Guidelines 2018 2018 |  |
+| score-tg18-calculator | scoreValue | critical | FAIL (known gap) | Tokyo Guidelines 2018 2018 | clinical-scores.ts scoreTokyoCholecystitis: add the missing TG18 Grade II criteria (duration >72 h, palpable tender RUQ mass, marked local inflammation — gangrenous/emphysematous/abscess/biliary peritonitis) as inputs, as ScalesTab/ClinicalScoresPanel ticks. |
+| mgmt-gallbladder-drainage | managementInclude | critical | PASS | Tokyo Guidelines 2018 2018; Tokyo Guidelines 2018 2018 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+| flag-surgical-risk | redFlags | quality | PASS | Tokyo Guidelines 2018 2018 |  |
+| score-rec-asa | scoreRecommended | quality | PASS | Tokyo Guidelines 2018 2018 |  |
+| inv-blood-cultures | investigationInclude | quality | PASS | Tokyo Guidelines 2018 2018 |  |
+| mgmt-drainage-in-documented-plan | managementInclude | quality | FAIL (known gap) | Tokyo Guidelines 2018 2018 | dx-variants.ts: include the conservative (drainage) phase in the Grade II variant, and fix variant order (see variant-grade2). |
+| mgmt-no-unqualified-early-lc | managementExclude | quality | FAIL (known gap) | Tokyo Guidelines 2018 2018 | Cholecystitis protocol: "Early LC within 72 h if CCI ≤5 and ASA-PS ≤2 (TG18)"; add a high-risk branch "antibiotics, then PTGBD if not responding; delayed LC if fitness improves". |
+| variant-grade2 | dxVariant | quality | FAIL (known gap) | Tokyo Guidelines 2018 2018 | dx-variants.ts: check Grade III → II → I. |
+
+Failure details:
+
+- **score-tg18-calculator** (web): expected = 2; got web.scoreCalculator.tg18-cholecystitis=1 (Mild cholecystitis — elective laparoscopic cholecystectomy) [known gap: Web calculator returns Grade I: it has no "duration >72 h" criterion (Grade II only on WBC >18).]
+- **mgmt-drainage-in-documented-plan** (web): no management item matched among 13 (web.plan) [known gap: Grade I variant allows immediate/surgical/followup phases only, so "percutaneous cholecystostomy if … unfit for surgery" (conservative phase) is missing from the Plan tab; it appears only in the Assessment panel.]
+- **mgmt-no-unqualified-early-lc** (web): forbidden management item present in web.plan: "[surgical] early laparoscopic cholecystectomy within 72 h (grade i-ii)." (+2 more) [known gap: Plan tab: "[surgical] Early laparoscopic cholecystectomy within 72 h (Grade I–II)" for a CCI 8 / ASA IV patient, with no fitness qualifier.]
+- **variant-grade2** (web): detected cholecystitis_grade1 in group Acute Cholecystitis; expected cholecystitis_grade2 [known gap: Grade I variant selected ("cholecystitis" keyword first).]
+
+Guidelines:
+
+- **tg18-dx-cholecystitis** — Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholecystitis (2018), Diagnostic criteria (A local + B systemic + C imaging); Grade II: WBC >18,000/mm³, palpable tender RUQ mass, duration >72 h, marked local inflammation (gangrenous, emphysematous, abscess, biliary peritonitis); Grade III: organ dysfunction. Yokoe M, Hata J, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:41–54. *(statement wording/numbering not yet verified against the source)*
+- **tg18-mgmt-cholecystitis** — Tokyo Guidelines 2018 — flowchart for the management of acute cholecystitis (2018), Grade I: early LC if CCI ≤5 / ASA-PS ≤2; Grade II: early LC in an advanced centre if fit, otherwise antibiotics and urgent/early gallbladder drainage when not responding; Grade III: organ support, antibiotics, drainage unless favourable organ dysfunction. Okamoto K, Suzuki K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:55–72. *(statement wording/numbering not yet verified against the source)*
+- **tg18-gb-drainage** — Tokyo Guidelines 2018 — management strategies for gallbladder drainage in acute cholecystitis (2018), Percutaneous transhepatic gallbladder drainage (PTGBD) as first-line drainage in high-risk surgical patients; acalculous cholecystitis in the critically ill. Mori Y, Itoi T, Baron TH, et al. J Hepatobiliary Pancreat Sci. 2018;25:87–95. *(statement wording/numbering not yet verified against the source)*
+- **tg18-antimicrobial** — Tokyo Guidelines 2018 — antimicrobial therapy for acute cholangitis and cholecystitis (2018), Blood cultures in Grade II/III; antimicrobial choice by severity; duration after source control. Gomi H, Solomkin JS, Schlossberg D, et al. J Hepatobiliary Pancreat Sci. 2018;25:3–16. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Acute Cholangitis; 3. Inguinal / Femoral Hernia
+- differential web.symptomInference: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Hepatocellular carcinoma (HCC); 4. Acute mesenteric ischaemia; 5. Symptomatic / ruptured abdominal aortic aneurysm
+- differential web.passive: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. UTI (paediatric); 4. Typhoid fever; 5. Mesenteric adenitis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=154)
+- alarms: Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 160 μmol/L — elevated [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Fever 38.4°C + HR 102 bpm [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]
+- recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, asge-cbd, news2, asa, rcri, cfs
+- score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=1; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=0
+- dx variant: cholecystitis_grade1 (Acute Cholecystitis)
+- note: PANE features applied: ruq_pain, nausea_vomiting, fever, anorexia
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from ICD)
+- note: PlanTab protocol: cholecystitis (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7)
+
+</details>
+
+#### `cholecystitis-immunosuppressed-gangrenous` — Immunosuppressed (renal transplant: tacrolimus, MMF, prednisolone) — masked signs, gangrenous change = Grade II
+
+58-year-old renal transplant recipient on tacrolimus, mycophenolate and prednisolone 7.5 mg: 2 days of mild RUQ discomfort, T 37.6 °C, minimal tenderness, WBC 11.2, CRP 145; ultrasound shows gallstones with a striated, irregular wall and intraluminal membranes (gangrenous change).
+
+Permutation of `cholecystitis-tg18-grade1`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-cholecystitis-top3 | mustRankTopK | critical | PASS | Tokyo Guidelines 2018 2018 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | Tokyo Guidelines 2018 2018 |  |
+| score-tg18-calculator | scoreValue | critical | FAIL (known gap) | Tokyo Guidelines 2018 2018 | clinical-scores.ts scoreTokyoCholecystitis: add the missing TG18 Grade II criteria (duration >72 h, palpable tender RUQ mass, marked local inflammation — gangrenous/emphysematous/abscess/biliary peritonitis) as inputs, as ScalesTab/ClinicalScoresPanel ticks. |
+| mgmt-source-control | managementInclude | critical | PASS | Tokyo Guidelines 2018 2018 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | FAIL (known gap) |  | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
+| flag-immunosuppression | redFlags | quality | FAIL (known gap) |  | clinical-inference.ts: add an immunosuppression prompt (tacrolimus/mycophenolate/azathioprine/prednisolone ≥5 mg or "transplant" in PMH/medications): masked signs, lower threshold for imaging/escalation, steroid cover, drug interactions. |
+| inv-blood-cultures | investigationInclude | quality | PASS | Tokyo Guidelines 2018 2018 |  |
+| mgmt-antibiotics | managementInclude | quality | PASS | Tokyo Guidelines 2018 2018 |  |
+| mgmt-steroid-cover | managementInclude | quality | FAIL (known gap) | AAGBI/RCP/Society for Endocrinology guideline 2020 | See flag-immunosuppression; add peri-operative hydrocortisone cover (AAGBI/RCP/SfE 2020) to operative-plan templates when a glucocorticoid is on the medication list. |
+| mgmt-transplant-liaison | managementInclude | quality | PASS |  |  |
+| variant-grade2 | dxVariant | quality | FAIL (known gap) | Tokyo Guidelines 2018 2018 | dx-variants.ts: check Grade III → II → I and move "gangrenous cholecystitis" to Grade II (TG18 marked local inflammation), keeping Grade III for organ dysfunction. |
+
+Failure details:
+
+- **flag-immunosuppression** (web): no red flag matched among 25 (web.triage.reasons, web.protocol.redFlags, web.dxVariant.urgencyNote, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No output mentions immunosuppression, transplant or steroids.]
+- **score-tg18-calculator** (web): expected = 2; got web.scoreCalculator.tg18-cholecystitis=1 (Mild cholecystitis — elective laparoscopic cholecystectomy) [known gap: Web calculator returns Grade I: no "marked local inflammation" (gangrenous) criterion.]
+- **mgmt-steroid-cover** (web): no management item matched among 54 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts, web.scoreCalculator.tg18-cholecystitis) [known gap: No peri-operative steroid cover for a patient on prednisolone 7.5 mg.]
+- **mgmt-no-appendicectomy** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "No guarding" in the exam text.]
+- **variant-grade2** (web): detected cholecystitis_grade1 in group Acute Cholecystitis; expected cholecystitis_grade2 [known gap: Grade I variant selected ("cholecystitis" keyword first; "gangrenous cholecystitis" is a Grade III keyword in dx-variants although TG18 grades it II).]
+
+Guidelines:
+
+- **tg18-dx-cholecystitis** — Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholecystitis (2018), Diagnostic criteria (A local + B systemic + C imaging); Grade II: WBC >18,000/mm³, palpable tender RUQ mass, duration >72 h, marked local inflammation (gangrenous, emphysematous, abscess, biliary peritonitis); Grade III: organ dysfunction. Yokoe M, Hata J, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:41–54. *(statement wording/numbering not yet verified against the source)*
+- **tg18-mgmt-cholecystitis** — Tokyo Guidelines 2018 — flowchart for the management of acute cholecystitis (2018), Grade I: early LC if CCI ≤5 / ASA-PS ≤2; Grade II: early LC in an advanced centre if fit, otherwise antibiotics and urgent/early gallbladder drainage when not responding; Grade III: organ support, antibiotics, drainage unless favourable organ dysfunction. Okamoto K, Suzuki K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:55–72. *(statement wording/numbering not yet verified against the source)*
+- **tg18-antimicrobial** — Tokyo Guidelines 2018 — antimicrobial therapy for acute cholangitis and cholecystitis (2018), Blood cultures in Grade II/III; antimicrobial choice by severity; duration after source control. Gomi H, Solomkin JS, Schlossberg D, et al. J Hepatobiliary Pancreat Sci. 2018;25:3–16. *(statement wording/numbering not yet verified against the source)*
+- **steroid-periop-2020** — AAGBI/RCP/Society for Endocrinology guideline — peri-operative glucocorticoids in adrenal insufficiency (including long-term steroid users) (2020), Patients on ≥5 mg prednisolone for >4 weeks need peri-operative hydrocortisone cover. Woodcock T, Barker P, Daniel S, et al. Anaesthesia. 2020;75:654–663. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Inguinal / Femoral Hernia; 3. Acute Appendicitis
+- differential web.symptomInference: 1. Acute cholecystitis; 2. Acute alcoholic pancreatitis; 3. Acute appendicitis (paediatric); 4. Hepatocellular carcinoma (HCC); 5. Mesenteric adenitis
+- differential web.passive: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Mesenteric adenitis; 4. Acute gastroenteritis; 5. Perforated peptic ulcer
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=72)
+- alarms: Emergency now [web.triage.emergency]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 132 μmol/L — elevated [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, asge-cbd, news2, caprini, asa, rcri
+- score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=1; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=0
+- dx variant: cholecystitis_grade1 (Acute Cholecystitis)
+- note: PANE features applied: ruq_pain, nausea_vomiting, fever
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from PANE top)
+- note: PlanTab protocol: cholecystitis (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10)
+
+</details>
+
+#### `cholecystitis-pregnancy-t2` — Pregnancy, 22 weeks — TG18 Grade I
+
+29-year-old at 22 weeks’ gestation with 36 h of RUQ pain, fever 38.2 °C, positive Murphy’s; WBC 14.8 and ALP 210 (both partly physiological in pregnancy); ultrasound shows gallstones with a 5 mm wall and pericholecystic fluid; live fetus.
+
+Permutation of `cholecystitis-tg18-grade1`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-cholecystitis-top3 | mustRankTopK | critical | PASS | Tokyo Guidelines 2018 2018 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | SAGES guidelines for the use of laparoscopy during pregnancy 2017 |  |
+| flag-pregnancy | redFlags | critical | PASS | ACOG Committee Opinion No. 723 2017 |  |
+| score-tg18-calculator | scoreValue | critical | PASS | Tokyo Guidelines 2018 2018 |  |
+| mgmt-lap-chole | managementInclude | critical | PASS | SAGES guidelines for the use of laparoscopy during pregnancy 2017 |  |
+| mgmt-no-nsaid-after-20-weeks | managementExclude | critical | FAIL (known gap) | US FDA Drug Safety Communication 2020 | clinical-inference.ts operative-plan templates (lap chole and appendicectomy post-operative orders): when pregnancyPossible/pregnant, drop ibuprofen (NSAIDs from 20 weeks), replace "β-HCG confirmed negative" with the gestation, add obstetric review and fetal heart monitoring, and prefer US/MRI to CT. |
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+| inv-no-unqualified-ct | investigationExclude | quality | FAIL (known gap) | ACOG Committee Opinion No. 723 2017 | HpiTab.seedInvestigationsFromPane: skip ionising imaging when pregnant (offer US/MRI) and keep each protocol investigation's conditional. |
+| mgmt-obstetric-involvement | managementInclude | quality | FAIL (known gap) | SAGES guidelines for the use of laparoscopy during pregnancy 2017; ACOG Committee Opinion No. 775 2019 | clinical-inference.ts operative-plan templates (lap chole and appendicectomy post-operative orders): when pregnancyPossible/pregnant, drop ibuprofen (NSAIDs from 20 weeks), replace "β-HCG confirmed negative" with the gestation, add obstetric review and fetal heart monitoring, and prefer US/MRI to CT. |
+| mgmt-antibiotics | managementInclude | quality | PASS | Tokyo Guidelines 2018 2018 |  |
+| mgmt-no-teratogenic-antibiotic | managementExclude | quality | PASS |  |  |
+| mgmt-no-bhcg-negative-assumption | managementExclude | quality | PASS |  |  |
+
+Failure details:
+
+- **inv-no-unqualified-ct** (web): forbidden investigation present in web.pane.seeded: "ct abdomen/pelvis with iv contrast (appendicitis)" [known gap: "CT abdomen/pelvis with IV contrast (appendicitis)" seeded for a pregnant patient. HpiTab.seedInvestigationsFromPane seeds every stat/urgent investigation of the top-3 PANE protocols, including CT from unrelated protocols, with no pregnancy check.]
+- **mgmt-obstetric-involvement** (web): no management item matched among 49 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts, web.scoreCalculator.tg18-cholecystitis) [known gap: No obstetric review or fetal monitoring in any web output.]
+- **mgmt-no-nsaid-after-20-weeks** (web): forbidden management item present in web.clinicalPrompts: "... 2. post-operative orders: • paracetamol 1g qds (regular) + ibuprofen 400mg tds (if egfr normal). • morphine 2.5-5mg sc/iv prn for pain > 5/10. • fre..." [known gap: Lap chole operative-plan post-op orders: "Ibuprofen 400mg TDS (if eGFR normal)" at 22 weeks.]
+
+Guidelines:
+
+- **tg18-dx-cholecystitis** — Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholecystitis (2018), Diagnostic criteria (A local + B systemic + C imaging); Grade II: WBC >18,000/mm³, palpable tender RUQ mass, duration >72 h, marked local inflammation (gangrenous, emphysematous, abscess, biliary peritonitis); Grade III: organ dysfunction. Yokoe M, Hata J, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:41–54. *(statement wording/numbering not yet verified against the source)*
+- **tg18-antimicrobial** — Tokyo Guidelines 2018 — antimicrobial therapy for acute cholangitis and cholecystitis (2018), Blood cultures in Grade II/III; antimicrobial choice by severity; duration after source control. Gomi H, Solomkin JS, Schlossberg D, et al. J Hepatobiliary Pancreat Sci. 2018;25:3–16. *(statement wording/numbering not yet verified against the source)*
+- **sages-2017** — SAGES guidelines for the use of laparoscopy during pregnancy (2017), Laparoscopic cholecystectomy is safe in any trimester and is the treatment of choice for symptomatic gallbladder disease/gallstone pancreatitis; obstetric consultation; fetal heart monitoring; VTE prophylaxis. Pearl JP, Price RR, Tonkin AE, Richardson WS, Stefanidis D. Surg Endosc. 2017;31:3767–3782. *(statement wording/numbering not yet verified against the source)*
+- **acog-co723-2017** — ACOG Committee Opinion No. 723 — Guidelines for diagnostic imaging during pregnancy and lactation (2017), US and MRI preferred; CT not contraindicated when needed; gadolinium only if it clearly improves diagnosis. ACOG Committee Opinion No. 723. Obstet Gynecol. 2017;130:e210–e216. *(statement wording/numbering not yet verified against the source)*
+- **acog-co775-2019** — ACOG Committee Opinion No. 775 — Nonobstetric surgery during pregnancy (2019), Obstetric consultation before non-obstetric surgery; fetal heart rate assessment before and after the procedure. ACOG Committee Opinion No. 775. Obstet Gynecol. 2019;133:e285–e286. *(statement wording/numbering not yet verified against the source)*
+- **fda-2020-nsaid** — US FDA Drug Safety Communication — NSAIDs in pregnancy at 20 weeks or later (2020), Avoid NSAIDs from about 20 weeks’ gestation (fetal renal dysfunction, oligohydramnios). US Food and Drug Administration. Drug Safety Communication, 15 October 2020. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Acute Cholangitis; 3. Acute Appendicitis
+- differential web.symptomInference: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Gallstone pancreatitis; 5. Adhesive small bowel obstruction
+- differential web.passive: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute mesenteric ischaemia
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=237)
+- alarms: Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Fever 38.2°C + HR 104 bpm [web.clinicalPrompts.safety]
+- recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, asge-cbd, news2
+- score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=1; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=0
+- dx variant: cholecystitis_grade1 (Acute Cholecystitis)
+- note: PANE features applied: ruq_pain, nausea_vomiting, fever, fatty_food_trigger
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from PANE top)
+- note: PlanTab protocol: cholecystitis (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Acute Abdomen (7)
 
 </details>
 
@@ -2559,6 +3081,299 @@ Guidelines:
 - note: PlanTab protocol: cholecystitis (from ICD)
 - note: no web calculator for score form 'qsofa'
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10), Wound Management (Acute / Chronic / SSI) (5)
+
+</details>
+
+### Right lower lobe community-acquired pneumonia (mimic of cholecystitis)
+
+#### `cholecystitis-mimic-rll-pneumonia` — Dangerous mimic — right lower lobe pneumonia with RUQ pain and fever, normal gallbladder
+
+47-year-old man with 3 days of fever 38.9 °C, RUQ pain worse on deep breathing, productive cough and breathlessness; RR 26, SpO₂ 91%, crackles at the right base; ultrasound shows a normal gallbladder and a small right pleural effusion. No chest X-ray yet.
+
+Permutation of `cholecystitis-tg18-grade1`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-pneumonia | mustNotMiss | critical | FAIL (known gap) | NICE CG191 2014 | lib/pane-engine: add a "pneumonia" mimic node (cough, pleuritic pain, dyspnoea, hypoxia, basal crackles) or surface the symptom-inference #1 when it is not in the PANE top 3. |
+| level-at-least-urgent | emergencyLevel | critical | PASS | NICE CG191 2014 |  |
+| inv-chest-xray | investigationInclude | critical | FAIL (known gap) | NICE CG191 2014 | clinical-inference.ts: RUQ/upper abdominal pain + (cough or pleuritic pain or SpO₂ <94% or basal crackles) → "CXR (exclude basal pneumonia)" as an investigation (addToInvestigations). |
+| mgmt-no-cholecystectomy | managementExclude | critical | FAIL (known gap) |  | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
+| mgmt-no-appendicectomy | managementExclude | critical | FAIL (known gap) |  | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
+| alarm-hypoxia | mustAlarm | quality | PASS |  |  |
+| score-rec-curb65 | scoreRecommended | quality | PASS | NICE CG191 2014 |  |
+| inv-blood-cultures | investigationInclude | quality | PASS | NICE CG191 2014 |  |
+
+Failure details:
+
+- **mnm-pneumonia** (web): not in top 3 of web.pane: 1. Liver Abscess \| 2. Acute Appendicitis \| 3. Inguinal / Femoral Hernia; also in web.symptomInference#1, web.passive#2 [known gap: PANE has no pneumonia node (top 3: liver abscess, appendicitis, inguinal hernia). Symptom inference ranks community-acquired pneumonia #1 but it is a secondary view.]
+- **inv-chest-xray** (web): no investigation matched among 33 (web.pane.seeded, web.clinicalPrompts) [known gap: No CXR investigation for pneumonia; a CXR appears only as plan text in the hypoxia/sepsis prompts ("CXR — identify cause", "Erect CXR — exclude free air and basal pneumonia"). Partial mitigation.]
+- **mgmt-no-cholecystectomy** (web): forbidden management item present in web.clinicalPrompts: "• consent: laparoscopic cholecystectomy - bile duct injury (0.3%), haemorrhage, conversion to open, bile leak, retained..." (+3 more) [known gap: Gallstone operative plan and consent prompt fire (hasGallstoneIndication: the "right upper quadrant pain" symptom chip, and "Murphy's sign negative" matches "murphy") despite a normal gallbladder on US.]
+- **mgmt-no-appendicectomy** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "without guarding".]
+
+Guidelines:
+
+- **nice-cg191** — NICE CG191 — Pneumonia in adults: diagnosis and management (2014), Chest X-ray to confirm community-acquired pneumonia; CRB-65/CURB-65 severity assessment; antibiotics within 4 hours. National Institute for Health and Care Excellence. Clinical guideline CG191, December 2014 (updated 2022). *(statement wording/numbering not yet verified against the source)*
+- **tg18-dx-cholecystitis** — Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholecystitis (2018), Diagnostic criteria (A local + B systemic + C imaging); Grade II: WBC >18,000/mm³, palpable tender RUQ mass, duration >72 h, marked local inflammation (gangrenous, emphysematous, abscess, biliary peritonitis); Grade III: organ dysfunction. Yokoe M, Hata J, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:41–54. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Liver Abscess; 2. Acute Appendicitis; 3. Inguinal / Femoral Hernia
+- differential web.symptomInference: 1. Community-acquired pneumonia; 2. Empyema thoracis; 3. Acute cholecystitis; 4. Sepsis / systemic infection; 5. Infective endocarditis
+- differential web.passive: 1. Acute cholecystitis; 2. Community-acquired pneumonia; 3. Empyema thoracis; 4. Sepsis / systemic infection; 5. Infective endocarditis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=363)
+- alarms: Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 17.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Fever 38.9°C + HR 112 bpm [web.clinicalPrompts.safety]; SpO₂ 91% — hypoxia [web.clinicalPrompts.safety]
+- recommended scores: alvarado, heart, wells-pe, tg18-cholangitis, ranson, qsofa, asge-cbd, curb65, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: ruq_pain, nausea_vomiting, fever, rigors
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), IBD — Surgical Complications (Crohn's / UC) (12)
+
+</details>
+
+### Choledocholithiasis
+
+#### `choledocholithiasis-asge-high-risk` — Base case — ASGE 2019 high risk (CBD stone on ultrasound; bilirubin >4 mg/dL with dilated CBD), no cholangitis
+
+48-year-old woman with 2 days of RUQ pain then jaundice, dark urine and pale stools; afebrile; bilirubin 92 µmol/L (5.4 mg/dL), ALP 410; ultrasound shows a 10 mm CBD with a distal 8 mm stone.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-cbd-stone-top3 | mustRankTopK | critical | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 |  |
+| level-at-least-priority | emergencyLevel | critical | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 |  |
+| mgmt-ercp | managementInclude | critical | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019; ESGE guideline 2019 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | FAIL (known gap) |  | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
+| mnm-malignant-obstruction | mustNotMiss | quality | FAIL (known gap) |  | PANE: keep one malignant obstruction node in the displayed list when jaundice is present (or display top 5). |
+| score-rec-asge-cbd | scoreRecommended | quality | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 |  |
+| inv-coagulation | investigationInclude | quality | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 |  |
+| inv-no-mrcp-before-ercp | investigationExclude | quality | FAIL (known gap) | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 | Choledocholithiasis protocol: make MRCP/EUS conditional on ASGE intermediate risk; high risk → ERCP directly. |
+| mgmt-cholecystectomy-after-ercp | managementInclude | quality | PASS | BSG updated guideline on the management of common bile duct stones 2017 |  |
+
+Failure details:
+
+- **mnm-malignant-obstruction** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Choledocholithiasis \| 3. Acute Pancreatitis; also in web.symptomInference#4, web.passive#2 [known gap: PANE top 3: cholecystitis, choledocholithiasis, pancreatitis (symptom inference #4 has cholangiocarcinoma).]
+- **inv-no-mrcp-before-ercp** (web): forbidden investigation present in web.plan.investigations: "mrcp (cbd stone confirmation)" (+2 more) [known gap: Choledocholithiasis protocol lists MRCP unconditionally, even when a duct stone is seen on US (ASGE high risk).]
+- **mgmt-no-appendicectomy** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "no guarding".]
+
+Guidelines:
+
+- **asge-2019** — ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis (2019), Risk strata. High: CBD stone on US/cross-sectional imaging, or total bilirubin >4 mg/dL with dilated CBD, or ascending cholangitis → ERCP. Intermediate: abnormal liver tests, age >55, or dilated CBD → EUS/MRCP or intra-operative cholangiography/laparoscopic US. Low: none → cholecystectomy without further CBD evaluation. Buxbaum JL, Abbas Fehmi SM, Sultan S, et al. Gastrointest Endosc. 2019;89:1075–1105.e15. *(statement wording/numbering not yet verified against the source)*
+- **esge-2019-cbds** — ESGE guideline — endoscopic management of common bile duct stones (2019), ERCP for CBD stones; EUS/MRCP for intermediate probability; peri-procedural considerations including pregnancy. Manes G, Paspatis G, Aabakken L, et al. Endoscopy. 2019;51:472–491. *(statement wording/numbering not yet verified against the source)*
+- **bsg-2017-cbds** — BSG updated guideline on the management of common bile duct stones (2017), MRCP/EUS when CBDS suspected but not confirmed; cholecystectomy after ERCP clearance (within 2 weeks) unless unfit. Williams E, Beckingham I, El Sayed G, et al. Gut. 2017;66:765–782. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Choledocholithiasis; 3. Acute Pancreatitis
+- differential web.symptomInference: 1. CBD stone / obstructive jaundice; 2. Liver disease / hepatitis / cirrhosis; 3. Acute cholangitis; 4. Cholangiocarcinoma; 5. Biliary atresia
+- differential web.passive: 1. Liver disease / hepatitis / cirrhosis; 2. Cholangiocarcinoma; 3. CBD stone / obstructive jaundice; 4. Biliary atresia; 5. Pancreatic adenocarcinoma
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=130)
+- alarms: Emergency now [web.triage.emergency]; Charcot's triad (RUQ pain + fever + jaundice) [web.clinicalPrompts.safety]; Courvoisier's sign (palpable non-tender gallbladder + jaundice) [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
+- recommended scores: tg18-cholangitis, asge-cbd, news2
+- score values: (none)
+- dx variant: (none) (Cholangitis)
+- note: PANE features applied: ruq_pain, epigastric_pain, colicky_pain, radiation_to_back, nausea_vomiting, jaundice
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from PANE top)
+- note: PlanTab protocol: choledocholithiasis (from ICD)
+- note: matchPathways: Jaundice Workup (30), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (22), Pancreatic Mass / Cyst (17)
+
+</details>
+
+#### `choledocholithiasis-elderly-warfarin` — Elderly (79) on warfarin (INR 2.6) — ASGE high risk; anticoagulation plan before sphincterotomy
+
+79-year-old man with AF on warfarin (INR 2.6): painless-ish jaundice with RUQ discomfort; bilirubin 70, ALP 360; ultrasound shows a 12 mm CBD with stones; afebrile.
+
+Permutation of `choledocholithiasis-asge-high-risk`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-cbd-stone-top3 | mustRankTopK | critical | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 |  |
+| level-at-least-priority | emergencyLevel | critical | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 |  |
+| flag-anticoagulant | redFlags | critical | PASS | BSG/ESGE guideline 2021 |  |
+| inv-inr | investigationInclude | critical | PASS | BSG/ESGE guideline 2021 |  |
+| mgmt-ercp | managementInclude | critical | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 |  |
+| mgmt-anticoagulation-plan | managementInclude | critical | PASS | BSG/ESGE guideline 2021 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+| mnm-malignant-obstruction | mustNotMiss | quality | FAIL (known gap) |  | PANE: age modifier for pancreatic/biliary malignancy with jaundice; recalibrate the inguinal hernia prior (0.15) that fills the top 3 in unrelated presentations. |
+
+Failure details:
+
+- **mnm-malignant-obstruction** (web): not in top 3 of web.pane: 1. Choledocholithiasis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#4, web.passive#4 [known gap: PANE top 3: choledocholithiasis, inguinal hernia, cholecystitis — no malignant cause for obstructive jaundice at 79 (symptom inference #4 has one).]
+
+Guidelines:
+
+- **asge-2019** — ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis (2019), Risk strata. High: CBD stone on US/cross-sectional imaging, or total bilirubin >4 mg/dL with dilated CBD, or ascending cholangitis → ERCP. Intermediate: abnormal liver tests, age >55, or dilated CBD → EUS/MRCP or intra-operative cholangiography/laparoscopic US. Low: none → cholecystectomy without further CBD evaluation. Buxbaum JL, Abbas Fehmi SM, Sultan S, et al. Gastrointest Endosc. 2019;89:1075–1105.e15. *(statement wording/numbering not yet verified against the source)*
+- **bsg-esge-2021-anticoag** — BSG/ESGE guideline — endoscopy in patients on antiplatelet or anticoagulant therapy (2021 update) (2021), ERCP with sphincterotomy is a high-risk procedure: stop warfarin 5 days before and check INR <1.5; bridging only for high thrombotic risk; DOACs stopped per renal function. Veitch AM, Radaelli F, Alikhan R, et al. Gut. 2021;70:1611–1628. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Choledocholithiasis; 2. Inguinal / Femoral Hernia; 3. Acute Cholecystitis
+- differential web.symptomInference: 1. CBD stone / obstructive jaundice; 2. Acute cholangitis; 3. Biliary atresia; 4. Cholangiocarcinoma; 5. Liver disease / hepatitis / cirrhosis
+- differential web.passive: 1. CBD stone / obstructive jaundice; 2. Biliary atresia; 3. Liver disease / hepatitis / cirrhosis; 4. Cholangiocarcinoma; 5. Pancreatic adenocarcinoma
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=166)
+- alarms: Emergency now [web.triage.emergency]; Charcot's triad (RUQ pain + fever + jaundice) [web.clinicalPrompts.safety]; Courvoisier's sign (palpable non-tender gallbladder + jaundice) [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy [web.clinicalPrompts.safety]; INR 2.6 — coagulopathy [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
+- recommended scores: tg18-cholangitis, cha2ds2-vasc, asge-cbd, web:wagner, news2, caprini, has-bled, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (Cholangitis)
+- note: PANE features applied: ruq_pain, jaundice, anorexia
+- note: AssessmentTab ManagementPanel protocol: choledocholithiasis (from ICD)
+- note: PlanTab protocol: choledocholithiasis (from ICD)
+- note: matchPathways: Jaundice Workup (30), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10)
+
+</details>
+
+#### `choledocholithiasis-pregnancy` — Pregnancy, 26 weeks — ASGE high risk, obstructive jaundice
+
+31-year-old at 26 weeks with RUQ pain and jaundice; bilirubin 78, ALP 380 (partly placental), ALT 280; ultrasound shows an 11 mm CBD with a distal stone; afebrile; live fetus.
+
+Permutation of `choledocholithiasis-asge-high-risk`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-cbd-stone-top3 | mustRankTopK | critical | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 |  |
+| level-at-least-priority | emergencyLevel | critical | PASS | ASGE guideline 2012 |  |
+| flag-pregnancy | redFlags | critical | PASS | ASGE guideline 2012 |  |
+| mgmt-ercp | managementInclude | critical | PASS | ASGE guideline 2012; ESGE guideline 2019 |  |
+| mgmt-no-nsaid-after-20-weeks | managementExclude | critical | FAIL (known gap) | US FDA Drug Safety Communication 2020 | clinical-inference.ts operative-plan templates (lap chole and appendicectomy post-operative orders): when pregnancyPossible/pregnant, drop ibuprofen (NSAIDs from 20 weeks), replace "β-HCG confirmed negative" with the gestation, add obstetric review and fetal heart monitoring, and prefer US/MRI to CT. |
+| mgmt-no-appendicectomy | managementExclude | critical | FAIL (known gap) |  | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
+| inv-no-unqualified-ct | investigationExclude | quality | FAIL (known gap) | ACOG Committee Opinion No. 723 2017 | HpiTab.seedInvestigationsFromPane: no ionising imaging when pregnant. |
+| mgmt-fluoroscopy-minimised | managementInclude | quality | FAIL (known gap) | ASGE guideline 2012 | Choledocholithiasis protocol: pregnancy branch per ASGE 2012 (therapeutic ERCP, minimal fluoroscopy, obstetric input). |
+| mgmt-obstetric-involvement | managementInclude | quality | FAIL (known gap) | ASGE guideline 2012; ACOG Committee Opinion No. 775 2019 | clinical-inference.ts operative-plan templates (lap chole and appendicectomy post-operative orders): when pregnancyPossible/pregnant, drop ibuprofen (NSAIDs from 20 weeks), replace "β-HCG confirmed negative" with the gestation, add obstetric review and fetal heart monitoring, and prefer US/MRI to CT. |
+| mgmt-no-bhcg-negative-assumption | managementExclude | quality | FAIL (known gap) |  | clinical-inference.ts operative-plan templates (lap chole and appendicectomy post-operative orders): when pregnancyPossible/pregnant, drop ibuprofen (NSAIDs from 20 weeks), replace "β-HCG confirmed negative" with the gestation, add obstetric review and fetal heart monitoring, and prefer US/MRI to CT. |
+
+Failure details:
+
+- **inv-no-unqualified-ct** (web): forbidden investigation present in web.pane.seeded: "ct kub (non-contrast) - stone size, location, hydronephrosis (renal_colic)" [known gap: "CT KUB (non-contrast)" seeded from the renal colic protocol (PANE #3) at 26 weeks. HpiTab.seedInvestigationsFromPane seeds every stat/urgent investigation of the top-3 PANE protocols, including CT from unrelated protocols, with no pregnancy check.]
+- **mgmt-fluoroscopy-minimised** (web): no management item matched among 46 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ERCP is offered with no pregnancy adaptation (fluoroscopy minimisation, shielding, obstetric support).]
+- **mgmt-obstetric-involvement** (web): no management item matched among 46 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No obstetric review or fetal monitoring.]
+- **mgmt-no-nsaid-after-20-weeks** (web): forbidden management item present in web.clinicalPrompts: "... 2. post-operative orders: • paracetamol 1g qds (regular) + ibuprofen 400mg tds (if egfr normal). • morphine 2.5-5mg sc/iv prn for pain > 5/10. • fre..." (+1 more) [known gap: Operative-plan post-op orders (lap chole and appendicectomy templates) include ibuprofen at 26 weeks.]
+- **mgmt-no-bhcg-negative-assumption** (web): forbidden management item present in web.clinicalPrompts: "...ak (< 1%), hartmann's pouch if appendix not identifiable. • β-hcg confirmed negative (female of reproductive age). • group & screen available; cross-match if perfor..." [known gap: Appendicectomy template asserts "β-HCG confirmed negative" for a 26-week pregnant patient.]
+- **mgmt-no-appendicectomy** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "no guarding".]
+
+Guidelines:
+
+- **asge-2019** — ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis (2019), Risk strata. High: CBD stone on US/cross-sectional imaging, or total bilirubin >4 mg/dL with dilated CBD, or ascending cholangitis → ERCP. Intermediate: abnormal liver tests, age >55, or dilated CBD → EUS/MRCP or intra-operative cholangiography/laparoscopic US. Low: none → cholecystectomy without further CBD evaluation. Buxbaum JL, Abbas Fehmi SM, Sultan S, et al. Gastrointest Endosc. 2019;89:1075–1105.e15. *(statement wording/numbering not yet verified against the source)*
+- **asge-2012-pregnancy** — ASGE guideline — endoscopy in pregnant and lactating women (2012), Therapeutic ERCP only for strong indications (choledocholithiasis, cholangitis, gallstone pancreatitis); minimise fluoroscopy; obstetric support. Shergill AK, Ben-Menachem T, Chandrasekhara V, et al. Gastrointest Endosc. 2012;76:18–24. *(statement wording/numbering not yet verified against the source)*
+- **esge-2019-cbds** — ESGE guideline — endoscopic management of common bile duct stones (2019), ERCP for CBD stones; EUS/MRCP for intermediate probability; peri-procedural considerations including pregnancy. Manes G, Paspatis G, Aabakken L, et al. Endoscopy. 2019;51:472–491. *(statement wording/numbering not yet verified against the source)*
+- **acog-co723-2017** — ACOG Committee Opinion No. 723 — Guidelines for diagnostic imaging during pregnancy and lactation (2017), US and MRI preferred; CT not contraindicated when needed; gadolinium only if it clearly improves diagnosis. ACOG Committee Opinion No. 723. Obstet Gynecol. 2017;130:e210–e216. *(statement wording/numbering not yet verified against the source)*
+- **acog-co775-2019** — ACOG Committee Opinion No. 775 — Nonobstetric surgery during pregnancy (2019), Obstetric consultation before non-obstetric surgery; fetal heart rate assessment before and after the procedure. ACOG Committee Opinion No. 775. Obstet Gynecol. 2019;133:e285–e286. *(statement wording/numbering not yet verified against the source)*
+- **fda-2020-nsaid** — US FDA Drug Safety Communication — NSAIDs in pregnancy at 20 weeks or later (2020), Avoid NSAIDs from about 20 weeks’ gestation (fetal renal dysfunction, oligohydramnios). US Food and Drug Administration. Drug Safety Communication, 15 October 2020. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Choledocholithiasis; 3. Renal Colic / Urolithiasis
+- differential web.symptomInference: 1. CBD stone / obstructive jaundice; 2. Liver disease / hepatitis / cirrhosis; 3. Cholangiocarcinoma; 4. Acute cholangitis; 5. Pancreatic adenocarcinoma
+- differential web.passive: 1. Liver disease / hepatitis / cirrhosis; 2. Cholangiocarcinoma; 3. CBD stone / obstructive jaundice; 4. Pancreatic adenocarcinoma; 5. Biliary atresia
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=172)
+- alarms: Emergency now [web.triage.emergency]; Charcot's triad (RUQ pain + fever + jaundice) [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
+- recommended scores: tg18-cholangitis, asge-cbd, news2
+- score values: (none)
+- dx variant: (none) (Cholangitis)
+- note: PANE features applied: ruq_pain, colicky_pain, radiation_to_back, nausea_vomiting, jaundice
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from PANE top)
+- note: PlanTab protocol: choledocholithiasis (from ICD)
+- note: matchPathways: Jaundice Workup (25), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (22), Pancreatic Mass / Cyst (17)
+
+</details>
+
+### Choledocholithiasis (suspected)
+
+#### `choledocholithiasis-asge-intermediate` — ASGE 2019 intermediate risk (age >55, abnormal LFTs, CBD 7 mm, no stone seen) → MRCP/EUS or IOC, not ERCP
+
+62-year-old man with two biliary episodes this week, now pain-free and not jaundiced; bilirubin 30 µmol/L (1.75 mg/dL), ALT 140, ALP 190; ultrasound shows gallstones and a 7 mm CBD without a visible stone.
+
+Permutation of `choledocholithiasis-asge-high-risk`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| inv-mrcp-or-eus | investigationInclude | critical | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019; BSG updated guideline on the management of common bile duct stones 2017 |  |
+| mgmt-no-unconditional-ercp | managementExclude | critical | FAIL (known gap) | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 | Choledocholithiasis protocol and dx-variants: add ASGE 2019 risk variants (high → ERCP; intermediate → EUS/MRCP or IOC/LCBDE, ERCP only if a stone is confirmed; low → LC ± IOC), fed by the existing asgeCbd scale. |
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+| score-rec-asge-cbd | scoreRecommended | quality | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 |  |
+| mgmt-cholecystectomy | managementInclude | quality | PASS | NICE CG188 2014; ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 |  |
+
+Failure details:
+
+- **mgmt-no-unconditional-ercp** (web): forbidden management item present in web.plan: "[surgical] ercp + sphincterotomy and stone extraction." (+3 more) [known gap: Plan tab: "[surgical] ERCP + sphincterotomy and stone extraction." unconditionally for ASGE intermediate risk (no stone seen), before MRCP/EUS.]
+
+Guidelines:
+
+- **asge-2019** — ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis (2019), Risk strata. High: CBD stone on US/cross-sectional imaging, or total bilirubin >4 mg/dL with dilated CBD, or ascending cholangitis → ERCP. Intermediate: abnormal liver tests, age >55, or dilated CBD → EUS/MRCP or intra-operative cholangiography/laparoscopic US. Low: none → cholecystectomy without further CBD evaluation. Buxbaum JL, Abbas Fehmi SM, Sultan S, et al. Gastrointest Endosc. 2019;89:1075–1105.e15. *(statement wording/numbering not yet verified against the source)*
+- **bsg-2017-cbds** — BSG updated guideline on the management of common bile duct stones (2017), MRCP/EUS when CBDS suspected but not confirmed; cholecystectomy after ERCP clearance (within 2 weeks) unless unfit. Williams E, Beckingham I, El Sayed G, et al. Gut. 2017;66:765–782. *(statement wording/numbering not yet verified against the source)*
+- **nice-cg188** — NICE CG188 — Gallstone disease: diagnosis and management (2014), Asymptomatic gallbladder stones in a normal gallbladder and biliary tree: reassure, no treatment; symptomatic gallbladder stones: offer laparoscopic cholecystectomy; LFTs and ultrasound for suspected gallstone disease. National Institute for Health and Care Excellence. Clinical guideline CG188, October 2014. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Inguinal / Femoral Hernia; 3. Choledocholithiasis
+- differential web.symptomInference: 1. CBD stone / obstructive jaundice; 2. Adhesive small bowel obstruction; 3. Acute cholecystitis; 4. Liver disease / hepatitis / cirrhosis; 5. Sigmoid volvulus
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Liver disease / hepatitis / cirrhosis; 3. CBD stone / obstructive jaundice; 4. Acute gastroenteritis; 5. Acute mesenteric ischaemia
+- differential web.triageSurgical: 1. Acute cholangitis
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=107)
+- alarms: Emergency now [web.triage.emergency]; Charcot's triad (RUQ pain + fever + jaundice) [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, asge-cbd, news2, caprini, asa, rcri
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: ruq_pain, colicky_pain, nausea_vomiting, fatty_food_trigger
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from PANE top)
+- note: PlanTab protocol: choledocholithiasis (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Jaundice Workup (10)
+
+</details>
+
+### Symptomatic gallstones (ASGE low risk for choledocholithiasis)
+
+#### `choledocholithiasis-asge-low-risk` — ASGE 2019 low risk (age ≤55, normal LFTs, normal CBD) → cholecystectomy without CBD evaluation
+
+41-year-old woman with a single episode of biliary pain three weeks ago; normal LFTs; ultrasound shows gallstones and a 4 mm CBD.
+
+Permutation of `choledocholithiasis-asge-high-risk`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mgmt-no-ercp | managementExclude | critical | FAIL (known gap) | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 | clinical-inference.ts dilated_cbd prompt: parse the CBD diameter from the report (dilated only if >6 mm with gallbladder in situ, or the report says "dilated" without negation) instead of firing on any "cbd"/"common bile duct" mention; make its ERCP action conditional ("if a stone is confirmed/ASGE high risk"). |
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+| level-not-emergency | emergencyLevel | quality | FAIL (known gap) |  | clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches "temp" and "afebrile") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text. |
+| no-dilated-cbd-alarm | mustNotAlarm | quality | FAIL (known gap) |  | clinical-inference.ts dilated_cbd prompt: parse the CBD diameter from the report (dilated only if >6 mm with gallbladder in situ, or the report says "dilated" without negation) instead of firing on any "cbd"/"common bile duct" mention; make its ERCP action conditional ("if a stone is confirmed/ASGE high risk"). |
+| inv-no-routine-mrcp | investigationExclude | quality | FAIL (known gap) | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 | HpiTab.seedInvestigationsFromPane: keep protocol conditionals ("if CBD dilated/LFTs abnormal") instead of seeding unconditionally. |
+| mgmt-lap-chole | managementInclude | quality | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019; NICE CG188 2014 |  |
+
+Failure details:
+
+- **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=140); expected ≤ priority [known gap: adaptiveTriage emergency_now: "No jaundice, dark urine, pale stools or fever since" fires biliary-obstruction and cholangitis-pattern rules.]
+- **no-dilated-cbd-alarm** (web): forbidden alarm present in web.clinicalPrompts.safety: "dilated common bile duct on imaging - dilated cbd → mrcp + ercp" [known gap: "Dilated CBD" prompt fires on "CBD 4 mm, no duct stone".]
+- **inv-no-routine-mrcp** (web): forbidden investigation present in web.pane.seeded: "mrcp (cbd stone confirmation) (choledocholithiasis)" [known gap: MRCP seeded from the choledocholithiasis protocol (PANE #2) for an ASGE low-risk patient.]
+- **mgmt-no-ercp** (web): forbidden management item present in web.clinicalPrompts: "• ercp - therapeutic: stone extraction (choledocholithiasis) or stenting (malignant st..." [known gap: "ERCP — therapeutic: stone extraction or stenting" from the false dilated-CBD prompt.]
+
+Guidelines:
+
+- **asge-2019** — ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis (2019), Risk strata. High: CBD stone on US/cross-sectional imaging, or total bilirubin >4 mg/dL with dilated CBD, or ascending cholangitis → ERCP. Intermediate: abnormal liver tests, age >55, or dilated CBD → EUS/MRCP or intra-operative cholangiography/laparoscopic US. Low: none → cholecystectomy without further CBD evaluation. Buxbaum JL, Abbas Fehmi SM, Sultan S, et al. Gastrointest Endosc. 2019;89:1075–1105.e15. *(statement wording/numbering not yet verified against the source)*
+- **nice-cg188** — NICE CG188 — Gallstone disease: diagnosis and management (2014), Asymptomatic gallbladder stones in a normal gallbladder and biliary tree: reassure, no treatment; symptomatic gallbladder stones: offer laparoscopic cholecystectomy; LFTs and ultrasound for suspected gallstone disease. National Institute for Health and Care Excellence. Clinical guideline CG188, October 2014. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Choledocholithiasis; 3. Acute Pancreatitis
+- differential web.symptomInference: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. CBD stone / obstructive jaundice; 5. Acute mesenteric ischaemia
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Adhesive small bowel obstruction; 5. Perforated peptic ulcer
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=140)
+- alarms: Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]
+- recommended scores: alvarado, asge-cbd, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: ruq_pain, radiation_to_back, nausea_vomiting, fatty_food_trigger
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from PANE top)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Jaundice Workup (15), Pancreatic Mass / Cyst (14)
 
 </details>
 
@@ -4965,6 +5780,55 @@ Guidelines:
 
 </details>
 
+### Acute viral hepatitis A (mimic of obstructive jaundice / cholangitis)
+
+#### `jaundice-mimic-acute-hepatitis-a` — Dangerous mimic — acute hepatitis A: fever, RUQ pain and jaundice (pseudo-Charcot), ALT 2850, normal CBD, reactive gallbladder wall thickening
+
+24-year-old man with 5 days of malaise, fever and RUQ ache, then jaundice and dark urine; community hepatitis A outbreak; ALT 2850, AST 2100, ALP 180, bilirubin 118, INR 1.4; ultrasound: CBD 4 mm, no stones, oedematous contracted gallbladder wall.
+
+Permutation of `painless-jaundice-pancreatic-head`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-hepatitis-top3 | mustRankTopK | critical | PASS | ACG Clinical Guideline 2017 |  |
+| inv-inr | investigationInclude | critical | PASS | EASL Clinical Practice Guidelines on the management of acute (fulminant) liver failure 2017 |  |
+| mgmt-no-ercp | managementExclude | critical | FAIL (known gap) | ACG Clinical Guideline 2017 | clinical-inference.ts charcots_triad: require cholestatic LFTs or duct dilatation on imaging before suggesting ERCP; when ALT >10 × ULN with a normal duct, prompt "consider acute hepatitis — viral serology, INR" instead. |
+| mgmt-no-cholecystectomy | managementExclude | critical | FAIL (known gap) |  | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+| level-at-least-urgent | emergencyLevel | quality | PASS | EASL Clinical Practice Guidelines on the management of acute (fulminant) liver failure 2017 |  |
+| flag-liver-failure-watch | redFlags | quality | PASS | EASL Clinical Practice Guidelines on the management of acute (fulminant) liver failure 2017 |  |
+| inv-viral-serology | investigationInclude | quality | PASS | ACG Clinical Guideline 2017 |  |
+| mgmt-public-health | managementInclude | quality | PASS |  |  |
+
+Failure details:
+
+- **mgmt-no-ercp** (web): forbidden management item present in web.clinicalPrompts: "• arrange urgent ercp - biliary decompression (tokyo grade ii/iii cholangitis)." (+1 more) [known gap: "Charcot's triad → Acute Cholangitis" prompt: "Arrange urgent ERCP — biliary decompression" for a hepatocellular picture with a 4 mm CBD (fever + RUQ pain + jaundice with no duct check).]
+- **mgmt-no-cholecystectomy** (web): forbidden management item present in web.clinicalPrompts: "• consent: laparoscopic cholecystectomy - bile duct injury (0.3%), haemorrhage, conversion to open, bile leak, retained..." (+3 more) [known gap: Gallstone operative plan and consent prompt fire (hasGallstoneIndication: the "right upper quadrant pain" symptom chip, and "Murphy's sign negative" matches "murphy"), even though the duct is normal and there are no stones.]
+
+Guidelines:
+
+- **acg-2017-lft** — ACG Clinical Guideline — evaluation of abnormal liver chemistries (2017), Hepatocellular pattern (ALT/AST ≫ ALP): acute viral hepatitis serology (HAV IgM, HBsAg, anti-HBc IgM, HCV, HEV); INR for synthetic function. Kwo PY, Cohen SM, Lim JK. Am J Gastroenterol. 2017;112:18–35. *(statement wording/numbering not yet verified against the source)*
+- **easl-2017-alf** — EASL Clinical Practice Guidelines on the management of acute (fulminant) liver failure (2017), INR and mental status define acute liver injury vs failure; early recognition and hepatology referral. Wendon J, Cordoba J, Dhawan A, et al. J Hepatol. 2017;66:1047–1081. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Hepatitis; 2. Acute Appendicitis; 3. Choledocholithiasis
+- differential web.symptomInference: 1. Acute cholangitis; 2. CBD stone / obstructive jaundice; 3. Liver disease / hepatitis / cirrhosis; 4. Cholangiocarcinoma; 5. Leptospirosis
+- differential web.passive: 1. Acute cholecystitis; 2. Liver disease / hepatitis / cirrhosis; 3. CBD stone / obstructive jaundice; 4. Cholangiocarcinoma; 5. Leptospirosis
+- differential web.triageSurgical: 1. Acute cholangitis
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=150)
+- alarms: Emergency now [web.triage.emergency]; Charcot's triad (RUQ pain + fever + jaundice) [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
+- recommended scores: tg18-cholangitis, child-pugh, qsofa, asge-cbd, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: ruq_pain, nausea_vomiting, fever, jaundice, anorexia
+- note: AssessmentTab ManagementPanel protocol: acute_hepatitis (from PANE top)
+- note: PlanTab protocol: acute_hepatitis (from ICD)
+- note: matchPathways: Jaundice Workup (25), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10)
+
+</details>
+
 ### Large bowel obstruction
 
 #### `lbo-obstructing-sigmoid-cancer` — Obstructing sigmoid cancer, no perforation (base case)
@@ -5374,6 +6238,159 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from ICD)
 - note: PlanTab protocol: upper_gi_bleed (from ICD)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), Diverticular Disease / Diverticulitis (12), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (10)
+
+</details>
+
+### Amoebic liver abscess
+
+#### `liver-abscess-amoebic` — Amoebic (Caribbean context) — serology positive, single homogeneous right-lobe abscess
+
+32-year-old man from rural Saint Lucia with 2 weeks of fever and RUQ pain after dysentery a month ago; T 38.6 °C; WBC 15.8, ALP 210; E. histolytica serology positive; ultrasound: single 6 cm homogeneous hypoechoic lesion in segment VIII.
+
+Permutation of `liver-abscess-pyogenic`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-liver-abscess-top3 | mustRankTopK | critical | PASS | Amebiasis (narrative review 2003 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | Amebiasis (narrative review 2003 |  |
+| mgmt-metronidazole | managementInclude | critical | FAIL (known gap) | Amebiasis (narrative review 2003 | lib/pane-engine management index: map A06.4 to the liver_abscess protocol (amoebic branch: metronidazole 750–800 mg TDS 7–10 days then a luminal agent) and see mgmt-no-appendicectomy. |
+| mgmt-no-appendicectomy | managementExclude | critical | FAIL (known gap) |  | AssessmentTab ManagementPanel: when the clinician has confirmed/locked a working diagnosis (ICD or disease id), show that protocol instead of the PANE top (≥0.20). Today a confirmed pancreatitis/amoebic abscess shows the cholecystitis or appendicitis protocol. |
+| inv-blood-cultures | investigationInclude | quality | PASS |  |  |
+| mgmt-luminal-agent | managementInclude | quality | FAIL (known gap) | Amebiasis (narrative review 2003 | liver_abscess protocol: add paromomycin or diloxanide furoate after metronidazole for amoebic abscess. |
+| mgmt-no-routine-drainage | managementExclude | quality | PASS | Amebiasis (narrative review 2003 |  |
+
+Failure details:
+
+- **mgmt-metronidazole** (web): no management item matched among 28 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: A06.4 has no protocol mapping (getProtocolByIcd) and PANE ranks appendicitis first (0.38), so the Assessment panel shows the appendicitis protocol; the only metronidazole is anaerobic cover in a sepsis bundle.]
+- **mgmt-luminal-agent** (web): no management item matched among 28 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No luminal amoebicide anywhere (the liver_abscess protocol also omits it).]
+- **mgmt-no-appendicectomy** (web): forbidden management item present in web.managementPanel: "[surgical] laparoscopic appendicectomy (gold standard; reduces wound infection and los)." (+2 more) [known gap: Assessment panel shows the appendicitis protocol ("Laparoscopic appendicectomy") because PANE ranks appendicitis first for fever + RUQ pain.]
+
+Guidelines:
+
+- **review-amoebiasis-2003** — Amebiasis (narrative review — no formal international guideline exists) (2003), Amoebic liver abscess: serology; metronidazole (or tinidazole) followed by a luminal agent (paromomycin, diloxanide furoate) to eradicate intestinal carriage; aspiration only for no response, left-lobe or imminent rupture. Haque R, Huston CD, Hughes M, Houpt E, Petri WA Jr. N Engl J Med. 2003;348:1565–1573. *(statement wording/numbering not yet verified against the source)*
+- **review-liver-abscess-2015** — Hepatic abscess: diagnosis and management (narrative review — no formal international guideline exists) (2015), Pyogenic abscess: blood cultures, CT, antibiotics for 4–6 weeks, percutaneous drainage/aspiration for larger abscesses, look for a biliary or colonic source; multiple cholangitic abscesses: treat the biliary obstruction. Lardière-Deguelte S, Ragot E, Amroun K, et al. J Visc Surg. 2015;152:231–243. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Appendicitis; 2. Liver Abscess; 3. Inguinal / Femoral Hernia
+- differential web.symptomInference: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Typhoid fever; 4. Infective endocarditis; 5. UTI (paediatric)
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. UTI (paediatric); 3. Typhoid fever; 4. Mesenteric adenitis; 5. Infective endocarditis
+- differential web.triageSurgical: 1. Acute cholangitis
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=158)
+- alarms: Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.6°C + HR 104 bpm [web.clinicalPrompts.safety]
+- recommended scores: alvarado, tg18-cholangitis, ranson, child-pugh, qsofa, asge-cbd, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: ruq_pain, fever, anorexia
+- note: AssessmentTab ManagementPanel protocol: appendicitis (from PANE top)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Acute Abdomen (7)
+
+</details>
+
+### Pyogenic liver abscess (cholangitic, multiple)
+
+#### `liver-abscess-elderly-biliary-septic` — Elderly (79) septic shock — multiple small cholangitic abscesses from an occluded biliary stent
+
+79-year-old man with a plastic biliary stent overdue for exchange: confusion, fever 39.4 °C, BP 84/48 on noradrenaline, lactate 4.6, creatinine 190, platelets 88; CT: multiple ≤2 cm abscesses in the right lobe, dilated ducts with an occluded stent.
+
+Permutation of `liver-abscess-pyogenic`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-liver-abscess-or-cholangitis-top3 | mustRankTopK | critical | PASS | Hepatic abscess: diagnosis and management (narrative review 2015; Tokyo Guidelines 2018 2018 |  |
+| level-emergency | emergencyLevel | critical | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| alarm-sepsis | mustAlarm | critical | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| alarm-haemodynamic | mustAlarm | critical | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| inv-blood-cultures | investigationInclude | critical | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| mgmt-antibiotics | managementInclude | critical | PASS | Surviving Sepsis Campaign guidelines 2021 2021; Tokyo Guidelines 2018 2018 |  |
+| mgmt-organ-support | managementInclude | critical | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| mgmt-biliary-drainage | managementInclude | critical | PASS | Tokyo Guidelines 2018 2018; Hepatic abscess: diagnosis and management (narrative review 2015 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+| mnm-sepsis | mustNotMiss | quality | FAIL (known gap) |  | PANE or a CDS rule: surface sepsis/septic shock when qSOFA ≥2 or vasopressors are documented. |
+
+Failure details:
+
+- **mnm-sepsis** (web): not in top 3 of web.pane: 1. Acute Cholangitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Diverticulitis; also in web.symptomInference#2, web.passive#1 [known gap: PANE has no sepsis node (top 3: cholangitis, inguinal hernia, diverticulitis).]
+
+Guidelines:
+
+- **review-liver-abscess-2015** — Hepatic abscess: diagnosis and management (narrative review — no formal international guideline exists) (2015), Pyogenic abscess: blood cultures, CT, antibiotics for 4–6 weeks, percutaneous drainage/aspiration for larger abscesses, look for a biliary or colonic source; multiple cholangitic abscesses: treat the biliary obstruction. Lardière-Deguelte S, Ragot E, Amroun K, et al. J Visc Surg. 2015;152:231–243. *(statement wording/numbering not yet verified against the source)*
+- **tg18-dx-cholangitis** — Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholangitis (2018), Grade II: any two of WBC >12,000 or <4,000/mm³, fever ≥39 °C, age ≥75, total bilirubin ≥5 mg/dL, hypoalbuminaemia (<0.7 × LLN); Grade III: organ dysfunction. Kiriyama S, Kozaka K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:17–30. *(statement wording/numbering not yet verified against the source)*
+- **tg18-mgmt-cholangitis** — Tokyo Guidelines 2018 — flowchart for acute cholangitis (2018), Grade II: early biliary drainage; Grade III: organ support then urgent biliary drainage. Miura F, Okamoto K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:31–40. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign guidelines 2021 (2021), Blood cultures before antimicrobials; antimicrobials within 1 h for shock; source control; noradrenaline first-line vasopressor. Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholangitis; 2. Inguinal / Femoral Hernia; 3. Acute Diverticulitis
+- differential web.symptomInference: 1. Acute cholangitis; 2. Sepsis / systemic infection; 3. Fournier's gangrene; 4. Malaria; 5. CBD stone / obstructive jaundice
+- differential web.passive: 1. Sepsis / systemic infection; 2. Malaria; 3. Leptospirosis; 4. Meningitis / encephalitis; 5. Pyelonephritis
+- differential web.triageSurgical: 1. Choledocholithiasis with cholangitis; 2. Acute cholangitis
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=324)
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Fever 39.4°C + HR 124 bpm + SBP 84 mmHg — septic shock [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 23 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 190 μmol/L — elevated [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]; Albumin 25 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- recommended scores: tg18-cholangitis, child-pugh, qsofa, gcs, asge-cbd, news2, caprini, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: (none)
+- note: AssessmentTab ManagementPanel protocol: cholangitis (from PANE top)
+- note: PlanTab protocol: liver_abscess (from ICD)
+- note: matchPathways: ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (20), Jaundice Workup (15), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10)
+
+</details>
+
+### Pyogenic liver abscess
+
+#### `liver-abscess-pyogenic` — Base case — pyogenic liver abscess (7 cm, multiloculated) in a diabetic
+
+58-year-old man with poorly controlled diabetes: 10 days of fever, rigors and RUQ pain; T 39.1 °C, HR 112, RR 22; WBC 21.3, CRP 290, ALP 260; ultrasound: 7 × 6 cm multiloculated abscess in segment VII.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-liver-abscess-top3 | mustRankTopK | critical | PASS | Hepatic abscess: diagnosis and management (narrative review 2015 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| inv-blood-cultures | investigationInclude | critical | PASS | Surviving Sepsis Campaign guidelines 2021 2021; Hepatic abscess: diagnosis and management (narrative review 2015 |  |
+| mgmt-antibiotics | managementInclude | critical | PASS | SIS/IDSA guidelines 2010; Hepatic abscess: diagnosis and management (narrative review 2015 |  |
+| mgmt-percutaneous-drainage | managementInclude | critical | PASS | SIS/IDSA guidelines 2010; Hepatic abscess: diagnosis and management (narrative review 2015 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+| alarm-sepsis | mustAlarm | quality | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| flag-diabetes | redFlags | quality | PASS |  |  |
+| inv-ct | investigationInclude | quality | PASS | Hepatic abscess: diagnosis and management (narrative review 2015 |  |
+| inv-amoebic-serology | investigationInclude | quality | PASS | Amebiasis (narrative review 2003 |  |
+| inv-aspirate-culture | investigationInclude | quality | PASS | Hepatic abscess: diagnosis and management (narrative review 2015 |  |
+| mgmt-prolonged-course | managementInclude | quality | PASS | Hepatic abscess: diagnosis and management (narrative review 2015 |  |
+| mgmt-source-search | managementInclude | quality | PASS | Hepatic abscess: diagnosis and management (narrative review 2015 |  |
+| mgmt-glycaemic-control | managementInclude | quality | PASS |  |  |
+| mgmt-no-open-surgery-first | managementExclude | quality | FAIL (known gap) | SIS/IDSA guidelines 2010 | clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches "temp" and "afebrile") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text. |
+
+Failure details:
+
+- **mgmt-no-open-surgery-first** (web): forbidden management item present in web.clinicalPrompts: "• emergency laparotomy consent - source control; icu post-operatively." [known gap: Peritonism prompt ("No peritonism" in the exam text) adds "Emergency laparotomy consent — source control".]
+
+Guidelines:
+
+- **review-liver-abscess-2015** — Hepatic abscess: diagnosis and management (narrative review — no formal international guideline exists) (2015), Pyogenic abscess: blood cultures, CT, antibiotics for 4–6 weeks, percutaneous drainage/aspiration for larger abscesses, look for a biliary or colonic source; multiple cholangitic abscesses: treat the biliary obstruction. Lardière-Deguelte S, Ragot E, Amroun K, et al. J Visc Surg. 2015;152:231–243. *(statement wording/numbering not yet verified against the source)*
+- **idsa-2010-ciai** — SIS/IDSA guidelines — complicated intra-abdominal infection (2010), Source control (percutaneous drainage preferred when feasible) plus antimicrobial therapy; blood cultures. Solomkin JS, Mazuski JE, Bradley JS, et al. Clin Infect Dis. 2010;50:133–164. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign guidelines 2021 (2021), Blood cultures before antimicrobials; antimicrobials within 1 h for shock; source control; noradrenaline first-line vasopressor. Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+- **review-amoebiasis-2003** — Amebiasis (narrative review — no formal international guideline exists) (2003), Amoebic liver abscess: serology; metronidazole (or tinidazole) followed by a luminal agent (paromomycin, diloxanide furoate) to eradicate intestinal carriage; aspiration only for no response, left-lobe or imminent rupture. Haque R, Huston CD, Hughes M, Houpt E, Petri WA Jr. N Engl J Med. 2003;348:1565–1573. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Appendicitis; 2. Liver Abscess; 3. Inguinal / Femoral Hernia
+- differential web.symptomInference: 1. Acute cholecystitis; 2. Fournier's gangrene; 3. Infective endocarditis; 4. Sepsis / systemic infection; 5. Malaria
+- differential web.passive: 1. Sepsis / systemic infection; 2. Malaria; 3. Infective endocarditis; 4. Typhoid fever; 5. Fournier's gangrene
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=136)
+- alarms: Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 21.3 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 39.1°C + HR 112 bpm [web.clinicalPrompts.safety]; BGL 18.4 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Albumin 26 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- recommended scores: alvarado, tg18-cholangitis, ranson, child-pugh, qsofa, asge-cbd, web:wagner, news2, caprini, asa, curb65, rcri
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: ruq_pain, fever, anorexia, rigors
+- note: AssessmentTab ManagementPanel protocol: liver_abscess (from ICD)
+- note: PlanTab protocol: liver_abscess (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
 
@@ -5876,6 +6893,735 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: peptic_ulcer (from ICD)
 - note: PlanTab protocol: peptic_ulcer (from ICD)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (27), Acute Abdomen (7), Acute Appendicitis (7)
+
+</details>
+
+### Pancreatic head carcinoma (malignant obstructive jaundice)
+
+#### `painless-jaundice-pancreatic-head` — Base case — painless obstructive jaundice with Courvoisier gallbladder, weight loss and new-onset diabetes
+
+68-year-old man with 3 weeks of painless jaundice, pruritus, pale stools, 8 kg weight loss and diabetes diagnosed 4 months ago; palpable non-tender gallbladder; bilirubin 236, ALP 690; ultrasound: double-duct dilatation to a 3 cm hypoechoic pancreatic head lesion.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-pancreatic-cancer-top3 | mustRankTopK | critical | PASS | NICE NG12 2015; NICE NG85 2018 |  |
+| level-at-least-priority | emergencyLevel | critical | PASS | NICE NG12 2015 |  |
+| flag-malignancy | redFlags | critical | PASS | NICE NG12 2015 |  |
+| inv-ct-pancreas-protocol | investigationInclude | critical | PASS | NICE NG85 2018; ESMO Clinical Practice Guideline 2023 |  |
+| mgmt-hpb-mdt | managementInclude | critical | PASS | NICE NG85 2018; NICE NG12 2015 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+| mnm-cholangiocarcinoma-ampullary | mustNotMiss | quality | PASS |  |  |
+| no-sepsis-alarm | mustNotAlarm | quality | PASS |  |  |
+| inv-ca199 | investigationInclude | quality | PASS | ESMO Clinical Practice Guideline 2023 |  |
+| inv-eus-tissue | investigationInclude | quality | PASS | NICE NG85 2018 |  |
+| inv-coagulation | investigationInclude | quality | PASS |  |  |
+| mgmt-no-routine-preop-drainage | managementExclude | quality | PASS | DROP trial 2010; NICE NG85 2018; ESGE Clinical Guideline 2018 |  |
+
+Guidelines:
+
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (pancreatic cancer) (2015), Suspected cancer pathway referral for pancreatic cancer at age ≥40 with jaundice; urgent direct-access CT (within 2 weeks) at age ≥60 with weight loss and any of diarrhoea, back pain, abdominal pain, nausea, vomiting, constipation or new-onset diabetes. National Institute for Health and Care Excellence. NICE guideline NG12, June 2015 (updated). *(statement wording/numbering not yet verified against the source)*
+- **nice-ng85** — NICE NG85 — Pancreatic cancer in adults: diagnosis and management (2018), Pancreatic-protocol CT for obstructive jaundice with suspected pancreatic cancer; EUS with tissue sampling if unclear; specialist pancreatic MDT; pre-operative biliary drainage only when surgery is delayed, for cholangitis, or before neoadjuvant therapy; SEMS for palliative biliary drainage. National Institute for Health and Care Excellence. NICE guideline NG85, February 2018. *(statement wording/numbering not yet verified against the source)*
+- **esmo-2023-pancreas** — ESMO Clinical Practice Guideline — pancreatic cancer (2023), Staging with pancreas-protocol CT (chest/abdomen/pelvis); CA 19-9; MDT resectability assessment; best supportive care and palliation in metastatic disease. Conroy T, Pfeiffer P, Vilgrain V, et al. Ann Oncol. 2023;34:987–1002. *(statement wording/numbering not yet verified against the source)*
+- **esge-2018-stenting** — ESGE Clinical Guideline — endoscopic biliary stenting: indications, choice of stents and results (2018), Self-expanding metal stents for palliation of malignant extrahepatic biliary obstruction; routine pre-operative drainage not recommended. Dumonceau JM, Tringali A, Papanikolaou IS, et al. Endoscopy. 2018;50:910–930. *(statement wording/numbering not yet verified against the source)*
+- **drop-2010** — DROP trial — preoperative biliary drainage for cancer of the head of the pancreas (2010), Routine preoperative biliary drainage increased serious complications (74% vs 39%) compared with early surgery. van der Gaag NA, Rauws EAJ, van Eijck CHJ, et al. N Engl J Med. 2010;362:129–137. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Pancreatic Carcinoma; 2. Cholangiocarcinoma; 3. Colorectal Cancer
+- differential web.symptomInference: 1. CBD stone / obstructive jaundice; 2. Cholangiocarcinoma; 3. Pancreatic adenocarcinoma; 4. Biliary atresia; 5. Acute cholangitis
+- differential web.passive: 1. CBD stone / obstructive jaundice; 2. Cholangiocarcinoma; 3. Pancreatic adenocarcinoma; 4. Biliary atresia; 5. Liver disease / hepatitis / cirrhosis
+- differential web.triageSurgical: 1. Acute cholangitis; 2. Unexplained weight loss / GI alarm symptoms — endoscopy workup
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=174)
+- alarms: Emergency now [web.triage.emergency]; Courvoisier's sign (palpable non-tender gallbladder + jaundice) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Hepatic lesion on imaging [web.clinicalPrompts.safety]
+- recommended scores: asge-cbd, web:wagner, news2, caprini, asa, rcri, cfs, ecog
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: epigastric_pain, radiation_to_back, jaundice, anorexia, weight_loss, nocturnal_pain
+- note: AssessmentTab ManagementPanel protocol: pancreatic_carcinoma (from PANE top)
+- note: PlanTab protocol: pancreatic_carcinoma (from ICD)
+- note: matchPathways: Jaundice Workup (30), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10)
+
+</details>
+
+#### `painless-jaundice-elderly-metastatic` — Elderly (84), frail (CFS 6), metastatic on CT — palliative biliary drainage, not resection
+
+84-year-old frail woman (CFS 6) with painless jaundice, severe pruritus and weight loss; CT: 4 cm pancreatic head mass encasing the SMA with multiple liver metastases; bilirubin 310.
+
+Permutation of `painless-jaundice-pancreatic-head`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-pancreatic-cancer-top3 | mustRankTopK | critical | PASS | ESMO Clinical Practice Guideline 2023 |  |
+| mgmt-no-resection | managementExclude | critical | PASS | ESMO Clinical Practice Guideline 2023; NICE NG85 2018 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+| flag-frailty | redFlags | quality | FAIL (known gap) |  | clinical-inference.ts or VisitRisk equivalent: flag frailty (CFS ≥5, housebound, age ≥80) against operative templates. |
+| mgmt-palliative-biliary-drainage | managementInclude | quality | PASS | ESGE Clinical Guideline 2018; NICE NG85 2018 |  |
+| mgmt-palliative-care | managementInclude | quality | PASS | ESMO Clinical Practice Guideline 2023 |  |
+| mgmt-mdt | managementInclude | quality | PASS | NICE NG85 2018 |  |
+
+Failure details:
+
+- **flag-frailty** (web): no red flag matched among 28 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No frailty/performance-status flag (CFS 6 in the PMH).]
+
+Guidelines:
+
+- **esmo-2023-pancreas** — ESMO Clinical Practice Guideline — pancreatic cancer (2023), Staging with pancreas-protocol CT (chest/abdomen/pelvis); CA 19-9; MDT resectability assessment; best supportive care and palliation in metastatic disease. Conroy T, Pfeiffer P, Vilgrain V, et al. Ann Oncol. 2023;34:987–1002. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng85** — NICE NG85 — Pancreatic cancer in adults: diagnosis and management (2018), Pancreatic-protocol CT for obstructive jaundice with suspected pancreatic cancer; EUS with tissue sampling if unclear; specialist pancreatic MDT; pre-operative biliary drainage only when surgery is delayed, for cholangitis, or before neoadjuvant therapy; SEMS for palliative biliary drainage. National Institute for Health and Care Excellence. NICE guideline NG85, February 2018. *(statement wording/numbering not yet verified against the source)*
+- **esge-2018-stenting** — ESGE Clinical Guideline — endoscopic biliary stenting: indications, choice of stents and results (2018), Self-expanding metal stents for palliation of malignant extrahepatic biliary obstruction; routine pre-operative drainage not recommended. Dumonceau JM, Tringali A, Papanikolaou IS, et al. Endoscopy. 2018;50:910–930. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Pancreatic Carcinoma; 2. Cholangiocarcinoma; 3. Colorectal Cancer
+- differential web.symptomInference: 1. Cholangiocarcinoma; 2. Pancreatic adenocarcinoma; 3. CBD stone / obstructive jaundice; 4. Occult malignancy / systemic disease; 5. Liver disease / hepatitis / cirrhosis
+- differential web.passive: 1. Cholangiocarcinoma; 2. Pancreatic adenocarcinoma; 3. Liver disease / hepatitis / cirrhosis; 4. Occult malignancy / systemic disease; 5. CBD stone / obstructive jaundice
+- differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=107)
+- alarms: Emergency now [web.triage.emergency]; Courvoisier's sign (palpable non-tender gallbladder + jaundice) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; CA 19-9 2400 U/mL — elevated [web.clinicalPrompts.safety]; Albumin 26 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- recommended scores: child-pugh, asge-cbd, news2, caprini, asa, rcri, cfs, ecog
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: epigastric_pain, radiation_to_back, jaundice, anorexia, weight_loss
+- note: AssessmentTab ManagementPanel protocol: pancreatic_carcinoma (from PANE top)
+- note: PlanTab protocol: pancreatic_carcinoma (from ICD)
+- note: matchPathways: Pancreatic Mass / Cyst (17), Jaundice Workup (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10)
+
+</details>
+
+### Pancreatic body carcinoma (early, non-jaundiced)
+
+#### `pancreatic-cancer-new-diabetes-weight-loss` — Non-jaundiced — age ≥60 with weight loss, back pain and new-onset diabetes (NICE NG12 urgent CT)
+
+66-year-old woman with 7 kg weight loss over four months, a dull epigastric ache radiating to the back and diabetes diagnosed two months ago; normal LFTs, no jaundice.
+
+Permutation of `painless-jaundice-pancreatic-head`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-pancreatic-cancer | mustNotMiss | critical | PASS | NICE NG12 2015 |  |
+| level-at-least-priority | emergencyLevel | critical | PASS | NICE NG12 2015 |  |
+| flag-malignancy | redFlags | critical | PASS | NICE NG12 2015 |  |
+| inv-ct | investigationInclude | critical | PASS | NICE NG12 2015 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+
+Guidelines:
+
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (pancreatic cancer) (2015), Suspected cancer pathway referral for pancreatic cancer at age ≥40 with jaundice; urgent direct-access CT (within 2 weeks) at age ≥60 with weight loss and any of diarrhoea, back pain, abdominal pain, nausea, vomiting, constipation or new-onset diabetes. National Institute for Health and Care Excellence. NICE guideline NG12, June 2015 (updated). *(statement wording/numbering not yet verified against the source)*
+- **nice-ng85** — NICE NG85 — Pancreatic cancer in adults: diagnosis and management (2018), Pancreatic-protocol CT for obstructive jaundice with suspected pancreatic cancer; EUS with tissue sampling if unclear; specialist pancreatic MDT; pre-operative biliary drainage only when surgery is delayed, for cholangitis, or before neoadjuvant therapy; SEMS for palliative biliary drainage. National Institute for Health and Care Excellence. NICE guideline NG85, February 2018. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Colorectal Cancer; 2. Gastric Carcinoma; 3. Pancreatic Carcinoma
+- differential web.symptomInference: 1. Occult malignancy / systemic disease; 2. Gastric carcinoma; 3. Colorectal carcinoma; 4. Oesophageal / gastric carcinoma; 5. Pancreatic adenocarcinoma
+- differential web.passive: 1. Pancreatic adenocarcinoma; 2. Gastric carcinoma; 3. Chronic pancreatitis; 4. Occult malignancy / systemic disease; 5. Major depressive disorder
+- differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=114)
+- alarms: Emergency now [web.triage.emergency]; Jaundice [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: ranson, web:wagner, news2, caprini, web:gerdq, asa, rcri, cfs, ecog
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: epigastric_pain, radiation_to_back, anorexia, weight_loss, nocturnal_pain
+- note: AssessmentTab ManagementPanel protocol: pancreatic_carcinoma (from ICD)
+- note: PlanTab protocol: pancreatic_carcinoma (from ICD)
+- note: matchPathways: Pancreatic Mass / Cyst (14), Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7)
+
+</details>
+
+### Acute pancreatitis (alcohol-induced)
+
+#### `pancreatitis-alcohol` — Alcohol-induced, mild — alcohol dependence (thiamine, withdrawal, brief intervention); no gallstones
+
+41-year-old man drinking ~20 units/day, last drink 12 h ago: epigastric pain to the back with vomiting; tremulous; amylase 980, lipase 1400, AST 140 > ALT 60, GGT 480; ultrasound: fatty liver, no gallstones.
+
+Permutation of `pancreatitis-gallstone-mild`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-pancreatitis-top3 | mustRankTopK | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | ACG Guideline 2024 |  |
+| mgmt-thiamine | managementInclude | critical | FAIL (known gap) | NICE CG100 2010 | Pancreatitis protocol (alcohol aetiology) and clinical-inference.ts alcohol prompt: parenteral thiamine (Pabrinex) before glucose, CIWA-Ar-guided benzodiazepine withdrawal management (NICE CG100). |
+| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-prophylactic-antibiotics | managementExclude | critical | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | FAIL (known gap) |  | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
+| flag-alcohol | redFlags | quality | PASS | NICE CG100 2010 |  |
+| score-rec-bisap | scoreRecommended | quality | PASS | BISAP score 2008; ACG Guideline 2024 |  |
+| mgmt-withdrawal | managementInclude | quality | FAIL (known gap) | NICE CG100 2010 | See mgmt-thiamine. |
+| mgmt-alcohol-intervention | managementInclude | quality | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018 |  |
+| mgmt-early-oral-feeding | managementInclude | quality | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018 |  |
+| mgmt-no-cholecystectomy | managementExclude | quality | PASS | ACG Guideline 2024 |  |
+| variant-mild | dxVariant | quality | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
+
+Failure details:
+
+- **mgmt-thiamine** (web): no management item matched among 46 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No thiamine anywhere for an alcohol-dependent, vomiting patient in early withdrawal.]
+- **mgmt-withdrawal** (web): no management item matched among 46 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No withdrawal assessment or management.]
+- **mgmt-no-aggressive-fluids** (web): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
+- **mgmt-no-appendicectomy** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "guarding".]
+
+Guidelines:
+
+- **atlanta-2012** — Revised Atlanta classification of acute pancreatitis (2012) (2012), Diagnosis (2 of 3: typical pain, lipase/amylase ≥3 × ULN, imaging); severity: mild (no organ failure, no local/systemic complications), moderately severe (transient organ failure <48 h and/or local complications), severe (persistent organ failure >48 h); modified Marshall score. Banks PA, Bollen TL, Dervenis C, et al. Gut. 2013;62:102–111. *(statement wording/numbering not yet verified against the source)*
+- **acg-2024** — ACG Guideline — management of acute pancreatitis (2024) (2024), Moderately aggressive (goal-directed) fluids with lactated Ringer’s; no prophylactic antibiotics (including predicted severe and sterile necrosis); early oral feeding when tolerated; enteral rather than parenteral nutrition; ERCP within 24 h only with concurrent cholangitis; cholecystectomy during the index admission for mild biliary AP; transabdominal US in every patient; triglycerides if no gallstones/alcohol; CT not needed at presentation unless the diagnosis is unclear. Tenner S, Vege SS, Sheth SG, et al. Am J Gastroenterol. 2024;119:419–437. *(statement wording/numbering not yet verified against the source)*
+- **aga-2018** — AGA Institute guideline on initial management of acute pancreatitis (2018), Goal-directed fluids; against prophylactic antibiotics; against urgent ERCP in biliary AP without cholangitis; early oral feeding (within 24 h); enteral over parenteral; same-admission cholecystectomy for biliary AP; alcohol brief intervention. Crockett SD, Wani S, Gardner TB, Falck-Ytter Y, Barkun AN. Gastroenterology. 2018;154:1096–1101. *(statement wording/numbering not yet verified against the source)*
+- **waterfall-2022** — WATERFALL trial — aggressive vs moderate fluid resuscitation in acute pancreatitis (NEJM 2022) (2022), Moderate (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h lactated Ringer’s) vs aggressive (20 mL/kg bolus then 3 mL/kg/h): stopped for harm — fluid overload 20.5% vs 6.3% with no improvement in moderately severe/severe AP. Patients with heart failure (NYHA II–IV) were excluded. de-Madaria E, Buxbaum JL, Maisonneuve P, et al. N Engl J Med. 2022;387:989–1000. *(statement wording/numbering not yet verified against the source)*
+- **iap-apa-2013** — IAP/APA evidence-based guidelines for the management of acute pancreatitis (2013), No antibiotic prophylaxis; enteral nutrition in severe AP; same-admission cholecystectomy for mild biliary AP; delay cholecystectomy with peripancreatic collections until they resolve or beyond 6 weeks; intervention for infected necrosis delayed to ≥4 weeks (walled-off). Working Group IAP/APA Acute Pancreatitis Guidelines. Pancreatology. 2013;13(4 Suppl 2):e1–15. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng104** — NICE NG104 — Pancreatitis (2018), Acute pancreatitis: do not offer prophylactic antimicrobials; enteral nutrition for moderately severe/severe AP started within 72 h; parenteral nutrition only if enteral nutrition fails or is contraindicated. National Institute for Health and Care Excellence. NICE guideline NG104, September 2018. *(statement wording/numbering not yet verified against the source)*
+- **nice-cg100** — NICE CG100 — Alcohol-use disorders: diagnosis and management of physical complications (2010), Thiamine for harmful or dependent drinkers admitted to hospital (parenteral if Wernicke’s suspected); benzodiazepine-based management of acute alcohol withdrawal. National Institute for Health and Care Excellence. Clinical guideline CG100, June 2010 (updated April 2017). *(statement wording/numbering not yet verified against the source)*
+- **bisap-2008** — BISAP score — early prediction of mortality in acute pancreatitis (2008), BUN >25 mg/dL, impaired mental status, SIRS, age >60, pleural effusion within 24 h; ≥3 = increased mortality. Wu BU, Johannes RS, Sun X, et al. Gut. 2008;57:1698–1703. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Pancreatitis; 2. Acute Appendicitis; 3. Peptic Ulcer Disease
+- differential web.symptomInference: 1. Gallstone pancreatitis; 2. Acute alcoholic pancreatitis; 3. Peptic ulcer disease; 4. Perforated peptic ulcer; 5. Acute cholecystitis
+- differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=75)
+- alarms: Emergency now [web.triage.emergency]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Amylase/lipase 980 U/L — 3–10× upper limit [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, child-pugh, meld, bisap, news2, caprini, web:gerdq, web:audit
+- score values: (none)
+- dx variant: pancreatitis_mild (Pancreatitis)
+- note: PANE features applied: epigastric_pain, radiation_to_back, nausea_vomiting, anorexia, alcohol_use
+- note: AssessmentTab ManagementPanel protocol: pancreatitis (from PANE top)
+- note: PlanTab protocol: pancreatitis (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (14), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
+
+</details>
+
+### Acute pancreatitis (drug-induced)
+
+#### `pancreatitis-drug-induced-immunosuppressed` — Immunosuppressed — azathioprine-induced pancreatitis in Crohn’s disease on prednisolone
+
+33-year-old woman with Crohn’s disease, azathioprine started 4 weeks ago and prednisolone 20 mg: epigastric pain to the back, vomiting; lipase 1100; no gallstones, normal TG and calcium, minimal alcohol.
+
+Permutation of `pancreatitis-gallstone-mild`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-pancreatitis-top3 | mustRankTopK | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | ACG Guideline 2024 |  |
+| mgmt-stop-azathioprine | managementInclude | critical | FAIL (known gap) | ACG Guideline 2024 | Pancreatitis protocol: "Identify and stop a causative drug" step with the culprit list; see flag-immunosuppression. |
+| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-prophylactic-antibiotics | managementExclude | critical | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+| flag-immunosuppression | redFlags | quality | FAIL (known gap) |  | clinical-inference.ts: drug-induced pancreatitis prompt for recognised culprits (azathioprine/6-MP, valproate, ACE inhibitors, oestrogens, etc.) started within ~3 months. |
+| mgmt-steroid-cover | managementInclude | quality | FAIL (known gap) | AAGBI/RCP/Society for Endocrinology guideline 2020 | clinical-inference.ts: glucocorticoid on the medication list + vomiting/NBM → IV hydrocortisone cover. |
+| mgmt-no-cholecystectomy | managementExclude | quality | PASS |  |  |
+| variant-mild | dxVariant | quality | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
+
+Failure details:
+
+- **flag-immunosuppression** (web): no red flag matched among 19 (web.triage.reasons, web.protocol.redFlags, web.dxVariant.urgencyNote, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: Azathioprine/prednisolone not flagged; drug-induced aetiology not recognised.]
+- **mgmt-stop-azathioprine** (web): no management item matched among 45 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No output advises stopping azathioprine.]
+- **mgmt-steroid-cover** (web): no management item matched among 45 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No steroid-continuation/cover advice for prednisolone 20 mg with vomiting.]
+- **mgmt-no-aggressive-fluids** (web): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
+
+Guidelines:
+
+- **atlanta-2012** — Revised Atlanta classification of acute pancreatitis (2012) (2012), Diagnosis (2 of 3: typical pain, lipase/amylase ≥3 × ULN, imaging); severity: mild (no organ failure, no local/systemic complications), moderately severe (transient organ failure <48 h and/or local complications), severe (persistent organ failure >48 h); modified Marshall score. Banks PA, Bollen TL, Dervenis C, et al. Gut. 2013;62:102–111. *(statement wording/numbering not yet verified against the source)*
+- **acg-2024** — ACG Guideline — management of acute pancreatitis (2024) (2024), Moderately aggressive (goal-directed) fluids with lactated Ringer’s; no prophylactic antibiotics (including predicted severe and sterile necrosis); early oral feeding when tolerated; enteral rather than parenteral nutrition; ERCP within 24 h only with concurrent cholangitis; cholecystectomy during the index admission for mild biliary AP; transabdominal US in every patient; triglycerides if no gallstones/alcohol; CT not needed at presentation unless the diagnosis is unclear. Tenner S, Vege SS, Sheth SG, et al. Am J Gastroenterol. 2024;119:419–437. *(statement wording/numbering not yet verified against the source)*
+- **waterfall-2022** — WATERFALL trial — aggressive vs moderate fluid resuscitation in acute pancreatitis (NEJM 2022) (2022), Moderate (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h lactated Ringer’s) vs aggressive (20 mL/kg bolus then 3 mL/kg/h): stopped for harm — fluid overload 20.5% vs 6.3% with no improvement in moderately severe/severe AP. Patients with heart failure (NYHA II–IV) were excluded. de-Madaria E, Buxbaum JL, Maisonneuve P, et al. N Engl J Med. 2022;387:989–1000. *(statement wording/numbering not yet verified against the source)*
+- **iap-apa-2013** — IAP/APA evidence-based guidelines for the management of acute pancreatitis (2013), No antibiotic prophylaxis; enteral nutrition in severe AP; same-admission cholecystectomy for mild biliary AP; delay cholecystectomy with peripancreatic collections until they resolve or beyond 6 weeks; intervention for infected necrosis delayed to ≥4 weeks (walled-off). Working Group IAP/APA Acute Pancreatitis Guidelines. Pancreatology. 2013;13(4 Suppl 2):e1–15. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng104** — NICE NG104 — Pancreatitis (2018), Acute pancreatitis: do not offer prophylactic antimicrobials; enteral nutrition for moderately severe/severe AP started within 72 h; parenteral nutrition only if enteral nutrition fails or is contraindicated. National Institute for Health and Care Excellence. NICE guideline NG104, September 2018. *(statement wording/numbering not yet verified against the source)*
+- **steroid-periop-2020** — AAGBI/RCP/Society for Endocrinology guideline — peri-operative glucocorticoids in adrenal insufficiency (including long-term steroid users) (2020), Patients on ≥5 mg prednisolone for >4 weeks need peri-operative hydrocortisone cover. Woodcock T, Barker P, Daniel S, et al. Anaesthesia. 2020;75:654–663. *(statement wording/numbering not yet verified against the source)*
+- **aga-2018** — AGA Institute guideline on initial management of acute pancreatitis (2018), Goal-directed fluids; against prophylactic antibiotics; against urgent ERCP in biliary AP without cholangitis; early oral feeding (within 24 h); enteral over parenteral; same-admission cholecystectomy for biliary AP; alcohol brief intervention. Crockett SD, Wani S, Gardner TB, Falck-Ytter Y, Barkun AN. Gastroenterology. 2018;154:1096–1101. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Pancreatitis; 2. Peptic Ulcer Disease; 3. Acute Appendicitis
+- differential web.symptomInference: 1. Gallstone pancreatitis; 2. Peptic ulcer disease; 3. Acute alcoholic pancreatitis; 4. Acute cholecystitis; 5. Perforated peptic ulcer
+- differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=63)
+- alarms: Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Amylase 1100 U/L — severe elevation [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, news2, web:gerdq, must
+- score values: (none)
+- dx variant: pancreatitis_mild (Pancreatitis)
+- note: PANE features applied: epigastric_pain, radiation_to_back, nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: pancreatitis (from PANE top)
+- note: PlanTab protocol: pancreatitis (from ICD)
+- note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (17), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
+
+</details>
+
+### Acute pancreatitis (gallstone)
+
+#### `pancreatitis-gallstone-mild` — Base case — mild acute biliary pancreatitis (revised Atlanta 2012), BISAP 1
+
+52-year-old woman with 10 h of epigastric pain radiating to the back and vomiting; stable observations; lipase 2450 U/L (≈40 × ULN), ALT 312; ultrasound shows gallstones, CBD 6 mm without a visible stone. No organ failure.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-pancreatitis-top3 | mustRankTopK | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | ACG Guideline 2024 |  |
+| mgmt-same-admission-cholecystectomy | managementInclude | critical | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; PONCHO trial 2015 |  |
+| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-prophylactic-antibiotics | managementExclude | critical | FAIL (known gap) | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 | AssessmentTab ManagementPanel: when the clinician has confirmed/locked a working diagnosis (ICD or disease id), show that protocol instead of the PANE top (≥0.20). Today a confirmed pancreatitis/amoebic abscess shows the cholecystitis or appendicitis protocol. Pancreatitis context: suppress the peritonism prompt's antibiotics (negated "no peritonism" trigger) and the SIRS "Sepsis-6 … antibiotics" bundle when the working diagnosis is acute pancreatitis without a documented infection; add an explicit "No prophylactic antibiotics (ACG 2024; IAP/APA 2013; NICE NG104)" line to the pancreatitis protocol. |
+| mgmt-no-routine-ercp | managementExclude | critical | FAIL (known gap) | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018; APEC trial 2020 | clinical-inference.ts dilated_cbd prompt: parse the CBD diameter from the report (dilated only if >6 mm with gallbladder in situ, or the report says "dilated" without negation) instead of firing on any "cbd"/"common bile duct" mention; make its ERCP action conditional ("if a stone is confirmed/ASGE high risk"). |
+| mgmt-no-appendicectomy | managementExclude | critical | FAIL (known gap) |  | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
+| score-rec-bisap | scoreRecommended | quality | FAIL (known gap) | BISAP score 2008; ACG Guideline 2024 | clinical-cds.ts bisap rule: also trigger on workingDiagnosis.diseaseId === "pancreatitis" or lipase/amylase ≥3 × ULN. |
+| inv-ultrasound | investigationInclude | quality | PASS | ACG Guideline 2024 |  |
+| inv-triglycerides | investigationInclude | quality | FAIL (known gap) | ACG Guideline 2024 | Pancreatitis protocol: add triglycerides and calcium to the aetiology work-up (ACG 2024). |
+| inv-calcium | investigationInclude | quality | PASS | ACG Guideline 2024 |  |
+| inv-no-early-ct | investigationExclude | quality | FAIL (known gap) | ACG Guideline 2024 | HpiTab.seedInvestigationsFromPane: carry `conditional` through, or do not seed conditional investigations. |
+| mgmt-moderate-fluids | managementInclude | quality | FAIL (known gap) | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-early-oral-feeding | managementInclude | quality | FAIL (known gap) | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018 | Pancreatitis protocol step 3: "Early oral feeding as tolerated (within 24–72 h); NG/NJ enteral if not tolerated" (ACG 2024/AGA 2018). |
+| mgmt-no-routine-nbm | managementExclude | quality | FAIL (known gap) | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018 | Pancreatitis protocol: replace routine NBM with early oral feeding (ACG 2024). |
+| variant-mild | dxVariant | quality | FAIL (known gap) | Revised Atlanta classification of acute pancreatitis (2012) 2012 | dx-variants.ts detectDxVariants: pick the group by diseaseId/ICD across all groups first and use the text fallback only if nothing matched (and make it negation-aware). Today "No cholangitis"/"no pancreatitis" in the assessment selects the earlier Cholangitis/Pancreatitis group by text before the Pancreatitis group is checked by disease id. dx-variants.ts pancreatitis group: test severe → moderately severe → mild with Atlanta phrases that cannot be substrings of each other (e.g. match "moderately severe" before "severe acute pancreatitis"; move "pancreatic necrosis" out of the moderate list or check persistent organ failure first), and accept qualifiers between "mild" and "pancreatitis" (e.g. "mild acute biliary pancreatitis"). |
+
+Failure details:
+
+- **score-rec-bisap** (web): bisap not recommended; recommended: alvarado, ranson, news2, web:gerdq, asa, stop-bang [known gap: CDS BISAP rule fires only on a "pancreatitis"/"epigastric pain" chip plus an alcohol/gallstone/hyperlipidaemia comorbidity; it ignores the locked working diagnosis and the lipase result.]
+- **inv-triglycerides** (web): no investigation matched among 41 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Pancreatitis protocol investigations have no triglycerides (iOS radiation has them).]
+- **inv-no-early-ct** (web): forbidden investigation present in web.pane.seeded: "cect abdomen (assess pancreatic necrosis) (pancreatitis)" [known gap: HPI completion seeds "CECT abdomen (assess pancreatic necrosis)" as an urgent order, dropping the protocol's conditional "at 48–72 h if severe or not improving".]
+- **mgmt-moderate-fluids** (web): no management item matched among 60 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No moderate/goal-directed fluid instruction anywhere.]
+- **mgmt-early-oral-feeding** (web): no management item matched among 60 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No early oral feeding line: the mild variant (which has one) is not detected (see variant-mild) and the protocol says "NBM".]
+- **mgmt-no-aggressive-fluids** (web): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+1 more) [known gap: Plan tab and Assessment panel: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h initial)"; protocol medication "Hartmann's 500 ml Q2H — aggressive fluid resuscitation"; lipase prompt "NBM + aggressive IV fluid resuscitation".]
+- **mgmt-no-prophylactic-antibiotics** (web): forbidden management item present in web.managementPanel: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or piperacillin-tazobactam for severe." (+1 more) [known gap: Assessment panel shows the cholecystitis protocol (PANE top: cholecystitis 0.29 > pancreatitis 0.19) with IV co-amoxiclav/pip-tazo, and the peritonism prompt (fired by "No peritonism") adds pip-tazo + metronidazole.]
+- **mgmt-no-routine-ercp** (web): forbidden management item present in web.clinicalPrompts: "• ercp - therapeutic: stone extraction (choledocholithiasis) or stenting (malignant st..." [known gap: "ERCP — therapeutic: stone extraction" from the dilated-CBD prompt (CBD 6 mm, no stone, no cholangitis).]
+- **mgmt-no-routine-nbm** (web): forbidden management item present in web.plan: "[immediate] nbm - enteral feeding via ng/nj if not tolerating po at 48 h." (+2 more) [known gap: Protocol step "NBM — enteral feeding via NG/NJ if not tolerating PO at 48 h"; lipase prompt "NBM + …".]
+- **mgmt-no-appendicectomy** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "voluntary guarding" (any guarding).]
+- **variant-mild** (web): detected (none) in group Cholangitis; expected pancreatitis_mild [known gap: Assessment "…No cholangitis…" selects the Cholangitis group by text before the Pancreatitis group is checked; no variant, so the Plan tab shows every phase (including necrosectomy).]
+
+Guidelines:
+
+- **atlanta-2012** — Revised Atlanta classification of acute pancreatitis (2012) (2012), Diagnosis (2 of 3: typical pain, lipase/amylase ≥3 × ULN, imaging); severity: mild (no organ failure, no local/systemic complications), moderately severe (transient organ failure <48 h and/or local complications), severe (persistent organ failure >48 h); modified Marshall score. Banks PA, Bollen TL, Dervenis C, et al. Gut. 2013;62:102–111. *(statement wording/numbering not yet verified against the source)*
+- **acg-2024** — ACG Guideline — management of acute pancreatitis (2024) (2024), Moderately aggressive (goal-directed) fluids with lactated Ringer’s; no prophylactic antibiotics (including predicted severe and sterile necrosis); early oral feeding when tolerated; enteral rather than parenteral nutrition; ERCP within 24 h only with concurrent cholangitis; cholecystectomy during the index admission for mild biliary AP; transabdominal US in every patient; triglycerides if no gallstones/alcohol; CT not needed at presentation unless the diagnosis is unclear. Tenner S, Vege SS, Sheth SG, et al. Am J Gastroenterol. 2024;119:419–437. *(statement wording/numbering not yet verified against the source)*
+- **aga-2018** — AGA Institute guideline on initial management of acute pancreatitis (2018), Goal-directed fluids; against prophylactic antibiotics; against urgent ERCP in biliary AP without cholangitis; early oral feeding (within 24 h); enteral over parenteral; same-admission cholecystectomy for biliary AP; alcohol brief intervention. Crockett SD, Wani S, Gardner TB, Falck-Ytter Y, Barkun AN. Gastroenterology. 2018;154:1096–1101. *(statement wording/numbering not yet verified against the source)*
+- **iap-apa-2013** — IAP/APA evidence-based guidelines for the management of acute pancreatitis (2013), No antibiotic prophylaxis; enteral nutrition in severe AP; same-admission cholecystectomy for mild biliary AP; delay cholecystectomy with peripancreatic collections until they resolve or beyond 6 weeks; intervention for infected necrosis delayed to ≥4 weeks (walled-off). Working Group IAP/APA Acute Pancreatitis Guidelines. Pancreatology. 2013;13(4 Suppl 2):e1–15. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng104** — NICE NG104 — Pancreatitis (2018), Acute pancreatitis: do not offer prophylactic antimicrobials; enteral nutrition for moderately severe/severe AP started within 72 h; parenteral nutrition only if enteral nutrition fails or is contraindicated. National Institute for Health and Care Excellence. NICE guideline NG104, September 2018. *(statement wording/numbering not yet verified against the source)*
+- **waterfall-2022** — WATERFALL trial — aggressive vs moderate fluid resuscitation in acute pancreatitis (NEJM 2022) (2022), Moderate (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h lactated Ringer’s) vs aggressive (20 mL/kg bolus then 3 mL/kg/h): stopped for harm — fluid overload 20.5% vs 6.3% with no improvement in moderately severe/severe AP. Patients with heart failure (NYHA II–IV) were excluded. de-Madaria E, Buxbaum JL, Maisonneuve P, et al. N Engl J Med. 2022;387:989–1000. *(statement wording/numbering not yet verified against the source)*
+- **bisap-2008** — BISAP score — early prediction of mortality in acute pancreatitis (2008), BUN >25 mg/dL, impaired mental status, SIRS, age >60, pleural effusion within 24 h; ≥3 = increased mortality. Wu BU, Johannes RS, Sun X, et al. Gut. 2008;57:1698–1703. *(statement wording/numbering not yet verified against the source)*
+- **poncho-2015** — PONCHO trial — same-admission vs interval cholecystectomy for mild gallstone pancreatitis (2015), Same-admission cholecystectomy reduced recurrent gallstone-related complications. da Costa DW, Bouwense SA, Schepers NJ, et al. Lancet. 2015;386:1261–1268. *(statement wording/numbering not yet verified against the source)*
+- **apec-2020** — APEC trial — urgent ERCP vs conservative treatment in predicted severe gallstone pancreatitis without cholangitis (2020), Urgent ERCP with sphincterotomy did not reduce major complications or mortality in the absence of cholangitis. Schepers NJ, Hallensleben NDL, Besselink MG, et al. Lancet. 2020;396:167–176. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Acute Pancreatitis; 3. Peptic Ulcer Disease
+- differential web.symptomInference: 1. Gallstone pancreatitis; 2. Acute cholecystitis; 3. Peptic ulcer disease; 4. Acute alcoholic pancreatitis; 5. Perforated peptic ulcer
+- differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
+- differential web.triageSurgical: 1. Acute cholangitis
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=135)
+- alarms: Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Amylase 2450 U/L — severe elevation [web.clinicalPrompts.safety]; Pelvic free fluid on imaging — female patient [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, news2, web:gerdq, asa, stop-bang
+- score values: (none)
+- dx variant: (none) (Cholangitis)
+- note: PANE features applied: epigastric_pain, radiation_to_back, nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from PANE top)
+- note: PlanTab protocol: pancreatitis (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (14), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
+
+</details>
+
+#### `pancreatitis-elderly-bisap-heart-failure` — Elderly (79) with HFrEF on apixaban — BISAP 4 at presentation (predicted severe)
+
+79-year-old woman with HFrEF (EF 30%), AF on apixaban and CKD 3a: 6 h of epigastric pain and vomiting; HR 112, RR 22, T 37.9 °C, urea 10.8, WBC 14.2, small left pleural effusion; lipase 1850; gallstones.
+
+Permutation of `pancreatitis-gallstone-mild`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-pancreatitis-top3 | mustRankTopK | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | ACG Guideline 2024; BISAP score 2008 |  |
+| mgmt-hdu-level-care | managementInclude | critical | PASS | ACG Guideline 2024; BISAP score 2008 |  |
+| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-prophylactic-antibiotics | managementExclude | critical | FAIL (known gap) | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 | Pancreatitis context: suppress the peritonism prompt's antibiotics (negated "no peritonism" trigger) and the SIRS "Sepsis-6 … antibiotics" bundle when the working diagnosis is acute pancreatitis without a documented infection; add an explicit "No prophylactic antibiotics (ACG 2024; IAP/APA 2013; NICE NG104)" line to the pancreatitis protocol. |
+| mgmt-no-routine-ercp | managementExclude | critical | FAIL (known gap) | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018; APEC trial 2020 | clinical-inference.ts dilated_cbd prompt: parse the CBD diameter from the report (dilated only if >6 mm with gallbladder in situ, or the report says "dilated" without negation) instead of firing on any "cbd"/"common bile duct" mention; make its ERCP action conditional ("if a stone is confirmed/ASGE high risk"). |
+| mgmt-no-appendicectomy | managementExclude | critical | FAIL (known gap) |  | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
+| flag-heart-failure | redFlags | quality | PASS | WATERFALL trial 2022 |  |
+| flag-anticoagulant | redFlags | quality | PASS |  |  |
+| score-rec-bisap | scoreRecommended | quality | PASS | BISAP score 2008; ACG Guideline 2024 |  |
+| inv-triglycerides | investigationInclude | quality | FAIL (known gap) | ACG Guideline 2024 | Pancreatitis protocol: add triglycerides and calcium. |
+| mgmt-moderate-fluids | managementInclude | quality | FAIL (known gap) | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-same-admission-cholecystectomy | managementInclude | quality | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; PONCHO trial 2015 |  |
+
+Failure details:
+
+- **inv-triglycerides** (web): no investigation matched among 41 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No triglycerides in the pancreatitis protocol.]
+- **mgmt-moderate-fluids** (web): no management item matched among 62 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No moderate/goal-directed fluid instruction.]
+- **mgmt-no-aggressive-fluids** (web): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)" for a 79-year-old with EF 30% — no heart-failure caveat.]
+- **mgmt-no-prophylactic-antibiotics** (web): forbidden management item present in web.clinicalPrompts: "• iv piperacillin-tazobactam 4.5g tds + metronidazole 500mg tds." [known gap: Peritonism prompt ("No peritonism") adds pip-tazo + metronidazole.]
+- **mgmt-no-routine-ercp** (web): forbidden management item present in web.clinicalPrompts: "• ercp - therapeutic: stone extraction (choledocholithiasis) or stenting (malignant st..." [known gap: Dilated-CBD prompt ERCP (CBD 6 mm, no stone, no cholangitis).]
+- **mgmt-no-appendicectomy** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "guarding".]
+
+Guidelines:
+
+- **atlanta-2012** — Revised Atlanta classification of acute pancreatitis (2012) (2012), Diagnosis (2 of 3: typical pain, lipase/amylase ≥3 × ULN, imaging); severity: mild (no organ failure, no local/systemic complications), moderately severe (transient organ failure <48 h and/or local complications), severe (persistent organ failure >48 h); modified Marshall score. Banks PA, Bollen TL, Dervenis C, et al. Gut. 2013;62:102–111. *(statement wording/numbering not yet verified against the source)*
+- **acg-2024** — ACG Guideline — management of acute pancreatitis (2024) (2024), Moderately aggressive (goal-directed) fluids with lactated Ringer’s; no prophylactic antibiotics (including predicted severe and sterile necrosis); early oral feeding when tolerated; enteral rather than parenteral nutrition; ERCP within 24 h only with concurrent cholangitis; cholecystectomy during the index admission for mild biliary AP; transabdominal US in every patient; triglycerides if no gallstones/alcohol; CT not needed at presentation unless the diagnosis is unclear. Tenner S, Vege SS, Sheth SG, et al. Am J Gastroenterol. 2024;119:419–437. *(statement wording/numbering not yet verified against the source)*
+- **waterfall-2022** — WATERFALL trial — aggressive vs moderate fluid resuscitation in acute pancreatitis (NEJM 2022) (2022), Moderate (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h lactated Ringer’s) vs aggressive (20 mL/kg bolus then 3 mL/kg/h): stopped for harm — fluid overload 20.5% vs 6.3% with no improvement in moderately severe/severe AP. Patients with heart failure (NYHA II–IV) were excluded. de-Madaria E, Buxbaum JL, Maisonneuve P, et al. N Engl J Med. 2022;387:989–1000. *(statement wording/numbering not yet verified against the source)*
+- **bisap-2008** — BISAP score — early prediction of mortality in acute pancreatitis (2008), BUN >25 mg/dL, impaired mental status, SIRS, age >60, pleural effusion within 24 h; ≥3 = increased mortality. Wu BU, Johannes RS, Sun X, et al. Gut. 2008;57:1698–1703. *(statement wording/numbering not yet verified against the source)*
+- **iap-apa-2013** — IAP/APA evidence-based guidelines for the management of acute pancreatitis (2013), No antibiotic prophylaxis; enteral nutrition in severe AP; same-admission cholecystectomy for mild biliary AP; delay cholecystectomy with peripancreatic collections until they resolve or beyond 6 weeks; intervention for infected necrosis delayed to ≥4 weeks (walled-off). Working Group IAP/APA Acute Pancreatitis Guidelines. Pancreatology. 2013;13(4 Suppl 2):e1–15. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng104** — NICE NG104 — Pancreatitis (2018), Acute pancreatitis: do not offer prophylactic antimicrobials; enteral nutrition for moderately severe/severe AP started within 72 h; parenteral nutrition only if enteral nutrition fails or is contraindicated. National Institute for Health and Care Excellence. NICE guideline NG104, September 2018. *(statement wording/numbering not yet verified against the source)*
+- **aga-2018** — AGA Institute guideline on initial management of acute pancreatitis (2018), Goal-directed fluids; against prophylactic antibiotics; against urgent ERCP in biliary AP without cholangitis; early oral feeding (within 24 h); enteral over parenteral; same-admission cholecystectomy for biliary AP; alcohol brief intervention. Crockett SD, Wani S, Gardner TB, Falck-Ytter Y, Barkun AN. Gastroenterology. 2018;154:1096–1101. *(statement wording/numbering not yet verified against the source)*
+- **apec-2020** — APEC trial — urgent ERCP vs conservative treatment in predicted severe gallstone pancreatitis without cholangitis (2020), Urgent ERCP with sphincterotomy did not reduce major complications or mortality in the absence of cholangitis. Schepers NJ, Hallensleben NDL, Besselink MG, et al. Lancet. 2020;396:167–176. *(statement wording/numbering not yet verified against the source)*
+- **poncho-2015** — PONCHO trial — same-admission vs interval cholecystectomy for mild gallstone pancreatitis (2015), Same-admission cholecystectomy reduced recurrent gallstone-related complications. da Costa DW, Bouwense SA, Schepers NJ, et al. Lancet. 2015;386:1261–1268. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Pancreatitis; 2. Acute Cholecystitis; 3. Peptic Ulcer Disease
+- differential web.symptomInference: 1. Gallstone pancreatitis; 2. Acute cholecystitis; 3. Peptic ulcer disease; 4. Acute alcoholic pancreatitis; 5. Perforated peptic ulcer
+- differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
+- differential web.triageSurgical: 1. Acute biliary pancreatitis
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=151)
+- alarms: Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Amylase 1850 U/L — severe elevation [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, cha2ds2-vasc, qsofa, bisap, curb65, news2, web:gerdq, has-bled, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (Pancreatitis)
+- note: PANE features applied: epigastric_pain, radiation_to_back, nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: pancreatitis (from PANE top)
+- note: PlanTab protocol: pancreatitis (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (14), Pancreatic Mass / Cyst (14), IBD — Surgical Complications (Crohn's / UC) (12)
+
+</details>
+
+#### `pancreatitis-moderately-severe` — Moderately severe (Atlanta): transient renal failure <48 h and an acute necrotic collection — sterile
+
+58-year-old man on day 5 of gallstone pancreatitis: AKI on admission resolved within 36 h; CECT at 96 h shows 20% pancreatic body necrosis with an acute necrotic collection, no gas; low-grade fever 38.1 °C, tolerating NG feed.
+
+Permutation of `pancreatitis-gallstone-mild`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-pancreatitis-top3 | mustRankTopK | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
+| mgmt-no-prophylactic-antibiotics | managementExclude | critical | FAIL (known gap) | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 | Pancreatitis context: suppress the peritonism prompt's antibiotics (negated "no peritonism" trigger) and the SIRS "Sepsis-6 … antibiotics" bundle when the working diagnosis is acute pancreatitis without a documented infection; add an explicit "No prophylactic antibiotics (ACG 2024; IAP/APA 2013; NICE NG104)" line to the pancreatitis protocol. |
+| mgmt-no-early-cholecystectomy-with-collection | managementExclude | critical | FAIL (known gap) | IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; ACG Guideline 2024 | clinical-inference.ts pancreatitis prompts: same-admission cholecystectomy only for mild AP; with collections/necrosis, defer until they resolve or >6 weeks (IAP/APA 2013). |
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+| mgmt-enteral-nutrition | managementInclude | quality | PASS | ACG Guideline 2024; NICE NG104 2018 |  |
+| mgmt-no-early-necrosectomy | managementExclude | quality | PASS | ESGE guideline 2018; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013 |  |
+| mgmt-no-tpn | managementExclude | quality | PASS | NICE NG104 2018; ACG Guideline 2024 |  |
+| variant-moderate | dxVariant | quality | FAIL (known gap) | Revised Atlanta classification of acute pancreatitis (2012) 2012 | dx-variants.ts pancreatitis group: test severe → moderately severe → mild with Atlanta phrases that cannot be substrings of each other (e.g. match "moderately severe" before "severe acute pancreatitis"; move "pancreatic necrosis" out of the moderate list or check persistent organ failure first), and accept qualifiers between "mild" and "pancreatitis" (e.g. "mild acute biliary pancreatitis"). |
+
+Failure details:
+
+- **mgmt-no-prophylactic-antibiotics** (web): forbidden management item present in web.clinicalPrompts: "• iv piperacillin-tazobactam 4.5g tds + metronidazole 500mg tds." [known gap: "IV piperacillin-tazobactam 4.5g TDS + metronidazole" from the peritonism prompt, fired by "no peritonism" in the exam text (sterile necrosis, cultures negative).]
+- **mgmt-no-early-cholecystectomy-with-collection** (web): forbidden management item present in web.clinicalPrompts: "• plan interval laparoscopic cholecystectomy - same admission or within 2 weeks (gallstone pancreatitis)." [known gap: Lipase prompt (300–1000 U/L band): "Plan interval laparoscopic cholecystectomy — same admission or within 2 weeks" despite a 6 × 4 cm necrotic collection.]
+- **variant-moderate** (web): detected pancreatitis_severe in group Pancreatitis; expected pancreatitis_moderate [known gap: "Moderately severe acute pancreatitis" contains "severe acute pancreatitis" → severe variant (ICU prefix, surgical phase) selected.]
+
+Guidelines:
+
+- **atlanta-2012** — Revised Atlanta classification of acute pancreatitis (2012) (2012), Diagnosis (2 of 3: typical pain, lipase/amylase ≥3 × ULN, imaging); severity: mild (no organ failure, no local/systemic complications), moderately severe (transient organ failure <48 h and/or local complications), severe (persistent organ failure >48 h); modified Marshall score. Banks PA, Bollen TL, Dervenis C, et al. Gut. 2013;62:102–111. *(statement wording/numbering not yet verified against the source)*
+- **acg-2024** — ACG Guideline — management of acute pancreatitis (2024) (2024), Moderately aggressive (goal-directed) fluids with lactated Ringer’s; no prophylactic antibiotics (including predicted severe and sterile necrosis); early oral feeding when tolerated; enteral rather than parenteral nutrition; ERCP within 24 h only with concurrent cholangitis; cholecystectomy during the index admission for mild biliary AP; transabdominal US in every patient; triglycerides if no gallstones/alcohol; CT not needed at presentation unless the diagnosis is unclear. Tenner S, Vege SS, Sheth SG, et al. Am J Gastroenterol. 2024;119:419–437. *(statement wording/numbering not yet verified against the source)*
+- **iap-apa-2013** — IAP/APA evidence-based guidelines for the management of acute pancreatitis (2013), No antibiotic prophylaxis; enteral nutrition in severe AP; same-admission cholecystectomy for mild biliary AP; delay cholecystectomy with peripancreatic collections until they resolve or beyond 6 weeks; intervention for infected necrosis delayed to ≥4 weeks (walled-off). Working Group IAP/APA Acute Pancreatitis Guidelines. Pancreatology. 2013;13(4 Suppl 2):e1–15. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng104** — NICE NG104 — Pancreatitis (2018), Acute pancreatitis: do not offer prophylactic antimicrobials; enteral nutrition for moderately severe/severe AP started within 72 h; parenteral nutrition only if enteral nutrition fails or is contraindicated. National Institute for Health and Care Excellence. NICE guideline NG104, September 2018. *(statement wording/numbering not yet verified against the source)*
+- **esge-2018-necrosis** — ESGE guideline — endoscopic management of acute necrotising pancreatitis (2018), No intervention for sterile necrosis; step-up approach for infected necrosis, delayed until walled-off (≈4 weeks). Arvanitakis M, Dumonceau JM, Albert J, et al. Endoscopy. 2018;50:524–546. *(statement wording/numbering not yet verified against the source)*
+- **aga-2018** — AGA Institute guideline on initial management of acute pancreatitis (2018), Goal-directed fluids; against prophylactic antibiotics; against urgent ERCP in biliary AP without cholangitis; early oral feeding (within 24 h); enteral over parenteral; same-admission cholecystectomy for biliary AP; alcohol brief intervention. Crockett SD, Wani S, Gardner TB, Falck-Ytter Y, Barkun AN. Gastroenterology. 2018;154:1096–1101. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Pancreatitis; 2. Acute Cholecystitis; 3. Inguinal / Femoral Hernia
+- differential web.symptomInference: 1. Acute cholecystitis; 2. Perforated peptic ulcer; 3. Acute alcoholic pancreatitis; 4. Gallstone pancreatitis; 5. Peptic ulcer disease
+- differential web.passive: 1. Perforated peptic ulcer; 2. Acute alcoholic pancreatitis; 3. Acute appendicitis (paediatric); 4. Symptomatic / ruptured abdominal aortic aneurysm; 5. Sickle cell vaso-occlusive crisis
+- differential web.triageSurgical: 1. Acute biliary pancreatitis; 2. Acute cholecystitis with cholelithiasis
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=158)
+- alarms: Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Amylase/lipase 420 U/L — 3–10× upper limit [web.clinicalPrompts.safety]; Albumin 29 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, caprini, web:gerdq, asa, rcri
+- score values: (none)
+- dx variant: pancreatitis_severe (Pancreatitis)
+- note: PANE features applied: epigastric_pain, radiation_to_back, nausea_vomiting, fever
+- note: AssessmentTab ManagementPanel protocol: pancreatitis (from PANE top)
+- note: PlanTab protocol: pancreatitis (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
+
+</details>
+
+#### `pancreatitis-pregnancy` — Pregnancy, 21 weeks — mild gallstone pancreatitis
+
+27-year-old at 21 weeks with epigastric pain to the back and vomiting; lipase 1900, ALT 280; ultrasound: gallstones, CBD 5 mm, live fetus; stable.
+
+Permutation of `pancreatitis-gallstone-mild`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-pancreatitis-top3 | mustRankTopK | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | ACG Guideline 2024 |  |
+| flag-pregnancy | redFlags | critical | PASS | ACOG Committee Opinion No. 723 2017 |  |
+| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-prophylactic-antibiotics | managementExclude | critical | FAIL (known gap) | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 | Pancreatitis context: suppress the peritonism prompt's antibiotics (negated "no peritonism" trigger) and the SIRS "Sepsis-6 … antibiotics" bundle when the working diagnosis is acute pancreatitis without a documented infection; add an explicit "No prophylactic antibiotics (ACG 2024; IAP/APA 2013; NICE NG104)" line to the pancreatitis protocol. |
+| mgmt-no-routine-ercp | managementExclude | critical | FAIL (known gap) | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018; APEC trial 2020 | clinical-inference.ts dilated_cbd prompt: parse the CBD diameter from the report (dilated only if >6 mm with gallbladder in situ, or the report says "dilated" without negation) instead of firing on any "cbd"/"common bile duct" mention; make its ERCP action conditional ("if a stone is confirmed/ASGE high risk"). |
+| mgmt-no-nsaid-after-20-weeks | managementExclude | critical | FAIL (known gap) | US FDA Drug Safety Communication 2020 | clinical-inference.ts operative-plan templates (lap chole and appendicectomy post-operative orders): when pregnancyPossible/pregnant, drop ibuprofen (NSAIDs from 20 weeks), replace "β-HCG confirmed negative" with the gestation, add obstetric review and fetal heart monitoring, and prefer US/MRI to CT. |
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+| inv-no-unqualified-ct | investigationExclude | quality | FAIL (known gap) | ACOG Committee Opinion No. 723 2017; ACG Guideline 2024 | HpiTab.seedInvestigationsFromPane: keep conditionals; no ionising imaging when pregnant unless severe/not improving. |
+| mgmt-obstetric-involvement | managementInclude | quality | FAIL (known gap) | SAGES guidelines for the use of laparoscopy during pregnancy 2017; ACOG Committee Opinion No. 775 2019 | clinical-inference.ts operative-plan templates (lap chole and appendicectomy post-operative orders): when pregnancyPossible/pregnant, drop ibuprofen (NSAIDs from 20 weeks), replace "β-HCG confirmed negative" with the gestation, add obstetric review and fetal heart monitoring, and prefer US/MRI to CT. |
+| mgmt-cholecystectomy-in-pregnancy | managementInclude | quality | PASS | SAGES guidelines for the use of laparoscopy during pregnancy 2017 |  |
+| mgmt-no-bhcg-negative-assumption | managementExclude | quality | PASS |  |  |
+| variant-mild | dxVariant | quality | FAIL (known gap) | Revised Atlanta classification of acute pancreatitis (2012) 2012 | dx-variants.ts detectDxVariants: pick the group by diseaseId/ICD across all groups first and use the text fallback only if nothing matched (and make it negation-aware). Today "No cholangitis"/"no pancreatitis" in the assessment selects the earlier Cholangitis/Pancreatitis group by text before the Pancreatitis group is checked by disease id. |
+
+Failure details:
+
+- **inv-no-unqualified-ct** (web): forbidden investigation present in web.pane.seeded: "cect abdomen (assess pancreatic necrosis) (pancreatitis)" [known gap: "CECT abdomen (assess pancreatic necrosis)" seeded unconditionally (conditional dropped) at 21 weeks. HpiTab.seedInvestigationsFromPane seeds every stat/urgent investigation of the top-3 PANE protocols, including CT from unrelated protocols, with no pregnancy check.]
+- **mgmt-obstetric-involvement** (web): no management item matched among 51 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No obstetric review or fetal monitoring.]
+- **mgmt-no-aggressive-fluids** (web): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
+- **mgmt-no-prophylactic-antibiotics** (web): forbidden management item present in web.clinicalPrompts: "• iv piperacillin-tazobactam 4.5g tds + metronidazole 500mg tds." [known gap: Peritonism prompt ("no peritonism") adds pip-tazo + metronidazole.]
+- **mgmt-no-routine-ercp** (web): forbidden management item present in web.clinicalPrompts: "• ercp - therapeutic: stone extraction (choledocholithiasis) or stenting (malignant st..." [known gap: Dilated-CBD prompt ERCP (CBD 5 mm).]
+- **mgmt-no-nsaid-after-20-weeks** (web): forbidden management item present in web.clinicalPrompts: "... 2. post-operative orders: • paracetamol 1g qds (regular) + ibuprofen 400mg tds (if egfr normal). • morphine 2.5-5mg sc/iv prn for pain > 5/10. • fre..." [known gap: Lap chole operative-plan post-op orders include ibuprofen at 21 weeks.]
+- **variant-mild** (web): detected (none) in group Cholangitis; expected pancreatitis_mild [known gap: Assessment "…No cholangitis" selects the Cholangitis group by text; no pancreatitis variant.]
+
+Guidelines:
+
+- **atlanta-2012** — Revised Atlanta classification of acute pancreatitis (2012) (2012), Diagnosis (2 of 3: typical pain, lipase/amylase ≥3 × ULN, imaging); severity: mild (no organ failure, no local/systemic complications), moderately severe (transient organ failure <48 h and/or local complications), severe (persistent organ failure >48 h); modified Marshall score. Banks PA, Bollen TL, Dervenis C, et al. Gut. 2013;62:102–111. *(statement wording/numbering not yet verified against the source)*
+- **acg-2024** — ACG Guideline — management of acute pancreatitis (2024) (2024), Moderately aggressive (goal-directed) fluids with lactated Ringer’s; no prophylactic antibiotics (including predicted severe and sterile necrosis); early oral feeding when tolerated; enteral rather than parenteral nutrition; ERCP within 24 h only with concurrent cholangitis; cholecystectomy during the index admission for mild biliary AP; transabdominal US in every patient; triglycerides if no gallstones/alcohol; CT not needed at presentation unless the diagnosis is unclear. Tenner S, Vege SS, Sheth SG, et al. Am J Gastroenterol. 2024;119:419–437. *(statement wording/numbering not yet verified against the source)*
+- **waterfall-2022** — WATERFALL trial — aggressive vs moderate fluid resuscitation in acute pancreatitis (NEJM 2022) (2022), Moderate (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h lactated Ringer’s) vs aggressive (20 mL/kg bolus then 3 mL/kg/h): stopped for harm — fluid overload 20.5% vs 6.3% with no improvement in moderately severe/severe AP. Patients with heart failure (NYHA II–IV) were excluded. de-Madaria E, Buxbaum JL, Maisonneuve P, et al. N Engl J Med. 2022;387:989–1000. *(statement wording/numbering not yet verified against the source)*
+- **iap-apa-2013** — IAP/APA evidence-based guidelines for the management of acute pancreatitis (2013), No antibiotic prophylaxis; enteral nutrition in severe AP; same-admission cholecystectomy for mild biliary AP; delay cholecystectomy with peripancreatic collections until they resolve or beyond 6 weeks; intervention for infected necrosis delayed to ≥4 weeks (walled-off). Working Group IAP/APA Acute Pancreatitis Guidelines. Pancreatology. 2013;13(4 Suppl 2):e1–15. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng104** — NICE NG104 — Pancreatitis (2018), Acute pancreatitis: do not offer prophylactic antimicrobials; enteral nutrition for moderately severe/severe AP started within 72 h; parenteral nutrition only if enteral nutrition fails or is contraindicated. National Institute for Health and Care Excellence. NICE guideline NG104, September 2018. *(statement wording/numbering not yet verified against the source)*
+- **apec-2020** — APEC trial — urgent ERCP vs conservative treatment in predicted severe gallstone pancreatitis without cholangitis (2020), Urgent ERCP with sphincterotomy did not reduce major complications or mortality in the absence of cholangitis. Schepers NJ, Hallensleben NDL, Besselink MG, et al. Lancet. 2020;396:167–176. *(statement wording/numbering not yet verified against the source)*
+- **sages-2017** — SAGES guidelines for the use of laparoscopy during pregnancy (2017), Laparoscopic cholecystectomy is safe in any trimester and is the treatment of choice for symptomatic gallbladder disease/gallstone pancreatitis; obstetric consultation; fetal heart monitoring; VTE prophylaxis. Pearl JP, Price RR, Tonkin AE, Richardson WS, Stefanidis D. Surg Endosc. 2017;31:3767–3782. *(statement wording/numbering not yet verified against the source)*
+- **acog-co723-2017** — ACOG Committee Opinion No. 723 — Guidelines for diagnostic imaging during pregnancy and lactation (2017), US and MRI preferred; CT not contraindicated when needed; gadolinium only if it clearly improves diagnosis. ACOG Committee Opinion No. 723. Obstet Gynecol. 2017;130:e210–e216. *(statement wording/numbering not yet verified against the source)*
+- **acog-co775-2019** — ACOG Committee Opinion No. 775 — Nonobstetric surgery during pregnancy (2019), Obstetric consultation before non-obstetric surgery; fetal heart rate assessment before and after the procedure. ACOG Committee Opinion No. 775. Obstet Gynecol. 2019;133:e285–e286. *(statement wording/numbering not yet verified against the source)*
+- **fda-2020-nsaid** — US FDA Drug Safety Communication — NSAIDs in pregnancy at 20 weeks or later (2020), Avoid NSAIDs from about 20 weeks’ gestation (fetal renal dysfunction, oligohydramnios). US Food and Drug Administration. Drug Safety Communication, 15 October 2020. *(statement wording/numbering not yet verified against the source)*
+- **aga-2018** — AGA Institute guideline on initial management of acute pancreatitis (2018), Goal-directed fluids; against prophylactic antibiotics; against urgent ERCP in biliary AP without cholangitis; early oral feeding (within 24 h); enteral over parenteral; same-admission cholecystectomy for biliary AP; alcohol brief intervention. Crockett SD, Wani S, Gardner TB, Falck-Ytter Y, Barkun AN. Gastroenterology. 2018;154:1096–1101. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Pancreatitis; 2. Acute Cholecystitis; 3. Peptic Ulcer Disease
+- differential web.symptomInference: 1. Gallstone pancreatitis; 2. Peptic ulcer disease; 3. Acute alcoholic pancreatitis; 4. Acute cholecystitis; 5. Perforated peptic ulcer
+- differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
+- differential web.triageSurgical: 1. Acute cholangitis
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=199)
+- alarms: Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Amylase 1900 U/L — severe elevation [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, news2, web:gerdq
+- score values: (none)
+- dx variant: (none) (Cholangitis)
+- note: PANE features applied: epigastric_pain, radiation_to_back, nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: pancreatitis (from PANE top)
+- note: PlanTab protocol: pancreatitis (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (14), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
+
+</details>
+
+#### `pancreatitis-severe-organ-failure` — Severe (Atlanta): persistent respiratory and renal failure >48 h, 40% necrosis, no cholangitis
+
+64-year-old man on ICU day 3 with gallstone pancreatitis: persistent respiratory failure (SpO₂ 90% on high-flow, RR 30) and renal failure (creatinine 260, oliguria) >48 h, low-dose noradrenaline; CECT: 40% pancreatic necrosis; bilirubin 30, no cholangitis.
+
+Permutation of `pancreatitis-gallstone-mild`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-pancreatitis-top3 | mustRankTopK | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
+| level-emergency | emergencyLevel | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012; ACG Guideline 2024 |  |
+| alarm-organ-failure | mustAlarm | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
+| mgmt-critical-care | managementInclude | critical | PASS | ACG Guideline 2024; Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
+| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-prophylactic-antibiotics | managementExclude | critical | FAIL (known gap) | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 | Pancreatitis context: suppress the peritonism prompt's antibiotics (negated "no peritonism" trigger) and the SIRS "Sepsis-6 … antibiotics" bundle when the working diagnosis is acute pancreatitis without a documented infection; add an explicit "No prophylactic antibiotics (ACG 2024; IAP/APA 2013; NICE NG104)" line to the pancreatitis protocol. |
+| mgmt-no-routine-ercp | managementExclude | critical | FAIL (known gap) | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018; APEC trial 2020 | clinical-inference.ts dilated_cbd prompt: parse the CBD diameter from the report (dilated only if >6 mm with gallbladder in situ, or the report says "dilated" without negation) instead of firing on any "cbd"/"common bile duct" mention; make its ERCP action conditional ("if a stone is confirmed/ASGE high risk"). |
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+| score-rec-bisap | scoreRecommended | quality | FAIL (known gap) | BISAP score 2008; ACG Guideline 2024 | clinical-cds.ts bisap rule: trigger on the working diagnosis. |
+| mgmt-enteral-nutrition | managementInclude | quality | PASS | ACG Guideline 2024; NICE NG104 2018 |  |
+| mgmt-abdominal-compartment | managementInclude | quality | FAIL (known gap) |  | Pancreatitis protocol (severe): add intra-abdominal pressure monitoring / abdominal compartment syndrome. |
+| mgmt-no-early-necrosectomy | managementExclude | quality | PASS | ESGE guideline 2018; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013 |  |
+| pathway-ward-review | pathway | quality | n/a |  |  |
+| variant-severe | dxVariant | quality | FAIL (known gap) | Revised Atlanta classification of acute pancreatitis (2012) 2012 | dx-variants.ts detectDxVariants: pick the group by diseaseId/ICD across all groups first and use the text fallback only if nothing matched (and make it negation-aware). Today "No cholangitis"/"no pancreatitis" in the assessment selects the earlier Cholangitis/Pancreatitis group by text before the Pancreatitis group is checked by disease id. dx-variants.ts pancreatitis group: test severe → moderately severe → mild with Atlanta phrases that cannot be substrings of each other (e.g. match "moderately severe" before "severe acute pancreatitis"; move "pancreatic necrosis" out of the moderate list or check persistent organ failure first), and accept qualifiers between "mild" and "pancreatitis" (e.g. "mild acute biliary pancreatitis"). |
+
+Failure details:
+
+- **score-rec-bisap** (web): bisap not recommended; recommended: alvarado, wells-pe, ranson, qsofa, web:wagner, curb65, news2, caprini, web:gerdq, asa, rcri, stop-bang [known gap: BISAP not suggested (CDS rule ignores the working diagnosis); 12 other scales are.]
+- **mgmt-abdominal-compartment** (web): no management item matched among 72 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No intra-abdominal pressure monitoring despite a documented bladder pressure of 16 mmHg.]
+- **mgmt-no-aggressive-fluids** (web): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)" in established respiratory failure with pleural effusions.]
+- **mgmt-no-prophylactic-antibiotics** (web): forbidden management item present in web.clinicalPrompts: "• iv piperacillin-tazobactam 4.5g tds + metronidazole 500mg tds." (+3 more) [known gap: Peritonism prompt ("no peritonism") pip-tazo + metronidazole, and the SIRS sepsis bundle "Sepsis-6 … antibiotics" — no infection documented.]
+- **mgmt-no-routine-ercp** (web): forbidden management item present in web.clinicalPrompts: "• ercp - therapeutic: stone extraction (choledocholithiasis) or stenting (malignant st..." [known gap: Dilated-CBD prompt: "ERCP — therapeutic" (CBD 6 mm, no cholangitis) — APEC: no benefit.]
+- **variant-severe** (web): detected (none) in group Cholangitis; expected pancreatitis_severe [known gap: Assessment "…no cholangitis" selects the Cholangitis group by text; had it reached the Pancreatitis group, "40% pancreatic necrosis" would select the moderately severe variant first.]
+
+Guidelines:
+
+- **atlanta-2012** — Revised Atlanta classification of acute pancreatitis (2012) (2012), Diagnosis (2 of 3: typical pain, lipase/amylase ≥3 × ULN, imaging); severity: mild (no organ failure, no local/systemic complications), moderately severe (transient organ failure <48 h and/or local complications), severe (persistent organ failure >48 h); modified Marshall score. Banks PA, Bollen TL, Dervenis C, et al. Gut. 2013;62:102–111. *(statement wording/numbering not yet verified against the source)*
+- **acg-2024** — ACG Guideline — management of acute pancreatitis (2024) (2024), Moderately aggressive (goal-directed) fluids with lactated Ringer’s; no prophylactic antibiotics (including predicted severe and sterile necrosis); early oral feeding when tolerated; enteral rather than parenteral nutrition; ERCP within 24 h only with concurrent cholangitis; cholecystectomy during the index admission for mild biliary AP; transabdominal US in every patient; triglycerides if no gallstones/alcohol; CT not needed at presentation unless the diagnosis is unclear. Tenner S, Vege SS, Sheth SG, et al. Am J Gastroenterol. 2024;119:419–437. *(statement wording/numbering not yet verified against the source)*
+- **iap-apa-2013** — IAP/APA evidence-based guidelines for the management of acute pancreatitis (2013), No antibiotic prophylaxis; enteral nutrition in severe AP; same-admission cholecystectomy for mild biliary AP; delay cholecystectomy with peripancreatic collections until they resolve or beyond 6 weeks; intervention for infected necrosis delayed to ≥4 weeks (walled-off). Working Group IAP/APA Acute Pancreatitis Guidelines. Pancreatology. 2013;13(4 Suppl 2):e1–15. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng104** — NICE NG104 — Pancreatitis (2018), Acute pancreatitis: do not offer prophylactic antimicrobials; enteral nutrition for moderately severe/severe AP started within 72 h; parenteral nutrition only if enteral nutrition fails or is contraindicated. National Institute for Health and Care Excellence. NICE guideline NG104, September 2018. *(statement wording/numbering not yet verified against the source)*
+- **waterfall-2022** — WATERFALL trial — aggressive vs moderate fluid resuscitation in acute pancreatitis (NEJM 2022) (2022), Moderate (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h lactated Ringer’s) vs aggressive (20 mL/kg bolus then 3 mL/kg/h): stopped for harm — fluid overload 20.5% vs 6.3% with no improvement in moderately severe/severe AP. Patients with heart failure (NYHA II–IV) were excluded. de-Madaria E, Buxbaum JL, Maisonneuve P, et al. N Engl J Med. 2022;387:989–1000. *(statement wording/numbering not yet verified against the source)*
+- **apec-2020** — APEC trial — urgent ERCP vs conservative treatment in predicted severe gallstone pancreatitis without cholangitis (2020), Urgent ERCP with sphincterotomy did not reduce major complications or mortality in the absence of cholangitis. Schepers NJ, Hallensleben NDL, Besselink MG, et al. Lancet. 2020;396:167–176. *(statement wording/numbering not yet verified against the source)*
+- **esge-2018-necrosis** — ESGE guideline — endoscopic management of acute necrotising pancreatitis (2018), No intervention for sterile necrosis; step-up approach for infected necrosis, delayed until walled-off (≈4 weeks). Arvanitakis M, Dumonceau JM, Albert J, et al. Endoscopy. 2018;50:524–546. *(statement wording/numbering not yet verified against the source)*
+- **bisap-2008** — BISAP score — early prediction of mortality in acute pancreatitis (2008), BUN >25 mg/dL, impaired mental status, SIRS, age >60, pleural effusion within 24 h; ≥3 = increased mortality. Wu BU, Johannes RS, Sun X, et al. Gut. 2008;57:1698–1703. *(statement wording/numbering not yet verified against the source)*
+- **aga-2018** — AGA Institute guideline on initial management of acute pancreatitis (2018), Goal-directed fluids; against prophylactic antibiotics; against urgent ERCP in biliary AP without cholangitis; early oral feeding (within 24 h); enteral over parenteral; same-admission cholecystectomy for biliary AP; alcohol brief intervention. Crockett SD, Wani S, Gardner TB, Falck-Ytter Y, Barkun AN. Gastroenterology. 2018;154:1096–1101. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Pancreatitis; 2. Acute Cholecystitis; 3. Inguinal / Femoral Hernia
+- differential web.symptomInference: 1. Gallstone pancreatitis; 2. Acute alcoholic pancreatitis; 3. Peptic ulcer disease; 4. Perforated peptic ulcer; 5. Acute cholecystitis
+- differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
+- differential web.triageSurgical: 1. Acute biliary pancreatitis; 2. Acute cholecystitis with cholelithiasis
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=212)
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 18.6 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 260 μmol/L — elevated [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; SpO₂ 90% — hypoxia [web.clinicalPrompts.safety]; HR 122 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Albumin 24 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- recommended scores: alvarado, wells-pe, ranson, qsofa, web:wagner, curb65, news2, caprini, web:gerdq, asa, rcri, stop-bang
+- score values: (none)
+- dx variant: (none) (Cholangitis)
+- note: PANE features applied: epigastric_pain, radiation_to_back, nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: pancreatitis (from PANE top)
+- note: PlanTab protocol: pancreatitis (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (7), Pancreatic Mass / Cyst (7)
+
+</details>
+
+### Acute pancreatitis (gallstone) with acute cholangitis
+
+#### `pancreatitis-gallstone-cholangitis` — Gallstone pancreatitis with concurrent cholangitis (TG18 Grade II) → ERCP within 24 h
+
+71-year-old man with epigastric pain, fever 39.2 °C with rigors and jaundice; lipase 3100, bilirubin 105, WBC 16.8; ultrasound: CBD 11 mm with a distal stone.
+
+Permutation of `pancreatitis-gallstone-mild`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-pancreatitis-top3 | mustRankTopK | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
+| mnm-cholangitis | mustNotMiss | critical | PASS | Tokyo Guidelines 2018 2018 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | Tokyo Guidelines 2018 2018; ACG Guideline 2024 |  |
+| score-tg18-cholangitis-calculator | scoreValue | critical | PASS | Tokyo Guidelines 2018 2018 |  |
+| inv-blood-cultures | investigationInclude | critical | PASS | Tokyo Guidelines 2018 2018; Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| mgmt-ercp-urgent | managementInclude | critical | PASS | ACG Guideline 2024; Tokyo Guidelines 2018 2018 |  |
+| mgmt-ercp-within-24h | managementInclude | critical | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; Tokyo Guidelines 2018 2018 |  |
+| mgmt-antibiotics | managementInclude | critical | PASS | Tokyo Guidelines 2018 2018 |  |
+| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-appendicectomy | managementExclude | critical | FAIL (known gap) |  | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
+| alarm-sepsis | mustAlarm | quality | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| score-rec-tg18-cholangitis | scoreRecommended | quality | PASS | Tokyo Guidelines 2018 2018 |  |
+
+Failure details:
+
+- **mgmt-no-aggressive-fluids** (web): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+1 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
+- **mgmt-no-appendicectomy** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "guarding".]
+
+Guidelines:
+
+- **atlanta-2012** — Revised Atlanta classification of acute pancreatitis (2012) (2012), Diagnosis (2 of 3: typical pain, lipase/amylase ≥3 × ULN, imaging); severity: mild (no organ failure, no local/systemic complications), moderately severe (transient organ failure <48 h and/or local complications), severe (persistent organ failure >48 h); modified Marshall score. Banks PA, Bollen TL, Dervenis C, et al. Gut. 2013;62:102–111. *(statement wording/numbering not yet verified against the source)*
+- **acg-2024** — ACG Guideline — management of acute pancreatitis (2024) (2024), Moderately aggressive (goal-directed) fluids with lactated Ringer’s; no prophylactic antibiotics (including predicted severe and sterile necrosis); early oral feeding when tolerated; enteral rather than parenteral nutrition; ERCP within 24 h only with concurrent cholangitis; cholecystectomy during the index admission for mild biliary AP; transabdominal US in every patient; triglycerides if no gallstones/alcohol; CT not needed at presentation unless the diagnosis is unclear. Tenner S, Vege SS, Sheth SG, et al. Am J Gastroenterol. 2024;119:419–437. *(statement wording/numbering not yet verified against the source)*
+- **waterfall-2022** — WATERFALL trial — aggressive vs moderate fluid resuscitation in acute pancreatitis (NEJM 2022) (2022), Moderate (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h lactated Ringer’s) vs aggressive (20 mL/kg bolus then 3 mL/kg/h): stopped for harm — fluid overload 20.5% vs 6.3% with no improvement in moderately severe/severe AP. Patients with heart failure (NYHA II–IV) were excluded. de-Madaria E, Buxbaum JL, Maisonneuve P, et al. N Engl J Med. 2022;387:989–1000. *(statement wording/numbering not yet verified against the source)*
+- **tg18-dx-cholangitis** — Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholangitis (2018), Grade II: any two of WBC >12,000 or <4,000/mm³, fever ≥39 °C, age ≥75, total bilirubin ≥5 mg/dL, hypoalbuminaemia (<0.7 × LLN); Grade III: organ dysfunction. Kiriyama S, Kozaka K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:17–30. *(statement wording/numbering not yet verified against the source)*
+- **tg18-mgmt-cholangitis** — Tokyo Guidelines 2018 — flowchart for acute cholangitis (2018), Grade II: early biliary drainage; Grade III: organ support then urgent biliary drainage. Miura F, Okamoto K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:31–40. *(statement wording/numbering not yet verified against the source)*
+- **tg18-antimicrobial** — Tokyo Guidelines 2018 — antimicrobial therapy for acute cholangitis and cholecystitis (2018), Blood cultures in Grade II/III; antimicrobial choice by severity; duration after source control. Gomi H, Solomkin JS, Schlossberg D, et al. J Hepatobiliary Pancreat Sci. 2018;25:3–16. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign guidelines 2021 (2021), Blood cultures before antimicrobials; antimicrobials within 1 h for shock; source control; noradrenaline first-line vasopressor. Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+- **iap-apa-2013** — IAP/APA evidence-based guidelines for the management of acute pancreatitis (2013), No antibiotic prophylaxis; enteral nutrition in severe AP; same-admission cholecystectomy for mild biliary AP; delay cholecystectomy with peripancreatic collections until they resolve or beyond 6 weeks; intervention for infected necrosis delayed to ≥4 weeks (walled-off). Working Group IAP/APA Acute Pancreatitis Guidelines. Pancreatology. 2013;13(4 Suppl 2):e1–15. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholangitis; 2. Acute Pancreatitis; 3. Acute Cholecystitis
+- differential web.symptomInference: 1. Acute cholangitis; 2. Acute cholecystitis; 3. CBD stone / obstructive jaundice; 4. Gallstone pancreatitis; 5. Perforated peptic ulcer
+- differential web.passive: 1. Perforated peptic ulcer; 2. Acute alcoholic pancreatitis; 3. Malaria; 4. Acute appendicitis (paediatric); 5. Acute gastroenteritis
+- differential web.triageSurgical: 1. Acute cholangitis
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=267)
+- alarms: Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Amylase 3100 U/L — severe elevation [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Fever 39.2°C + HR 118 bpm [web.clinicalPrompts.safety]
+- recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, bisap, asge-cbd, news2, caprini, web:gerdq, asa, rcri, cfs
+- score values: tg18-cholangitis/calculator@web.scaleCalculator.tg18-cholangitis=2; tg18-cholangitis/calculator@web.scoreCalculator.tg18-cholangitis=2; tg18-cholangitis/autofill@web.scoreCalculator.tg18-cholangitis=0
+- dx variant: (none) (Cholangitis)
+- note: PANE features applied: ruq_pain, epigastric_pain, radiation_to_back, nausea_vomiting, fever, jaundice, rigors
+- note: AssessmentTab ManagementPanel protocol: cholangitis (from PANE top)
+- note: PlanTab protocol: pancreatitis (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (27), Jaundice Workup (25), Pancreatic Mass / Cyst (17)
+
+</details>
+
+### Acute pancreatitis (hypertriglyceridaemia)
+
+#### `pancreatitis-hypertriglyceridaemia` — Hypertriglyceridaemia (TG 31.4 mmol/L) with uncontrolled diabetes — lipaemic sample, amylase only 1.4 × ULN
+
+34-year-old woman with poorly controlled type 2 diabetes (HbA1c 11.2%), severe epigastric pain and vomiting; lipaemic serum, amylase 140 (<3 × ULN) but lipase 820; triglycerides 31.4 mmol/L, glucose 22.6; no gallstones.
+
+Permutation of `pancreatitis-gallstone-mild`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-pancreatitis-top3 | mustRankTopK | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | ACG Guideline 2024 |  |
+| flag-hypertriglyceridaemia | redFlags | critical | FAIL (known gap) | ACG Guideline 2024; Endocrine Society clinical practice guideline 2012 | clinical-inference.ts: add a triglycerides ≥11.3 mmol/L (1000 mg/dL) prompt ("hypertriglyceridaemia-induced pancreatitis: insulin/dextrose infusion, consider apheresis, lipid clinic"); make numLab take the highest ×ULN of amylase and lipase rather than the first key. |
+| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-prophylactic-antibiotics | managementExclude | critical | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | FAIL (known gap) |  | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
+| score-rec-bisap | scoreRecommended | quality | PASS | BISAP score 2008; ACG Guideline 2024 |  |
+| inv-triglycerides | investigationInclude | quality | FAIL (known gap) | ACG Guideline 2024 | Pancreatitis protocol: add triglycerides. |
+| mgmt-tg-lowering | managementInclude | quality | PASS | Endocrine Society clinical practice guideline 2012; ACG Guideline 2024 |  |
+| mgmt-no-cholecystectomy | managementExclude | quality | FAIL (known gap) |  | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
+| variant-mild | dxVariant | quality | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
+
+Failure details:
+
+- **flag-hypertriglyceridaemia** (web): no red flag matched among 29 (web.triage.reasons, web.protocol.redFlags, web.dxVariant.urgencyNote, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: TG 31.4 mmol/L is not flagged by any output (no TG rule in prompts, triage or protocol); the lipase prompt reads the first lab named amylase/lipase (amylase 140), so no pancreatitis prompt fires either.]
+- **inv-triglycerides** (web): no investigation matched among 44 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No triglycerides in the pancreatitis protocol investigations.]
+- **mgmt-no-aggressive-fluids** (web): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
+- **mgmt-no-cholecystectomy** (web): forbidden management item present in web.clinicalPrompts: "• consent: laparoscopic cholecystectomy - bile duct injury (0.3%), haemorrhage, conversion to open, bile leak, retained..." [known gap: Gallstone operative plan and consent fire from the US text "no gallstones or sludge".]
+- **mgmt-no-appendicectomy** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "guarding".]
+
+Guidelines:
+
+- **atlanta-2012** — Revised Atlanta classification of acute pancreatitis (2012) (2012), Diagnosis (2 of 3: typical pain, lipase/amylase ≥3 × ULN, imaging); severity: mild (no organ failure, no local/systemic complications), moderately severe (transient organ failure <48 h and/or local complications), severe (persistent organ failure >48 h); modified Marshall score. Banks PA, Bollen TL, Dervenis C, et al. Gut. 2013;62:102–111. *(statement wording/numbering not yet verified against the source)*
+- **acg-2024** — ACG Guideline — management of acute pancreatitis (2024) (2024), Moderately aggressive (goal-directed) fluids with lactated Ringer’s; no prophylactic antibiotics (including predicted severe and sterile necrosis); early oral feeding when tolerated; enteral rather than parenteral nutrition; ERCP within 24 h only with concurrent cholangitis; cholecystectomy during the index admission for mild biliary AP; transabdominal US in every patient; triglycerides if no gallstones/alcohol; CT not needed at presentation unless the diagnosis is unclear. Tenner S, Vege SS, Sheth SG, et al. Am J Gastroenterol. 2024;119:419–437. *(statement wording/numbering not yet verified against the source)*
+- **endo-htg-2012** — Endocrine Society clinical practice guideline — evaluation and treatment of hypertriglyceridaemia (2012), Severe hypertriglyceridaemia (≥1000 mg/dL, 11.3 mmol/L) carries a risk of pancreatitis; screen for secondary causes (uncontrolled diabetes); triglyceride-lowering therapy. Berglund L, Brunzell JD, Goldberg AC, et al. J Clin Endocrinol Metab. 2012;97:2969–2989. *(statement wording/numbering not yet verified against the source)*
+- **waterfall-2022** — WATERFALL trial — aggressive vs moderate fluid resuscitation in acute pancreatitis (NEJM 2022) (2022), Moderate (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h lactated Ringer’s) vs aggressive (20 mL/kg bolus then 3 mL/kg/h): stopped for harm — fluid overload 20.5% vs 6.3% with no improvement in moderately severe/severe AP. Patients with heart failure (NYHA II–IV) were excluded. de-Madaria E, Buxbaum JL, Maisonneuve P, et al. N Engl J Med. 2022;387:989–1000. *(statement wording/numbering not yet verified against the source)*
+- **iap-apa-2013** — IAP/APA evidence-based guidelines for the management of acute pancreatitis (2013), No antibiotic prophylaxis; enteral nutrition in severe AP; same-admission cholecystectomy for mild biliary AP; delay cholecystectomy with peripancreatic collections until they resolve or beyond 6 weeks; intervention for infected necrosis delayed to ≥4 weeks (walled-off). Working Group IAP/APA Acute Pancreatitis Guidelines. Pancreatology. 2013;13(4 Suppl 2):e1–15. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng104** — NICE NG104 — Pancreatitis (2018), Acute pancreatitis: do not offer prophylactic antimicrobials; enteral nutrition for moderately severe/severe AP started within 72 h; parenteral nutrition only if enteral nutrition fails or is contraindicated. National Institute for Health and Care Excellence. NICE guideline NG104, September 2018. *(statement wording/numbering not yet verified against the source)*
+- **bisap-2008** — BISAP score — early prediction of mortality in acute pancreatitis (2008), BUN >25 mg/dL, impaired mental status, SIRS, age >60, pleural effusion within 24 h; ≥3 = increased mortality. Wu BU, Johannes RS, Sun X, et al. Gut. 2008;57:1698–1703. *(statement wording/numbering not yet verified against the source)*
+- **aga-2018** — AGA Institute guideline on initial management of acute pancreatitis (2018), Goal-directed fluids; against prophylactic antibiotics; against urgent ERCP in biliary AP without cholangitis; early oral feeding (within 24 h); enteral over parenteral; same-admission cholecystectomy for biliary AP; alcohol brief intervention. Crockett SD, Wani S, Gardner TB, Falck-Ytter Y, Barkun AN. Gastroenterology. 2018;154:1096–1101. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Pancreatitis; 2. Peptic Ulcer Disease; 3. Acute Appendicitis
+- differential web.symptomInference: 1. Gallstone pancreatitis; 2. Peptic ulcer disease; 3. Acute alcoholic pancreatitis; 4. Acute cholecystitis; 5. Perforated peptic ulcer
+- differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. DKA / hyperglycaemic hyperosmolar state; 4. Acute gastroenteritis; 5. Adhesive small bowel obstruction
+- differential web.triageSurgical: 1. Acute biliary pancreatitis
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=77)
+- alarms: Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; BGL 22.6 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; HbA1c 11.2% — poorly controlled diabetes [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, bisap, web:wagner, news2, caprini, web:gerdq, asa, rcri, stop-bang, cfs
+- score values: (none)
+- dx variant: pancreatitis_mild (Pancreatitis)
+- note: PANE features applied: epigastric_pain, radiation_to_back, nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: pancreatitis (from PANE top)
+- note: PlanTab protocol: pancreatitis (from ICD)
+- note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7), Acute Appendicitis (7)
+
+</details>
+
+### Ruptured abdominal aortic aneurysm (mimic of acute pancreatitis)
+
+#### `pancreatitis-mimic-ruptured-aaa` — Dangerous mimic — ruptured AAA: epigastric pain to the back, collapse, hypotension, amylase mildly raised
+
+74-year-old hypertensive smoker with sudden epigastric pain radiating to the back and a collapse at home; BP 86/50, HR 118, pale; amylase 240 (2.4 × ULN), Hb 9.8, lactate 4.1. No imaging yet.
+
+Permutation of `pancreatitis-gallstone-mild`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-aaa | mustNotMiss | critical | FAIL (known gap) | ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms 2024 | lib/pane-engine: age/sex/smoking prior modifiers for aortic_aneurysm and a much stronger pulsatile_mass/haemodynamic_instability likelihood ratio; or a hard safety rule (age ≥60 + epigastric/back pain + SBP <90 or collapse → "Exclude ruptured AAA: bedside US/CTA, vascular surgeon"). |
+| level-emergency | emergencyLevel | critical | PASS | ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms 2024 |  |
+| alarm-haemodynamic | mustAlarm | critical | PASS | ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms 2024 |  |
+| inv-aortic-imaging | investigationInclude | critical | FAIL (known gap) | ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms 2024 | getProtocolByIcd: map I71.x to the aortic_aneurysm protocol; see mnm-aaa. |
+| mgmt-vascular-emergency | managementInclude | critical | FAIL (known gap) | ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms 2024 | See inv-aortic-imaging. |
+| mgmt-no-aggressive-fluids | managementExclude | critical | PASS | ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms 2024 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
+
+Failure details:
+
+- **mnm-aaa** (web): not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Inguinal / Femoral Hernia \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE ranks acute pancreatitis first; aortic_aneurysm has a post-modifier prior of 0.0024 for a 74-year-old male smoker and stays out of the top 3 even with the PANE answers pulsatile_mass and haemodynamic_instability = true. Symptom inference ranks ruptured AAA #1 (secondary view).]
+- **inv-aortic-imaging** (web): no investigation matched among 23 (web.pane.seeded, web.clinicalPrompts) [known gap: No aortic imaging suggested (the protocol for the confirmed I71.3 is not reached: no ICD mapping for I71.3, PANE not converged).]
+- **mgmt-vascular-emergency** (web): no management item matched among 23 (web.clinicalPrompts) [known gap: No vascular/EVAR/theatre output.]
+
+Guidelines:
+
+- **esvs-2024-aaa** — ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms (2024), Suspected rupture: immediate vascular surgical assessment, permissive hypotension, CT angiography if stable, EVAR preferred when anatomy suitable. Wanhainen A, Van Herzeele I, Bastos Goncalves F, et al. Eur J Vasc Endovasc Surg. 2024;67:192–331. *(statement wording/numbering not yet verified against the source)*
+- **atlanta-2012** — Revised Atlanta classification of acute pancreatitis (2012) (2012), Diagnosis (2 of 3: typical pain, lipase/amylase ≥3 × ULN, imaging); severity: mild (no organ failure, no local/systemic complications), moderately severe (transient organ failure <48 h and/or local complications), severe (persistent organ failure >48 h); modified Marshall score. Banks PA, Bollen TL, Dervenis C, et al. Gut. 2013;62:102–111. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Pancreatitis; 2. Inguinal / Femoral Hernia; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Gallstone pancreatitis; 3. Peptic ulcer disease; 4. Acute alcoholic pancreatitis; 5. Perforated peptic ulcer
+- differential web.passive: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Perforated peptic ulcer; 3. Acute alcoholic pancreatitis; 4. Vasovagal / reflex syncope; 5. Chronic pancreatitis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=99)
+- alarms: Hypotension [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; SBP 86 mmHg — hypotension [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- recommended scores: ranson, qsofa, news2, caprini, web:gerdq, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (Pancreatitis)
+- note: PANE features applied: epigastric_pain, rlq_pain, radiation_to_back, nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7)
 
 </details>
 
@@ -8270,6 +10016,27 @@ Guidelines:
 | `appendicitis-score-low-band` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=67); expected ≤ urgent [known gap: Web: adaptiveTriage returns emergency_now because the HPI negative 'No vaginal bleeding' matches the 'GI or other bleeding' red flag (no ne |
 | `appendicitis-score-low-band` | score-rec-air | web | quality | known gap | air not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Web CDS has no AIR rule.] |
 | `appendicitis-score-low-band` | mgmt-no-appendicectomy-at-low-risk | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• emergency laparoscopic appendicectomy - consent obtained, theatre booked." [known gap: Web: The appendicitis prompt fires on the substrings 'guarding'/'rebound' in 'No guarding, n |
+| `biliary-colic-asymptomatic-incidental-gallstones` | level-routine | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=100); expected ≤ routine [known gap: adaptiveTriage emergency_now (score 100) for an asymptomatic referral: "never had … jaundice or fever" fires biliary-obstruction and chol |
+| `biliary-colic-asymptomatic-incidental-gallstones` | no-alarm | web | quality | known gap | forbidden alarm present in web.triage.emergency: "emergency now - do not auto-book. advise urgent emergency assessment / tapion contact and..." (+1 more) [known gap: "Emergency now" and "Dilated CBD" alarms fire on negated history and "CBD  |
+| `biliary-colic-asymptomatic-incidental-gallstones` | mgmt-reassure-safety-net | web | quality | known gap | no management item matched among 20 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No output recommends reassurance/no treatment for asymptomatic stones.] |
+| `biliary-colic-asymptomatic-incidental-gallstones` | mgmt-no-cholecystectomy | web | quality | known gap | forbidden management item present in web.managementPanel: "[surgical] early laparoscopic cholecystectomy within 72 h (grade i-ii)." (+4 more) [known gap: With no features applied, PANE still ranks cholecystitis first (0.27 ≥ 0.20), so the A |
+| `biliary-colic-asymptomatic-incidental-gallstones` | mgmt-no-antibiotics | web | quality | known gap | forbidden management item present in web.managementPanel: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or piperacillin-tazobactam for severe." (+1 more) [known gap: Assessment panel (cholecystitis protocol from PANE top) lists IV co- |
+| `biliary-colic-incidental-polyp` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=125); expected ≤ priority [known gap: adaptiveTriage emergency_now (score 125) for a pain-free outpatient: "No fever, jaundice or weight loss" fires biliary-obstruction and m |
+| `biliary-colic-incidental-polyp` | flag-polyp | web | quality | known gap | no red flag matched among 20 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No engine mentions the 12 mm polyp (no |
+| `biliary-colic-mimic-inferior-mi` | mnm-acs | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE has no ACS/MI node (top 3: inguinal hernia, cholecystitis, GORD); symptom inference top 5 has no cardiac diag |
+| `biliary-colic-mimic-inferior-mi` | alarm-cardiac-or-haemodynamic | web | quality | known gap | no alarm matched among 6 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Only the generic "Emergency now" alarm; no cardiac or haemodynamic alarm (SBP 98 and HR 54 are above the vital red-flag cut-offs).] |
+| `biliary-colic-mimic-inferior-mi` | inv-ecg | web | critical | known gap | no investigation matched among 26 (web.pane.seeded, web.clinicalPrompts) [known gap: The only ECG is a plan line "12-lead ECG — pre-operative cardiac baseline (age ≥ 40)", not an urgent investigation for ACS.] |
+| `biliary-colic-mimic-inferior-mi` | inv-troponin | web | critical | known gap | no investigation matched among 26 (web.pane.seeded, web.clinicalPrompts) [known gap: No troponin anywhere.] |
+| `biliary-colic-mimic-inferior-mi` | mgmt-reperfusion-cardiology | web | critical | known gap | no management item matched among 26 (web.clinicalPrompts) [known gap: No protocol for I21.1 and no prompt: no cardiology/reperfusion/antiplatelet output.] |
+| `biliary-colic-mimic-inferior-mi` | mgmt-no-cholecystectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• plan laparoscopic cholecystectomy - early (< 72h onset) or interval (≥ 6 weeks)." (+3 more) [known gap: Gallstone operative-plan prompt fires ("Plan laparoscopic cholecystectomy — |
+| `biliary-colic-mimic-inferior-mi` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "no guarding".] |
+| `biliary-colic-uncomplicated` | dx-biliary-colic-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. Sphincter of Oddi Dysfunction [known gap: PANE has no biliary colic / symptomatic cholelithiasis node: ranks Acute Cholecystitis (0.73) first for a pain-free  |
+| `biliary-colic-uncomplicated` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=140); expected ≤ priority [known gap: adaptiveTriage returns emergency_now (score 140): "No fever, no jaundice" in the HPI fires "Possible biliary obstruction" and "Possible  |
+| `biliary-colic-uncomplicated` | no-sepsis-alarm | web | quality | known gap | forbidden alarm present in web.triage.emergency: "emergency now - do not auto-book. advise urgent emergency assessment / tapion contact and ale..." [known gap: Triage "Emergency now" alarm fires (negated fever/jaundice in the HPI).] |
+| `biliary-colic-uncomplicated` | no-dilated-cbd-alarm | web | quality | known gap | forbidden alarm present in web.clinicalPrompts.safety: "dilated common bile duct on imaging - dilated cbd → mrcp + ercp" [known gap: "Dilated CBD → MRCP + ERCP" safety prompt fires on "CBD 4 mm" (any mention of the CBD).] |
+| `biliary-colic-uncomplicated` | no-cholangitis-alarm | web | quality | known gap | forbidden alarm present in web.clinicalPrompts.safety: "...iad (ruq pain + fever + jaundice) - charcot's triad → acute cholangitis" [known gap: "Charcot's triad → Acute Cholangitis" fires: hasFever matches "afebrile" (contains "febrile"), h |
+| `biliary-colic-uncomplicated` | mgmt-no-antibiotics | web | quality | known gap | forbidden management item present in web.managementPanel: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or piperacillin-tazobactam for severe." (+6 more) [known gap: Assessment panel shows the cholecystitis protocol (PANE top) with IV |
+| `biliary-colic-uncomplicated` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Full LAPAROSCOPIC APPENDICECTOMY operative plan prompt: h |
 | `boerhaave-classic-mackler` | dx-perforation-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis [known gap: PANE top 3: pancreatitis, inguinal hernia, cholecystitis. Subcutaneous emphysema, chest_pain_oesophageal and vomiting_effo |
 | `boerhaave-classic-mackler` | mgmt-antifungal | web | quality | known gap | no management item matched among 50 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: oesophageal_perforation protocol has no antifungal.] |
 | `boerhaave-presenting-as-chest-pain` | mnm-perforation | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. Acute Pancreatitis [known gap: PANE top 3: inguinal hernia, cholecystitis, pancreatitis; no oesophageal features reach PANE. Symptom inference ranks STEM |
@@ -8324,6 +10091,28 @@ Guidelines:
 | `cholangitis-tg18-grade3-reynolds` | score-tg18-autofill | web | critical | known gap | expected = 3; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: iOS auto-fill never sets organ-dysfunction fields (returns Grade II from age/temperature/WBC/bilirubin); web returns "criteria |
 | `cholangitis-tg18-grade3-reynolds` | mgmt-no-surgery-first | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• emergency laparotomy consent - source control; icu post-operatively." [known gap: Web clinical prompt: 'Emergency laparotomy consent — source control' for Grade III cholangitis, i |
 | `cholangitis-tg18-grade3-reynolds` | variant-grade3 | web | quality | known gap | detected (none) in group Cholangitis; expected cholangitis_grade3 [known gap: dx-variants needs 'severe cholangitis' word order; 'Severe acute cholangitis' selects no variant.] |
+| `cholecystitis-acalculous-icu` | mgmt-no-unqualified-early-lc | web | quality | known gap | forbidden management item present in web.managementPanel.keyPoints: "early laparoscopic cholecystectomy (within 72 h) reduces complications vs interval surgery." [known gap: Assessment panel key point "Early laparoscopic cholecystectomy (wi |
+| `cholecystitis-acalculous-icu` | variant-grade3 | web | quality | known gap | detected cholecystitis_grade1 in group Acute Cholecystitis; expected cholecystitis_grade3 [known gap: Grade I variant selected (bare "cholecystitis" keyword checked first), so the Plan tab drops the conservative phase that holds percutaneou |
+| `cholecystitis-elderly-diabetic-atypical` | mnm-mesenteric-ischaemia | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3: cholecystitis, peptic ulcer, GORD (symptom inference #4 has mesenteric ischaemia).] |
+| `cholecystitis-elderly-diabetic-atypical` | score-tg18-autofill | web | quality | known gap | expected ≥ 2; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: clinical-scores auto-derived grade = 0 "criteria not met" despite WBC 19.4 and a characteristic US report (needs manual im |
+| `cholecystitis-elderly-diabetic-atypical` | mgmt-no-nsaid-ckd | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "... 2. post-operative orders: • paracetamol 1g qds (regular) + ibuprofen 400mg tds (if egfr normal). • morphine 2.5-5mg sc/iv prn for pain > 5/10. • fre..." [known gap: Lap chole op |
+| `cholecystitis-elderly-diabetic-atypical` | variant-grade2 | web | quality | known gap | detected cholecystitis_grade1 in group Acute Cholecystitis; expected cholecystitis_grade2 [known gap: Grade I variant lists the bare keyword "cholecystitis" and is checked first (seed finding).] |
+| `cholecystitis-high-risk-grade2-drainage` | score-tg18-calculator | web | critical | known gap | expected = 2; got web.scoreCalculator.tg18-cholecystitis=1 (Mild cholecystitis — elective laparoscopic cholecystectomy) [known gap: Web calculator returns Grade I: it has no "duration >72 h" criterion (Grade II only on WBC >18).] |
+| `cholecystitis-high-risk-grade2-drainage` | mgmt-drainage-in-documented-plan | web | quality | known gap | no management item matched among 13 (web.plan) [known gap: Grade I variant allows immediate/surgical/followup phases only, so "percutaneous cholecystostomy if … unfit for surgery" (conservative phase) is missing from the Plan tab; it appear |
+| `cholecystitis-high-risk-grade2-drainage` | mgmt-no-unqualified-early-lc | web | quality | known gap | forbidden management item present in web.plan: "[surgical] early laparoscopic cholecystectomy within 72 h (grade i-ii)." (+2 more) [known gap: Plan tab: "[surgical] Early laparoscopic cholecystectomy within 72 h (Grade I–II)" for a CCI 8 /  |
+| `cholecystitis-high-risk-grade2-drainage` | variant-grade2 | web | quality | known gap | detected cholecystitis_grade1 in group Acute Cholecystitis; expected cholecystitis_grade2 [known gap: Grade I variant selected ("cholecystitis" keyword first).] |
+| `cholecystitis-immunosuppressed-gangrenous` | flag-immunosuppression | web | quality | known gap | no red flag matched among 25 (web.triage.reasons, web.protocol.redFlags, web.dxVariant.urgencyNote, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No output |
+| `cholecystitis-immunosuppressed-gangrenous` | score-tg18-calculator | web | critical | known gap | expected = 2; got web.scoreCalculator.tg18-cholecystitis=1 (Mild cholecystitis — elective laparoscopic cholecystectomy) [known gap: Web calculator returns Grade I: no "marked local inflammation" (gangrenous) criterion.] |
+| `cholecystitis-immunosuppressed-gangrenous` | mgmt-steroid-cover | web | quality | known gap | no management item matched among 54 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts, web.scoreCalculator.tg18-cholecystitis) [known gap: No peri-operative steroid cover for a pati |
+| `cholecystitis-immunosuppressed-gangrenous` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "No guarding" in t |
+| `cholecystitis-immunosuppressed-gangrenous` | variant-grade2 | web | quality | known gap | detected cholecystitis_grade1 in group Acute Cholecystitis; expected cholecystitis_grade2 [known gap: Grade I variant selected ("cholecystitis" keyword first; "gangrenous cholecystitis" is a Grade III keyword in dx-variants although TG18 gr |
+| `cholecystitis-mimic-rll-pneumonia` | mnm-pneumonia | web | critical | known gap | not in top 3 of web.pane: 1. Liver Abscess \| 2. Acute Appendicitis \| 3. Inguinal / Femoral Hernia; also in web.symptomInference#1, web.passive#2 [known gap: PANE has no pneumonia node (top 3: liver abscess, appendicitis, inguinal hernia). |
+| `cholecystitis-mimic-rll-pneumonia` | inv-chest-xray | web | critical | known gap | no investigation matched among 33 (web.pane.seeded, web.clinicalPrompts) [known gap: No CXR investigation for pneumonia; a CXR appears only as plan text in the hypoxia/sepsis prompts ("CXR — identify cause", "Erect CXR — exclude free air an |
+| `cholecystitis-mimic-rll-pneumonia` | mgmt-no-cholecystectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• consent: laparoscopic cholecystectomy - bile duct injury (0.3%), haemorrhage, conversion to open, bile leak, retained..." (+3 more) [known gap: Gallstone operative plan and consen |
+| `cholecystitis-mimic-rll-pneumonia` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "without guarding" |
+| `cholecystitis-pregnancy-t2` | inv-no-unqualified-ct | web | quality | known gap | forbidden investigation present in web.pane.seeded: "ct abdomen/pelvis with iv contrast (appendicitis)" [known gap: "CT abdomen/pelvis with IV contrast (appendicitis)" seeded for a pregnant patient. HpiTab.seedInvestigationsFromPane seeds e |
+| `cholecystitis-pregnancy-t2` | mgmt-obstetric-involvement | web | quality | known gap | no management item matched among 49 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts, web.scoreCalculator.tg18-cholecystitis) [known gap: No obstetric review or fetal monitoring in |
+| `cholecystitis-pregnancy-t2` | mgmt-no-nsaid-after-20-weeks | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "... 2. post-operative orders: • paracetamol 1g qds (regular) + ibuprofen 400mg tds (if egfr normal). • morphine 2.5-5mg sc/iv prn for pain > 5/10. • fre..." [known gap: Lap chole op |
 | `cholecystitis-tg18-grade1` | score-rec-tg18-cholecystitis | web | quality | known gap | tg18-cholecystitis not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, asge-cbd, news2, asa, stop-bang [known gap: Web CDS has a TG18 cholangitis rule but none for cholecystitis.] |
 | `cholecystitis-tg18-grade1` | score-tg18-autofill | web | quality | known gap | expected = 1; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: iOS auto-fill sets only WBC >18 (Grade II criterion) and never the local-signs field, so it reads "criteria not met"; web  |
 | `cholecystitis-tg18-grade2` | score-rec-tg18-cholecystitis | web | quality | known gap | tg18-cholecystitis not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, asge-cbd, web:wagner, news2, caprini, asa, rcri [known gap: No TG18 cholecystitis CDS rule on web.] |
@@ -8336,6 +10125,21 @@ Guidelines:
 | `cholecystitis-tg18-grade3-organ-dysfunction` | mgmt-no-penicillin-in-anaphylaxis | web | critical | known gap | forbidden management item present in web.plan: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or piperacillin-tazobactam for severe." (+5 more) [known gap: Plan templates suggest co-amoxiclav / piperacillin-tazobactam regardless of the |
 | `cholecystitis-tg18-grade3-organ-dysfunction` | mgmt-no-early-cholecystectomy-in-shock | web | quality | known gap | forbidden management item present in web.managementPanel.keyPoints: "early laparoscopic cholecystectomy (within 72 h) reduces complications vs interval surgery." [known gap: iOS TG18 Grade III recommendation offers 'emergency cholecystectom |
 | `cholecystitis-tg18-grade3-organ-dysfunction` | variant-grade3 | web | quality | known gap | detected cholecystitis_grade1 in group Acute Cholecystitis; expected cholecystitis_grade3 [known gap: dx-variants selects Grade I ('cholecystitis' keyword checked first).] |
+| `choledocholithiasis-asge-high-risk` | mnm-malignant-obstruction | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Choledocholithiasis \| 3. Acute Pancreatitis; also in web.symptomInference#4, web.passive#2 [known gap: PANE top 3: cholecystitis, choledocholithiasis, pancreatitis (symptom inference # |
+| `choledocholithiasis-asge-high-risk` | inv-no-mrcp-before-ercp | web | quality | known gap | forbidden investigation present in web.plan.investigations: "mrcp (cbd stone confirmation)" (+2 more) [known gap: Choledocholithiasis protocol lists MRCP unconditionally, even when a duct stone is seen on US (ASGE high risk).] |
+| `choledocholithiasis-asge-high-risk` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "no guarding".] |
+| `choledocholithiasis-asge-intermediate` | mgmt-no-unconditional-ercp | web | critical | known gap | forbidden management item present in web.plan: "[surgical] ercp + sphincterotomy and stone extraction." (+3 more) [known gap: Plan tab: "[surgical] ERCP + sphincterotomy and stone extraction." unconditionally for ASGE intermediate risk (no  |
+| `choledocholithiasis-asge-low-risk` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=140); expected ≤ priority [known gap: adaptiveTriage emergency_now: "No jaundice, dark urine, pale stools or fever since" fires biliary-obstruction and cholangitis-pattern ru |
+| `choledocholithiasis-asge-low-risk` | no-dilated-cbd-alarm | web | quality | known gap | forbidden alarm present in web.clinicalPrompts.safety: "dilated common bile duct on imaging - dilated cbd → mrcp + ercp" [known gap: "Dilated CBD" prompt fires on "CBD 4 mm, no duct stone".] |
+| `choledocholithiasis-asge-low-risk` | inv-no-routine-mrcp | web | quality | known gap | forbidden investigation present in web.pane.seeded: "mrcp (cbd stone confirmation) (choledocholithiasis)" [known gap: MRCP seeded from the choledocholithiasis protocol (PANE #2) for an ASGE low-risk patient.] |
+| `choledocholithiasis-asge-low-risk` | mgmt-no-ercp | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• ercp - therapeutic: stone extraction (choledocholithiasis) or stenting (malignant st..." [known gap: "ERCP — therapeutic: stone extraction or stenting" from the false dilated-CBD  |
+| `choledocholithiasis-elderly-warfarin` | mnm-malignant-obstruction | web | quality | known gap | not in top 3 of web.pane: 1. Choledocholithiasis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#4, web.passive#4 [known gap: PANE top 3: choledocholithiasis, inguinal hernia, cholecystitis — no malig |
+| `choledocholithiasis-pregnancy` | inv-no-unqualified-ct | web | quality | known gap | forbidden investigation present in web.pane.seeded: "ct kub (non-contrast) - stone size, location, hydronephrosis (renal_colic)" [known gap: "CT KUB (non-contrast)" seeded from the renal colic protocol (PANE #3) at 26 weeks. HpiTab.seedInve |
+| `choledocholithiasis-pregnancy` | mgmt-fluoroscopy-minimised | web | quality | known gap | no management item matched among 46 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ERCP is offered with no pregnancy adaptation (fluoroscopy minimisation, shielding, |
+| `choledocholithiasis-pregnancy` | mgmt-obstetric-involvement | web | quality | known gap | no management item matched among 46 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No obstetric review or fetal monitoring.] |
+| `choledocholithiasis-pregnancy` | mgmt-no-nsaid-after-20-weeks | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "... 2. post-operative orders: • paracetamol 1g qds (regular) + ibuprofen 400mg tds (if egfr normal). • morphine 2.5-5mg sc/iv prn for pain > 5/10. • fre..." (+1 more) [known gap: Op |
+| `choledocholithiasis-pregnancy` | mgmt-no-bhcg-negative-assumption | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...ak (< 1%), hartmann's pouch if appendix not identifiable. • β-hcg confirmed negative (female of reproductive age). • group & screen available; cross-match if perfor..." [known ga |
+| `choledocholithiasis-pregnancy` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "no guarding".] |
 | `crc-cibh-fit-positive-older` | flag-fit-read | web | quality | known gap | no red flag matched among 27 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No engine reads a FIT result: the la |
 | `crc-cibh-fit-positive-older` | mgmt-iron | web | quality | known gap | no management item matched among 36 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No iron replacement output for iron-deficiency anaemia (Hb 10.2, ferritin 9); the colorectal_cancer protocol |
 | `crc-fit-positive-abdominal-pain` | mnm-crc | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#3 [known gap: PANE top 3 is cholecystitis/GORD/PUD (the "Acute abdominal pain" template with a suprap |
@@ -8465,6 +10269,8 @@ Guidelines:
 | `ischaemic-colitis-left` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web computeClinicalPrompts fires "Appendicitis — emergenc |
 | `ischaemic-colitis-right-af-ami` | mnm-ami | web | critical | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#2 [known gap: Acute mesenteric ischaemia is not a PANE disease (top 3: appendicitis, hern |
 | `ischaemic-colitis-right-af-ami` | inv-cta | web | critical | known gap | no investigation matched among 41 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: K55.0 maps to the ischaemic_colitis protocol, whose imaging is "CT abdomen/pelvis with IV contrast"; nothing asks for CT angiograp |
+| `jaundice-mimic-acute-hepatitis-a` | mgmt-no-ercp | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• arrange urgent ercp - biliary decompression (tokyo grade ii/iii cholangitis)." (+1 more) [known gap: "Charcot's triad → Acute Cholangitis" prompt: "Arrange urgent ERCP — biliary d |
+| `jaundice-mimic-acute-hepatitis-a` | mgmt-no-cholecystectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• consent: laparoscopic cholecystectomy - bile duct injury (0.3%), haemorrhage, conversion to open, bile leak, retained..." (+3 more) [known gap: Gallstone operative plan and consen |
 | `lbo-cancer-impending-caecal-perforation` | mgmt-no-stent-with-impending-perforation | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• if lbo due to colonic malignancy: colonic stent as bridge to elective resection (vs emergency hartmann's)." [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to colonic  |
 | `lbo-cancer-impending-caecal-perforation` | variant-lbo-malignant | web | quality | known gap | detected sbo_strangulation in group Bowel Obstruction; expected lbo_malignant [known gap: Web: The word 'closed-loop' selects sbo_strangulation (a small-bowel variant) before lbo_malignant.] |
 | `lbo-right-colon-cancer` | mgmt-right-hemicolectomy | web | quality | known gap | no management item matched among 48 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Plan offers the left-sided LBO options only (SEMS, Hartmann's, colostomy); no right colectomy with prim |
@@ -8488,6 +10294,11 @@ Guidelines:
 | `lgib-unstable-cta-first` | mgmt-no-terlipressin | web | critical | known gap | forbidden management item present in web.plan: "[immediate] suspected varices: terlipressin 2 mg qds + prophylactic iv ceftriaxone." (+1 more) [known gap: The confirmed ICD K92.2 (GI haemorrhage, unspecified) matches the upper_gi_bleed prot |
 | `lgib-unstable-warfarin` | inv-cta-first | web | critical | known gap | no investigation matched among 39 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No CT angiography output (see lgib-unstable-cta-first). The confirmed ICD K92.2 (GI haemorrhage, unspecified) matches the upper_gi |
 | `lgib-unstable-warfarin` | mgmt-restart-anticoag-plan | web | quality | known gap | no management item matched among 55 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No output plans when to restart warfarin after the bleed; the only anticoagulant t |
+| `liver-abscess-amoebic` | mgmt-metronidazole | web | critical | known gap | no management item matched among 28 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: A06.4 has no protocol mapping (getProtocolByIcd) and PANE ranks appendicitis first (0.38), so the Assessment panel sho |
+| `liver-abscess-amoebic` | mgmt-luminal-agent | web | quality | known gap | no management item matched among 28 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No luminal amoebicide anywhere (the liver_abscess protocol also omits it).] |
+| `liver-abscess-amoebic` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.managementPanel: "[surgical] laparoscopic appendicectomy (gold standard; reduces wound infection and los)." (+2 more) [known gap: Assessment panel shows the appendicitis protocol ("Laparoscopic appen |
+| `liver-abscess-elderly-biliary-septic` | mnm-sepsis | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholangitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Diverticulitis; also in web.symptomInference#2, web.passive#1 [known gap: PANE has no sepsis node (top 3: cholangitis, inguinal hernia, diverticuliti |
+| `liver-abscess-pyogenic` | mgmt-no-open-surgery-first | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• emergency laparotomy consent - source control; icu post-operatively." [known gap: Peritonism prompt ("No peritonism" in the exam text) adds "Emergency laparotomy consent — source  |
 | `mallory-weiss-young-binge` | dx-mallory-weiss-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Peptic Ulcer Disease \| 3. Acute Pancreatitis [known gap: PANE top 3: appendicitis, peptic ulcer, pancreatitis — no haematemesis/vomiting_effortless features reach PANE (see UGIB gap).] |
 | `mallory-weiss-young-binge` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=120); expected ≤ urgent [known gap: Emergency now (score 120): any "blood"/"bleed" word is an urgent red flag regardless of volume or GBS, and "No chest pain" in the HPI fire |
 | `mi-presenting-as-epigastric-pain` | mnm-acs | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. GORD / Reflux Oesophagitis [known gap: PANE has no cardiac disease; top 3 cholecystitis, peptic ulcer, GORD.] |
@@ -8524,6 +10335,58 @@ Guidelines:
 | `mimic-testicular-torsion` | level-emergency | web | critical | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 35). No torsion/testicular rule; the scrotal-swelling chip does not raise acuity. iOS: Clinic |
 | `nsaid-associated-gastric-ulcer` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=52); expected ≤ priority [known gap: Emergency now (score 52): adaptiveTriage reads CC+HPI free text without negation — "No bleeding" matches the "GI or other bleeding" urgen |
 | `nsaid-associated-gastric-ulcer` | mgmt-ppi-8-weeks | web | quality | known gap | no management item matched among 42 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: peptic_ulcer protocol gives omeprazole 20 mg OD "4–8 weeks" in medications (matche |
+| `painless-jaundice-elderly-metastatic` | flag-frailty | web | quality | known gap | no red flag matched among 28 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No frailty/perf |
+| `pancreatitis-alcohol` | mgmt-thiamine | web | critical | known gap | no management item matched among 46 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No thiamine anywhere for an alcohol-dependent, vomiting patient in early withdrawa |
+| `pancreatitis-alcohol` | mgmt-withdrawal | web | quality | known gap | no management item matched among 46 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No withdrawal assessment or management.] |
+| `pancreatitis-alcohol` | mgmt-no-aggressive-fluids | web | critical | known gap | forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".] |
+| `pancreatitis-alcohol` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "guarding".] |
+| `pancreatitis-drug-induced-immunosuppressed` | flag-immunosuppression | web | quality | known gap | no red flag matched among 19 (web.triage.reasons, web.protocol.redFlags, web.dxVariant.urgencyNote, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: Azathioprine/prednisolone not flagged; drug- |
+| `pancreatitis-drug-induced-immunosuppressed` | mgmt-stop-azathioprine | web | critical | known gap | no management item matched among 45 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No output advises stopping azathioprine.] |
+| `pancreatitis-drug-induced-immunosuppressed` | mgmt-steroid-cover | web | quality | known gap | no management item matched among 45 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No steroid-continuation/cover advice for prednisolone 20 mg with vomiting.] |
+| `pancreatitis-drug-induced-immunosuppressed` | mgmt-no-aggressive-fluids | web | critical | known gap | forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".] |
+| `pancreatitis-elderly-bisap-heart-failure` | inv-triglycerides | web | quality | known gap | no investigation matched among 41 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No triglycerides in the pancreatitis protocol.] |
+| `pancreatitis-elderly-bisap-heart-failure` | mgmt-moderate-fluids | web | quality | known gap | no management item matched among 62 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No moderate/goal-directed fluid instruction.] |
+| `pancreatitis-elderly-bisap-heart-failure` | mgmt-no-aggressive-fluids | web | critical | known gap | forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)" for a 79-year-ol |
+| `pancreatitis-elderly-bisap-heart-failure` | mgmt-no-prophylactic-antibiotics | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• iv piperacillin-tazobactam 4.5g tds + metronidazole 500mg tds." [known gap: Peritonism prompt ("No peritonism") adds pip-tazo + metronidazole.] |
+| `pancreatitis-elderly-bisap-heart-failure` | mgmt-no-routine-ercp | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• ercp - therapeutic: stone extraction (choledocholithiasis) or stenting (malignant st..." [known gap: Dilated-CBD prompt ERCP (CBD 6 mm, no stone, no cholangitis).] |
+| `pancreatitis-elderly-bisap-heart-failure` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "guarding".] |
+| `pancreatitis-gallstone-cholangitis` | mgmt-no-aggressive-fluids | web | critical | known gap | forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+1 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".] |
+| `pancreatitis-gallstone-cholangitis` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "guarding".] |
+| `pancreatitis-gallstone-mild` | score-rec-bisap | web | quality | known gap | bisap not recommended; recommended: alvarado, ranson, news2, web:gerdq, asa, stop-bang [known gap: CDS BISAP rule fires only on a "pancreatitis"/"epigastric pain" chip plus an alcohol/gallstone/hyperlipidaemia comorbidity; it ignores the lo |
+| `pancreatitis-gallstone-mild` | inv-triglycerides | web | quality | known gap | no investigation matched among 41 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Pancreatitis protocol investigations have no triglycerides (iOS radiation has them).] |
+| `pancreatitis-gallstone-mild` | inv-no-early-ct | web | quality | known gap | forbidden investigation present in web.pane.seeded: "cect abdomen (assess pancreatic necrosis) (pancreatitis)" [known gap: HPI completion seeds "CECT abdomen (assess pancreatic necrosis)" as an urgent order, dropping the protocol's conditio |
+| `pancreatitis-gallstone-mild` | mgmt-moderate-fluids | web | quality | known gap | no management item matched among 60 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No moderate/goal-directed fluid instruction anywhere.] |
+| `pancreatitis-gallstone-mild` | mgmt-early-oral-feeding | web | quality | known gap | no management item matched among 60 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No early oral feeding line: the mild variant (which has one) is not detected (see  |
+| `pancreatitis-gallstone-mild` | mgmt-no-aggressive-fluids | web | critical | known gap | forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+1 more) [known gap: Plan tab and Assessment panel: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml |
+| `pancreatitis-gallstone-mild` | mgmt-no-prophylactic-antibiotics | web | critical | known gap | forbidden management item present in web.managementPanel: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or piperacillin-tazobactam for severe." (+1 more) [known gap: Assessment panel shows the cholecystitis protocol (PANE top: cholecy |
+| `pancreatitis-gallstone-mild` | mgmt-no-routine-ercp | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• ercp - therapeutic: stone extraction (choledocholithiasis) or stenting (malignant st..." [known gap: "ERCP — therapeutic: stone extraction" from the dilated-CBD prompt (CBD 6 mm,  |
+| `pancreatitis-gallstone-mild` | mgmt-no-routine-nbm | web | quality | known gap | forbidden management item present in web.plan: "[immediate] nbm - enteral feeding via ng/nj if not tolerating po at 48 h." (+2 more) [known gap: Protocol step "NBM — enteral feeding via NG/NJ if not tolerating PO at 48 h"; lipase prompt "NB |
+| `pancreatitis-gallstone-mild` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "voluntary guardin |
+| `pancreatitis-gallstone-mild` | variant-mild | web | quality | known gap | detected (none) in group Cholangitis; expected pancreatitis_mild [known gap: Assessment "…No cholangitis…" selects the Cholangitis group by text before the Pancreatitis group is checked; no variant, so the Plan tab shows every phase (includ |
+| `pancreatitis-hypertriglyceridaemia` | flag-hypertriglyceridaemia | web | critical | known gap | no red flag matched among 29 (web.triage.reasons, web.protocol.redFlags, web.dxVariant.urgencyNote, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emerge |
+| `pancreatitis-hypertriglyceridaemia` | inv-triglycerides | web | quality | known gap | no investigation matched among 44 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No triglycerides in the pancreatitis protocol investigations.] |
+| `pancreatitis-hypertriglyceridaemia` | mgmt-no-aggressive-fluids | web | critical | known gap | forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".] |
+| `pancreatitis-hypertriglyceridaemia` | mgmt-no-cholecystectomy | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• consent: laparoscopic cholecystectomy - bile duct injury (0.3%), haemorrhage, conversion to open, bile leak, retained..." [known gap: Gallstone operative plan and consent fire fro |
+| `pancreatitis-hypertriglyceridaemia` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "guarding".] |
+| `pancreatitis-mimic-ruptured-aaa` | mnm-aaa | web | critical | known gap | not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Inguinal / Femoral Hernia \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE ranks acute pancreatitis first; aortic_aneurysm has a post-modi |
+| `pancreatitis-mimic-ruptured-aaa` | inv-aortic-imaging | web | critical | known gap | no investigation matched among 23 (web.pane.seeded, web.clinicalPrompts) [known gap: No aortic imaging suggested (the protocol for the confirmed I71.3 is not reached: no ICD mapping for I71.3, PANE not converged).] |
+| `pancreatitis-mimic-ruptured-aaa` | mgmt-vascular-emergency | web | critical | known gap | no management item matched among 23 (web.clinicalPrompts) [known gap: No vascular/EVAR/theatre output.] |
+| `pancreatitis-moderately-severe` | mgmt-no-prophylactic-antibiotics | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• iv piperacillin-tazobactam 4.5g tds + metronidazole 500mg tds." [known gap: "IV piperacillin-tazobactam 4.5g TDS + metronidazole" from the peritonism prompt, fired by "no peritoni |
+| `pancreatitis-moderately-severe` | mgmt-no-early-cholecystectomy-with-collection | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• plan interval laparoscopic cholecystectomy - same admission or within 2 weeks (gallstone pancreatitis)." [known gap: Lipase prompt (300–1000 U/L band): "Plan interval laparoscopic |
+| `pancreatitis-moderately-severe` | variant-moderate | web | quality | known gap | detected pancreatitis_severe in group Pancreatitis; expected pancreatitis_moderate [known gap: "Moderately severe acute pancreatitis" contains "severe acute pancreatitis" → severe variant (ICU prefix, surgical phase) selected.] |
+| `pancreatitis-pregnancy` | inv-no-unqualified-ct | web | quality | known gap | forbidden investigation present in web.pane.seeded: "cect abdomen (assess pancreatic necrosis) (pancreatitis)" [known gap: "CECT abdomen (assess pancreatic necrosis)" seeded unconditionally (conditional dropped) at 21 weeks. HpiTab.seedInve |
+| `pancreatitis-pregnancy` | mgmt-obstetric-involvement | web | quality | known gap | no management item matched among 51 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No obstetric review or fetal monitoring.] |
+| `pancreatitis-pregnancy` | mgmt-no-aggressive-fluids | web | critical | known gap | forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".] |
+| `pancreatitis-pregnancy` | mgmt-no-prophylactic-antibiotics | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• iv piperacillin-tazobactam 4.5g tds + metronidazole 500mg tds." [known gap: Peritonism prompt ("no peritonism") adds pip-tazo + metronidazole.] |
+| `pancreatitis-pregnancy` | mgmt-no-routine-ercp | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• ercp - therapeutic: stone extraction (choledocholithiasis) or stenting (malignant st..." [known gap: Dilated-CBD prompt ERCP (CBD 5 mm).] |
+| `pancreatitis-pregnancy` | mgmt-no-nsaid-after-20-weeks | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "... 2. post-operative orders: • paracetamol 1g qds (regular) + ibuprofen 400mg tds (if egfr normal). • morphine 2.5-5mg sc/iv prn for pain > 5/10. • fre..." [known gap: Lap chole op |
+| `pancreatitis-pregnancy` | variant-mild | web | quality | known gap | detected (none) in group Cholangitis; expected pancreatitis_mild [known gap: Assessment "…No cholangitis" selects the Cholangitis group by text; no pancreatitis variant.] |
+| `pancreatitis-severe-organ-failure` | score-rec-bisap | web | quality | known gap | bisap not recommended; recommended: alvarado, wells-pe, ranson, qsofa, web:wagner, curb65, news2, caprini, web:gerdq, asa, rcri, stop-bang [known gap: BISAP not suggested (CDS rule ignores the working diagnosis); 12 other scales are.] |
+| `pancreatitis-severe-organ-failure` | mgmt-abdominal-compartment | web | quality | known gap | no management item matched among 72 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No intra-abdominal pressure monitoring despite a documented bladder pressure of 16 |
+| `pancreatitis-severe-organ-failure` | mgmt-no-aggressive-fluids | web | critical | known gap | forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)" in established r |
+| `pancreatitis-severe-organ-failure` | mgmt-no-prophylactic-antibiotics | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• iv piperacillin-tazobactam 4.5g tds + metronidazole 500mg tds." (+3 more) [known gap: Peritonism prompt ("no peritonism") pip-tazo + metronidazole, and the SIRS sepsis bundle "Sep |
+| `pancreatitis-severe-organ-failure` | mgmt-no-routine-ercp | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• ercp - therapeutic: stone extraction (choledocholithiasis) or stenting (malignant st..." [known gap: Dilated-CBD prompt: "ERCP — therapeutic" (CBD 6 mm, no cholangitis) — APEC: no |
+| `pancreatitis-severe-organ-failure` | variant-severe | web | quality | known gap | detected (none) in group Cholangitis; expected pancreatitis_severe [known gap: Assessment "…no cholangitis" selects the Cholangitis group by text; had it reached the Pancreatitis group, "40% pancreatic necrosis" would select the moderately  |
 | `parathyroid-hypercalcaemic-crisis` | mnm-hypercalcaemia | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.symptomInference#2, web.passive#3 [known gap: PANE applied no feature ("Nausea / vomiting" template, SOCRATES empty);  |
 | `parathyroid-hypercalcaemic-crisis` | mgmt-no-thyroidectomy-template | web | critical | known gap | forbidden management item present in web.plan: "total thyroidectomy" (+1 more) [known gap: Same dx-variant substring bug: the crisis plan opens with the elective Total Thyroidectomy template.] |
 | `parathyroid-primary-hpt-surgical-indications` | dx-hyperparathyroid-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#3, web.passive#3 [known gap: PANE applied no feature (template "Other / general surgical"); hypercalc |
