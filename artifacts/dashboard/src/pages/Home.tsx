@@ -84,6 +84,7 @@ import CommandPalette from '@/components/CommandPalette';
 import ProblemListStrip from '@/components/ProblemListStrip';
 import CriticalResultAlert from '@/components/CriticalResultAlert';
 import PreviousVisitStrip from '@/components/PreviousVisitStrip';
+import VisitContinuityPanel from '@/components/VisitContinuityPanel';
 import ClinicalWorkflowBar from '@/components/ClinicalWorkflowBar';
 import ClinicalPromptsStrip from '@/components/ClinicalPromptsStrip';
 import FollowUpQueueStrip from '@/components/FollowUpQueueStrip';
@@ -102,6 +103,7 @@ import AmbientConsultation from '@/components/AmbientConsultation';
 import EncounterSignOffDialog from '@/components/EncounterSignOffDialog';
 import { getMatrix } from '@/lib/cc-matrices';
 import { VISIT_TYPE_TABS } from '@/lib/visit-type-tabs';
+import { currentComplaintText } from '@/lib/visit-continuity-web';
 
 const API_ORIGIN = getApiOrigin();
 
@@ -171,6 +173,7 @@ export default function HomePage() {
     lastSaveError,
     syncStatus,
     freeText,
+    procedureData,
     surgicalHistory, surgicalNotes,
     medications, medicationsText,
     allergies,
@@ -252,7 +255,12 @@ export default function HomePage() {
       const res = await fetch(`${API_ORIGIN}/api/visit/complete/${encounterId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders as Record<string, string> },
-        body: JSON.stringify({ description: plan ?? undefined }),
+        // Today's chief complaint is stored on the closed encounter, so the next visit can tell a
+        // follow-up of this problem from a new complaint (VisitContinuityPanel).
+        body: JSON.stringify({
+          description: plan ?? undefined,
+          chiefComplaint: currentComplaintText({ procedureData, symptoms, freeText }) || undefined,
+        }),
       });
       if (res.ok) {
         setEncounterStatus('closed');
@@ -261,7 +269,7 @@ export default function HomePage() {
     } catch { /* non-blocking — navigate regardless */ }
     setCompleting(false);
     setTopSection('finaldoc');
-  }, [encounterId, plan, setEncounterStatus, setEncounterClosedAt, setTopSection]);
+  }, [encounterId, plan, procedureData, symptoms, freeText, setEncounterStatus, setEncounterClosedAt, setTopSection]);
 
   // Every "close / finish encounter" control opens the in-app sign-off dialog first (missing
   // steps, allergy status, diagnosis); the encounter closes only on its explicit confirmation.
@@ -692,6 +700,11 @@ export default function HomePage() {
             for continuity of care. Self-hides for a genuinely new patient (no history) and
             never modifies the current encounter — reference only. */}
         {topSection === 'consultation' && <PreviousVisitStrip />}
+
+        {/* Returning patient: follow-up of the last problem or a new problem — flagged
+            automatically when the encounter starts (one-tap change), with what this visit
+            continues from and the standing history to review. Self-hides for a new patient. */}
+        {topSection === 'consultation' && (!!patientId || !!patientName) && <VisitContinuityPanel />}
 
         {/* No-patient quickstart — inline name/age/sex entry */}
         <NoPatientQuickstart />

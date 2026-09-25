@@ -1723,6 +1723,42 @@ export async function syncMedicationList(
   return { error: null };
 }
 
+// ─── loadEncounterMedicationList ─────────────────────────────────────────────
+
+/**
+ * The medicine list documented at one encounter (the rows syncMedicationList writes), split
+ * back into chips and the free-text entry. Read-only: used to show a returning patient's
+ * last-visit medicines as "carried forward — review" (VisitContinuityPanel); nothing is copied
+ * to today's encounter until the clinician taps to add them.
+ */
+export async function loadEncounterMedicationList(
+  patientId: string,
+  encounterId: string,
+): Promise<{ chips: string[]; freeText: string; error: string | null }> {
+  if (!supabase) return { chips: [], freeText: '', error: notConfigured('loadEncounterMedicationList') };
+  const { data, error } = await supabase
+    .from('medications')
+    .select('drug_name, dose')
+    .eq('patient_id', patientId)
+    .eq('encounter_id', encounterId)
+    .eq('indication', 'consultation-list')
+    .eq('status', 'active');
+  if (error) {
+    console.error('[db] loadEncounterMedicationList:', error);
+    return { chips: [], freeText: '', error: error.message };
+  }
+  const rows = (data ?? []) as Array<{ drug_name: string | null; dose: string | null }>;
+  const chips: string[] = [];
+  let freeText = '';
+  for (const r of rows) {
+    const name = (r.drug_name ?? '').trim();
+    if (!name) continue;
+    if (r.dose === '(see notes)') freeText = name;
+    else chips.push(name);
+  }
+  return { chips, freeText, error: null };
+}
+
 // ─── saveExamFindings ─────────────────────────────────────────────────────────
 
 const EXAM_SYSTEM_LABELS: Record<string, string> = {

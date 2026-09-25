@@ -406,6 +406,9 @@ interface CtxValue {
 
   /** Previous encounters for the loaded patient (excludes current encounter). */
   recentEncounters: EncounterSummary[];
+  /** Patient whose encounters `recentEncounters` holds (null until the list has loaded), so
+   *  visit continuity never decides from the previous patient's list or an unloaded one. */
+  recentEncountersPatientId: string | null;
 
   /** Wound assessments for current encounter. */
   wounds: WoundAssessment[];
@@ -754,6 +757,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const [problems, setProblems] = useState<PatientProblem[]>([]);
   const [recentEncounters, setRecentEncounters] = useState<EncounterSummary[]>([]);
+  const [recentEncountersPatientId, setRecentEncountersPatientId] = useState<string | null>(null);
   const [wounds, setWounds] = useState<WoundAssessment[]>([]);
   const [extractedLabs, setExtractedLabs] = useState<Record<string, number | null>>({});
   const [clinicalScores, setClinicalScores] = useState<Record<string, unknown>>({});
@@ -1207,8 +1211,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // ── Load recent encounters whenever patient changes ───────────────────────
   useEffect(() => {
+    setRecentEncountersPatientId(null);
     if (!patientId) { setRecentEncounters([]); return; }
-    void listPatientEncounters(patientId).then(setRecentEncounters);
+    let cancelled = false;
+    void listPatientEncounters(patientId).then(list => {
+      if (cancelled) return;
+      setRecentEncounters(list);
+      setRecentEncountersPatientId(patientId);
+    });
+    return () => { cancelled = true; };
   }, [patientId]);
 
   // ── Load wound assessments whenever encounter changes ─────────────────────
@@ -1787,6 +1798,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     traumaData, setTraumaData,
     problems,
     recentEncounters,
+    recentEncountersPatientId,
     addProblem: async (problem) => {
       const tmp: PatientProblem = { ...problem, id: `tmp-${Date.now()}` };
       setProblems(prev => [...prev, tmp]);
