@@ -1410,9 +1410,10 @@
       "contentVersion": "unversioned",
       "files": [
         "artifacts/dashboard/src/lib/clinical-scales.ts",
-        "artifacts/dashboard/src/lib/clinical-scores.ts"
+        "artifacts/dashboard/src/lib/clinical-scores.ts",
+        "artifacts/dashboard/src/lib/tg18-autofill.ts"
       ],
-      "tests": [],
+      "tests": ["artifacts/dashboard/src/lib/__tests__/web-last-gaps.test.ts"],
       "ciChecks": [],
       "guidelines": [
         { "name": "Per-scale source names in comments and interpretation text", "version": "per scale", "section": "clinical-scales.ts", "citation": "Mostly original derivation papers; NEWS2 delegates to lib/triage-engine/src/news2.ts" }
@@ -1426,7 +1427,8 @@
       "changeAuthority": "Any repository committer. Ships on dashboard deploy.",
       "notes": "Duplicates many iOS ClinicalScoringEngine scores with no parity check.",
       "changelog": [
-        { "version": "unversioned", "date": "2026-09-25", "change": "C8: TG18 cholecystitis Grade II reads palpable tender mass, duration > 72 h and marked local inflammation (gangrenous / emphysematous / abscess) besides WBC > 18 (Yokoe 2018). TG18 cholangitis Grade II needs any two criteria and the WBC criterion was added (Kiriyama 2018); the ScalesTab fever criterion is ≥ 39 °C. ABCD2 interpretation defers to NICE NG128 (not for triage)." }
+        { "version": "unversioned", "date": "2026-09-25", "change": "C8: TG18 cholecystitis Grade II reads palpable tender mass, duration > 72 h and marked local inflammation (gangrenous / emphysematous / abscess) besides WBC > 18 (Yokoe 2018). TG18 cholangitis Grade II needs any two criteria and the WBC criterion was added (Kiriyama 2018); the ScalesTab fever criterion is ≥ 39 °C. ABCD2 interpretation defers to NICE NG128 (not for triage)." },
+        { "version": "unversioned", "date": "2026-09-25", "change": "New tg18-autofill.ts: the ClinicalScoresPanel TG18 cholangitis / cholecystitis cards are pre-filled from the record (diagnostic A/B/C criteria from the examination, history and imaging reports; Grade II duration > 72 h, palpable mass, marked local inflammation, age ≥ 75; organ dysfunction SBP < 90 or vasopressor, ACVPU not Alert, creatinine > 177 µmol/L or oliguria, INR > 1.5, platelets < 100, respiratory never inferred — the iOS rule, 1f50221). Every pre-filled toggle can be changed. See docs/clinical-validation/changes/web-last-gaps.md." }
       ]
     },
     {

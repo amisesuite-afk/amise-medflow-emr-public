@@ -187,8 +187,8 @@
           "mode": "autofill",
           "equals": 1,
           "note": "The record holds Murphy's sign, fever, WBC/CRP and characteristic ultrasound; auto-fill should reach Grade I rather than 'criteria not met'.",
-          "knownGap": ["ios", "web"],
-          "knownGapNote": "iOS auto-fill sets only WBC >18 (Grade II criterion) and never the local-signs field, so it reads \"criteria not met\"; web clinical-scores needs manual Murphy/imaging ticks."
+          "knownGap": ["ios"],
+          "knownGapNote": "iOS auto-fill sets only WBC >18 (Grade II criterion) and never the local-signs field, so it reads \"criteria not met\"."
         }
       ]
     },

@@ -175,8 +175,8 @@
           "mode": "autofill",
           "equals": 1,
           "guidelineRefs": ["tg18-dx-cholangitis"],
-          "knownGap": ["ios", "web"],
-          "knownGapNote": "iOS auto-fill: age >75 alone → Grade II; web clinical-scores: criteria not met without manual imaging ticks."
+          "knownGap": ["ios"],
+          "knownGapNote": "iOS auto-fill: age >75 alone → Grade II."
         }
       ]
     },

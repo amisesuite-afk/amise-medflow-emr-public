@@ -21,6 +21,7 @@ import {
   type ExtractedLabs, type ScoringVitals,
 } from '@/lib/clinical-scores';
 import { NEWS2_AVPU_LABELS, type News2Avpu } from '@workspace/triage-engine';
+import { tokyoCholangitisAutoFill, tokyoCholecystitisAutoFill, type Tg18Record } from '@/lib/tg18-autofill';
 import { news2OptionsFromVitals, resolveNews2Scale2 } from '@/lib/vitals-news2-fields';
 import { usePatientNews2Scale2 } from '@/hooks/usePatientNews2Scale2';
 
@@ -115,15 +116,43 @@ function useRelevantScores() {
 // ═══════════════════════════════════════════════════════════════════════════════
 // TOKYO CHOLANGITIS PANEL
 // ═══════════════════════════════════════════════════════════════════════════════
+/**
+ * The record the TG18 auto-fill reads (lib/tg18-autofill.ts): vitals, extracted labs, examination,
+ * HPI, assessment and received imaging reports. Every auto-filled toggle can be unticked.
+ */
+function useTg18Record(): Tg18Record {
+  const {
+    age, vitals, extractedLabs, examGeneral, examAbdomen, examNotes, hpiNotes, assessment,
+    radiologyRequests, surgicalHistory,
+  } = useAppContext();
+  return useMemo(() => {
+    const a = parseInt(age, 10);
+    const sbp = parseFloat(vitals.systolicBp ?? '');
+    return {
+      age: Number.isNaN(a) ? null : a,
+      systolicBp: Number.isFinite(sbp) ? sbp : null,
+      avpu: (vitals as Record<string, string>).avpu ?? null,
+      labs: extractedLabs as ExtractedLabs,
+      examText: [examGeneral, examAbdomen, ...Object.values(examNotes ?? {})].filter(Boolean).join('\n'),
+      historyText: hpiNotes,
+      assessment,
+      imagingReports: radiologyRequests.filter(r => r.resultReceived && r.resultNotes).map(r => r.resultNotes),
+      surgicalHistory,
+    };
+  }, [age, vitals, extractedLabs, examGeneral, examAbdomen, examNotes, hpiNotes, assessment, radiologyRequests, surgicalHistory]);
+}
+
 function TokyoCholangitisCard() {
   const { extractedLabs, vitals } = useAppContext();
-  const [inputs, setInputs] = useState<Partial<TokyoCholangitisInputs>>({
-    biliary_dilatation: false, biliary_cause_on_imaging: false,
-    organ_dysfunction: [],
-  });
+  const record = useTg18Record();
+  // Pre-filled from the record (TG18 A/B/C criteria and organ dysfunction); the clinician's
+  // toggles override the auto-filled values.
+  const auto = useMemo(() => tokyoCholangitisAutoFill(record), [record]);
+  const [overrides, setOverrides] = useState<Partial<TokyoCholangitisInputs>>({});
+  const inputs = useMemo<Partial<TokyoCholangitisInputs>>(() => ({ ...auto, ...overrides }), [auto, overrides]);
 
   const set = (k: keyof TokyoCholangitisInputs, v: unknown) =>
-    setInputs(c => ({ ...c, [k]: v }));
+    setOverrides(c => ({ ...c, [k]: v }));
 
   const labs = extractedLabs as ExtractedLabs;
   const sv: ScoringVitals = {
@@ -146,6 +175,7 @@ function TokyoCholangitisCard() {
     <div style={PANEL}>
       <div style={LABEL}>Tokyo TG18 — Acute Cholangitis</div>
       {grade(`Grade ${result.grade}`, result.colour, result.label)}
+      <div style={{ fontSize: 10, color: '#94a3b8', marginBottom: 6 }}>Pre-filled from the record — review each criterion; tap to change.</div>
 
       <div style={{ marginBottom: 8 }}>
         <div style={{ fontSize: 10, color: '#94a3b8', marginBottom: 4 }}>Imaging / clinical findings</div>
@@ -182,12 +212,13 @@ function TokyoCholangitisCard() {
 // ═══════════════════════════════════════════════════════════════════════════════
 function TokyoCholecystitisCard() {
   const { extractedLabs, vitals } = useAppContext();
-  const [inputs, setInputs] = useState<Partial<TokyoCholecystitisInputs>>({
-    murphy_sign: false, ruq_pain_mass_tenderness: false, organ_dysfunction: [],
-  });
+  const record = useTg18Record();
+  const auto = useMemo(() => tokyoCholecystitisAutoFill(record), [record]);
+  const [overrides, setOverrides] = useState<Partial<TokyoCholecystitisInputs>>({});
+  const inputs = useMemo<Partial<TokyoCholecystitisInputs>>(() => ({ ...auto, ...overrides }), [auto, overrides]);
 
   const set = (k: keyof TokyoCholecystitisInputs, v: unknown) =>
-    setInputs(c => ({ ...c, [k]: v }));
+    setOverrides(c => ({ ...c, [k]: v }));
 
   const labs = extractedLabs as ExtractedLabs;
   const sv: ScoringVitals = {
@@ -201,6 +232,7 @@ function TokyoCholecystitisCard() {
     <div style={PANEL}>
       <div style={LABEL}>Tokyo TG18 — Acute Cholecystitis</div>
       {grade(`Grade ${result.grade}`, result.colour, result.label)}
+      <div style={{ fontSize: 10, color: '#94a3b8', marginBottom: 6 }}>Pre-filled from the record — review each criterion; tap to change.</div>
 
       <div style={{ marginBottom: 8 }}>
         <div style={{ fontSize: 10, color: '#94a3b8', marginBottom: 4 }}>Local signs (A criteria)</div>

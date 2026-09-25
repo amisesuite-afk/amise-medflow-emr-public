@@ -133,6 +133,7 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'artifacts/dashboard/src/lib/dx-variants.ts',
   'artifacts/dashboard/src/lib/clinical-scales.ts',
   'artifacts/dashboard/src/lib/clinical-scores.ts',
+  'artifacts/dashboard/src/lib/tg18-autofill.ts',
   'artifacts/dashboard/src/lib/clinical-cds.ts',
   'artifacts/dashboard/src/lib/clinical-inference.ts',
   'artifacts/dashboard/src/lib/symptom-inference.ts',

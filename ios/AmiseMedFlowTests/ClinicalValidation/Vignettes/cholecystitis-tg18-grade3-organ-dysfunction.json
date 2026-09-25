@@ -420,11 +420,7 @@
           "guidelineRefs": [
             "tg18-dx-cholecystitis"
           ],
-          "note": "The record holds SBP 82 on noradrenaline, AVPU 'C', creatinine 238 and platelets 88. An auto-filled grade below III under-grades a patient in septic shock until every organ box is ticked by hand.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web auto-fill returns \"criteria not met\" (organ-dysfunction data in the record: SBP 82 on noradrenaline, AVPU C, creatinine 238, platelets 88)."
+          "note": "The record holds SBP 82 on noradrenaline, AVPU 'C', creatinine 238 and platelets 88. An auto-filled grade below III under-grades a patient in septic shock until every organ box is ticked by hand."
         },
         {
           "id": "score-qsofa-autofill",

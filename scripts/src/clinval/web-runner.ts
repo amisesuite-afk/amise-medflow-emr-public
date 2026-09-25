@@ -47,6 +47,8 @@ import {
   scoreTokyoCholangitis, scoreTokyoCholecystitis,
 } from '../../../artifacts/dashboard/src/lib/clinical-scores';
 import type { ExtractedLabs, ScoringVitals } from '../../../artifacts/dashboard/src/lib/clinical-scores';
+import { tokyoCholangitisAutoFill, tokyoCholecystitisAutoFill } from '../../../artifacts/dashboard/src/lib/tg18-autofill';
+import type { Tg18Record } from '../../../artifacts/dashboard/src/lib/tg18-autofill';
 import {
   alvaradoScore, interpretAlvarado, interpretTg18Cholangitis, tg18CholangitisGrade,
 } from '../../../artifacts/dashboard/src/lib/clinical-scales';
@@ -478,8 +480,16 @@ export function runWeb(v: Vignette): EngineOutputs {
     scoreValues.push({ score: 'tg18-cholangitis', mode: 'calculator', source: 'web.scoreCalculator.tg18-cholangitis', value: full.score, label: full.label });
     management.push({ source: 'web.scoreCalculator.tg18-cholangitis', text: full.label });
   }
+  // ClinicalScoresPanel useTg18Record(): the record the TG18 cards pre-fill from (tg18-autofill.ts).
+  const tg18Record: Tg18Record = {
+    age, systolicBp: lv?.systolicBp ?? null, avpu: lv?.avpu ?? null, labs,
+    examText: [inp.exam?.general, inp.exam?.abdomen, inp.exam?.other, inp.exam?.skin].filter(Boolean).join('\n'),
+    historyText: inp.hpi ?? '', assessment,
+    imagingReports: (inp.imaging ?? []).map(i => i.result),
+    surgicalHistory: inp.surgicalHistory ?? [],
+  };
   if (tgc || (dx?.paneDiseaseId === 'cholangitis')) {
-    const auto = scoreTokyoCholangitis({}, labs, sv);
+    const auto = scoreTokyoCholangitis(tokyoCholangitisAutoFill(tg18Record), labs, sv);
     scoreValues.push({ score: 'tg18-cholangitis', mode: 'autofill', source: 'web.scoreCalculator.tg18-cholangitis', value: auto.score, label: auto.label, pending: auto.missing_inputs });
   }
 
@@ -500,7 +510,7 @@ export function runWeb(v: Vignette): EngineOutputs {
     management.push({ source: 'web.scoreCalculator.tg18-cholecystitis', text: full.label });
   }
   if (tgk || (dx?.paneDiseaseId === 'cholecystitis')) {
-    const auto = scoreTokyoCholecystitis({}, labs, sv);
+    const auto = scoreTokyoCholecystitis(tokyoCholecystitisAutoFill(tg18Record), labs, sv);
     scoreValues.push({ score: 'tg18-cholecystitis', mode: 'autofill', source: 'web.scoreCalculator.tg18-cholecystitis', value: auto.score, label: auto.label, pending: auto.missing_inputs });
   }
   for (const key of Object.keys(forms)) {

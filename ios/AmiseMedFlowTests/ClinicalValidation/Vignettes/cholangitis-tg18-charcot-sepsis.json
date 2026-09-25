@@ -192,9 +192,7 @@
           "score": "tg18-cholangitis",
           "mode": "autofill",
           "equals": 2,
-          "guidelineRefs": ["tg18-dx-cholangitis"],
-          "knownGap": ["web"],
-          "knownGapNote": "Web clinical-scores needs manual imaging ticks before it will diagnose, so auto-fill reads \"criteria not met\"."
+          "guidelineRefs": ["tg18-dx-cholangitis"]
         },
         {
           "id": "score-qsofa-calculator",

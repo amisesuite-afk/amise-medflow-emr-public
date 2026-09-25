@@ -323,12 +323,7 @@
           "guidelineRefs": [
             "tg18-dx-cholecystitis"
           ],
-          "note": "The record holds WBC 19.4 and a characteristic ultrasound: auto-fill should not under-grade.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "clinical-scores auto-derived grade = 0 \"criteria not met\" despite WBC 19.4 and a characteristic US report (needs manual imaging ticks).",
-          "proposedFix": "clinical-scores.ts: derive the TG18 imaging criterion from the radiology result text (wall thickening, pericholecystic fluid, sonographic Murphy's) and local signs from exam chips."
+          "note": "The record holds WBC 19.4 and a characteristic ultrasound: auto-fill should not under-grade."
         }
       ]
     },
