@@ -37,6 +37,20 @@ extension PatientScoreAutoPopulator {
             f.addPending(key: "tbsaPercent", label: "Total body surface area burned (%) — assess from clinical examination", source: "Examination")
         }
 
+        // Child: formal fluids from 10% TBSA, urine output 1 mL/kg/h (burn fluid threshold).
+        if patient.dateOfBirth != nil, patient.ageYears < 16 {
+            i.isChild = true
+            f.addAutoFilled(key: "isChild", label: "Under 16 — paediatric burn thresholds", source: "Date of birth")
+        }
+        // Electrical injury: IV fluids whatever the visible TBSA (ABA; BBA).
+        if ["electrical injury", "high voltage", "high-voltage", "electrocution", "electric shock", "lightning"].contains(where: { text.contains($0) }) {
+            i.isElectrical = true
+            f.addAutoFilled(key: "isElectrical", label: "Electrical injury in the record", source: "History")
+        }
+        // The first half is due within 8 h of the BURN: the time of the burn is needed.
+        f.addPending(key: "hoursSinceBurn", label: "Time of the burn — hours since injury (sets the rate for the first 8 h)", source: "History")
+        f.addPending(key: "fluidGivenMl", label: "IV fluid already given since the burn (mL)", source: "Pre-hospital / referring notes")
+
         // Inhalation injury keywords
         let inhalKw = ["inhalation injury", "inhalation burn", "smoke inhalation",
                        "airway burn", "singed nasal hair", "carbonaceous sputum"]

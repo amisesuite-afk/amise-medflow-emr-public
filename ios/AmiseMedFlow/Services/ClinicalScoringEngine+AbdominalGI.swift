@@ -68,7 +68,10 @@ extension ClinicalScoringEngine {
         let hasGradeIIIOrgan = i.cardiovascularDysfunction || i.neurologicalDysfunction ||
                                i.respiratoryDysfunction || i.renalDysfunction ||
                                i.hepaticDysfunction || i.haematologicalDysfunction
-        let hasGradeII = i.wbcAbove18 || i.durationOver72h || i.markedLocalInflammation
+        // TG18 Grade II (moderate) cholecystitis: ANY of WBC >18, palpable tender RUQ mass,
+        // duration >72 h, marked local inflammation (gangrenous / emphysematous cholecystitis,
+        // pericholecystic or hepatic abscess, biliary peritonitis).
+        let hasGradeII = i.wbcAbove18 || i.durationOver72h || i.markedLocalInflammation || i.palpableTenderRUQMass
 
         let grade: Int
         let risk: ScoreRisk
@@ -108,6 +111,7 @@ extension ClinicalScoringEngine {
             .init(label: "Local inflammation signs", points: 1, present: i.localInflammationSignsMild),
             .init(label: "WBC >18,000", points: 1, present: i.wbcAbove18),
             .init(label: "Duration >72 h", points: 1, present: i.durationOver72h),
+            .init(label: "Palpable tender RUQ mass", points: 1, present: i.palpableTenderRUQMass),
             .init(label: "Marked local inflammation (gangrenous / peritonitis)", points: 2, present: i.markedLocalInflammation),
             .init(label: "Cardiovascular dysfunction", points: 3, present: i.cardiovascularDysfunction),
             .init(label: "Neurological dysfunction", points: 3, present: i.neurologicalDysfunction),
@@ -152,11 +156,13 @@ extension ClinicalScoringEngine {
                     "IV antibiotics (meropenem or piperacillin-tazobactam)",
                     "ICU admission", "Critical care / hepatobiliary surgical review",
                     "Blood cultures × 2 before antibiotics"]
-        } else if gradeIICount >= 1 {
+        } else if gradeIICount >= 2 {
+            // TG18 Grade II (moderate) cholangitis needs ANY TWO of: WBC >12 or <4, fever ≥39 °C,
+            // age ≥75, bilirubin ≥5 mg/dL, albumin <0.7 × LLN (one criterion was counted before).
             grade = 2; risk = .high
-            interpretation = "Tokyo Grade II — Moderate acute cholangitis; urgent ERCP within 24–48 h"
+            interpretation = "Tokyo Grade II — Moderate acute cholangitis; early biliary drainage (within 24 h)"
             recs = ["IV antibiotics (co-amoxiclav or cefuroxime + metronidazole)",
-                    "Urgent ERCP within 24–48 h",
+                    "Early biliary drainage (ERCP) within 24 h (TG18; ACG 2024)",
                     "Admit for IV hydration and monitoring",
                     "Blood cultures × 2 before antibiotics",
                     "MRCP if ERCP contraindicated"]
@@ -164,7 +170,7 @@ extension ClinicalScoringEngine {
             grade = 1; risk = .low
             interpretation = "Tokyo Grade I — Mild acute cholangitis; respond to initial medical treatment"
             recs = ["IV antibiotics with close observation",
-                    "Elective ERCP within 72 h if stable",
+                    "Biliary drainage if no response to initial treatment within 24 h; treat the cause (ERCP / cholecystectomy) (TG18)",
                     "Monitor for deterioration to Grade II/III"]
         } else {
             grade = 0; risk = .low

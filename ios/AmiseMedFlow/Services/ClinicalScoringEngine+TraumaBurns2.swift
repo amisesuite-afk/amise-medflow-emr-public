@@ -11,39 +11,86 @@ extension ClinicalScoringEngine {
         var weightKg: Double = 70     // body weight in kilograms
         var tbsaPercent: Double = 20  // total body surface area burned (%)
         var hasInhalationInjury: Bool = false
+        /// Hours since the burn (the first half is due within 8 h of the BURN, not of arrival).
+        var hoursSinceBurn: Double = 0
+        /// Crystalloid already given since the burn (pre-hospital, referring unit), mL.
+        var fluidGivenMl: Double = 0
+        /// Under 16: formal fluids from 10% TBSA, urine output target 1 mL/kg/h, add maintenance.
+        var isChild: Bool = false
+        /// Electrical (high-voltage) injury: IV fluids whatever the visible TBSA.
+        var isElectrical: Bool = false
     }
 
+    /// Formal IV resuscitation threshold used across the app (acuity engine, burns card, this
+    /// calculator): ≥15% TBSA adults, ≥10% children. The ≥ / > choice and its source are logged for
+    /// surgeon sign-off (SURGEON-DECISIONS D2); ≥ is the conservative reading.
+    static func burnFluidThreshold(isChild: Bool) -> Double { isChild ? 10 : 15 }
+
     static func parkland(_ i: ParklandInput) -> ClinicalScore {
-        // Parkland: 4 mL × kg × TBSA% in 24 h (adults)
-        // Modified Brooke (commonly used): 2 mL × kg × TBSA%
-        // Using Parkland (4 mL/kg/%TBSA) — the established UK/Caribbean standard
+        // Parkland 4 mL × kg × %TBSA over 24 h from the time of burn — the practice's current,
+        // conservative default. ATLS 10 / ABA starting rates (2 mL adults, 3 mL children, 4 mL
+        // electrical) are shown as a note (SURGEON-DECISIONS D1, sign-off pending).
         let totalVol = 4.0 * i.weightKg * i.tbsaPercent
         let firstHalf = totalVol / 2     // first 8 h from time of burn
         let secondHalf = totalVol / 2    // next 16 h
-        let rateFirst8h = firstHalf / 8
+        let hours = max(0, min(i.hoursSinceBurn, 24))
+        let given = max(0, i.fluidGivenMl)
+        // Rate now: what is still due in the first 8 h, over the hours left of those 8 h; after
+        // 8 h, what is still due of the 24 h volume over the hours left.
+        let rateNow: Double
+        let rateNowText: String
+        if hours < 8 {
+            let due = max(0, firstHalf - given)
+            let hoursLeft = 8 - hours
+            rateNow = due / hoursLeft
+            rateNowText = "First 8 h from the TIME OF BURN: \(Int(due)) mL still due over the remaining \(String(format: "%.1f", hoursLeft)) h — run at \(Int(rateNow)) mL/h now (burn \(String(format: "%.1f", hours)) h ago, \(Int(given)) mL already given)"
+        } else {
+            let due = max(0, totalVol - given)
+            let hoursLeft = max(24 - hours, 1)
+            rateNow = due / hoursLeft
+            rateNowText = "More than 8 h since the burn: \(Int(due)) mL of the 24 h volume still due over \(Int(hoursLeft)) h — \(Int(rateNow)) mL/h, titrated to urine output"
+        }
         let rateNext16h = secondHalf / 16
+        let threshold = burnFluidThreshold(isChild: i.isChild)
+        let uoTarget = i.isElectrical ? "1–1.5 mL/kg/h until pigmented urine clears (electrical injury)"
+            : (i.isChild ? "1 mL/kg/h (child)" : "0.5 mL/kg/h (adult)")
 
         let (risk, interp): (ScoreRisk, String)
-        let flags: [String]
-        switch i.tbsaPercent {
-        case ..<15:
+        var flags: [String] = []
+        if i.isElectrical {
+            risk = i.tbsaPercent >= 25 ? .critical : .high
+            interp = "Electrical injury (visible TBSA \(Int(i.tbsaPercent))%). Visible burn size underestimates deep injury: IV fluids and a urine-output target of \(uoTarget) REGARDLESS of visible TBSA (ABA; BBA)."
+            flags = ["Electrical injury — IV fluids and urine output target regardless of visible TBSA; ECG monitoring, CK, compartments"]
+        } else if i.tbsaPercent < threshold {
             risk = .low
-            interp = "Minor burn (TBSA \(Int(i.tbsaPercent))%). Total Parkland volume: \(Int(totalVol)) mL over 24 h. May be managed with oral fluids if alert. IV access recommended."
-            flags = []
-        case 15..<25:
+            interp = "Burn \(Int(i.tbsaPercent))% TBSA — below the formal IV resuscitation threshold (≥\(Int(threshold))% \(i.isChild ? "child" : "adult")). Oral fluids may be adequate if alert and drinking; IV fluids if not. Parkland volume for reference: \(Int(totalVol)) mL over 24 h."
+        } else if i.tbsaPercent < 25 {
             risk = .moderate
-            interp = "Moderate burn (TBSA \(Int(i.tbsaPercent))%). Total Parkland volume: \(Int(totalVol)) mL over 24 h. IV resuscitation mandatory."
-            flags = []
-        case 25..<40:
+            interp = "Burn \(Int(i.tbsaPercent))% TBSA — formal IV resuscitation required (≥\(Int(threshold))% \(i.isChild ? "child" : "adult")). Parkland volume: \(Int(totalVol)) mL over 24 h from the time of burn."
+        } else if i.tbsaPercent < 40 {
             risk = .high
-            interp = "Major burn (TBSA \(Int(i.tbsaPercent))%). Total Parkland volume: \(Int(totalVol)) mL. Risk of burn shock — aggressive resuscitation and ICU admission."
+            interp = "Major burn (TBSA \(Int(i.tbsaPercent))%). Parkland volume: \(Int(totalVol)) mL over 24 h from the time of burn. Risk of burn shock — ICU / burns centre."
             flags = ["Major burn ≥25% TBSA — burn shock risk: strict fluid monitoring required"]
-        default:
+        } else {
             risk = .critical
-            interp = "Critical burn (TBSA \(Int(i.tbsaPercent))%). Total Parkland volume: \(Int(totalVol)) mL. Life-threatening — burns unit, early intubation if inhalation injury."
+            interp = "Critical burn (TBSA \(Int(i.tbsaPercent))%). Parkland volume: \(Int(totalVol)) mL. Life-threatening — burns centre, early intubation if inhalation injury."
             flags = ["Critical burn ≥40% TBSA — mortality risk >50%; burns centre transfer if available"]
         }
         let inhalationNote = i.hasInhalationInjury ? " Inhalation injury: early intubation strongly recommended — airway oedema peaks at 8–12 h." : ""
+        var recs = [
+            "Parkland formula: 4 mL × \(Int(i.weightKg)) kg × \(Int(i.tbsaPercent))% TBSA = \(Int(totalVol)) mL Hartmann's over 24 h FROM THE TIME OF BURN",
+            rateNowText,
+            "Second half (\(Int(secondHalf)) mL) over the following 16 h — \(Int(rateNext16h)) mL/h, titrated to urine output",
+            "Target urine output: \(uoTarget) — adjust the rate hourly (over-resuscitation causes compartment syndromes)",
+            "Note — ATLS 10 / ABA starting rates: 2 mL/kg/%TBSA adults, 3 mL/kg/%TBSA children, 4 mL/kg/%TBSA electrical injury (practice default remains Parkland pending surgeon sign-off)",
+            "Urinary catheter; strict fluid balance",
+            i.hasInhalationInjury ? "INHALATION INJURY: early anaesthetic/ICU review for intubation before oedema develops" : "Analgesia: IV opioid + anti-emetic; oral if minor burn",
+            "Wound care: cool running water for 20 min if <3 h post-burn; cling film / non-adherent dressings",
+            "Refer to a burns service: any full-thickness burn, partial thickness >10% adults (>5% children), face / hands / feet / genitalia / perineum / major joints, circumferential, inhalation, electrical, chemical, pregnancy, comorbidity, concomitant trauma, suspected non-accidental injury (National Burn Care Referral Guidance)",
+        ]
+        if i.isChild {
+            recs.append("Child: add maintenance fluid with glucose on top of the resuscitation volume — weight-based dosing — calculate per BNFc / APLS")
+        }
         return ClinicalScore(
             systemName: "Parkland Formula (Burns Fluid)",
             abbreviation: "Parkland \(Int(totalVol)) mL",
@@ -51,28 +98,18 @@ extension ClinicalScoringEngine {
             maxScore: 4 * 100 * 100,
             risk: risk,
             interpretation: interp + inhalationNote,
-            recommendations: [
-                "Parkland formula: 4 mL × \(Int(i.weightKg)) kg × \(Int(i.tbsaPercent))% TBSA = \(Int(totalVol)) mL Hartmann's/Ringer's lactate over 24 h",
-                "First half (\(Int(firstHalf)) mL) in first 8 h from TIME OF BURN (not from arrival) — at \(Int(rateFirst8h)) mL/h",
-                "Second half (\(Int(secondHalf)) mL) over next 16 h — at \(Int(rateNext16h)) mL/h",
-                "Target urine output: 0.5–1.0 mL/kg/h (adult) — titrate infusion rate accordingly",
-                "Urinary catheter mandatory — strict fluid balance; avoid under- and over-resuscitation",
-                "Do NOT include colloid in first 12 h (Parkland protocol)",
-                "Add colloid (albumin 5%) from 12–24 h if resuscitation requirements excessive",
-                i.hasInhalationInjury ? "INHALATION INJURY: early anaesthetic/ICU review for intubation before oedema develops" : "Analgesia: IV morphine + anti-emetic; oral if minor burn",
-                "Wound care: cool running water for 20 min if <3 h post-burn; non-adherent dressings",
-                "Transfer to regional burns unit if: TBSA >15% adult, full-thickness, face/hands/perineum/circumferential"
-            ],
+            recommendations: recs,
             items: [
                 ScoredItem(label: "Weight (\(Int(i.weightKg)) kg)", points: i.weightKg, present: true),
                 ScoredItem(label: "TBSA burned (\(Int(i.tbsaPercent))%)", points: i.tbsaPercent, present: true),
                 ScoredItem(label: "Total 24 h volume: \(Int(totalVol)) mL Hartmann's", points: totalVol, present: true),
-                ScoredItem(label: "First 8 h: \(Int(firstHalf)) mL at \(Int(rateFirst8h)) mL/h", points: firstHalf, present: true),
+                ScoredItem(label: "Rate now: \(Int(rateNow)) mL/h (\(String(format: "%.1f", hours)) h since burn, \(Int(given)) mL given)", points: rateNow, present: true),
                 ScoredItem(label: "Next 16 h: \(Int(secondHalf)) mL at \(Int(rateNext16h)) mL/h", points: secondHalf, present: true),
-                ScoredItem(label: "Inhalation injury (+additional airway management)", points: 0, present: i.hasInhalationInjury)
+                ScoredItem(label: "Inhalation injury (+additional airway management)", points: 0, present: i.hasInhalationInjury),
+                ScoredItem(label: "Electrical injury (fluids regardless of TBSA)", points: 0, present: i.isElectrical)
             ],
             redFlags: flags,
-            evidenceNote: "Baxter CR, Shires T. Ann N Y Acad Sci 1968;150:874–894. Parkland formula: 4 mL/kg/%TBSA Hartmann's in 24 h. Standard in UK (ISBI, NICE). The formula is a guide — adjust rate to urine output 0.5–1 mL/kg/h. Over-resuscitation causes abdominal compartment syndrome and pulmonary oedema; under-resuscitation causes burn shock. Reassess fluid rate hourly."
+            evidenceNote: "Baxter CR, Shires T. Ann N Y Acad Sci 1968;150:874–894 (Parkland 4 mL/kg/%TBSA). ATLS 10th ed. (2018) and ABA start at 2 mL/kg/%TBSA (adults), 3 mL (children), 4 mL (electrical). Half is due within 8 h of the BURN, so a late start needs a higher rate. Formal fluids from 15% TBSA adults / 10% children (≥, conservative; source to be confirmed — SURGEON-DECISIONS D2). Adjust to urine output."
         )
     }
 

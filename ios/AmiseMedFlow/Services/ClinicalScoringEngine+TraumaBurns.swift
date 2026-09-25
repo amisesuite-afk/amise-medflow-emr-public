@@ -49,10 +49,13 @@ extension ClinicalScoringEngine {
         switch pts {
         case ..<6:
             risk = .low
-            interpretation = "LRINEC \(Int(pts))/17 — Low probability of NF; consider cellulitis"
-            recs = ["IV antibiotics for cellulitis (flucloxacillin + metronidazole)",
-                    "Elevate and mark erythema margins", "Repeat clinical exam in 12–24 h",
-                    "If rapidly spreading or systemic toxicity → reassess for NF"]
+            // WSES 2018 / Fernando 2019 meta-analysis: LRINEC has low sensitivity — a low score
+            // must never be used to rule out necrotising soft-tissue infection.
+            interpretation = "LRINEC \(Int(pts))/17 — A low score does NOT exclude necrotising infection"
+            redFlags = ["LRINEC <6 does not rule out NSTI — if necrotising infection is clinically suspected (pain out of proportion, rapid spread, crepitus, bullae, systemic toxicity), urgent surgical exploration"]
+            recs = ["A low LRINEC does not exclude necrotising infection; if clinically suspected, urgent surgical exploration (WSES 2018)",
+                    "Senior surgical review of the clinical picture — the score does not replace it",
+                    "Mark the erythema margins and re-examine within hours; escalate on any spread or systemic signs"]
         case 6...7:
             risk = .moderate
             interpretation = "LRINEC \(Int(pts))/17 — Moderate concern; thorough surgical evaluation essential"
@@ -84,7 +87,7 @@ extension ClinicalScoringEngine {
             risk: risk, interpretation: interpretation,
             recommendations: recs, items: items,
             redFlags: redFlags,
-            evidenceNote: "Wong 2004. Score ≥6: NF risk. ≥8: high probability (PPV 92%). PPV falls if used non-selectively."
+            evidenceNote: "Wong 2004. Score ≥6: NF risk. ≥8: high probability (PPV 92%). Sensitivity is low (Fernando 2019 meta-analysis) — never use a low score to rule out NSTI (WSES/SIS 2018)."
         )
     }
 

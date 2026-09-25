@@ -181,7 +181,7 @@ extension ClinicalScoringEngine {
             risk: risk, interpretation: interpretation,
             recommendations: recs, items: items,
             redFlags: redFlags,
-            evidenceNote: "Johnston 2007. Predicts 2-day stroke risk after TIA. Score ≤3: low; 4–5: moderate; 6–7: high."
+            evidenceNote: "Johnston 2007. NICE NG128 (2019, updated 2022) advises NOT to use ABCD2 or other scores to decide urgency: everyone with a suspected TIA is seen by a specialist within 24 h of onset, with aspirin 300 mg. Shown for reference only."
         )
     }
 

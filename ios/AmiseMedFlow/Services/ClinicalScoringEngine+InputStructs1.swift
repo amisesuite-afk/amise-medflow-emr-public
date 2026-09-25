@@ -24,6 +24,7 @@ struct TokyoCholecystitisInput: Equatable {
     var localInflammationSignsMild: Bool = false    // tenderness, RUQ mass/pain
     var wbcAbove18: Bool = false                    // WBC >18,000
     var durationOver72h: Bool = false
+    var palpableTenderRUQMass: Bool = false         // TG18 Grade II criterion
     var markedLocalInflammation: Bool = false       // biliary peritonitis, pericholecystic abscess, hepatic abscess, gangrenous/emphysematous cholecystitis
     // Grade III organ dysfunction
     var cardiovascularDysfunction: Bool = false    // SBP <90 or vasopressor
@@ -35,7 +36,7 @@ struct TokyoCholecystitisInput: Equatable {
 }
 
 struct TokyoCholangitisInput: Equatable {
-    // Severity Grade II criteria (any = Grade II or above)
+    // Severity Grade II criteria (any TWO = Grade II, TG18)
     var wbcAbove12OrBelow4: Bool = false
     var temperatureAbove39: Bool = false
     var ageAbove75: Bool = false

@@ -60,7 +60,7 @@ extension ClinicalScoringEngine {
                 "Echo + troponin/BNP to risk-stratify for intermediate-high vs high-risk PE",
                 "If massive PE (haemodynamic instability): systemic thrombolysis or catheter-directed therapy",
                 "If intermediate-high risk: consider NOAC after clinical stability, monitor for deterioration",
-                "Supplemental oxygen to maintain SpO2 ≥95%",
+                "Oxygen to a target SpO2 of 94–98% (88–92% if at risk of hypercapnic respiratory failure) (BTS 2017)",
                 "Avoid bed rest in haemodynamically stable patients — early mobilisation"
             ],
             items: items,

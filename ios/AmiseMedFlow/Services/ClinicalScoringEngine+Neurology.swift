@@ -18,7 +18,7 @@ extension ClinicalScoringEngine {
         let (risk, interp, recs, flags): (ScoreRisk, String, [String], [String]) = switch total {
         case 0:
             (.low, "No stroke deficit — NIHSS 0",
-             ["Review for TIA; consider DWI-MRI if symptoms resolved (ABCD² ≥4)",
+             ["Review for TIA: specialist assessment within 24 h; DWI-MRI if symptoms resolved (NICE NG128 — no ABCD² triage)",
               "Assess for AF, carotid disease, and modifiable stroke risk factors",
               "Early dual antiplatelet (if TIA/minor stroke): aspirin + clopidogrel for 21 days"],
              [])

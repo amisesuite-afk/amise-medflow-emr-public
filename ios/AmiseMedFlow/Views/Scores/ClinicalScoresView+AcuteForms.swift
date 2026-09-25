@@ -63,7 +63,8 @@ extension ClinicalScoresView {
         Group {
             sectionHeader("Local Inflammation")
             scoreToggle("Local inflammation signs (mild)", binding: $tkyC.localInflammationSignsMild, points: "Grade I")
-            scoreToggle("WBC >18,000/μL", binding: $tkyC.wbcAbove18, points: "Grade I", autoKey: "wbcAbove18")
+            scoreToggle("WBC >18,000/μL", binding: $tkyC.wbcAbove18, points: "Grade II", autoKey: "wbcAbove18")
+            scoreToggle("Palpable tender RUQ mass", binding: $tkyC.palpableTenderRUQMass, points: "Grade II")
             scoreToggle("Symptoms >72 hours", binding: $tkyC.durationOver72h, points: "Grade II")
             scoreToggle("Marked local inflammation", binding: $tkyC.markedLocalInflammation, points: "Grade II")
             sectionHeader("Organ Dysfunction (Grade III)")

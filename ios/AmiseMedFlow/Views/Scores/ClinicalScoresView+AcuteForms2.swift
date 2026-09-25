@@ -102,7 +102,13 @@ extension ClinicalScoresView {
                        range: 1...250, step: 1, unit: "kg")
             mewsSlider("Total body surface area burned (%TBSA)", value: $parklandI.tbsaPercent,
                        range: 0...100, step: 1, unit: "%")
-            scoreToggle("Inhalation injury (adds 10% to TBSA)", binding: $parklandI.hasInhalationInjury, points: "+10% TBSA")
+            scoreToggle("Inhalation injury (early airway review)", binding: $parklandI.hasInhalationInjury, points: "Airway")
+            mewsSlider("Hours since the burn", value: $parklandI.hoursSinceBurn,
+                       range: 0...24, step: 0.5, unit: "h")
+            mewsSlider("Fluid already given since the burn", value: $parklandI.fluidGivenMl,
+                       range: 0...10000, step: 100, unit: "mL")
+            scoreToggle("Child (under 16)", binding: $parklandI.isChild, points: "≥10% TBSA")
+            scoreToggle("Electrical injury (high voltage)", binding: $parklandI.isElectrical, points: "IV fluids")
         }
         .onChange(of: parklandI) { _, _ in recalculate() }
     }
