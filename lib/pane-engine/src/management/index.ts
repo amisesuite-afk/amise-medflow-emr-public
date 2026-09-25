@@ -17,11 +17,11 @@ export type {
   ManagementProtocol, InvestigationItem, ManagementStep, ProtocolMedication, ProtocolKind, PatientCondition,
 } from './types.js';
 export {
-  adaptProtocolForPatient, adaptPlanText, allergyProfile, pregnancyFor, gestationFromText, procedureFor, hasOperativeSteps,
-  ALLERGY_CLASSES, PLAN_SAFETY_VERSION,
+  adaptProtocolForPatient, adaptPlanText, adaptInvestigationForPatient, allergyProfile, pregnancyFor, gestationFromText, procedureFor, hasOperativeSteps,
+  ALLERGY_CLASSES, PLAN_SAFETY_VERSION, PAEDIATRIC_FLUID,
 } from './planSafety.js';
 export type {
-  PlanPatientContext, AdaptedProtocol, AdaptOptions, SafetyNote, SafetyKind, PregnancyStatus, ProcedureKind, AllergyClass,
+  PlanPatientContext, AdaptedProtocol, AdaptOptions, WithheldItem, SafetyNote, SafetyKind, PregnancyStatus, ProcedureKind, AllergyClass,
 } from './planSafety.js';
 
 /**

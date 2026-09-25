@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   adaptPlanText, adaptProtocolForPatient, allergyProfile, gestationFromText, getAllProtocols, getProtocol,
-  getProtocolByIcd, hasOperativeSteps, pregnancyFor, procedureFor, resolveProtocol,
+  getProtocolByIcd, hasOperativeSteps, pregnancyFor, procedureFor, resolveProtocol, PAEDIATRIC_FLUID,
 } from '../management/index.js';
 import type { PlanPatientContext } from '../management/index.js';
 
@@ -153,6 +153,35 @@ describe('under 16', () => {
     expect(text).toMatch(/herniotomy/);
     expect(a.safetyNotes.some(n => /Infant/.test(n.text))).toBe(true);
     expect(a.safetyNotes.find(n => n.kind === 'paediatric')?.text).toMatch(/4 months/);
+  });
+  it('fixed adult fluid volumes become "fluids by weight"; titration wording and mL/kg stay', () => {
+    const base = proto('appendicitis');
+    const p = {
+      ...base,
+      management: [
+        { phase: 'immediate' as const, step: "IV Hartmann's 1 L stat then titrate to urine output" },
+        { phase: 'immediate' as const, step: 'IV 0.9% sodium chloride 200–300 mL/hr; target urine output 1 mL/kg/h' },
+        { phase: 'immediate' as const, step: 'Parkland 4 mL × kg × %TBSA of Hartmann\'s in 24 h; titrate to urine output' },
+        { phase: 'immediate' as const, step: 'Calcium gluconate 10% 10 mL IV bolus' },
+      ],
+      medications: [
+        { drugName: "Hartmann's solution", dose: '500 ml', frequency: 'IV bolus — repeat as required', route: 'IV', indication: 'Fluid resuscitation', phase: 'immediate' as const },
+        { drugName: 'Calcium gluconate 10%', dose: '10 mL', frequency: 'Single bolus', route: 'IV', indication: 'Tetany', phase: 'immediate' as const },
+      ],
+    };
+    const a = adaptProtocolForPatient(p, child);
+    const steps = a.management.map(m => m.step);
+    expect(PAEDIATRIC_FLUID).toBe('fluids by weight — calculate per APLS/BNFc (mL/kg)');
+    expect(steps[0]).toBe(`IV Hartmann's [${PAEDIATRIC_FLUID}] stat then titrate to urine output`);
+    expect(steps[1]).toBe(`IV 0.9% sodium chloride [${PAEDIATRIC_FLUID}]; target urine output 1 mL/kg/h`);
+    expect(steps[2]).toMatch(/Parkland 4 mL × kg × %TBSA/);
+    expect(steps[3]).toMatch(/\[dose: weight-based — calculate per BNFc\]/);
+    expect(steps.join('\n')).not.toMatch(/\b1 L\b|500 mL|200–300 mL/);
+    const [fluid, calcium] = a.medications ?? [];
+    expect(fluid).toMatchObject({ dose: PAEDIATRIC_FLUID, frequency: 'IV bolus — repeat as required' });
+    expect(calcium?.dose).toBe('Weight-based — calculate per BNFc');
+    // Adults keep the protocol volume.
+    expect(adaptProtocolForPatient(p, adult).management[0]?.step).toBe("IV Hartmann's 1 L stat then titrate to urine output");
   });
   it('no adult VTE line for children', () => {
     const a = adaptProtocolForPatient(proto('appendicitis'), child);

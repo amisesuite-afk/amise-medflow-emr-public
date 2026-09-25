@@ -32,7 +32,7 @@ import type {
   InvestigationItem, ManagementProtocol, ManagementStep, PatientCondition, ProtocolMedication,
 } from './types.js';
 
-export const PLAN_SAFETY_VERSION = '1.0.0';
+export const PLAN_SAFETY_VERSION = '1.1.0';
 
 // ── Patient context ───────────────────────────────────────────────────────────────────────────
 
@@ -75,11 +75,25 @@ export interface SafetyNote {
   text: string;
 }
 
+export interface WithheldItem {
+  item: string;
+  reason: string;
+  from: 'step' | 'medication';
+  /** Withheld protocol medication: its drug name and phase (e.g. 'discharge'). */
+  drugName?: string;
+  phase?: ProtocolMedication['phase'];
+  /**
+   * The line that replaces the withheld item, with the reason and the protocol's alternative
+   * ("⚠ ALLERGY — penicillin allergy recorded (…): withheld (contains co-amoxiclav). Alternative: …").
+   */
+  note?: string;
+}
+
 export interface AdaptedProtocol extends ManagementProtocol {
   /** Patient-specific lines to show above the plan (sorted: critical first). */
   safetyNotes: SafetyNote[];
   /** What was withheld and why (plan steps and protocol medications). */
-  withheld: { item: string; reason: string; from: 'step' | 'medication' }[];
+  withheld: WithheldItem[];
 }
 
 // ── Text helpers ─────────────────────────────────────────────────────────────────────────────
@@ -446,9 +460,38 @@ function stentInfo(text: string): { present: boolean; months: number | null; acs
 
 // ── Adaptation ─────────────────────────────────────────────────────────────────────────────
 
-const DOSE_RE = /\b\d+(?:\.\d+)?(?:\s*[–-]\s*\d+(?:\.\d+)?)?\s*(?:mg|g|mcg|micrograms?|µg|units?|iu|ml|l|litres?|liters?|mmol)\b(?!\s*\/\s*(?:kg|m²|m2|l\b|dl\b|min\b|mol\b))/gi;
+/**
+ * A weight-based amount ("4 mL × kg × %TBSA", "20 mL/kg", "per kg") or a concentration
+ * ("mmol/L", "mg/dL") is already right for a child and is never replaced.
+ */
+const WEIGHT_BASED_AFTER = String.raw`(?!\s*(?:\/\s*(?:kg|m²|m2|l\b|dl\b|min\b|mol\b)|[×x*]\s*kg\b|per\s+kg\b))`;
+const DOSE_RE = new RegExp(String.raw`\b\d+(?:\.\d+)?(?:\s*[–-]\s*\d+(?:\.\d+)?)?\s*(?:mg|g|mcg|micrograms?|µg|units?|iu|ml|l|litres?|liters?|mmol)\b${WEIGHT_BASED_AFTER}`, 'gi');
 const DOSE_TEST = new RegExp(DOSE_RE.source, 'i');
 const PAEDIATRIC_DOSE = '[dose: weight-based — calculate per BNFc]';
+
+/**
+ * Under 16, a fixed adult fluid volume (bolus, resuscitation or maintenance: "1 L", "500 mL",
+ * "4–6 L over 24 h", "200–300 mL/hr") is replaced by this wording; titration wording ("then
+ * titrate to urine output") is kept. The iOS twin uses the same string (APLS; BNFc; NICE NG29).
+ */
+export const PAEDIATRIC_FLUID = 'fluids by weight — calculate per APLS/BNFc (mL/kg)';
+/** Words that make a volume a fluid volume (not a drug dose in mL such as calcium gluconate 10 mL). */
+const FLUID_TERMS = /\b(fluids?|hartmann'?s|ringer'?s?|crystalloids?|colloids?|saline|sodium chloride|plasma-?lyte|dextrose|glucose \d|bolus(?:es)?|resuscitation|rehydration|maintenance|albumin)\b/i;
+/** A fixed volume, with an optional per-hour rate ("200–300 mL/hr"); weight-based volumes excluded. */
+const FLUID_VOLUME_RE = new RegExp(String.raw`\b(\d+(?:\.\d+)?)(?:\s*[–-]\s*\d+(?:\.\d+)?)?\s*(ml|l|litres?|liters?)\b${WEIGHT_BASED_AFTER}(?:\s*(?:\/\s*(?:h|hr|hour)\b|per\s+hour\b))?`, 'gi');
+
+/** Replaces fixed adult fluid volumes (≥ 50 mL, or any volume in litres) in a fluid line. */
+function replaceFluidVolumes(text: string): string {
+  if (!FLUID_TERMS.test(text)) return text;
+  return text.replace(FLUID_VOLUME_RE, (m, value: string, unit: string) => (
+    /^l|^lit/i.test(unit) || Number(value) >= 50 ? `[${PAEDIATRIC_FLUID}]` : m
+  ));
+}
+
+/** A protocol medication that is an IV / oral fluid rather than a drug (e.g. Hartmann's 1 L). */
+function isFluidMedication(m: ProtocolMedication): boolean {
+  return FLUID_TERMS.test(m.drugName) && /\b\d+(?:\.\d+)?\s*(?:ml|l|litres?|liters?)\b/i.test(m.dose);
+}
 
 const ADULT_HERNIA_TECHNIQUE = /\b(mesh|lichtenstein|tep|tapp|truss)\b/i;
 const PAEDIATRIC_HERNIA_LINE = '⚠ CHILD (under 16): adult hernia technique withheld — paediatric inguinal hernia is repaired by open herniotomy (no mesh) by a paediatric surgeon; in infants repair promptly because of the incarceration risk.';
@@ -605,7 +648,10 @@ function adaptLine(line: string, protocol: ManagementProtocol, s: Signals): Step
     if (ADULT_HERNIA_TECHNIQUE.test(line) && /hernia|herniorrhaphy|lichtenstein|tep|tapp|truss/i.test(`${line} ${protocol.label}`)) {
       return { text: PAEDIATRIC_HERNIA_LINE, withheld: { item: 'adult hernia technique', reason: 'under 16' } };
     }
-    if (!protocol.paediatricDosing && DOSE_TEST.test(text)) text = text.replace(DOSE_RE, PAEDIATRIC_DOSE);
+    if (!protocol.paediatricDosing) {
+      text = replaceFluidVolumes(text);
+      if (DOSE_TEST.test(text)) text = text.replace(DOSE_RE, PAEDIATRIC_DOSE);
+    }
   }
   return { text };
 }
@@ -632,10 +678,15 @@ function adaptMedication(m: ProtocolMedication, protocol: ManagementProtocol, s:
   // withhold cefuroxime for a penicillin allergy.
   const v = adaptLine(m.drugName, protocol, s);
   if (v.withheld) {
-    withheld.push({ item: `${m.drugName} (${m.indication})`, reason: v.withheld.reason, from: 'medication' });
+    withheld.push({
+      item: `${m.drugName} (${m.indication})`, reason: v.withheld.reason, from: 'medication',
+      drugName: m.drugName, phase: m.phase, note: v.text,
+    });
     return null;
   }
   if (s.child && !protocol.paediatricDosing) {
+    // A fluid keeps its titration wording ("IV bolus — repeat as required"); only the volume goes.
+    if (isFluidMedication(m)) return { ...m, dose: PAEDIATRIC_FLUID };
     return { ...m, dose: 'Weight-based — calculate per BNFc', frequency: `${m.frequency} (confirm per BNFc)` };
   }
   return m;
@@ -995,7 +1046,7 @@ export function adaptProtocolForPatient(
   for (const step of protocol.management) {
     if (!conditionHolds(step.onlyIf, s)) continue;
     const v = adaptLine(step.step, protocol, s);
-    if (v.withheld) withheld.push({ ...v.withheld, from: 'step' });
+    if (v.withheld) withheld.push({ ...v.withheld, from: 'step', note: v.text });
     // Two steps replaced by the same line (e.g. the paediatric hernia line) are shown once.
     if (v.text !== step.step && management.some(m => m.step === v.text)) continue;
     management.push(v.text === step.step ? step : { ...step, step: v.text });
@@ -1086,6 +1137,15 @@ export function adaptProtocolForPatient(
   // "for this patient" block).
   for (const n of notes) if (n.severity === 'critical' && !redFlags.includes(n.text)) redFlags.push(n.text);
   return { ...protocol, keyPoints: [...new Set(keyPoints)], management, medications, investigations, redFlags, safetyNotes: notes, withheld };
+}
+
+/**
+ * One investigation adapted to the patient on record, outside a protocol (e.g. a chief-complaint
+ * suggestion): the same pregnancy / child / contrast-allergy caveats as the protocol's own
+ * investigations. The label is returned unchanged when nothing applies.
+ */
+export function adaptInvestigationForPatient(inv: InvestigationItem, ctx: PlanPatientContext): InvestigationItem {
+  return adaptInvestigation(inv, signalsFor(ctx));
 }
 
 /**

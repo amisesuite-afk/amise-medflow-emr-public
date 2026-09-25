@@ -796,7 +796,7 @@
       "title": "Patient-specific plan filters: allergy cross-check, pregnancy, under-16 dosing, VTE, anticoagulation / antiplatelet / SGLT2 / steroid / anaesthetic / frailty lines",
       "platforms": ["web"],
       "kind": "decision-support-rules",
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.1.0",
       "versionStamp": { "file": "lib/pane-engine/src/management/planSafety.ts", "type": "regex", "pattern": "PLAN_SAFETY_VERSION\\s*=\\s*'([^']+)'" },
       "files": ["lib/pane-engine/src/management/planSafety.ts", "artifacts/dashboard/src/lib/plan-builder.ts"],
       "tests": ["lib/pane-engine/src/__tests__/planSafety.test.ts", "artifacts/dashboard/src/lib/__tests__/plan-builder.test.ts"],
@@ -811,9 +811,10 @@
       "reviewPriority": "P1",
       "nextReviewDue": "2026-10-31",
       "changeAuthority": "Any repository committer. Ships on dashboard deploy.",
-      "notes": "Clinician-facing only (PlanTab suggested plan, ManagementPanel, PrescriptionsTab protocol medicines); never patient-facing (hazard H-10). Deterministic, negation-aware whole-word matching. Several choices need surgeon sign-off (SGLT2 CPOC vs FDA interval, P2Y12 intervals, frailty trigger) — see the change log.",
+      "notes": "Clinician-facing only (PlanTab suggested plan, ManagementPanel, PrescriptionsTab protocol medicines, SummaryTab discharge-summary protocol fill, Ambient consultation protocol card and plan, InvestigationsTab protocol panel, Dictionary launch, suggested investigations); never patient-facing (hazard H-10). Deterministic, negation-aware whole-word matching. Several choices need surgeon sign-off (SGLT2 CPOC vs FDA interval, P2Y12 intervals, frailty trigger) — see the change log.",
       "changelog": [
-        { "version": "1.0.0", "date": "2026-09-25", "change": "Created (SURGEON-DECISIONS C5, G2.1–G2.3, G2.5, G2.6, G2.11, G2.12, A3–A5, A22). See docs/clinical-validation/changes/fix-web-protocols.md." }
+        { "version": "1.0.0", "date": "2026-09-25", "change": "Created (SURGEON-DECISIONS C5, G2.1–G2.3, G2.5, G2.6, G2.11, G2.12, A3–A5, A22). See docs/clinical-validation/changes/fix-web-protocols.md." },
+        { "version": "1.1.0", "date": "2026-09-25", "change": "Under 16: a fixed adult fluid volume (\"1 L\", \"500 mL\", \"200–300 mL/hr\") is replaced by \"fluids by weight — calculate per APLS/BNFc (mL/kg)\", titration wording kept; weight-based amounts (\"4 mL × kg × %TBSA\") are no longer replaced. Withheld medicines carry their phase and replacement line. The filter now also covers the SummaryTab discharge medicines, Ambient consultation, InvestigationsTab, Dictionary and the suggested investigations. See docs/clinical-validation/changes/web-plan-filter-everywhere.md." }
       ]
     },
     {

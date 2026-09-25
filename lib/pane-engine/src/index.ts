@@ -16,10 +16,10 @@ export { getDiseaseSpecialty } from './vademecum/registry.js';
 export { PRIOR_TIER } from './vademecum/priors.js';
 export {
   getProtocol, getProtocolByIcd, getAllProtocols, resolveProtocol, normaliseIcd, MANAGEMENT_PROTOCOLS_VERSION,
-  adaptProtocolForPatient, adaptPlanText, allergyProfile, pregnancyFor, gestationFromText, procedureFor, hasOperativeSteps,
-  ALLERGY_CLASSES, PLAN_SAFETY_VERSION,
+  adaptProtocolForPatient, adaptPlanText, adaptInvestigationForPatient, allergyProfile, pregnancyFor, gestationFromText, procedureFor, hasOperativeSteps,
+  ALLERGY_CLASSES, PLAN_SAFETY_VERSION, PAEDIATRIC_FLUID,
 } from './management/index.js';
 export type {
   ManagementProtocol, InvestigationItem, ManagementStep, ProtocolMedication, ProtocolKind, PatientCondition,
-  PlanPatientContext, AdaptedProtocol, AdaptOptions, SafetyNote, SafetyKind, PregnancyStatus, ProcedureKind, AllergyClass,
+  PlanPatientContext, AdaptedProtocol, AdaptOptions, WithheldItem, SafetyNote, SafetyKind, PregnancyStatus, ProcedureKind, AllergyClass,
 } from './management/index.js';
