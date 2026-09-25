@@ -23,32 +23,39 @@ extension ConsultationView {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 8) {
                 Image(systemName: alert.domain.icon)
-                    .font(.system(size: 11, weight: .bold))
+                    .scaledFont(size: 11, weight: .bold)
                     .foregroundStyle(bandColor)
                     .frame(width: 16)
+                    .accessibilityHidden(true)
                 Text(alert.title)
-                    .font(.system(size: 12, weight: .semibold))
+                    .scaledFont(size: 12, weight: .semibold)
                     .foregroundStyle(.primary)
                 Spacer()
                 Text(alert.band.label.uppercased())
-                    .font(.system(size: 9, weight: .black))
+                    .scaledFont(size: 9, weight: .black)
                     .foregroundStyle(bandColor)
                     .padding(.horizontal, 5).padding(.vertical, 2)
                     .background(bandColor.opacity(0.12), in: Capsule())
+                    .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+                    .fixedSize()
             }
             Text(alert.detail)
-                .font(.system(size: 11))
+                .scaledFont(size: 11)
                 .foregroundStyle(.secondary)
             HStack(alignment: .top, spacing: 4) {
                 Image(systemName: "arrow.right.circle")
-                    .font(.system(size: 10))
+                    .scaledFont(size: 10)
                     .foregroundStyle(bandColor)
+                    .accessibilityHidden(true)
                 Text(alert.action)
-                    .font(.system(size: 10, weight: .medium))
+                    .scaledFont(size: 10, weight: .medium)
                     .foregroundStyle(.secondary)
             }
         }
         .padding(.vertical, 6)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(A11yLabel.joined([
+            "\(alert.band.label) risk", alert.title, alert.detail, "Action: \(alert.action)"])))
     }
 
     var surgicalRiskSection: some View {
@@ -59,9 +66,10 @@ extension ConsultationView {
         } header: {
             HStack(spacing: 6) {
                 Image(systemName: "shield.lefthalf.filled.trianglebadge.exclamationmark")
-                    .font(.system(size: 11, weight: .semibold))
+                    .scaledFont(size: 11, weight: .semibold)
+                    .accessibilityHidden(true)
                 Text("Surgical Risk Profile")
-                    .font(.system(size: 11, weight: .semibold))
+                    .scaledFont(size: 11, weight: .semibold)
                     .textCase(nil)
                 Spacer()
                 let maxBand = surgicalRiskAlerts.map { $0.band }.max()
@@ -75,13 +83,15 @@ extension ConsultationView {
                         }
                     }()
                     Text("\(surgicalRiskAlerts.count) alert\(surgicalRiskAlerts.count == 1 ? "" : "s") · \(top.label)")
-                        .font(.system(size: 9, weight: .bold))
+                        .scaledFont(size: 9, weight: .bold)
                         .foregroundStyle(topColor)
                         .padding(.horizontal, 6).padding(.vertical, 2)
                         .background(topColor.opacity(0.12), in: Capsule())
                 }
             }
             .foregroundStyle(.secondary)
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isHeader)
         }
     }
 
@@ -93,16 +103,21 @@ extension ConsultationView {
                 .font(.caption.weight(.bold))
                 .foregroundStyle(.white)
             ForEach(patient.allergies) { a in
-                HStack(spacing: 5) {
+                HStack(alignment: .firstTextBaseline, spacing: 5) {
                     Circle().fill(Color(white: 1, opacity: 0.7)).frame(width: 5, height: 5)
                     Text("\(a.name)  [\(a.severity)]  — \(a.reaction)")
                         .font(.caption2).foregroundStyle(.white)
+                        .fixedSize(horizontal: false, vertical: true)   // wrap, never truncate
                 }
             }
         }
         .padding(.horizontal, 16).padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background { allergyBannerBg }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text("Allergy alert: " + patient.allergies
+            .map { A11yLabel.joined([$0.name, $0.severity, $0.reaction]) }
+            .joined(separator: "; ")))
     }
 
     // MARK: - Clinical alarm banner
@@ -118,28 +133,34 @@ extension ConsultationView {
         let isEmergency = alarm.severity == .emergency
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: alarm.systemImage)
-                .font(.system(size: 13, weight: .bold))
+                .scaledFont(size: 13, weight: .bold)
                 .foregroundStyle(.white)
                 .frame(width: 18)
+                .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
                     Text(alarm.title)
-                        .font(.system(size: 12, weight: .bold))
+                        .scaledFont(size: 12, weight: .bold)
                         .foregroundStyle(.white)
                     Text(isEmergency ? "EMERGENCY" : "CRITICAL")
-                        .font(.system(size: 9, weight: .black))
+                        .scaledFont(size: 9, weight: .black)
                         .foregroundStyle(isEmergency ? .red : .orange)
                         .padding(.horizontal, 4).padding(.vertical, 1)
                         .background(Color.white, in: Capsule())
+                        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+                        .fixedSize()
                 }
                 Text(alarm.detail)
-                    .font(.system(size: 11))
+                    .scaledFont(size: 11)
                     .foregroundStyle(.white.opacity(0.9))
                 Text(alarm.action)
-                    .font(.system(size: 10, weight: .medium))
+                    .scaledFont(size: 10, weight: .medium)
                     .foregroundStyle(.white.opacity(0.75))
                     .padding(.top, 1)
             }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(Text(A11yLabel.joined([
+                isEmergency ? "Emergency alarm" : "Critical alarm", alarm.title, alarm.detail, alarm.action])))
             Spacer()
             Button {
                 withAnimation(.easeOut(duration: 0.15)) {
@@ -147,10 +168,13 @@ extension ConsultationView {
                 }
             } label: {
                 Image(systemName: "xmark")
-                    .font(.system(size: 10, weight: .semibold))
+                    .scaledFont(size: 10, weight: .semibold)
                     .foregroundStyle(.white.opacity(0.7))
+                    // 44 pt target; the icon stays in the top-right corner where it was.
+                    .minimumTouchTarget(alignment: .topTrailing)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Dismiss alarm: \(alarm.title)")
         }
         .padding(.horizontal, 14).padding(.vertical, 9)
         .background { alarmBannerColor(isEmergency: isEmergency) }
@@ -184,6 +208,9 @@ extension ConsultationView {
         }
         .padding(.horizontal, 16).padding(.vertical, 7)
         .background(AMColor.bg)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Pathway progress")
+        .accessibilityValue("\(filled) of \(total) steps documented")
     }
 
 

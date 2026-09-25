@@ -60,9 +60,9 @@ extension View {
     }
 
     /// Minimum 44 × 44 pt hit area (Apple HIG) around a small control without changing how it
-    /// looks: the frame grows, the drawn content stays centred at its own size.
-    func minimumTouchTarget(_ side: CGFloat = 44) -> some View {
-        frame(minWidth: side, minHeight: side)
+    /// looks: the frame grows, the drawn content keeps its own size (centred by default).
+    func minimumTouchTarget(_ side: CGFloat = 44, alignment: Alignment = .center) -> some View {
+        frame(minWidth: side, minHeight: side, alignment: alignment)
             .contentShape(Rectangle())
     }
 }

@@ -20,14 +20,19 @@ extension ConsultationView {
                     Image(systemName: pathway.icon)
                     Text(pathway.title)
                         .lineLimit(1)
-                    Image(systemName: "chevron.down").font(.system(size: 9, weight: .bold))
+                    Image(systemName: "chevron.down").scaledFont(size: 9, weight: .bold)
                 }
-                .font(.system(size: 12, weight: .bold))
+                .scaledFont(size: 12, weight: .bold)
                 .foregroundStyle(Color(hex: pathway.accentHex))
                 .padding(.horizontal, 10).padding(.vertical, 6)
                 .background(Color(hex: pathway.accentHex).opacity(0.15), in: Capsule())
+                .minimumTouchTarget()
             }
             .buttonStyle(.plain)
+            // Dense pill beside the scrolling steps: grows up to xxxLarge, then holds.
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+            .accessibilityLabel("Visit pathway: \(pathway.title)")
+            .accessibilityHint("Choose a different visit pathway")
             .padding(.leading, 8)
 
             ScrollViewReader { proxy in
@@ -46,11 +51,13 @@ extension ConsultationView {
                             }
                         } label: {
                             Text("More")
-                                .font(.system(size: 13, weight: .semibold))
+                                .scaledFont(size: 13, weight: .semibold)
                                 .foregroundStyle(AMColor.sidebarText)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 10)
+                                .minimumTouchTarget()
                         }
+                        .accessibilityLabel("More sections")
                     }
                     .padding(.horizontal, 4)
                 }
@@ -60,7 +67,8 @@ extension ConsultationView {
             }
         }
         .background(AMColor.sidebarBg)
-        .frame(height: 44)
+        // At least 44 pt; grows with larger text instead of clipping the step labels.
+        .frame(minHeight: 44)
     }
 
     private func stepButton(_ tab: ConsultTab, number: Int?, isFilled: Bool) -> some View {
@@ -75,20 +83,33 @@ extension ConsultationView {
                             .frame(width: 5, height: 5)
                     }
                     Text(number.map { "\($0) " } ?? "")
-                        .font(.system(size: 10, weight: .bold).monospacedDigit())
+                        .font(.system(size: stepNumberFontSize, weight: .bold).monospacedDigit())
                         .foregroundColor(AMColor.sidebarGroup)
                     + Text(pathway.label(for: tab))
-                        .font(.system(size: 13, weight: activeTab == tab ? .bold : .semibold))
+                        .font(.system(size: stepLabelFontSize, weight: activeTab == tab ? .bold : .semibold))
                         .foregroundColor(activeTab == tab ? AMColor.accent : AMColor.sidebarText)
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 10)
+                .frame(minHeight: 42)   // + 2 pt underline = 44 pt touch target
                 Rectangle()
                     .fill(activeTab == tab ? AMColor.accent : Color.clear)
                     .frame(height: 2)
             }
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        // The filled dot and the underline are colour / shape only: say them.
+        .accessibilityLabel(stepAccessibilityLabel(tab, number: number, isFilled: isFilled))
+        .accessibilityAddTraits(activeTab == tab ? .isSelected : [])
+    }
+
+    private func stepAccessibilityLabel(_ tab: ConsultTab, number: Int?, isFilled: Bool) -> String {
+        A11yLabel.joined([
+            number.map { "Step \($0) of \(pathwaySteps.count)" },
+            pathway.label(for: tab),
+            isFilled ? "documented" : "not documented",
+        ])
     }
 
     // MARK: - Step footer (Back / Next)
@@ -98,44 +119,74 @@ extension ConsultationView {
         if let idx = pathwaySteps.firstIndex(of: activeTab) {
             let prev = idx > 0 ? pathwaySteps[idx - 1] : nil
             let next = idx + 1 < pathwaySteps.count ? pathwaySteps[idx + 1] : nil
-            HStack {
-                if let prev {
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.15)) { activeTab = prev }
-                    } label: {
-                        Label(pathway.label(for: prev), systemImage: "chevron.left")
-                            .font(.system(size: 13, weight: .semibold))
-                    }
-                }
-                Spacer()
-                Text("Step \(idx + 1) of \(pathwaySteps.count)")
-                    .font(.caption2.monospacedDigit())
-                    .foregroundStyle(.secondary)
-                Spacer()
-                if let next {
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.15)) { activeTab = next }
-                    } label: {
-                        HStack(spacing: 4) {
-                            Text("Next: \(pathway.label(for: next))")
-                            Image(systemName: "chevron.right")
+            let stepText = Text("Step \(idx + 1) of \(pathwaySteps.count)")
+                .font(.caption2.monospacedDigit())
+                .foregroundStyle(.secondary)
+            Group {
+                if dynamicTypeSize.isAccessibilitySize {
+                    // Large text: the step count on its own line, Back / Next below it.
+                    VStack(spacing: 4) {
+                        stepText
+                        HStack {
+                            footerBack(prev)
+                            Spacer()
+                            footerNext(next)
                         }
-                        .font(.system(size: 13, weight: .bold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 12).padding(.vertical, 7)
-                        .background(AMColor.accent, in: Capsule())
                     }
                 } else {
-                    Label("Last step", systemImage: "flag.checkered")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(.secondary)
+                    HStack {
+                        footerBack(prev)
+                        Spacer()
+                        stepText
+                        Spacer()
+                        footerNext(next)
+                    }
                 }
             }
             .buttonStyle(.plain)
             .foregroundStyle(AMColor.accent)
             .padding(.horizontal, 14)
-            .padding(.vertical, 8)
+            .padding(.vertical, 1)
             .background(.bar)
+        }
+    }
+
+    @ViewBuilder
+    private func footerBack(_ prev: ConsultTab?) -> some View {
+        if let prev {
+            Button {
+                withAnimation(.easeInOut(duration: 0.15)) { activeTab = prev }
+            } label: {
+                Label(pathway.label(for: prev), systemImage: "chevron.left")
+                    .scaledFont(size: 13, weight: .semibold)
+                    .minimumTouchTarget()
+            }
+            .accessibilityLabel("Back: \(pathway.label(for: prev))")
+        }
+    }
+
+    @ViewBuilder
+    private func footerNext(_ next: ConsultTab?) -> some View {
+        if let next {
+            Button {
+                withAnimation(.easeInOut(duration: 0.15)) { activeTab = next }
+            } label: {
+                HStack(spacing: 4) {
+                    Text("Next: \(pathway.label(for: next))")
+                    Image(systemName: "chevron.right")
+                }
+                .scaledFont(size: 13, weight: .bold)
+                .foregroundStyle(.white)
+                .padding(.horizontal, 12).padding(.vertical, 7)
+                .background(AMColor.accent, in: Capsule())
+                .minimumTouchTarget()
+            }
+            .accessibilityLabel("Next: \(pathway.label(for: next))")
+        } else {
+            Label("Last step", systemImage: "flag.checkered")
+                .scaledFont(size: 13, weight: .semibold)
+                .foregroundStyle(.secondary)
+                .frame(minHeight: 44)
         }
     }
 
@@ -223,11 +274,13 @@ extension ConsultationView {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
                     Image(systemName: "clock.arrow.circlepath").foregroundStyle(AMColor.accent)
+                        .accessibilityHidden(true)
                     Text("Last visit \(last.encounterDate.formatted(date: .abbreviated, time: .omitted)) · \(last.visitType.shortLabel)")
                         .font(.caption.weight(.semibold))
                     Spacer()
                     Button("Open") { lastVisitShown = last }
                         .font(.caption.weight(.semibold))
+                        .accessibilityLabel("Open last visit")
                 }
                 if let dx = last.workingDiagnosis, !dx.isEmpty {
                     Text("Dx: \(dx)").font(.caption)
@@ -262,7 +315,7 @@ extension ConsultationView {
                     .background(Color.orange.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
                 }
                 Text("VISIT PATHWAY")
-                    .font(.system(size: 11, weight: .heavy))
+                    .scaledFont(size: 11, weight: .heavy)
                     .tracking(0.6)
                     .foregroundStyle(.secondary)
                 VisitPathwayPicker(patient: patient, current: pathway, onSelect: { choosePathway($0) }, showsRisk: false)

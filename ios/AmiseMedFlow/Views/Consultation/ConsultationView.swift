@@ -67,6 +67,11 @@ struct ConsultationView: View {
     @State var showPathwayPicker = false
     @State var lastVisitShown: Encounter? = nil   // follow-up "Last visit" card → Open
     @State private var keyboardVisible = false        // hide the step footer while typing
+    // Dynamic Type: the step bar's number + label are one concatenated Text, so their sizes are
+    // scaled metrics (same point sizes at the default text size).
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    @ScaledMetric(relativeTo: .caption2) var stepNumberFontSize: CGFloat = 10
+    @ScaledMetric(relativeTo: .footnote) var stepLabelFontSize: CGFloat = 13
 
     enum ExamMode { case short, full }
 
@@ -344,6 +349,8 @@ struct ConsultationView: View {
                     }
                     .foregroundStyle(encounterSavedFeedback ? Color.green : AMColor.accent)
                 }
+                .accessibilityLabel("Save visit")
+                .accessibilityValue(encounterSavedFeedback ? "Saved" : "")
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 if patient.encounterStatus != .complete {
@@ -360,6 +367,9 @@ struct ConsultationView: View {
                         .foregroundStyle(completeness.total > 0 && Double(completeness.filled) / Double(completeness.total) >= 0.75
                                          ? Color.green : Color(.tertiaryLabel))
                     }
+                    // The green / grey tint is the only on-screen sign of how much is documented.
+                    .accessibilityLabel("Complete encounter")
+                    .accessibilityValue("\(completeness.filled) of \(completeness.total) steps documented")
                 } else {
                     Label("Encounter complete", systemImage: "checkmark.seal.fill")
                         .font(.system(size: 12, weight: .semibold))
