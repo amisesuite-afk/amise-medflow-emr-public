@@ -35,7 +35,7 @@ extension DiagnosisRadiationEngine {
 - SEVERE (CURB-65 ≥3):
   • Co-amoxiclav 1.2 g IV 8h + azithromycin 500 mg IV OD
   • Or ceftriaxone 2 g IV OD + azithromycin
-- Supplemental O₂: target SaO₂ 94–98%
+- Supplemental O₂: target SaO₂ 94–98% (88–92% if COPD / at risk of hypercapnic respiratory failure — BTS 2017; blood gas)
 - Adequate hydration; VTE prophylaxis (enoxaparin) if admitted
 - Smoking cessation counselling
 - Pneumococcal and influenza vaccines
@@ -66,7 +66,7 @@ extension DiagnosisRadiationEngine {
   • Salbutamol 5 mg nebulised back-to-back × 3 in first hour
   • Ipratropium 0.5 mg nebulised 4-hourly
   • Prednisolone 40–50 mg PO stat (or hydrocortisone 200 mg IV if unable to swallow)
-  • O₂: maintain SaO₂ 94–98%
+  • O₂: maintain SaO₂ 94–98% (88–92% if COPD / hypercapnic risk — BTS 2017)
   • Admit if no improvement at 1h
 - LIFE-THREATENING (PEF <33%, silent chest, cyanosis, SpO₂ <92%):
   • IV magnesium sulphate 1.2–2 g over 20 min

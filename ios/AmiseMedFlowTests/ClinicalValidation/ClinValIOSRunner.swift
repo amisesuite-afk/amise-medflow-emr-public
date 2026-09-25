@@ -355,7 +355,8 @@ enum ClinValIOSRunner {
         if triage.suggestedAcuity < p.acuity { p.acuity = triage.suggestedAcuity }
 
         // 6. Plan tab: diagnosis radiation.
-        if let r = DiagnosisRadiationEngine.radiate(workingDiagnosis: p.workingDiagnosis, ageYears: p.ageYears, sex: p.sex) {
+        // ConsultationView+PlanTab.radiationResult: the card with the patient safety filter.
+        if let r = DiagnosisRadiationEngine.radiate(for: p) {
             out.notes.append("Radiation entry: \(r.conditionName)")
             for inv in r.investigations {
                 out.investigations.append(.init(source: "ios.radiation", text: "\(inv.name) — \(inv.rationale)"))
@@ -478,9 +479,10 @@ enum ClinValIOSRunner {
                 add(key, ClinicalScoringEngine.air(i))
             case "tg18-cholecystitis":
                 var i = TokyoCholecystitisInput()
-                // The iOS form has no "palpable tender RUQ mass" Grade II toggle; its "Local
-                // inflammation signs (mild)" toggle covers RUQ mass/pain/tenderness.
+                // "Palpable tender RUQ mass" is a TG18 Grade II toggle on the iOS form; a mass is also
+                // a local sign (Grade I diagnostic criterion).
                 i.localInflammationSignsMild = f.bool("localSigns") || f.bool("palpableTenderRUQMass")
+                i.palpableTenderRUQMass = f.bool("palpableTenderRUQMass")
                 i.wbcAbove18 = f.bool("wbcAbove18")
                 i.durationOver72h = f.bool("durationOver72h")
                 i.markedLocalInflammation = f.bool("markedLocalInflammation")

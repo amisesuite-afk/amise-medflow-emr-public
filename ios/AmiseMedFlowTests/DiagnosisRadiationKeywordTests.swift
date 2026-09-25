@@ -44,8 +44,11 @@ final class DiagnosisRadiationKeywordTests: XCTestCase {
     }
 
     func testShortKeywordsDoNotFireInsideWords() {
-        XCTAssertNil(condition("Flame burns 27% TBSA (deep partial and full thickness)"))   // "tb" in "TBSA"
-        XCTAssertNil(condition("Head injury in a patient taking apixaban"))                 // "aki" in "taking"
+        // These now reach the cards added in 2026-09 (Burns, Head Injury) — never TB or AKI.
+        XCTAssertNotEqual(condition("Flame burns 27% TBSA (deep partial and full thickness)"), "Pulmonary Tuberculosis") // "tb" in "TBSA"
+        XCTAssertEqual(condition("Flame burns 27% TBSA (deep partial and full thickness)"), "Burns")
+        XCTAssertNotEqual(condition("Head injury in a patient taking apixaban"), "Acute Kidney Injury")                 // "aki" in "taking"
+        XCTAssertEqual(condition("Head injury in a patient taking apixaban"), "Head Injury")
         XCTAssertNil(condition("Musculoskeletal chest wall pain after viral cough"))        // "af" in "after"
         XCTAssertNil(condition("Mirizzi syndrome"))                                          // "mi" in "mirizzi"
     }

@@ -135,7 +135,8 @@ extension DiagnosisRadiationEngine {
 - ANTICOAGULATION (first-line DOACs):
   • Rivaroxaban: 15 mg BD × 21 days, then 20 mg OD (with food)
   • Apixaban: 10 mg BD × 7 days, then 5 mg BD
-  • LMWH → warfarin: if APS, CrCl <15, pregnant, or haematology preference
+  • LMWH → warfarin: if APS, CrCl <15, or haematology preference
+  • PREGNANCY: treatment-dose LMWH for the rest of the pregnancy and ≥6 weeks postnatally — no DOACs, no warfarin antenatally; D-dimer is not used to diagnose VTE in pregnancy (RCOG Green-top 37b)
 - Duration: provoked (reversible risk factor) → 3 months; unprovoked → ≥6 months; recurrent/malignancy → long-term
 - Compression stockings: grade II, worn 2 years (reduces PTS)
 - Elevation + early mobilisation — do NOT enforce bed rest
@@ -189,11 +190,13 @@ extension DiagnosisRadiationEngine {
 - Wells' PE score: if ≤4 → D-dimer; if >4 → CTPA directly
 - HAEMODYNAMICALLY STABLE (most patients):
   • DOACs (preferred): rivaroxaban 15 mg BD × 21d → 20 mg OD; or apixaban 10 mg BD × 7d → 5 mg BD
-  • LMWH (enoxaparin 1.5 mg/kg SC OD or 1 mg/kg BD) as bridge if needed
+  • LMWH (enoxaparin 1.5 mg/kg SC OD or 1 mg/kg BD) when a DOAC is unsuitable (renal failure, pregnancy, drug interactions) — no "bridging" to a DOAC
+  • PREGNANCY: LMWH only — no DOACs or warfarin (RCOG Green-top 37b)
 - HAEMODYNAMICALLY UNSTABLE (massive PE — SBP <90):
-  • ADMIT ICU — thrombolysis: alteplase 100 mg IV over 2h (contraindications: recent surgery/stroke)
+  • ADMIT ICU — thrombolysis: alteplase 100 mg IV over 2h — CONTRAINDICATED after major surgery or trauma within 3 weeks, recent stroke or active bleeding (ESC 2019): choose surgical embolectomy / catheter-directed therapy instead
   • If thrombolysis contraindicated: surgical embolectomy / catheter-directed therapy
-- O₂ supplementation to maintain SpO₂ ≥94%
+- Oxygen to a target SpO₂ 94–98% (88–92% if at risk of hypercapnic respiratory failure, e.g. COPD) (BTS 2017)
+- No fluid bolus in suspected PE with RV strain / heart-failure signs — cautious fluids only (ESC 2019)
 - Duration: provoked → 3 months; unprovoked → ≥6 months; cancer-associated → DOAC long-term
 """,
             billingCodes: [

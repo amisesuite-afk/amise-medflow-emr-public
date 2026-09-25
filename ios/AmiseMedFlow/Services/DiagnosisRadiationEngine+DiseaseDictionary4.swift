@@ -196,14 +196,14 @@ extension DiagnosisRadiationEngine {
 - IDENTIFY & TREAT CAUSE:
   • PRERENAL (commonest — dehydration, sepsis, cardiac output): IV fluid challenge; treat sepsis
   • INTRINSIC (ATN, nephritis, drugs): stop nephrotoxins (NSAIDs, aminoglycosides, contrast, ACE inhibitors in volume depletion)
-  • POSTRENAL (obstruction): urgent renal USS → nephrostomy/stent if hydronephrosis
+  • POSTRENAL (obstruction): urgent renal USS → nephrostomy/stent if hydronephrosis; obstructed infected or solitary kidney → emergency decompression (EAU 2024); no NSAIDs in AKI
 - FLUID MANAGEMENT:
   • Hypovolaemia: 500 mL 0.9% NaCl bolus → reassess response (JVP, UO, BP)
-  • Oliguric AKI (UO <0.5 mL/kg/h): furosemide challenge 20–40 mg IV after adequate volume replacement
+  • Oliguric AKI (UO <0.5 mL/kg/h): assess volume status; diuretics only for fluid overload, not to treat AKI (NICE NG148)
   • Fluid overload: fluid restrict ± furosemide; consider dialysis
 - HYPERKALAEMIA MANAGEMENT:
-  • K⁺ >6.0 or ECG changes: 10 mL 10% calcium gluconate IV (cardioprotection)
-  • Insulin 10 units + 50% dextrose 50 mL IV (shift K⁺ intracellularly)
+  • K⁺ ≥6.5 or ECG changes: calcium gluconate 10% 30 mL IV over 5–10 min (or calcium chloride 10% 10 mL) — cardioprotection (UK Kidney Association 2023)
+  • Insulin–glucose: 10 units soluble insulin with 25 g glucose IV; monitor capillary glucose for 12 h (UKKA 2023)
   • Salbutamol 10–20 mg nebulised (K⁺ shift)
   • Kayexalate / patiromer / sodium zirconium (GI elimination)
   • Restrict dietary K⁺; stop K⁺-sparing drugs
@@ -218,10 +218,10 @@ extension DiagnosisRadiationEngine {
                 .init(icd10: "N17.9", icdDescription: "Acute kidney injury, unspecified", cpt: nil, cptDescription: "Medical management"),
             ],
             consentCategory: nil,
-            urgencyNote: "Hyperkalaemia >6.5 + ECG changes: IMMEDIATE treatment — calcium gluconate IV first.",
+            urgencyNote: "Hyperkalaemia ≥6.5 or ECG changes: IMMEDIATE treatment — calcium gluconate 10% 30 mL IV first (UKKA 2023).",
             redFlags: ["ECG changes (peaked T, wide QRS) → hyperkalaemia emergency", "Anuria → obstruction excluded? → urgent USS", "Uraemic encephalopathy → dialysis"],
             followUp: "Nephrology review if no recovery at 48–72h. Repeat U&E at 48h, then weekly until creatinine stable. Avoid nephrotoxins long-term.",
-            guidelineReference: "KDIGO AKI 2012; NICE AKI 2013 (NG148); RCP 2015"
+            guidelineReference: "KDIGO AKI 2012; NICE NG148 (2019); UK Kidney Association hyperkalaemia (2023); EAU urolithiasis 2024"
         )),
     ]
 

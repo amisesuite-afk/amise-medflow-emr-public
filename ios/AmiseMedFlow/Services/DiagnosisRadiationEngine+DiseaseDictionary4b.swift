@@ -43,11 +43,10 @@ extension DiagnosisRadiationEngine {
   • Start aspirin 300 mg stat if haemorrhage excluded (thrombolysis: delay 24h)
   • Dual antiplatelet (aspirin + clopidogrel) × 21 days for minor stroke/TIA (POINT trial)
   • Switch to clopidogrel 75 mg OD monotherapy after 21 days
-- TIA: ABCD² score; high-risk (≥4) → admit / next-day stroke clinic + dual antiplatelet
+- TIA: aspirin 300 mg (unless contraindicated) and specialist assessment within 24 h of onset — do NOT use ABCD² or other risk scores to decide urgency (NICE NG128)
   • Carotid endarterectomy within 2 weeks if stenosis >50% ipsilateral
 - ANTICOAGULATION for AF:
   • DOAC (apixaban or rivaroxaban) after 2 weeks for most ischaemic strokes with AF
-  • LMWH bridge in high-risk settings
 """,
             billingCodes: [
                 .init(icd10: "I63.9", icdDescription: "Cerebral infarction, unspecified", cpt: nil, cptDescription: "Medical management / thrombolysis"),
@@ -55,7 +54,7 @@ extension DiagnosisRadiationEngine {
             ],
             consentCategory: nil,
             urgencyNote: "STROKE: Time = Brain. Activate stroke pathway immediately. CT within 15 min of arrival.",
-            redFlags: ["Large vessel occlusion → mechanical thrombectomy eligible → transfer urgently", "BP >185/110 pre-thrombolysis → control before giving alteplase", "TIA with ABCD² ≥4 → high 48h stroke risk → admit + dual antiplatelet"],
+            redFlags: ["Large vessel occlusion → mechanical thrombectomy eligible → transfer urgently", "BP >185/110 pre-thrombolysis → control before giving alteplase", "Suspected TIA → specialist assessment within 24 h (NICE NG128 — no ABCD² triage)", "Check glucose first — hypoglycaemia mimics stroke"],
             followUp: "Stroke clinic at 1 week. Carotid Doppler at 24h. Cardiology follow-up if AF. BP/lipid optimisation. Speech/OT/physio rehabilitation.",
             guidelineReference: "RCP Stroke Guidelines 2023; ESO 2021; AHA/ASA 2019; NICE NG128"
         )),
@@ -76,7 +75,7 @@ extension DiagnosisRadiationEngine {
   • ICU/HDU admission
   • Analgesia: paracetamol 1g QDS; avoid NSAIDs (platelet effects)
   • Bed rest; avoid Valsalva
-  • IV nimodipine 60 mg 4-hourly (calcium channel blocker — reduces vasospasm after SAH)
+  • Nimodipine 60 mg ORALLY (or via NG tube) every 4 hours for 21 days — reduces delayed cerebral ischaemia after aneurysmal SAH (NICE NG228)
   • IV fluids: maintain euvolaemia; avoid hyponatraemia
 - ANEURYSMAL SAH:
   • Neurosurgical coiling (endovascular) or clipping (open) within 24–72h
@@ -93,7 +92,7 @@ extension DiagnosisRadiationEngine {
             urgencyNote: "Thunderclap headache = SAH until proven otherwise. CT BRAIN STAT. Neurological emergency.",
             redFlags: ["Sentinel headache (mild preceding) → preceding leak → high rupture risk", "Rebleed before treatment → fatal → secure aneurysm urgently"],
             followUp: "CTA at 3–6 months (aneurysm occlusion check). Neuropsychological assessment. Annual follow-up for vasospasm sequelae.",
-            guidelineReference: "NICE NG224; ESO 2021; Neurocritical Care Society"
+            guidelineReference: "NICE NG228 (2022) Subarachnoid haemorrhage caused by a ruptured aneurysm; ESO 2021; Neurocritical Care Society"
         )),
 
         // ══════════════════════════════════════════════════════════════

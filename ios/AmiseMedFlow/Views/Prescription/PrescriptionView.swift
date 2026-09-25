@@ -16,11 +16,7 @@ struct PrescriptionView: View {
     }
 
     private var radiationPlan: DiagnosisRadiation? {
-        DiagnosisRadiationEngine.radiate(
-            workingDiagnosis: patient.workingDiagnosis,
-            ageYears: patient.ageYears,
-            sex: patient.sex
-        )
+        DiagnosisRadiationEngine.radiate(for: patient)
     }
 
     var body: some View {

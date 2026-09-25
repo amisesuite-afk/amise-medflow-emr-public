@@ -8,12 +8,10 @@ extension ConsultationView {
 
     // MARK: - Plan tab
 
+    /// The plan card for this patient (age, pregnancy, allergies and antithrombotics applied —
+    /// DiagnosisRadiationEngine+SafetyFilter).
     var radiationResult: DiagnosisRadiation? {
-        DiagnosisRadiationEngine.radiate(
-            workingDiagnosis: patient.workingDiagnosis,
-            ageYears: patient.ageYears,
-            sex: patient.sex
-        )
+        DiagnosisRadiationEngine.radiate(for: patient)
     }
 
     var planTab: some View {

@@ -78,6 +78,7 @@ extension DiagnosisRadiationEngine {
 - Stop NSAIDs + aspirin if possible; use paracetamol instead
 - PPI: omeprazole 40 mg OD × 8 weeks (healing dose)
 - If H. pylori positive: triple therapy — clarithromycin 500 mg + amoxicillin 1 g + omeprazole 20 mg BD × 7–14 days
+- Penicillin allergy: penicillin-free regimen — bismuth quadruple therapy (PPI + bismuth + tetracycline + metronidazole) (Maastricht VI / Florence 2022)
 - Repeat breath test 4–6 weeks after eradication
 - Avoid alcohol and smoking
 - Repeat OGD at 8 weeks for gastric ulcers (exclude malignancy)

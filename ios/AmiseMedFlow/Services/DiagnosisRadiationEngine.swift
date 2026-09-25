@@ -135,19 +135,27 @@ enum DiagnosisRadiationEngine {
 
     // MARK: Public API
 
+    /// The card for a working diagnosis. `context` (age, pregnancy, allergies, medications)
+    /// applies the patient safety filter (DiagnosisRadiationEngine+SafetyFilter); views that show
+    /// a plan to the clinician use `radiate(for:)`, which always passes it.
     static func radiate(
         workingDiagnosis: String?,
         ageYears: Int,
-        sex: Sex
+        sex: Sex,
+        context: RadiationContext? = nil
     ) -> DiagnosisRadiation? {
         guard let dx = workingDiagnosis, !dx.isEmpty else { return nil }
         let dxL = dx.lowercased()
-        guard var base = allEntries.first(where: { entry in
+        // Lookup order: explicit precedence entries (specific diagnoses that a generic keyword
+        // used to capture — e.g. "hyperparathyroidism … nephrolithiasis" → renal colic, "cellulitis
+        // … type 2 diabetes" → diabetes, "large bowel obstruction" → small bowel obstruction), then
+        // the original dictionary, then the cards added for diagnoses that had none.
+        guard var base = lookupOrder.first(where: { entry in
             entry.keywords.contains { DiagnosisRadiationEngine.keywordMatches($0, in: dxL) }
         })?.radiation else { return nil }
         // Inject referral suggestions from the lookup table (kept separate to avoid
         // repeating them in every Entry init).
-        let refs = referralTable[base.conditionName] ?? []
+        let refs = referralTable[base.conditionName] ?? additionalReferralTable[base.conditionName] ?? []
         if !refs.isEmpty {
             base = DiagnosisRadiation(
                 conditionName: base.conditionName,
@@ -164,7 +172,30 @@ enum DiagnosisRadiationEngine {
                 referralSuggestions: refs
             )
         }
+        base = withVTELine(base)
+        if let context { base = applySafety(base, context) }
         return base
+    }
+
+    /// Precedence entries, the original dictionary, then the added cards.
+    static let lookupOrder: [Entry] = _precedenceEntries
+        + allEntries.filter { precedenceConditionNames.contains($0.radiation.conditionName) }
+        + allEntries
+        + _additionalEntries
+
+    /// Existing cards that must win over a generic keyword elsewhere in the diagnosis (E6).
+    static let precedenceConditionNames: Set<String> = ["Cellulitis"]
+
+    /// NICE NG89 (2018, updated 2019): every operative / procedural card carries a VTE line.
+    static func withVTELine(_ r: DiagnosisRadiation) -> DiagnosisRadiation {
+        guard r.consentCategory != nil, !r.planTemplate.lowercased().contains("vte prophylaxis") else { return r }
+        let line = "- VTE prophylaxis (NICE NG89): assess VTE and bleeding risk on admission; mechanical ± pharmacological prophylaxis (LMWH, dose adjusted for weight and renal function) unless contraindicated; extended prophylaxis (28 days) after major abdominal or pelvic cancer surgery."
+        return DiagnosisRadiation(
+            conditionName: r.conditionName, icd10Primary: r.icd10Primary, investigations: r.investigations,
+            planTemplate: r.planTemplate.trimmingCharacters(in: .newlines) + "\n" + line + "\n",
+            billingCodes: r.billingCodes, consentCategory: r.consentCategory, urgencyNote: r.urgencyNote,
+            redFlags: r.redFlags, followUp: r.followUp, guidelineReference: r.guidelineReference,
+            scoringCriteria: r.scoringCriteria, referralSuggestions: r.referralSuggestions)
     }
 
     // MARK: Keyword matching
@@ -211,8 +242,8 @@ enum DiagnosisRadiationEngine {
             RS(specialty: "Interventional Radiology", urgency: .urgent, reason: "Percutaneous cholecystostomy if high surgical risk", notes: nil)
         ],
         "Acute Pancreatitis": [
-            RS(specialty: "General / HPB Surgery", urgency: .urgent, reason: "Gallstone pancreatitis — cholecystectomy same admission or within 2 weeks", notes: "Avoid re-admission risk"),
-            RS(specialty: "Gastroenterology", urgency: .routine, reason: "ERCP if CBD stone + cholangitis / persistent biliary obstruction", notes: nil),
+            RS(specialty: "General / HPB Surgery", urgency: .urgent, reason: "Mild gallstone pancreatitis — cholecystectomy in the same admission", notes: "Necrotising pancreatitis / peripancreatic collections: defer until collections resolve or >6 weeks (IAP/APA; ACG 2024)"),
+            RS(specialty: "Gastroenterology", urgency: .urgent, reason: "Urgent ERCP within 24 h if concomitant cholangitis; ERCP for persistent biliary obstruction (ACG 2024)", notes: nil),
             RS(specialty: "Intensive Care", urgency: .urgent, reason: "Severe pancreatitis (Atlanta III / APACHE II ≥8) — HDU/ICU step-up", notes: nil)
         ],
         "Colorectal Cancer": [
@@ -225,7 +256,7 @@ enum DiagnosisRadiationEngine {
             RS(specialty: "Emergency Department", urgency: .emergency, reason: "Transfer to ED if not already in-hospital", notes: nil)
         ],
         "Acute Cholangitis": [
-            RS(specialty: "Gastroenterology / ERCP", urgency: .emergency, reason: "Urgent ERCP for biliary decompression (within 24–48 h)", notes: "Tokyo III: Grade III cholangitis = ICU + emergency biliary drainage"),
+            RS(specialty: "Gastroenterology / ERCP", urgency: .emergency, reason: "Biliary decompression (ERCP) within 24 h; Grade III (severe) — as soon as resuscitated (TG18; ACG 2024)", notes: "Tokyo III: Grade III cholangitis = ICU + emergency biliary drainage"),
             RS(specialty: "General Surgery", urgency: .urgent, reason: "Surgical drainage if ERCP unavailable or fails", notes: nil)
         ],
         "Inguinal Hernia": [
@@ -279,13 +310,13 @@ enum DiagnosisRadiationEngine {
             RS(specialty: "Intensive Care", urgency: .urgent, reason: "AKI with haemodynamic compromise or hyperkalaemia refractory to medical management → RRT", notes: nil)
         ],
         "Ischaemic Stroke / TIA": [
-            RS(specialty: "Neurology / Stroke Unit", urgency: .emergency, reason: "Acute stroke — thrombolysis window 4.5 h, thrombectomy 24 h", notes: "ABCD² score to stratify TIA risk"),
+            RS(specialty: "Neurology / Stroke Unit", urgency: .emergency, reason: "Acute stroke — thrombolysis window 4.5 h, thrombectomy 24 h", notes: "Suspected TIA: specialist assessment within 24 h — no ABCD² triage (NICE NG128)"),
             RS(specialty: "Radiology", urgency: .emergency, reason: "CT head ± CTA ± MRI (diffusion-weighted)", notes: nil),
             RS(specialty: "Neurosurgery", urgency: .emergency, reason: "Malignant MCA infarct / space-occupying stroke — decompressive craniectomy", notes: nil)
         ],
         "Subarachnoid / Intracranial Haemorrhage": [
             RS(specialty: "Neurosurgery", urgency: .emergency, reason: "SAH — aneurysm coiling / clipping; ICH — haematoma evacuation", notes: nil),
-            RS(specialty: "Intensive Care / HDU", urgency: .emergency, reason: "Nimodipine, ICP monitoring, vasospasm surveillance", notes: nil)
+            RS(specialty: "Intensive Care / HDU", urgency: .emergency, reason: "Oral nimodipine 60 mg 4-hourly (NICE NG228), ICP monitoring, vasospasm surveillance", notes: nil)
         ],
         "Atrial Fibrillation": [
             RS(specialty: "Cardiology", urgency: .urgent, reason: "Rate/rhythm control + anticoagulation initiation (CHA₂DS₂-VASc ≥1)", notes: "DC cardioversion if haemodynamically compromised"),

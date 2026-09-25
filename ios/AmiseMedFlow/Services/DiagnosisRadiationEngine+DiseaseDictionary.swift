@@ -119,9 +119,9 @@ extension DiagnosisRadiationEngine {
             ],
             planTemplate: """
 - ADMIT — sepsis pathway
-- IV access × 2 + aggressive fluid resuscitation
+- IV access × 2 + fluid resuscitation guided by response (goal-directed)
 - Antibiotics: piperacillin-tazobactam 4.5 g IV 8-hourly (or meropenem if severe)
-- Urgent ERCP ± biliary decompression within 12–24h (Tokyo Grade II) or 12h (Grade III)
+- Biliary decompression (ERCP) within 24 h — Grade III (severe) as soon as resuscitated; Grade II early (TG18; ACG 2024)
 - Repeat LFTs + cultures at 48h
 - ICU consult if Reynolds' pentad present
 """,
@@ -150,11 +150,12 @@ extension DiagnosisRadiationEngine {
             ],
             planTemplate: """
 - ADMIT — monitor fluid balance strictly
-- IV fluids: Hartmann's 250–500 mL/h initially (aggressive resuscitation in first 24h)
+- IV fluids: MODERATE goal-directed resuscitation with Hartmann's — 10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h, reassessed at 12–24 h; avoid aggressive rates, lower in heart failure / renal impairment (WATERFALL 2022; ACG 2024)
+- No prophylactic antibiotics — antibiotics only for documented infection (ACG 2024; IAP/APA)
 - Analgesia: morphine IV/IM + antiemetic
 - NBM initially; early oral/NG feeding within 24–48h if tolerated (reduces complications)
 - Glasgow / Ranson scoring at 48h
-- ERCP within 72h if gallstone aetiology + cholangitis
+- Urgent ERCP within 24 h if concomitant cholangitis; not routinely for gallstone pancreatitis without cholangitis or obstruction (ACG 2024)
 - Surgical/HDU input if CRP >150 or organ failure
 - Alcohol counselling if alcohol aetiology
 """,
@@ -165,8 +166,8 @@ extension DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: "Admit. Assess severity (Glasgow/Ranson). Review at 24h and 48h.",
             redFlags: ["Glasgow ≥3 → severe → HDU", "Organ failure → ICU", "Infected necrosis → surgery or drainage"],
-            followUp: "Review 4–6 weeks. Cholecystectomy before discharge if gallstone aetiology. Repeat USS.",
-            guidelineReference: "BSG 2022; IAP/APA 2013; Atlanta Classification 2012"
+            followUp: "Review 4–6 weeks. Mild gallstone pancreatitis: cholecystectomy in the same admission; necrotising pancreatitis / collections: defer until collections resolve (IAP/APA; ACG 2024). Repeat USS.",
+            guidelineReference: "ACG 2024; WATERFALL (NEJM 2022); IAP/APA 2013; Atlanta Classification 2012"
         )),
 
         // ══════════════════════════════════════════════════════════════
@@ -202,7 +203,7 @@ extension DiagnosisRadiationEngine {
             ],
             consentCategory: "Laparoscopic Appendicectomy",
             urgencyNote: "URGENT — prepare for theatre. NBM. IV antibiotics within 1h of diagnosis.",
-            redFlags: ["Perforation signs → emergency OT", "Peritonitis → aggressive fluid resuscitation"],
+            redFlags: ["Perforation signs → emergency OT", "Peritonitis → fluid resuscitation, IV antibiotics, source control (WSES 2020)"],
             followUp: "Post-op review 2 weeks. Histology review.",
             guidelineReference: "NICE NG61; SAGES Guidelines; Alvarado Score",
             scoringCriteria: .init(

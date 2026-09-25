@@ -219,11 +219,7 @@ extension NoteEditorView {
                     .foregroundStyle(.teal)
                 }
                 if let patient = note.patient,
-                   let radiationPlan = DiagnosisRadiationEngine.radiate(
-                       workingDiagnosis: patient.workingDiagnosis,
-                       ageYears: patient.ageYears,
-                       sex: patient.sex
-                   ),
+                   let radiationPlan = DiagnosisRadiationEngine.radiate(for: patient),
                    !radiationPlan.planTemplate.isEmpty {
                     Button {
                         let existing = (note.plan ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
