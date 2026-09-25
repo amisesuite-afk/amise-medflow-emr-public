@@ -1,6 +1,7 @@
 import { Router, type IRouter } from "express";
 import { HealthCheckResponse } from "@workspace/api-zod";
 import { requireCronSecret, sb } from "../lib/supabase.js";
+import { corsAllowedOrigins, patientSiteBaseUrl } from "../lib/site-urls.js";
 
 const router: IRouter = Router();
 
@@ -54,7 +55,9 @@ router.get("/api/healthz/env", (req, res) => {
       calendars:  { rodneyBay: check('CALENDAR_ID_RODNEY_BAY'), tapionErcp: check('CALENDAR_ID_TAPION_ERCP') },
       twilio:     { sid: check('TWILIO_ACCOUNT_SID'), authToken: check('TWILIO_AUTH_TOKEN'), fromNumber: check('TWILIO_FROM_NUMBER') },
       notify:     { staffPhone: check('STAFF_NOTIFY_PHONE'), staffEmail: check('STAFF_NOTIFY_EMAIL'), doctorEmail: check('DOCTOR_NOTIFY_EMAIL') },
-      portal:     { url: process.env.PORTAL_URL || '(not set)', dashboardUrl: process.env.DASHBOARD_URL || '(not set)' },
+      // PORTAL_URL may be a comma-separated list; patientLinkBase is the entry
+      // used in links sent to patients (the first one).
+      portal:     { url: process.env.PORTAL_URL || '(not set)', dashboardUrl: process.env.DASHBOARD_URL || '(not set)', patientLinkBase: patientSiteBaseUrl(), corsOrigins: corsAllowedOrigins() },
       cron:       { secret: check('CRON_SECRET') },
       // x-staff-token secret; false means the api-server falls back to CRON_SECRET.
       staffMachine: { token: check('STAFF_MACHINE_TOKEN') },

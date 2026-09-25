@@ -27,6 +27,7 @@ import { logger } from '../lib/logger.js';
 import { sendSms, smsBodyStaffNewBooking, toE164 } from '../lib/sms.js';
 import { sendMetaWhatsApp, sendTelnyxWhatsApp } from '../lib/whatsapp-send.js';
 import { outboundBlocked } from '../lib/outbound.js';
+import { patientSiteBaseUrl } from '../lib/site-urls.js';
 import { createAnthropicClient, isAiEnabled } from '../lib/ai-gate.js';
 
 const router = Router();
@@ -313,7 +314,7 @@ router.post('/api/whatsapp/inbound', async (req: Request, res: Response) => {
 
   const { from, body, profileName, messageId } = msg;
   const fromE164 = toE164(from);
-  const portalUrl = process.env.PORTAL_URL ?? process.env.FRONTEND_URL ?? 'https://amise-medflow-front-desk.vercel.app';
+  const portalUrl = patientSiteBaseUrl();
   const supa = getSupabaseAdmin();
 
   // General enquiry → portal link, no booking record
@@ -575,7 +576,7 @@ router.post('/api/whatsapp/meta', async (req, res) => {
         const profileName = contacts?.find(c => c.wa_id === msg.from)?.profile?.name ?? '';
 
         if (isGeneralEnquiry(body)) {
-          const baseUrl = process.env.PORTAL_URL || 'https://amise-medflow-front-desk.vercel.app';
+          const baseUrl = patientSiteBaseUrl();
           const replyText =
             `Thanks for reaching out to Amise Medical Services — a general & endoscopic surgery practice led by Dr Dawit Daniel Kabiye, MD, DM, in Saint Lucia.\n\n` +
             `To help us prepare for your visit, please complete our short triage form: ${baseUrl}/patient/request\n\n` +

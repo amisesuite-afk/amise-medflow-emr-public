@@ -6,6 +6,7 @@ import { classifyMessage, draftReply } from '../lib/claude.js';
 import { triage } from '../lib/triage-logic.js';
 import { findSlots, createEvent, formatSlotForDisplay } from '../lib/calendar.js';
 import { logger } from '../lib/logger.js';
+import { patientSiteBaseUrl } from '../lib/site-urls.js';
 
 const router = Router();
 
@@ -73,7 +74,7 @@ router.post('/api/intake/run', async (req, res) => {
       }
 
       if (classification.category === 'admin' && triageResult.recommendedAction !== 'draft_supervised') {
-        const baseUrl = process.env.FRONTEND_URL || 'https://front-desk-amisesuite-afks-projects.vercel.app';
+        const baseUrl = patientSiteBaseUrl();
         const reply = await draftReply({
           template: 'general_enquiry',
           patientFirstName: classification.patient_first_name,

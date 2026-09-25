@@ -4,6 +4,7 @@ import { sb, requireStaffAuth } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 import { logAudit } from '../lib/audit.js';
 import { sendSms as sendSmsMessage } from '../lib/sms.js';
+import { patientSiteBaseUrl } from '../lib/site-urls.js';
 
 const router = Router();
 const client = createAnthropicClient();
@@ -114,7 +115,7 @@ router.post('/api/previsit/create', async (req, res) => {
       submissionId = created.id as string;
     }
 
-    const portalUrl = process.env.PORTAL_URL ?? 'https://front-desk-amisesuite-afks-projects.vercel.app';
+    const portalUrl = patientSiteBaseUrl();
     const link = `${portalUrl}/previsit/${token}`;
 
     // Send SMS if requested

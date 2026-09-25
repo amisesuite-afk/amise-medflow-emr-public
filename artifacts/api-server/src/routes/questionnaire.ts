@@ -4,6 +4,7 @@ import { createAnthropicClient, isAiEnabled } from '../lib/ai-gate.js';
 import { z } from 'zod';
 import { sb, audit, requireStaffAuth } from '../lib/supabase.js';
 import { sendSms } from '../lib/sms.js';
+import { patientSiteBaseUrl } from '../lib/site-urls.js';
 import { logger, errStr } from '../lib/logger.js';
 import {
   createSession,
@@ -790,7 +791,7 @@ router.post('/api/questionnaire/provision-link', async (req, res) => {
       payload: { templateKey: key, mode: 'screening', delivery: 'whatsapp_link', provisioned: true },
     });
 
-    const baseUrl = process.env.FRONTEND_URL || 'https://front-desk-amisesuite-afks-projects.vercel.app';
+    const baseUrl = patientSiteBaseUrl();
     res.status(201).json({ url: `${baseUrl}/questionnaire/${sessionToken}`, session_id: sessionRow.id });
   } catch (err) {
     req.log.info({ err }, '[questionnaire/provision-link] error');
@@ -1630,7 +1631,7 @@ router.post('/api/questionnaire/send-sms', async (req, res) => {
       return;
     }
 
-    const baseUrl = process.env.FRONTEND_URL || 'https://front-desk-amisesuite-afks-projects.vercel.app';
+    const baseUrl = patientSiteBaseUrl();
     const url = `${baseUrl}/questionnaire/${sessionToken}`;
     const greeting = patientName ? `Hello ${patientName.split(' ')[0]},` : 'Hello,';
     const smsBody = `${greeting} Please complete your pre-visit questionnaire for Amise Medical Services: ${url}`;

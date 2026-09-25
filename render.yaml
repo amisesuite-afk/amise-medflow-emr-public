@@ -72,5 +72,8 @@ services:
       # PORTAL_URL    = https://front-desk-amisesuite-afks-projects.vercel.app
       # DASHBOARD_URL = https://dashboard-lemon-gamma-44.vercel.app
       #
-      # When a custom domain is configured, update PORTAL_URL to:
-      # PORTAL_URL = https://amisemedical.com
+      # Both accept a comma-separated list (lib/site-urls.ts). CORS allows every
+      # entry; links sent to patients (SMS, WhatsApp, portal invites) use the
+      # FIRST PORTAL_URL entry only — put the primary domain first. Once the
+      # custom domains are live (docs/DOMAINS.md):
+      # PORTAL_URL = https://amisemedical.com,https://www.amisemedical.com,https://amisesuite.com,https://www.amisesuite.com,https://front-desk-amisesuite-afks-projects.vercel.app

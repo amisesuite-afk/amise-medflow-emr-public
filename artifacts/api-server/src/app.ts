@@ -12,6 +12,7 @@ import router from "./routes";
 import { logger } from "./lib/logger";
 import { correlationId } from "./middlewares/correlation";
 import { phiAuditMiddleware } from "./lib/phi-audit-middleware";
+import { corsAllowedOrigins } from "./lib/site-urls";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -66,12 +67,9 @@ app.use(helmet({
 }));
 app.use(compression());
 
-const isDev = process.env.NODE_ENV !== 'production';
-const allowedOrigins = [
-  process.env.PORTAL_URL,
-  process.env.DASHBOARD_URL,
-  ...(isDev ? ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'] : []),
-].filter(Boolean) as string[];
+// PORTAL_URL / DASHBOARD_URL may each be a comma-separated list (the website
+// is served from amisemedical.com and amisesuite.com) — see lib/site-urls.ts.
+const allowedOrigins = corsAllowedOrigins();
 
 app.use(cors({
   origin: (origin, cb) => {

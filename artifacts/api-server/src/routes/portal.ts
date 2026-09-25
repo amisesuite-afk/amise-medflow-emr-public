@@ -5,6 +5,7 @@ import { logger, errStr } from '../lib/logger.js';
 import { sendSms, smsBodyStaffChangeRequest } from '../lib/sms.js';
 import { logAudit } from '../lib/audit.js';
 import { sendOrDraft } from '../lib/gmail.js';
+import { patientSiteBaseUrl } from '../lib/site-urls.js';
 
 const router = Router();
 const anthropic = createAnthropicClient();
@@ -56,11 +57,11 @@ async function getPatientAuth(authHeader: string | undefined): Promise<{ authUse
 // invite, and marks the patient record as portal-enabled. Shared by the manual
 // staff invite endpoint and the auto-invite-on-registration flow below.
 async function sendPortalInvite(patientId: string, normalEmail: string): Promise<string | null> {
-  const portalUrl = process.env.PORTAL_URL ?? 'https://front-desk-amisesuite-afks-projects.vercel.app/patient';
-  // Route through the auth callback (which knows how to parse the implicit-flow
-  // token hash) rather than dumping the link straight on /patient — landing
-  // there directly skips session detection and bounces the patient back to login.
-  const redirectTo = `${new URL(portalUrl).origin}/patient/auth/callback?next=${encodeURIComponent('/patient')}`;
+  // First PORTAL_URL entry (lib/site-urls.ts). Route through the auth callback
+  // (which knows how to parse the implicit-flow token hash) rather than dumping
+  // the link straight on /patient — landing there directly skips session
+  // detection and bounces the patient back to login.
+  const redirectTo = `${patientSiteBaseUrl()}/patient/auth/callback?next=${encodeURIComponent('/patient')}`;
 
   const { data: invite, error: inviteErr } = await sb().auth.admin.inviteUserByEmail(normalEmail, { redirectTo });
 
