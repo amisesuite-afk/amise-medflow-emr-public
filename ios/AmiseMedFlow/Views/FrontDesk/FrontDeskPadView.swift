@@ -415,6 +415,7 @@ private struct FDQuestionnaireView: View {
                                         Image(systemName: "list.clipboard")
                                             .foregroundStyle(AMColor.accent)
                                     }
+                                    .contentShape(Rectangle())   // whole row tappable, not only its text
                                 }
                                 .buttonStyle(.plain)
                                 .padding(.vertical, 4)
