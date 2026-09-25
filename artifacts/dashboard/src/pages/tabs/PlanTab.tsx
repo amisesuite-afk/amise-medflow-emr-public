@@ -11,6 +11,7 @@ import { confirmedPlanSource, insertSuggestedPlan } from '@/lib/diagnosis-sugges
 import { buildPlanText, planProtocolFor } from '@/lib/plan-builder';
 import { usePlanPatientContext } from '@/hooks/usePlanPatientContext';
 import LifestylePracticesPanel from '@/components/LifestylePracticesPanel';
+import DecisionSupportPanel from '@/components/DecisionSupportPanel';
 
 const BMI_NOTES: Record<string, string> = {
   'Obese class I':  'BMI 30–34.9 (Obese I): Increased VTE risk — pharmacological prophylaxis per NICE NG89 (LMWH, weight- and renal-adjusted) + mechanical prophylaxis unless contraindicated. Laparoscopic access may be technically difficult. Monitor wound site closely post-op.',
@@ -494,6 +495,16 @@ export default function PlanTab() {
               </button>
             ))}
           </div>
+        </div>
+      </CollapsibleCard>
+
+      {/* Scores, results and treatment options for the leading diagnoses — suggestions only,
+          each added by the clinician's tap (lib/pane-engine/src/decision). */}
+      <CollapsibleCard title="Decision support — clinician decides">
+        <DecisionSupportPanel />
+        <div style={{ fontSize: 11, color: '#64748b', marginTop: 6 }}>
+          Nothing here is shown until a score is recorded ("Use in decision support" on the Scales step), a result crosses a
+          guideline threshold, or a leading diagnosis has decision content.
         </div>
       </CollapsibleCard>
 

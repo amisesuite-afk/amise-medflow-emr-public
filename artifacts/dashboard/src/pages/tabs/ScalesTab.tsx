@@ -55,6 +55,7 @@ import {
 } from '@/lib/clinical-scales';
 import { getCdsSuggestions, type CdsContext } from '@/lib/clinical-cds';
 import { TokyoCholecystitisCard } from '@/components/ClinicalScoresPanel';
+import RecordScoreButton from '@/components/RecordScoreButton';
 
 // ── Context-derive helpers for pre-population ─────────────────────────────────
 // Cards call useAppContext() and use these to seed useState at mount (lazy init).
@@ -91,7 +92,13 @@ function PrePopBadge() {
 
 // ── Result badge ──────────────────────────────────────────────────────────────
 
-function ResultBadge({ result }: { result: ScaleResult }) {
+/**
+ * `recordKey` / `recordValue`: the calculator can be recorded for the Plan-step decision support
+ * (explicit "Use in decision support" tap — RecordScoreButton).
+ */
+function ResultBadge({ result, recordKey, recordValue, redParameter }: {
+  result: ScaleResult; recordKey?: string; recordValue?: number | null; redParameter?: boolean;
+}) {
   const colors: Record<string, string> = {
     green: '#d1fae5', amber: '#fef3c7', red: '#fee2e2',
   };
@@ -106,6 +113,7 @@ function ResultBadge({ result }: { result: ScaleResult }) {
     }}>
       <div style={{ fontWeight: 700, fontSize: 15 }}>{result.band}</div>
       <div style={{ fontSize: 13, marginTop: 4, color: '#374151' }}>{result.action}</div>
+      {recordKey && <RecordScoreButton scoreKey={recordKey} value={recordValue ?? null} redParameter={redParameter} />}
     </div>
   );
 }
@@ -215,7 +223,7 @@ function News2Card() {
           ⚠ {evaluation.incompleteNote} — the score may under-estimate risk
         </div>
       )}
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="news2" recordValue={score} redParameter={evaluation.hasSingleParameterScore3} />
     </div>
   );
 }
@@ -240,7 +248,7 @@ function AlvaradoCard() {
       <Chk label="WBC > 10,000 /µL" checked={v.wbcAbove10} onChange={() => tog('wbcAbove10')} pts={2} />
       <Chk label="Shift to left (neutrophilia / bands)" checked={v.leftShift} onChange={() => tog('leftShift')} pts={1} />
       <ScoreRow label="Alvarado Score" value={`${score}/10`} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="alvarado" recordValue={score} />
     </div>
   );
 }
@@ -329,7 +337,7 @@ function WellsPeCard() {
       <Chk label="Haemoptysis" checked={v.haemoptysis} onChange={() => tog('haemoptysis')} pts={1} />
       <Chk label="Malignancy (treatment / palliation in past 6 months)" checked={v.cancer} onChange={() => tog('cancer')} pts={1} />
       <ScoreRow label="Wells PE Score" value={score} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="wells-pe" recordValue={score} />
     </div>
   );
 }
@@ -357,7 +365,7 @@ function WellsDvtCard() {
       <Chk label="Previously documented DVT" checked={v.previousDvt} onChange={() => tog('previousDvt')} pts={1} />
       <Chk label="Alternative diagnosis at least as likely" checked={v.alternativeDx} onChange={() => tog('alternativeDx')} pts={-2} />
       <ScoreRow label="Wells DVT Score" value={score} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="wells-dvt" recordValue={score} />
     </div>
   );
 }
@@ -401,7 +409,7 @@ function Abcd2Card() {
       </label>
       <Chk label="Diabetes mellitus" checked={v.diabetes} onChange={() => setV(p => ({ ...p, diabetes: !p.diabetes }))} pts={1} />
       <ScoreRow label="ABCD² Score" value={`${score}/7`} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="abcd2" recordValue={score} />
     </div>
   );
 }
@@ -438,7 +446,7 @@ function Tg18Card() {
       <Chk label="Hepatic — PT-INR > 1.5" checked={v.organDysfunctionHepatic} onChange={() => tog('organDysfunctionHepatic')} />
       <Chk label="Haematological — platelets < 100,000" checked={v.organDysfunctionHaem} onChange={() => tog('organDysfunctionHaem')} />
       <ScoreRow label="TG18 Grade" value={grade} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="tg18-cholangitis" recordValue={grade === 'III' ? 3 : grade === 'II' ? 2 : 1} />
     </div>
   );
 }
@@ -523,7 +531,7 @@ function Curb65Card() {
       <Chk label="Low BP (SBP < 90 or DBP ≤ 60 mmHg)" checked={v.bpLow} onChange={() => tog('bpLow')} pts={1} />
       <Chk label="Age ≥ 65 years" checked={v.age65orAbove} onChange={() => tog('age65orAbove')} pts={1} />
       <ScoreRow label="CURB-65 Score" value={`${score}/5`} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="curb65" recordValue={score} />
     </div>
   );
 }
@@ -571,7 +579,7 @@ function GlasgowBlatchfordCard() {
       <Chk label="Hepatic disease" checked={v.liverDisease} onChange={() => setV(p => ({ ...p, liverDisease: !p.liverDisease }))} pts={2} />
       <Chk label="Cardiac failure" checked={v.cardiacFailure} onChange={() => setV(p => ({ ...p, cardiacFailure: !p.cardiacFailure }))} pts={2} />
       <ScoreRow label="Glasgow-Blatchford Score" value={score} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="glasgow-blatchford" recordValue={score} />
     </div>
   );
 }
@@ -615,7 +623,7 @@ function PreRockallCard() {
         </select>
       </label>
       <ScoreRow label="Pre-Rockall Score" value={score} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="rockall-pre" recordValue={score} />
     </div>
   );
 }
@@ -644,7 +652,7 @@ function RcriCard() {
       <Chk label="Pre-operative insulin use" checked={v.insulinDependentDiabetes} onChange={() => tog('insulinDependentDiabetes')} pts={1} />
       <Chk label="Pre-operative creatinine > 177 µmol/L (2.0 mg/dL)" checked={v.creatinineAbove177} onChange={() => tog('creatinineAbove177')} pts={1} />
       <ScoreRow label="RCRI Score" value={`${score}/6`} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="rcri" recordValue={score} />
     </div>
   );
 }
@@ -668,7 +676,7 @@ function RansonCard() {
       <Chk label="LDH > 350 IU/L" checked={v.ldhAbove350} onChange={() => tog('ldhAbove350')} pts={1} />
       <Chk label="AST > 250 IU/L" checked={v.astAbove250} onChange={() => tog('astAbove250')} pts={1} />
       <ScoreRow label="Ranson Admission Score" value={`${score}/5`} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="ranson" recordValue={score} />
     </div>
   );
 }
@@ -901,7 +909,7 @@ function CapriniCard() {
         </div>
       ))}
       <ScoreRow label="Caprini score" value={score} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="caprini" recordValue={score} />
     </div>
   );
 }
@@ -967,7 +975,7 @@ function CfsCard() {
       </div>
       <div style={{ marginBottom: 4, fontWeight: 600, fontSize: 14 }}>CFS {level} — {current.label}</div>
       <p style={{ fontSize: 13, color: '#374151', margin: '0 0 8px' }}>{current.description}</p>
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="cfs" recordValue={level} />
     </div>
   );
 }
@@ -1305,7 +1313,7 @@ function HasBledCard() {
       <Chk label="Alcohol (≥ 8 drinks / week)"                          checked={v.alcoholUse}               onChange={() => tog('alcoholUse')}               pts={1} />
       <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 6 }}>Maximum score 9 (drugs + alcohol each count +1)</div>
       <ScoreRow label="HAS-BLED Score" value={`${score}/9`} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="has-bled" recordValue={score} />
     </div>
   );
 }
@@ -1351,7 +1359,7 @@ function QsofaCard() {
         pts={1}
       />
       <ScoreRow label="qSOFA Score" value={`${score}/3`} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="qsofa" recordValue={score} />
     </div>
   );
 }
@@ -1383,7 +1391,7 @@ function AsaCard() {
         <div style={{ color: '#6b7280', marginTop: 2 }}><strong>Perioperative mortality:</strong> {selected.mortalityApprox}</div>
       </div>
       <Chk label="Emergency surgery (add 'E' suffix — mortality ~3× higher)" checked={emergency} onChange={() => setEmergency(p => !p)} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="asa" recordValue={asaClass} />
     </div>
   );
 }
@@ -1415,7 +1423,7 @@ function BisapCard() {
         SIRS ≥ 2 of: temp &lt; 36 °C or &gt; 38 °C · HR &gt; 90 · RR &gt; 20 or PaCO₂ &lt; 32 mmHg · WBC &lt; 4k or &gt; 12k or &gt; 10% bands
       </div>
       <ScoreRow label="BISAP Score" value={`${score}/5`} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="bisap" recordValue={score} />
     </div>
   );
 }

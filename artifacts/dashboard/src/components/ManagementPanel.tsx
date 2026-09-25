@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { adaptProtocolForPatient } from '@workspace/pane-engine';
 import type { ManagementProtocol, ManagementStep, PlanPatientContext, SafetyNote } from '@workspace/pane-engine';
 import { planProtocolFor } from '@/lib/plan-builder';
+import DecisionSupportPanel from '@/components/DecisionSupportPanel';
 
 interface Props {
   diseaseId: string | null;
@@ -183,6 +184,9 @@ export function ManagementPanel({ diseaseId, icdCode, patient }: Props) {
               <span style={{ color: BODY, fontSize: 12 }}>{protocol.referral}</span>
             </section>
           )}
+
+          {/* Treatment decision support for this diagnosis (patient open only) — suggestions only. */}
+          {patient && <DecisionSupportPanel compact diseaseId={protocol.diseaseId} />}
         </div>
       )}
     </div>

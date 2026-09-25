@@ -24,6 +24,7 @@ import { NEWS2_AVPU_LABELS, type News2Avpu } from '@workspace/triage-engine';
 import { tokyoCholangitisAutoFill, tokyoCholecystitisAutoFill, type Tg18Record } from '@/lib/tg18-autofill';
 import { news2OptionsFromVitals, resolveNews2Scale2 } from '@/lib/vitals-news2-fields';
 import { usePatientNews2Scale2 } from '@/hooks/usePatientNews2Scale2';
+import RecordScoreButton from '@/components/RecordScoreButton';
 
 // ── Colour tokens ─────────────────────────────────────────────────────────────
 const BADGE: Record<'green' | 'amber' | 'red', React.CSSProperties> = {
@@ -233,6 +234,7 @@ export function TokyoCholecystitisCard() {
     <div style={PANEL}>
       <div style={LABEL}>Tokyo TG18 — Acute Cholecystitis</div>
       {grade(`Grade ${result.grade}`, result.colour, result.label)}
+      {result.score >= 1 && <RecordScoreButton scoreKey="tg18-cholecystitis" value={result.score} />}
       <div style={{ fontSize: 10, color: '#94a3b8', marginBottom: 6 }}>Pre-filled from the record — review each criterion; tap to change.</div>
 
       <div style={{ marginBottom: 8 }}>
