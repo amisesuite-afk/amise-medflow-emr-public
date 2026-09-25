@@ -2185,6 +2185,10 @@ enum BayesianDiagnosisEngine {
             let name    = inv.name.lowercased()
             let result  = inv.result.lowercased()
             let combined = name + " " + result
+            // Whole-word name matching (LabNameMatch): "Fasting glucose" is not AST, "Alpha
+            // fetoprotein" is not ALP, "Lactate dehydrogenase" is not lactate, "HBsAg" is not Hb.
+            let nameWords = LabNameMatch.words(of: inv.name)
+            func named(_ keywords: String...) -> Bool { LabNameMatch.matchesAny(nameWords, keywords) }
             let isHigh  = combined.contains("elevated") || combined.contains("raised") ||
                           combined.contains(" high") || result.hasPrefix("high") ||
                           combined.contains(">") || combined.contains("abnormal")
@@ -2192,65 +2196,57 @@ enum BayesianDiagnosisEngine {
                           combined.contains("decreased") || combined.contains("deficient") ||
                           combined.contains("<")
 
-            if name.contains("wbc") || name.contains("white cell") ||
-               name.contains("leukocyte") || name.contains("leucocyte") ||
-               name.contains("neutrophil") || name.contains("white blood cell") {
+            if named("wbc", "white cell", "leukocyte", "leucocyte", "neutrophil", "white blood cell") {
                 if isHigh { labAssocChips.insert("raised wbc") }
                 if isLow  { labAssocChips.insert("leukopenia") }
             }
-            if name.contains("crp") || name.contains("c-reactive") {
+            if named("crp", "c-reactive") {
                 if isHigh { labAssocChips.insert("elevated crp") }
             }
-            if name.contains("lactate") || name.contains("lactic acid") {
+            if named("lactate", "lactic acid") {
                 if isHigh { labAssocChips.insert("elevated lactate") }
             }
-            if name.contains("troponin") {
+            if named("troponin") {
                 if isHigh { labAssocChips.insert("elevated troponin") }
             }
-            if name.contains("d-dimer") || name.contains("d dimer") || name.contains("ddimer") {
+            if named("d-dimer", "ddimer") {
                 if isHigh { labAssocChips.insert("elevated d-dimer") }
             }
-            if name.contains("alt") || name.contains("ast") || name.contains("alp") ||
-               name.contains("ggt") || name.contains("lft") ||
-               name.contains("liver function") || name.contains("transaminase") ||
-               name.contains("alkaline phosphatase") {
+            if named("alt", "ast", "alp", "ggt", "lft", "lfts", "liver function", "transaminase",
+                     "alkaline phosphatase") {
                 if isHigh { labAssocChips.insert("elevated liver enzymes") }
             }
-            if name.contains("bilirubin") {
+            if named("bilirubin") {
                 if isHigh { labAssocChips.insert("raised bilirubin") }
             }
-            if name.contains("inr") || (name.contains("prothrombin") && name.contains("time")) {
+            if named("inr") || (named("prothrombin") && nameWords.contains("time")) {
                 if isHigh { labAssocChips.insert("raised inr") }
             }
-            if name.contains("creatinine") || name.contains("egfr") ||
-               (name.contains("urea") && !name.contains("uric")) ||
-               name.contains("bun") || name.contains("renal function") {
-                if isHigh || (name.contains("egfr") && isLow) {
+            if named("creatinine", "egfr", "urea", "bun", "renal function") {
+                if isHigh || (named("egfr") && isLow) {
                     labAssocChips.insert("renal impairment")
                 }
             }
-            if name.contains("calcium") && !name.contains("channel") {
+            if named("calcium") {
                 if isHigh { labAssocChips.insert("hypercalcaemia") }
             }
-            if name.contains("esr") || name.contains("erythrocyte sedimentation") {
+            if named("esr", "erythrocyte sedimentation") {
                 if isHigh { labAssocChips.insert("elevated esr") }
             }
-            if name.contains("amylase") {
+            if named("amylase") {
                 if isHigh { labAssocChips.insert("elevated amylase") }
             }
-            if name.contains("lipase") {
+            if named("lipase") {
                 if isHigh { labAssocChips.insert("elevated lipase") }
             }
-            if name.contains("glucose") || name.contains("blood sugar") || name.contains("bgl") {
+            if named("glucose", "blood sugar", "bgl") {
                 if isHigh { labAssocChips.insert("elevated glucose") }
             }
-            if name.contains("ldh") || name.contains("lactate dehydrogenase") {
+            if named("ldh", "lactate dehydrogenase") {
                 if isHigh { labAssocChips.insert("elevated ldh") }
             }
-            if name.contains("haemoglobin") || name.contains("hemoglobin") ||
-               name.contains("hgb") ||
-               (name.count <= 4 && name.hasPrefix("hb")) ||
-               (name.contains("fbc") && result.contains("anaemi")) {
+            if named("haemoglobin", "hemoglobin", "hgb", "hb") ||
+               (named("fbc") && result.contains("anaemi")) {
                 if isLow { labAssocChips.insert("Anaemia symptoms") }
             }
         }

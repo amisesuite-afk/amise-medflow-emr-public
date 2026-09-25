@@ -84,7 +84,7 @@ final class ScoreAutoPopulateContext {
     private(set) lazy var prescriptionText: String = self.patient.scorePrescriptionText()
     /// Most recent vitals entry.
     private(set) lazy var latestVitals: VitalsEntry? = self.patient.scoreLatestVitals()
-    /// Resulted investigations (decoded once), in stored order, with lowercased names.
+    /// Resulted investigations (decoded once), in stored order, with their names split into words.
     private(set) lazy var resultedLabs: [ScoreResultedLab] = self.patient.scoreResultedLabs()
 
     /// `latestLab(named:)` results for this run, keyed by the keyword list.
@@ -99,9 +99,9 @@ final class ScoreAutoPopulateContext {
     }
 }
 
-/// A resulted investigation with its name lowercased once.
+/// A resulted investigation with its name split into lowercase words once (`LabNameMatch`).
 struct ScoreResultedLab {
-    let lowerName: String
+    let nameWords: [String]
     let entry: InvestigationEntry
 }
 
@@ -162,12 +162,13 @@ extension Patient {
     fileprivate func scoreResultedLabs() -> [ScoreResultedLab] {
         investigations
             .filter { $0.status == .resulted && $0.category.holdsLabValues }
-            .map { ScoreResultedLab(lowerName: $0.name.lowercased(), entry: $0) }
+            .map { ScoreResultedLab(nameWords: LabNameMatch.words(of: $0.name), entry: $0) }
     }
 
     fileprivate func scoreLatestLab(named keywords: [String], in resulted: [ScoreResultedLab]) -> Double? {
         let match = resulted
-            .filter { lab in keywords.contains { lab.lowerName.contains($0) } }
+            // Whole words only: "HbA1c" / "HBsAg" are not "hb", "Fasting glucose" is not "ast".
+            .filter { lab in LabNameMatch.matchesAny(lab.nameWords, keywords) }
             .map(\.entry)
             .sorted { ($0.resultedAt ?? $0.orderedAt) < ($1.resultedAt ?? $1.orderedAt) }
             .last

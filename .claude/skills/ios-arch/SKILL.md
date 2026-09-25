@@ -327,9 +327,8 @@ request for a scanned PDF). AIService is never used. Nothing is saved before the
   names on one report needs the explicit "This report belongs to …" toggle.
 - Saving (`ReportImportSaver`): lab rows → `InvestigationEntry` (Blood, Resulted, orderedAt =
   resultedAt = collection time, `result` starts with the value) under catalogue names chosen so
-  `latestLab(named:)` and `LabPanel` read each as its own analyte (substring matching: never
-  "HbA1c", "Fasting glucose", "Direct bilirubin", "Lactate dehydrogenase" — the catalogue test
-  enforces this; `LabScoreKeywords` copies the populators' keyword lists — keep in step). Units
+  `latestLab(named:)` and `LabPanel` read each as its own analyte (the catalogue test enforces
+  this; `LabScoreKeywords` copies the populators' keyword lists — keep in step). Units
   the scores assume (µmol/L creatinine, mmol/L urea/glucose, g/dL Hb, g/L albumin) are converted
   only with an exact factor, original kept in the text; ambiguous/unexpected/missing units and
   implausible values leave the row unticked. Imaging → one Imaging entry (Impression + Findings,
@@ -339,6 +338,14 @@ request for a scanned PDF). AIService is never used. Nothing is saved before the
 - `InvestigationEntry` gained optional `source`, `accession`, `referenceRange`, `flag`,
   `reportedAt`, `portalURL`, `documentId` (old JSON decodes). `latestLab` and `LabPanel` now skip
   Imaging and Endoscopy entries (`InvCategory.holdsLabValues`): narrative reports are never lab values.
+- Lab name matching (`Services/LabNameMatch.swift`) is whole-word, never substring: `latestLab`,
+  `LabPanel.parse`, `LabScoreKeywords` and the Bayesian lab chips split the name into lowercase
+  words at spaces/punctuation ("+" kept, so "Ca++" ≠ "Ca") and need the keyword's words in a row
+  (a 4+ letter word also matches its plural). A name with another specimen word (urine, CSF,
+  fluid, drain …) or another-test word (`otherTestWords`: A1c/glycated/mean for Hb, direct for
+  bilirubin, dehydrogenase for lactate, ratio/clearance for albumin/creatinine …) is not read.
+  So "HbA1c"/"HBsAg" ≠ Hb, "CA 19-9" ≠ calcium, "PTH" ≠ PT/INR, "LDH" ≠ lactate, "Fasting
+  glucose" ≠ AST. New lab readers must use it. Tests: `LabKeywordMatchingTests.swift`.
 
 ## On-device store safety (never lose data silently)
 

@@ -4,14 +4,15 @@
 //
 // Saved names are chosen for the two readers of Patient.investigations:
 //   - `Patient.latestLab(named:)` (score auto-populator, bowel prep): a resulted entry whose
-//     lowercased name CONTAINS any keyword, first number of `result`;
+//     name contains any keyword as whole words (`LabNameMatch`), first number of `result`;
 //   - `LabPanel.parse(from:)` (critical values, risk engines, procedure forms): an if/else chain of
-//     `contains` tests on the lowercased name.
-// Substring matching means a careless name is read as another analyte ("Fasting glucose" contains
-// "ast", "HbA1c" contains "hb", "Lactate dehydrogenase" contains "lactate", "Direct bilirubin"
-// contains "bilirubin"). Every saved name here reads as its own analyte only;
+//     the same whole-word tests on the name.
+// Both used to match substrings, so a careless name was read as another analyte ("Fasting glucose"
+// contains "ast", "HbA1c" contains "hb", "Lactate dehydrogenase" contains "lactate"). The saved
+// names below still avoid those spellings. Every saved name here reads as its own analyte only;
 // LabReportParserTests.testCanonicalNamesAreReadOnlyAsTheirOwnAnalyte enforces it against the
-// real LabPanel and the keyword lists copied in `LabScoreKeywords`.
+// real LabPanel and the keyword lists copied in `LabScoreKeywords`, and LabKeywordMatchingTests
+// covers hand-typed names.
 //
 // Units: values the scores read are stored in the unit the app assumes (µmol/L creatinine,
 // mmol/L urea and glucose, g/dL Hb, g/L albumin, ...). A printed unit with an exact factor is
@@ -409,10 +410,11 @@ enum LabScoreKeywords {
         ("magnesium", ["magnesium"]),
     ]
 
-    /// Score keyword groups whose keywords a saved name would match.
+    /// Score keyword groups whose keywords a saved name would match (the same whole-word
+    /// matching as `Patient.latestLab(named:)`).
     static func groups(readingName name: String) -> [String] {
-        let lower = name.lowercased()
-        return groups.filter { g in g.keywords.contains { lower.contains($0) } }.map(\.key)
+        let words = LabNameMatch.words(of: name)
+        return groups.filter { g in LabNameMatch.matchesAny(words, g.keywords) }.map(\.key)
     }
 }
 

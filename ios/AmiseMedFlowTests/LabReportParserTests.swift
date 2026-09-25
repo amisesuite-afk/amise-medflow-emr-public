@@ -271,7 +271,7 @@ final class LabReportParserTests: XCTestCase {
             "bun": "urea", "bilirubin": "bilirubin", "alt": "alt", "ast": "ast", "alp": "alp",
             "albumin": "albumin", "calcium": "calcium", "amylase": "amylase", "lipase": "lipase",
             "lactate": "lactate", "dDimer": "dDimer", "troponinI": "troponin", "troponinT": "troponin",
-            "troponin": "troponin", "inr": "inr", "glucose": "glucose",
+            "troponin": "troponin", "inr": "inr", "glucose": "glucose", "hba1c": "hba1c",
         ]
         for analyte in LabAnalyteCatalog.all {
             var names = [analyte.name]
@@ -315,12 +315,20 @@ final class LabReportParserTests: XCTestCase {
         XCTAssertEqual(draft.rows.map(\.savedName),
                        ["Vitamin D 25-OH", "HBsAg", "Albumin/Globulin ratio", "Urine Protein", "Urine Glucose", "Urine WBC"])
         XCTAssertTrue(draft.rows.allSatisfy { $0.analyteKey == nil })
-        XCTAssertEqual(draft.rows.map(\.include), [true, false, false, true, false, false])
-
-        // Unticked because a score would read the name as Hb / albumin / glucose / WBC.
-        XCTAssertTrue(draft.rows[1].assessment().issues.contains(.readAsOther(["Haemoglobin"])))
-        XCTAssertTrue(draft.rows[4].assessment().issues.contains { if case .readAsOther = $0 { return true }; return false })
+        // No reader takes these names as another analyte any more (whole-word matching,
+        // LabNameMatch: "HBsAg" is not Hb, a ratio is not albumin, a urine row is not blood).
+        XCTAssertEqual(draft.rows.map(\.include), [true, true, true, true, true, true])
+        for row in draft.rows {
+            XCTAssertEqual(LabPanelProbe.readers(ofName: row.savedName), [], row.savedName)
+        }
         XCTAssertEqual(draft.rows[3].specimen, .urine)
+        XCTAssertTrue(draft.rows[4].assessment().issues.contains(.urine))
+
+        // A name a score would read as another analyte is still unticked.
+        let preOpHb = LabRowNormaliser.assess(analyteKey: nil, name: "Pre-op Hb", valueText: "9.1", unit: "",
+                                              referenceRange: "", flag: "", specimen: .blood)
+        XCTAssertTrue(preOpHb.issues.contains(.readAsOther(["Haemoglobin"])))
+        XCTAssertTrue(preOpHb.excludedByDefault)
 
         // An unmapped row is saved under its (editable) name, with its text.
         let entry = ReportImportBuilder.labEntry(row: draft.rows[0], reportedAt: nil, accession: "",
