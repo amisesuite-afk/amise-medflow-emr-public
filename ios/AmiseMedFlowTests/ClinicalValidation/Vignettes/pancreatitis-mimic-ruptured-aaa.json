@@ -315,11 +315,7 @@
           "guidelineRefs": [
             "esvs-2024-aaa"
           ],
-          "note": "Ruptured AAA: permissive hypotension until proximal control. A pancreatitis-style \"aggressive fluid\" instruction can precipitate further bleeding.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"...asopressors if fluid-unresponsive; icu/hdu now; iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia...\""
+          "note": "Ruptured AAA: permissive hypotension until proximal control. A pancreatitis-style \"aggressive fluid\" instruction can precipitate further bleeding."
         },
         {
           "id": "mgmt-no-appendicectomy",

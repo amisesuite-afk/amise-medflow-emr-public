@@ -229,11 +229,7 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 1 (ios.pipeline.voi)"
+          ]
         },
         {
           "id": "inv-fbc",

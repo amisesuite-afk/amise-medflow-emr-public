@@ -290,11 +290,7 @@
             "wses-cdi-2019"
           ],
           "note": "IDSA/SHEA 2017: fulminant CDI → vancomycin 500 mg four times daily by mouth (plus rectal if ileus) with IV metronidazole.",
-          "proposedFix": "Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.decisions, ios.pipeline.actions, ios.scoreCalculator.qsofa, ios.soap.plan)"
+          "proposedFix": "Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result."
         },
         {
           "id": "mgmt-surgical-consult",

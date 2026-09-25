@@ -168,11 +168,7 @@
           "guidelineRefs": [
             "es-phaeo-2014",
             "ese-adrenal-2023"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          ]
         }
       ],
       "mustExclude": [
@@ -212,11 +208,7 @@
           "guidelineRefs": [
             "es-phaeo-2014"
           ],
-          "note": "Endocrine Society 2014: pre-operative alpha-adrenoceptor blockade for 7–14 days.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+          "note": "Endocrine Society 2014: pre-operative alpha-adrenoceptor blockade for 7–14 days."
         }
       ],
       "mustExclude": [

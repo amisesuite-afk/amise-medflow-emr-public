@@ -304,11 +304,7 @@
             "bsg-ibd-2019"
           ],
           "note": "Colonoscopy (with insufflation) is contraindicated in toxic megacolon — perforation risk.",
-          "proposedFix": "Mark the UC colonoscopy investigation conditional (\"not in acute severe colitis/toxic megacolon — limited unprepared flexible sigmoidoscopy only\") and add a toxic-megacolon dx-variant that drops endoscopy.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.radiation: \"colonoscopy + biopsy - gold standard diagnosis - extent and pattern\""
+          "proposedFix": "Mark the UC colonoscopy investigation conditional (\"not in acute severe colitis/toxic megacolon — limited unprepared flexible sigmoidoscopy only\") and add a toxic-megacolon dx-variant that drops endoscopy."
         }
       ]
     },

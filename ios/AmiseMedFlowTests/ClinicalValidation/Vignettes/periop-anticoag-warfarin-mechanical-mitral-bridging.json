@@ -165,11 +165,7 @@
           ],
           "guidelineRefs": [
             "accp-2022"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          ]
         }
       ]
     },
@@ -187,11 +183,7 @@
             "accp-2022",
             "esc-valve-2021"
           ],
-          "note": "Mechanical mitral valve: interrupt warfarin with therapeutic heparin bridging.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+          "note": "Mechanical mitral valve: interrupt warfarin with therapeutic heparin bridging."
         },
         {
           "id": "mgmt-specialist-input",

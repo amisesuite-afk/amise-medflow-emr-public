@@ -270,11 +270,7 @@
           "guidelineRefs": [
             "nice-cg184"
           ],
-          "note": "Aspirin for secondary prevention after TIA is continued with PPI cover; stopping it is a clinician decision, never an automatic plan line.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"stop nsaids + aspirin if possible; use paracetamol instead\""
+          "note": "Aspirin for secondary prevention after TIA is continued with PPI cover; stopping it is a clinician decision, never an automatic plan line."
         },
         {
           "id": "mgmt-no-patient-hold-advice",

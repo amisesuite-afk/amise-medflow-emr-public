@@ -254,10 +254,9 @@
           ],
           "note": "NCCN: in inflammatory breast cancer, breast-conserving surgery and sentinel node biopsy are not recommended; surgery (modified radical mastectomy) follows neoadjuvant systemic therapy.",
           "knownGap": [
-            "web",
-            "ios"
+            "web"
           ],
-          "knownGapNote": "The C50 plan comes from the generic invasive_ductal_carcinoma protocol, which offers \"Wide local excision (breast-conserving) + SLNB\" first; the protocol lists inflammatory breast cancer as a red flag but has no IBC branch. | iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"early stage: wide local excision + sentinel node biopsy ± mastectomy\"",
+          "knownGapNote": "The C50 plan comes from the generic invasive_ductal_carcinoma protocol, which offers \"Wide local excision (breast-conserving) + SLNB\" first; the protocol lists inflammatory breast cancer as a red flag but has no IBC branch.",
           "proposedFix": "Add an inflammatory-breast-cancer variant (C50 + \"inflammatory\"/\"peau d'orange\"): neoadjuvant systemic therapy then modified radical mastectomy; exclude BCS and SLNB."
         },
         {

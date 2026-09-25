@@ -164,11 +164,7 @@
           "guidelineRefs": [
             "nice-ng217"
           ],
-          "note": "NICE NG217: 12-lead ECG in adults with a suspected seizure (cardiac causes). Graded as management because the web prompts add ECGs as plan lines.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+          "note": "NICE NG217: 12-lead ECG in adults with a suspected seizure (cardiac causes). Graded as management because the web prompts add ECGs as plan lines."
         },
         {
           "id": "mgmt-first-seizure-referral",
@@ -182,11 +178,7 @@
           ],
           "guidelineRefs": [
             "nice-ng217"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+          ]
         },
         {
           "id": "mgmt-driving-safety-advice",

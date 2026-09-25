@@ -272,11 +272,7 @@
           "guidelineRefs": [
             "wses-2020",
             "nice-ng126"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions)"
+          ]
         }
       ]
     },

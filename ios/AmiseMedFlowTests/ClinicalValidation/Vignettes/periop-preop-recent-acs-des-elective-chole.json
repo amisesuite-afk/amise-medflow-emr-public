@@ -212,11 +212,7 @@
             "esc-ncs-2022",
             "accp-2022"
           ],
-          "note": "ESC 2022: delay elective non-cardiac surgery until 12 months after ACS (6 months after elective PCI); quiescent biliary colic is not time-sensitive.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+          "note": "ESC 2022: delay elective non-cardiac surgery until 12 months after ACS (6 months after elective PCI); quiescent biliary colic is not time-sensitive."
         },
         {
           "id": "mgmt-cardiology-liaison",

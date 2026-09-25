@@ -202,11 +202,7 @@
             "re:\\b(tep|tapp)\\b",
             "herniorrhaphy"
           ],
-          "note": "The mother's label (\"hernia\") and the groin template must not produce a hernia plan.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"emergency - act now: emergency hernia repair - suspected strangulation - nbm; iv access; fluid resuscitation; iv antibiotics...\" (+1 more)"
+          "note": "The mother's label (\"hernia\") and the groin template must not produce a hernia plan."
         }
       ]
     }

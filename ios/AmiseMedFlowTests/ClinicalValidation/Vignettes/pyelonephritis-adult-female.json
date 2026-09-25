@@ -303,11 +303,7 @@
           "guidelineRefs": [
             "nice-ng111"
           ],
-          "note": "NICE NG111: nitrofurantoin does not reach adequate renal tissue levels.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"nitrofurantoin 100 mg mr bd × 5 days (first-line - st lucia)\""
+          "note": "NICE NG111: nitrofurantoin does not reach adequate renal tissue levels."
         },
         {
           "id": "mgmt-no-appendicectomy",

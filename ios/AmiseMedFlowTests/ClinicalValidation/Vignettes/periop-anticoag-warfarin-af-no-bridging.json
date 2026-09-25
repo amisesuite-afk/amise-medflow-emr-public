@@ -183,11 +183,7 @@
           ],
           "guidelineRefs": [
             "accp-2022"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 13 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)"
+          ]
         }
       ]
     },
@@ -205,11 +201,7 @@
             "accp-2022",
             "acc-2017"
           ],
-          "note": "Stop warfarin 5 days before surgery; check INR the day before.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
+          "note": "Stop warfarin 5 days before surgery; check INR the day before."
         },
         {
           "id": "mgmt-resume-warfarin",

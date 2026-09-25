@@ -169,11 +169,7 @@
             "eupsa-paed-hernia-2022"
           ],
           "note": "Watchful waiting is an adult option; infants have the highest incarceration risk.",
-          "proposedFix": "Add a paediatric inguinal hernia protocol (herniotomy, prompt repair, no mesh, no truss) selected when age < 16.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"...- refer to a paediatric surgeon for herniotomy (no mesh, no truss); infants need early repair because of the incarceration risk.\""
+          "proposedFix": "Add a paediatric inguinal hernia protocol (herniotomy, prompt repair, no mesh, no truss) selected when age < 16."
         },
         {
           "id": "mgmt-no-adult-mesh-repair",

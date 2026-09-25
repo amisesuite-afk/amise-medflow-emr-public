@@ -192,11 +192,7 @@
           ],
           "guidelineRefs": [
             "abs-best-practice-2010"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          ]
         }
       ]
     },

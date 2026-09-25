@@ -213,11 +213,7 @@
           "guidelineRefs": [
             "bche-review-2019"
           ],
-          "note": "Rapid sequence induction without suxamethonium (e.g. rocuronium with sugammadex available).",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+          "note": "Rapid sequence induction without suxamethonium (e.g. rocuronium with sugammadex available)."
         }
       ]
     }

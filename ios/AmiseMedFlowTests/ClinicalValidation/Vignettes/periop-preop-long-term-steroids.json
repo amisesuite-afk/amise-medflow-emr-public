@@ -196,11 +196,7 @@
           "guidelineRefs": [
             "woodcock-steroids-2020"
           ],
-          "note": "Prednisolone ≥5 mg for >4 weeks: hydrocortisone at induction and continued cover until eating and drinking (adrenal crisis risk).",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
+          "note": "Prednisolone ≥5 mg for >4 weeks: hydrocortisone at induction and continued cover until eating and drinking (adrenal crisis risk)."
         }
       ],
       "mustExclude": [

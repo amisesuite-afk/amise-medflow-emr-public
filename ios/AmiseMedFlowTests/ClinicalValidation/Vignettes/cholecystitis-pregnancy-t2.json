@@ -374,11 +374,7 @@
           "guidelineRefs": [
             "fda-2020-nsaid"
           ],
-          "note": "NSAIDs should be avoided from 20 weeks’ gestation.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ...\""
+          "note": "NSAIDs should be avoided from 20 weeks’ gestation."
         },
         {
           "id": "mgmt-no-teratogenic-antibiotic",

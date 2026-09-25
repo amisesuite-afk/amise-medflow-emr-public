@@ -209,11 +209,7 @@
           "guidelineRefs": [
             "bsg-eoe-2022"
           ],
-          "note": "EoE is a histological diagnosis; a normal-looking oesophagus without biopsies misses it.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 5 (ios.pipeline.voi, ios.radiation)"
+          "note": "EoE is a histological diagnosis; a normal-looking oesophagus without biopsies misses it."
         },
         {
           "id": "inv-six-biopsies-two-levels",

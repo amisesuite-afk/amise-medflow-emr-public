@@ -178,11 +178,7 @@
             "aagbi-anaphylaxis-2009",
             "nap6-2018"
           ],
-          "note": "Known latex anaphylaxis: latex-free theatre, ward and equipment.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
+          "note": "Known latex anaphylaxis: latex-free theatre, ward and equipment."
         },
         {
           "id": "mgmt-first-on-list",

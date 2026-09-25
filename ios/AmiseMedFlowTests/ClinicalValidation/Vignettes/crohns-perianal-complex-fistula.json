@@ -214,11 +214,7 @@
           "guidelineRefs": [
             "ascrs-abscess-2022",
             "bsg-ibd-2019"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.radiation)"
+          ]
         }
       ]
     },
@@ -234,11 +230,7 @@
             "ascrs-abscess-2022",
             "bsg-ibd-2019"
           ],
-          "note": "Complex Crohn’s fistula: drain sepsis and place a loose (non-cutting) seton before biologic therapy.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+          "note": "Complex Crohn’s fistula: drain sepsis and place a loose (non-cutting) seton before biologic therapy."
         },
         {
           "id": "mgmt-drainage",

@@ -286,11 +286,7 @@
           "guidelineRefs": [
             "ssc-2021"
           ],
-          "proposedFix": "Blood cultures in the appendicitis protocol for the generalised-peritonitis / septic variant (WSES 2020), or a sepsis protocol for the PANE node sepsis.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation)"
+          "proposedFix": "Blood cultures in the appendicitis protocol for the generalised-peritonitis / septic variant (WSES 2020), or a sepsis protocol for the PANE node sepsis."
         },
         {
           "id": "inv-lactate",

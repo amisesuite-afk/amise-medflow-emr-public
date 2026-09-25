@@ -198,11 +198,7 @@
           "guidelineRefs": [
             "ascrs-anal-scc-2018"
           ],
-          "note": "Tissue diagnosis of the anal lesion itself (EUA and biopsy); a colonoscopy biopsy does not sample it.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          "note": "Tissue diagnosis of the anal lesion itself (EUA and biopsy); a colonoscopy biopsy does not sample it."
         },
         {
           "id": "inv-mri-pelvis",

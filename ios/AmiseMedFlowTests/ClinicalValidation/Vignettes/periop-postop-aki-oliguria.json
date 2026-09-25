@@ -273,11 +273,7 @@
             "kdigo-aki-2012",
             "nice-ng148"
           ],
-          "note": "No NSAID suggestion in established AKI.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"...or solitary kidney → emergency decompression (eau 2024); no nsaids in aki\""
+          "note": "No NSAID suggestion in established AKI."
         },
         {
           "id": "mgmt-no-emergency-laparotomy",

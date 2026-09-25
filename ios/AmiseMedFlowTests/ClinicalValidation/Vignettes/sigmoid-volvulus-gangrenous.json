@@ -267,11 +267,7 @@
           "guidelineRefs": [
             "ascrs-volvulus-2021",
             "wses-volvulus-2023"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+          ]
         },
         {
           "id": "mgmt-antibiotics",
@@ -333,11 +329,7 @@
             "ascrs-volvulus-2021",
             "wses-volvulus-2023"
           ],
-          "note": "Endoscopic detorsion is contraindicated with peritonitis, gangrene or perforation.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"sigmoid volvulus without ischaemia: endoscopic decompression (flexible sigmoidoscopy), then sigmoidectomy in the same admission; gangrene or...\""
+          "note": "Endoscopic detorsion is contraindicated with peritonitis, gangrene or perforation."
         }
       ]
     },

@@ -238,11 +238,7 @@
           "guidelineRefs": [
             "ascrs-fissure-2023"
           ],
-          "note": "Sphincterotomy (or botulinum) for an undiagnosed atypical ulcer risks incontinence and delays a cancer or infection diagnosis.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"if chronic / failed medical: lateral internal sphincterotomy\""
+          "note": "Sphincterotomy (or botulinum) for an undiagnosed atypical ulcer risks incontinence and delays a cancer or infection diagnosis."
         }
       ]
     }

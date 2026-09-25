@@ -142,11 +142,7 @@
             "ese-adrenal-2023",
             "es-phaeo-2014"
           ],
-          "note": "ESE 2023: metanephrines are required for masses >10 HU; an unrecognised phaeochromocytoma is lethal at surgery or biopsy.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)"
+          "note": "ESE 2023: metanephrines are required for masses >10 HU; an unrecognised phaeochromocytoma is lethal at surgery or biopsy."
         },
         {
           "id": "inv-dst",

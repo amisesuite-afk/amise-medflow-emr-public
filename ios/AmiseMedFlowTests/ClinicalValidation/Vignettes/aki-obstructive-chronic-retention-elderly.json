@@ -223,11 +223,7 @@
           "guidelineRefs": [
             "nice-ng148",
             "eau-luts-2024"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
+          ]
         },
         {
           "id": "mgmt-post-obstructive-diuresis",
@@ -241,11 +237,7 @@
             "nice-cg97",
             "eau-luts-2024"
           ],
-          "note": "After decompressing high-pressure chronic retention, diuresis can cause hypovolaemia and electrolyte loss.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
+          "note": "After decompressing high-pressure chronic retention, diuresis can cause hypovolaemia and electrolyte loss."
         },
         {
           "id": "mgmt-urology",

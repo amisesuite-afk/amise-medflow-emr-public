@@ -265,10 +265,9 @@
           ],
           "note": "Warfarin is teratogenic and not used antenatally.",
           "knownGap": [
-            "web",
-            "ios"
+            "web"
           ],
-          "knownGapNote": "The DVT plan says \"LMWH bridging to warfarin (target INR 2–3) if DOAC contraindicated (severe renal failure, pregnancy)\" and lists \"Warfarin 5 mg OD — if DOAC contraindicated\": read literally, it proposes warfarin in pregnancy. | iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"...egnancy safety - no nsaids from 20 weeks, lmwh not doacs or warfarin, no ace inhibitors/arbs, avoid ionising imaging where ultrasound or mri answers...\" (+5 more)",
+          "knownGapNote": "The DVT plan says \"LMWH bridging to warfarin (target INR 2–3) if DOAC contraindicated (severe renal failure, pregnancy)\" and lists \"Warfarin 5 mg OD — if DOAC contraindicated\": read literally, it proposes warfarin in pregnancy.",
           "proposedFix": "Rewrite the DVT protocol line: pregnancy → treatment-dose LMWH throughout pregnancy; warfarin is contraindicated antenatally."
         }
       ]

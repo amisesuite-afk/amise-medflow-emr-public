@@ -200,11 +200,7 @@
           "guidelineRefs": [
             "nice-ng126"
           ],
-          "note": "Woman of reproductive age before CT and theatre.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)"
+          "note": "Woman of reproductive age before CT and theatre."
         }
       ]
     },

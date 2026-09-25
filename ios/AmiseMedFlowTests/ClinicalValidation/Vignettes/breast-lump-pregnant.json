@@ -197,11 +197,7 @@
             "rcog-gtg12-2011",
             "nccn-breast-2025"
           ],
-          "note": "Tamoxifen is teratogenic; it must not be proposed during pregnancy.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"adjuvant: endocrine therapy if er+ (tamoxifen / aromatase inhibitor), herceptin if her2+\""
+          "note": "Tamoxifen is teratogenic; it must not be proposed during pregnancy."
         },
         {
           "id": "mgmt-no-deferral",

@@ -422,10 +422,9 @@
           ],
           "note": "The record holds SBP 82 on noradrenaline, AVPU 'C', creatinine 238 and platelets 88. An auto-filled grade below III under-grades a patient in septic shock until every organ box is ticked by hand.",
           "knownGap": [
-            "ios",
             "web"
           ],
-          "knownGapNote": "iOS auto-fill ignores the organ-dysfunction data in the record (SBP 82 on noradrenaline, AVPU C, creatinine 238, platelets 88) and returns Grade II from WBC alone; web returns \"criteria not met\"."
+          "knownGapNote": "Web auto-fill returns \"criteria not met\" (organ-dysfunction data in the record: SBP 82 on noradrenaline, AVPU C, creatinine 238, platelets 88)."
         },
         {
           "id": "score-qsofa-autofill",
@@ -568,11 +567,7 @@
             "avoid",
             "anaphylaxis"
           ],
-          "note": "The patient has penicillin anaphylaxis. A penicillin in the suggested plan (without an allergy caveat) is a prescribing hazard.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "Plan templates suggest co-amoxiclav / piperacillin-tazobactam regardless of the recorded penicillin anaphylaxis."
+          "note": "The patient has penicillin anaphylaxis. A penicillin in the suggested plan (without an allergy caveat) is a prescribing hazard."
         },
         {
           "id": "mgmt-no-early-cholecystectomy-in-shock",

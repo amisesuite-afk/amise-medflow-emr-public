@@ -179,11 +179,7 @@
           "guidelineRefs": [
             "eau-nmibc-2024"
           ],
-          "note": "Haematuria on anticoagulation is investigated the same way; the anticoagulant does not explain it.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)"
+          "note": "Haematuria on anticoagulation is investigated the same way; the anticoagulant does not explain it."
         },
         {
           "id": "inv-fbc-group",

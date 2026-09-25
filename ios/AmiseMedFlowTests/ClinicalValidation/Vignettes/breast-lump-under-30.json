@@ -165,11 +165,7 @@
             "abs-best-practice-2010",
             "nccn-breast-dx-2025"
           ],
-          "note": "Imaging is part of triple assessment at every age; ultrasound is the modality under 30.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          "note": "Imaging is part of triple assessment at every age; ultrasound is the modality under 30."
         }
       ],
       "mustExclude": [

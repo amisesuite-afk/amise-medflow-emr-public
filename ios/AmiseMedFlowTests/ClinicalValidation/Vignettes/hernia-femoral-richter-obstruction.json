@@ -307,11 +307,7 @@
           ],
           "guidelineRefs": [
             "wses-hernia-2017"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
+          ]
         },
         {
           "id": "mgmt-ng-decompression",
@@ -340,11 +336,7 @@
           "guidelineRefs": [
             "wses-asbo-2017"
           ],
-          "note": "A trial of non-operative (adhesional-SBO) management is wrong for a strangulated hernia.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic\" (+1 more)"
+          "note": "A trial of non-operative (adhesional-SBO) management is wrong for a strangulated hernia."
         }
       ]
     },

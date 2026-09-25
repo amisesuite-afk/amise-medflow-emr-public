@@ -290,11 +290,7 @@
             "age ≥ 12",
             "microgram/kg"
           ],
-          "proposedFix": "Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy...\""
+          "proposedFix": "Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts."
         },
         {
           "id": "mgmt-no-gastroenteritis-discharge",

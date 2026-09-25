@@ -266,11 +266,7 @@
             "over 50 kg",
             "age ≥ 12",
             "microgram/kg"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy...\""
+          ]
         },
         {
           "id": "mgmt-no-appendicectomy",

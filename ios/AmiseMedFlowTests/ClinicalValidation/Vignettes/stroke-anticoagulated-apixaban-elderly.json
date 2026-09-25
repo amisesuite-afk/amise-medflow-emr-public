@@ -227,11 +227,7 @@
           "guidelineRefs": [
             "eso-ivt-2021"
           ],
-          "note": "ESO 2021: no IV thrombolysis within 48 h of a DOAC dose (without specific levels or reversal).",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"thrombolysis (iv alteplase 0.9 mg/kg max 90 mg):\" (+4 more)"
+          "note": "ESO 2021: no IV thrombolysis within 48 h of a DOAC dose (without specific levels or reversal)."
         }
       ]
     }

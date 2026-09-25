@@ -220,11 +220,7 @@
           "guidelineRefs": [
             "ukka-hyperk-2020"
           ],
-          "note": "Potassium 6.2 mmol/L must be corrected (dialysis) before anaesthesia.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
+          "note": "Potassium 6.2 mmol/L must be corrected (dialysis) before anaesthesia."
         },
         {
           "id": "mgmt-dialysis-timing",

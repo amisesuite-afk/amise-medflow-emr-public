@@ -220,11 +220,7 @@
           "guidelineRefs": [
             "nice-ng35"
           ],
-          "note": "Hypercalcaemia, AKI, anaemia and lytic lesions: missed myeloma is a missed cancer diagnosis.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 11 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)"
+          "note": "Hypercalcaemia, AKI, anaemia and lytic lesions: missed myeloma is a missed cancer diagnosis."
         }
       ]
     },

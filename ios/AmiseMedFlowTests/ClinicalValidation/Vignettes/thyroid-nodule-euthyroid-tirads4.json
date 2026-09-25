@@ -171,11 +171,7 @@
             "ata-2015",
             "bta-2014"
           ],
-          "note": "TSH first: it decides between FNA and a radionuclide scan.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          "note": "TSH first: it decides between FNA and a radionuclide scan."
         },
         {
           "id": "inv-us",
@@ -271,11 +267,7 @@
             "acr-tirads-2017",
             "bta-2014"
           ],
-          "note": "The plan or a prompt must recommend ultrasound-guided FNA for a TR4 nodule ≥1.5 cm.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+          "note": "The plan or a prompt must recommend ultrasound-guided FNA for a TR4 nodule ≥1.5 cm."
         }
       ]
     }

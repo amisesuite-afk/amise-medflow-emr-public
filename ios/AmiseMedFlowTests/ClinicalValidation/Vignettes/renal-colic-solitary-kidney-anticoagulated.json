@@ -293,11 +293,7 @@
             "nice-ng148"
           ],
           "note": "AKI on CKD in a solitary kidney, anticoagulated: NSAIDs are contraindicated.",
-          "knownGapNote": "Web: \"Diclofenac 75 mg IM / PR (first-line)\" in plan, panel and medications for AKI on CKD in a solitary kidney on apixaban. | iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"diclofenac 75 mg im or pr (nsaid - first line, reduces ureteric spasm)\"",
-          "proposedFix": "Suppress NSAIDs when eGFR is low, creatinine is rising, or an anticoagulant is recorded.",
-          "knownGap": [
-            "ios"
-          ]
+          "proposedFix": "Suppress NSAIDs when eGFR is low, creatinine is rising, or an anticoagulant is recorded."
         },
         {
           "id": "mgmt-no-conservative-met",

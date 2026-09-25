@@ -268,11 +268,7 @@
             "easl-cirrhosis-2018",
             "ehs-ahs-umbilical-2020"
           ],
-          "note": "Repair without controlling ascites risks leak, recurrence and peritonitis; hepatology co-management is standard.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+          "note": "Repair without controlling ascites risks leak, recurrence and peritonitis; hepatology co-management is standard."
         }
       ],
       "mustExclude": [

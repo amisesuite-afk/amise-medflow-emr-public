@@ -151,11 +151,7 @@
           "guidelineRefs": [
             "ata-2015"
           ],
-          "note": "ATA 2015: for tumours with clinical nodal metastases (cN1), the initial procedure should be total thyroidectomy.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+          "note": "ATA 2015: for tumours with clinical nodal metastases (cN1), the initial procedure should be total thyroidectomy."
         },
         {
           "id": "mgmt-lateral-neck-dissection",
@@ -168,11 +164,7 @@
           "guidelineRefs": [
             "ata-2015"
           ],
-          "note": "Therapeutic lateral neck dissection for biopsy-proven lateral compartment nodes.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+          "note": "Therapeutic lateral neck dissection for biopsy-proven lateral compartment nodes."
         }
       ],
       "mustExclude": [

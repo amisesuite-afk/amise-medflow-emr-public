@@ -279,11 +279,7 @@
           "guidelineRefs": [
             "nice-ng111"
           ],
-          "note": "NICE NG111 lists cefalexin (oral) or cefuroxime (IV) in pregnancy; quinolones are avoided.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"⚠ pregnancy: fluoroquinolone / tetracycline removed (bnf) - e.g. cefalexin for pyelonephritis in pregnancy (...\""
+          "note": "NICE NG111 lists cefalexin (oral) or cefuroxime (IV) in pregnancy; quinolones are avoided."
         },
         {
           "id": "mgmt-no-nitrofurantoin",
@@ -300,11 +296,7 @@
           ],
           "guidelineRefs": [
             "nice-ng111"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"nitrofurantoin 100 mg mr bd × 5 days (first-line - st lucia)\""
+          ]
         },
         {
           "id": "mgmt-no-trimethoprim",

@@ -279,11 +279,7 @@
           "guidelineRefs": [
             "nice-ng133"
           ],
-          "note": "ACE inhibitors/ARBs are contraindicated in pregnancy.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"...y - no nsaids from 20 weeks, lmwh not doacs or warfarin, no ace inhibitors/arbs, avoid ionising imaging where ultrasound or mri answers the question.\" (+2 more)"
+          "note": "ACE inhibitors/ARBs are contraindicated in pregnancy."
         },
         {
           "id": "mgmt-no-nsaid",

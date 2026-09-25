@@ -246,11 +246,7 @@
           "guidelineRefs": [
             "iwgdf-2023-pad"
           ],
-          "note": "With ABPI >1.3 the ABPI cannot exclude PAD; toe pressures/TBPI or imaging are needed.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.voi, ios.pipeline.actions)"
+          "note": "With ABPI >1.3 the ABPI cannot exclude PAD; toe pressures/TBPI or imaging are needed."
         }
       ]
     },
@@ -271,11 +267,7 @@
           "guidelineRefs": [
             "iwgdf-2023-pad"
           ],
-          "note": "Toe pressure <30 mmHg / TBPI <0.25: urgent vascular imaging and consideration of revascularisation.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
+          "note": "Toe pressure <30 mmHg / TBPI <0.25: urgent vascular imaging and consideration of revascularisation."
         }
       ],
       "mustExclude": [

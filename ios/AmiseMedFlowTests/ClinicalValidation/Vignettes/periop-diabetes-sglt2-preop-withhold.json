@@ -179,11 +179,7 @@
             "cpoc-diabetes-2022",
             "fda-sglt2-2020"
           ],
-          "note": "SGLT2 inhibitors are withheld before surgery (CPOC: the day before and the day of surgery; FDA label: at least 3 days for dapagliflozin) because of euglycaemic ketoacidosis.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
+          "note": "SGLT2 inhibitors are withheld before surgery (CPOC: the day before and the day of surgery; FDA label: at least 3 days for dapagliflozin) because of euglycaemic ketoacidosis."
         },
         {
           "id": "mgmt-omit-sulfonylurea",

@@ -163,11 +163,7 @@
             "esge-fb-2016",
             "wses-2019"
           ],
-          "proposedFix": "A protocol for the PANE node food_bolus with emergency OGD within 6 hours for complete obstruction (ESGE 2016 foreign bodies).",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 3 (ios.pipeline.voi, ios.pipeline.actions)"
+          "proposedFix": "A protocol for the PANE node food_bolus with emergency OGD within 6 hours for complete obstruction (ESGE 2016 foreign bodies)."
         }
       ]
     },
@@ -183,11 +179,7 @@
           ],
           "guidelineRefs": [
             "esge-fb-2016"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+          ]
         },
         {
           "id": "mgmt-biopsies-underlying-cause",

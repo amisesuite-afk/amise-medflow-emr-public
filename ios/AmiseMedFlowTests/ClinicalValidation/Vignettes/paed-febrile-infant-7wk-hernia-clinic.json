@@ -183,11 +183,7 @@
             "re:(refer|admi|assess)[^\\n]{0,40}paediatric",
             "re:paediatric[^\\n]{0,30}(team|review|assessment|admission|emergency)",
             "re:pediatric[^\\n]{0,30}(team|review|assessment|admission|emergency)"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
+          ]
         },
         {
           "id": "mgmt-parenteral-antibiotics",

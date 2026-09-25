@@ -244,11 +244,7 @@
           ],
           "guidelineRefs": [
             "nice-ng126"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 5 (ios.pipeline.decisions)"
+          ]
         },
         {
           "id": "inv-thrombophilia",
@@ -286,11 +282,7 @@
           "guidelineRefs": [
             "esvs-2017"
           ],
-          "note": "ESVS 2017: immediate therapeutic anticoagulation for mesenteric venous thrombosis.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
+          "note": "ESVS 2017: immediate therapeutic anticoagulation for mesenteric venous thrombosis."
         },
         {
           "id": "mgmt-stop-cocp",

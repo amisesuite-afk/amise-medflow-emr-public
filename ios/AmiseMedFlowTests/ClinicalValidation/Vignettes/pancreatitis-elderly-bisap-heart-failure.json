@@ -424,11 +424,7 @@
             "acg-2024"
           ],
           "note": "WATERFALL (NEJM 2022) was stopped for harm: aggressive resuscitation (20 mL/kg bolus then 3 mL/kg/h) caused more fluid overload (20.5% vs 6.3%) without benefit. ACG 2024 recommends moderate, goal-directed fluids. A plan that says \"aggressive\" or 250–500 mL/h is a fluid-overload hazard. HFrEF (EF 30%): WATERFALL excluded NYHA II–IV heart failure — the risk of fluid overload is higher still.",
-          "proposedFix": "lib/pane-engine management protocol \"pancreatitis\" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace \"aggressive … 250–500 ml/h\" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine \"acute pancreatitis\" planTemplate.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia...\""
+          "proposedFix": "lib/pane-engine management protocol \"pancreatitis\" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace \"aggressive … 250–500 ml/h\" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine \"acute pancreatitis\" planTemplate."
         },
         {
           "id": "mgmt-no-prophylactic-antibiotics",
@@ -493,11 +489,7 @@
             "aga-2018",
             "apec-2020"
           ],
-          "note": "ERCP in gallstone pancreatitis only for concurrent cholangitis or persistent biliary obstruction (APEC: no benefit from urgent ERCP without cholangitis). An unconditional ERCP line exposes the patient to post-ERCP pancreatitis and perforation.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.soap.plan: \"investigations: lfts, amylase / lipase, mrcp, ercp.\""
+          "note": "ERCP in gallstone pancreatitis only for concurrent cholangitis or persistent biliary obstruction (APEC: no benefit from urgent ERCP without cholangitis). An unconditional ERCP line exposes the patient to post-ERCP pancreatitis and perforation."
         },
         {
           "id": "mgmt-no-appendicectomy",

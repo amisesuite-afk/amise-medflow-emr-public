@@ -290,11 +290,7 @@
           "guidelineRefs": [
             "sfe-steroid-2020"
           ],
-          "note": "Prednisolone 7.5 mg for years: adrenal crisis risk in septic shock; parenteral hydrocortisone.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+          "note": "Prednisolone 7.5 mg for years: adrenal crisis risk in septic shock; parenteral hydrocortisone."
         },
         {
           "id": "mgmt-hold-methotrexate",

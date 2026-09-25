@@ -221,11 +221,7 @@
           ],
           "guidelineRefs": [
             "ascrs-prolapse-2017"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
+          ]
         }
       ]
     }

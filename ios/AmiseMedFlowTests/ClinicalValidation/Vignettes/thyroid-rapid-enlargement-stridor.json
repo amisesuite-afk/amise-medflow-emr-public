@@ -253,11 +253,7 @@
           "guidelineRefs": [
             "ata-atc-2021"
           ],
-          "note": "ATA 2021: core or open biopsy when FNA cannot distinguish anaplastic carcinoma from lymphoma.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          "note": "ATA 2021: core or open biopsy when FNA cannot distinguish anaplastic carcinoma from lymphoma."
         },
         {
           "id": "inv-ct-neck-chest",
@@ -289,11 +285,7 @@
           ],
           "guidelineRefs": [
             "ata-atc-2021"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+          ]
         }
       ],
       "mustExclude": [

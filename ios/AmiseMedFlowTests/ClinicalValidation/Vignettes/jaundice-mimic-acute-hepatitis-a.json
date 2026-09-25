@@ -311,11 +311,7 @@
           "guidelineRefs": [
             "easl-2017-alf"
           ],
-          "note": "INR is the marker that separates acute liver injury from acute liver failure.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.voi)"
+          "note": "INR is the marker that separates acute liver injury from acute liver failure."
         }
       ]
     },

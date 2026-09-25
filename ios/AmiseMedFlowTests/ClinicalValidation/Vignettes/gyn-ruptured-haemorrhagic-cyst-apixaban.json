@@ -276,11 +276,7 @@
             "re:\\bpcc\\b",
             "reversal",
             "re:\\brevers(e|al|ing)\\b"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
+          ]
         },
         {
           "id": "mgmt-stop-apixaban",

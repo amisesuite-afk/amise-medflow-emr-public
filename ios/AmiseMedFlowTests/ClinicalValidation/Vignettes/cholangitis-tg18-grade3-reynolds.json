@@ -393,10 +393,9 @@
           ],
           "note": "The record holds SBP 78 on noradrenaline, AVPU 'V', creatinine 212, INR 1.8 and platelets 74; auto-fill below Grade III under-grades septic shock.",
           "knownGap": [
-            "ios",
             "web"
           ],
-          "knownGapNote": "iOS auto-fill never sets organ-dysfunction fields (returns Grade II from age/temperature/WBC/bilirubin); web returns \"criteria not met\"."
+          "knownGapNote": "Web auto-fill returns \"criteria not met\" (organ-dysfunction data in the record: SBP 78 on noradrenaline, AVPU V, creatinine 212, INR 1.8, platelets 74)."
         },
         {
           "id": "score-qsofa-autofill",

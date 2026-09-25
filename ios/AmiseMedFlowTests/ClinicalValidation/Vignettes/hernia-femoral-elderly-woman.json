@@ -201,11 +201,7 @@
           "guidelineRefs": [
             "herniasurge-2018"
           ],
-          "note": "HerniaSurge: femoral hernias should be repaired urgently/early; laparoscopic repair suggested where expertise exists.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+          "note": "HerniaSurge: femoral hernias should be repaired urgently/early; laparoscopic repair suggested where expertise exists."
         }
       ],
       "mustExclude": [

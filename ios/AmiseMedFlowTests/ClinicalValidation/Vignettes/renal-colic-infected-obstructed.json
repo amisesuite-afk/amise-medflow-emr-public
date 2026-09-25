@@ -365,11 +365,7 @@
           "guidelineRefs": [
             "eau-urolith-2024"
           ],
-          "note": "EAU: definitive stone removal is delayed until the infection has resolved.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"5-10 mm: met + urology follow-up; eswl if no spontaneous passage at 4 weeks\" (+2 more)"
+          "note": "EAU: definitive stone removal is delayed until the infection has resolved."
         },
         {
           "id": "mgmt-no-laparotomy",

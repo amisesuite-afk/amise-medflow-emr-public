@@ -320,11 +320,7 @@
           ],
           "guidelineRefs": [
             "wses-hernia-2017"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan)"
+          ]
         },
         {
           "id": "mgmt-bowel-viability",
