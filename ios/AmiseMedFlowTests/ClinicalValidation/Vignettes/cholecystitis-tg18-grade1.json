@@ -165,9 +165,7 @@
           "severity": "quality",
           "score": "tg18-cholecystitis",
           "guidelineRefs": ["tg18-dx-cholecystitis"],
-          "note": "TG18 severity grading drives the management flowchart.",
-          "knownGap": ["web"],
-          "knownGapNote": "Web CDS has a TG18 cholangitis rule but none for cholecystitis."
+          "note": "TG18 severity grading drives the management flowchart."
         }
       ],
       "values": [

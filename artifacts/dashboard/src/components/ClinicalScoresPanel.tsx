@@ -210,7 +210,8 @@ function TokyoCholangitisCard() {
 // ═══════════════════════════════════════════════════════════════════════════════
 // TOKYO CHOLECYSTITIS PANEL
 // ═══════════════════════════════════════════════════════════════════════════════
-function TokyoCholecystitisCard() {
+/** Also used by ScalesTab (CDS suggestion 'tg18Cholecystitis'). */
+export function TokyoCholecystitisCard() {
   const { extractedLabs, vitals } = useAppContext();
   const record = useTg18Record();
   const auto = useMemo(() => tokyoCholecystitisAutoFill(record), [record]);

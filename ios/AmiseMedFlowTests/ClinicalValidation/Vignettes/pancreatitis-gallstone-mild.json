@@ -288,12 +288,7 @@
           "guidelineRefs": [
             "bisap-2008",
             "acg-2024"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "CDS BISAP rule fires only on a \"pancreatitis\"/\"epigastric pain\" chip plus an alcohol/gallstone/hyperlipidaemia comorbidity; it ignores the locked working diagnosis and the lipase result.",
-          "proposedFix": "clinical-cds.ts bisap rule: also trigger on workingDiagnosis.diseaseId === \"pancreatitis\" or lipase/amylase ≥3 × ULN."
+          ]
         }
       ]
     },

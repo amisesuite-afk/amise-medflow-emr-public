@@ -9,6 +9,8 @@
  *  - Each suggestion carries the triggering evidence so the clinician understands why
  */
 
+import { containsAnyAffirmed } from '@workspace/triage-engine';
+
 export type CdsUrgency = 'urgent' | 'relevant' | 'consider';
 
 export interface CdsSuggestion {
@@ -61,6 +63,13 @@ function hasLab(ctx: CdsContext, ...keys: string[]): boolean {
   const resultsText = Object.entries(ctx.investigationResults)
     .map(([k, v]) => `${k} ${v}`.toLowerCase()).join(' ');
   return keys.some(k => resultsText.includes(k.toLowerCase()));
+}
+
+/** The working diagnosis (locked or clinician-set disease id) or the assessment names this condition. */
+function dxIs(ctx: CdsContext, diseaseIds: string[], terms: Array<string | RegExp>): boolean {
+  const id = ctx.workingDiagnosis?.diseaseId ?? '';
+  if (id && diseaseIds.some(d => id === d || id.startsWith(`${d}_`))) return true;
+  return containsAnyAffirmed(ctx.assessment ?? '', terms);
 }
 
 function vitalPresent(ctx: CdsContext, key: string): boolean {
@@ -176,6 +185,23 @@ const RULES: CdsRule[] = [
           "2 features of Charcot's triad present";
         return triad;
       }
+      return null;
+    },
+  },
+
+  // ── TG18 Cholecystitis (Yokoe 2018) ──────────────────────────────────────────
+  // The calculator is the ClinicalScoresPanel card (pre-filled from the record, tg18-autofill.ts).
+  {
+    scaleKey: 'tg18Cholecystitis',
+    title: 'TG18 Acute Cholecystitis — Diagnosis and Severity',
+    urgency: 'urgent',
+    needsLabs: false,
+    categoryTag: 'Biliary',
+    trigger: ctx => {
+      if (dxIs(ctx, ['cholecystitis'], [/\b(acute |calculous |acalculous )?cholecystitis\b/]))
+        return 'acute cholecystitis is the working diagnosis — TG18 grade sets the timing of cholecystectomy or drainage';
+      if (hasSym(ctx, 'right upper quadrant pain', 'ruq pain') && hasSym(ctx, 'fever'))
+        return 'right upper quadrant pain with fever — TG18 diagnostic criteria for acute cholecystitis';
       return null;
     },
   },
@@ -647,6 +673,8 @@ const RULES: CdsRule[] = [
     needsLabs: true,
     categoryTag: 'GI / Hepatobiliary',
     trigger: ctx => {
+      if (dxIs(ctx, ['pancreatitis'], [/\bacute (biliary |gallstone |alcoholic |necrotising |necrotizing )?pancreatitis\b/, /\bpancreatitis\b/]))
+        return 'acute pancreatitis is the working diagnosis — BISAP within 24 hours for severity (mortality risk) and disposition';
       if (hasSym(ctx, 'pancreatitis', 'acute pancreatitis', 'epigastric pain') &&
           hasComorbidity(ctx, 'pancreatitis', 'alcohol', 'gallstones', 'hyperlipidaemia'))
         return 'pancreatitis presentation — BISAP for 24-hour severity and ICU disposition decision';

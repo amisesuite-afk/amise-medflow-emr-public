@@ -56,7 +56,7 @@ import type { DxItem, EngineOutputs, Level, ScoreForm, SourcedText, Vignette } f
 
 /** CDS scaleKey → canonical score key. Unlisted keys are reported as 'web:<key>'. */
 export const WEB_SCALE_TO_CANONICAL: Record<string, string> = {
-  alvarado: 'alvarado', tg18Cholangitis: 'tg18-cholangitis', asgeCbd: 'asge-cbd', glasgowBlatchford: 'glasgow-blatchford',
+  alvarado: 'alvarado', tg18Cholangitis: 'tg18-cholangitis', tg18Cholecystitis: 'tg18-cholecystitis', asgeCbd: 'asge-cbd', glasgowBlatchford: 'glasgow-blatchford',
   preRockall: 'rockall', qsofa: 'qsofa', news2: 'news2', bisap: 'bisap', ranson: 'ranson', asa: 'asa', rcri: 'rcri',
   caprini: 'caprini', cfs: 'cfs', childPugh: 'child-pugh', meld: 'meld', wellsPe: 'wells-pe', wellsDvt: 'wells-dvt',
   curb65: 'curb65', must: 'must', ppossuml: 'p-possum', forrest: 'forrest', clavienDindo: 'clavien-dindo', gcs: 'gcs',

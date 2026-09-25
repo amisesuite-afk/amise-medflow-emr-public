@@ -54,6 +54,7 @@ import {
   type ScaleResult,
 } from '@/lib/clinical-scales';
 import { getCdsSuggestions, type CdsContext } from '@/lib/clinical-cds';
+import { TokyoCholecystitisCard } from '@/components/ClinicalScoresPanel';
 
 // ── Context-derive helpers for pre-population ─────────────────────────────────
 // Cards call useAppContext() and use these to seed useState at mount (lazy init).
@@ -1951,6 +1952,7 @@ const SCALE_COMPONENTS: Record<string, React.FC> = {
   wellsDvt:         WellsDvtCard,
   abcd2:            Abcd2Card,
   tg18Cholangitis:  Tg18Card,
+  tg18Cholecystitis: TokyoCholecystitisCard,
   asgeCbd:          AsgeCbdCard,
   wagner:           WagnerCard,
   curb65:           Curb65Card,
@@ -1996,6 +1998,7 @@ const ALL_SCALE_TITLES: Record<string, string> = {
   wellsDvt:         'Wells DVT Score — Deep Vein Thrombosis',
   abcd2:            'ABCD² Score — TIA Stroke Risk',
   tg18Cholangitis:  'TG18 Cholangitis Severity',
+  tg18Cholecystitis: 'TG18 Acute Cholecystitis — Diagnosis and Severity',
   asgeCbd:          'ASGE CBD Stone Probability',
   wagner:           'Wagner Classification — Diabetic Foot',
   curb65:           'CURB-65 — Pneumonia Severity',

@@ -383,11 +383,7 @@
           "score": "tg18-cholecystitis",
           "guidelineRefs": [
             "tg18-dx-cholecystitis"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No TG18 cholecystitis CDS rule on web."
+          ]
         },
         {
           "id": "score-rec-news2",

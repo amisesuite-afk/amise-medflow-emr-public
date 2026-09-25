@@ -294,12 +294,7 @@
           "guidelineRefs": [
             "bisap-2008",
             "acg-2024"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "BISAP not suggested (CDS rule ignores the working diagnosis); 12 other scales are.",
-          "proposedFix": "clinical-cds.ts bisap rule: trigger on the working diagnosis."
+          ]
         }
       ]
     },
