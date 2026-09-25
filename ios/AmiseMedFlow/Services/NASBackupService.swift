@@ -126,6 +126,10 @@ final class NASBackupService: ObservableObject {
     @Published var backupError: String?     = nil
     @Published var connectionStatus: NASConnectionStatus = .unconfigured
     @Published private(set) var recentEvents: [NASBackupEvent] = []
+    /// Document upload progress while a backup runs; nil otherwise (NASBackupService+Documents).
+    @Published var documentProgress: NASDocumentProgress? = nil
+    /// Documents part of the last backup run (counts and sizes only; kept in UserDefaults).
+    @Published var lastDocumentsSummary: NASDocumentsSummary? = NASDocumentsSummary.loadSaved()
 
     var isConfigured: Bool {
         !serverURL.trimmingCharacters(in: .whitespaces).isEmpty
@@ -149,6 +153,17 @@ final class NASBackupService: ObservableObject {
         cfg.requestCachePolicy    = .reloadIgnoringLocalCacheData
         cfg.timeoutIntervalForRequest  = 30
         cfg.timeoutIntervalForResource = 120
+        return URLSession(configuration: cfg)
+    }()
+
+    /// For document files: a large PDF or photo over Tailscale can take longer than the
+    /// 120-second limit of `session`.
+    lazy var documentSession: URLSession = {
+        let cfg = URLSessionConfiguration.default
+        cfg.requestCachePolicy    = .reloadIgnoringLocalCacheData
+        cfg.urlCache              = nil
+        cfg.timeoutIntervalForRequest  = 60
+        cfg.timeoutIntervalForResource = 1_800
         return URLSession(configuration: cfg)
     }()
 
@@ -190,7 +205,9 @@ final class NASBackupService: ObservableObject {
 
     // MARK: - Backup
 
-    /// Exports all SwiftData records to the NAS as timestamped JSON bundles.
+    /// Exports all SwiftData records to the NAS as timestamped JSON bundles, then every patient
+    /// document's file (documents/ + documents.json). A document upload that fails part-way leaves
+    /// the backup marked incomplete (backupError, documents.json `complete: false`).
     /// Safe to call from a `Task {}` in a SwiftUI view; all state updates run on MainActor.
     func backup(context: ModelContext) async {
         guard isConfigured else { return }
@@ -202,7 +219,7 @@ final class NASBackupService: ObservableObject {
             let timestamp = ISO8601DateFormatter().string(from: .now)
                 .replacingOccurrences(of: ":", with: "")
                 .replacingOccurrences(of: ".", with: "")
-            let base    = "medflow-backups"
+            let base    = NASDocumentBackup.backupsBase
             let dirPath = "\(base)/\(timestamp)"
 
             try await ensureDirectory(path: base)
@@ -252,12 +269,27 @@ final class NASBackupService: ObservableObject {
             AuditLog.record("export", "document", details: ["kind": "nas_backup",
                                                             "patients": "\(full.patients.count)"])
 
+            // Patient documents and photos, one file at a time. Never throws: a failure part-way
+            // is recorded in documents.json and the summary as incomplete.
+            let docs = await backupDocuments(context: context, dirPath: dirPath)
+            totalBytes += docs.uploadedBytes
+
             let total = patients.count + notes.count + prescriptions.count + vitals.count
-            lastBackupAt    = .now
-            lastBackupCount = total
             connectionStatus = .ok
 
-            let event = NASBackupEvent(at: .now, recordCount: total, sizeBytes: totalBytes, success: true, errorMessage: nil)
+            let event: NASBackupEvent
+            if docs.complete {
+                lastBackupAt    = .now
+                lastBackupCount = total
+                event = NASBackupEvent(at: .now, recordCount: total, sizeBytes: totalBytes, success: true, errorMessage: nil)
+            } else {
+                // Records are on the NAS; documents are not all there. Not counted as a
+                // successful backup, and Verify reports it as incomplete.
+                let message = "Backup incomplete: records saved, but only \(docs.documentCount) of "
+                    + "\(docs.expectedCount) documents (\(docs.failureMessage ?? "unknown error")). Tap Backup Now to retry."
+                backupError = message
+                event = NASBackupEvent(at: .now, recordCount: total, sizeBytes: totalBytes, success: false, errorMessage: message)
+            }
             recentEvents.insert(event, at: 0)
             if recentEvents.count > 10 { recentEvents = Array(recentEvents.prefix(10)) }
 

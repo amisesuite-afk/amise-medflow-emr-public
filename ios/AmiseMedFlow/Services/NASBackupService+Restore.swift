@@ -6,6 +6,7 @@
 // (demographics, NOK, allergies, exam, investigations, procedure forms, pathway data), not the
 // summary DTOs of the original backup. Restore goes through PeerSyncService's apply* merge,
 // which only adds what is missing and never replaces newer data on the device.
+// Documents and photos (files + documents.json) are handled in NASBackupService+Documents.swift.
 
 import Foundation
 import SwiftData
@@ -80,8 +81,10 @@ extension NASBackupService {
 
     // MARK: - Verify (non-destructive restore test)
 
-    /// Downloads the latest backup, decodes every record and compares with this device.
-    /// Nothing on the device is changed.
+    /// Downloads the latest backup, decodes every record and compares with this device, then
+    /// checks the documents (manifest counts and file SHA-256, NASBackupService+Documents).
+    /// Nothing on the device or the NAS is changed. The message starts with "Backup OK" only
+    /// when records and documents are both complete and verified.
     func verifyLatestBackup(context: ModelContext) async -> String {
         guard let dir = lastBackupPath else {
             return "No full backup yet — tap Backup Now first."
@@ -91,10 +94,21 @@ extension NASBackupService {
             let localCodes = Set(((try? context.fetch(FetchDescriptor<Patient>())) ?? [])
                 .filter(\.isLive).map { $0.syncCode.isEmpty ? $0.id.uuidString : $0.syncCode })
             let missingHere = b.patients.filter { !localCodes.contains($0.syncCode) }.count
-            UserDefaults.standard.set(Date.now, forKey: Self.lastVerifiedKey)
-            AuditLog.record("export", "document", details: ["kind": "backup_verify", "patients": "\(b.patients.count)"])
-            return "Backup OK and readable: \(b.summary)."
-                + (missingHere > 0 ? " \(missingHere) patient(s) in the backup are not on this device." : "")
+            let docs = await verifyDocuments(dirPath: dir)
+            if docs.check == .verified {
+                UserDefaults.standard.set(Date.now, forKey: Self.lastVerifiedKey)
+            }
+            AuditLog.record("export", "document", details: ["kind": "backup_verify", "patients": "\(b.patients.count)",
+                                                            "documents_check": "\(docs.check)"])
+            let missingNote = missingHere > 0 ? " \(missingHere) patient(s) in the backup are not on this device." : ""
+            let head: String
+            switch docs.check {
+            case .verified:    head = "Backup OK and readable: \(b.summary). Documents:"
+            case .notInBackup: head = "Backup records readable (\(b.summary)), but documents are missing."
+            case .incomplete:  head = "Backup INCOMPLETE — records readable (\(b.summary)); documents:"
+            case .damaged:     head = "Backup PROBLEM — records readable (\(b.summary)); documents:"
+            }
+            return head + " " + docs.message + missingNote
         } catch {
             return "Backup could not be read back: \(error.localizedDescription)"
         }
@@ -118,7 +132,11 @@ extension NASBackupService {
             let after = (try? context.fetch(FetchDescriptor<Patient>()).count) ?? 0
             AuditLog.record("create", "patient", details: ["kind": "backup_restore",
                                                            "patients_added": "\(max(0, after - before))"])
-            return "Restore complete: \(max(0, after - before)) patient(s) added; notes, prescriptions, vitals and billing merged."
+            // Documents after the patients, so each links to its (possibly just restored) patient.
+            let docs = await restoreMissingDocuments(context: context, dirPath: dir)
+            return (docs.ok ? "Restore complete" : "Restore partly complete")
+                + ": \(max(0, after - before)) patient(s) added; notes, prescriptions, vitals and billing merged. "
+                + docs.message
         } catch {
             return "Restore failed: \(error.localizedDescription)"
         }

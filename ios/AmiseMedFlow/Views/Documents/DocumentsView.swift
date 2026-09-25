@@ -236,6 +236,8 @@ struct DocumentsView: View {
                         AuditLog.record("delete", "document", patient: patient,
                                         resourceId: docs[$0].remoteId ?? docs[$0].id.uuidString)
                         SyncTombstones.add(docs[$0].remoteId, in: .documents)
+                        // A NAS restore must not bring a deleted document back.
+                        NASDocumentBackup.recordDeletedDocument(code: docs[$0].id.uuidString)
                         context.delete(docs[$0])
                     }
                 }

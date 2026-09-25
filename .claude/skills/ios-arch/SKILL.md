@@ -146,6 +146,21 @@ stamp. Tests: `SyncCompletenessTests.swift`, `SyncMergeTests.swift`.
 `KCHelper`; URL in `UserDefaults`. Creates `medflow-backups/<timestamp>/` with
 `patients.json`, `notes.json`, `prescriptions.json`, `vitals.json`,
 `manifest.json`. Works over Tailscale transparently.
+Documents and photos (`PatientDocument.localData`, stored inline in SwiftData; there is no
+separate patient photo) go to `documents/<doc id>.<ext>` plus `documents.json`
+(`DocumentsManifest`: code = `PatientDocument.id`, patient syncCode, name, type, size, SHA-256,
+`path` relative to `medflow-backups/`). Pure logic in `NASDocumentBackup.swift`, network and
+SwiftData in `NASBackupService+Documents.swift`, tests `NASDocumentsBackupTests.swift`.
+- One file at a time, each read in its own `ModelContext` so its data is released after upload.
+- An unchanged file (same SHA-256 and size as the last `documents.json`, and HEAD finds it) is not
+  uploaded again: the entry points at the earlier folder. Never delete older backup folders.
+- A WebDAV failure part-way: `documents.json` is written with `complete: false`, `backupError`
+  is set, `lastBackupAt` is not advanced, and Verify says "Backup INCOMPLETE".
+- Verify downloads every file (or 30 when over 150 MB) and checks the SHA-256.
+- Restore is additive: inserts missing documents (id restored from the code, linked by patient
+  syncCode), adds file data only to a record with none, and skips documents deleted here
+  (`NASDocumentBackup.recordDeletedDocument`, called from DocumentsView's delete).
+- Nothing on the NAS or the device is deleted or overwritten.
 
 **Tailnet** (console.tailscale.com):
 - `amise-storage` (NAS, Linux) → `100.119.29.97`

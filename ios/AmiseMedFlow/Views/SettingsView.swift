@@ -238,6 +238,33 @@ struct SettingsView: View {
                         }
                     }
 
+                    // Documents and photos in the last backup run (NASBackupService+Documents).
+                    if let docs = nasBackup.lastDocumentsSummary, !nasBackup.isBackingUp {
+                        LabeledContent("Documents") {
+                            VStack(alignment: .trailing, spacing: 2) {
+                                Text("\(docs.fileCount) · \(NASDocumentBackup.megabytes(docs.totalBytes))")
+                                    .foregroundStyle(docs.complete ? Color.secondary : Color.orange)
+                                Text(docs.complete
+                                     ? "\(docs.uploadedCount) uploaded, \(docs.reusedCount) unchanged · \(Int(docs.seconds.rounded())) s"
+                                     : "Incomplete: \(docs.documentCount) of \(docs.expectedCount) saved")
+                                    .font(.caption2)
+                                    .foregroundStyle(docs.complete ? Color.secondary : Color.orange)
+                            }
+                        }
+                    }
+
+                    if let progress = nasBackup.documentProgress {
+                        VStack(alignment: .leading, spacing: 4) {
+                            ProgressView(value: Double(progress.done), total: Double(max(progress.total, 1)))
+                                .tint(AMColor.accent)
+                            Text(progress.total == 0
+                                 ? "Preparing documents…"
+                                 : "Documents \(progress.done) of \(progress.total) · \(NASDocumentBackup.megabytes(progress.uploadedBytes)) sent")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
                     if let err = nasBackup.backupError {
                         Label(err, systemImage: "exclamationmark.triangle")
                             .foregroundStyle(.red)
@@ -304,7 +331,7 @@ struct SettingsView: View {
                 } header: {
                     Text("NAS Backup")
                 } footer: {
-                    Text("Backs up all patient records to a Synology, QNAP, or any WebDAV server.\n\nSynology DSM: Control Panel → File Services → WebDAV → Enable. Port 5005 (HTTP) or 5006 (HTTPS).\n\nExample — over Tailscale: http://your-nas:5005 (Tailscale machine name) or http://100.x.y.z:5005 (its Tailscale IP). If this device is on the same Tailnet as the NAS, backup works from any network automatically.")
+                    Text("Backs up all patient records, documents and photos to a Synology, QNAP, or any WebDAV server. Unchanged documents are not uploaded again: later backups point to the copy in an earlier backup folder, so keep the older folders.\n\nSynology DSM: Control Panel → File Services → WebDAV → Enable. Port 5005 (HTTP) or 5006 (HTTPS).\n\nExample — over Tailscale: http://your-nas:5005 (Tailscale machine name) or http://100.x.y.z:5005 (its Tailscale IP). If this device is on the same Tailnet as the NAS, backup works from any network automatically.")
                 }
 
                 // MARK: Practice
@@ -392,7 +419,7 @@ struct SettingsView: View {
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("Adds patients, notes, prescriptions, vitals and billing from the latest NAS backup that are missing on this device. Nothing already on the device is replaced by older backup data.")
+                Text("Adds patients, notes, prescriptions, vitals, billing, documents and photos from the latest NAS backup that are missing on this device. Nothing already on the device is replaced by older backup data, and documents deleted on this device are not brought back.")
             }
             .sheet(isPresented: $showLogin) { LoginView() }
             .sheet(isPresented: $showPairing) {
