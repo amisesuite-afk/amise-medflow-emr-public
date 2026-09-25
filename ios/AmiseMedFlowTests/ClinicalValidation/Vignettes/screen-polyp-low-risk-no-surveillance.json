@@ -101,11 +101,6 @@
             "routine screening",
             "re:10 ?years"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No post-polypectomy surveillance logic exists on web: D12.6 maps to no protocol, and the only colorectal output is the generic age-≥50 prompt ('Colonoscopy — CRC screening', 'FOBT every 2 years'), which ignores the colonoscopy just done.",
-          "proposedFix": "Add a post-polypectomy surveillance helper (BSG 2020 / MSTF 2020 tables) driven by number, size and histology of polyps, and suppress the routine screening prompt when a colonoscopy was done recently.",
           "unverified": [
             "ios"
           ]

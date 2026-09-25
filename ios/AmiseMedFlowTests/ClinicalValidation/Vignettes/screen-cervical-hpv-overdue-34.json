@@ -89,11 +89,6 @@
           "match": [
             "hpv"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: computeClinicalPrompts preventative prompts are fixed age/sex rules: cervical_smear offers only 'Cervical smear — confirm up to date … every 3 years (21–65)' and 'Refer gynaecology — cervical smear overdue'; HPV testing is never mentioned.",
-          "proposedFix": "From 30, offer primary HPV testing every 5 years (WHO 2021 / USPSTF 2018); cytology every 3 years at 21–29; screening can be done in the practice rather than by gynaecology referral.",
           "unverified": [
             "ios"
           ]

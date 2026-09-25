@@ -129,14 +129,9 @@
             "nice-ng45"
           ],
           "note": "PSA is not a pre-operative test (NICE NG45) and there are no urinary symptoms.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "'PSA (M)' comes from the psa_discussion preventative prompt (male ≥50) and the hernia template's pre-op step ('PSA if male ≥ 50 and not done').",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Remove PSA from the hernia pre-operative step; keep PSA discussion as an opt-in wellness prompt outside the surgical plan."
+          ]
         }
       ]
     },

@@ -91,11 +91,6 @@
             "urea breath",
             "stool antigen"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No prompt reads a family history of gastric cancer (the 'Gastric cancer' family-history chip triggers nothing — checked by calling computeClinicalPrompts directly), and there is no H. pylori screening prompt.",
-          "proposedFix": "Add: first-degree relative with gastric cancer → non-invasive H. pylori test (UBT/stool antigen) and eradication (Maastricht VI).",
           "unverified": [
             "ios"
           ]

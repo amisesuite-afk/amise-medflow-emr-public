@@ -200,11 +200,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No output mentions iron deficiency: the triage cancer screen’s IDA criterion looks for \"anaemia/pale/unusually tired\" in symptom chips (no such chip exists) and never reads Hb/ferritin; the prompts fire on Hb only below 8 g/dL."
+          ]
         }
       ]
     },
@@ -222,11 +218,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No colonoscopy requested for IDA (D50.9 has no protocol; no lab-driven IDA rule)."
+          ]
         },
         {
           "id": "inv-ogd",
@@ -260,11 +252,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No coeliac serology for IDA."
+          ]
         }
       ]
     },
@@ -286,11 +274,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No iron replacement output."
+          ]
         }
       ]
     }

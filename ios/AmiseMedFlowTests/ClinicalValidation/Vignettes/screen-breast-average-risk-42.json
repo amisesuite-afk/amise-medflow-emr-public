@@ -133,11 +133,6 @@
             "re:2-yearly",
             "re:two-yearly"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: computeClinicalPrompts preventative prompts are fixed age/sex rules: mammogram_check says 'Annual mammogram recommended from age 40' and '> 1 year for 40–49' (USPSTF 2024: biennial 40–74).",
-          "proposedFix": "Change the mammogram_check rationale/interval to biennial for 40–74.",
           "unverified": [
             "ios"
           ]

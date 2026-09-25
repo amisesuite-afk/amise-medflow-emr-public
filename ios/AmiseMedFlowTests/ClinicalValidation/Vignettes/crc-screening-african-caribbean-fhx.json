@@ -120,10 +120,9 @@
             "uspstf-2021",
             "acg-screen-2021"
           ],
-          "note": "USPSTF 2021 / ACG 2021: average-risk screening from 45. ACG 2021: one FDR with CRC diagnosed < 60 (father at 58) → colonoscopy from age 40 (or 10 years before the relative’s age at diagnosis), repeated every 5 years — so he is overdue on the ACG reading. BSG 2020 (UK) would not add colonoscopic surveillance for a single FDR diagnosed ≥ 50. The practice’s policy needs the surgeon’s decision. Not observable in the web harness: the dashboard feeds the Family History field (ClinicalPromptsStrip familyHistory) to computeClinicalPrompts, but the vignette schema has no family-history input, so web-runner passes []. In the dashboard the \"FHx colorectal cancer, age 35–49\" prompt would probably add a colonoscopy. Needs a familyHistory input in the schema and both runners. Without a family history there is no screening prompt before 50: the average-risk \"colorectal_screen\" prompt starts at age 50 (USPSTF 2021 and ACG 2021: 45) and offers FOBT every 2 years rather than annual FIT.",
+          "note": "USPSTF 2021 / ACG 2021: average-risk screening from 45. ACG 2021: one FDR with CRC diagnosed < 60 (father at 58) → colonoscopy from age 40 (or 10 years before the relative’s age at diagnosis), repeated every 5 years — so he is overdue on the ACG reading. BSG 2020 (UK) would not add colonoscopic surveillance for a single FDR diagnosed ≥ 50. The practice’s policy needs the surgeon’s decision. Not observable in the web harness: the dashboard feeds the Family History field (ClinicalPromptsStrip familyHistory) to computeClinicalPrompts, but the vignette schema has no family-history input, so web-runner passes []. In the dashboard the \"FHx colorectal cancer, age 35–49\" prompt would probably add a colonoscopy. Needs a familyHistory input in the schema and both runners. Without a family history there is no screening prompt before 50: the average-risk \"colorectal_screen\" prompt starts at age 50 (USPSTF 2021 and ACG 2021: 45) and offers FOBT every 2 years rather than annual FIT. Web, 2026-09-25 (fix-web-screening): now observed in the harness — the preventive-screening engine reads the \"Family history: …\" and \"Lynch syndrome\" comorbidity entries, which the dashboard passes too; web removed from unverified.",
           "unverified": [
-            "ios",
-            "web"
+            "ios"
           ]
         }
       ]

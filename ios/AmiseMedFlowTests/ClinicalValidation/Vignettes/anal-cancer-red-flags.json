@@ -247,11 +247,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No HIV test is suggested for anal cancer."
+          ]
         }
       ]
     },

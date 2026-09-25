@@ -154,11 +154,7 @@
         "atLeast": "priority",
         "unverified": [
           "ios"
-        ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Triage routine (score 0): no rule for blood-stained nipple discharge."
+        ]
       },
       "redFlags": [
         {
@@ -175,12 +171,7 @@
           "note": "NICE NG12: aged 50 and over with, in one breast only, nipple discharge, retraction or other changes of concern.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "screenForCancer only counts nipple discharge together with a lump; NICE NG12 (≥50, unilateral nipple discharge) is not implemented. Triage score 0, routine.",
-          "proposedFix": "Add the NG12 criterion \"aged ≥50 with nipple discharge, retraction or other changes of concern in one breast only\" to screenForCancer."
+          ]
         }
       ]
     },
@@ -198,12 +189,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "N64.52 maps to no protocol and PANE did not reach duct_ectasia, so no imaging is proposed.",
-          "proposedFix": "Map N64.5x (nipple discharge) to the duct_ectasia / nipple-discharge protocol."
+          ]
         },
         {
           "id": "inv-uss",
@@ -219,11 +205,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "As above: no retroareolar ultrasound proposed."
+          ]
         }
       ]
     },

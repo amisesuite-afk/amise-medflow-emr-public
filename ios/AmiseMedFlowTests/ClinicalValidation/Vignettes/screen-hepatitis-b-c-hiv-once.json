@@ -87,11 +87,6 @@
             "hcv",
             "hep c"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Hepatitis serology is suggested only inside the jaundice/liver/hepatic-lesion prompts; there is no universal once-in-adulthood HCV, HBV or HIV screening prompt (the iOS ScreeningEngine has HCV 18–79 and HIV 15–65).",
-          "proposedFix": "Add blood-borne-virus screening prompts: HCV antibody once 18–79, HBV triple panel once ≥ 18, HIV 15–65.",
           "unverified": [
             "ios"
           ]
@@ -108,11 +103,6 @@
             "hep b",
             "hbv"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "See inv-hcv: no universal HBV screening prompt.",
-          "proposedFix": "See inv-hcv.",
           "unverified": [
             "ios"
           ]
@@ -126,11 +116,6 @@
           "match": [
             "re:\\bhiv\\b"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "See inv-hcv: no HIV screening prompt.",
-          "proposedFix": "See inv-hcv.",
           "unverified": [
             "ios"
           ]

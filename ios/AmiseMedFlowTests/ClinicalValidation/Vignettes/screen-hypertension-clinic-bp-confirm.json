@@ -92,11 +92,6 @@
             "home bp",
             "out-of-office"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No output confirms the diagnosis out of office: there is no prompt for a clinic BP of 140–179 systolic (hypertensive_urgency starts at SBP ≥ 180; htn_metabolic needs a recorded hypertension comorbidity).",
-          "proposedFix": "Add a raised-clinic-BP prompt (140/90–179/119): ABPM (or HBPM) to confirm, cardiovascular risk estimate and target-organ tests (NICE NG136).",
           "unverified": [
             "ios"
           ]
@@ -114,11 +109,6 @@
             "albumin creatinine",
             "microalbumin"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Urine ACR is suggested only when 'hypertension' is already recorded as a comorbidity (htn_metabolic); a first raised reading gets nothing.",
-          "proposedFix": "Same raised-clinic-BP prompt.",
           "unverified": [
             "ios"
           ]
@@ -138,11 +128,6 @@
             "re:cardiovascular risk (score|calculat|estimat|assessment)",
             "framingham"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No formal risk score is suggested; the only related text is the wellness panel's 'Document BP, BMI, waist circumference — cardiovascular risk profiling'.",
-          "proposedFix": "Suggest QRISK3 (or the pooled cohort equations) with the lipid profile.",
           "unverified": [
             "ios"
           ]

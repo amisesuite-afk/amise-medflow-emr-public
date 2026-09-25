@@ -117,11 +117,6 @@
             "recommend against",
             "not indicated"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: computeClinicalPrompts preventative prompts are fixed age/sex rules: psa_discussion fires for every man ≥ 50 with no upper age limit and adds 'PSA (M)' to investigations at 81 (USPSTF 2018 grade D ≥ 70).",
-          "proposedFix": "Limit psa_discussion to 55–69 (shared decision), and show 'PSA screening not recommended ≥ 70' above that age.",
           "unverified": [
             "ios"
           ]
@@ -145,11 +140,6 @@
             "prior screening",
             "overall health"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: colorectal_screen has no upper age limit and no individualisation text for 76–85 (USPSTF grade C).",
-          "proposedFix": "Add an age ≥ 76 branch: 'individual decision — overall health, life expectancy and prior screening'; none after 85.",
           "unverified": [
             "ios"
           ]
@@ -170,11 +160,6 @@
             "not recommended",
             "recommend against"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: '• PSA discussion — document informed consent to proceed with test.' at 81.",
-          "proposedFix": "Limit psa_discussion to 55–69 (USPSTF 2018).",
           "unverified": [
             "ios"
           ]
@@ -196,11 +181,6 @@
             "selective",
             "life expectancy"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: '• Colonoscopy — CRC screening, age ≥ 50.' and 'Colonoscopy every 10 years' at 81 after a normal colonoscopy at 71.",
-          "proposedFix": "Stop the routine colorectal_screen prompt at 75; individualise 76–85.",
           "unverified": [
             "ios"
           ]

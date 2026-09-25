@@ -133,11 +133,6 @@
             "colorectal cancer screening",
             "crc screening"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: computeClinicalPrompts preventative prompts are fixed age/sex rules: the colorectal_screen prompt starts at age ≥ 50 ('FOBT every 2 years or colonoscopy every 10 years'); at 46 nothing about colorectal screening is suggested (USPSTF/ACG 2021 start at 45).",
-          "proposedFix": "Lower the colorectal_screen threshold to 45 (USPSTF 2021 grade B), use 'FIT yearly' rather than 'FOBT every 2 years', and stop at 75 unless individualised.",
           "unverified": [
             "ios"
           ]

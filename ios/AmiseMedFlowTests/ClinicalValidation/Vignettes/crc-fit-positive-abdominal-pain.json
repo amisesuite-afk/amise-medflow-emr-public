@@ -221,12 +221,7 @@
           "note": "The FIT result is the only red flag; the engines must read it.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No engine reads a FIT result: the lab is recorded but neither the triage cancer screen, clinical prompts nor PANE/CDS use it, and no rule implements the NICE DG56 threshold (≥ 10 µg Hb/g).",
-          "proposedFix": "Add a FIT rule (lab \"FIT\"/\"faecal immunochemical\"): value ≥ 10 µg Hb/g → suspected colorectal cancer pathway prompt (colonoscopy/CTC), independent of symptoms (NICE DG56; BSG/ACPGBI 2022). Record < 10 as \"does not exclude\" when there is a mass, IDA or ongoing concern."
+          ]
         }
       ]
     },
@@ -244,12 +239,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Nothing requests colonoscopy: R19.5 has no protocol and no rule reads the FIT. No engine reads a FIT result: the lab is recorded but neither the triage cancer screen, clinical prompts nor PANE/CDS use it, and no rule implements the NICE DG56 threshold (≥ 10 µg Hb/g).",
-          "proposedFix": "Add a FIT rule (lab \"FIT\"/\"faecal immunochemical\"): value ≥ 10 µg Hb/g → suspected colorectal cancer pathway prompt (colonoscopy/CTC), independent of symptoms (NICE DG56; BSG/ACPGBI 2022). Record < 10 as \"does not exclude\" when there is a mass, IDA or ongoing concern."
+          ]
         }
       ]
     },
@@ -272,12 +262,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No engine reads a FIT result: the lab is recorded but neither the triage cancer screen, clinical prompts nor PANE/CDS use it, and no rule implements the NICE DG56 threshold (≥ 10 µg Hb/g).",
-          "proposedFix": "Add a FIT rule (lab \"FIT\"/\"faecal immunochemical\"): value ≥ 10 µg Hb/g → suspected colorectal cancer pathway prompt (colonoscopy/CTC), independent of symptoms (NICE DG56; BSG/ACPGBI 2022). Record < 10 as \"does not exclude\" when there is a mass, IDA or ongoing concern."
+          ]
         }
       ]
     }

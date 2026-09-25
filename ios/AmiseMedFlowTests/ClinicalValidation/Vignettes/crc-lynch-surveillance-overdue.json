@@ -110,10 +110,9 @@
             "bsg-hereditary-2020"
           ],
           "unverified": [
-            "ios",
-            "web"
+            "ios"
           ],
-          "note": "Not observable in the web harness: the dashboard feeds the Family History field (ClinicalPromptsStrip familyHistory) to computeClinicalPrompts, but the vignette schema has no family-history input, so web-runner passes []. In the dashboard the \"FHx colorectal cancer, age 35–49\" prompt would probably add a colonoscopy. Needs a familyHistory input in the schema and both runners. Triage itself never names Lynch syndrome."
+          "note": "Not observable in the web harness: the dashboard feeds the Family History field (ClinicalPromptsStrip familyHistory) to computeClinicalPrompts, but the vignette schema has no family-history input, so web-runner passes []. In the dashboard the \"FHx colorectal cancer, age 35–49\" prompt would probably add a colonoscopy. Needs a familyHistory input in the schema and both runners. Triage itself never names Lynch syndrome. Web, 2026-09-25 (fix-web-screening): now observed in the harness — the preventive-screening engine reads the \"Family history: …\" and \"Lynch syndrome\" comorbidity entries, which the dashboard passes too; web removed from unverified."
         }
       ]
     },
@@ -129,10 +128,9 @@
             "bsg-hereditary-2020"
           ],
           "unverified": [
-            "ios",
-            "web"
+            "ios"
           ],
-          "note": "Not observable in the web harness: the dashboard feeds the Family History field (ClinicalPromptsStrip familyHistory) to computeClinicalPrompts, but the vignette schema has no family-history input, so web-runner passes []. In the dashboard the \"FHx colorectal cancer, age 35–49\" prompt would probably add a colonoscopy. Needs a familyHistory input in the schema and both runners."
+          "note": "Not observable in the web harness: the dashboard feeds the Family History field (ClinicalPromptsStrip familyHistory) to computeClinicalPrompts, but the vignette schema has no family-history input, so web-runner passes []. In the dashboard the \"FHx colorectal cancer, age 35–49\" prompt would probably add a colonoscopy. Needs a familyHistory input in the schema and both runners. Web, 2026-09-25 (fix-web-screening): now observed in the harness — the preventive-screening engine reads the \"Family history: …\" and \"Lynch syndrome\" comorbidity entries, which the dashboard passes too; web removed from unverified."
         }
       ]
     },
@@ -152,12 +150,7 @@
           "note": "BSG/ACPGBI/UKCGG 2020: colonoscopy every 2 years from age 25 for path_MLH1/path_MSH2 carriers.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No Lynch-specific rule: Z15.09 has no protocol, and the only colorectal family-history prompt (age 35–49, dashboard Family History field) says \"colonoscopy 10 years before youngest affected relative, or at 40\" with no 2-yearly Lynch interval.",
-          "proposedFix": "Add a hereditary-CRC rule (Lynch/MLH1/MSH2/MSH6/PMS2/FAP in PMH or family history) → colonoscopy every 2 years from 25/35 per gene; aspirin discussion (BSG/ACPGBI/UKCGG 2020)."
+          ]
         },
         {
           "id": "mgmt-aspirin-discussion",
@@ -171,11 +164,7 @@
           "note": "Aspirin chemoprevention is recommended for Lynch syndrome (dose per current guidance; not asserted here).",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No aspirin chemoprevention output for Lynch syndrome on any path."
+          ]
         }
       ]
     }

@@ -103,11 +103,6 @@
             "re:(ultrasound|uss)[^\\n]{0,40}aort",
             "aaa screen"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No prompt for AAA screening exists in computeClinicalPrompts (the iOS ScreeningEngine has one: men 65–75 who ever smoked).",
-          "proposedFix": "Add an AAA-screen prompt: male 65–75 with any smoking history → one-time aortic ultrasound (USPSTF 2019).",
           "unverified": [
             "ios"
           ]

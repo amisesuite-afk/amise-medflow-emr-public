@@ -234,12 +234,7 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "note": "NG12 (2015 wording): age ≥ 50 with unexplained rectal bleeding, or ≥ 40 with weight loss and abdominal pain; the triage cancer screen has neither rule.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The triage cancer screen has no \"age ≥ 50 with unexplained rectal bleeding\" or \"age ≥ 40 with weight loss + abdominal pain\" rule; its rectal-bleeding rule needs a change in bowel habit (≥ 40, CG27-era wording mislabelled \"NICE NG12 1.3.1\").",
-          "proposedFix": "Rewrite cancer-screening.ts lower-GI criteria to current NG12/DG56 (FIT-first; ≥ 50 rectal bleeding; ≥ 40 weight loss + abdominal pain; < 50 rectal bleeding + CIBH/weight loss/IDA; rectal/abdominal mass; IDA ≥ 60)."
+          "note": "NG12 (2015 wording): age ≥ 50 with unexplained rectal bleeding, or ≥ 40 with weight loss and abdominal pain; the triage cancer screen has neither rule."
         }
       ]
     },

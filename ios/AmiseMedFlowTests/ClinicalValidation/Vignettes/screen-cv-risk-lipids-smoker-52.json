@@ -114,11 +114,6 @@
             "re:cardiovascular risk (score|calculat|estimat|assessment)",
             "framingham"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No formal 10-year risk estimate is suggested; the lipid profile comes from diabetes_screen and the only CV-risk text is 'Document BP, BMI, waist circumference — cardiovascular risk profiling'.",
-          "proposedFix": "Add a primary-prevention prompt at 40–75: lipid profile plus QRISK3/PCE 10-year risk and statin discussion (USPSTF 2022).",
           "unverified": [
             "ios"
           ]

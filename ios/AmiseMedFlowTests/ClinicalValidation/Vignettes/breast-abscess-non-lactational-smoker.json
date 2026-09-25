@@ -218,11 +218,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The breast_abscess protocol has no non-lactational (periductal mastitis) branch: no smoking cessation or duct excision."
+          ]
         },
         {
           "id": "mgmt-exclude-malignancy",

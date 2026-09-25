@@ -108,12 +108,7 @@
           "note": "NICE CG164: one first-degree relative with breast cancer <40 (plus ovarian cancer in the family, Jewish ancestry) meets referral criteria.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The family-history prompt exists (computeClinicalPrompts: \"Family history of breast / ovarian cancer\" → genetics) but reads InferenceInput.familyHistory, which the harness passes as [] (no vignette field); Z80.3 maps to no protocol.",
-          "proposedFix": "Add a familyHistory field to the vignette schema and web-runner.ts; map Z80.3 to a familial-risk protocol (NICE CG164 referral criteria)."
+          ]
         }
       ],
       "mustExclude": [

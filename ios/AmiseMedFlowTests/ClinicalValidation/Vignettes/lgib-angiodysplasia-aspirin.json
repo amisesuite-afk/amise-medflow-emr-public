@@ -275,11 +275,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No output requests ferritin/iron studies for IDA with bleeding (the plan is the ischaemic-colitis protocol)."
+          ]
         }
       ]
     },
@@ -300,11 +296,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No iron replacement anywhere in the plan (no IDA rule reads Hb/MCV/ferritin)."
+          ]
         },
         {
           "id": "mgmt-apc",

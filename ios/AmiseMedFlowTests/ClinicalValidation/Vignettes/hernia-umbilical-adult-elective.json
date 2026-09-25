@@ -184,11 +184,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The umbilical_hernia protocol has no pre-operative optimisation (smoking) step."
+          ]
         }
       ],
       "mustExclude": [

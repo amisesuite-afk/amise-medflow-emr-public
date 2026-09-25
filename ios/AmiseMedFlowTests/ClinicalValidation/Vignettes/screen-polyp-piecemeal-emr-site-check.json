@@ -113,11 +113,6 @@
             "re:\\b(6|six)[ -]?months?",
             "re:2[–-]6 ?months"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No output mentions a site check after piecemeal EMR; D12.2 maps to no protocol; the generic age-≥50 screening prompt still offers 'FOBT every 2 years' and 'Colonoscopy — CRC screening' 4 weeks after the EMR.",
-          "proposedFix": "Post-polypectomy surveillance helper with a piecemeal ≥ 20 mm branch: site-check colonoscopy at 6 months (MSTF) / 2–6 months (BSG).",
           "unverified": [
             "ios"
           ]

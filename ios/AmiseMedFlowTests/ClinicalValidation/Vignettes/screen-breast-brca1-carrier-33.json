@@ -122,11 +122,6 @@
             "re:breast[^\\n]{0,30}\\bmri\\b",
             "re:annual mri"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No MRI surveillance output. brca_discussion (which suggests annual MRI from 30) is triggered only by a 'breast'/'ovarian' family-history chip; the recorded BRCA1 carrier status (comorbidity) and the 'BRCA mutation' chip do not trigger it (checked by calling computeClinicalPrompts directly).",
-          "proposedFix": "Trigger the high-risk breast prompt from a recorded BRCA1/2 (or TP53/PALB2) carrier status and the 'BRCA mutation' chip; for known carriers replace 'BRCA testing if Manchester ≥ 17' with 'annual MRI 30–49 (+ mammography from 40), risk-reducing surgery discussion'.",
           "unverified": [
             "ios"
           ]
@@ -167,11 +162,6 @@
             "salpingo-oophorectomy",
             "rrso"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No output mentions risk-reducing mastectomy or salpingo-oophorectomy; even brca_discussion (family-history route) has no such line.",
-          "proposedFix": "Add risk-reducing surgery counselling for confirmed carriers (NICE CG164).",
           "unverified": [
             "ios"
           ]
@@ -188,11 +178,6 @@
             "high-risk",
             "high risk"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No genetics / family-history-service output: brca_discussion is not triggered by carrier status (see inv-annual-mri).",
-          "proposedFix": "Same as inv-annual-mri.",
           "unverified": [
             "ios"
           ]

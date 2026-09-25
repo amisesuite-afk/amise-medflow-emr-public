@@ -218,11 +218,6 @@
             "bsg-ida-2021",
             "nice-ng12"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Nothing reads the anaemia indices: severe_anaemia prompt needs Hb <8; the NG12 IDA criterion in cancer-screening needs the words \"anaemia/pale/unusually tired\" in the symptom chips. Hb 9.1 / MCV 72 / ferritin 6 raise nothing.",
-          "proposedFix": "clinical-inference.ts: add an IDA prompt from labs (low Hb for sex + low ferritin or MCV) → \"BSG 2021: bidirectional endoscopy, coeliac serology; NG12 ≥60 urgent referral\".",
           "unverified": [
             "ios"
           ]
@@ -258,11 +253,6 @@
             "bsg-ida-2021",
             "nice-ng12"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No protocol for D50.9 and no IDA prompt; colonoscopy never suggested.",
-          "proposedFix": "Same IDA prompt.",
           "unverified": [
             "ios"
           ]
@@ -279,10 +269,6 @@
           "guidelineRefs": [
             "bsg-ida-2021"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Same as inv-colonoscopy.",
           "unverified": [
             "ios"
           ]
@@ -297,10 +283,6 @@
           "guidelineRefs": [
             "bsg-ida-2021"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Same as inv-colonoscopy.",
           "unverified": [
             "ios"
           ]
@@ -322,10 +304,6 @@
           "guidelineRefs": [
             "bsg-ida-2021"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Same as inv-colonoscopy.",
           "unverified": [
             "ios"
           ]

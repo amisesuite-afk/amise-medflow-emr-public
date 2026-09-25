@@ -155,14 +155,9 @@
           "nice-ng12"
         ],
         "note": "A suspected-cancer referral, not an emergency (CLAUDE.md: red flags are not emergencies).",
-        "knownGap": [
-          "web"
-        ],
         "unverified": [
           "ios"
-        ],
-        "knownGapNote": "Web: Triage \"routine_booking\" (score 7): there is no haematuria rule in RED_FLAGS, and the cancer screen does not trigger on visible haematuria. The protocol does say 2WW.",
-        "proposedFix": "Add \"blood in urine / haematuria\" to the malignancy red flag (priority) and a NG12 urological rule to cancer-screening (age ≥45, visible haematuria without UTI)."
+        ]
       }
     },
     "investigations": {

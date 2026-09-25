@@ -104,12 +104,11 @@
             "mstf-fhx-2017",
             "acg-crc-2021"
           ],
-          "note": "One FDR with CRC < 60: colonoscopy from 40 (or 10 years before the youngest case), 5-yearly. Web harness limit: the web runner passes familyHistory: [] to computeClinicalPrompts (the vignette schema has no family-history field). Calling computeClinicalPrompts directly with the dashboard's 'Colorectal cancer' family-history chip at 41 produces 'Arrange colonoscopy — FHx CRC, early surveillance criterion', so the dashboard would pass when that chip is ticked.",
+          "note": "One FDR with CRC < 60: colonoscopy from 40 (or 10 years before the youngest case), 5-yearly. Web harness limit: the web runner passes familyHistory: [] to computeClinicalPrompts (the vignette schema has no family-history field). Calling computeClinicalPrompts directly with the dashboard's 'Colorectal cancer' family-history chip at 41 produces 'Arrange colonoscopy — FHx CRC, early surveillance criterion', so the dashboard would pass when that chip is ticked. Web, 2026-09-25 (fix-web-screening): now observed in the harness — the preventive-screening engine reads the \"Family history: …\" and \"Lynch syndrome\" comorbidity entries, which the dashboard passes too; web removed from unverified.",
           "match": [
             "colonoscopy"
           ],
           "unverified": [
-            "web",
             "ios"
           ]
         },
@@ -129,11 +128,6 @@
             "microsatellite",
             "msi"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No output mentions Lynch syndrome, genetics referral or tumour MMR/MSI testing. Even with the 'Colorectal cancer' family-history chip, the dashboard's early_colonoscopy prompt only adds 'Arrange colonoscopy' and CEA (checked by calling computeClinicalPrompts directly). The 'Lynch syndrome' chip exists but no prompt reads it.",
-          "proposedFix": "Add a hereditary-CRC prompt: FDR with CRC < 50, or CRC plus a Lynch-spectrum cancer (endometrial, ovarian, upper tract urothelial) in the family → request the relative's tumour MMR/MSI result and refer to clinical genetics (BSG/ACPGBI/UKCGG 2020, NICE DG27).",
           "unverified": [
             "ios"
           ]

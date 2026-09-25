@@ -99,11 +99,6 @@
             "not indicated",
             "no longer"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: cervical_smear fires for every woman 21–65 regardless of surgical history: 'Confirm cervical smear date' and 'Refer gynaecology — cervical smear overdue' after a total hysterectomy for fibroids (USPSTF 2018 grade D).",
-          "proposedFix": "Suppress cervical_smear when the surgical history records total hysterectomy (cervix removed) for benign disease without CIN 2+.",
           "unverified": [
             "ios"
           ]
