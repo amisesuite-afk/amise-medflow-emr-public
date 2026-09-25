@@ -29,7 +29,7 @@ function builder(table: string) {
 vi.mock('@/lib/supabase', () => ({ supabase: { from: (t: string) => builder(t) } }));
 
 import { loadEncounterData } from '@/lib/db';
-import { ALL_SAVE_SECTIONS, PATIENT_SAVE_SECTIONS } from '@/lib/autosave-guard';
+import { RECORD_LOAD_SECTIONS, PATIENT_SAVE_SECTIONS } from '@/lib/autosave-guard';
 
 const DOWN: Err = { code: '08006', message: 'connection failure' };
 
@@ -48,7 +48,9 @@ describe('loadEncounterData failed sections', () => {
     const r = await loadEncounterData('enc-1', 'pat-1');
     expect(r.error).toBeNull();
     expect(r.data!.failedSections).toEqual([]);
-    expect(r.data!.loadedSections).toEqual([...ALL_SAVE_SECTIONS]);
+    expect(r.data!.loadedSections).toEqual([...RECORD_LOAD_SECTIONS]);
+    // The lifestyle history has its own loader (AppContext).
+    expect(r.data!.loadedSections).not.toContain('lifestyle');
     expect(r.data!.medications).toEqual(['Metformin']);
     expect(r.data!.medicationsFreeText).toBe('Aspirin 75 mg od');
     expect(r.data!.plan).toBe('Review');
@@ -65,7 +67,7 @@ describe('loadEncounterData failed sections', () => {
       'clinical_notes:[INPATIENT_JSON]%': { error: DOWN },
     };
     const r = await loadEncounterData('enc-1', 'pat-1');
-    expect(new Set(r.data!.failedSections)).toEqual(new Set(ALL_SAVE_SECTIONS.filter(s => s !== 'encounter_type')));
+    expect(new Set(r.data!.failedSections)).toEqual(new Set(RECORD_LOAD_SECTIONS.filter(s => s !== 'encounter_type')));
   });
 
   it('a network-level failure counts as failed too', async () => {
@@ -89,7 +91,7 @@ describe('loadEncounterData failed sections', () => {
 
   it('with no encounter, reads only the patient sections', async () => {
     const r = await loadEncounterData(null, 'pat-1');
-    expect(r.data!.loadedSections).toEqual([...PATIENT_SAVE_SECTIONS]);
+    expect(r.data!.loadedSections).toEqual(PATIENT_SAVE_SECTIONS.filter(s => s !== 'lifestyle'));
     expect(queried.some(k => /assessments|plans|medications|investigation_results|encounters|clinical_notes/.test(k))).toBe(false);
   });
 });

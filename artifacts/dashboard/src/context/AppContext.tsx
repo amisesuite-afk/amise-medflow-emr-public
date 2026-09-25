@@ -14,7 +14,7 @@ import { loadEncounterData, type EncounterData } from '@/lib/db';
 import {
   createAutosaveGuard, resetGuard, clearSections, beginLoad, finishLoad, checkAutosave,
   fingerprint, sectionValueFromState, sectionValueFromPayload, isReadOnlyEncounterStatus,
-  ALL_SAVE_SECTIONS, ENCOUNTER_SAVE_SECTIONS, PATIENT_SAVE_SECTIONS, ENTITY_TYPE_SECTION,
+  ALL_SAVE_SECTIONS, ENCOUNTER_SAVE_SECTIONS, PATIENT_SAVE_SECTIONS, RECORD_LOAD_SECTIONS, ENTITY_TYPE_SECTION,
   type SaveSection, type SectionState,
 } from '@/lib/autosave-guard';
 import type { PaneState, RankedDiagnosis, ProtocolMedication } from '@workspace/pane-engine';
@@ -1329,7 +1329,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     dbEncounterType: toDbEncounterType(encounterType, encounterMode),
     inpatient: { ward, dateAdmission, dateDischarge, admittingSurgeon, referringPhysician, nokName, nokRelation, nokTel, bloodGroup, mrNumber },
     clinicalScores, extractedLabs, allergies, surgicalHistory, surgicalNotes, recentSurgeryDate,
-    toxicHabits, pmhNotes, familyHistoryNotes,
+    toxicHabits, pmhNotes, familyHistoryNotes, lifestyleHistory,
   });
 
   useEffect(() => {
@@ -1411,7 +1411,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
    * meanwhile. Returns the sections that could not be loaded.
    */
   async function loadRecordIntoContext(token: number, patientIdVal: string, encounterIdVal: string | null): Promise<{ failed: SaveSection[]; error: string | null }> {
-    const expected: SaveSection[] = encounterIdVal ? [...ALL_SAVE_SECTIONS] : [...PATIENT_SAVE_SECTIONS];
+    const expected: SaveSection[] = RECORD_LOAD_SECTIONS.filter(s => encounterIdVal || PATIENT_SAVE_SECTIONS.includes(s));
     let r: Awaited<ReturnType<typeof loadEncounterData>>;
     try {
       r = await loadEncounterData(encounterIdVal, patientIdVal);
@@ -1442,11 +1442,36 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }
 
   /** "Couldn't load — retry": reads again and fills in the sections that still hold nothing. */
+  // The lifestyle history has its own loader (below). A failed read leaves this browser's copy
+  // (empty, or the encounter cache) in state: "not loaded", not saved until edited or reloaded.
+  const lifestyleValueRef = useRef(lifestyleHistory);
+  lifestyleValueRef.current = lifestyleHistory;
+  function markLifestyleLoad(failed: boolean) {
+    const g = guardRef.current;
+    if (failed && !lifestyleDirtyRef.current) {
+      g.notLoaded.add('lifestyle');
+      g.baseline.lifestyle = fingerprint(lifestyleValueRef.current);
+    } else {
+      g.notLoaded.delete('lifestyle');
+      delete g.baseline.lifestyle;
+    }
+    syncGuardState();
+  }
+
   async function retryNotLoaded(): Promise<void> {
     const pid = patientIdRef.current;
     const eid = encounterIdRef.current;
     const g = guardRef.current;
     if (!pid || g.notLoaded.size === 0) return;
+    if (g.notLoaded.has('lifestyle')) {
+      const lr = await loadLifestyleHistory(pid).catch(() => null);
+      if (lr && g === guardRef.current && pid === patientIdRef.current && g.notLoaded.has('lifestyle') && !lr.error) {
+        setLifestyleStorageAvailable(lr.available);
+        if (lr.lifestyle && !lifestyleDirtyRef.current) setLifestyleHistoryState(lr.lifestyle);
+        markLifestyleLoad(false);
+      }
+    }
+    if ([...g.notLoaded].every(s => s === 'lifestyle')) return;
     const token = g.loadToken;
     let r: Awaited<ReturnType<typeof loadEncounterData>>;
     try { r = await loadEncounterData(eid, pid); } catch { return; }
@@ -1723,6 +1748,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     void loadLifestyleHistory(patientId).then(r => {
       if (cancelled) return;
       setLifestyleStorageAvailable(r.available);
+      markLifestyleLoad(r.error !== null);
       if (r.lifestyle && !lifestyleDirtyRef.current) setLifestyleHistoryState(r.lifestyle);
     });
     return () => { cancelled = true; };

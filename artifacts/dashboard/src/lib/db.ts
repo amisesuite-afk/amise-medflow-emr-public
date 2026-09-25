@@ -13,7 +13,7 @@ import {
 } from './vitals-news2-fields';
 import { buildDocumentInsert, describeDocumentSaveError } from './document-types';
 import { lifestyleQuestionnaireLine } from '@workspace/triage-engine/lifestyle-questions';
-import { ALL_SAVE_SECTIONS, PATIENT_SAVE_SECTIONS, type SaveSection } from './autosave-guard';
+import { RECORD_LOAD_SECTIONS, PATIENT_SAVE_SECTIONS, type SaveSection } from './autosave-guard';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -2265,7 +2265,7 @@ export async function loadEncounterData(
 
   // encounter_type is not read (it follows the visit type chosen in the UI), but after a load it
   // must not be re-written until it is changed either.
-  const loadedSections: SaveSection[] = enc ? [...ALL_SAVE_SECTIONS] : [...PATIENT_SAVE_SECTIONS];
+  const loadedSections: SaveSection[] = RECORD_LOAD_SECTIONS.filter(s => enc || PATIENT_SAVE_SECTIONS.includes(s));
 
   return {
     data: {

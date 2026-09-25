@@ -116,6 +116,7 @@ const STATE: SectionState = {
   surgicalHistory: ['Cholecystectomy'], surgicalNotes: 'uneventful', recentSurgeryDate: '',
   toxicHabits: ['Smoker'],
   pmhNotes: 'T2DM', familyHistoryNotes: 'none',
+  lifestyleHistory: { fasting: { observes: 'yes' }, nightShift: 'no' },
 };
 const E = 'enc-1', P = 'pat-1';
 // Payloads as AppContext builds them for trackedSave (kept in step by the source check below).
@@ -136,6 +137,7 @@ const PAYLOADS: Record<string, Record<string, unknown>> = {
   surgical_history: { patientId: P, procedures: STATE.surgicalHistory, notes: STATE.surgicalNotes, recentSurgeryDate: STATE.recentSurgeryDate },
   toxic_habits: { patientId: P, habits: STATE.toxicHabits },
   pmh_notes: { patientId: P, pmhNotes: STATE.pmhNotes, familyHistoryNotes: STATE.familyHistoryNotes },
+  lifestyle_history: { patientId: P, lifestyle: STATE.lifestyleHistory },
 };
 
 describe('section values', () => {

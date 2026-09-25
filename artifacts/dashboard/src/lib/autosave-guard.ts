@@ -30,7 +30,7 @@
 export type SaveSection =
   | 'assessment' | 'plan' | 'medications' | 'exam' | 'ros' | 'procedure_data' | 'trauma'
   | 'hpi' | 'investigations' | 'encounter_type' | 'inpatient' | 'clinical_scores'
-  | 'allergies' | 'surgical_history' | 'toxic_habits' | 'pmh_notes';
+  | 'allergies' | 'surgical_history' | 'toxic_habits' | 'pmh_notes' | 'lifestyle';
 
 /** Sections stored against the encounter (read-only once it is closed). */
 export const ENCOUNTER_SAVE_SECTIONS: readonly SaveSection[] = [
@@ -40,8 +40,16 @@ export const ENCOUNTER_SAVE_SECTIONS: readonly SaveSection[] = [
 
 /** Sections stored against the patient (standing history). */
 export const PATIENT_SAVE_SECTIONS: readonly SaveSection[] = [
-  'allergies', 'surgical_history', 'toxic_habits', 'pmh_notes',
+  'allergies', 'surgical_history', 'toxic_habits', 'pmh_notes', 'lifestyle',
 ];
+
+/**
+ * Sections loadEncounterData reads. The lifestyle history has its own loader (AppContext, once
+ * per patient, lifestyle-history-db.ts) and is marked "not loaded" there.
+ */
+export const RECORD_LOAD_SECTIONS: readonly SaveSection[] = ENCOUNTER_SAVE_SECTIONS.concat(
+  PATIENT_SAVE_SECTIONS.filter(s => s !== 'lifestyle'),
+);
 
 export const ALL_SAVE_SECTIONS: readonly SaveSection[] = [...ENCOUNTER_SAVE_SECTIONS, ...PATIENT_SAVE_SECTIONS];
 
@@ -53,6 +61,7 @@ export const SAVE_SECTION_LABEL: Record<SaveSection, string> = {
   encounter_type: 'Encounter type', inpatient: 'Admission details',
   clinical_scores: 'Scores and labs', allergies: 'Allergies',
   surgical_history: 'Surgical history', toxic_habits: 'Habits', pmh_notes: 'PMH / family history notes',
+  lifestyle: 'Lifestyle history',
 };
 
 /** Outbox / trackedSave entity types → section (for the check when a debounced save fires). */
@@ -62,7 +71,7 @@ export const ENTITY_TYPE_SECTION: Record<string, SaveSection> = {
   hpi_note: 'hpi', hpi_note_clear: 'hpi', investigation_orders: 'investigations',
   encounter_type: 'encounter_type', inpatient_details: 'inpatient', clinical_scores: 'clinical_scores',
   allergies: 'allergies', surgical_history: 'surgical_history', toxic_habits: 'toxic_habits',
-  pmh_notes: 'pmh_notes',
+  pmh_notes: 'pmh_notes', lifestyle_history: 'lifestyle',
 };
 
 export function isEncounterSection(section: SaveSection): boolean {
@@ -186,6 +195,7 @@ export interface SectionState {
   surgicalHistory: string[]; surgicalNotes: string; recentSurgeryDate: string;
   toxicHabits: string[];
   pmhNotes: string; familyHistoryNotes: string;
+  lifestyleHistory: unknown;
 }
 
 const allergenList = (text: string) => text.split(',').map(t => t.trim()).filter(Boolean);
@@ -209,6 +219,7 @@ export function sectionValueFromState(section: SaveSection, s: SectionState): un
     case 'surgical_history': return [s.surgicalHistory, s.surgicalNotes, s.recentSurgeryDate];
     case 'toxic_habits': return s.toxicHabits;
     case 'pmh_notes': return [s.pmhNotes, s.familyHistoryNotes];
+    case 'lifestyle': return s.lifestyleHistory;
   }
 }
 
@@ -235,6 +246,7 @@ export function sectionValueFromPayload(entityType: string, p: Record<string, un
     case 'surgical_history': return [p.procedures, p.notes, p.recentSurgeryDate];
     case 'toxic_habits': return p.habits;
     case 'pmh_notes': return [p.pmhNotes, p.familyHistoryNotes];
+    case 'lifestyle_history': return p.lifestyle;
     default: return p;
   }
 }
