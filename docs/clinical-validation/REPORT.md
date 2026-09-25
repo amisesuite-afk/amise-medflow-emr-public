@@ -1,10 +1,10 @@
 # Clinical validation report — consultation engines vs guidelines
 
-Generated 2026-09-25T15:37:36.611Z.
+Generated 2026-09-25T15:42:01.635Z.
 
 - iOS: 243 vignette results from `docs/clinical-validation/results/ios-latest.jsonl` (generated 2026-09-25T15:32:05Z).
 - iOS differential engine mode: fallback (BayesianDiagnosisEngine could not decode DiagnosticDatabase.json and used its built-in lists).
-- Web: 280 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-25T15:37:07.617Z, clinval-web/1).
+- Web: 317 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-25T15:41:58.759Z, clinval-web/1).
 
 Status legend: PASS; FAIL — BLOCKING (critical, not flagged: fails the test run); FAIL (known gap) and
 FAIL (unverified) are reported only; "PASS (gap resolved)" means the flag can be removed from the vignette;
@@ -15,11 +15,11 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
 | ios | 243 | 1954 | 843 | 1022 | 89 | 595 | 0 | 61 | 961 | 734 |
-| web | 280 | 2223 | 1410 | 740 | 73 | 341 | 0 | 737 | 3 | 123 |
+| web | 317 | 2488 | 1568 | 841 | 79 | 375 | 1 | 837 | 3 | 131 |
 
 ## Blocking failures
 
-None.
+- `periop-preop-suxamethonium-apnoea` / **level-at-least-urgent** (web, FAIL — BLOCKING): web.triage: priority (acuity=review, action=priority_24_48h, score=23); expected ≥ urgent
 
 ## All critical failures (including known gaps and unverified)
 
@@ -904,6 +904,40 @@ None.
 - `perianal-abscess-hiv` / **level-same-day** (web, FAIL (known gap)): web.triage: routine (acuity=routine, action=routine_booking, score=8); expected ≥ urgent [known gap: Web adaptiveTriage has no perianal abscess/anorectal sepsis rule: the level depends on the pain score and incidental words (the base abscess reaches "emergency" only via the negated "no weight loss" plus pain 8/10; with pain 6/10 it is routine).]
 - `perianal-abscess-hiv` / **flag-hiv** (web, FAIL (known gap)): no red flag matched among 5 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety) [known gap: HIV/immunosuppression in the comorbidity list is not surfaced by triage, prompts or the perianal_abscess protocol (whose IV antibiotic line mentions "immunocompromised" only as an indication).]
 - `perianal-abscess-simple` / **level-same-day** (web, FAIL (known gap)): web.triage: priority (acuity=review, action=priority_24_48h, score=20); expected ≥ urgent [known gap: Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Possible malignancy). With negation-aware matching web triage gives acuity=review, action=priority_24_48h, score=20: no triage rule covers this presentation.]
+- `periop-abx-penicillin-anaphylaxis-colectomy` / **mgmt-no-penicillin** (web, FAIL (known gap)): forbidden management item present in web.plan: "[conservative] uncomplicated: oral co-amoxiclav 625 mg tds for 5-7 days; liquid diet." (+6 more) [known gap: Penicillins despite recorded penicillin anaphylaxis: Plan tab (dx-variant 'diverticulitis_abscess' prefix 'IV antibiotics: piperacillin-tazobactam' and protocol 'oral co-amoxiclav'), protocol medications (co-amoxiclav, pip-tazo) and the negated-free-air prompt (pip-tazo). Nothing reads the allergy list. Same root cause as the seed finding 'Allergies: neither platform's plan templates check the recorded allergy'.]
+- `periop-anticoag-warfarin-af-no-bridging` / **mgmt-stop-warfarin-5-days** (web, FAIL (known gap)): no management item matched among 19 (web.clinicalPrompts) [known gap: The only anticoagulation plan line is 'Anticoagulant bridging: hold DOAC 48–72h pre-op (renal-adjusted); warfarin — bridge with LMWH per haematology protocol.' No stop-5-days or day-before INR instruction. The coagulopathy prompt (INR 2.4 > 1.5) adds 'Hold elective surgery until INR < 1.5' and 'PO Vitamin K 1–2mg' — reversal instead of planned interruption.]
+- `periop-anticoag-warfarin-af-no-bridging` / **mgmt-no-bridging** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "...dging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haematology protocol." [known gap: anticoag_check prompt: 'warfarin — bridge with LMWH per haematology protocol' for non-valvular AF, CHA₂DS₂-VASc 3, no prior stroke — the BRIDGE population, where bridging increased major bleeding.]
+- `periop-diabetes-sglt2-euglycaemic-dka-postop` / **mnm-dka** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Post-operative Ileus \| 3. Bowel Obstruction [known gap: PANE top 3: acute cholecystitis (the gallbladder was removed 2 days ago), post-operative ileus, bowel obstruction. PANE has no DKA node, and no rule reads the ketone, pH or bicarbonate results.]
+- `periop-diabetes-sglt2-euglycaemic-dka-postop` / **alarm-ketoacidosis** (web, FAIL (known gap)): no alarm matched among 7 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Alarms are only 'Tachypnoea' (RR 28) and 'Emergency now'; the glucose prompts need glucose >11/15 mmol/L, so euglycaemic DKA (9.8) raises nothing.]
+- `periop-diabetes-sglt2-euglycaemic-dka-postop` / **inv-ketones-gas** (web, FAIL (known gap)): no investigation matched among 28 (web.pane.seeded, web.clinicalPrompts) [known gap: No ketone or blood-gas investigation suggested (they are already resulted; no output interprets them).]
+- `periop-diabetes-sglt2-euglycaemic-dka-postop` / **mgmt-stop-sglt2** (web, FAIL (known gap)): no management item matched among 20 (web.clinicalPrompts) [known gap: Empagliflozin is not recognised by any rule.]
+- `periop-diabetes-sglt2-euglycaemic-dka-postop` / **mgmt-no-emergency-laparotomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• emergency laparotomy consent - source control; icu post-operatively." [known gap: 'mild generalised tenderness, no peritonism' matches the peritonism prompt ('generalised tenderness' and 'peritonism' substrings), which adds 'Emergency laparotomy consent — source control; ICU post-operatively' and pip-tazo/metronidazole to a medical emergency (DKA).]
+- `periop-diabetes-sglt2-preop-withhold` / **mgmt-withhold-sglt2** (web, FAIL (known gap)): no management item matched among 26 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No SGLT2-inhibitor instruction anywhere. clinical-inference.ts never checks gliflozins; the diabetes prompts are HbA1c/eGFR/ACR monitoring. Dapagliflozin is not in the triage 'Diabetes medication mentioned' regex either (insulin/gliclazide only).]
+- `periop-diabetes-type1-emergency-surgery` / **level-at-least-urgent** (web, FAIL (known gap)): web.triage: priority (acuity=review, action=priority_24_48h, score=26); expected ≥ urgent [known gap: Triage priority_24_48h (score 26) for ultrasound-confirmed appendicitis awaiting emergency surgery: the free text has no triage keyword (T 37.8 < 38), and triage reads neither imaging nor the confirmed diagnosis. The seeded appendicitis vignettes reach emergency through 'severe pain'/fever wording.]
+- `periop-diabetes-type1-emergency-surgery` / **mgmt-continue-basal-insulin** (web, FAIL (known gap)): no management item matched among 51 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: VRIII is suggested (glucose >11), but nothing says to continue the basal glargine in type 1 diabetes; the VRIII line reads 'DKA fixed-rate 0.1 units/kg/h' (mixing VRIII and FRIII) in the BGL >15 prompt, which does not fire here.]
+- `periop-endo-dapt-recent-stent-polypectomy` / **mgmt-cardiology-liaison** (web, FAIL (known gap)): no management item matched among 7 (web.clinicalPrompts) [known gap: No output addresses DAPT 2 months after a DES before a high-risk polypectomy; triage emergency_now from 'GI or other bleeding' (the negated 'No bleeding').]
+- `periop-endo-diagnostic-ogd-warfarin` / **mgmt-no-bridging** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "...dging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haematology protocol." [known gap: anticoag_check 'warfarin — bridge with LMWH' for a procedure where warfarin should simply continue.]
+- `periop-endo-diagnostic-ogd-warfarin` / **mgmt-no-inr-reversal** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• po vitamin k 1-2mg - slow inr correction (avoid over-reversal in warfarin patients)." [known gap: The coagulopathy prompt fires on any INR >1.5 (here 2.3, therapeutic): 'Hold elective surgery until INR < 1.5' and 'PO Vitamin K 1–2mg — slow INR correction'. It ignores that the INR is an intended warfarin effect before a low-risk procedure. The negated HPI ('No weight loss, dysphagia, vomiting or melaena') also makes triage emergency_now.]
+- `periop-endo-polypectomy-clopidogrel` / **mgmt-stop-clopidogrel** (web, FAIL (known gap)): no management item matched among 6 (web.clinicalPrompts) [known gap: No clopidogrel instruction: anticoag_check does not include antiplatelets (hasMed list is warfarin/DOACs/heparins only). Only the generic triage reason mentions the drug.]
+- `periop-nela-frail-emergency-laparotomy` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: 'generalised guarding and rebound' matches the appendicectomy indication (exam 'rebound'/'guarding'), so the full laparoscopic appendicectomy operative plan is offered for perforated diverticulitis.]
+- `periop-postop-anastomotic-leak-day5` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: 'guarding' in the exam triggers the full laparoscopic appendicectomy operative plan for an anastomotic leak after anterior resection.]
+- `periop-postop-anastomotic-leak-occult-elderly` / **mnm-leak** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Post-operative Ileus \| 2. Bowel Obstruction \| 3. Acute Cholecystitis [known gap: PANE top 3: post-operative ileus, bowel obstruction, acute cholecystitis. With postop_fever=false and no guarding, the anastomotic_leak node (fever 0.8, guarding 0.65) falls out; no feature for new AF, delirium or rising CRP. The CT is still suggested (protocol and prompts).]
+- `periop-postop-delirium-hypoactive` / **flag-delirium** (web, FAIL (known gap)): no red flag matched among 18 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: Confusion (chip, HPI, AVPU 'C') yields only the generic triage reason 'Systemic red flag symptom'; GCS is suggested as a scale. No delirium flag or 4AT.]
+- `periop-postop-pe-high-risk-shock` / **mgmt-no-unqualified-thrombolysis** (web, FAIL (known gap)): forbidden management item present in web.protocol.medications: "alteplase 10 mg iv bolus, then 90 mg over 2 hours iv (intravenous) stat (once) - massive ..." (+2 more) [known gap: The pulmonary_embolism protocol management step is qualified ('if no contraindication'), but its medications list 'Alteplase 10 mg IV bolus, then 90 mg over 2 hours … Massive PE with haemodynamic compromise' and the key point 'systemic thrombolysis (alteplase 100 mg IV over 2 hours) is life-saving' with no contraindication check, 6 days after a laparotomy.]
+- `periop-postop-ssi-organ-space-diabetic` / **mgmt-drainage** (web, FAIL (known gap)): no management item matched among 47 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The surgical_site_infection protocol management has superficial wound opening and 'Deep incisional SSI: formal surgical debridement', but no radiological drainage of an organ-space collection; 'CT-guided drainage' appears only in the protocol red flags. The negated 'no generalised peritonism' adds 'Emergency laparotomy consent'.]
+- `periop-pregnancy-emergency-laparotomy-sbo` / **mgmt-obstetric-involvement** (web, FAIL (known gap)): no management item matched among 42 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No obstetric team, CTG or fetal monitoring in any output; pregnancy is only a triage reason and the β-HCG prompt ('Urine pregnancy test — mandatory', 'exclude ectopic') for a known 29-week pregnancy.]
+- `periop-preop-latex-allergy` / **mgmt-latex-free** (web, FAIL (known gap)): no management item matched among 8 (web.clinicalPrompts) [known gap: The allergy is shown in the header ('Allergy: Latex') but nothing adapts the plan: the lap chole template is unchanged and no output mentions a latex-free theatre.]
+- `periop-preop-long-term-steroids` / **mgmt-steroid-cover** (web, FAIL (known gap)): no management item matched among 11 (web.clinicalPrompts) [known gap: No hydrocortisone / steroid-cover line in any output; clinical-inference.ts has no glucocorticoid rule (hasMed never checks prednisolone/hydrocortisone/dexamethasone).]
+- `periop-preop-mh-susceptible` / **flag-mh** (web, FAIL (known gap)): no red flag matched among 7 (web.triage.pathways, web.clinicalPrompts.safety) [known gap: Nothing reads 'malignant hyperthermia' from the PMH: no triage reason, no prompt, no alert. The only safety prompt is the pre-op bloods panel.]
+- `periop-preop-mh-susceptible` / **mgmt-trigger-free-anaesthesia** (web, FAIL (known gap)): no management item matched among 6 (web.clinicalPrompts) [known gap: No trigger-free anaesthesia plan; the only plan content is the lap chole operative template ('General anaesthesia + neuromuscular blockade').]
+- `periop-preop-osa-stopbang` / **flag-osa-risk** (web, FAIL (known gap)): no red flag matched among 13 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: STOP-Bang is suggested in the scales list ('snoring' chip, obesity), but nothing flags OSA as a peri-operative risk: no red flag, no alert. Triage adds 'Post-operative concern' (urgent) because the HPI says 'breathless on one flight of stairs'.]
+- `periop-preop-recent-acs-des-elective-chole` / **mgmt-defer-elective-surgery** (web, FAIL (known gap)): no management item matched among 12 (web.clinicalPrompts) [known gap: No output relates the stent date to surgical timing. The lap chole operative template (consent, NBM, co-amoxiclav, LMWH) is offered for an elective case 3 months after an ACS stent. Aspirin/ticagrelor raise only the generic triage reason 'Anticoagulant or antiplatelet medication mentioned'.]
+- `periop-preop-recent-acs-des-elective-chole` / **mgmt-cardiology-liaison** (web, FAIL (known gap)): no management item matched among 12 (web.clinicalPrompts) [known gap: No cardiology input suggested for P2Y12 management 3 months after a DES.]
+- `periop-preop-suxamethonium-apnoea` / **level-at-least-urgent** (web, FAIL — BLOCKING): web.triage: priority (acuity=review, action=priority_24_48h, score=23); expected ≥ urgent
+- `periop-preop-suxamethonium-apnoea` / **flag-sux-apnoea** (web, FAIL (known gap)): no red flag matched among 21 (web.triage.reasons, web.protocol.redFlags, web.dxVariant.urgencyNote, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: The suxamethonium-apnoea history (PMH and HPI) raises nothing; triage reasons are pregnancy (from 'urine pregnancy test negative'), pain and vomiting.]
+- `periop-preop-suxamethonium-apnoea` / **mgmt-avoid-suxamethonium-mivacurium** (web, FAIL (known gap)): no management item matched among 52 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The appendicectomy template specifies 'General anaesthesia + endotracheal intubation' with no neuromuscular-blocker caution; no rocuronium/sugammadex alternative for RSI.]
+- `periop-vte-caprini-high-cancer-surgery` / **mgmt-pharmacological-prophylaxis** (web, FAIL (known gap)): no management item matched among 34 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Caprini is suggested as a score, but no output recommends thromboprophylaxis: the plan is the colorectal_cancer protocol (C20 → colorectal_cancer; paneDiseaseId rectal_carcinoma is not used for the protocol) with no VTE content, and there is no colorectal operative template. Triage emergency_now from rectal bleeding history.]
+- `periop-vte-high-bleeding-risk-mechanical` / **mgmt-mechanical-prophylaxis** (web, FAIL (known gap)): no management item matched among 37 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No VTE decision at all on post-operative day 1: the plan is the peptic_ulcer protocol (with 'OGD within 24 h' after an operation that already controlled the bleed). No LMWH is suggested either, so the no-LMWH check passes by omission.]
 - `ppu-elderly-steroids-masked` / **alarm-sepsis** (web, FAIL (known gap)): no alarm matched among 9 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Sepsis prompts need temperature ≥38 °C with HR >100 (or SBP <90 for the shock prompt); an afebrile patient with qSOFA 3, lactate 3.1 and AKI raises no sepsis alarm.]
 - `ppu-perforated-peptic-ulcer` / **level-emergency** (web, FAIL (known gap)): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 35). The CC 'Sudden severe upper abdominal pain' misses the red-flag regex 'severe (abdominal\|belly\|stomach)? pain' because of the word 'upper'; HR 112 is below the >120 vital flag; rigidity/free air are not read by triage. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Sudden severe upper abdominal pain' gives 'routine'.]
 - `ppu-septic-shock-delayed` / **dx-perforation-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Pancreatitis; also in web.symptomInference#2, web.passive#1 [known gap: Web: PANE top 3: cholecystitis, inguinal/femoral hernia, pancreatitis (alcohol history). PANE has no perforation node and no feature for rigidity/free gas; symptom inference ranks perforated peptic ulcer #2.]
@@ -8868,6 +8902,1087 @@ Guidelines:
 
 - **ascrs-abscess-2022** — ASCRS clinical practice guidelines — anorectal abscess, fistula-in-ano and rectovaginal fistula (2022), Anorectal abscess: prompt incision and drainage; antibiotics selectively (cellulitis, systemic infection, immunosuppression). Gaertner WB, Burgess PL, Davids JS, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of anorectal abscess, fistula-in-ano, and rectovaginal fistula. Dis Colon Rectum. 2022;65:964–985. *(statement wording/numbering not yet verified against the source)*
 
+### Surgical antibiotic prophylaxis — clean surgery with mesh (open inguinal hernia repair)
+
+#### `periop-abx-clean-mesh-hernia` — Clean surgery with mesh, no allergy
+
+56-year-old man, ASA I, for elective open Lichtenstein mesh repair of a reducible right inguinal hernia.
+
+Permutation of `periop-abx-penicillin-anaphylaxis-colectomy`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| level-routine-or-priority | emergencyLevel | quality | not run | PASS |  |  |
+| inv-no-routine-coag | investigationExclude | quality | not run | FAIL (known gap) | NICE NG45 2016 | preop_haem prompt: apply NICE NG45 by ASA grade and surgical grade (no routine PT/INR/APTT for ASA 1–2 without liver disease or anticoagulant; no ECG for ASA 1 under 40; no PSA as a pre-op test). The harness maps every non-emergency setting to encounterType 'surgical_consult', so ward reviews also get this prompt. |
+| inv-no-preop-psa | investigationExclude | quality | not run | FAIL (known gap) | NICE NG45 2016 | Remove PSA from the hernia pre-operative step; keep PSA discussion as an opt-in wellness prompt outside the surgical plan. |
+| mgmt-single-dose-prophylaxis | managementInclude | quality | not run | PASS | NICE NG125 2019; SIGN 104 2014 |  |
+| mgmt-no-postop-antibiotic-course | managementExclude | quality | not run | PASS | SIGN 104 2014; ASHP/IDSA/SIS/SHEA clinical practice guidelines for antimicrobial prophylaxis in surgery 2013 |  |
+
+Failure details:
+
+- **inv-no-routine-coag** (web): forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" [known gap: preop_haem adds PT/INR for an ASA 1 patient; the hernia template adds FBC and Group & Screen.]
+- **inv-no-preop-psa** (web): forbidden investigation present in web.clinicalPrompts: "psa (m)" [known gap: 'PSA (M)' comes from the psa_discussion preventative prompt (male ≥50) and the hernia template's pre-op step ('PSA if male ≥ 50 and not done').]
+
+Guidelines:
+
+- **nice-ng125** — NICE NG125 — Surgical site infections: prevention and treatment (2019), 1.3 Antibiotic prophylaxis before clean surgery involving a prosthesis or implant, clean-contaminated and contaminated surgery; single dose IV on starting anaesthesia; do not use routinely for clean non-prosthetic uncomplicated surgery; take allergy and local resistance into account. 1.4 SSI treatment: antibiotic covering likely organisms, local resistance and culture results. National Institute for Health and Care Excellence. Surgical site infections: prevention and treatment (NG125). London: NICE; 2019 (updated 2020). *(statement wording/numbering not yet verified against the source)*
+- **sign-104** — SIGN 104 — Antibiotic prophylaxis in surgery (2014), Procedure table: laparoscopic cholecystectomy — prophylaxis not recommended in low-risk patients (consider in high risk); open inguinal/femoral hernia repair with mesh — recommended/consider; colorectal surgery — highly recommended; a single dose is sufficient for most procedures; no evidence for post-operative doses. Scottish Intercollegiate Guidelines Network. Antibiotic prophylaxis in surgery (SIGN 104). Edinburgh: SIGN; 2008, updated 2014. *(statement wording/numbering not yet verified against the source)*
+- **ashp-2013** — ASHP/IDSA/SIS/SHEA clinical practice guidelines for antimicrobial prophylaxis in surgery (2013), Timing: within 60 minutes before incision; duration: single dose or < 24 h; beta-lactam allergy alternatives (colorectal: e.g. clindamycin or metronidazole with an aminoglycoside, aztreonam or a fluoroquinolone). Bratzler DW, Dellinger EP, Olsen KM, et al. Am J Health Syst Pharm. 2013;70:195–283. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng45** — NICE NG45 — Routine preoperative tests for elective surgery (2016), Tables by surgical grade and ASA grade: ASA 1 minor/intermediate surgery — no routine FBC, U&E, ECG or haemostasis tests; do not routinely offer haemostasis tests (consider only for ASA 3–4 with chronic liver disease or when anticoagulant management needs it); ask women of childbearing potential about possible pregnancy and offer a test with consent. National Institute for Health and Care Excellence. Routine preoperative tests for elective surgery (NG45). London: NICE; 2016. *(statement wording/numbering not yet verified against the source)*
+
+### Surgical antibiotic prophylaxis — penicillin anaphylaxis before elective colectomy
+
+#### `periop-abx-penicillin-anaphylaxis-colectomy` — 
+
+63-year-old woman with penicillin anaphylaxis listed for elective laparoscopic sigmoid colectomy for recurrent complicated diverticulitis.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-penicillin-allergy | redFlags | critical | not run | PASS | RCoA NAP6 2018; AAAAI/ACAAI Joint Task Force practice parameter 2022 |  |
+| mgmt-no-emergency-laparotomy | managementExclude | critical | not run | PASS (gap resolved) |  | Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis. |
+| mgmt-no-penicillin | managementExclude | critical | not run | FAIL (known gap) | AAAAI/ACAAI Joint Task Force practice parameter 2022; NICE NG125 2019 | Allergy-aware plan generation: filter or substitute every drug line against the allergy record (penicillin class includes co-amoxiclav, pip-tazo, flucloxacillin, amoxicillin) and show the substitution. |
+| level-not-urgent | emergencyLevel | quality | not run | FAIL (known gap) |  | adaptiveTriage is a front-desk intake engine: its keyword red flags ('bleeding', 'breathless', 'collapse', 'jaundice', 'drain', 'procedure') fire on negated or historical mentions in a clinician's pre-operative note. Use negation handling and do not derive the consultation's emergency level from free-text keyword hits alone in a scheduled pre-operative/endoscopy encounter. |
+| mgmt-prophylaxis-timing | managementInclude | quality | not run | FAIL (known gap) | ASHP/IDSA/SIS/SHEA clinical practice guidelines for antimicrobial prophylaxis in surgery 2013; NICE NG125 2019 | Add a surgical-prophylaxis prompt keyed on the planned procedure class (clean-contaminated colorectal → single IV dose within 60 min before incision, repeat for long cases) that reads the allergy record. |
+| mgmt-non-penicillin-alternative | managementInclude | quality | not run | FAIL (known gap) | ASHP/IDSA/SIS/SHEA clinical practice guidelines for antimicrobial prophylaxis in surgery 2013; AAAAI/ACAAI Joint Task Force practice parameter 2022 | When a penicillin allergy is recorded, substitute the allergy alternative in every antibiotic line (ASHP 2013 table) and suppress penicillin lines. |
+
+Failure details:
+
+- **level-not-urgent** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=47); expected ≤ priority [known gap: Triage emergency_now (score 47) for an elective planning visit: 'Systemic red flag symptom' from 'collapse' in the allergy history, and 'Post-operative or recent-procedure concern' from 'drained percutaneously'.]
+- **mgmt-prophylaxis-timing** (web): no management item matched among 36 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No prophylaxis plan for the elective colectomy at all: the diverticulitis protocol is a treatment protocol for acute disease, and there is no colorectal operative template.]
+- **mgmt-non-penicillin-alternative** (web): no management item matched among 36 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No non-beta-lactam alternative in the documented plan or panel. (The uncomplicated-diverticulitis dx-variant prefix has 'ciprofloxacin + metronidazole if penicillin allergy', but the detected variant here is the abscess one, whose prefix is pip-tazo.)]
+- **mgmt-no-emergency-laparotomy** (web): none of 36 management items matched
+- **mgmt-no-penicillin** (web): forbidden management item present in web.plan: "[conservative] uncomplicated: oral co-amoxiclav 625 mg tds for 5-7 days; liquid diet." (+6 more) [known gap: Penicillins despite recorded penicillin anaphylaxis: Plan tab (dx-variant 'diverticulitis_abscess' prefix 'IV antibiotics: piperacillin-tazobactam' and protocol 'oral co-amoxiclav'), protocol medications (co-amoxiclav, pip-tazo) and the negated-free-air prompt (pip-tazo). Nothing reads the allergy list. Same root cause as the seed finding 'Allergies: neither platform's plan templates check the recorded allergy'.]
+
+Guidelines:
+
+- **nice-ng125** — NICE NG125 — Surgical site infections: prevention and treatment (2019), 1.3 Antibiotic prophylaxis before clean surgery involving a prosthesis or implant, clean-contaminated and contaminated surgery; single dose IV on starting anaesthesia; do not use routinely for clean non-prosthetic uncomplicated surgery; take allergy and local resistance into account. 1.4 SSI treatment: antibiotic covering likely organisms, local resistance and culture results. National Institute for Health and Care Excellence. Surgical site infections: prevention and treatment (NG125). London: NICE; 2019 (updated 2020). *(statement wording/numbering not yet verified against the source)*
+- **ashp-2013** — ASHP/IDSA/SIS/SHEA clinical practice guidelines for antimicrobial prophylaxis in surgery (2013), Timing: within 60 minutes before incision; duration: single dose or < 24 h; beta-lactam allergy alternatives (colorectal: e.g. clindamycin or metronidazole with an aminoglycoside, aztreonam or a fluoroquinolone). Bratzler DW, Dellinger EP, Olsen KM, et al. Am J Health Syst Pharm. 2013;70:195–283. *(statement wording/numbering not yet verified against the source)*
+- **sign-104** — SIGN 104 — Antibiotic prophylaxis in surgery (2014), Procedure table: laparoscopic cholecystectomy — prophylaxis not recommended in low-risk patients (consider in high risk); open inguinal/femoral hernia repair with mesh — recommended/consider; colorectal surgery — highly recommended; a single dose is sufficient for most procedures; no evidence for post-operative doses. Scottish Intercollegiate Guidelines Network. Antibiotic prophylaxis in surgery (SIGN 104). Edinburgh: SIGN; 2008, updated 2014. *(statement wording/numbering not yet verified against the source)*
+- **jtf-drug-allergy-2022** — AAAAI/ACAAI Joint Task Force practice parameter — drug allergy (2022), Penicillin allergy history: avoid penicillins after anaphylaxis; cephalosporins with dissimilar side chains may be given; document and act on the allergy record. Khan DA, Banerji A, Blumenthal KG, et al. Drug allergy: a 2022 practice parameter update. J Allergy Clin Immunol. 2022;150:1333–93. *(statement wording/numbering not yet verified against the source)*
+- **nap6-2018** — RCoA NAP6 — Perioperative anaphylaxis (2018), Antibiotics (teicoplanin, co-amoxiclav) are the commonest triggers; allergy history must be checked before induction; latex remains a cause and requires a latex-free pathway in known allergy. Royal College of Anaesthetists. Anaesthesia, surgery and life-threatening allergic reactions: 6th National Audit Project. London: RCoA; 2018. *(statement wording/numbering not yet verified against the source)*
+
+### Peri-operative anticoagulation — apixaban, age 81, creatinine clearance ~30 mL/min
+
+#### `periop-anticoag-apixaban-ckd-elderly` — Apixaban, age 81, CrCl ~30 mL/min
+
+81-year-old woman on apixaban 2.5 mg BD for AF (creatinine 138 µmol/L, 52 kg) listed for elective open umbilical hernia repair (low/moderate bleeding risk).
+
+Permutation of `periop-anticoag-warfarin-af-no-bridging`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-anticoagulant | redFlags | critical | not run | PASS | ACCP guideline 2022 |  |
+| inv-renal-function | investigationInclude | critical | not run | PASS | PAUSE study 2019; ACCP guideline 2022 |  |
+| mgmt-doac-interrupt | managementInclude | critical | not run | PASS | PAUSE study 2019; ACCP guideline 2022 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| score-rec-cfs | scoreRecommended | quality | not run | PASS | CPOC/BGS guideline 2021 |  |
+| inv-no-routine-coag | investigationExclude | quality | not run | FAIL (known gap) | PAUSE study 2019; ACCP guideline 2022 | Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH. |
+| mgmt-no-bridging | managementExclude | quality | not run | FAIL (known gap) | PAUSE study 2019; ACCP guideline 2022 | Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH. |
+
+Failure details:
+
+- **inv-no-routine-coag** (web): forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" (+1 more) [known gap: PT/INR and APTT added by anticoag_check and preop_haem for a DOAC patient (PAUSE: not needed with standardised interruption).]
+- **mgmt-no-bridging** (web): forbidden management item present in web.clinicalPrompts: "...dging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haematology protocol." [known gap: A DOAC patient gets the line headed 'Anticoagulant bridging' (warfarin bridge with LMWH). The DOAC part, 'hold DOAC 48–72h pre-op (renal-adjusted)', does not scale to bleeding risk (1 day for low/moderate risk per PAUSE).]
+
+Guidelines:
+
+- **pause-2019** — PAUSE study — perioperative DOAC interruption without bridging or coagulation testing (2019), Apixaban/rivaroxaban/edoxaban omitted 1 day before low-bleed-risk and 2 days before high-bleed-risk procedures (dabigatran longer when CrCl <50 mL/min), no bridging, no pre-operative coagulation tests. Douketis JD, Spyropoulos AC, Duncan J, et al. JAMA Intern Med. 2019;179:1469–78. *(statement wording/numbering not yet verified against the source)*
+- **accp-2022** — ACCP guideline — perioperative management of antithrombotic therapy (2022), VKA: stop 5 days before surgery; in AF suggest against heparin bridging; suggest bridging for mechanical mitral valve; DOAC: interrupt 1 day before low/moderate bleed-risk and 2 days before high bleed-risk procedures, no heparin bridging, no pre-operative coagulation testing; aspirin: continue in patients with coronary stents; P2Y12 inhibitors: stop clopidogrel/ticagrelor 5 days and prasugrel 7 days before surgery; defer elective surgery after recent stent. Douketis JD, Spyropoulos AC, Murad MH, et al. Perioperative management of antithrombotic therapy: an American College of Chest Physicians clinical practice guideline. Chest. 2022;162:e207–43. *(statement wording/numbering not yet verified against the source)*
+- **cpoc-bgs-frailty-2021** — CPOC/BGS guideline — perioperative care for people living with frailty undergoing elective and emergency surgery (2021), Frailty screening (Clinical Frailty Scale) for people aged ≥65; comprehensive geriatric assessment; cognitive and delirium risk assessment; shared decision-making including treatment escalation; post-operative delirium prevention. Centre for Perioperative Care, British Geriatrics Society. London: CPOC; 2021. *(statement wording/numbering not yet verified against the source)*
+
+### Peri-operative anticoagulation — warfarin for non-valvular AF (no bridging)
+
+#### `periop-anticoag-warfarin-af-no-bridging` — 
+
+72-year-old woman on warfarin for non-valvular AF (CHA₂DS₂-VASc 3, no prior stroke), INR 2.4, listed for elective laparoscopic cholecystectomy.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-anticoagulant | redFlags | critical | not run | PASS | ACCP guideline 2022 |  |
+| inv-inr | investigationInclude | critical | not run | PASS | ACCP guideline 2022 |  |
+| mgmt-stop-warfarin-5-days | managementInclude | critical | not run | FAIL (known gap) | ACCP guideline 2022; 2017 ACC expert consensus decision pathway 2017 | Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH. |
+| mgmt-no-bridging | managementExclude | critical | not run | FAIL (known gap) | BRIDGE trial 2015; ACCP guideline 2022; 2017 ACC expert consensus decision pathway 2017 | Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH. |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| score-rec-cha2ds2-vasc | scoreRecommended | quality | not run | PASS | 2017 ACC expert consensus decision pathway 2017 |  |
+| mgmt-resume-warfarin | managementInclude | quality | not run | FAIL (known gap) | ACCP guideline 2022 | Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH. |
+
+Failure details:
+
+- **mgmt-stop-warfarin-5-days** (web): no management item matched among 19 (web.clinicalPrompts) [known gap: The only anticoagulation plan line is 'Anticoagulant bridging: hold DOAC 48–72h pre-op (renal-adjusted); warfarin — bridge with LMWH per haematology protocol.' No stop-5-days or day-before INR instruction. The coagulopathy prompt (INR 2.4 > 1.5) adds 'Hold elective surgery until INR < 1.5' and 'PO Vitamin K 1–2mg' — reversal instead of planned interruption.]
+- **mgmt-resume-warfarin** (web): no management item matched among 19 (web.clinicalPrompts) [known gap: No restart plan for warfarin after surgery.]
+- **mgmt-no-bridging** (web): forbidden management item present in web.clinicalPrompts: "...dging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haematology protocol." [known gap: anticoag_check prompt: 'warfarin — bridge with LMWH per haematology protocol' for non-valvular AF, CHA₂DS₂-VASc 3, no prior stroke — the BRIDGE population, where bridging increased major bleeding.]
+
+Guidelines:
+
+- **accp-2022** — ACCP guideline — perioperative management of antithrombotic therapy (2022), VKA: stop 5 days before surgery; in AF suggest against heparin bridging; suggest bridging for mechanical mitral valve; DOAC: interrupt 1 day before low/moderate bleed-risk and 2 days before high bleed-risk procedures, no heparin bridging, no pre-operative coagulation testing; aspirin: continue in patients with coronary stents; P2Y12 inhibitors: stop clopidogrel/ticagrelor 5 days and prasugrel 7 days before surgery; defer elective surgery after recent stent. Douketis JD, Spyropoulos AC, Murad MH, et al. Perioperative management of antithrombotic therapy: an American College of Chest Physicians clinical practice guideline. Chest. 2022;162:e207–43. *(statement wording/numbering not yet verified against the source)*
+- **acc-2017** — 2017 ACC expert consensus decision pathway — periprocedural management of anticoagulation in non-valvular AF (2017), Bridging generally not indicated in AF without prior stroke/TIA/embolism or mechanical valve; warfarin interruption timed to the INR; DOAC interruption by drug, renal function and bleeding risk. Doherty JU, Gluckman TJ, Hucker WJ, et al. J Am Coll Cardiol. 2017;69:871–98. *(statement wording/numbering not yet verified against the source)*
+- **bridge-2015** — BRIDGE trial — perioperative bridging anticoagulation in AF (2015), Forgoing bridging was non-inferior for arterial thromboembolism and reduced major bleeding in patients with AF interrupting warfarin. Douketis JD, Spyropoulos AC, Kaatz S, et al. N Engl J Med. 2015;373:823–33. *(statement wording/numbering not yet verified against the source)*
+
+### Peri-operative anticoagulation — mechanical mitral valve (bridging indicated)
+
+#### `periop-anticoag-warfarin-mechanical-mitral-bridging` — Mechanical mitral valve — bridging indicated
+
+59-year-old man with a mechanical mitral valve on warfarin (INR 3.1) listed for elective open incisional hernia repair with mesh.
+
+Permutation of `periop-anticoag-warfarin-af-no-bridging`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-anticoagulant | redFlags | critical | not run | PASS | ACCP guideline 2022 |  |
+| inv-inr | investigationInclude | critical | not run | PASS | ACCP guideline 2022 |  |
+| mgmt-bridging | managementInclude | critical | not run | PASS | ACCP guideline 2022; 2021 ESC/EACTS guidelines 2021 |  |
+| mgmt-no-doac-switch | managementExclude | critical | not run | PASS | 2021 ESC/EACTS guidelines 2021 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| flag-mechanical-valve | redFlags | quality | not run | FAIL (known gap) | 2021 ESC/EACTS guidelines 2021 | Read 'mechanical valve' from PMH into the anticoagulation rule (high thrombotic risk → bridging, VKA only). |
+| mgmt-specialist-input | managementInclude | quality | not run | PASS | 2021 ESC/EACTS guidelines 2021 |  |
+
+Failure details:
+
+- **flag-mechanical-valve** (web): no red flag matched among 17 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: The mechanical valve is not surfaced; triage reasons are 'GI or other bleeding' (from 'No bleeding problems'), the anticoagulant reason and post-op concern (from 'laparotomy'). The bridging expectation passes only because the generic prompt bridges every warfarin patient.]
+
+Guidelines:
+
+- **accp-2022** — ACCP guideline — perioperative management of antithrombotic therapy (2022), VKA: stop 5 days before surgery; in AF suggest against heparin bridging; suggest bridging for mechanical mitral valve; DOAC: interrupt 1 day before low/moderate bleed-risk and 2 days before high bleed-risk procedures, no heparin bridging, no pre-operative coagulation testing; aspirin: continue in patients with coronary stents; P2Y12 inhibitors: stop clopidogrel/ticagrelor 5 days and prasugrel 7 days before surgery; defer elective surgery after recent stent. Douketis JD, Spyropoulos AC, Murad MH, et al. Perioperative management of antithrombotic therapy: an American College of Chest Physicians clinical practice guideline. Chest. 2022;162:e207–43. *(statement wording/numbering not yet verified against the source)*
+- **esc-valve-2021** — 2021 ESC/EACTS guidelines — valvular heart disease (2021), Mechanical valves: VKA only (DOACs contraindicated); bridging with therapeutic UFH/LMWH when VKA is interrupted for surgery. Vahanian A, Beyersdorf F, Praz F, et al. Eur Heart J. 2022;43:561–632. *(statement wording/numbering not yet verified against the source)*
+
+### Euglycaemic diabetic ketoacidosis after surgery (SGLT2 inhibitor not withheld)
+
+#### `periop-diabetes-sglt2-euglycaemic-dka-postop` — Post-operative euglycaemic DKA (SGLT2i continued)
+
+61-year-old woman on empagliflozin, day 2 after laparoscopic cholecystectomy with poor oral intake: vomiting, abdominal pain, tachypnoea; glucose 9.8 mmol/L, pH 7.18, bicarbonate 10, ketones 5.4 mmol/L.
+
+Permutation of `periop-diabetes-sglt2-preop-withhold`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-dka | mustNotMiss | critical | not run | FAIL (known gap) | JBDS 2023 | Add a hard safety rule: ketones ≥3 mmol/L or pH <7.3/bicarbonate <15 → DKA alarm regardless of glucose, with an SGLT2i-specific 'euglycaemic DKA' message; add metabolic mimics to PANE or a separate 'non-surgical causes' list. |
+| level-at-least-urgent | emergencyLevel | critical | not run | PASS | JBDS 2023 |  |
+| alarm-ketoacidosis | mustAlarm | critical | not run | FAIL (known gap) | JBDS 2023 | See mnm-dka. |
+| inv-ketones-gas | investigationInclude | critical | not run | FAIL (known gap) | JBDS 2023 | See mnm-dka. |
+| mgmt-stop-sglt2 | managementInclude | critical | not run | FAIL (known gap) | JBDS 2023; CPOC guideline 2022 | See mnm-dka and periop-diabetes-sglt2-preop-withhold. |
+| mgmt-no-emergency-laparotomy | managementExclude | critical | not run | FAIL (known gap) |  | Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis. |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| mnm-bile-leak-or-collection | mustNotMiss | quality | not run | FAIL (known gap) |  | PANE: suppress gallbladder diagnoses after cholecystectomy; add bile leak / post-operative collection nodes. |
+| mgmt-dka-insulin-with-glucose | managementInclude | quality | not run | FAIL (known gap) | JBDS 2023 | See mnm-dka. |
+
+Failure details:
+
+- **mnm-dka** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Post-operative Ileus \| 3. Bowel Obstruction [known gap: PANE top 3: acute cholecystitis (the gallbladder was removed 2 days ago), post-operative ileus, bowel obstruction. PANE has no DKA node, and no rule reads the ketone, pH or bicarbonate results.]
+- **mnm-bile-leak-or-collection** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Post-operative Ileus \| 3. Bowel Obstruction [known gap: No post-cholecystectomy complication node (bile leak) in PANE; cholecystitis ranks first after cholecystectomy because nothing reads the surgical history.]
+- **alarm-ketoacidosis** (web): no alarm matched among 7 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Alarms are only 'Tachypnoea' (RR 28) and 'Emergency now'; the glucose prompts need glucose >11/15 mmol/L, so euglycaemic DKA (9.8) raises nothing.]
+- **inv-ketones-gas** (web): no investigation matched among 28 (web.pane.seeded, web.clinicalPrompts) [known gap: No ketone or blood-gas investigation suggested (they are already resulted; no output interprets them).]
+- **mgmt-stop-sglt2** (web): no management item matched among 20 (web.clinicalPrompts) [known gap: Empagliflozin is not recognised by any rule.]
+- **mgmt-dka-insulin-with-glucose** (web): no management item matched among 20 (web.clinicalPrompts) [known gap: No DKA protocol line (fixed-rate insulin with glucose).]
+- **mgmt-no-emergency-laparotomy** (web): forbidden management item present in web.clinicalPrompts: "• emergency laparotomy consent - source control; icu post-operatively." [known gap: 'mild generalised tenderness, no peritonism' matches the peritonism prompt ('generalised tenderness' and 'peritonism' substrings), which adds 'Emergency laparotomy consent — source control; ICU post-operatively' and pip-tazo/metronidazole to a medical emergency (DKA).]
+
+Guidelines:
+
+- **jbds-dka-2023** — JBDS — management of diabetic ketoacidosis in adults (2023), DKA: ketonaemia ≥3.0 mmol/L (or ketonuria ≥2+), bicarbonate <15 mmol/L and/or pH <7.3; euglycaemic DKA in people on SGLT2 inhibitors (glucose may be normal); stop the SGLT2 inhibitor; fixed-rate IV insulin infusion with glucose 10% when glucose is below 14 mmol/L. Joint British Diabetes Societies for Inpatient Care. The management of diabetic ketoacidosis in adults. 2023 update. *(statement wording/numbering not yet verified against the source)*
+- **cpoc-diabetes-2022** — CPOC guideline — perioperative care for people with diabetes mellitus undergoing elective and emergency surgery (2022), SGLT2 inhibitors: omit the day before and the day of surgery, check ketones; sulfonylureas omitted on the day of surgery; people with diabetes early on the list; capillary glucose monitoring; VRIII when more than one meal will be missed or in emergency surgery; type 1 diabetes: never omit basal insulin (continue long-acting insulin, usually at a reduced dose) alongside VRIII. Centre for Perioperative Care. Guideline for perioperative care for people with diabetes mellitus undergoing elective and emergency surgery. London: CPOC; 2021 (updated 2022). *(statement wording/numbering not yet verified against the source)*
+
+### Peri-operative diabetes — SGLT2 inhibitor, metformin and sulfonylurea before day-case surgery
+
+#### `periop-diabetes-sglt2-preop-withhold` — 
+
+57-year-old man with type 2 diabetes on metformin, dapagliflozin and gliclazide (HbA1c 7.5%) listed for day-case laparoscopic inguinal hernia repair.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-withhold-sglt2 | managementInclude | critical | not run | FAIL (known gap) | CPOC guideline 2022; FDA labelling change 2020 | Add a peri-operative diabetes medication prompt (CPOC 2022): SGLT2i withheld (day before + day of surgery; FDA label 3–4 days) with ketone check; sulfonylurea omitted on the day; metformin by eGFR/missed meals; early on the list; CBG monitoring. Wording to be signed off by the surgeon (hazard H-10 applies to patient-facing text). |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| level-not-urgent | emergencyLevel | quality | not run | PASS |  |  |
+| inv-hba1c | investigationInclude | quality | not run | PASS | CPOC guideline 2022 |  |
+| mgmt-omit-sulfonylurea | managementInclude | quality | not run | FAIL (known gap) | CPOC guideline 2022 | See mgmt-withhold-sglt2. |
+| mgmt-ketone-check | managementInclude | quality | not run | FAIL (known gap) | CPOC guideline 2022 | See mgmt-withhold-sglt2. |
+| mgmt-glucose-monitoring | managementInclude | quality | not run | FAIL (known gap) | CPOC guideline 2022 | See mgmt-withhold-sglt2. |
+
+Failure details:
+
+- **mgmt-withhold-sglt2** (web): no management item matched among 26 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No SGLT2-inhibitor instruction anywhere. clinical-inference.ts never checks gliflozins; the diabetes prompts are HbA1c/eGFR/ACR monitoring. Dapagliflozin is not in the triage 'Diabetes medication mentioned' regex either (insulin/gliclazide only).]
+- **mgmt-omit-sulfonylurea** (web): no management item matched among 26 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No sulfonylurea instruction (hypoglycaemia while fasting).]
+- **mgmt-ketone-check** (web): no management item matched among 26 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Ketones appear only in the hyperglycaemia prompts (glucose >11); glucose is 8.1 here.]
+- **mgmt-glucose-monitoring** (web): no management item matched among 26 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No peri-operative capillary glucose monitoring line.]
+
+Guidelines:
+
+- **cpoc-diabetes-2022** — CPOC guideline — perioperative care for people with diabetes mellitus undergoing elective and emergency surgery (2022), SGLT2 inhibitors: omit the day before and the day of surgery, check ketones; sulfonylureas omitted on the day of surgery; people with diabetes early on the list; capillary glucose monitoring; VRIII when more than one meal will be missed or in emergency surgery; type 1 diabetes: never omit basal insulin (continue long-acting insulin, usually at a reduced dose) alongside VRIII. Centre for Perioperative Care. Guideline for perioperative care for people with diabetes mellitus undergoing elective and emergency surgery. London: CPOC; 2021 (updated 2022). *(statement wording/numbering not yet verified against the source)*
+- **fda-sglt2-2020** — FDA labelling change — SGLT2 inhibitors before scheduled surgery (2020), Canagliflozin, dapagliflozin and empagliflozin discontinued at least 3 days, and ertugliflozin at least 4 days, before scheduled surgery (euglycaemic ketoacidosis). US Food and Drug Administration. FDA revises labels of SGLT2 inhibitors for diabetes to include warnings about too much acid in the blood and serious urinary tract infections; label update March 2020. *(statement wording/numbering not yet verified against the source)*
+
+### Peri-operative diabetes — type 1 diabetes before emergency appendicectomy
+
+#### `periop-diabetes-type1-emergency-surgery` — Type 1 diabetes, emergency appendicectomy
+
+23-year-old man with type 1 diabetes (glargine + aspart) and ultrasound-confirmed acute appendicitis, nil by mouth for emergency laparoscopic appendicectomy; glucose 14.6 mmol/L, ketones 0.8.
+
+Permutation of `periop-diabetes-sglt2-preop-withhold`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-at-least-urgent | emergencyLevel | critical | not run | FAIL (known gap) |  | Floor the consultation emergency level by the confirmed working diagnosis and resulted imaging (e.g. confirmed appendicitis → at least urgent). |
+| mgmt-vriii | managementInclude | critical | not run | PASS | CPOC guideline 2022 |  |
+| mgmt-continue-basal-insulin | managementInclude | critical | not run | FAIL (known gap) | CPOC guideline 2022 | Diabetes peri-operative prompt: type 1 diabetes → continue basal insulin (CPOC 2022) alongside VRIII; never omit. |
+| mgmt-no-stop-insulin | managementExclude | critical | not run | PASS | CPOC guideline 2022 |  |
+| dx-appendicitis-top3 | mustRankTopK | quality | not run | PASS |  |  |
+| inv-ketones | investigationInclude | quality | not run | FAIL (known gap) | CPOC guideline 2022 | Emit ketone testing as an investigation (addToInvestigations) in the hyperglycaemia prompt. |
+
+Failure details:
+
+- **level-at-least-urgent** (web): web.triage: priority (acuity=review, action=priority_24_48h, score=26); expected ≥ urgent [known gap: Triage priority_24_48h (score 26) for ultrasound-confirmed appendicitis awaiting emergency surgery: the free text has no triage keyword (T 37.8 < 38), and triage reads neither imaging nor the confirmed diagnosis. The seeded appendicitis vignettes reach emergency through 'severe pain'/fever wording.]
+- **inv-ketones** (web): no investigation matched among 40 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Ketones appear only as a plan line ('Urine ketones — exclude diabetic ketoacidosis', addToPlan, graded as management), not as an investigation; the recorded capillary ketones (0.8) are not interpreted.]
+- **mgmt-continue-basal-insulin** (web): no management item matched among 51 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: VRIII is suggested (glucose >11), but nothing says to continue the basal glargine in type 1 diabetes; the VRIII line reads 'DKA fixed-rate 0.1 units/kg/h' (mixing VRIII and FRIII) in the BGL >15 prompt, which does not fire here.]
+
+Guidelines:
+
+- **cpoc-diabetes-2022** — CPOC guideline — perioperative care for people with diabetes mellitus undergoing elective and emergency surgery (2022), SGLT2 inhibitors: omit the day before and the day of surgery, check ketones; sulfonylureas omitted on the day of surgery; people with diabetes early on the list; capillary glucose monitoring; VRIII when more than one meal will be missed or in emergency surgery; type 1 diabetes: never omit basal insulin (continue long-acting insulin, usually at a reduced dose) alongside VRIII. Centre for Perioperative Care. Guideline for perioperative care for people with diabetes mellitus undergoing elective and emergency surgery. London: CPOC; 2021 (updated 2022). *(statement wording/numbering not yet verified against the source)*
+
+### Endoscopy antithrombotic management — dual antiplatelet therapy 2 months after a drug-eluting stent, 20 mm polyp
+
+#### `periop-endo-dapt-recent-stent-polypectomy` — DAPT 2 months after DES, 20 mm polyp
+
+58-year-old man on aspirin + clopidogrel 2 months after elective DES, FIT-positive, colonoscopy shows a 20 mm pedunculated sigmoid polyp needing polypectomy.
+
+Permutation of `periop-endo-polypectomy-clopidogrel`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-antiplatelet-stent | redFlags | critical | not run | PASS | BSG/ESGE guideline 2021 |  |
+| mgmt-cardiology-liaison | managementInclude | critical | not run | FAIL (known gap) | BSG/ESGE guideline 2021; 2022 ESC guidelines 2022 | Add an antiplatelet prompt (aspirin, clopidogrel, ticagrelor, prasugrel) that reads stent type/date: continue aspirin; P2Y12 interruption only with cardiology agreement; defer elective surgery within 6 months of elective PCI / 12 months of ACS (ESC 2022); for endoscopy use the BSG/ESGE 2021 table. |
+| mgmt-no-stop-aspirin | managementExclude | critical | not run | PASS | BSG/ESGE guideline 2021; 2022 ESC guidelines 2022 |  |
+| mgmt-no-unsupervised-p2y12-stop | managementExclude | critical | not run | PASS | BSG/ESGE guideline 2021 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| mgmt-defer-or-plan | managementInclude | quality | not run | FAIL (known gap) | BSG/ESGE guideline 2021 | Add an antiplatelet prompt (aspirin, clopidogrel, ticagrelor, prasugrel) that reads stent type/date: continue aspirin; P2Y12 interruption only with cardiology agreement; defer elective surgery within 6 months of elective PCI / 12 months of ACS (ESC 2022); for endoscopy use the BSG/ESGE 2021 table. |
+
+Failure details:
+
+- **mgmt-cardiology-liaison** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: No output addresses DAPT 2 months after a DES before a high-risk polypectomy; triage emergency_now from 'GI or other bleeding' (the negated 'No bleeding').]
+- **mgmt-defer-or-plan** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: No deferral or staged plan.]
+
+Guidelines:
+
+- **bsg-esge-2021-anticoag** — BSG/ESGE guideline — endoscopy in patients on antiplatelet or anticoagulant therapy (2021 update) (2021), Low-risk procedures (diagnostic ± biopsy): continue P2Y12 inhibitors and warfarin (INR in the week before, within therapeutic range), omit the morning DOAC dose. High-risk procedures (polypectomy, EMR, ERCP with sphincterotomy): P2Y12 inhibitor stopped 7 days before when thrombotic risk is low; high thrombotic risk (coronary stents) — continue aspirin and liaise with the cardiologist about stopping the P2Y12 inhibitor; warfarin stopped 5 days before (INR <1.5), bridging only for high thrombotic risk; DOAC stopped before the procedure (interval by drug and renal function), no bridging. Veitch AM, Radaelli F, Alikhan R, et al. Gut. 2021;70:1611–28. *(statement wording/numbering not yet verified against the source)*
+- **esc-ncs-2022** — 2022 ESC guidelines — cardiovascular assessment and management of patients undergoing non-cardiac surgery (with ESAIC) (2022), Clinical risk (RCRI), functional capacity (e.g. climbing two flights of stairs); ECG and NT-proBNP/BNP and troponin in patients with risk factors before intermediate/high-risk surgery; echocardiography in poor functional capacity, raised NT-proBNP or known HF; delay elective surgery until 6 months after elective PCI and 12 months after ACS; continue aspirin after PCI if bleeding risk allows; interrupt P2Y12 inhibitors only in agreement with the cardiologist; bridging not recommended for antiplatelet interruption. Halvorsen S, Mehilli J, Cassese S, et al. 2022 ESC Guidelines on cardiovascular assessment and management of patients undergoing non-cardiac surgery. Eur Heart J. 2022;43:3826–924. *(statement wording/numbering not yet verified against the source)*
+
+### Endoscopy antithrombotic management — warfarin continued for diagnostic OGD ± biopsy
+
+#### `periop-endo-diagnostic-ogd-warfarin` — Warfarin, diagnostic OGD ± biopsy (low-risk procedure)
+
+74-year-old woman on warfarin for AF (INR 2.3) booked for diagnostic gastroscopy ± biopsy for PPI-refractory dyspepsia (low bleeding-risk procedure).
+
+Permutation of `periop-endo-polypectomy-clopidogrel`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-anticoagulant | redFlags | critical | not run | PASS | BSG/ESGE guideline 2021 |  |
+| mgmt-no-bridging | managementExclude | critical | not run | FAIL (known gap) | BSG/ESGE guideline 2021; BRIDGE trial 2015 | Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH. |
+| mgmt-no-inr-reversal | managementExclude | critical | not run | FAIL (known gap) | BSG/ESGE guideline 2021 | Coagulopathy prompt: when the patient is on warfarin, compare INR with the target range and the planned procedure's bleeding risk; suggest reversal only for bleeding or urgent high-risk surgery. |
+| inv-inr | investigationInclude | quality | not run | PASS | BSG/ESGE guideline 2021 |  |
+| mgmt-continue-warfarin | managementInclude | quality | not run | FAIL (known gap) | BSG/ESGE guideline 2021 | Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH. |
+| mgmt-no-deferral-for-inr | managementExclude | quality | not run | PASS | BSG/ESGE guideline 2021 |  |
+
+Failure details:
+
+- **mgmt-continue-warfarin** (web): no management item matched among 13 (web.clinicalPrompts) [known gap: No 'continue warfarin' for a low-risk diagnostic OGD; the procedure's bleeding risk is not an input to any rule.]
+- **mgmt-no-bridging** (web): forbidden management item present in web.clinicalPrompts: "...dging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haematology protocol." [known gap: anticoag_check 'warfarin — bridge with LMWH' for a procedure where warfarin should simply continue.]
+- **mgmt-no-inr-reversal** (web): forbidden management item present in web.clinicalPrompts: "• po vitamin k 1-2mg - slow inr correction (avoid over-reversal in warfarin patients)." [known gap: The coagulopathy prompt fires on any INR >1.5 (here 2.3, therapeutic): 'Hold elective surgery until INR < 1.5' and 'PO Vitamin K 1–2mg — slow INR correction'. It ignores that the INR is an intended warfarin effect before a low-risk procedure. The negated HPI ('No weight loss, dysphagia, vomiting or melaena') also makes triage emergency_now.]
+
+Guidelines:
+
+- **bsg-esge-2021-anticoag** — BSG/ESGE guideline — endoscopy in patients on antiplatelet or anticoagulant therapy (2021 update) (2021), Low-risk procedures (diagnostic ± biopsy): continue P2Y12 inhibitors and warfarin (INR in the week before, within therapeutic range), omit the morning DOAC dose. High-risk procedures (polypectomy, EMR, ERCP with sphincterotomy): P2Y12 inhibitor stopped 7 days before when thrombotic risk is low; high thrombotic risk (coronary stents) — continue aspirin and liaise with the cardiologist about stopping the P2Y12 inhibitor; warfarin stopped 5 days before (INR <1.5), bridging only for high thrombotic risk; DOAC stopped before the procedure (interval by drug and renal function), no bridging. Veitch AM, Radaelli F, Alikhan R, et al. Gut. 2021;70:1611–28. *(statement wording/numbering not yet verified against the source)*
+- **bridge-2015** — BRIDGE trial — perioperative bridging anticoagulation in AF (2015), Forgoing bridging was non-inferior for arterial thromboembolism and reduced major bleeding in patients with AF interrupting warfarin. Douketis JD, Spyropoulos AC, Kaatz S, et al. N Engl J Med. 2015;373:823–33. *(statement wording/numbering not yet verified against the source)*
+
+### Endoscopy antithrombotic management — apixaban before ERCP with sphincterotomy
+
+#### `periop-endo-ercp-sphincterotomy-apixaban` — Apixaban, ERCP with sphincterotomy
+
+76-year-old man on apixaban for AF with CBD stones (ASGE high risk, no cholangitis) booked for ERCP with sphincterotomy (high bleeding-risk procedure).
+
+Permutation of `periop-endo-polypectomy-clopidogrel`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-anticoagulant | redFlags | critical | not run | PASS | BSG/ESGE guideline 2021 |  |
+| mgmt-doac-interrupt | managementInclude | critical | not run | PASS | BSG/ESGE guideline 2021; PAUSE study 2019 |  |
+| mgmt-ercp | managementInclude | critical | not run | PASS | ASGE guideline 2019 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| dx-cbd-stone-top3 | mustRankTopK | quality | not run | FAIL (known gap) | ASGE guideline 2019 | Seed PANE jaundice/dark_urine features from the jaundice symptom chip and bilirubin result (the HPB cluster's PANE priors issue also applies: inguinal hernia prior 0.15). |
+| mgmt-no-bridging | managementExclude | quality | not run | FAIL (known gap) | BSG/ESGE guideline 2021 | Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH. |
+
+Failure details:
+
+- **dx-cbd-stone-top3** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#4, web.passive#3 [known gap: PANE top 3: inguinal hernia, cholecystitis, GORD. The 'Obstructive jaundice' CC template adds no features, the SOCRATES answers carry no jaundice words, and paneAnswers only set us_gallstones.]
+- **mgmt-no-bridging** (web): forbidden management item present in web.clinicalPrompts: "...dging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haematology protocol." [known gap: Same 'Anticoagulant bridging' line for a DOAC patient before ERCP.]
+
+Guidelines:
+
+- **bsg-esge-2021-anticoag** — BSG/ESGE guideline — endoscopy in patients on antiplatelet or anticoagulant therapy (2021 update) (2021), Low-risk procedures (diagnostic ± biopsy): continue P2Y12 inhibitors and warfarin (INR in the week before, within therapeutic range), omit the morning DOAC dose. High-risk procedures (polypectomy, EMR, ERCP with sphincterotomy): P2Y12 inhibitor stopped 7 days before when thrombotic risk is low; high thrombotic risk (coronary stents) — continue aspirin and liaise with the cardiologist about stopping the P2Y12 inhibitor; warfarin stopped 5 days before (INR <1.5), bridging only for high thrombotic risk; DOAC stopped before the procedure (interval by drug and renal function), no bridging. Veitch AM, Radaelli F, Alikhan R, et al. Gut. 2021;70:1611–28. *(statement wording/numbering not yet verified against the source)*
+- **pause-2019** — PAUSE study — perioperative DOAC interruption without bridging or coagulation testing (2019), Apixaban/rivaroxaban/edoxaban omitted 1 day before low-bleed-risk and 2 days before high-bleed-risk procedures (dabigatran longer when CrCl <50 mL/min), no bridging, no pre-operative coagulation tests. Douketis JD, Spyropoulos AC, Duncan J, et al. JAMA Intern Med. 2019;179:1469–78. *(statement wording/numbering not yet verified against the source)*
+- **asge-2019** — ASGE guideline — choledocholithiasis (2019), High risk (CBD stone on imaging, cholangitis, or bilirubin >4 mg/dL with dilated CBD) → ERCP. Buxbaum JL, Abbas Fehmi SM, Sultan S, et al. Gastrointest Endosc. 2019;89:1075–105. *(statement wording/numbering not yet verified against the source)*
+
+### Endoscopy antithrombotic management — clopidogrel before EMR of a 25 mm polyp
+
+#### `periop-endo-polypectomy-clopidogrel` — 
+
+67-year-old man on clopidogrel after an ischaemic stroke (no stents) booked for EMR of a 25 mm colonic polyp (high bleeding-risk procedure, low thrombotic risk).
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-antiplatelet | redFlags | critical | not run | PASS | BSG/ESGE guideline 2021 |  |
+| mgmt-stop-clopidogrel | managementInclude | critical | not run | FAIL (known gap) | BSG/ESGE guideline 2021 | Add an antiplatelet prompt (aspirin, clopidogrel, ticagrelor, prasugrel) that reads stent type/date: continue aspirin; P2Y12 interruption only with cardiology agreement; defer elective surgery within 6 months of elective PCI / 12 months of ACS (ESC 2022); for endoscopy use the BSG/ESGE 2021 table. |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| level-not-urgent | emergencyLevel | quality | not run | FAIL (known gap) |  | adaptiveTriage is a front-desk intake engine: its keyword red flags ('bleeding', 'breathless', 'collapse', 'jaundice', 'drain', 'procedure') fire on negated or historical mentions in a clinician's pre-operative note. Use negation handling and do not derive the consultation's emergency level from free-text keyword hits alone in a scheduled pre-operative/endoscopy encounter. |
+| mgmt-no-bridging | managementExclude | quality | not run | PASS | BSG/ESGE guideline 2021; 2022 ESC guidelines 2022 |  |
+
+Failure details:
+
+- **level-not-urgent** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=31); expected ≤ priority [known gap: Triage same_day_call (score 31) from age, comorbidity and the antiplatelet reason for a booked elective EMR.]
+- **mgmt-stop-clopidogrel** (web): no management item matched among 6 (web.clinicalPrompts) [known gap: No clopidogrel instruction: anticoag_check does not include antiplatelets (hasMed list is warfarin/DOACs/heparins only). Only the generic triage reason mentions the drug.]
+
+Guidelines:
+
+- **bsg-esge-2021-anticoag** — BSG/ESGE guideline — endoscopy in patients on antiplatelet or anticoagulant therapy (2021 update) (2021), Low-risk procedures (diagnostic ± biopsy): continue P2Y12 inhibitors and warfarin (INR in the week before, within therapeutic range), omit the morning DOAC dose. High-risk procedures (polypectomy, EMR, ERCP with sphincterotomy): P2Y12 inhibitor stopped 7 days before when thrombotic risk is low; high thrombotic risk (coronary stents) — continue aspirin and liaise with the cardiologist about stopping the P2Y12 inhibitor; warfarin stopped 5 days before (INR <1.5), bridging only for high thrombotic risk; DOAC stopped before the procedure (interval by drug and renal function), no bridging. Veitch AM, Radaelli F, Alikhan R, et al. Gut. 2021;70:1611–28. *(statement wording/numbering not yet verified against the source)*
+- **esc-ncs-2022** — 2022 ESC guidelines — cardiovascular assessment and management of patients undergoing non-cardiac surgery (with ESAIC) (2022), Clinical risk (RCRI), functional capacity (e.g. climbing two flights of stairs); ECG and NT-proBNP/BNP and troponin in patients with risk factors before intermediate/high-risk surgery; echocardiography in poor functional capacity, raised NT-proBNP or known HF; delay elective surgery until 6 months after elective PCI and 12 months after ACS; continue aspirin after PCI if bleeding risk allows; interrupt P2Y12 inhibitors only in agreement with the cardiologist; bridging not recommended for antiplatelet interruption. Halvorsen S, Mehilli J, Cassese S, et al. 2022 ESC Guidelines on cardiovascular assessment and management of patients undergoing non-cardiac surgery. Eur Heart J. 2022;43:3826–924. *(statement wording/numbering not yet verified against the source)*
+
+### Elective major surgery in a frail older patient with dementia
+
+#### `periop-frailty-elective-dementia` — Elective, CFS 5 with dementia
+
+82-year-old man, CFS 5, mild Alzheimer dementia, iron-deficiency anaemia from a caecal cancer, being considered for laparoscopic right hemicolectomy.
+
+Permutation of `periop-nela-frail-emergency-laparotomy`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| flag-delirium-risk | redFlags | quality | not run | FAIL (known gap) | NICE CG103 2023; CPOC/BGS guideline 2021 | Delirium-risk prompt for age ≥65 with cognitive impairment or previous delirium (NICE CG103), feeding the operative plan. |
+| score-rec-cfs | scoreRecommended | quality | not run | PASS | CPOC/BGS guideline 2021 |  |
+| inv-iron-studies | investigationInclude | quality | not run | FAIL (known gap) | International consensus statement on the perioperative management of anaemia and iron deficiency 2017 | See periop-preop-rcri-high-risk-hemicolectomy/inv-iron-studies. |
+| mgmt-cga | managementInclude | quality | not run | FAIL (known gap) | CPOC/BGS guideline 2021 | See periop-nela-frail-emergency-laparotomy/mgmt-geriatric-input. |
+| mgmt-delirium-prevention | managementInclude | quality | not run | FAIL (known gap) | NICE CG103 2023; CPOC/BGS guideline 2021 | See flag-delirium-risk. |
+| mgmt-shared-decision | managementInclude | quality | not run | FAIL (known gap) | CPOC/BGS guideline 2021 | See periop-nela-frail-emergency-laparotomy/mgmt-shared-decision. |
+
+Failure details:
+
+- **flag-delirium-risk** (web): no red flag matched among 14 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: Dementia and a previous post-operative delirium are not flagged; triage emergency_now for an elective discussion ('Possible malignancy', 'Systemic red flag symptom' from 'falls'/'confusion' wording, 'Post-operative…' from the 2019 hernia repair).]
+- **inv-iron-studies** (web): no investigation matched among 20 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Hb 9.4 g/dL with a caecal cancer: only 'FBC (exclude iron-deficiency anaemia)'; no iron studies or pre-operative iron plan.]
+- **mgmt-cga** (web): no management item matched among 25 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: CFS is suggested but no comprehensive geriatric assessment or elderly-medicine input.]
+- **mgmt-delirium-prevention** (web): no management item matched among 25 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No delirium prevention plan.]
+- **mgmt-shared-decision** (web): no management item matched among 25 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No capacity / shared decision-making prompt with dementia.]
+
+Guidelines:
+
+- **cpoc-bgs-frailty-2021** — CPOC/BGS guideline — perioperative care for people living with frailty undergoing elective and emergency surgery (2021), Frailty screening (Clinical Frailty Scale) for people aged ≥65; comprehensive geriatric assessment; cognitive and delirium risk assessment; shared decision-making including treatment escalation; post-operative delirium prevention. Centre for Perioperative Care, British Geriatrics Society. London: CPOC; 2021. *(statement wording/numbering not yet verified against the source)*
+- **nice-cg103** — NICE CG103 — Delirium: prevention, diagnosis and management in hospital and long-term care (2023), Identify and manage underlying causes (infection, hypoxia, dehydration, pain, urinary retention, constipation, medication including opioids and anticholinergics); non-pharmacological measures first; short-term antipsychotic only if distressed or a risk to self/others; multicomponent prevention for people at risk (age ≥65, cognitive impairment). National Institute for Health and Care Excellence. Delirium (CG103). London: NICE; 2010 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+- **anaemia-consensus-2017** — International consensus statement on the perioperative management of anaemia and iron deficiency (2017), Detect, evaluate and treat anaemia before elective major surgery; iron deficiency treated (IV iron when time is short); Hb <130 g/L treated as anaemia pre-operatively in both sexes. Muñoz M, Acheson AG, Auerbach M, et al. Anaesthesia. 2017;72:233–47. *(statement wording/numbering not yet verified against the source)*
+
+### Emergency laparotomy in a frail older patient (NELA high risk) — perforated diverticulitis on apixaban
+
+#### `periop-nela-frail-emergency-laparotomy` — 
+
+84-year-old frail woman (CFS 6) on apixaban with faecal peritonitis from perforated sigmoid diverticulitis, hypotensive with lactate 4.1 — emergency laparotomy.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-perforation-top3 | mustRankTopK | critical | not run | PASS | WSES guidelines 2017 |  |
+| level-emergency | emergencyLevel | critical | not run | PASS | Surviving Sepsis Campaign 2021 |  |
+| alarm-sepsis | mustAlarm | critical | not run | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-antibiotics | managementInclude | critical | not run | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-source-control | managementInclude | critical | not run | PASS | WSES guidelines 2017; National Emergency Laparotomy Audit (NELA) 2023 |  |
+| mgmt-critical-care | managementInclude | critical | not run | PASS | RCS England / DH 2011; National Emergency Laparotomy Audit (NELA) 2023 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | FAIL (known gap) |  | Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis. |
+| variant-peritonitis | dxVariant | critical | not run | PASS (gap resolved) | WSES guidelines 2017 | Match Hinchey keywords on word boundaries (\bhinchey (i\|1)\b) and check the peritonitis variant first (dx-variants.ts diverticulitis group); add a vector to lint:dx-phases. |
+| score-rec-cfs | scoreRecommended | quality | not run | PASS | CPOC/BGS guideline 2021; National Emergency Laparotomy Audit (NELA) 2023 |  |
+| score-rec-p-possum | scoreRecommended | quality | not run | FAIL (known gap) | RCS England / DH 2011; National Emergency Laparotomy Audit (NELA) 2023 | Suggest P-POSSUM/NELA risk on a locked emergency-surgery diagnosis (perforation, peritonitis, obstruction) and on the emergency-surgery visit type. |
+| mgmt-mortality-risk | managementInclude | quality | not run | FAIL (known gap) | RCS England / DH 2011; National Emergency Laparotomy Audit (NELA) 2023 | See score-rec-p-possum; add a NELA pathway prompt (risk, consultant presence, critical care, timing). |
+| mgmt-geriatric-input | managementInclude | quality | not run | FAIL (known gap) | CPOC/BGS guideline 2021; National Emergency Laparotomy Audit (NELA) 2023 | Age ≥65 + emergency laparotomy → elderly medicine review prompt; CFS ≥5 → frailty pathway (CPOC/BGS 2021). |
+| mgmt-shared-decision | managementInclude | quality | not run | FAIL (known gap) | CPOC/BGS guideline 2021 | Add a shared decision-making / treatment escalation plan prompt for high-risk and frail emergency surgery. |
+| mgmt-doac-plan | managementInclude | quality | not run | FAIL (known gap) | 2022 ESC guidelines 2022 | Emergency surgery on a DOAC: document last dose and renal function, consider drug level where available and a haemostatic plan with haematology (ESC 2022). |
+
+Failure details:
+
+- **score-rec-p-possum** (web): p-possum not recommended; recommended: alvarado, tg18-cholangitis, ranson, cha2ds2-vasc, qsofa, news2, caprini, has-bled, asa, rcri, cfs [known gap: P-POSSUM is not suggested: the CDS rule needs procedureData.preop or an endoscopy record (not set by the harness). No NELA risk score exists in the CDS list.]
+- **mgmt-mortality-risk** (web): no management item matched among 76 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No documented mortality risk in any output.]
+- **mgmt-geriatric-input** (web): no management item matched among 76 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: CFS is suggested, but no elderly-medicine/geriatric review for an 84-year-old CFS 6 undergoing emergency laparotomy (NELA standard).]
+- **mgmt-shared-decision** (web): no management item matched among 76 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No goals-of-care, treatment escalation or resuscitation-status prompt.]
+- **mgmt-doac-plan** (web): no management item matched among 76 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Apixaban taken this morning is covered only by the generic 'hold DOAC 48–72h pre-op' line, which does not apply to emergency surgery; no timing, anti-Xa or haemostatic plan.]
+- **mgmt-no-appendicectomy** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: 'generalised guarding and rebound' matches the appendicectomy indication (exam 'rebound'/'guarding'), so the full laparoscopic appendicectomy operative plan is offered for perforated diverticulitis.]
+- **variant-peritonitis** (web): detected diverticulitis_peritonitis in group Diverticulitis; expected diverticulitis_peritonitis
+
+Guidelines:
+
+- **wses-iai-2017** — WSES guidelines — management of intra-abdominal infections (2017), Early source control; CT for diagnosis; percutaneous drainage for accessible collections; relaparotomy for diffuse peritonitis; empirical antibiotics by severity and local resistance. Sartelli M, Chichom-Mefire A, Labricciosa FM, et al. World J Emerg Surg. 2017;12:29. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign — international guidelines 2021 (2021), Antimicrobials within 1 h for possible septic shock or high likelihood of sepsis; source control as soon as practical; measure lactate; admit to ICU when needed. Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063–143. *(statement wording/numbering not yet verified against the source)*
+- **rcs-highrisk-2011** — RCS England / DH — The higher risk general surgical patient (2011), Estimate and document mortality risk before emergency surgery (e.g. P-POSSUM); predicted mortality ≥5%: consultant surgeon and anaesthetist present, post-operative critical care; ≥10%: consultant-delivered care. Royal College of Surgeons of England, Department of Health. The higher risk general surgical patient: towards improved care for a forgotten group. London: RCS; 2011 (revised 2018). *(statement wording/numbering not yet verified against the source)*
+- **nela-standards** — National Emergency Laparotomy Audit (NELA) — standards of care (2023), Documented preoperative risk assessment (NELA/P-POSSUM), timely antibiotics and theatre, consultant surgeon and anaesthetist present for high-risk cases, post-operative critical care when predicted mortality ≥5%, frailty assessment and elderly medicine review for patients aged ≥65. NELA Project Team. Ninth Patient Report of the National Emergency Laparotomy Audit. London: RCoA; 2023. *(statement wording/numbering not yet verified against the source)*
+- **cpoc-bgs-frailty-2021** — CPOC/BGS guideline — perioperative care for people living with frailty undergoing elective and emergency surgery (2021), Frailty screening (Clinical Frailty Scale) for people aged ≥65; comprehensive geriatric assessment; cognitive and delirium risk assessment; shared decision-making including treatment escalation; post-operative delirium prevention. Centre for Perioperative Care, British Geriatrics Society. London: CPOC; 2021. *(statement wording/numbering not yet verified against the source)*
+- **esc-ncs-2022** — 2022 ESC guidelines — cardiovascular assessment and management of patients undergoing non-cardiac surgery (with ESAIC) (2022), Clinical risk (RCRI), functional capacity (e.g. climbing two flights of stairs); ECG and NT-proBNP/BNP and troponin in patients with risk factors before intermediate/high-risk surgery; echocardiography in poor functional capacity, raised NT-proBNP or known HF; delay elective surgery until 6 months after elective PCI and 12 months after ACS; continue aspirin after PCI if bleeding risk allows; interrupt P2Y12 inhibitors only in agreement with the cardiologist; bridging not recommended for antiplatelet interruption. Halvorsen S, Mehilli J, Cassese S, et al. 2022 ESC Guidelines on cardiovascular assessment and management of patients undergoing non-cardiac surgery. Eur Heart J. 2022;43:3826–924. *(statement wording/numbering not yet verified against the source)*
+
+### Post-operative acute kidney injury (KDIGO stage 2) with nephrotoxic drugs
+
+#### `periop-postop-aki-oliguria` — 
+
+74-year-old man with CKD 3a on ramipril, day 2 after open right hemicolectomy on regular diclofenac: urine output 0.3 mL/kg/h for 14 h, creatinine 118 → 246, K 5.8, BP 102/60.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-aki | redFlags | critical | not run | PASS | KDIGO clinical practice guideline 2012; NICE NG148 2019 |  |
+| inv-potassium | investigationInclude | critical | not run | PASS | NICE NG148 2019 |  |
+| mgmt-stop-nephrotoxics | managementInclude | critical | not run | PASS | KDIGO clinical practice guideline 2012; NICE NG148 2019 |  |
+| mgmt-no-nsaid | managementExclude | critical | not run | PASS | KDIGO clinical practice guideline 2012; NICE NG148 2019 |  |
+| mgmt-no-emergency-laparotomy | managementExclude | critical | not run | PASS |  |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| mgmt-urinalysis | managementInclude | quality | not run | PASS | NICE NG148 2019 |  |
+| mgmt-volume-assessment | managementInclude | quality | not run | PASS | KDIGO clinical practice guideline 2012 |  |
+| mgmt-no-insulin-dextrose-mild-k | managementExclude | quality | not run | FAIL (known gap) | UK Kidney Association 2020 | Grade the hyperkalaemia prompt by UKKA 2020 bands: mild 5.5–5.9 → treat the cause and recheck; moderate/severe → insulin-glucose (±calcium with ECG changes). |
+| pathway-ward-review | pathway | quality | not run | n/a |  |  |
+
+Failure details:
+
+- **mgmt-no-insulin-dextrose-mild-k** (web): forbidden management item present in web.clinicalPrompts: "• iv actrapid 10 units + 50ml 50% dextrose - shift k⁺ intracellularly. onset 15-30 min, durat..." (+1 more) [known gap: The hyperkalaemia prompt fires from K⁺ >5.5 and adds 'IV Actrapid 10 units + 50ml 50% dextrose' and salbutamol for K⁺ 5.8 (UKKA 2020 mild band; insulin-glucose from 6.0).]
+
+Guidelines:
+
+- **kdigo-aki-2012** — KDIGO clinical practice guideline — acute kidney injury (2012), Stage 2: creatinine 2.0–2.9 × baseline or urine output <0.5 mL/kg/h for ≥12 h; discontinue nephrotoxic agents where possible; assess volume status. Kidney Disease: Improving Global Outcomes AKI Work Group. Kidney Int Suppl. 2012;2:1–138. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng148** — NICE NG148 — Acute kidney injury: prevention, detection and management (2019), Urine dipstick for all with AKI; consider stopping/withholding nephrotoxic drugs (NSAIDs, ACE inhibitors, ARBs, diuretics); ultrasound within 24 h when obstruction is suspected; monitor potassium; refer to nephrology by criteria. National Institute for Health and Care Excellence. Acute kidney injury (NG148). London: NICE; 2019. *(statement wording/numbering not yet verified against the source)*
+- **ukka-hyperk-2020** — UK Kidney Association — clinical practice guideline: treatment of acute hyperkalaemia in adults (2020), Mild 5.5–5.9, moderate 6.0–6.4, severe ≥6.5 mmol/L; insulin-glucose for K⁺ ≥6.0 mmol/L; ECG; treat the cause; dialysis for refractory hyperkalaemia or in dialysis patients. UK Kidney Association. Treatment of acute hyperkalaemia in adults. 2020 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+### Anastomotic leak after anterior resection (day 5)
+
+#### `periop-postop-anastomotic-leak-day5` — Day 5 anastomotic leak with sepsis
+
+64-year-old man, day 5 after laparoscopic anterior resection without a defunctioning stoma: fever 38.7°C, HR 118, lower abdominal guarding, WBC 17.8, CRP 286 and rising.
+
+Permutation of `periop-postop-fever-day1-early`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-leak-top3 | mustRankTopK | critical | not run | PASS | ISREC definition and grading of anastomotic leakage after anterior resection 2010 |  |
+| level-at-least-urgent | emergencyLevel | critical | not run | PASS | Surviving Sepsis Campaign 2021 |  |
+| alarm-sepsis | mustAlarm | critical | not run | PASS | Surviving Sepsis Campaign 2021 |  |
+| inv-ct | investigationInclude | critical | not run | PASS | WSES guidelines 2017; ISREC definition and grading of anastomotic leakage after anterior resection 2010 |  |
+| mgmt-antibiotics | managementInclude | critical | not run | PASS | Surviving Sepsis Campaign 2021; WSES guidelines 2017 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | FAIL (known gap) |  | Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis. |
+| score-rec-qsofa | scoreRecommended | quality | not run | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-source-control | managementInclude | quality | not run | PASS | ISREC definition and grading of anastomotic leakage after anterior resection 2010; WSES guidelines 2017 |  |
+| pathway-ward-review | pathway | quality | not run | n/a |  |  |
+
+Failure details:
+
+- **mgmt-no-appendicectomy** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: 'guarding' in the exam triggers the full laparoscopic appendicectomy operative plan for an anastomotic leak after anterior resection.]
+
+Guidelines:
+
+- **isrec-2010** — ISREC definition and grading of anastomotic leakage after anterior resection (2010), Grade A: no change in management; Grade B: active intervention without relaparotomy (antibiotics, radiological drainage); Grade C: relaparotomy. Rahbari NN, Weitz J, Hohenberger W, et al. Surgery. 2010;147:339–51. *(statement wording/numbering not yet verified against the source)*
+- **wses-iai-2017** — WSES guidelines — management of intra-abdominal infections (2017), Early source control; CT for diagnosis; percutaneous drainage for accessible collections; relaparotomy for diffuse peritonitis; empirical antibiotics by severity and local resistance. Sartelli M, Chichom-Mefire A, Labricciosa FM, et al. World J Emerg Surg. 2017;12:29. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign — international guidelines 2021 (2021), Antimicrobials within 1 h for possible septic shock or high likelihood of sepsis; source control as soon as practical; measure lactate; admit to ICU when needed. Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063–143. *(statement wording/numbering not yet verified against the source)*
+
+### Occult anastomotic leak in an older patient on a beta-blocker and steroids (day 4)
+
+#### `periop-postop-anastomotic-leak-occult-elderly` — Elderly, beta-blocker + steroids, afebrile, delirium
+
+79-year-old woman, day 4 after right hemicolectomy, on bisoprolol and prednisolone: afebrile, new confusion, new AF at 104, distension and vomiting, CRP 245 and rising — leak until proven otherwise.
+
+Permutation of `periop-postop-anastomotic-leak-day5`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-leak | mustNotMiss | critical | not run | FAIL (known gap) | ISREC definition and grading of anastomotic leakage after anterior resection 2010 | Add leak features that do not depend on fever (new arrhythmia, delirium, rising CRP after day 3, ileus after day 3) and a day-4+ post-colectomy rule: 'anastomotic leak until proven otherwise' when CRP is rising. |
+| level-at-least-urgent | emergencyLevel | critical | not run | PASS | WSES guidelines 2017 |  |
+| inv-ct | investigationInclude | critical | not run | PASS | WSES guidelines 2017; ISREC definition and grading of anastomotic leakage after anterior resection 2010 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS (gap resolved) |  | Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis. |
+| flag-new-confusion | redFlags | quality | not run | FAIL (known gap) | NICE CG103 2023 | See periop-postop-delirium-hypoactive/flag-delirium. |
+| mgmt-steroid-cover | managementInclude | quality | not run | FAIL (known gap) | AAGBI/RCP/SfE guideline 2020 | See periop-preop-long-term-steroids. |
+
+Failure details:
+
+- **mnm-leak** (web): not in top 3 of web.pane: 1. Post-operative Ileus \| 2. Bowel Obstruction \| 3. Acute Cholecystitis [known gap: PANE top 3: post-operative ileus, bowel obstruction, acute cholecystitis. With postop_fever=false and no guarding, the anastomotic_leak node (fever 0.8, guarding 0.65) falls out; no feature for new AF, delirium or rising CRP. The CT is still suggested (protocol and prompts).]
+- **flag-new-confusion** (web): no red flag matched among 24 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: Confusion only produces the generic triage reason 'Systemic red flag symptom'; no delirium flag.]
+- **mgmt-steroid-cover** (web): no management item matched among 49 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Prednisolone is not recognised; no stress-dose cover in acute illness.]
+- **mgmt-no-appendicectomy** (web): none of 49 management items matched
+
+Guidelines:
+
+- **isrec-2010** — ISREC definition and grading of anastomotic leakage after anterior resection (2010), Grade A: no change in management; Grade B: active intervention without relaparotomy (antibiotics, radiological drainage); Grade C: relaparotomy. Rahbari NN, Weitz J, Hohenberger W, et al. Surgery. 2010;147:339–51. *(statement wording/numbering not yet verified against the source)*
+- **wses-iai-2017** — WSES guidelines — management of intra-abdominal infections (2017), Early source control; CT for diagnosis; percutaneous drainage for accessible collections; relaparotomy for diffuse peritonitis; empirical antibiotics by severity and local resistance. Sartelli M, Chichom-Mefire A, Labricciosa FM, et al. World J Emerg Surg. 2017;12:29. *(statement wording/numbering not yet verified against the source)*
+- **nice-cg103** — NICE CG103 — Delirium: prevention, diagnosis and management in hospital and long-term care (2023), Identify and manage underlying causes (infection, hypoxia, dehydration, pain, urinary retention, constipation, medication including opioids and anticholinergics); non-pharmacological measures first; short-term antipsychotic only if distressed or a risk to self/others; multicomponent prevention for people at risk (age ≥65, cognitive impairment). National Institute for Health and Care Excellence. Delirium (CG103). London: NICE; 2010 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+- **woodcock-steroids-2020** — AAGBI/RCP/SfE guideline — glucocorticoids in the peri-operative period for adrenal insufficiency (2020), Patients on ≥5 mg prednisolone (or equivalent) for >4 weeks are at risk of adrenal insufficiency: hydrocortisone at induction and continued cover until eating and drinking, then usual dose; do not omit usual glucocorticoid. Woodcock T, Barker P, Daniel S, et al. Anaesthesia. 2020;75:654–63. *(statement wording/numbering not yet verified against the source)*
+
+### Hypoactive post-operative delirium in an 86-year-old
+
+#### `periop-postop-delirium-hypoactive` — 
+
+86-year-old woman, day 2 after laparotomy for adhesional obstruction: drowsy, inattentive, fluctuating (4AT 8), on morphine PCA and cyclizine, no urine since catheter removal, SpO₂ 93%.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-delirium | redFlags | critical | not run | FAIL (known gap) | NICE CG103 2023; SIGN 157 2019 | Delirium prompt: new confusion/inattention after surgery (or AVPU C) → 'Delirium — 4AT', precipitant screen (bladder scan, urinalysis, glucose, U&E/Na, CXR, cultures), medication review (opioids, anticholinergics), non-pharmacological care; avoid benzodiazepines (NICE CG103, SIGN 157). |
+| mgmt-no-benzodiazepine | managementExclude | critical | not run | PASS | SIGN 157 2019 |  |
+| mgmt-no-emergency-laparotomy | managementExclude | critical | not run | PASS |  |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| mnm-precipitants | mustNotMiss | quality | not run | FAIL (known gap) | NICE CG103 2023 | Add delirium precipitants (retention, pneumonia, UTI, drugs) as a non-PANE checklist when confusion is recorded after surgery. |
+| inv-precipitant-screen | investigationInclude | quality | not run | PASS | NICE CG103 2023 |  |
+| mgmt-medication-review | managementInclude | quality | not run | FAIL (known gap) | NICE CG103 2023 | See flag-delirium. |
+| mgmt-non-pharmacological | managementInclude | quality | not run | FAIL (known gap) | NICE CG103 2023 | See flag-delirium. |
+| mgmt-no-routine-antipsychotic | managementExclude | quality | not run | PASS | NICE CG103 2023 |  |
+| pathway-ward-review | pathway | quality | not run | n/a |  |  |
+
+Failure details:
+
+- **mnm-precipitants** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Diverticulitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#3, web.passive#2 [known gap: PANE top 3: acute cholecystitis, acute diverticulitis, GORD — no retention, pneumonia or sepsis node for a confused post-operative patient (symptom inference does list a relevant cause).]
+- **flag-delirium** (web): no red flag matched among 18 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: Confusion (chip, HPI, AVPU 'C') yields only the generic triage reason 'Systemic red flag symptom'; GCS is suggested as a scale. No delirium flag or 4AT.]
+- **mgmt-medication-review** (web): no management item matched among 13 (web.clinicalPrompts) [known gap: Morphine PCA and cyclizine are not reviewed.]
+- **mgmt-non-pharmacological** (web): no management item matched among 13 (web.clinicalPrompts) [known gap: No non-pharmacological delirium care.]
+
+Guidelines:
+
+- **nice-cg103** — NICE CG103 — Delirium: prevention, diagnosis and management in hospital and long-term care (2023), Identify and manage underlying causes (infection, hypoxia, dehydration, pain, urinary retention, constipation, medication including opioids and anticholinergics); non-pharmacological measures first; short-term antipsychotic only if distressed or a risk to self/others; multicomponent prevention for people at risk (age ≥65, cognitive impairment). National Institute for Health and Care Excellence. Delirium (CG103). London: NICE; 2010 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+- **sign-157** — SIGN 157 — Risk reduction and management of delirium (2019), Use the 4AT to detect delirium; benzodiazepines should not be used routinely except in alcohol or benzodiazepine withdrawal. Scottish Intercollegiate Guidelines Network. Risk reduction and management of delirium (SIGN 157). Edinburgh: SIGN; 2019. *(statement wording/numbering not yet verified against the source)*
+
+### Early post-operative fever (day 1) — non-infective
+
+#### `periop-postop-fever-day1-early` — 
+
+44-year-old woman, day 1 after uncomplicated laparoscopic cholecystectomy: T 38.2°C, HR 94, reduced basal air entry, clean wounds.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-no-emergency-laparotomy | managementExclude | critical | not run | PASS |  |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| mnm-postop-causes | mustNotMiss | quality | not run | FAIL (known gap) | ACCM/IDSA 2008 | PANE: condition on surgical history (no gallbladder diagnoses after cholecystectomy, no appendicitis after appendicectomy) and add early post-operative causes. |
+| level-not-emergency | emergencyLevel | quality | not run | FAIL (known gap) | ACCM/IDSA 2008 | Post-operative ward reviews: score post-op concern from physiology (NEWS2) rather than adding 'Post-operative concern' (urgent) for any 'post-op'/'wound' word; reserve emergency_now for physiological or peritonitic criteria. |
+| score-rec-news2 | scoreRecommended | quality | not run | PASS | RCP 2017 |  |
+| mgmt-clinical-source-review | managementInclude | quality | not run | FAIL (known gap) | ACCM/IDSA 2008 | Post-operative fever prompt by day (early: atelectasis/inflammatory; day 5+: leak/SSI/collection; UTI, line, VTE). |
+| mgmt-no-broad-spectrum | managementExclude | quality | not run | PASS (gap resolved) | ACCM/IDSA 2008 | Assessment panel: follow the locked working diagnosis, not the PANE top (findings/hpb.md gap 7). |
+| mgmt-no-anticoag-bridging-prompt | managementExclude | quality | not run | FAIL (known gap) | NICE NG89 2018 | Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH. |
+| pathway-ward-review | pathway | quality | not run | n/a |  |  |
+
+Failure details:
+
+- **mnm-postop-causes** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Cholangitis \| 3. Liver Abscess [known gap: PANE top 3 after laparoscopic cholecystectomy: acute cholecystitis, acute cholangitis, liver abscess. Nothing reads the surgical history, so the removed gallbladder ranks first; no atelectasis/pneumonia node.]
+- **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=152); expected ≤ urgent [known gap: Triage emergency_now (score 152) for T 38.2, HR 94 on day 1: 'Post-operative concern' (urgent) for any 'post-op' word, 'Post-op fever — source must be identified', 'Fever', and the anticoagulant reason (prophylactic enoxaparin).]
+- **mgmt-clinical-source-review** (web): no management item matched among 6 (web.clinicalPrompts) [known gap: No chest physiotherapy/mobilisation/wound review line; the Assessment panel shows the cholecystitis protocol (PANE top).]
+- **mgmt-no-broad-spectrum** (web): none of 6 management items matched
+- **mgmt-no-anticoag-bridging-prompt** (web): forbidden management item present in web.clinicalPrompts: "• anticoagulant bridging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haem..." [known gap: Prophylactic enoxaparin 40 mg triggers anticoag_check ('Anticoagulation monitoring + peri-operative bridging plan', PT/INR, 'warfarin — bridge with LMWH'). It fires in all 10 post-operative vignettes whose only anticoagulant is standard prophylactic enoxaparin.]
+
+Guidelines:
+
+- **ogrady-fever-2008** — ACCM/IDSA — evaluation of new fever in critically ill adult patients (2008 update) (2008), Fever in the first 48 h after surgery is usually non-infectious; evaluate clinically (chest, wound, lines, urine) before investigating or starting antibiotics. O'Grady NP, Barie PS, Bartlett JG, et al. Crit Care Med. 2008;36:1330–49. *(statement wording/numbering not yet verified against the source)*
+- **rcp-news2-2017** — RCP — National Early Warning Score (NEWS) 2 (2017), Aggregate ≥7: emergency response — urgent assessment by a team with critical-care competencies, continuous monitoring; 5–6 or a single red parameter: urgent response. Royal College of Physicians. National Early Warning Score (NEWS) 2. London: RCP; 2017. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng89** — NICE NG89 — Venous thromboembolism in over 16s: reducing the risk of hospital-acquired DVT or PE (2018), Assess VTE and bleeding risk; abdominal surgery with VTE risk above bleeding risk: pharmacological prophylaxis (LMWH) for at least 7 days; extended to 28 days after major cancer surgery in the abdomen/pelvis; mechanical prophylaxis (anti-embolism stockings or IPC) when pharmacological prophylaxis is contraindicated by bleeding risk; reassess within 24 h and when the clinical situation changes. National Institute for Health and Care Excellence. VTE in over 16s (NG89). London: NICE; 2018 (updated 2019). *(statement wording/numbering not yet verified against the source)*
+
+### Prolonged post-operative ileus (day 4)
+
+#### `periop-postop-ileus` — 
+
+69-year-old woman, day 4 after open right hemicolectomy: vomiting, distension, no flatus for 48 h, afebrile, no peritonism, K 3.1, Mg 0.58, CRP falling; morphine PCA running.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-no-emergency-laparotomy | managementExclude | critical | not run | PASS (gap resolved) |  | Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis. |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| dx-ileus-top3 | mustRankTopK | quality | not run | PASS | Definition of postoperative ileus (systematic review and consensus) 2013 |  |
+| mnm-leak-or-obstruction | mustNotMiss | quality | not run | PASS | ERAS Society guidelines 2019 |  |
+| inv-electrolytes | investigationInclude | quality | not run | PASS | ERAS Society guidelines 2019 |  |
+| inv-ct-if-not-resolving | investigationInclude | quality | not run | PASS | ERAS Society guidelines 2019 |  |
+| mgmt-ng-decompression | managementInclude | quality | not run | PASS | ERAS Society guidelines 2019 |  |
+| mgmt-reduce-opioids | managementInclude | quality | not run | PASS | ERAS Society guidelines 2019 |  |
+| mgmt-correct-electrolytes | managementInclude | quality | not run | PASS | ERAS Society guidelines 2019 |  |
+
+Failure details:
+
+- **mgmt-no-emergency-laparotomy** (web): none of 38 management items matched
+
+Guidelines:
+
+- **vather-poi-2013** — Definition of postoperative ileus (systematic review and consensus) (2013), Prolonged post-operative ileus: two or more of nausea/vomiting, inability to tolerate oral diet over 24 h, absence of flatus over 24 h, distension, radiological confirmation, on or after day 4 without prior resolution. Vather R, Trivedi S, Bissett I. J Gastrointest Surg. 2013;17:962–72. *(statement wording/numbering not yet verified against the source)*
+- **eras-colorectal-2019** — ERAS Society guidelines — elective colorectal surgery (2019), Opioid-sparing multimodal analgesia, avoidance of fluid overload, early oral intake, no routine nasogastric tube; prolonged ileus should prompt a search for a cause. Gustafsson UO, Scott MJ, Hubner M, et al. World J Surg. 2019;43:659–95. *(statement wording/numbering not yet verified against the source)*
+
+### High-risk (massive) pulmonary embolism 6 days after major surgery
+
+#### `periop-postop-pe-high-risk-shock` — Obstructive shock, thrombolysis contraindicated (surgery 6 days ago)
+
+66-year-old man, day 6 after open Hartmann's procedure: sudden collapse, SBP 78, HR 132, SpO₂ 86% on 15 L oxygen, dilated RV on bedside echo — thrombolysis contraindicated by recent major surgery.
+
+Permutation of `pe-postop-day5`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-pe-top3 | mustRankTopK | critical | not run | PASS | 2019 ESC guidelines 2019 |  |
+| level-emergency | emergencyLevel | critical | not run | PASS | 2019 ESC guidelines 2019 |  |
+| alarm-shock | mustAlarm | critical | not run | PASS | 2019 ESC guidelines 2019 |  |
+| mgmt-reperfusion | managementInclude | critical | not run | PASS | 2019 ESC guidelines 2019 |  |
+| mgmt-critical-care | managementInclude | critical | not run | PASS | 2019 ESC guidelines 2019 |  |
+| mgmt-no-unqualified-thrombolysis | managementExclude | critical | not run | FAIL (known gap) | 2019 ESC guidelines 2019 | Qualify the alteplase medication and key point with the ESC 2019 contraindications (major surgery within 3 weeks) and put surgical embolectomy / catheter-directed therapy first when the patient is post-operative. |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| inv-echo-or-ctpa | investigationInclude | quality | not run | PASS | 2019 ESC guidelines 2019 |  |
+| mgmt-ufh | managementInclude | quality | not run | PASS | 2019 ESC guidelines 2019 |  |
+
+Failure details:
+
+- **mgmt-no-unqualified-thrombolysis** (web): forbidden management item present in web.protocol.medications: "alteplase 10 mg iv bolus, then 90 mg over 2 hours iv (intravenous) stat (once) - massive ..." (+2 more) [known gap: The pulmonary_embolism protocol management step is qualified ('if no contraindication'), but its medications list 'Alteplase 10 mg IV bolus, then 90 mg over 2 hours … Massive PE with haemodynamic compromise' and the key point 'systemic thrombolysis (alteplase 100 mg IV over 2 hours) is life-saving' with no contraindication check, 6 days after a laparotomy.]
+
+Guidelines:
+
+- **esc-pe-2019** — 2019 ESC guidelines — acute pulmonary embolism (2019), High-risk (haemodynamically unstable) PE: UFH and systemic thrombolysis; surgical embolectomy or catheter-directed treatment when thrombolysis is contraindicated or has failed; recent major surgery (within 3 weeks) is a contraindication to thrombolysis (table of contraindications). Konstantinides SV, Meyer G, Becattini C, et al. Eur Heart J. 2020;41:543–603. *(statement wording/numbering not yet verified against the source)*
+
+### Post-operative pneumonia with NEWS2 ≥7 — ward escalation
+
+#### `periop-postop-pneumonia-news2-escalation` — 
+
+69-year-old man with COPD, day 3 after laparotomy for a perforated duodenal ulcer: RR 28, SpO₂ 89% on 2 L oxygen, HR 112, BP 104/62, T 38.4°C, new confusion — NEWS2 15.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-emergency | emergencyLevel | critical | not run | PASS | RCP 2017 |  |
+| alarm-hypoxia | mustAlarm | critical | not run | PASS | RCP 2017; BTS guideline 2017 |  |
+| mgmt-escalation | managementInclude | critical | not run | PASS | RCP 2017 |  |
+| mgmt-antibiotics | managementInclude | critical | not run | PASS | NICE NG139 2019; Surviving Sepsis Campaign 2021 |  |
+| mgmt-no-emergency-laparotomy | managementExclude | critical | not run | PASS (gap resolved) |  | Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis. |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| mnm-pneumonia | mustNotMiss | quality | not run | FAIL (known gap) | NICE NG139 2019 | Add hospital-acquired pneumonia to the post-operative differential (PANE node or post-op checklist). |
+| score-rec-news2 | scoreRecommended | quality | not run | PASS | RCP 2017 |  |
+| inv-abg | investigationInclude | quality | not run | PASS | BTS guideline 2017 |  |
+| inv-cultures | investigationInclude | quality | not run | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-controlled-oxygen | managementInclude | quality | not run | FAIL (known gap) | BTS guideline 2017 | Hypoxia prompt: when COPD/hypercapnic risk is recorded, add 'controlled oxygen, target 88–92% until ABG' as the plan line (BTS 2017). |
+| mgmt-no-high-target-in-copd | managementExclude | quality | not run | FAIL (known gap) | BTS guideline 2017 | See mgmt-controlled-oxygen. |
+| pathway-ward-review | pathway | quality | not run | n/a |  |  |
+
+Failure details:
+
+- **mnm-pneumonia** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Cholangitis \| 3. Inguinal / Femoral Hernia; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: acute cholecystitis, acute cholangitis, inguinal hernia — no pneumonia node (symptom inference ranks pneumonia first). The escalation expectation passes only through 'Emergency laparotomy consent … ICU post-operatively' (negated peritonism) and the hypoxia prompt's 'ITU review'.]
+- **mgmt-controlled-oxygen** (web): no management item matched among 17 (web.clinicalPrompts) [known gap: The hypoxia prompt's step text mentions 'COPD: target 88–92%', but the plan line it adds is 'Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%'; COPD in the PMH does not change it.]
+- **mgmt-no-high-target-in-copd** (web): forbidden management item present in web.clinicalPrompts: "• supplemental o₂: hudson mask 5-10l/min, titrate to spo₂ ≥ 94%." [known gap: 'titrate to SpO₂ ≥ 94%' in a COPD patient.]
+- **mgmt-no-emergency-laparotomy** (web): none of 17 management items matched
+
+Guidelines:
+
+- **rcp-news2-2017** — RCP — National Early Warning Score (NEWS) 2 (2017), Aggregate ≥7: emergency response — urgent assessment by a team with critical-care competencies, continuous monitoring; 5–6 or a single red parameter: urgent response. Royal College of Physicians. National Early Warning Score (NEWS) 2. London: RCP; 2017. *(statement wording/numbering not yet verified against the source)*
+- **bts-oxygen-2017** — BTS guideline — oxygen use in adults in healthcare and emergency settings (2017), Target SpO₂ 94–98% for most; 88–92% for people at risk of hypercapnic respiratory failure (e.g. COPD) pending blood gases. O'Driscoll BR, Howard LS, Earis J, Mak V. Thorax. 2017;72(Suppl 1):ii1–90. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng139** — NICE NG139 — Pneumonia (hospital-acquired): antimicrobial prescribing (2019), Start antibiotics as soon as possible after diagnosis in people with hospital-acquired pneumonia; choice by severity and risk of resistance. National Institute for Health and Care Excellence. Pneumonia (hospital-acquired): antimicrobial prescribing (NG139). London: NICE; 2019. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign — international guidelines 2021 (2021), Antimicrobials within 1 h for possible septic shock or high likelihood of sepsis; source control as soon as practical; measure lactate; admit to ICU when needed. Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063–143. *(statement wording/numbering not yet verified against the source)*
+
+### Deep and organ-space surgical site infection in a diabetic patient (day 9)
+
+#### `periop-postop-ssi-organ-space-diabetic` — Organ-space SSI with sepsis, insulin-treated diabetes
+
+67-year-old man with insulin-treated diabetes, day 9 after open right hemicolectomy: purulent wound, fever 38.9°C, HR 114, 6 cm subhepatic collection on CT, anastomosis intact; glucose 17.8.
+
+Permutation of `periop-postop-ssi-superficial`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-ssi-or-collection-top3 | mustRankTopK | critical | not run | PASS | NICE NG125 2019; WSES guidelines 2017 |  |
+| level-at-least-urgent | emergencyLevel | critical | not run | PASS | Surviving Sepsis Campaign 2021 |  |
+| alarm-sepsis | mustAlarm | critical | not run | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-drainage | managementInclude | critical | not run | FAIL (known gap) | WSES guidelines 2017 | Add an organ/space SSI step to the SSI protocol: CT-guided percutaneous drainage of accessible collections (WSES 2017), relaparotomy for diffuse peritonitis. |
+| mgmt-iv-antibiotics | managementInclude | critical | not run | PASS | Surviving Sepsis Campaign 2021; WSES guidelines 2017 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| inv-blood-cultures | investigationInclude | quality | not run | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-glycaemic-control | managementInclude | quality | not run | PASS | CPOC guideline 2022 |  |
+| mgmt-no-emergency-laparotomy | managementExclude | quality | not run | PASS (gap resolved) |  | Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis. |
+
+Failure details:
+
+- **mgmt-drainage** (web): no management item matched among 47 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The surgical_site_infection protocol management has superficial wound opening and 'Deep incisional SSI: formal surgical debridement', but no radiological drainage of an organ-space collection; 'CT-guided drainage' appears only in the protocol red flags. The negated 'no generalised peritonism' adds 'Emergency laparotomy consent'.]
+- **mgmt-no-emergency-laparotomy** (web): none of 47 management items matched
+
+Guidelines:
+
+- **nice-ng125** — NICE NG125 — Surgical site infections: prevention and treatment (2019), 1.3 Antibiotic prophylaxis before clean surgery involving a prosthesis or implant, clean-contaminated and contaminated surgery; single dose IV on starting anaesthesia; do not use routinely for clean non-prosthetic uncomplicated surgery; take allergy and local resistance into account. 1.4 SSI treatment: antibiotic covering likely organisms, local resistance and culture results. National Institute for Health and Care Excellence. Surgical site infections: prevention and treatment (NG125). London: NICE; 2019 (updated 2020). *(statement wording/numbering not yet verified against the source)*
+- **wses-iai-2017** — WSES guidelines — management of intra-abdominal infections (2017), Early source control; CT for diagnosis; percutaneous drainage for accessible collections; relaparotomy for diffuse peritonitis; empirical antibiotics by severity and local resistance. Sartelli M, Chichom-Mefire A, Labricciosa FM, et al. World J Emerg Surg. 2017;12:29. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign — international guidelines 2021 (2021), Antimicrobials within 1 h for possible septic shock or high likelihood of sepsis; source control as soon as practical; measure lactate; admit to ICU when needed. Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063–143. *(statement wording/numbering not yet verified against the source)*
+- **cpoc-diabetes-2022** — CPOC guideline — perioperative care for people with diabetes mellitus undergoing elective and emergency surgery (2022), SGLT2 inhibitors: omit the day before and the day of surgery, check ketones; sulfonylureas omitted on the day of surgery; people with diabetes early on the list; capillary glucose monitoring; VRIII when more than one meal will be missed or in emergency surgery; type 1 diabetes: never omit basal insulin (continue long-acting insulin, usually at a reduced dose) alongside VRIII. Centre for Perioperative Care. Guideline for perioperative care for people with diabetes mellitus undergoing elective and emergency surgery. London: CPOC; 2021 (updated 2022). *(statement wording/numbering not yet verified against the source)*
+
+### Superficial incisional surgical site infection (day 6)
+
+#### `periop-postop-ssi-superficial` — Superficial incisional SSI, day 6
+
+36-year-old woman, day 6 after open appendicectomy for perforated appendicitis: red, fluctuant wound with pus, erythema 2 cm, T 37.6°C, HR 88.
+
+Permutation of `periop-postop-fever-day1-early`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-ssi-top3 | mustRankTopK | critical | not run | PASS | NICE NG125 2019; IDSA practice guideline 2014 |  |
+| mgmt-open-drain-wound | managementInclude | critical | not run | PASS | IDSA practice guideline 2014 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| level-not-emergency | emergencyLevel | quality | not run | FAIL (known gap) | IDSA practice guideline 2014 | Post-operative ward reviews: score post-op concern from physiology (NEWS2) rather than adding 'Post-operative concern' (urgent) for any 'post-op'/'wound' word; reserve emergency_now for physiological or peritonitic criteria. |
+| inv-wound-swab | investigationInclude | quality | not run | PASS | NICE NG125 2019 |  |
+| mgmt-no-broad-spectrum-iv | managementExclude | quality | not run | PASS | IDSA practice guideline 2014 |  |
+
+Failure details:
+
+- **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=73); expected ≤ urgent [known gap: Triage emergency_now (score 88): 'Post-operative concern' (urgent) for 'wound … pus' wording, plus 'Vomiting or possible dehydration' from the negated 'no vomiting'.]
+
+Guidelines:
+
+- **nice-ng125** — NICE NG125 — Surgical site infections: prevention and treatment (2019), 1.3 Antibiotic prophylaxis before clean surgery involving a prosthesis or implant, clean-contaminated and contaminated surgery; single dose IV on starting anaesthesia; do not use routinely for clean non-prosthetic uncomplicated surgery; take allergy and local resistance into account. 1.4 SSI treatment: antibiotic covering likely organisms, local resistance and culture results. National Institute for Health and Care Excellence. Surgical site infections: prevention and treatment (NG125). London: NICE; 2019 (updated 2020). *(statement wording/numbering not yet verified against the source)*
+- **idsa-ssti-2014** — IDSA practice guideline — skin and soft tissue infections (surgical site infections) (2014), Suture removal plus incision and drainage for SSI; antibiotics added only with systemic signs (T >38.5 °C, HR >110) or erythema/induration extending >5 cm; after intestinal surgery cover gram-negatives and anaerobes. Stevens DL, Bisno AL, Chambers HF, et al. Clin Infect Dis. 2014;59:e10–52. *(statement wording/numbering not yet verified against the source)*
+
+### Post-operative urinary retention after inguinal hernia repair
+
+#### `periop-postop-urinary-retention` — 
+
+71-year-old man with untreated LUTS, 8 h after open inguinal mesh repair under GA with morphine and 1.5 L IV fluid: unable to void, suprapubic discomfort, bladder scan 920 mL.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-retention-top3 | mustRankTopK | critical | not run | PASS | Postoperative urinary retention 2009 |  |
+| mgmt-catheterise | managementInclude | critical | not run | PASS | Postoperative urinary retention 2009; EAU guidelines 2023 |  |
+| level-not-emergency | emergencyLevel | quality | not run | FAIL (known gap) |  | Post-operative ward reviews: score post-op concern from physiology (NEWS2) rather than adding 'Post-operative concern' (urgent) for any 'post-op'/'wound' word; reserve emergency_now for physiological or peritonitic criteria. |
+| inv-no-acute-psa | investigationExclude | quality | not run | FAIL (known gap) | PHE Prostate Cancer Risk Management Programme 2016 | Remove PSA from the acute retention investigations; keep 'PSA at ≥6 weeks if indicated' in follow-up. |
+| mgmt-alpha-blocker-twoc | managementInclude | quality | not run | PASS | EAU guidelines 2023 |  |
+| pathway-ward-review | pathway | quality | not run | n/a |  |  |
+
+Failure details:
+
+- **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=45); expected ≤ urgent [known gap: Triage emergency_now (score 45 = age + pain + 'Post-operative or recent-procedure concern' 25): uncomfortable but stable retention.]
+- **inv-no-acute-psa** (web): forbidden investigation present in web.plan.investigations: "u&e, egfr, psa (once catheterised)" (+2 more) [known gap: The urinary_retention protocol lists 'U&E, eGFR, PSA (once catheterised)' as an urgent investigation (it also says 'PSA reassay at 6 weeks'), and the preventative prompt adds PSA. PSA is falsely raised by retention and catheterisation.]
+
+Guidelines:
+
+- **baldini-pour-2009** — Postoperative urinary retention — anaesthetic and perioperative considerations (review) (2009), Bladder ultrasound; catheterise when bladder volume exceeds 600 mL and the patient cannot void; risk factors include age, male sex, hernia surgery, anaesthetic agents, opioids and IV fluid volume. Baldini G, Bagry H, Aprikian A, Carli F. Anesthesiology. 2009;110:1139–57. *(statement wording/numbering not yet verified against the source)*
+- **eau-luts-2023** — EAU guidelines — management of non-neurogenic male LUTS (acute urinary retention) (2023), Catheterise; alpha-blocker before a trial without catheter improves success. Gravas S, Gacci M, Gratzke C, et al. EAU Guidelines on the management of non-neurogenic male LUTS. Arnhem: EAU; 2023. *(statement wording/numbering not yet verified against the source)*
+- **pcrmp-2016** — PHE Prostate Cancer Risk Management Programme — PSA testing (2016), Defer PSA testing after urinary retention, catheterisation or active UTI (falsely raised). Public Health England. Prostate cancer risk management programme: benefits and risks of PSA testing. London: PHE; 2016. *(statement wording/numbering not yet verified against the source)*
+
+### Emergency laparotomy in pregnancy (29 weeks) — adhesive small-bowel obstruction
+
+#### `periop-pregnancy-emergency-laparotomy-sbo` — Pregnant (29 weeks), adhesive SBO
+
+31-year-old at 29 weeks with adhesive small-bowel obstruction (previous open appendicectomy) failing conservative management, rising lactate — emergency laparotomy.
+
+Permutation of `periop-nela-frail-emergency-laparotomy`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-sbo-top3 | mustRankTopK | critical | not run | PASS |  |  |
+| level-at-least-urgent | emergencyLevel | critical | not run | PASS | ACOG Committee Opinion 775 2019 |  |
+| flag-pregnancy | redFlags | critical | not run | PASS | ACOG Committee Opinion 775 2019 |  |
+| mgmt-obstetric-involvement | managementInclude | critical | not run | FAIL (known gap) | ACOG Committee Opinion 775 2019; SAGES guidelines 2017 | Pregnancy branch for any operative plan: obstetric review, fetal monitoring by gestation, left uterine displacement, VTE prophylaxis, antenatal steroids when preterm delivery is possible, no NSAIDs from 20 weeks. |
+| mgmt-no-nsaid | managementExclude | critical | not run | PASS | FDA drug safety communication 2020 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| inv-no-unqualified-ct | investigationExclude | quality | not run | FAIL (known gap) | ACOG Committee Opinion 775 2019 | When pregnant: prefer MRI/US, qualify CT, and suppress the ectopic pathway beyond the first trimester (see findings/hpb.md gap 6). |
+| mgmt-vte-prophylaxis | managementInclude | quality | not run | PASS | RCOG Green-top Guideline 37a 2015; SAGES guidelines 2017 |  |
+| mgmt-left-uterine-displacement | managementInclude | quality | not run | FAIL (known gap) | SAGES guidelines 2017 | See mgmt-obstetric-involvement. |
+| mgmt-antenatal-steroids | managementInclude | quality | not run | FAIL (known gap) | NICE NG25 2022 | See mgmt-obstetric-involvement. |
+
+Failure details:
+
+- **inv-no-unqualified-ct** (web): forbidden investigation present in web.plan.investigations: "ct abdomen/pelvis with iv contrast (level, cause, ischaemia)" (+3 more) [known gap: 'CT abdomen/pelvis with IV contrast' from the bowel_obstruction protocol investigations and PANE seeding, unqualified at 29 weeks although MRI has been done. The pelvic-free-fluid prompt also fires 'Ruptured ectopic protocol' at 29 weeks.]
+- **mgmt-obstetric-involvement** (web): no management item matched among 42 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No obstetric team, CTG or fetal monitoring in any output; pregnancy is only a triage reason and the β-HCG prompt ('Urine pregnancy test — mandatory', 'exclude ectopic') for a known 29-week pregnancy.]
+- **mgmt-left-uterine-displacement** (web): no management item matched among 42 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No positioning advice.]
+- **mgmt-antenatal-steroids** (web): no management item matched among 42 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No antenatal corticosteroid consideration at 29 weeks.]
+
+Guidelines:
+
+- **acog-co775** — ACOG Committee Opinion 775 — Nonobstetric surgery during pregnancy (2019), A pregnant woman should never be denied indicated surgery; obstetric consultation before surgery; fetal heart rate monitoring appropriate to gestation and facilities when the fetus is viable. American College of Obstetricians and Gynecologists. Obstet Gynecol. 2019;133:e285–6. *(statement wording/numbering not yet verified against the source)*
+- **sages-pregnancy-2017** — SAGES guidelines — use of laparoscopy during pregnancy (2017), Left lateral positioning to minimise aortocaval compression; intra-operative and post-operative VTE prophylaxis; obstetric consultation; fetal heart monitoring. Pearl JP, Price RR, Tonkin AE, et al. Surg Endosc. 2017;31:3767–82. *(statement wording/numbering not yet verified against the source)*
+- **rcog-gtg37a** — RCOG Green-top Guideline 37a — reducing the risk of VTE during pregnancy and the puerperium (2015), Any surgical procedure in pregnancy is a transient risk factor: consider LMWH thromboprophylaxis. Royal College of Obstetricians and Gynaecologists. Green-top Guideline No. 37a. London: RCOG; 2015. *(statement wording/numbering not yet verified against the source)*
+- **fda-nsaid-2020** — FDA drug safety communication — NSAIDs from 20 weeks of pregnancy (2020), Avoid NSAIDs from about 20 weeks of pregnancy (fetal renal dysfunction, oligohydramnios). US Food and Drug Administration. Drug Safety Communication, 15 October 2020. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng25** — NICE NG25 — Preterm labour and birth (2022), Maternal corticosteroids offered between 24+0 and 33+6 weeks when preterm birth is suspected, diagnosed, established or planned. National Institute for Health and Care Excellence. Preterm labour and birth (NG25). London: NICE; 2015 (updated 2022). *(statement wording/numbering not yet verified against the source)*
+
+### Pre-operative assessment (ASA I, elective laparoscopic cholecystectomy)
+
+#### `periop-preop-asa1-lap-chole` — 
+
+32-year-old fit woman (ASA I, good functional capacity, not pregnant) listed for day-case laparoscopic cholecystectomy for symptomatic gallstones.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| level-not-urgent | emergencyLevel | quality | not run | PASS | NICE NG45 2016 |  |
+| score-rec-asa | scoreRecommended | quality | not run | FAIL (known gap) | ASA Physical Status Classification System 2020 | Trigger ASA on encounter type (pre-operative assessment / elective surgery visit) and on a confirmed operative plan, not only on symptom words. |
+| inv-pregnancy-status | investigationInclude | quality | not run | PASS | NICE NG45 2016 |  |
+| inv-no-routine-coag | investigationExclude | quality | not run | FAIL (known gap) | NICE NG45 2016 | preop_haem prompt: apply NICE NG45 by ASA grade and surgical grade (no routine PT/INR/APTT for ASA 1–2 without liver disease or anticoagulant; no ECG for ASA 1 under 40; no PSA as a pre-op test). The harness maps every non-emergency setting to encounterType 'surgical_consult', so ward reviews also get this prompt. |
+| inv-no-routine-ecg | investigationExclude | quality | not run | PASS | NICE NG45 2016 |  |
+| mgmt-no-fasting-from-midnight | managementExclude | quality | not run | FAIL (known gap) | ESA guideline 2011 | Replace with 'Solids until 6 h and clear fluids until 2 h before anaesthesia' (ESA 2011) in the lap chole, appendicectomy and hernia templates. |
+| mgmt-no-routine-antibiotic-prophylaxis | managementExclude | quality | not run | FAIL (known gap) | SIGN 104 2014 | Make prophylaxis conditional on SIGN 104 high-risk criteria (e.g. acute cholecystitis, jaundice, CBD exploration, age/ASA) and check the allergy record. |
+
+Failure details:
+
+- **score-rec-asa** (web): asa not recommended; recommended: asge-cbd, news2 [known gap: getCdsSuggestions suggests only asge-cbd and news2. The ASA rule fires on pre-op symptom words or comorbidities, none present in a fit patient; the procedureData.preop trigger (Perioperative tab) is not set by the harness, so this may pass in the app once that tab is filled.]
+- **inv-no-routine-coag** (web): forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" [known gap: The preop_haem prompt adds 'Prothrombin Time (PT/INR)' (+ APTT, Group & Screen) for every surgical consultation, regardless of ASA grade.]
+- **mgmt-no-fasting-from-midnight** (web): forbidden management item present in web.clinicalPrompts: "...────────────────────────────────────────── pre-operative: • nbm from midnight (or ≥ 6h solids / 2h clear fluids). • iv co-amoxiclav 1.2g at induction (single..." [known gap: The lap_chole_pathway operative template starts 'NBM from midnight (or ≥ 6h solids / 2h clear fluids)'.]
+- **mgmt-no-routine-antibiotic-prophylaxis** (web): forbidden management item present in web.clinicalPrompts: "... nbm from midnight (or ≥ 6h solids / 2h clear fluids). • iv co-amoxiclav 1.2g at induction (single prophylactic dose). • lmwh (enoxaparin 40mg sc) night before + day of s..." [known gap: The lap chole template orders 'IV Co-amoxiclav 1.2g at induction (single prophylactic dose)' unconditionally.]
+
+Guidelines:
+
+- **nice-ng45** — NICE NG45 — Routine preoperative tests for elective surgery (2016), Tables by surgical grade and ASA grade: ASA 1 minor/intermediate surgery — no routine FBC, U&E, ECG or haemostasis tests; do not routinely offer haemostasis tests (consider only for ASA 3–4 with chronic liver disease or when anticoagulant management needs it); ask women of childbearing potential about possible pregnancy and offer a test with consent. National Institute for Health and Care Excellence. Routine preoperative tests for elective surgery (NG45). London: NICE; 2016. *(statement wording/numbering not yet verified against the source)*
+- **asa-ps-2020** — ASA Physical Status Classification System (2020), ASA I healthy; ASA II mild systemic disease; ASA III severe systemic disease; ASA IV severe systemic disease that is a constant threat to life; E suffix for emergency surgery. American Society of Anesthesiologists. ASA Physical Status Classification System (last amended 13 December 2020). *(statement wording/numbering not yet verified against the source)*
+- **esa-fasting-2011** — ESA guideline — perioperative fasting in adults and children (2011), Clear fluids up to 2 h and solids up to 6 h before elective anaesthesia; prolonged fasting should be avoided. Smith I, Kranke P, Murat I, et al. Perioperative fasting in adults and children: guidelines from the European Society of Anaesthesiology. Eur J Anaesthesiol. 2011;28:556–69. *(statement wording/numbering not yet verified against the source)*
+- **sign-104** — SIGN 104 — Antibiotic prophylaxis in surgery (2014), Procedure table: laparoscopic cholecystectomy — prophylaxis not recommended in low-risk patients (consider in high risk); open inguinal/femoral hernia repair with mesh — recommended/consider; colorectal surgery — highly recommended; a single dose is sufficient for most procedures; no evidence for post-operative doses. Scottish Intercollegiate Guidelines Network. Antibiotic prophylaxis in surgery (SIGN 104). Edinburgh: SIGN; 2008, updated 2014. *(statement wording/numbering not yet verified against the source)*
+
+### Pre-operative assessment — end-stage renal failure on haemodialysis with hyperkalaemia
+
+#### `periop-preop-ckd-dialysis-hyperkalaemia` — ESRF on haemodialysis, K⁺ 6.2
+
+58-year-old woman on haemodialysis (Mon/Wed/Fri) listed for laparoscopic cholecystectomy; pre-operative potassium 6.2 mmol/L on a non-dialysis day.
+
+Permutation of `periop-preop-asa1-lap-chole`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-hyperkalaemia | redFlags | critical | not run | PASS | UK Kidney Association 2020 |  |
+| mgmt-correct-k-before-surgery | managementInclude | critical | not run | PASS | UK Kidney Association 2020 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| score-rec-rcri | scoreRecommended | quality | not run | PASS | Revised Cardiac Risk Index (Lee) 1999 |  |
+| mgmt-dialysis-timing | managementInclude | quality | not run | FAIL (known gap) | UK Kidney Association 2020 | In the hyperkalaemia and pre-op prompts, when the PMH contains dialysis/ESRF: 'arrange dialysis before surgery (usually the day before) and recheck K⁺'. |
+| mgmt-no-unadjusted-lmwh | managementExclude | quality | not run | FAIL (known gap) | NICE NG89 2018 | Operative templates: 'LMWH dose-adjusted for renal function (UFH if eGFR <30 or dialysis per local protocol)' when creatinine/eGFR or dialysis is recorded. |
+| mgmt-no-nsaid | managementExclude | quality | not run | PASS | NICE NG203 2021 |  |
+
+Failure details:
+
+- **mgmt-dialysis-timing** (web): no management item matched among 24 (web.clinicalPrompts) [known gap: The hyperkalaemia prompt fires (ECG, calcium not given at 6.2, insulin-dextrose, 'Surgery DEFERRED — K⁺ must be < 5.5') but never mentions dialysis for a haemodialysis patient.]
+- **mgmt-no-unadjusted-lmwh** (web): forbidden management item present in web.clinicalPrompts: "...iclav 1.2g at induction (single prophylactic dose). • lmwh (enoxaparin 40mg sc) night before + day of surgery; ted stockings. • iv access; identify allergy..." [known gap: The lap chole template orders 'LMWH (Enoxaparin 40mg SC) night before + day of surgery' with no renal qualification for a dialysis patient.]
+
+Guidelines:
+
+- **ukka-hyperk-2020** — UK Kidney Association — clinical practice guideline: treatment of acute hyperkalaemia in adults (2020), Mild 5.5–5.9, moderate 6.0–6.4, severe ≥6.5 mmol/L; insulin-glucose for K⁺ ≥6.0 mmol/L; ECG; treat the cause; dialysis for refractory hyperkalaemia or in dialysis patients. UK Kidney Association. Treatment of acute hyperkalaemia in adults. 2020 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+- **rcri-1999** — Revised Cardiac Risk Index (Lee) (1999), High-risk surgery (intraperitoneal, intrathoracic, suprainguinal vascular), ischaemic heart disease, heart failure, cerebrovascular disease, insulin-treated diabetes, creatinine >2 mg/dL (177 µmol/L). Lee TH, Marcantonio ER, Mangione CM, et al. Circulation. 1999;100:1043–9. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng89** — NICE NG89 — Venous thromboembolism in over 16s: reducing the risk of hospital-acquired DVT or PE (2018), Assess VTE and bleeding risk; abdominal surgery with VTE risk above bleeding risk: pharmacological prophylaxis (LMWH) for at least 7 days; extended to 28 days after major cancer surgery in the abdomen/pelvis; mechanical prophylaxis (anti-embolism stockings or IPC) when pharmacological prophylaxis is contraindicated by bleeding risk; reassess within 24 h and when the clinical situation changes. National Institute for Health and Care Excellence. VTE in over 16s (NG89). London: NICE; 2018 (updated 2019). *(statement wording/numbering not yet verified against the source)*
+- **nice-ng203** — NICE NG203 — Chronic kidney disease: assessment and management (2021), Avoid long-term NSAIDs in CKD; adjust drug doses for renal function. National Institute for Health and Care Excellence. Chronic kidney disease (NG203). London: NICE; 2021. *(statement wording/numbering not yet verified against the source)*
+
+### Pre-operative assessment — latex anaphylaxis
+
+#### `periop-preop-latex-allergy` — Latex anaphylaxis
+
+34-year-old nurse with previous anaphylaxis to latex gloves listed for laparoscopic cholecystectomy.
+
+Permutation of `periop-preop-asa1-lap-chole`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-latex-allergy | redFlags | critical | not run | PASS | RCoA NAP6 2018 |  |
+| mgmt-latex-free | managementInclude | critical | not run | FAIL (known gap) | AAGBI safety guideline 2009; RCoA NAP6 2018 | Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list). |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| mgmt-first-on-list | managementInclude | quality | not run | FAIL (known gap) | AAGBI safety guideline 2009 | Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list). |
+
+Failure details:
+
+- **mgmt-latex-free** (web): no management item matched among 8 (web.clinicalPrompts) [known gap: The allergy is shown in the header ('Allergy: Latex') but nothing adapts the plan: the lap chole template is unchanged and no output mentions a latex-free theatre.]
+- **mgmt-first-on-list** (web): no management item matched among 8 (web.clinicalPrompts) [known gap: No 'first on the list' instruction.]
+
+Guidelines:
+
+- **nap6-2018** — RCoA NAP6 — Perioperative anaphylaxis (2018), Antibiotics (teicoplanin, co-amoxiclav) are the commonest triggers; allergy history must be checked before induction; latex remains a cause and requires a latex-free pathway in known allergy. Royal College of Anaesthetists. Anaesthesia, surgery and life-threatening allergic reactions: 6th National Audit Project. London: RCoA; 2018. *(statement wording/numbering not yet verified against the source)*
+- **aagbi-anaphylaxis-2009** — AAGBI safety guideline — suspected anaphylactic reactions associated with anaesthesia (2009), Patients with known latex allergy: latex-free environment and equipment, ideally first on the operating list. Association of Anaesthetists of Great Britain and Ireland. Suspected anaphylactic reactions associated with anaesthesia. Anaesthesia. 2009;64:199–211. *(statement wording/numbering not yet verified against the source)*
+
+### Pre-operative assessment — long-term glucocorticoid therapy (adrenal suppression risk)
+
+#### `periop-preop-long-term-steroids` — Prednisolone 10 mg for 2 years (adrenal suppression)
+
+49-year-old woman on prednisolone 10 mg daily for 2 years (rheumatoid arthritis) listed for laparoscopic cholecystectomy.
+
+Permutation of `periop-preop-asa1-lap-chole`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-steroid-cover | managementInclude | critical | not run | FAIL (known gap) | AAGBI/RCP/SfE guideline 2020 | See flag-steroid-adrenal. Do not state doses without the surgeon's template. |
+| mgmt-no-stop-steroid | managementExclude | critical | not run | PASS | AAGBI/RCP/SfE guideline 2020 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| flag-steroid-adrenal | redFlags | quality | not run | FAIL (known gap) | AAGBI/RCP/SfE guideline 2020 | Add a steroid prompt: prednisolone ≥5 mg (or equivalent) for >4 weeks → adrenal suppression flag + peri-operative hydrocortisone plan (Woodcock 2020). |
+
+Failure details:
+
+- **flag-steroid-adrenal** (web): no red flag matched among 11 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: Long-term prednisolone is visible only as the generic triage reason 'Higher-risk comorbidity present'; no adrenal-insufficiency flag.]
+- **mgmt-steroid-cover** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: No hydrocortisone / steroid-cover line in any output; clinical-inference.ts has no glucocorticoid rule (hasMed never checks prednisolone/hydrocortisone/dexamethasone).]
+
+Guidelines:
+
+- **woodcock-steroids-2020** — AAGBI/RCP/SfE guideline — glucocorticoids in the peri-operative period for adrenal insufficiency (2020), Patients on ≥5 mg prednisolone (or equivalent) for >4 weeks are at risk of adrenal insufficiency: hydrocortisone at induction and continued cover until eating and drinking, then usual dose; do not omit usual glucocorticoid. Woodcock T, Barker P, Daniel S, et al. Anaesthesia. 2020;75:654–63. *(statement wording/numbering not yet verified against the source)*
+
+### Pre-operative assessment — malignant hyperthermia susceptibility (untested first-degree relative)
+
+#### `periop-preop-mh-susceptible` — Untested first-degree relative of an MH-susceptible patient
+
+27-year-old man whose brother is IVCT-confirmed MH-susceptible, untested himself, listed for laparoscopic cholecystectomy.
+
+Permutation of `periop-preop-asa1-lap-chole`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-mh | redFlags | critical | not run | FAIL (known gap) | Association of Anaesthetists guideline 2021 | Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list). |
+| mgmt-trigger-free-anaesthesia | managementInclude | critical | not run | FAIL (known gap) | Association of Anaesthetists guideline 2021 | Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list). |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| mgmt-dantrolene | managementInclude | quality | not run | FAIL (known gap) | Association of Anaesthetists guideline 2021 | Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list). |
+| mgmt-mh-unit-referral | managementInclude | quality | not run | FAIL (known gap) | Association of Anaesthetists guideline 2021 | Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list). |
+
+Failure details:
+
+- **flag-mh** (web): no red flag matched among 7 (web.triage.pathways, web.clinicalPrompts.safety) [known gap: Nothing reads 'malignant hyperthermia' from the PMH: no triage reason, no prompt, no alert. The only safety prompt is the pre-op bloods panel.]
+- **mgmt-trigger-free-anaesthesia** (web): no management item matched among 6 (web.clinicalPrompts) [known gap: No trigger-free anaesthesia plan; the only plan content is the lap chole operative template ('General anaesthesia + neuromuscular blockade').]
+- **mgmt-dantrolene** (web): no management item matched among 6 (web.clinicalPrompts) [known gap: No output mentions dantrolene.]
+- **mgmt-mh-unit-referral** (web): no management item matched among 6 (web.clinicalPrompts) [known gap: No referral of the untested relative to an MH unit.]
+
+Guidelines:
+
+- **aa-mh-2021** — Association of Anaesthetists guideline — malignant hyperthermia 2020 (2021), MH-susceptible patients and untested first-degree relatives of an MH-susceptible patient: trigger-free anaesthesia (no volatile agents, no suxamethonium), dantrolene immediately available, refer relatives to an MH unit for testing. Hopkins PM, Girard T, Dalay S, et al. Malignant hyperthermia 2020: Guideline from the Association of Anaesthetists. Anaesthesia. 2021;76:655–64. *(statement wording/numbering not yet verified against the source)*
+
+### Pre-operative assessment — suspected obstructive sleep apnoea (STOP-Bang 8)
+
+#### `periop-preop-osa-stopbang` — Suspected OSA, BMI 42, STOP-Bang 8
+
+52-year-old man, BMI 42, loud snoring, witnessed apnoeas, daytime sleepiness, treated hypertension, neck 45 cm — STOP-Bang 8 — listed for laparoscopic cholecystectomy.
+
+Permutation of `periop-preop-asa1-lap-chole`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-osa-risk | redFlags | critical | not run | FAIL (known gap) | SASM guideline 2016; ASA practice guidelines 2014 | Raise an OSA red flag from STOP-Bang ≥5 or snoring + observed apnoea + BMI >35, carried into the anaesthetic/pre-op summary; see also Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list). |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| score-rec-stop-bang | scoreRecommended | quality | not run | PASS | STOP-Bang questionnaire 2008; SASM guideline 2016 |  |
+| score-rec-asa | scoreRecommended | quality | not run | PASS | ASA Physical Status Classification System 2020 |  |
+| mgmt-osa-plan | managementInclude | quality | not run | FAIL (known gap) | SASM guideline 2016; ASA practice guidelines 2014 | Add an OSA branch to the operative templates: opioid-sparing multimodal analgesia, continuous oximetry after recovery, CPAP if established (SASM 2016, ASA 2014). |
+
+Failure details:
+
+- **flag-osa-risk** (web): no red flag matched among 13 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: STOP-Bang is suggested in the scales list ('snoring' chip, obesity), but nothing flags OSA as a peri-operative risk: no red flag, no alert. Triage adds 'Post-operative concern' (urgent) because the HPI says 'breathless on one flight of stairs'.]
+- **mgmt-osa-plan** (web): no management item matched among 12 (web.clinicalPrompts) [known gap: No OSA mitigation (anaesthetic review, opioid-sparing analgesia, post-operative monitoring, sleep study/CPAP) in any output; the lap chole template's post-op orders include PRN morphine.]
+
+Guidelines:
+
+- **sasm-2016** — SASM guideline — preoperative screening and assessment of adults with obstructive sleep apnoea (2016), Screen with a validated tool (STOP-Bang); high-risk patients: consider further evaluation/CPAP where there is uncontrolled systemic disease or impaired gas exchange; otherwise proceed with risk-mitigation strategies (opioid-sparing analgesia, post-operative monitoring). Chung F, Memtsoudis SG, Ramachandran SK, et al. Anesth Analg. 2016;123:452–73. *(statement wording/numbering not yet verified against the source)*
+- **asa-osa-2014** — ASA practice guidelines — perioperative management of patients with obstructive sleep apnoea (2014), Preoperative identification; consider CPAP pre-operatively in severe OSA; minimise opioids; continuous monitoring after discharge from recovery while at increased risk. American Society of Anesthesiologists Task Force on Perioperative Management of patients with OSA. Anesthesiology. 2014;120:268–86. *(statement wording/numbering not yet verified against the source)*
+- **stopbang-2008** — STOP-Bang questionnaire (2008), Snoring, Tiredness, Observed apnoea, Pressure, BMI >35, Age >50, Neck circumference >40 cm, male Gender; 5–8 = high risk of moderate-severe OSA. Chung F, Yegneswaran B, Liao P, et al. Anesthesiology. 2008;108:812–21 (risk bands: Chung F et al. Chest 2016;149:631–8). *(statement wording/numbering not yet verified against the source)*
+- **asa-ps-2020** — ASA Physical Status Classification System (2020), ASA I healthy; ASA II mild systemic disease; ASA III severe systemic disease; ASA IV severe systemic disease that is a constant threat to life; E suffix for emergency surgery. American Society of Anesthesiologists. ASA Physical Status Classification System (last amended 13 December 2020). *(statement wording/numbering not yet verified against the source)*
+
+### Pre-operative cardiac risk assessment (RCRI 5, poor functional capacity)
+
+#### `periop-preop-rcri-high-risk-hemicolectomy` — Elderly, IHD + HFrEF + insulin + CKD (RCRI 5), cancer surgery
+
+76-year-old man with previous MI, HFrEF (EF 35%), insulin-treated diabetes and creatinine 190 µmol/L, unable to climb two flights, listed for laparoscopic right hemicolectomy for caecal cancer — RCRI 5.
+
+Permutation of `periop-preop-asa1-lap-chole`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-ecg | managementInclude | critical | not run | PASS | 2022 ESC guidelines 2022 |  |
+| mgmt-no-stop-aspirin | managementExclude | critical | not run | PASS | 2022 ESC guidelines 2022 |  |
+| score-rec-rcri | scoreRecommended | quality | not run | PASS | 2022 ESC guidelines 2022; Revised Cardiac Risk Index (Lee) 1999 |  |
+| score-rec-asa | scoreRecommended | quality | not run | PASS | ASA Physical Status Classification System 2020 |  |
+| inv-natriuretic-peptide-or-troponin | investigationInclude | quality | not run | FAIL (known gap) | 2022 ESC guidelines 2022 | When RCRI ≥1 or known HF/IHD before intermediate/high-risk surgery, prompt ECG + NT-proBNP (± troponin) per ESC 2022; with known HF and poor functional capacity, prompt echocardiography. |
+| inv-echocardiography | investigationInclude | quality | not run | FAIL (known gap) | 2022 ESC guidelines 2022 | See inv-natriuretic-peptide-or-troponin. |
+| inv-iron-studies | investigationInclude | quality | not run | FAIL (known gap) | International consensus statement on the perioperative management of anaemia and iron deficiency 2017 | Pre-operative anaemia prompt for major elective surgery: Hb <130 g/L → ferritin/TSAT and IV iron when surgery is within weeks (international consensus 2017). |
+| mgmt-functional-capacity | managementInclude | quality | not run | FAIL (known gap) | 2022 ESC guidelines 2022 | Add a functional-capacity question to the pre-operative prompt set (ESC 2022). |
+
+Failure details:
+
+- **inv-natriuretic-peptide-or-troponin** (web): no investigation matched among 24 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No output requests NT-proBNP/BNP or troponin; the only cardiac test is the age-based 'pre-operative cardiac baseline' ECG plan line. RCRI is suggested as a score but its result drives nothing.]
+- **inv-echocardiography** (web): no investigation matched among 24 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No echocardiography suggested for known HFrEF (EF 35%) with poor functional capacity before cancer surgery.]
+- **inv-iron-studies** (web): no investigation matched among 24 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Hb 10.8 g/dL before major cancer surgery: only 'FBC (exclude iron-deficiency anaemia)' from the colorectal protocol; no ferritin/iron studies or pre-operative iron plan (the severe_anaemia prompt needs Hb <8).]
+- **mgmt-functional-capacity** (web): no management item matched among 30 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Functional capacity (METs / two flights) is never asked for or documented; the colorectal_cancer protocol and prompts have no pre-operative risk content.]
+
+Guidelines:
+
+- **esc-ncs-2022** — 2022 ESC guidelines — cardiovascular assessment and management of patients undergoing non-cardiac surgery (with ESAIC) (2022), Clinical risk (RCRI), functional capacity (e.g. climbing two flights of stairs); ECG and NT-proBNP/BNP and troponin in patients with risk factors before intermediate/high-risk surgery; echocardiography in poor functional capacity, raised NT-proBNP or known HF; delay elective surgery until 6 months after elective PCI and 12 months after ACS; continue aspirin after PCI if bleeding risk allows; interrupt P2Y12 inhibitors only in agreement with the cardiologist; bridging not recommended for antiplatelet interruption. Halvorsen S, Mehilli J, Cassese S, et al. 2022 ESC Guidelines on cardiovascular assessment and management of patients undergoing non-cardiac surgery. Eur Heart J. 2022;43:3826–924. *(statement wording/numbering not yet verified against the source)*
+- **rcri-1999** — Revised Cardiac Risk Index (Lee) (1999), High-risk surgery (intraperitoneal, intrathoracic, suprainguinal vascular), ischaemic heart disease, heart failure, cerebrovascular disease, insulin-treated diabetes, creatinine >2 mg/dL (177 µmol/L). Lee TH, Marcantonio ER, Mangione CM, et al. Circulation. 1999;100:1043–9. *(statement wording/numbering not yet verified against the source)*
+- **asa-ps-2020** — ASA Physical Status Classification System (2020), ASA I healthy; ASA II mild systemic disease; ASA III severe systemic disease; ASA IV severe systemic disease that is a constant threat to life; E suffix for emergency surgery. American Society of Anesthesiologists. ASA Physical Status Classification System (last amended 13 December 2020). *(statement wording/numbering not yet verified against the source)*
+- **anaemia-consensus-2017** — International consensus statement on the perioperative management of anaemia and iron deficiency (2017), Detect, evaluate and treat anaemia before elective major surgery; iron deficiency treated (IV iron when time is short); Hb <130 g/L treated as anaemia pre-operatively in both sexes. Muñoz M, Acheson AG, Auerbach M, et al. Anaesthesia. 2017;72:233–47. *(statement wording/numbering not yet verified against the source)*
+
+### Pre-operative assessment — drug-eluting stent 3 months after NSTEMI (elective surgery)
+
+#### `periop-preop-recent-acs-des-elective-chole` — DES 3 months after NSTEMI on aspirin + ticagrelor
+
+61-year-old man on aspirin and ticagrelor 3 months after NSTEMI treated with a drug-eluting stent, referred for elective laparoscopic cholecystectomy for recurrent biliary colic.
+
+Permutation of `periop-preop-asa1-lap-chole`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-antiplatelet-stent | redFlags | critical | not run | PASS | 2022 ESC guidelines 2022 |  |
+| mgmt-defer-elective-surgery | managementInclude | critical | not run | FAIL (known gap) | 2022 ESC guidelines 2022; ACCP guideline 2022 | Add an antiplatelet prompt (aspirin, clopidogrel, ticagrelor, prasugrel) that reads stent type/date: continue aspirin; P2Y12 interruption only with cardiology agreement; defer elective surgery within 6 months of elective PCI / 12 months of ACS (ESC 2022); for endoscopy use the BSG/ESGE 2021 table. |
+| mgmt-cardiology-liaison | managementInclude | critical | not run | FAIL (known gap) | 2022 ESC guidelines 2022 | Add an antiplatelet prompt (aspirin, clopidogrel, ticagrelor, prasugrel) that reads stent type/date: continue aspirin; P2Y12 interruption only with cardiology agreement; defer elective surgery within 6 months of elective PCI / 12 months of ACS (ESC 2022); for endoscopy use the BSG/ESGE 2021 table. |
+| mgmt-no-stop-aspirin | managementExclude | critical | not run | PASS | 2022 ESC guidelines 2022; ACCP guideline 2022 |  |
+| mgmt-no-unsupervised-p2y12-stop | managementExclude | critical | not run | PASS | 2022 ESC guidelines 2022 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS |  |  |
+| level-not-urgent | emergencyLevel | quality | not run | PASS (gap resolved) | 2022 ESC guidelines 2022 | adaptiveTriage is a front-desk intake engine: its keyword red flags ('bleeding', 'breathless', 'collapse', 'jaundice', 'drain', 'procedure') fire on negated or historical mentions in a clinician's pre-operative note. Use negation handling and do not derive the consultation's emergency level from free-text keyword hits alone in a scheduled pre-operative/endoscopy encounter. |
+
+Failure details:
+
+- **level-not-urgent** (web): web.triage: priority (acuity=review, action=priority_24_48h, score=19); expected ≤ priority
+- **mgmt-defer-elective-surgery** (web): no management item matched among 12 (web.clinicalPrompts) [known gap: No output relates the stent date to surgical timing. The lap chole operative template (consent, NBM, co-amoxiclav, LMWH) is offered for an elective case 3 months after an ACS stent. Aspirin/ticagrelor raise only the generic triage reason 'Anticoagulant or antiplatelet medication mentioned'.]
+- **mgmt-cardiology-liaison** (web): no management item matched among 12 (web.clinicalPrompts) [known gap: No cardiology input suggested for P2Y12 management 3 months after a DES.]
+
+Guidelines:
+
+- **esc-ncs-2022** — 2022 ESC guidelines — cardiovascular assessment and management of patients undergoing non-cardiac surgery (with ESAIC) (2022), Clinical risk (RCRI), functional capacity (e.g. climbing two flights of stairs); ECG and NT-proBNP/BNP and troponin in patients with risk factors before intermediate/high-risk surgery; echocardiography in poor functional capacity, raised NT-proBNP or known HF; delay elective surgery until 6 months after elective PCI and 12 months after ACS; continue aspirin after PCI if bleeding risk allows; interrupt P2Y12 inhibitors only in agreement with the cardiologist; bridging not recommended for antiplatelet interruption. Halvorsen S, Mehilli J, Cassese S, et al. 2022 ESC Guidelines on cardiovascular assessment and management of patients undergoing non-cardiac surgery. Eur Heart J. 2022;43:3826–924. *(statement wording/numbering not yet verified against the source)*
+- **accp-2022** — ACCP guideline — perioperative management of antithrombotic therapy (2022), VKA: stop 5 days before surgery; in AF suggest against heparin bridging; suggest bridging for mechanical mitral valve; DOAC: interrupt 1 day before low/moderate bleed-risk and 2 days before high bleed-risk procedures, no heparin bridging, no pre-operative coagulation testing; aspirin: continue in patients with coronary stents; P2Y12 inhibitors: stop clopidogrel/ticagrelor 5 days and prasugrel 7 days before surgery; defer elective surgery after recent stent. Douketis JD, Spyropoulos AC, Murad MH, et al. Perioperative management of antithrombotic therapy: an American College of Chest Physicians clinical practice guideline. Chest. 2022;162:e207–43. *(statement wording/numbering not yet verified against the source)*
+
+### Suxamethonium apnoea history before emergency surgery (butyrylcholinesterase deficiency)
+
+#### `periop-preop-suxamethonium-apnoea` — Suxamethonium apnoea, emergency appendicectomy with RSI
+
+45-year-old woman with prolonged paralysis after suxamethonium at a previous caesarean section now needs emergency laparoscopic appendicectomy (rapid sequence induction).
+
+Permutation of `periop-preop-mh-susceptible`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-at-least-urgent | emergencyLevel | critical | not run | **FAIL — BLOCKING** |  |  |
+| flag-sux-apnoea | redFlags | critical | not run | FAIL (known gap) | Butyrylcholinesterase deficiency and its clinical importance in anaesthesia (systematic review) 2019 | Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list). |
+| mgmt-avoid-suxamethonium-mivacurium | managementInclude | critical | not run | FAIL (known gap) | Butyrylcholinesterase deficiency and its clinical importance in anaesthesia (systematic review) 2019 | Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list). |
+| dx-appendicitis-top3 | mustRankTopK | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **level-at-least-urgent** (web): web.triage: priority (acuity=review, action=priority_24_48h, score=23); expected ≥ urgent
+- **flag-sux-apnoea** (web): no red flag matched among 21 (web.triage.reasons, web.protocol.redFlags, web.dxVariant.urgencyNote, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: The suxamethonium-apnoea history (PMH and HPI) raises nothing; triage reasons are pregnancy (from 'urine pregnancy test negative'), pain and vomiting.]
+- **mgmt-avoid-suxamethonium-mivacurium** (web): no management item matched among 52 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The appendicectomy template specifies 'General anaesthesia + endotracheal intubation' with no neuromuscular-blocker caution; no rocuronium/sugammadex alternative for RSI.]
+
+Guidelines:
+
+- **bche-review-2019** — Butyrylcholinesterase deficiency and its clinical importance in anaesthesia (systematic review) (2019), Prolonged neuromuscular block after suxamethonium or mivacurium; avoid both in known or suspected deficiency; test the patient and relatives. Andersson ML, Møller AM, Wildgaard K. Anaesthesia. 2019;74:518–28. *(statement wording/numbering not yet verified against the source)*
+- **aa-mh-2021** — Association of Anaesthetists guideline — malignant hyperthermia 2020 (2021), MH-susceptible patients and untested first-degree relatives of an MH-susceptible patient: trigger-free anaesthesia (no volatile agents, no suxamethonium), dantrolene immediately available, refer relatives to an MH unit for testing. Hopkins PM, Girard T, Dalay S, et al. Malignant hyperthermia 2020: Guideline from the Association of Anaesthetists. Anaesthesia. 2021;76:655–64. *(statement wording/numbering not yet verified against the source)*
+
+### VTE risk and thromboprophylaxis — major pelvic cancer surgery (Caprini 11)
+
+#### `periop-vte-caprini-high-cancer-surgery` — 
+
+68-year-old woman, BMI 33, previous provoked DVT, varicose veins, for laparoscopic anterior resection of rectal cancer — Caprini 11 (high risk).
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-pharmacological-prophylaxis | managementInclude | critical | not run | FAIL (known gap) | NICE NG89 2018; ACCP 9th edition 2012 | Add a VTE prompt driven by the Caprini/NICE NG89 assessment (VTE risk vs bleeding risk) to every operative plan: LMWH + mechanical prophylaxis, extended 28 days after major abdominal/pelvic cancer surgery. |
+| score-rec-caprini | scoreRecommended | quality | not run | PASS | ACCP 9th edition 2012; NICE NG89 2018 |  |
+| mgmt-extended-prophylaxis | managementInclude | quality | not run | FAIL (known gap) | NICE NG89 2018; ACCP 9th edition 2012 | See mgmt-pharmacological-prophylaxis. |
+| mgmt-mechanical-prophylaxis | managementInclude | quality | not run | FAIL (known gap) | NICE NG89 2018; ACCP 9th edition 2012 | See mgmt-pharmacological-prophylaxis. |
+
+Failure details:
+
+- **mgmt-pharmacological-prophylaxis** (web): no management item matched among 34 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Caprini is suggested as a score, but no output recommends thromboprophylaxis: the plan is the colorectal_cancer protocol (C20 → colorectal_cancer; paneDiseaseId rectal_carcinoma is not used for the protocol) with no VTE content, and there is no colorectal operative template. Triage emergency_now from rectal bleeding history.]
+- **mgmt-extended-prophylaxis** (web): no management item matched among 34 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No extended (28-day) prophylaxis after major cancer surgery anywhere.]
+- **mgmt-mechanical-prophylaxis** (web): no management item matched among 34 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No mechanical prophylaxis (TED/IPC) in this plan.]
+
+Guidelines:
+
+- **nice-ng89** — NICE NG89 — Venous thromboembolism in over 16s: reducing the risk of hospital-acquired DVT or PE (2018), Assess VTE and bleeding risk; abdominal surgery with VTE risk above bleeding risk: pharmacological prophylaxis (LMWH) for at least 7 days; extended to 28 days after major cancer surgery in the abdomen/pelvis; mechanical prophylaxis (anti-embolism stockings or IPC) when pharmacological prophylaxis is contraindicated by bleeding risk; reassess within 24 h and when the clinical situation changes. National Institute for Health and Care Excellence. VTE in over 16s (NG89). London: NICE; 2018 (updated 2019). *(statement wording/numbering not yet verified against the source)*
+- **accp-2012-gould** — ACCP 9th edition — prevention of VTE in non-orthopaedic surgical patients (Caprini) (2012), General and abdominal-pelvic surgery: Caprini ≥5 high risk → LMWH/LDUH plus mechanical prophylaxis; extended-duration (4 weeks) LMWH after abdominal/pelvic cancer surgery; high bleeding risk → mechanical prophylaxis until bleeding risk diminishes. Gould MK, Garcia DA, Wren SM, et al. Chest. 2012;141(2 Suppl):e227S–77S. *(statement wording/numbering not yet verified against the source)*
+
+### VTE prophylaxis with high bleeding risk — day 1 after surgery for a bleeding duodenal ulcer
+
+#### `periop-vte-high-bleeding-risk-mechanical` — High bleeding risk after surgery for bleeding DU
+
+64-year-old man, day 1 after laparotomy and under-running of a bleeding duodenal ulcer, transfused, platelets 68: pharmacological prophylaxis should wait; mechanical prophylaxis now.
+
+Permutation of `periop-vte-caprini-high-cancer-surgery`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-bleeding | redFlags | critical | not run | PASS | NICE NG89 2018 |  |
+| mgmt-mechanical-prophylaxis | managementInclude | critical | not run | FAIL (known gap) | NICE NG89 2018; ACCP 9th edition 2012 | See periop-vte-caprini-high-cancer-surgery; when bleeding risk outweighs VTE risk, suggest mechanical prophylaxis and a daily reassessment. |
+| mgmt-no-lmwh-now | managementExclude | critical | not run | PASS | NICE NG89 2018 |  |
+| mgmt-reassess-vte-bleeding | managementInclude | quality | not run | FAIL (known gap) | NICE NG89 2018 | See mgmt-mechanical-prophylaxis. |
+
+Failure details:
+
+- **mgmt-mechanical-prophylaxis** (web): no management item matched among 37 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No VTE decision at all on post-operative day 1: the plan is the peptic_ulcer protocol (with 'OGD within 24 h' after an operation that already controlled the bleed). No LMWH is suggested either, so the no-LMWH check passes by omission.]
+- **mgmt-reassess-vte-bleeding** (web): no management item matched among 37 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No daily VTE/bleeding reassessment.]
+
+Guidelines:
+
+- **nice-ng89** — NICE NG89 — Venous thromboembolism in over 16s: reducing the risk of hospital-acquired DVT or PE (2018), Assess VTE and bleeding risk; abdominal surgery with VTE risk above bleeding risk: pharmacological prophylaxis (LMWH) for at least 7 days; extended to 28 days after major cancer surgery in the abdomen/pelvis; mechanical prophylaxis (anti-embolism stockings or IPC) when pharmacological prophylaxis is contraindicated by bleeding risk; reassess within 24 h and when the clinical situation changes. National Institute for Health and Care Excellence. VTE in over 16s (NG89). London: NICE; 2018 (updated 2019). *(statement wording/numbering not yet verified against the source)*
+- **accp-2012-gould** — ACCP 9th edition — prevention of VTE in non-orthopaedic surgical patients (Caprini) (2012), General and abdominal-pelvic surgery: Caprini ≥5 high risk → LMWH/LDUH plus mechanical prophylaxis; extended-duration (4 weeks) LMWH after abdominal/pelvic cancer surgery; high bleeding risk → mechanical prophylaxis until bleeding risk diminishes. Gould MK, Garcia DA, Wren SM, et al. Chest. 2012;141(2 Suppl):e227S–77S. *(statement wording/numbering not yet verified against the source)*
+
 ### Pharyngeal pouch (Zenker's diverticulum)
 
 #### `pharyngeal-pouch-elderly` — 
@@ -12592,6 +13707,106 @@ Guidelines:
 | `perianal-abscess-hiv` | flag-hiv | web | critical | known gap | no red flag matched among 5 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety) [known gap: HIV/immunosuppression in the comorbidity list is not surfaced by triage, prompts or the perianal_abscess protocol (whose IV anti |
 | `perianal-abscess-simple` | level-same-day | web | critical | known gap | web.triage: priority (acuity=review, action=priority_24_48h, score=20); expected ≥ urgent [known gap: Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings |
 | `perianal-abscess-simple` | mgmt-no-routine-antibiotics | web | quality | known gap | forbidden management item present in web.protocol.medications: "metronidazole 400 mg po (oral) tds (three times daily) - anaerobic cover for fistula tract" [known gap: The perianal_abscess protocol medications include oral metronidazole "an |
+| `periop-abx-clean-mesh-hernia` | inv-no-routine-coag | web | quality | known gap | forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" [known gap: preop_haem adds PT/INR for an ASA 1 patient; the hernia template adds FBC and Group & Screen.] |
+| `periop-abx-clean-mesh-hernia` | inv-no-preop-psa | web | quality | known gap | forbidden investigation present in web.clinicalPrompts: "psa (m)" [known gap: 'PSA (M)' comes from the psa_discussion preventative prompt (male ≥50) and the hernia template's pre-op step ('PSA if male ≥ 50 and not done').] |
+| `periop-abx-penicillin-anaphylaxis-colectomy` | level-not-urgent | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=47); expected ≤ priority [known gap: Triage emergency_now (score 47) for an elective planning visit: 'Systemic red flag symptom' from 'collapse' in the allergy history, and ' |
+| `periop-abx-penicillin-anaphylaxis-colectomy` | mgmt-prophylaxis-timing | web | quality | known gap | no management item matched among 36 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No prophylaxis plan for the elective colectomy at all: the diverticulitis protocol |
+| `periop-abx-penicillin-anaphylaxis-colectomy` | mgmt-non-penicillin-alternative | web | quality | known gap | no management item matched among 36 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No non-beta-lactam alternative in the documented plan or panel. (The uncomplicated |
+| `periop-abx-penicillin-anaphylaxis-colectomy` | mgmt-no-penicillin | web | critical | known gap | forbidden management item present in web.plan: "[conservative] uncomplicated: oral co-amoxiclav 625 mg tds for 5-7 days; liquid diet." (+6 more) [known gap: Penicillins despite recorded penicillin anaphylaxis: Plan tab (dx-variant 'divertic |
+| `periop-anticoag-apixaban-ckd-elderly` | inv-no-routine-coag | web | quality | known gap | forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" (+1 more) [known gap: PT/INR and APTT added by anticoag_check and preop_haem for a DOAC patient (PAUSE: not needed with standardised interruption).] |
+| `periop-anticoag-apixaban-ckd-elderly` | mgmt-no-bridging | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...dging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haematology protocol." [known gap: A DOAC patient gets the line headed 'Anticoagulant bridging' ( |
+| `periop-anticoag-warfarin-af-no-bridging` | mgmt-stop-warfarin-5-days | web | critical | known gap | no management item matched among 19 (web.clinicalPrompts) [known gap: The only anticoagulation plan line is 'Anticoagulant bridging: hold DOAC 48–72h pre-op (renal-adjusted); warfarin — bridge with LMWH per haematology protocol.' No stop-5- |
+| `periop-anticoag-warfarin-af-no-bridging` | mgmt-resume-warfarin | web | quality | known gap | no management item matched among 19 (web.clinicalPrompts) [known gap: No restart plan for warfarin after surgery.] |
+| `periop-anticoag-warfarin-af-no-bridging` | mgmt-no-bridging | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "...dging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haematology protocol." [known gap: anticoag_check prompt: 'warfarin — bridge with LMWH per haemat |
+| `periop-anticoag-warfarin-mechanical-mitral-bridging` | flag-mechanical-valve | web | quality | known gap | no red flag matched among 17 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: The mechanical valve is not surfaced; triage reasons are 'GI or other bleeding' (from 'No ble |
+| `periop-diabetes-sglt2-euglycaemic-dka-postop` | mnm-dka | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Post-operative Ileus \| 3. Bowel Obstruction [known gap: PANE top 3: acute cholecystitis (the gallbladder was removed 2 days ago), post-operative ileus, bowel obstruction. PANE has no D |
+| `periop-diabetes-sglt2-euglycaemic-dka-postop` | mnm-bile-leak-or-collection | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Post-operative Ileus \| 3. Bowel Obstruction [known gap: No post-cholecystectomy complication node (bile leak) in PANE; cholecystitis ranks first after cholecystectomy because nothing r |
+| `periop-diabetes-sglt2-euglycaemic-dka-postop` | alarm-ketoacidosis | web | critical | known gap | no alarm matched among 7 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Alarms are only 'Tachypnoea' (RR 28) and 'Emergency now'; the glucose prompts need glucose >11/15 mmol/L, so euglycaemic DKA ( |
+| `periop-diabetes-sglt2-euglycaemic-dka-postop` | inv-ketones-gas | web | critical | known gap | no investigation matched among 28 (web.pane.seeded, web.clinicalPrompts) [known gap: No ketone or blood-gas investigation suggested (they are already resulted; no output interprets them).] |
+| `periop-diabetes-sglt2-euglycaemic-dka-postop` | mgmt-stop-sglt2 | web | critical | known gap | no management item matched among 20 (web.clinicalPrompts) [known gap: Empagliflozin is not recognised by any rule.] |
+| `periop-diabetes-sglt2-euglycaemic-dka-postop` | mgmt-dka-insulin-with-glucose | web | quality | known gap | no management item matched among 20 (web.clinicalPrompts) [known gap: No DKA protocol line (fixed-rate insulin with glucose).] |
+| `periop-diabetes-sglt2-euglycaemic-dka-postop` | mgmt-no-emergency-laparotomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• emergency laparotomy consent - source control; icu post-operatively." [known gap: 'mild generalised tenderness, no peritonism' matches the peritonism prompt ('generalised tenderne |
+| `periop-diabetes-sglt2-preop-withhold` | mgmt-withhold-sglt2 | web | critical | known gap | no management item matched among 26 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No SGLT2-inhibitor instruction anywhere. clinical-inference.ts never checks gliflozins; the diabetes prompts |
+| `periop-diabetes-sglt2-preop-withhold` | mgmt-omit-sulfonylurea | web | quality | known gap | no management item matched among 26 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No sulfonylurea instruction (hypoglycaemia while fasting).] |
+| `periop-diabetes-sglt2-preop-withhold` | mgmt-ketone-check | web | quality | known gap | no management item matched among 26 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Ketones appear only in the hyperglycaemia prompts (glucose >11); glucose is 8.1 here.] |
+| `periop-diabetes-sglt2-preop-withhold` | mgmt-glucose-monitoring | web | quality | known gap | no management item matched among 26 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No peri-operative capillary glucose monitoring line.] |
+| `periop-diabetes-type1-emergency-surgery` | level-at-least-urgent | web | critical | known gap | web.triage: priority (acuity=review, action=priority_24_48h, score=26); expected ≥ urgent [known gap: Triage priority_24_48h (score 26) for ultrasound-confirmed appendicitis awaiting emergency surgery: the free text has no triage keyword (T |
+| `periop-diabetes-type1-emergency-surgery` | inv-ketones | web | quality | known gap | no investigation matched among 40 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Ketones appear only as a plan line ('Urine ketones — exclude diabetic ketoacidosis', addToPlan, graded as management), not as an i |
+| `periop-diabetes-type1-emergency-surgery` | mgmt-continue-basal-insulin | web | critical | known gap | no management item matched among 51 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: VRIII is suggested (glucose >11), but nothing says to continue the basal glargine  |
+| `periop-endo-dapt-recent-stent-polypectomy` | mgmt-cardiology-liaison | web | critical | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: No output addresses DAPT 2 months after a DES before a high-risk polypectomy; triage emergency_now from 'GI or other bleeding' (the negated 'No bleeding').] |
+| `periop-endo-dapt-recent-stent-polypectomy` | mgmt-defer-or-plan | web | quality | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: No deferral or staged plan.] |
+| `periop-endo-diagnostic-ogd-warfarin` | mgmt-continue-warfarin | web | quality | known gap | no management item matched among 13 (web.clinicalPrompts) [known gap: No 'continue warfarin' for a low-risk diagnostic OGD; the procedure's bleeding risk is not an input to any rule.] |
+| `periop-endo-diagnostic-ogd-warfarin` | mgmt-no-bridging | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "...dging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haematology protocol." [known gap: anticoag_check 'warfarin — bridge with LMWH' for a procedure w |
+| `periop-endo-diagnostic-ogd-warfarin` | mgmt-no-inr-reversal | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• po vitamin k 1-2mg - slow inr correction (avoid over-reversal in warfarin patients)." [known gap: The coagulopathy prompt fires on any INR >1.5 (here 2.3, therapeutic): 'Hold elec |
+| `periop-endo-ercp-sphincterotomy-apixaban` | dx-cbd-stone-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#4, web.passive#3 [known gap: PANE top 3: inguinal hernia, cholecystitis, GORD. The 'Obstructive  |
+| `periop-endo-ercp-sphincterotomy-apixaban` | mgmt-no-bridging | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...dging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haematology protocol." [known gap: Same 'Anticoagulant bridging' line for a DOAC patient before E |
+| `periop-endo-polypectomy-clopidogrel` | level-not-urgent | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=31); expected ≤ priority [known gap: Triage same_day_call (score 31) from age, comorbidity and the antiplatelet reason for a booked elective EMR.] |
+| `periop-endo-polypectomy-clopidogrel` | mgmt-stop-clopidogrel | web | critical | known gap | no management item matched among 6 (web.clinicalPrompts) [known gap: No clopidogrel instruction: anticoag_check does not include antiplatelets (hasMed list is warfarin/DOACs/heparins only). Only the generic triage reason mentions the drug.] |
+| `periop-frailty-elective-dementia` | flag-delirium-risk | web | quality | known gap | no red flag matched among 14 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: Dementia and a previous post-operati |
+| `periop-frailty-elective-dementia` | inv-iron-studies | web | quality | known gap | no investigation matched among 20 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Hb 9.4 g/dL with a caecal cancer: only 'FBC (exclude iron-deficiency anaemia)'; no iron studies or pre-operative iron plan.] |
+| `periop-frailty-elective-dementia` | mgmt-cga | web | quality | known gap | no management item matched among 25 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: CFS is suggested but no comprehensive geriatric assessment or elderly-medicine input.] |
+| `periop-frailty-elective-dementia` | mgmt-delirium-prevention | web | quality | known gap | no management item matched among 25 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No delirium prevention plan.] |
+| `periop-frailty-elective-dementia` | mgmt-shared-decision | web | quality | known gap | no management item matched among 25 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No capacity / shared decision-making prompt with dementia.] |
+| `periop-nela-frail-emergency-laparotomy` | score-rec-p-possum | web | quality | known gap | p-possum not recommended; recommended: alvarado, tg18-cholangitis, ranson, cha2ds2-vasc, qsofa, news2, caprini, has-bled, asa, rcri, cfs [known gap: P-POSSUM is not suggested: the CDS rule needs procedureData.preop or an endoscopy record (n |
+| `periop-nela-frail-emergency-laparotomy` | mgmt-mortality-risk | web | quality | known gap | no management item matched among 76 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No documented mortality risk in any output.] |
+| `periop-nela-frail-emergency-laparotomy` | mgmt-geriatric-input | web | quality | known gap | no management item matched among 76 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: CFS is suggested, but no elderly-medicine/geriatric review for an 84-year-old CFS  |
+| `periop-nela-frail-emergency-laparotomy` | mgmt-shared-decision | web | quality | known gap | no management item matched among 76 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No goals-of-care, treatment escalation or resuscitation-status prompt.] |
+| `periop-nela-frail-emergency-laparotomy` | mgmt-doac-plan | web | quality | known gap | no management item matched among 76 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Apixaban taken this morning is covered only by the generic 'hold DOAC 48–72h pre-o |
+| `periop-nela-frail-emergency-laparotomy` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: 'generalised guarding and rebound' matches the appendicec |
+| `periop-postop-aki-oliguria` | mgmt-no-insulin-dextrose-mild-k | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• iv actrapid 10 units + 50ml 50% dextrose - shift k⁺ intracellularly. onset 15-30 min, durat..." (+1 more) [known gap: The hyperkalaemia prompt fires from K⁺ >5.5 and adds 'IV Actr |
+| `periop-postop-anastomotic-leak-day5` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: 'guarding' in the exam triggers the full laparoscopic app |
+| `periop-postop-anastomotic-leak-occult-elderly` | mnm-leak | web | critical | known gap | not in top 3 of web.pane: 1. Post-operative Ileus \| 2. Bowel Obstruction \| 3. Acute Cholecystitis [known gap: PANE top 3: post-operative ileus, bowel obstruction, acute cholecystitis. With postop_fever=false and no guarding, the anastomot |
+| `periop-postop-anastomotic-leak-occult-elderly` | flag-new-confusion | web | quality | known gap | no red flag matched among 24 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: Confusion only produces the generic  |
+| `periop-postop-anastomotic-leak-occult-elderly` | mgmt-steroid-cover | web | quality | known gap | no management item matched among 49 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Prednisolone is not recognised; no stress-dose cover in acute illness.] |
+| `periop-postop-delirium-hypoactive` | mnm-precipitants | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Diverticulitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#3, web.passive#2 [known gap: PANE top 3: acute cholecystitis, acute diverticulitis, GORD — no retenti |
+| `periop-postop-delirium-hypoactive` | flag-delirium | web | critical | known gap | no red flag matched among 18 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: Confusion (chip, HPI, AVPU 'C') y |
+| `periop-postop-delirium-hypoactive` | mgmt-medication-review | web | quality | known gap | no management item matched among 13 (web.clinicalPrompts) [known gap: Morphine PCA and cyclizine are not reviewed.] |
+| `periop-postop-delirium-hypoactive` | mgmt-non-pharmacological | web | quality | known gap | no management item matched among 13 (web.clinicalPrompts) [known gap: No non-pharmacological delirium care.] |
+| `periop-postop-fever-day1-early` | mnm-postop-causes | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Cholangitis \| 3. Liver Abscess [known gap: PANE top 3 after laparoscopic cholecystectomy: acute cholecystitis, acute cholangitis, liver abscess. Nothing reads the surgical histor |
+| `periop-postop-fever-day1-early` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=152); expected ≤ urgent [known gap: Triage emergency_now (score 152) for T 38.2, HR 94 on day 1: 'Post-operative concern' (urgent) for any 'post-op' word, 'Post-op fever — so |
+| `periop-postop-fever-day1-early` | mgmt-clinical-source-review | web | quality | known gap | no management item matched among 6 (web.clinicalPrompts) [known gap: No chest physiotherapy/mobilisation/wound review line; the Assessment panel shows the cholecystitis protocol (PANE top).] |
+| `periop-postop-fever-day1-early` | mgmt-no-anticoag-bridging-prompt | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• anticoagulant bridging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haem..." [known gap: Prophylactic enoxaparin 40 mg triggers anticoag_check ('Anti |
+| `periop-postop-pe-high-risk-shock` | mgmt-no-unqualified-thrombolysis | web | critical | known gap | forbidden management item present in web.protocol.medications: "alteplase 10 mg iv bolus, then 90 mg over 2 hours iv (intravenous) stat (once) - massive ..." (+2 more) [known gap: The pulmonary_embolism protocol management step is qualified |
+| `periop-postop-pneumonia-news2-escalation` | mnm-pneumonia | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Cholangitis \| 3. Inguinal / Femoral Hernia; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: acute cholecystitis, acute cholangitis, inguinal hernia — no pne |
+| `periop-postop-pneumonia-news2-escalation` | mgmt-controlled-oxygen | web | quality | known gap | no management item matched among 17 (web.clinicalPrompts) [known gap: The hypoxia prompt's step text mentions 'COPD: target 88–92%', but the plan line it adds is 'Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%'; COPD in the PMH does not chang |
+| `periop-postop-pneumonia-news2-escalation` | mgmt-no-high-target-in-copd | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• supplemental o₂: hudson mask 5-10l/min, titrate to spo₂ ≥ 94%." [known gap: 'titrate to SpO₂ ≥ 94%' in a COPD patient.] |
+| `periop-postop-ssi-organ-space-diabetic` | mgmt-drainage | web | critical | known gap | no management item matched among 47 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The surgical_site_infection protocol management has superficial wound opening and  |
+| `periop-postop-ssi-superficial` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=73); expected ≤ urgent [known gap: Triage emergency_now (score 88): 'Post-operative concern' (urgent) for 'wound … pus' wording, plus 'Vomiting or possible dehydration' from  |
+| `periop-postop-urinary-retention` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=45); expected ≤ urgent [known gap: Triage emergency_now (score 45 = age + pain + 'Post-operative or recent-procedure concern' 25): uncomfortable but stable retention.] |
+| `periop-postop-urinary-retention` | inv-no-acute-psa | web | quality | known gap | forbidden investigation present in web.plan.investigations: "u&e, egfr, psa (once catheterised)" (+2 more) [known gap: The urinary_retention protocol lists 'U&E, eGFR, PSA (once catheterised)' as an urgent investigation (it also says 'PSA r |
+| `periop-pregnancy-emergency-laparotomy-sbo` | inv-no-unqualified-ct | web | quality | known gap | forbidden investigation present in web.plan.investigations: "ct abdomen/pelvis with iv contrast (level, cause, ischaemia)" (+3 more) [known gap: 'CT abdomen/pelvis with IV contrast' from the bowel_obstruction protocol investigations and PAN |
+| `periop-pregnancy-emergency-laparotomy-sbo` | mgmt-obstetric-involvement | web | critical | known gap | no management item matched among 42 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No obstetric team, CTG or fetal monitoring in any output; pregnancy is only a triage reason and the β-HCG pr |
+| `periop-pregnancy-emergency-laparotomy-sbo` | mgmt-left-uterine-displacement | web | quality | known gap | no management item matched among 42 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No positioning advice.] |
+| `periop-pregnancy-emergency-laparotomy-sbo` | mgmt-antenatal-steroids | web | quality | known gap | no management item matched among 42 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No antenatal corticosteroid consideration at 29 weeks.] |
+| `periop-preop-asa1-lap-chole` | score-rec-asa | web | quality | known gap | asa not recommended; recommended: asge-cbd, news2 [known gap: getCdsSuggestions suggests only asge-cbd and news2. The ASA rule fires on pre-op symptom words or comorbidities, none present in a fit patient; the procedureData.preop trigger (P |
+| `periop-preop-asa1-lap-chole` | inv-no-routine-coag | web | quality | known gap | forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" [known gap: The preop_haem prompt adds 'Prothrombin Time (PT/INR)' (+ APTT, Group & Screen) for every surgical consultation, regardless of ASA grade.] |
+| `periop-preop-asa1-lap-chole` | mgmt-no-fasting-from-midnight | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...────────────────────────────────────────── pre-operative: • nbm from midnight (or ≥ 6h solids / 2h clear fluids). • iv co-amoxiclav 1.2g at induction (single..." [known gap: The  |
+| `periop-preop-asa1-lap-chole` | mgmt-no-routine-antibiotic-prophylaxis | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "... nbm from midnight (or ≥ 6h solids / 2h clear fluids). • iv co-amoxiclav 1.2g at induction (single prophylactic dose). • lmwh (enoxaparin 40mg sc) night before + day of s..." [kn |
+| `periop-preop-ckd-dialysis-hyperkalaemia` | mgmt-dialysis-timing | web | quality | known gap | no management item matched among 24 (web.clinicalPrompts) [known gap: The hyperkalaemia prompt fires (ECG, calcium not given at 6.2, insulin-dextrose, 'Surgery DEFERRED — K⁺ must be < 5.5') but never mentions dialysis for a haemodialysis pa |
+| `periop-preop-ckd-dialysis-hyperkalaemia` | mgmt-no-unadjusted-lmwh | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...iclav 1.2g at induction (single prophylactic dose). • lmwh (enoxaparin 40mg sc) night before + day of surgery; ted stockings. • iv access; identify allergy..." [known gap: The la |
+| `periop-preop-latex-allergy` | mgmt-latex-free | web | critical | known gap | no management item matched among 8 (web.clinicalPrompts) [known gap: The allergy is shown in the header ('Allergy: Latex') but nothing adapts the plan: the lap chole template is unchanged and no output mentions a latex-free theatre.] |
+| `periop-preop-latex-allergy` | mgmt-first-on-list | web | quality | known gap | no management item matched among 8 (web.clinicalPrompts) [known gap: No 'first on the list' instruction.] |
+| `periop-preop-long-term-steroids` | flag-steroid-adrenal | web | quality | known gap | no red flag matched among 11 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: Long-term prednisolone is visible only as the generic triage reason 'Higher-risk comorbidity pr |
+| `periop-preop-long-term-steroids` | mgmt-steroid-cover | web | critical | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: No hydrocortisone / steroid-cover line in any output; clinical-inference.ts has no glucocorticoid rule (hasMed never checks prednisolone/hydrocortisone/dexamethasone).] |
+| `periop-preop-mh-susceptible` | flag-mh | web | critical | known gap | no red flag matched among 7 (web.triage.pathways, web.clinicalPrompts.safety) [known gap: Nothing reads 'malignant hyperthermia' from the PMH: no triage reason, no prompt, no alert. The only safety prompt is the pre-op bloods panel.] |
+| `periop-preop-mh-susceptible` | mgmt-trigger-free-anaesthesia | web | critical | known gap | no management item matched among 6 (web.clinicalPrompts) [known gap: No trigger-free anaesthesia plan; the only plan content is the lap chole operative template ('General anaesthesia + neuromuscular blockade').] |
+| `periop-preop-mh-susceptible` | mgmt-dantrolene | web | quality | known gap | no management item matched among 6 (web.clinicalPrompts) [known gap: No output mentions dantrolene.] |
+| `periop-preop-mh-susceptible` | mgmt-mh-unit-referral | web | quality | known gap | no management item matched among 6 (web.clinicalPrompts) [known gap: No referral of the untested relative to an MH unit.] |
+| `periop-preop-osa-stopbang` | flag-osa-risk | web | critical | known gap | no red flag matched among 13 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: STOP-Bang is suggested in the scales l |
+| `periop-preop-osa-stopbang` | mgmt-osa-plan | web | quality | known gap | no management item matched among 12 (web.clinicalPrompts) [known gap: No OSA mitigation (anaesthetic review, opioid-sparing analgesia, post-operative monitoring, sleep study/CPAP) in any output; the lap chole template's post-op orders inclu |
+| `periop-preop-rcri-high-risk-hemicolectomy` | inv-natriuretic-peptide-or-troponin | web | quality | known gap | no investigation matched among 24 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No output requests NT-proBNP/BNP or troponin; the only cardiac test is the age-based 'pre-operative cardiac baseline' ECG plan lin |
+| `periop-preop-rcri-high-risk-hemicolectomy` | inv-echocardiography | web | quality | known gap | no investigation matched among 24 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No echocardiography suggested for known HFrEF (EF 35%) with poor functional capacity before cancer surgery.] |
+| `periop-preop-rcri-high-risk-hemicolectomy` | inv-iron-studies | web | quality | known gap | no investigation matched among 24 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Hb 10.8 g/dL before major cancer surgery: only 'FBC (exclude iron-deficiency anaemia)' from the colorectal protocol; no ferritin/i |
+| `periop-preop-rcri-high-risk-hemicolectomy` | mgmt-functional-capacity | web | quality | known gap | no management item matched among 30 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Functional capacity (METs / two flights) is never asked for or documented; the colorectal_cancer protocol an |
+| `periop-preop-recent-acs-des-elective-chole` | mgmt-defer-elective-surgery | web | critical | known gap | no management item matched among 12 (web.clinicalPrompts) [known gap: No output relates the stent date to surgical timing. The lap chole operative template (consent, NBM, co-amoxiclav, LMWH) is offered for an elective case 3 months after an |
+| `periop-preop-recent-acs-des-elective-chole` | mgmt-cardiology-liaison | web | critical | known gap | no management item matched among 12 (web.clinicalPrompts) [known gap: No cardiology input suggested for P2Y12 management 3 months after a DES.] |
+| `periop-preop-suxamethonium-apnoea` | flag-sux-apnoea | web | critical | known gap | no red flag matched among 21 (web.triage.reasons, web.protocol.redFlags, web.dxVariant.urgencyNote, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: The suxamethonium-apnoea history (PMH and HPI) raises nothing; tri |
+| `periop-preop-suxamethonium-apnoea` | mgmt-avoid-suxamethonium-mivacurium | web | critical | known gap | no management item matched among 52 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The appendicectomy template specifies 'General anaesthesia + endotracheal intubati |
+| `periop-vte-caprini-high-cancer-surgery` | mgmt-pharmacological-prophylaxis | web | critical | known gap | no management item matched among 34 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Caprini is suggested as a score, but no output recommends thromboprophylaxis: the plan is the colorectal_can |
+| `periop-vte-caprini-high-cancer-surgery` | mgmt-extended-prophylaxis | web | quality | known gap | no management item matched among 34 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No extended (28-day) prophylaxis after major cancer surgery anywhere.] |
+| `periop-vte-caprini-high-cancer-surgery` | mgmt-mechanical-prophylaxis | web | quality | known gap | no management item matched among 34 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No mechanical prophylaxis (TED/IPC) in this plan.] |
+| `periop-vte-high-bleeding-risk-mechanical` | mgmt-mechanical-prophylaxis | web | critical | known gap | no management item matched among 37 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No VTE decision at all on post-operative day 1: the plan is the peptic_ulcer proto |
+| `periop-vte-high-bleeding-risk-mechanical` | mgmt-reassess-vte-bleeding | web | quality | known gap | no management item matched among 37 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No daily VTE/bleeding reassessment.] |
 | `pharyngeal-pouch-elderly` | mnm-pouch | web | quality | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Colorectal Cancer \| 3. GORD / Reflux Oesophagitis [known gap: No pharyngeal pouch / Zenker node in PANE or symptom inference; site "Upper neck" maps to neck_lump.] |
 | `pharyngeal-pouch-elderly` | inv-barium-first | web | quality | known gap | no investigation matched among 15 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol for K22.5; no output mentions a contrast swallow.] |
 | `pharyngeal-pouch-elderly` | mgmt-pouch-treatment-options | web | quality | known gap | no management item matched among 6 (web.clinicalPrompts) [known gap: No protocol for K22.5.] |
