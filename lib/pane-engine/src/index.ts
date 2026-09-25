@@ -23,3 +23,12 @@ export type {
   ManagementProtocol, InvestigationItem, ManagementStep, ProtocolMedication, ProtocolKind, PatientCondition,
   PlanPatientContext, AdaptedProtocol, AdaptOptions, WithheldItem, SafetyNote, SafetyKind, PregnancyStatus, ProcedureKind, AllergyClass,
 } from './management/index.js';
+export {
+  DECISION_CONTENT, DECISION_CONTENT_VERSION, decisionSupport, evaluateDecisions, scoreActions, resultActions,
+  activeFactors, thresholds, bandFor, pickScores, scoreBand, diagnosisMatches, keywordAt, formatPercent, formatValue,
+} from './decision/index.js';
+export type {
+  DecisionContent, DecisionInput, DecisionPatient, DecisionDiagnosis, DecisionScore, DecisionLabs, DecisionPregnancy,
+  DecisionSupportResult, DecisionResult, OptionResult, ScoreActionCard, ResultActionCard, AppliedFactor, Band,
+  LineFilter, FactorId, Triple as DecisionTriple, SourceRef as DecisionSourceRef, LabAnalyte as DecisionLabAnalyte,
+} from './decision/index.js';
