@@ -8,7 +8,7 @@ import ConsultationRequestsView from './ConsultationRequestsView';
 import { errMsg } from '@/lib/err';
 import { fmtPhone } from '@/lib/fmt';
 import { supabase } from '@/lib/supabase';
-import { loadPMH, loadEncounterData, getLatestOpenEncounter, getQuestionnaireIntake } from '@/lib/db';
+import { loadPMH, getLatestOpenEncounter, getQuestionnaireIntake } from '@/lib/db';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -259,10 +259,10 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     currentSite,
     setPatientName, setAge, setSex, setDob, setPhone, setPatientId,
     setTopSection, clearPatient,
-    setComorbidities, setAllergies, setMedications, setSurgicalHistory, setSurgicalNotes,
-    setEncounterId, setVisitType,
-    setClinicalScores, setExtractedLabs,
+    setComorbidities, setAllergies, setMedications,
+    setEncounterId, setEncounterStatus, setEncounterClosedAt, setVisitType,
     setHpiNotes, setFreeText, toggleSymptom,
+    beginRecordLoad, loadRecordIntoContext,
   } = useAppContext();
   const narrow = useNarrow();
 
@@ -334,9 +334,11 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   const nrNameRef                             = useRef<HTMLInputElement>(null);
   const [view, setView]                       = useState<InboxView>('bookings');
 
-  // Pre-populate consultation context from Supabase patient data.
-  // Called fire-and-forget after patient identity is set; errors are non-fatal.
-  const loadPatientContext = useCallback(async (patientId: string, apptType?: string) => {
+  // Pre-populate consultation context from Supabase patient data. `loadToken` comes from
+  // beginRecordLoad(), called right after clearPatient(): autosave stays off until the record is
+  // in state, and a section that could not be read is shown "not loaded" instead of being saved
+  // back as empty (loadRecordIntoContext).
+  async function loadPatientContext(patientId: string, loadToken: number, apptType?: string) {
     if (apptType) setVisitType(mapApptTypeToVisitType(apptType));
     const [pmhResult, encResult] = await Promise.all([
       loadPMH(patientId),
@@ -345,21 +347,15 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     if (!pmhResult.error && pmhResult.conditions.length > 0) {
       setComorbidities(pmhResult.conditions);
     }
-    if (!encResult.error && encResult.encounterId) {
-      setEncounterId(encResult.encounterId);
-      const encData = await loadEncounterData(encResult.encounterId, patientId);
-      if (!encData.error && encData.data) {
-        const d = encData.data;
-        if (d.allergens.length) setAllergies(d.allergens.join(', '));
-        if (d.medications.length) setMedications(d.medications);
-        if (d.surgicalHistory.length) setSurgicalHistory(d.surgicalHistory);
-        if (d.surgicalNotes) setSurgicalNotes(d.surgicalNotes);
-        if (Object.keys(d.clinicalScores).length) setClinicalScores(d.clinicalScores);
-        if (Object.keys(d.extractedLabs).length) setExtractedLabs(d.extractedLabs);
-      }
+    const encId = !encResult.error && encResult.encounterId ? encResult.encounterId : null;
+    if (encId) {
+      setEncounterId(encId);
+      setEncounterStatus('open');
+      setEncounterClosedAt(null);
     }
+    await loadRecordIntoContext(loadToken, patientId, encId);
     // The prior closed encounter (Ambient "Prior visit" strip) is loaded by AppContext.
-  }, [setVisitType, setComorbidities, setEncounterId, setAllergies, setMedications, setSurgicalHistory, setSurgicalNotes, setClinicalScores, setExtractedLabs]);
+  }
 
   const load = useCallback(async () => {
     try {
@@ -517,21 +513,30 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       setPatientName(selected.patient_name);
       if (selected.patient_phone) setPhone(selected.patient_phone);
       if (d.patientId) {
-        setPatientId(d.patientId);
+        const pid = d.patientId;
+        setPatientId(pid);
         setEncounterId(d.encounterId);
+        setEncounterStatus('open');
+        setEncounterClosedAt(null);
+        // Autosave off until the standing history is loaded (the new encounter itself is empty).
+        const loadToken = beginRecordLoad();
         const apptType = resolveApptType(selected);
         setVisitType(mapApptTypeToVisitType(apptType));
-        void loadPMH(d.patientId).then(r => {
+        void loadPMH(pid).then(r => {
           if (!r.error && r.conditions.length > 0) setComorbidities(r.conditions);
         });
-        void getQuestionnaireIntake(d.patientId).then(q => {
-          if (!q) return;
-          if (q.aiSummary) setHpiNotes(q.aiSummary);
-          else if (q.chiefComplaint) setFreeText(q.chiefComplaint);
-          for (const s of q.symptoms) toggleSymptom(s);
-          if (q.medications.length) setMedications(q.medications);
-          if (q.allergies.length) setAllergies(q.allergies.join(', '));
-        });
+        // The questionnaire is applied after the record, so it is not overwritten by the load
+        // (and, being a change from the loaded values, it is saved).
+        void loadRecordIntoContext(loadToken, pid, d.encounterId)
+          .then(() => getQuestionnaireIntake(pid))
+          .then(q => {
+            if (!q) return;
+            if (q.aiSummary) setHpiNotes(q.aiSummary);
+            else if (q.chiefComplaint) setFreeText(q.chiefComplaint);
+            for (const s of q.symptoms) toggleSymptom(s);
+            if (q.medications.length) setMedications(q.medications);
+            if (q.allergies.length) setAllergies(q.allergies.join(', '));
+          });
       }
       setTopSection('consultation');
     } catch (e) {
@@ -1748,8 +1753,9 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
                       if (p.sex) setSex(p.sex as Parameters<typeof setSex>[0]);
                       if (p.phone) setPhone(p.phone);
                       setPatientId(p.id);
+                      const loadToken = beginRecordLoad();
                       setTopSection('consultation');
-                      void loadPatientContext(p.id);
+                      void loadPatientContext(p.id, loadToken);
                     }}
                     style={{
                       flexShrink: 0, padding: '7px 14px', borderRadius: 7,
