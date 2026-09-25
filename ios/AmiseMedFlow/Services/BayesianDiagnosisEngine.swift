@@ -7,6 +7,10 @@ import Foundation
 
 enum BayesianDiagnosisEngine {
 
+    /// Log units per natural-log unit: logPrior, logLR and logPosterior are stored as
+    /// round(ln(x) × 5) (DiagnosticDatabase.json "conversionFormula").
+    static let logUnitsPerNat = 5.0
+
     // MARK: - Public output type
 
     struct DiagnosisResult: Identifiable {
@@ -196,19 +200,22 @@ enum BayesianDiagnosisEngine {
         latestSpO2: Int? = nil,       // oxygen saturation (%)
         latestRR: Int? = nil,         // respiratory rate (breaths/min)
         news2Score: Int? = nil,       // computed NEWS2 score (0–20)
-        specialtyHint: String? = nil  // e.g. "cardiology" — narrows matrix cross-query to that specialty
+        specialtyHint: String? = nil, // e.g. "cardiology" — narrows matrix cross-query to that specialty
+        hpi: String? = nil            // history of presenting complaint: read negation-aware by the curated "finding" features
     ) -> [DiagnosisResult] {
-        // Build a synthetic CC string from investigation names + results so that
-        // investigation findings also drive pool routing (not just scoring).
-        // Combines real CC + inv terms so existing keyword cases fire unchanged.
-        let invTerms = investigations.flatMap { inv -> [String] in
-            var t = [inv.name.lowercased()]
-            if inv.status == .resulted { t.append(inv.result.lowercased()) }
-            return t
-        }.joined(separator: " ")
-        let baseCCL = (chiefComplaint ?? "").lowercased()
-        guard !baseCCL.isEmpty || !invTerms.isEmpty else { return [] }
-        let ccL = baseCCL.isEmpty ? invTerms : (invTerms.isEmpty ? baseCCL : baseCCL + " " + invTerms)
+        // Pool routing reads the chief complaint only. Investigation text used to be appended
+        // to the complaint before routing, so a report ("US: no gallstones", "urine dipstick")
+        // replaced the complaint's pool (clinical validation 2026-09). Both texts are matched
+        // negation-aware at word starts (RouteText): "no vomiting" does not route to vomiting.
+        // Resulted investigations still add pools through the secondary merges further down
+        // (evL), which never replace the complaint's own pool.
+        let baseCC = chiefComplaint ?? ""
+        guard !baseCC.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !investigations.isEmpty else { return [] }
+        let investigationLines = investigations.map { inv -> String in
+            inv.status == .resulted && !inv.result.isEmpty ? "\(inv.name): \(inv.result)" : inv.name
+        }
+        let ccL = RouteText(baseCC)
+        let evL = RouteText(NegationMatcher.joinClauses([baseCC] + investigationLines))
 
         var candidates: [Candidate]
         var seenNames = Set<String>()
@@ -2102,50 +2109,50 @@ enum BayesianDiagnosisEngine {
            ccL.contains("cervical myelopathy") || ccL.contains("spinal stenosis") ||
            ccL.contains("epidural abscess") || ccL.contains("vertebral osteomyelitis") ||
            ccL.contains("neurogenic claudication") || ccL.contains("saddle anaesthesia") { mergePool("spinalNeurosurgical") }
-        // Secondary merges: investigation-first overlays
-        if ccL.contains("afp") || ccL.contains("liver lesion") || ccL.contains("hepatic mass") ||
-           ccL.contains("hcc") || ccL.contains("hepatocellular") { mergePool("hepatobiliaryMalignancy") }
-        if ccL.contains("ca19-9") || ccL.contains("pancreatic cyst") || ccL.contains("ipmn") ||
-           ccL.contains("pancreatic mass") { mergePool("pancreaticSurgical") }
-        if ccL.contains("cea") || ccL.contains("positive fit") || ccL.contains("fit positive") ||
-           ccL.contains("colonic mass") || ccL.contains("colonoscopy finding") { mergePool("colorectalMalignancy") }
-        if ccL.contains("ca-125") || ccL.contains("ca125") || ccL.contains("adnexal mass") ||
-           ccL.contains("ovarian cyst") || ccL.contains("ovarian mass") { mergePool("gynaecologicalSurgical") }
-        if ccL.contains("psa elevated") || ccL.contains("elevated psa") || ccL.contains("pirads") ||
-           ccL.contains("renal mass") || ccL.contains("renal lesion") || ccL.contains("bladder mass") { mergePool("urologicalSurgical") }
-        if ccL.contains("adrenal mass") || ccL.contains("adrenal lesion") || ccL.contains("adrenal incidentaloma") ||
-           ccL.contains("metanephrine") || ccL.contains("aldosterone renin") { mergePool("parathyroidAdrenal") }
-        if ccL.contains("bethesda") || ccL.contains("tirads") || ccL.contains("thyroid nodule") ||
-           ccL.contains("calcitonin elevated") || ccL.contains("fnac") { mergePool("thyroidNoduleAssessment") }
-        if ccL.contains("lung nodule") || ccL.contains("pulmonary nodule") ||
-           ccL.contains("lung lesion") || ccL.contains("lung mass") { mergePool("thoracicSurgical") }
-        if ccL.contains("abnormal lfts") || ccL.contains("deranged lfts") || ccL.contains("elevated bilirubin") ||
-           ccL.contains("elevated alt") || ccL.contains("elevated ast") { mergePool("jaundice") }
-        if (ccL.contains("iron deficiency") || ccL.contains("ida ") || ccL.contains("microcytic anaemia")) &&
-           !ccL.contains("menorrhagia") { mergePool("colorectalMalignancy") }
-        // Lab-finding-driven secondary merges — investigation results as chief complaints.
-        // invTerms (investigation names + results) flows into ccL above, so these fire
-        // whenever a resulted investigation contains the matching term.
-        if ccL.contains("troponin") { mergePool("chestPain"); mergePool("arrhythmia") }
-        if ccL.contains("d-dimer") || ccL.contains("ddimer") || ccL.contains("d dimer") {
+        // Secondary merges: investigation-first overlays (complaint + investigations, evL)
+        if evL.contains("afp") || evL.contains("liver lesion") || evL.contains("hepatic mass") ||
+           evL.contains("hcc") || evL.contains("hepatocellular") { mergePool("hepatobiliaryMalignancy") }
+        if evL.contains("ca19-9") || evL.contains("pancreatic cyst") || evL.contains("ipmn") ||
+           evL.contains("pancreatic mass") { mergePool("pancreaticSurgical") }
+        if evL.contains("cea") || evL.contains("positive fit") || evL.contains("fit positive") ||
+           evL.contains("colonic mass") || evL.contains("colonoscopy finding") { mergePool("colorectalMalignancy") }
+        if evL.contains("ca-125") || evL.contains("ca125") || evL.contains("adnexal mass") ||
+           evL.contains("ovarian cyst") || evL.contains("ovarian mass") { mergePool("gynaecologicalSurgical") }
+        if evL.contains("psa elevated") || evL.contains("elevated psa") || evL.contains("pirads") ||
+           evL.contains("renal mass") || evL.contains("renal lesion") || evL.contains("bladder mass") { mergePool("urologicalSurgical") }
+        if evL.contains("adrenal mass") || evL.contains("adrenal lesion") || evL.contains("adrenal incidentaloma") ||
+           evL.contains("metanephrine") || evL.contains("aldosterone renin") { mergePool("parathyroidAdrenal") }
+        if evL.contains("bethesda") || evL.contains("tirads") || evL.contains("thyroid nodule") ||
+           evL.contains("calcitonin elevated") || evL.contains("fnac") { mergePool("thyroidNoduleAssessment") }
+        if evL.contains("lung nodule") || evL.contains("pulmonary nodule") ||
+           evL.contains("lung lesion") || evL.contains("lung mass") { mergePool("thoracicSurgical") }
+        if evL.contains("abnormal lfts") || evL.contains("deranged lfts") || evL.contains("elevated bilirubin") ||
+           evL.contains("elevated alt") || evL.contains("elevated ast") { mergePool("jaundice") }
+        if (evL.contains("iron deficiency") || evL.contains("ida ") || evL.contains("microcytic anaemia")) &&
+           !evL.contains("menorrhagia") { mergePool("colorectalMalignancy") }
+        // Lab-finding-driven secondary merges. evL is the complaint plus the investigation
+        // names and resulted reports (negation-aware), so these fire when a resulted
+        // investigation names the finding; they add pools and never replace the route.
+        if evL.contains("troponin") { mergePool("chestPain"); mergePool("arrhythmia") }
+        if evL.contains("d-dimer") || evL.contains("ddimer") || evL.contains("d dimer") {
             mergePool("venousThromboEmbolism")
         }
-        if ccL.contains("amylase") || ccL.contains("lipase") { mergePool("acutePancreatitis") }
-        if ccL.contains("lactate") {
+        if evL.contains("amylase") || evL.contains("lipase") { mergePool("acutePancreatitis") }
+        if evL.contains("lactate") {
             mergePool("sepsisConditions"); mergePool("mesentericVascular")
         }
-        if ccL.contains("bnp") || ccL.contains("pro-bnp") || ccL.contains("nt-pro") ||
-           ccL.contains("brain natriuretic") { mergePool("cardiacFailure") }
-        if ccL.contains("hypercalcaemia") ||
-           (ccL.contains("calcium") && (ccL.contains("elevated") || ccL.contains("raised") || ccL.contains("high"))) {
+        if evL.contains("bnp") || evL.contains("pro-bnp") || evL.contains("nt-pro") ||
+           evL.contains("brain natriuretic") { mergePool("cardiacFailure") }
+        if evL.contains("hypercalcaemia") ||
+           (evL.contains("calcium") && (evL.contains("elevated") || evL.contains("raised") || evL.contains("high"))) {
             mergePool("adrenalEndocrine"); mergePool("oncologyComplications")
         }
-        if ccL.contains("raised inr") || ccL.contains("elevated inr") ||
-           (ccL.contains("inr") && (ccL.contains("elevated") || ccL.contains("raised") || ccL.contains("high"))) {
+        if evL.contains("raised inr") || evL.contains("elevated inr") ||
+           (evL.contains("inr") && (evL.contains("elevated") || evL.contains("raised") || evL.contains("high"))) {
             mergePool("coagulationDisorder")
         }
-        if ccL.contains("raised crp") || ccL.contains("elevated crp") ||
-           (ccL.contains("crp") && (ccL.contains("elevated") || ccL.contains("raised") || ccL.contains("high"))) {
+        if evL.contains("raised crp") || evL.contains("elevated crp") ||
+           (evL.contains("crp") && (evL.contains("elevated") || evL.contains("raised") || evL.contains("high"))) {
             if !candidates.isEmpty { /* crp is non-specific — enrich existing pool only, no redirect */ }
         }
 
@@ -2157,12 +2164,49 @@ enum BayesianDiagnosisEngine {
         // specialtyHint narrows the result to a specialty context (e.g. a CC
         // selected from the Cardiology block filters to cardiology diseases only).
         // Limited to 12 novel entries to keep the candidate list manageable.
-        let matrixExtra = matrixCandidates(forCC: ccL, specialtyHint: specialtyHint)
-        let matrixNovel = matrixExtra.filter { seenNames.insert($0.name).inserted }
-        candidates.append(contentsOf: matrixNovel.prefix(12))
+        //
+        // Condition-neutral safety net (DiagnosticDatabase.json "presentations"): the curated
+        // common and dangerous causes of this complaint from every specialty (medical,
+        // surgical, obstetric, paediatric) go first and replace same-named and superseded
+        // legacy pool entries, so a complaint never depends on one specialty pool.
+        // matrixOnlyWithoutPresentation: when a presentation matched, its curated candidates
+        // already span the systems, so the matrix's unreviewed system-wide extras are skipped;
+        // the matrix still widens complaints that match no presentation.
+        let core = presentationCandidates(for: ccL)
+        if core.candidates.isEmpty {
+            let matrixExtra = matrixCandidates(forCC: ccL.text, specialtyHint: specialtyHint)
+            let matrixNovel = matrixExtra.filter { seenNames.insert($0.name).inserted }
+            candidates.append(contentsOf: matrixNovel.prefix(12))
+        } else {
+            let coreNames = Set(core.candidates.map(\.name))
+            candidates = core.candidates + candidates.filter {
+                !coreNames.contains($0.name) && !core.supersedes.contains($0.name)
+            }
+            seenNames.formUnion(coreNames)
+        }
 
-        // Cap total candidates at 45 (raised from 35 to accommodate matrix overlay)
-        if candidates.count > 45 { candidates = Array(candidates.prefix(45)) }
+        // Canonical curated content: a legacy pool entry that has a curated equivalent (same
+        // name, or listed under the curated candidate's "supersedes") is replaced by the
+        // curated version, once, whatever route or merge brought it in.
+        var canonicalNames = Set<String>()
+        candidates = candidates.compactMap { c in
+            let canonical = curatedReplacements[c.name]?.toCandidate() ?? c
+            return canonicalNames.insert(canonical.name).inserted ? canonical : nil
+        }
+
+        // Demographic applicability (DiagnosticDatabase.json "applicability"): no ectopic
+        // pregnancy for a man, no pre-eclampsia unless pregnancy or the puerperium is recorded,
+        // no testicular torsion for a woman. Unknown age (0) or unspecified sex never filters.
+        let pregnancy = PregnancyStatus.from(
+            texts: [baseCC, hpi ?? "", pmhNotes ?? "", examAbdo ?? "", examGeneral ?? "", examOther ?? ""] + investigationLines,
+            surgicalHistory: surgicalHistory ?? "")
+        candidates = candidates.filter {
+            $0.applicability?.applies(ageYears: ageYears, sex: sex, pregnancy: pregnancy) ?? true
+        }
+
+        // Cap total candidates at 60 (raised from 45 for the presentation safety net; curated
+        // candidates come first so the cap only trims pool and matrix extras).
+        if candidates.count > 60 { candidates = Array(candidates.prefix(60)) }
 
         // Merge longitudinal context into scoring inputs.
         // Confirmed past diagnoses are appended to pmh so existing "pmh" feature
@@ -2250,20 +2294,28 @@ enum BayesianDiagnosisEngine {
                 if isLow { labAssocChips.insert("Anaemia symptoms") }
             }
         }
+        // Numeric results ("Potassium: 7.2 mmol/L") carry no words such as "raised", so the
+        // loop above misses them: LabPanel reads the most recent value of each analyte and
+        // numericLabChips turns it into the same chips (thresholds in the helper).
+        labAssocChips.formUnion(numericLabChips(LabPanel.parse(from: mergedInvestigations)))
+
         // Measured vital signs → association chips so that BDE features keyed to
         // "associations" fire from objective observations, not only manual SOCRATES entry.
+        // Heart rate, respiratory rate and blood pressure are judged against age-appropriate
+        // limits (VitalLimits: APLS 7th edition bands for children), not adult ones.
+        let limits = VitalLimits.forAge(ageYears)
         var vitalsChips: Set<String> = []
         if let hr = latestHR {
-            if hr > 100 { vitalsChips.insert("tachycardia") }
-            if hr < 50  { vitalsChips.insert("bradycardia") }
+            if hr > limits.maxHeartRate { vitalsChips.insert("tachycardia") }
+            if hr < limits.minHeartRate { vitalsChips.insert("bradycardia") }
         }
-        if let sbp = latestSBP, sbp < 100 { vitalsChips.insert("hypotension") }
+        if let sbp = latestSBP, sbp < limits.minSystolic { vitalsChips.insert("hypotension") }
         if let temp = latestTemp {
             if temp >= 38.0 { vitalsChips.insert("fever") }
             if temp < 36.0  { vitalsChips.insert("hypothermia") }
         }
         if let spo2 = latestSpO2, spo2 < 94 { vitalsChips.insert("oxygen desaturation") }
-        if let rr = latestRR, rr > 20        { vitalsChips.insert("tachypnoea") }
+        if let rr = latestRR, rr > limits.maxRespiratoryRate { vitalsChips.insert("tachypnoea") }
 
         // Merge lab chips + vitals chips into socratesSelections["associations"] so that every
         // DiagnosticDatabase.json "associations" feature fires from objective measurements.
@@ -2293,23 +2345,22 @@ enum BayesianDiagnosisEngine {
             sex: sex,
             medications: medications,
             socialText: socialHistoryText ?? "",
-            bmi: bmi
+            bmi: bmi,
+            complaint: baseCC,
+            hpi: hpi ?? ""
         )
 
-        // Urgency safety-net boost: applied AFTER feature scoring so the boost
-        // supplements — rather than replaces — evidence-based ranking.
-        // urgency=1 (+8)  ≈ one moderate positive finding  → same-day assessment
-        // urgency=2 (+16) ≈ a strong clinical sign         → immediate evaluation
-        // urgency=3 (+24) ≈ a pathognomonic finding        → life-threatening
-        // This ensures "don't miss" diagnoses (PE, ACS, ectopic) appear in the
-        // differential even when the presenting history is sparse or atypical.
+        // Urgency label. Urgency no longer adds to the log-posterior (it used to add
+        // urgency × 8, up to +24 ≈ a likelihood ratio of 120, which ranked every critical
+        // diagnosis above better-supported ones and made the list follow urgency rather than
+        // evidence). "Do not miss" visibility now comes from the reserved places in
+        // topResults (dontMissSlots): ranks 1–3 are the most probable diagnoses and ranks
+        // 4–5 the most probable emergency / critical ones not already listed.
         let urgencyLabels = ["", "Urgent — same-day assessment required",
                              "Emergency — immediate evaluation required",
                              "CRITICAL — potentially life-threatening; do not miss"]
         for i in scored.indices where scored[i].candidate.urgency > 0 {
             let u = scored[i].candidate.urgency
-            let boost = u * 8
-            scored[i].logPosterior += boost
             let label = urgencyLabels[min(u, 3)]
             scored[i].evidence.insert(label, at: 0)
             scored[i].evidenceSources["score", default: []].insert(label, at: 0)
@@ -4088,7 +4139,7 @@ enum BayesianDiagnosisEngine {
             for fragment in rule.fragments {
                 for i in scored.indices {
                     if scored[i].candidate.name.lowercased().contains(fragment) {
-                        scored[i].logPosterior = -9999
+                        scored[i].logPosterior = excludedLogPosterior
                     }
                 }
             }
@@ -4105,6 +4156,8 @@ enum BayesianDiagnosisEngine {
         let logPrior: Int            // higher = more prevalent in this CC context
         var urgency: Int = 0         // 0=routine 1=urgent 2=emergency 3=critical
         let features: [Feature]
+        /// Sex / age / pregnancy the diagnosis can apply to (nil = anyone). See `Applicability`.
+        var applicability: Applicability? = nil
 
         struct Feature {
             let key: String          // dimension id or sentinel like "exam", "pmh", "inv"

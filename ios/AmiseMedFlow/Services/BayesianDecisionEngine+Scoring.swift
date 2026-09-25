@@ -7,6 +7,69 @@ extension BayesianDecisionEngine {
 
     // MARK: - Scoring
 
+    /// "a|b&c": true when any "|" alternative has all of its "&" terms affirmed at a word start.
+    static func anyAlternative(_ spec: String, in source: NegationMatcher.Source) -> Bool {
+        alternatives(spec).contains { terms in terms.allSatisfy { source.contains($0, wordStart: true) } }
+    }
+
+    /// True when an alternative's terms are all mentioned but at least one is only ever negated.
+    static func anyAlternativeDocumentedAbsent(_ spec: String, in source: NegationMatcher.Source) -> Bool {
+        alternatives(spec).contains { terms in
+            terms.allSatisfy { !source.occurrences(of: $0, wordStart: true).isEmpty } &&
+                !terms.allSatisfy { source.contains($0, wordStart: true) }
+        }
+    }
+
+    /// Text for "finding" / "findingAbsent" / "notFinding" features. A single term is looked
+    /// for anywhere; the terms of an "a&b" alternative must all occur in one sentence, one result
+    /// line or one chip, so "lipase&raised" cannot pair a "Lipase: 40" line with a "raised
+    /// bilirubin" chip.
+    struct FeatureText {
+        let whole: NegationMatcher.Source
+        let sentences: [NegationMatcher.Source]
+
+        init(_ parts: [String]) {
+            whole = NegationMatcher.Source(parts.joined(separator: " .\n "))
+            sentences = parts.flatMap { FeatureText.sentenceSplit($0) }.map { NegationMatcher.Source($0) }
+        }
+
+        /// Splits at ". ", "; " and line breaks ("7.2" stays whole).
+        static func sentenceSplit(_ text: String) -> [String] {
+            text.replacingOccurrences(of: ". ", with: "\n")
+                .replacingOccurrences(of: "; ", with: "\n")
+                .split(separator: "\n")
+                .map(String.init)
+                .filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
+        }
+    }
+
+    static func anyAlternative(_ spec: String, in text: FeatureText) -> Bool {
+        alternatives(spec).contains { terms in
+            terms.count == 1
+                ? text.whole.contains(terms[0], wordStart: true)
+                : text.sentences.contains { s in terms.allSatisfy { s.contains($0, wordStart: true) } }
+        }
+    }
+
+    /// True when no alternative is affirmed and one of them is mentioned (in one sentence, for
+    /// an "a&b" alternative) only as negated: "no neck stiffness", "D-dimer negative".
+    static func anyAlternativeDocumentedAbsent(_ spec: String, in text: FeatureText) -> Bool {
+        guard !anyAlternative(spec, in: text) else { return false }
+        return alternatives(spec).contains { terms in
+            (terms.count == 1 ? [text.whole] : text.sentences).contains { s in
+                terms.allSatisfy { !s.occurrences(of: $0, wordStart: true).isEmpty }
+            }
+        }
+    }
+
+    private static func alternatives(_ spec: String) -> [[String]] {
+        spec.lowercased().split(separator: "|").map { alt in
+            alt.split(separator: "&")
+                .map(String.init)   // spaces are significant: "red " must not match "reduced"
+                .filter { !$0.isEmpty }
+        }.filter { !$0.isEmpty }
+    }
+
     struct ScoredCandidate {
         let candidate: Candidate
         var logPosterior: Int
@@ -27,7 +90,9 @@ extension BayesianDecisionEngine {
         age: Int, sex: Sex,
         medications: [String] = [],
         socialText: String = "",
-        bmi: Double? = nil
+        bmi: Double? = nil,
+        complaint: String = "",
+        hpi: String = ""
     ) -> [ScoredCandidate] {
         // Free text (exam, PMH, PSHx, social history, resulted reports) is matched negation-aware
         // through NegationMatcher: "Murphy's sign negative", "no guarding", "No crepitus",
@@ -66,6 +131,9 @@ extension BayesianDecisionEngine {
         let broadRecordText = clauses([pmh, pshx, examAbdo, examGeneral, examCVS,
                                        examResp, examNeuro, examMSK, examSkin, examOther,
                                        socialText] + invResults + invNames + chipTexts)
+        let complaintL = NegationMatcher.Source(complaint)
+        let findingText = FeatureText([complaint, hpi, examAbdo, examGeneral, examCVS, examResp, examNeuro,
+                                       examMSK, examSkin, examOther, pmh, pshx] + chipTexts + invResults)
         /// Test for the words of one feature value, matched one by one. A value written as a
         /// negative ("absent pulse", "absent cremasteric reflex", "no transillumination") has the
         /// negation as its finding: its words are matched plainly, as before. Otherwise each word
@@ -160,13 +228,15 @@ extension BayesianDecisionEngine {
                     // First try exact substring match (fast path for short feature values).
                     // For multi-word values the exact phrase rarely survives abbreviation
                     // differences (e.g. "axr" vs "abdominal x-ray"), so fall back to a
-                    // majority-token match: require ≥60% of significant tokens (≥4 chars,
-                    // not stop-words) to appear in any single invNames or invResults entry.
+                    // token match: every significant token (≥4 chars, not a stop-word) must
+                    // appear, in any order, in one invNames or invResults entry
+                    // (allSignificantTokens). The former 60% rule let "irregular gallbladder
+                    // wall thickening" fire on "oedematous gallbladder wall thickening".
                     let fv = f.value.lowercased()
                     let stop: Set<String> = ["with","and","the","for","that","this","from","into","positive","negative","confirmed","elevated","raised","normal","abnormal","level","result"]
                     let fTokens = fv.split(separator: " ").map(String.init)
                         .filter { $0.count >= 4 && !stop.contains($0) }
-                    let threshold = max(1, Int((Double(fTokens.count) * 0.6).rounded(.up)))
+                    let threshold = max(1, fTokens.count)
                     // Names are matched plainly (a test name is not a finding); report text
                     // negation-aware ("US: no gallstones").
                     func tokenMatch(_ has: (String) -> Bool) -> Bool {
@@ -217,7 +287,7 @@ extension BayesianDecisionEngine {
                     let fv = f.value.lowercased()
                     let stop2: Set<String> = ["with","and","the","for","that","this","from","into","positive","negative","confirmed","elevated","raised","normal","abnormal","level","result"]
                     let fTok = fv.split(separator: " ").map(String.init).filter { $0.count >= 4 && !stop2.contains($0) }
-                    let thr = max(1, Int((Double(fTok.count) * 0.6).rounded(.up)))
+                    let thr = max(1, fTok.count)   // allSignificantTokens, as for "inv"
                     func invMatch(_ has: (String) -> Bool) -> Bool {
                         has(fv) || (fTok.count >= 2 && fTok.filter { has($0) }.count >= thr)
                     }
@@ -583,6 +653,31 @@ extension BayesianDecisionEngine {
                     triggered = age >= 50
                     sourceKey = "demographics"
 
+                // ── Curated keys (DiagnosticDatabase.json 2.0.0 "coreConditions") ────────────
+                // Value: "|" separates alternatives, "&" joins terms that must all be present.
+                // Matched negation-aware at word starts (NegationMatcher).
+                case "complaint":
+                    // The presenting complaint itself ("swollen lips", "cannot breathe").
+                    triggered = Self.anyAlternative(f.value, in: complaintL)
+                    sourceKey = "symptoms"
+
+                case "finding":
+                    // Complaint, HPI, examination, PMH, SOCRATES chips and resulted reports.
+                    triggered = Self.anyAlternative(f.value, in: findingText)
+                    sourceKey = "symptoms"
+
+                case "findingAbsent":
+                    // A finding documented as absent ("no neck stiffness"): mentioned, never affirmed.
+                    triggered = Self.anyAlternativeDocumentedAbsent(f.value, in: findingText)
+                    sourceKey = "symptoms"
+
+                case "notFinding":
+                    // A cardinal feature missing from the whole record (not written, or only
+                    // negated): e.g. no chest, arm, jaw, epigastric or breathing complaint for ACS.
+                    // Carries a likelihood ratio below 1.
+                    triggered = !Self.anyAlternative(f.value, in: findingText)
+                    sourceKey = "other"
+
                 default:
                     // Pass 1: SOCRATES dict lookup — specialist early-form chips may store
                     // any custom DB key (e.g. lucid_interval, ecg, triad_nph) into
@@ -602,20 +697,32 @@ extension BayesianDecisionEngine {
                                                      "into","also","show","seen","find","rate",
                                                      "does","have","been","true","false","over",
                                                      "under","each","both","when","more","less"]
-                        let keyToks = f.key.lowercased()
-                            .replacingOccurrences(of: "_or_", with: " ")
-                            .replacingOccurrences(of: "_", with: " ")
-                            .split(separator: " ").map(String.init)
-                            .filter { $0.count >= 4 && !keyStop.contains($0) }
-                        if !keyToks.isEmpty {
+                        // "_or_" separates alternatives ("flank_or_loin_pain"); every word of one
+                        // alternative must be in the record (a single shared word such as
+                        // "tender" used to be enough, which fired unrelated diagnoses).
+                        let keyGroups = f.key.lowercased()
+                            .components(separatedBy: "_or_")
+                            .map { group in
+                                group.replacingOccurrences(of: "_", with: " ")
+                                    .split(separator: " ").map(String.init)
+                                    .filter { $0.count >= 4 && !keyStop.contains($0) }
+                            }
+                            .filter { !$0.isEmpty }
+                        if !keyGroups.isEmpty {
                             let broadSrc = broadRecordText
-                            let matchCount = keyToks.filter(wordTest(keyToks, broadSrc)).count
-                            let threshold  = max(1, keyToks.count / 2)
-                            let findingPresent = matchCount >= threshold
+                            let findingPresent = keyGroups.contains { g in g.allSatisfy(wordTest(g, broadSrc)) }
                             let fvL = f.value.lowercased()
                             let isNegated = fvL == "absent" || fvL == "false" || fvL == "no" ||
                                             fvL == "negative" || fvL == "none" || fvL == "normal"
-                            triggered  = isNegated ? !findingPresent : findingPresent
+                            if isNegated {
+                                // An "absent" finding counts only when the record mentions it and
+                                // it is negated there ("no neck stiffness"); a finding nobody wrote
+                                // down is not evidence of its absence.
+                                let mentioned = keyGroups.contains { g in g.allSatisfy { broadSrc.lower.contains($0) } }
+                                triggered = mentioned && !findingPresent
+                            } else {
+                                triggered = findingPresent
+                            }
                             sourceKey  = "symptoms"
                         }
                     }
@@ -630,9 +737,10 @@ extension BayesianDecisionEngine {
                             featureID: nid,
                             featurePresent: true,
                             observedIDs: observedNetworkIDs,
-                            baseLogLR: Double(f.logLR)
+                            baseLogLR: Double(f.logLR) / BayesianDiagnosisEngine.logUnitsPerNat
                         )
-                        effectiveLR = Int(adj.rounded())
+                        // The network works in natural-log units; feature logLRs are ln × 5.
+                        effectiveLR = Int((adj * BayesianDiagnosisEngine.logUnitsPerNat).rounded())
                     } else {
                         effectiveLR = f.logLR
                     }

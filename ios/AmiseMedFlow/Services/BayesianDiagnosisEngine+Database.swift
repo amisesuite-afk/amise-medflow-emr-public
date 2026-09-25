@@ -16,10 +16,15 @@ extension BayesianDiagnosisEngine {
         /// Clinical urgency tier (0=routine, 1=urgent, 2=emergency, 3=critical).
         /// Drives two behaviours:
         ///   a) Matrix overlay bypass: urgency ≥ 1 exempts from the logPrior > 45 noise filter.
-        ///   b) Bayesian logPrior boost: urgency × 8 added at scoring so "don't miss"
-        ///      diagnoses surface even with sparse feature evidence.
+        ///   b) "Don't miss" slots: urgency ≥ 2 candidates may fill the last two places of the
+        ///      top five (topResults). Urgency no longer adds to the posterior.
         let urgency: Int?
         let features: [FeatureSpec]
+        /// Sex / age / pregnancy restriction (optional; see BayesianDiagnosisEngine+Routing.swift).
+        let applicability: Applicability?
+        /// Curated candidates only: legacy near-duplicate names this candidate replaces when it is
+        /// added by a presentation (optional).
+        let supersedes: [String]?
 
         struct FeatureSpec: Codable {
             let key: String
@@ -35,7 +40,8 @@ extension BayesianDiagnosisEngine {
                       features: features.map { f in
                           Candidate.Feature(key: f.key, value: f.value,
                                             logLR: f.logLR, evidenceLabel: f.evidenceLabel)
-                      })
+                      },
+                      applicability: applicability)
         }
     }
 
@@ -96,11 +102,13 @@ extension BayesianDiagnosisEngine {
     ///   - `urgent` / `routine` diseases are subject to the full X-Y filter.
     static func matrixCandidates(forCC cc: String, specialtyHint: String? = nil) -> [Candidate] {
         guard let db = externalDatabase, let mx = db.matrix else { return [] }
-        let ccL = cc.lowercased()
+        // Keywords match negation-aware at a word start ("no rash" is not a rash; "tb" is not
+        // found inside another word).
+        let ccSource = NegationMatcher.Source(cc)
 
         // ── X axis: CC → body systems ────────────────────────────────────────
         var matchedSystems = Set<String>()
-        for (keyword, systems) in mx.ccToSystems where ccL.contains(keyword) {
+        for (keyword, systems) in mx.ccToSystems where ccSource.contains(keyword, wordStart: true) {
             systems.forEach { matchedSystems.insert($0) }
         }
         guard !matchedSystems.isEmpty else { return [] }
@@ -164,16 +172,23 @@ extension BayesianDiagnosisEngine {
         // pollute cross-specialty results (back pain, gastroenteritis etc.).
         // Exemptions: urgency ≥ 1 bypasses logPrior cap; Z-axis safety-net
         // diseases bypass both the logPrior cap and specialty filter (above).
+        // Pools are read in name order and ties broken by urgency then name, so the same
+        // complaint always gives the same candidates (Dictionary order changes per launch).
         var seen = Set<String>()
         var result: [Candidate] = []
-        for (_, poolSpec) in db.pools {
+        for poolName in db.pools.keys.sorted() {
+            guard let poolSpec = db.pools[poolName] else { continue }
             for spec in poolSpec.candidates where diseaseNames.contains(spec.name) && seen.insert(spec.name).inserted {
                 let u = spec.urgency ?? 0
                 guard spec.logPrior <= 45 || u >= 1 else { continue }
                 result.append(spec.toCandidate())
             }
         }
-        return result.sorted { $0.logPrior > $1.logPrior }
+        return result.sorted { a, b in
+            if a.logPrior != b.logPrior { return a.logPrior > b.logPrior }
+            if a.urgency != b.urgency { return a.urgency > b.urgency }
+            return a.name < b.name
+        }
     }
 
 
