@@ -101,7 +101,7 @@ enum EmergencyRedirect {
 // MARK: - Inputs
 
 /// The vital signs the engine reads (one set: the latest recorded).
-struct VitalsSnapshot {
+struct AcuityVitals {
     var heartRate: Int?
     var systolic: Int?
     var diastolic: Int?
@@ -153,7 +153,7 @@ struct AcuityInputs {
     var ageMonths: Int?
     var sex: Sex = .unspecified
     var pregnancy: PregnancyContext = .none
-    var vitals: VitalsSnapshot?
+    var vitals: AcuityVitals?
     var workingDiagnosis: String?
     /// ClinicalTextParser alarms for the same record.
     var textAlarms: [ClinicalTextParser.ClinicalAlarm] = []
@@ -186,7 +186,7 @@ enum ClinicalAcuityEngine {
         i.sex = p.sex
         i.pregnancy = PregnancyContext.detect(patient: p)
         if let latest = p.vitalsEntries.filter(\.hasAnyValue).sorted(by: { $0.recordedAt > $1.recordedAt }).first {
-            i.vitals = VitalsSnapshot(latest)
+            i.vitals = AcuityVitals(latest)
         }
         i.workingDiagnosis = p.workingDiagnosis
         // Same parser call as the Diagnosis tab (ConsultationView+DiagnosisTab.refreshBayesian).

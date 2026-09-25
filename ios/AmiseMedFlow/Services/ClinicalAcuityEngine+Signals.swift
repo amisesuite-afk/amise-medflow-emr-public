@@ -100,7 +100,7 @@ extension ClinicalAcuityEngine {
         return 90
     }
 
-    private static func paediatricVitalSigns(_ b: AcuityBuilder, _ v: VitalsSnapshot, hypoxiaAction: String) {
+    private static func paediatricVitalSigns(_ b: AcuityBuilder, _ v: AcuityVitals, hypoxiaAction: String) {
         let age = b.inputs.ageYears ?? 0
         let ranges = aplsRanges(ageYears: age)
         if v.avpu != .alert {
