@@ -1,0 +1,338 @@
+{
+  "schemaVersion": 1,
+  "id": "anal-cancer-red-flags",
+  "condition": "Anal squamous cell carcinoma",
+  "category": "anorectal",
+  "permutationOf": null,
+  "summary": "62-year-old woman with previous CIN3, three months of an anal lump with bleeding, pain and pruritus, and a hard left inguinal node. NICE NG12 (unexplained anal mass or ulceration) → suspected cancer referral; EUA and biopsy; MRI pelvis, CT; HIV test; chemoradiotherapy is first-line (not abdominoperineal resection).",
+  "tags": [
+    "anorectal",
+    "cancer",
+    "must-not-miss",
+    "hpv"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 62,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 163,
+      "weightKg": 67
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Lump at the back passage with bleeding",
+    "hpi": "Three months of a lump at the anus that bleeds on wiping, with itching and aching pain. Thought it was piles. Previous CIN3 treated with LLETZ 15 years ago. Smoker. Lost 3 kg. Noticed a lump in the left groin.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago"
+      ],
+      "site": [
+        "Perianal",
+        "Anal canal"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "associations": [
+        "Rectal bleeding",
+        "Pruritus ani",
+        "Weight loss"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "perianal lump",
+      "rectal bleeding",
+      "perianal pain",
+      "lymphadenopathy",
+      "weight loss"
+    ],
+    "negatives": [
+      "change in bowel habit"
+    ],
+    "exam": {
+      "general": "Hard 2 cm left inguinal lymph node.",
+      "abdomen": "Soft.",
+      "other": "Perianal: 3 cm hard, ulcerated, irregular lesion at the anal margin extending into the anal canal at 3 o’clock; bleeds on contact."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 78,
+        "systolicBp": 132,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 12.1,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "Cervical intraepithelial neoplasia grade 3 (treated)"
+    ],
+    "surgicalHistory": [
+      "LLETZ (15 years ago)"
+    ],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker, 20 a day for 40 years.",
+    "confirmedDiagnosis": {
+      "name": "Suspected anal squamous cell carcinoma with inguinal node",
+      "icd10": "C21.0",
+      "assessmentText": "Suspected anal squamous cell carcinoma (anal margin/canal) with a left inguinal node. EUA and biopsy, MRI pelvis, CT chest/abdomen/pelvis, HIV test; oncology MDT (chemoradiotherapy)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Rectal bleeding",
+        "symptoms": [
+          "perianal lump",
+          "rectal bleeding",
+          "perianal pain",
+          "lymphadenopathy",
+          "weight loss"
+        ],
+        "symptomDetails": {
+          "rectal bleeding": [
+            "Fresh red",
+            "Pain",
+            "Weight loss"
+          ]
+        },
+        "examFindings": {
+          "perineal": [
+            "Mass / swelling"
+          ],
+          "anal": [
+            "Mass palpable"
+          ]
+        },
+        "paneAnswers": {
+          "anal_pain": true,
+          "perianal_swelling": true,
+          "pr_bleeding": true,
+          "ulcerated_lesion": true
+        },
+        "durationDays": 90,
+        "painScore": 4
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-anal-cancer",
+          "severity": "critical",
+          "match": [
+            "anal cancer",
+            "anal carcinoma",
+            "carcinoma of the anus",
+            "squamous cell carcinoma of the anus",
+            "anal scc",
+            "icd:C21"
+          ],
+          "guidelineRefs": [
+            "nice-ng12",
+            "ascrs-anal-scc-2018"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Anal cancer is not a PANE disease (top 3: haemorrhoids, fissure, colorectal cancer); symptom inference ranks anal SCC #2 but PANE is the primary differential.",
+          "proposedFix": "Add anal squamous cell carcinoma to PANE and a C21 protocol (EUA + biopsy, MRI pelvis, CT, HIV test, chemoradiotherapy — ASCRS 2018); NG12 anal-mass/ulcer prompt."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "critical",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "nice-ng12"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-malignancy",
+          "severity": "critical",
+          "match": [
+            "malignan",
+            "cancer",
+            "carcinoma"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-biopsy",
+          "severity": "critical",
+          "match": [
+            "eua",
+            "examination under anaesthesia",
+            "re:biops[^.;\\n]{0,40}(anal|lesion|ulcer|margin|mass)",
+            "re:(anal|lesion|ulcer|margin|mass)[^.;\\n]{0,40}biops"
+          ],
+          "guidelineRefs": [
+            "ascrs-anal-scc-2018"
+          ],
+          "note": "Tissue diagnosis of the anal lesion itself (EUA and biopsy); a colonoscopy biopsy does not sample it.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No output asks for EUA/biopsy of the anal lesion: C21.0 has no protocol; the plan shown is the haemorrhoids protocol (PANE top) and colonoscopy + biopsy from colorectal_cancer seeding."
+        },
+        {
+          "id": "inv-mri-pelvis",
+          "severity": "quality",
+          "match": [
+            "mri pelvis",
+            "pelvic mri",
+            "re:mri[^.;\\n]{0,20}pelvi"
+          ],
+          "guidelineRefs": [
+            "ascrs-anal-scc-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-hiv-test",
+          "severity": "quality",
+          "match": [
+            "hiv"
+          ],
+          "guidelineRefs": [
+            "ascrs-anal-scc-2018"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No HIV test is suggested for anal cancer."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-chemoradiotherapy",
+          "severity": "quality",
+          "match": [
+            "chemoradiotherapy",
+            "chemoradiation",
+            "nigro",
+            "oncology"
+          ],
+          "guidelineRefs": [
+            "ascrs-anal-scc-2018"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No chemoradiotherapy/oncology output (no anal cancer protocol); the management panel shows the haemorrhoid protocol."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-haemorrhoid-treatment",
+          "severity": "critical",
+          "match": [
+            "rubber band",
+            "haemorrhoidectomy",
+            "hemorrhoidectomy"
+          ],
+          "unless": [
+            "avoid",
+            "not ",
+            "contraindicat",
+            "do not",
+            "unless",
+            "caution"
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "ios.radiation",
+            "ios.soap"
+          ],
+          "guidelineRefs": [
+            "ascrs-anal-scc-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — suspected cancer: recognition and referral (lower gastrointestinal tract cancers)",
+      "year": 2023,
+      "section": "Anal cancer: consider a suspected cancer pathway referral for an unexplained anal mass or unexplained anal ulceration",
+      "citation": "National Institute for Health and Care Excellence. Suspected cancer: recognition and referral (NG12). First published 2015; lower GI recommendations updated 2023 to incorporate DG56.",
+      "verified": false
+    },
+    {
+      "id": "ascrs-anal-scc-2018",
+      "name": "ASCRS clinical practice guidelines — anal squamous cell cancers (revised 2018)",
+      "year": 2018,
+      "section": "Biopsy; MRI pelvis and CT staging; HIV testing; chemoradiation as primary treatment; abdominoperineal resection for persistent/recurrent disease",
+      "citation": "Stewart DB, Gaertner WB, Glasgow SC, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for anal squamous cell cancers (revised 2018). Dis Colon Rectum. 2018;61:755–774.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base anal cancer case (HPV-related risk: previous CIN3, smoker). The CC template is \"Rectal bleeding\" because that is how it presents; C21.0 has no management protocol, so the check is whether the differential and prompts surface it.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

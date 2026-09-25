@@ -1,0 +1,339 @@
+{
+  "schemaVersion": 1,
+  "id": "lgib-oakland-low-risk-discharge",
+  "condition": "Acute lower gastrointestinal bleeding — minor, low risk (Oakland ≤ 8)",
+  "category": "colorectal",
+  "permutationOf": null,
+  "summary": "36-year-old woman in the emergency department with two small episodes of fresh red rectal bleeding, stable observations, Hb 14.6 g/dL and blood on the glove: Oakland score 8, so BSG 2019 supports discharge with outpatient investigation.",
+  "tags": [
+    "lgib",
+    "risk-stratification",
+    "over-triage"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 36,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 165,
+      "weightKg": 64
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Bright red blood from the back passage",
+    "hpi": "Two episodes of bright red blood per rectum since yesterday, on the paper and in the pan, with normal formed stool. No abdominal pain, no change in bowel habit, no weight loss. Some constipation and straining recently. Never admitted with bleeding before. Not on anticoagulants, antiplatelets or NSAIDs. No family history of bowel cancer. LMP 2 weeks ago; urine pregnancy test negative.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Perianal"
+      ],
+      "associations": [
+        "Rectal bleeding"
+      ],
+      "timing": [
+        "Episodic"
+      ],
+      "exacerbating": [
+        "Straining"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "rectal bleeding",
+      "constipation"
+    ],
+    "negatives": [
+      "abdominal pain",
+      "change in bowel habit",
+      "weight loss",
+      "syncope"
+    ],
+    "exam": {
+      "general": "Well, alert, pink. Pulse 78/min, BP 132/80.",
+      "abdomen": "Soft, non-tender, no masses.",
+      "other": "PR: small amount of fresh red blood on the glove, no mass. Proctoscopy: grade II internal haemorrhoids at 3 and 7 o’clock, no active bleeding."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 78,
+        "systolicBp": 132,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.8,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 14.6,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 6.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 260,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 4.1,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 62,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.0,
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Teacher. Non-smoker. Occasional alcohol.",
+    "confirmedDiagnosis": {
+      "name": "Minor lower GI bleed — haemorrhoidal, Oakland score 8",
+      "icd10": "K64.1",
+      "paneDiseaseId": "haemorrhoids",
+      "assessmentText": "Minor self-terminating lower GI bleed, Oakland score 8 (low risk). Grade II internal haemorrhoids on proctoscopy. Suitable for discharge with outpatient follow-up."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Rectal bleeding",
+        "symptoms": [
+          "rectal bleeding",
+          "constipation"
+        ],
+        "symptomDetails": {
+          "rectal bleeding": [
+            "Fresh red",
+            "Separate from stool"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "PR: blood"
+          ],
+          "anal": [
+            "Internal haemorrhoids",
+            "Blood on glove"
+          ]
+        },
+        "paneAnswers": {
+          "pr_bleeding": true,
+          "weight_loss": false,
+          "change_bowel_habit": false
+        },
+        "durationDays": 1,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-haemorrhoids-top3",
+          "severity": "quality",
+          "match": [
+            "haemorrhoid",
+            "hemorrhoid",
+            "anorectal disease"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "urgent",
+        "guidelineRefs": [
+          "bsg-lgib-2019",
+          "oakland-2017"
+        ],
+        "note": "BSG 2019: a minor self-terminating bleed with Oakland score ≤ 8 and no other reason for admission can be discharged for urgent outpatient investigation. Over-triage to \"emergency\" is a quality (resource) failure, not a safety one.",
+        "unverified": [
+          "ios"
+        ],
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Web adaptiveTriage has no negation handling and treats any \"bleed/bleeding\" as an urgent red flag (RED_FLAGS \"GI or other bleeding\" → emergency_now), so every rectal bleed — including minor outlet bleeding — is \"emergency\".",
+        "proposedFix": "Grade rectal bleeding by volume/haemodynamics (and an Oakland score when Hb and DRE are recorded) instead of the word \"bleed\"."
+      }
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-oakland",
+          "severity": "quality",
+          "score": "oakland",
+          "guidelineRefs": [
+            "oakland-2017",
+            "bsg-lgib-2019"
+          ],
+          "note": "BSG 2019 recommends the Oakland score to identify minor bleeds suitable for discharge.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No Oakland score on web (no CDS rule, no calculator); web suggests Rockall (an upper GI score) instead. iOS has one (ClinicalScoringEngine.oakland, recommended by DiagnosisScoreMapper for \"lower gi bleed\").",
+          "proposedFix": "Add the Oakland score (age, sex, previous LGIB admission, DRE blood, HR, SBP, Hb) to clinical-scales and a CDS rule for rectal bleeding; ≤ 8 → discharge with outpatient investigation (BSG 2019)."
+        }
+      ]
+    },
+    "investigations": {
+      "mustExclude": [
+        {
+          "id": "inv-no-cta",
+          "severity": "quality",
+          "match": [
+            "ct angiogra",
+            "re:\\bcta\\b",
+            "re:\\bct\\b[^.;\\n]{0,30}angiogra",
+            "ct mesenteric angio"
+          ],
+          "sources": [
+            "web.plan",
+            "web.clinicalPrompts",
+            "web.pane.seeded",
+            "ios.radiation",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ],
+          "note": "CT angiography is for haemodynamically unstable bleeding; not indicated here.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-discharge-outpatient",
+          "severity": "quality",
+          "match": [
+            "re:discharge(d)? (home|for|with)",
+            "outpatient"
+          ],
+          "unless": [
+            "anal discharge",
+            "perianal discharge",
+            "wound discharge"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ],
+          "note": "Discharge with outpatient investigation/follow-up.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-transfusion",
+          "severity": "quality",
+          "match": [
+            "crossmatch",
+            "cross-match",
+            "prbc",
+            "units of blood",
+            "re:transfus(e|ion)"
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ],
+          "note": "Hb 14.6 g/dL: no transfusion or cross-match. BSG 2019 restrictive thresholds (Hb 70 g/L; 80 g/L with cardiovascular disease).",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web computeClinicalPrompts fires the \"GI haemorrhage\" resuscitation prompt (2 large-bore cannulae, Hartmann’s bolus, cross-match 2 units) for any rectal-bleeding chip, regardless of volume, haemodynamics or Hb.",
+          "proposedFix": "Condition the resuscitation/cross-match actions on instability (shock index > 1, SBP < 90, Hb < 80 g/L) or a large-volume bleed."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-lgib-2019",
+      "name": "BSG guideline — diagnosis and management of acute lower gastrointestinal bleeding",
+      "year": 2019,
+      "section": "Risk assessment: Oakland score ≤ 8 with no other indication for admission → discharge for outpatient investigation; restrictive red-cell transfusion",
+      "citation": "Oakland K, Chadwick G, East JE, et al. Diagnosis and management of acute lower gastrointestinal bleeding: guidelines from the British Society of Gastroenterology. Gut. 2019;68:776–789.",
+      "verified": false
+    },
+    {
+      "id": "oakland-2017",
+      "name": "Oakland score — derivation and validation (safe discharge after acute LGIB)",
+      "year": 2017,
+      "section": "Score items: age, sex, previous LGIB admission, DRE blood, heart rate, systolic BP, haemoglobin; ≤ 8 points = safe discharge",
+      "citation": "Oakland K, Jairath V, Uberoi R, et al. Derivation and validation of a novel risk score for safe discharge after acute lower gastrointestinal bleeding: a modelling study. Lancet Gastroenterol Hepatol. 2017;2:635–643.",
+      "verified": false
+    }
+  ],
+  "rationale": "Oakland: age < 40 (0) + female (0) + no previous LGIB admission (0) + blood on DRE (1) + HR 70–89 (1) + SBP 130–159 (2) + Hb 130–159 g/L (4) = 8. Tests whether the engines risk-stratify a minor LGIB instead of treating every bleed as an emergency (resuscitation, cross-match), and whether the Oakland score is available at all.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

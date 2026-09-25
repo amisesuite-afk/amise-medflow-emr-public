@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "id": "uc-flare-cdiff",
+  "condition": "Clostridioides difficile infection complicating a UC flare",
+  "category": "colorectal",
+  "permutationOf": "uc-acute-severe-truelove-witts",
+  "permutationLabel": "C. difficile positive, on azathioprine, recent antibiotics",
+  "summary": "52-year-old woman with UC on azathioprine, 8 loose bloody stools/day after ciprofloxacin for a UTI; C. difficile GDH and toxin positive. Treat CDI (oral vancomycin or fidaxomicin); do not escalate immunosuppression on the assumption of a simple flare.",
+  "tags": [
+    "ibd",
+    "ulcerative-colitis",
+    "c-difficile",
+    "immunosuppressed"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 160,
+      "weightKg": 62
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Worsening diarrhoea with blood",
+    "hpi": "Ulcerative colitis on azathioprine and mesalazine, in remission for 2 years. Took ciprofloxacin for a urinary infection 10 days ago. Now 8 loose stools a day with some blood, crampy pain, feels hot. Stool test sent by GP: C. difficile GDH positive, toxin positive.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "Diffuse"
+      ],
+      "character": [
+        "Cramping"
+      ],
+      "associations": [
+        "Rectal bleeding",
+        "Fever"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "diarrhoea",
+      "rectal bleeding",
+      "abdominal pain",
+      "fever"
+    ],
+    "negatives": [
+      "vomiting",
+      "travel"
+    ],
+    "exam": {
+      "general": "Alert. Temperature 37.6°C, HR 96, BP 118/72.",
+      "abdomen": "Soft, mild diffuse tenderness, not distended, no peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 96,
+        "systolicBp": 118,
+        "diastolicBp": 72,
+        "respiratoryRate": 16,
+        "temperatureC": 37.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.8,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 15.9,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 48,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 31,
+        "unit": "g/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 88,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "stoolCdiff",
+        "name": "C. difficile GDH / toxin",
+        "resultText": "GDH positive; toxin A/B EIA positive",
+        "minutesAgo": 1440
+      }
+    ],
+    "comorbidities": [
+      "Ulcerative colitis"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Azathioprine",
+        "dose": "125 mg",
+        "frequency": "OD",
+        "indication": "Ulcerative colitis"
+      },
+      {
+        "drug": "Mesalazine",
+        "dose": "2.4 g",
+        "frequency": "OD",
+        "indication": "Ulcerative colitis"
+      },
+      {
+        "drug": "Ciprofloxacin",
+        "dose": "500 mg",
+        "frequency": "BD (completed 10 days ago)",
+        "indication": "UTI"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Bank clerk.",
+    "confirmedDiagnosis": {
+      "name": "Clostridioides difficile infection with ulcerative colitis flare",
+      "icd10": "A04.7",
+      "paneDiseaseId": "ulcerative_colitis",
+      "assessmentText": "C. difficile infection (toxin positive) in a patient with ulcerative colitis on azathioprine, after ciprofloxacin. Treat CDI; reassess colitis activity."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Change in bowel habit",
+        "symptoms": [
+          "diarrhoea",
+          "rectal bleeding",
+          "abdominal pain",
+          "fever"
+        ],
+        "symptomDetails": {
+          "rectal bleeding": [
+            "Mixed with stool",
+            "Diarrhoea"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "Diffuse tenderness"
+          ]
+        },
+        "paneAnswers": {
+          "pr_bleeding": true,
+          "fever": true
+        },
+        "durationDays": 5,
+        "painScore": 4
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-cdiff",
+          "severity": "critical",
+          "match": [
+            "difficile",
+            "c. diff",
+            "c diff",
+            "cdiff",
+            "cdi",
+            "pseudomembranous"
+          ],
+          "guidelineRefs": [
+            "ecco-infections-2021",
+            "idsa-cdi-2021"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inference has only \"Acute gastroenteritis\".",
+          "proposedFix": "Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "quality",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "idsa-cdi-2021"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-cdi-treatment",
+          "severity": "critical",
+          "match": [
+            "oral vancomycin",
+            "re:vancomycin[^.;\\n]{0,40}(oral|\\bpo\\b|by mouth|enteral|rectal|\\bpr\\b|enema)",
+            "fidaxomicin"
+          ],
+          "guidelineRefs": [
+            "idsa-cdi-2021",
+            "ecco-infections-2021"
+          ],
+          "note": "IDSA/SHEA 2021: fidaxomicin (preferred) or oral vancomycin for an initial episode. ECCO 2021: treat CDI in IBD with vancomycin or fidaxomicin.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inference has only \"Acute gastroenteritis\". No output treats CDI (no vancomycin/fidaxomicin).",
+          "proposedFix": "Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ecco-infections-2021",
+      "name": "ECCO guidelines — prevention, diagnosis and management of infections in IBD",
+      "year": 2021,
+      "section": "Test for C. difficile in every flare; treat with vancomycin or fidaxomicin; immunosuppression decisions individualised",
+      "citation": "Kucharzik T, Ellul P, Greuter T, et al. ECCO guidelines on the prevention, diagnosis, and management of infections in inflammatory bowel disease. J Crohns Colitis. 2021;15:879–913.",
+      "verified": false
+    },
+    {
+      "id": "idsa-cdi-2021",
+      "name": "IDSA/SHEA focused update — management of Clostridioides difficile infection in adults",
+      "year": 2021,
+      "section": "Initial CDI episode: fidaxomicin preferred, oral vancomycin acceptable",
+      "citation": "Johnson S, Lavergne V, Skinner AM, et al. Clinical practice guideline by the Infectious Diseases Society of America (IDSA) and Society for Healthcare Epidemiology of America (SHEA): 2021 focused update guidelines on management of Clostridioides difficile infection in adults. Clin Infect Dis. 2021;73:e1029–e1044.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: an infective trigger with a positive toxin test and immunosuppression. The result is in the labs; the confirmed diagnosis is CDI (A04.7). Tests whether the plan treats the infection rather than the colitis alone.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "id": "pilonidal-abscess-acute",
+  "condition": "Acute pilonidal abscess",
+  "category": "anorectal",
+  "permutationOf": null,
+  "summary": "21-year-old man with a hot, fluctuant swelling in the natal cleft with midline pits. ASCRS 2019: incision and drainage (off-midline), definitive surgery later; no excision in the acute phase.",
+  "tags": [
+    "anorectal",
+    "pilonidal",
+    "abscess"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 21,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 179,
+      "weightKg": 92
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Painful swelling at the top of the buttock crease",
+    "hpi": "Four days of a painful swelling at the top of the buttock crease, worse sitting, now throbbing; a similar episode last year settled with antibiotics. Hairy, sits for long hours (security job). Not diabetic.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "Posterior midline"
+      ],
+      "character": [
+        "Throbbing"
+      ],
+      "exacerbating": [
+        "Sitting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abscess",
+      "perianal pain"
+    ],
+    "negatives": [
+      "rectal bleeding",
+      "change in bowel habit"
+    ],
+    "exam": {
+      "general": "Temperature 37.6°C, HR 90.",
+      "abdomen": "Soft.",
+      "other": "Sacrococcygeal: 4 cm fluctuant tender swelling just lateral to the natal cleft with two midline pits containing hair; anus normal, no connection to the anal canal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 90,
+        "systolicBp": 126,
+        "diastolicBp": 78,
+        "respiratoryRate": 16,
+        "temperatureC": 37.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 13.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 62,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "Obesity"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Security guard. Smoker.",
+    "confirmedDiagnosis": {
+      "name": "Acute pilonidal abscess",
+      "icd10": "L05.01",
+      "paneDiseaseId": "pilonidal_disease",
+      "assessmentText": "Acute pilonidal abscess with midline pits. Incision and drainage (off-midline); definitive treatment of the sinus once settled."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "abscess",
+          "perianal pain"
+        ],
+        "examFindings": {
+          "skin": [
+            "Lesion present"
+          ],
+          "wound": [
+            "Abscess"
+          ]
+        },
+        "paneAnswers": {
+          "swelling_fluctuant_soft": true,
+          "erythema_surrounding": true,
+          "perianal_swelling": true
+        },
+        "durationDays": 4,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-pilonidal-top3",
+          "severity": "quality",
+          "match": [
+            "pilonidal"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "ascrs-pilonidal-2019"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE ranks skin abscess, hernia and appendicitis: the \"Posterior midline\" site chip is not mapped to a PANE feature and there is no pilonidal CC hint for a presentation template. Symptom inference ranks pilonidal #1."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-soon",
+        "severity": "quality",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "ascrs-pilonidal-2019"
+        ],
+        "unverified": [
+          "ios"
+        ],
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Web adaptiveTriage has no pilonidal/perianal abscess rule: the level depends on the pain score and incidental words (the base abscess reaches \"emergency\" only via the negated \"no weight loss\" plus pain 8/10; with pain 6/10 it is routine).",
+        "proposedFix": "Add an anorectal-sepsis triage rule (perianal/perineal pain + swelling/lump, or \"abscess\") → at least same_day_call, and emergency_now with fever + SIRS, diabetes, immunosuppression or spreading erythema."
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-drainage",
+          "severity": "critical",
+          "match": [
+            "incision and drainage",
+            "re:\\bi&d\\b",
+            "re:\\bi & d\\b",
+            "drainage"
+          ],
+          "guidelineRefs": [
+            "ascrs-pilonidal-2019"
+          ],
+          "note": "ASCRS 2019: acute pilonidal abscess → incision and drainage.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-acute-excision",
+          "severity": "quality",
+          "match": [
+            "flap",
+            "wide excision",
+            "karydakis",
+            "bascom",
+            "limberg"
+          ],
+          "unless": [
+            "chronic",
+            "later",
+            "elective",
+            "recurrent",
+            "once",
+            "after"
+          ],
+          "sources": [
+            "web.plan",
+            "ios.radiation",
+            "ios.soap"
+          ],
+          "guidelineRefs": [
+            "ascrs-pilonidal-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ascrs-pilonidal-2019",
+      "name": "ASCRS clinical practice guidelines — management of pilonidal disease",
+      "year": 2019,
+      "section": "Acute abscess: incision and drainage; definitive excision/flap for chronic disease; hair removal adjunct",
+      "citation": "Johnson EK, Vogel JD, Cowan ML, et al. The American Society of Colon and Rectal Surgeons’ clinical practice guidelines for the management of pilonidal disease. Dis Colon Rectum. 2019;62:146–157.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base pilonidal case. Quality apart from the drainage itself.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

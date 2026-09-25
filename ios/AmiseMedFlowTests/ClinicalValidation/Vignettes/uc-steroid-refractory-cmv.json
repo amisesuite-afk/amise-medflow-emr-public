@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "id": "uc-steroid-refractory-cmv",
+  "condition": "Steroid-refractory ulcerative colitis with CMV colitis",
+  "category": "colorectal",
+  "permutationOf": "uc-acute-severe-truelove-witts",
+  "permutationLabel": "Immunosuppressed (azathioprine + infliximab), CMV on biopsy",
+  "summary": "45-year-old man on azathioprine and infliximab, day 5 of IV steroids without response; flexible sigmoidoscopy biopsies show CMV inclusions on immunohistochemistry. ECCO 2021: antiviral therapy (IV ganciclovir) for steroid-refractory colitis with CMV; colectomy discussion if no response.",
+  "tags": [
+    "ibd",
+    "ulcerative-colitis",
+    "cmv",
+    "immunosuppressed"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 45,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 175,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Bloody diarrhoea not settling in hospital",
+    "hpi": "Extensive UC on azathioprine and infliximab (loss of response). Day 5 of IV hydrocortisone: still 9 bloody stools a day, fevers to 38.2. C. difficile negative. Flexible sigmoidoscopy: deep ulcers; biopsies show CMV inclusion bodies on immunohistochemistry.",
+    "socrates": {
+      "onset": [
+        "1–4 weeks ago"
+      ],
+      "site": [
+        "Diffuse"
+      ],
+      "associations": [
+        "Rectal bleeding",
+        "Fever"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "bloody diarrhoea",
+      "fever",
+      "abdominal pain"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Tired. Temperature 38.2°C, HR 100, BP 116/70.",
+      "abdomen": "Soft, tender over the colon, not distended."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 100,
+        "systolicBp": 116,
+        "diastolicBp": 70,
+        "respiratoryRate": 18,
+        "temperatureC": 38.2,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 9.6,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 4.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 64,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 25,
+        "unit": "g/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 62,
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "biopsyCmv",
+        "name": "Colonic biopsy CMV IHC",
+        "resultText": "CMV immunohistochemistry positive, several inclusions per fragment",
+        "minutesAgo": 240
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Flexible sigmoidoscopy",
+        "modality": "Endoscopy",
+        "region": "Rectum/sigmoid",
+        "result": "Severe colitis with deep punched-out ulcers to 35 cm. Biopsies taken.",
+        "minutesAgo": 2880
+      }
+    ],
+    "comorbidities": [
+      "Ulcerative colitis (extensive)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Azathioprine",
+        "dose": "150 mg",
+        "frequency": "OD",
+        "indication": "Ulcerative colitis"
+      },
+      {
+        "drug": "Infliximab",
+        "dose": "5 mg/kg",
+        "frequency": "8-weekly",
+        "indication": "Ulcerative colitis"
+      },
+      {
+        "drug": "Hydrocortisone",
+        "dose": "100 mg",
+        "frequency": "QDS IV",
+        "indication": "Acute severe UC"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Engineer.",
+    "confirmedDiagnosis": {
+      "name": "Steroid-refractory acute severe ulcerative colitis with CMV colitis",
+      "icd10": "K51.0",
+      "paneDiseaseId": "ulcerative_colitis",
+      "assessmentText": "Steroid-refractory acute severe ulcerative colitis with CMV colitis on biopsy (immunohistochemistry positive), on azathioprine and infliximab. Antiviral therapy; colectomy discussion."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Change in bowel habit",
+        "symptoms": [
+          "diarrhoea",
+          "rectal bleeding",
+          "fever",
+          "abdominal pain"
+        ],
+        "symptomDetails": {
+          "rectal bleeding": [
+            "Mixed with stool",
+            "Diarrhoea"
+          ]
+        },
+        "paneAnswers": {
+          "pr_bleeding": true,
+          "fever": true
+        },
+        "durationDays": 14,
+        "painScore": 4
+      }
+    }
+  },
+  "expected": {
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-cmv",
+          "severity": "critical",
+          "match": [
+            "cmv",
+            "cytomegalovirus"
+          ],
+          "guidelineRefs": [
+            "ecco-infections-2021"
+          ],
+          "note": "CMV must be looked for (biopsy immunohistochemistry/PCR) in steroid-refractory colitis before further immunosuppression.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The CMV-positive biopsy result is not read and no output mentions CMV.",
+          "proposedFix": "Read biopsy/IHC results for CMV in UC; steroid-refractory UC → CMV testing prompt (ECCO 2021)."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-antiviral",
+          "severity": "critical",
+          "match": [
+            "ganciclovir",
+            "valganciclovir",
+            "antiviral"
+          ],
+          "guidelineRefs": [
+            "ecco-infections-2021"
+          ],
+          "note": "ECCO 2021: antiviral therapy for CMV colitis in steroid-refractory UC with high-density CMV on biopsy.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No antiviral (ganciclovir) anywhere; the UC plan escalates immunosuppression (infliximab, ciclosporin, tofacitinib) regardless of CMV.",
+          "proposedFix": "Add a CMV-colitis branch: CMV on biopsy in steroid-refractory UC → IV ganciclovir, review immunomodulators (ECCO 2021)."
+        },
+        {
+          "id": "mgmt-colectomy-option",
+          "severity": "quality",
+          "match": [
+            "colectomy"
+          ],
+          "guidelineRefs": [
+            "ecco-uc-surg-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ecco-infections-2021",
+      "name": "ECCO guidelines — prevention, diagnosis and management of infections in IBD",
+      "year": 2021,
+      "section": "CMV: test tissue (IHC/PCR) in steroid-refractory colitis; antiviral therapy (ganciclovir) when CMV colitis is present; review immunomodulators",
+      "citation": "Kucharzik T, Ellul P, Greuter T, et al. ECCO guidelines on the prevention, diagnosis, and management of infections in inflammatory bowel disease. J Crohns Colitis. 2021;15:879–913.",
+      "verified": false
+    },
+    {
+      "id": "ecco-uc-surg-2022",
+      "name": "ECCO guidelines on therapeutics in ulcerative colitis — surgical treatment",
+      "year": 2022,
+      "section": "Colectomy when medical therapy fails",
+      "citation": "Spinelli A, Bonovas S, Burisch J, et al. ECCO guidelines on therapeutics in ulcerative colitis: surgical treatment. J Crohns Colitis. 2022;16:179–189.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: immunosuppression (thiopurine + anti-TNF) and an opportunistic infection. Tests whether the CMV biopsy result changes the plan.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

@@ -1,0 +1,294 @@
+{
+  "schemaVersion": 1,
+  "id": "lgib-unstable-warfarin",
+  "condition": "Acute lower gastrointestinal bleeding — unstable, on warfarin",
+  "category": "gi-emergency",
+  "permutationOf": "lgib-unstable-cta-first",
+  "permutationLabel": "Anticoagulated (warfarin, INR 4.6)",
+  "summary": "81-year-old woman with atrial fibrillation on warfarin (INR 4.6) with heavy fresh and dark rectal bleeding, HR 112 and SBP 86: interrupt warfarin and reverse with prothrombin complex concentrate and IV vitamin K, then CT angiography.",
+  "tags": [
+    "lgib",
+    "anticoagulated",
+    "elderly",
+    "shock"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 81,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 156,
+      "weightKg": 58
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Heavy bleeding from the back passage",
+    "hpi": "Four large bloody stools since this morning, dark red with clots and some fresh blood; dizzy on standing. No haematemesis. Atrial fibrillation on warfarin; recent course of clarithromycin for a chest infection. No abdominal pain. Previous colonoscopy (4 years ago): diverticular disease.",
+    "socrates": {
+      "onset": [
+        "Today"
+      ],
+      "associations": [
+        "Rectal bleeding"
+      ],
+      "timing": [
+        "Episodic"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "rectal bleeding",
+      "dizziness"
+    ],
+    "negatives": [
+      "haematemesis",
+      "abdominal pain"
+    ],
+    "exam": {
+      "general": "Pale, drowsy but orientated. HR 112 irregularly irregular, BP 86/50 after 500 mL crystalloid.",
+      "abdomen": "Soft, non-tender.",
+      "other": "PR: dark red blood and clots, no mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 112,
+        "systolicBp": 86,
+        "diastolicBp": 50,
+        "respiratoryRate": 22,
+        "temperatureC": 36.2,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 7.9,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 8.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 190,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 9.8,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 118,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 4.6,
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.9,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "Atrial fibrillation",
+      "Hypertension",
+      "Diverticular disease"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Warfarin",
+        "dose": "per INR",
+        "frequency": "OD",
+        "indication": "Atrial fibrillation"
+      },
+      {
+        "drug": "Bisoprolol",
+        "dose": "2.5 mg",
+        "frequency": "OD",
+        "indication": "Atrial fibrillation"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives alone, independent.",
+    "confirmedDiagnosis": {
+      "name": "Acute lower GI bleed — unstable, supratherapeutic INR on warfarin",
+      "icd10": "K92.2",
+      "assessmentText": "Major acute lower GI bleed, haemodynamically unstable, on warfarin with INR 4.6. Needs reversal and CT angiography."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Rectal bleeding",
+        "symptoms": [
+          "rectal bleeding",
+          "dizziness"
+        ],
+        "symptomDetails": {
+          "rectal bleeding": [
+            "Dark red",
+            "Massive"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "PR: blood"
+          ],
+          "cardiovascular": [
+            "Tachycardia",
+            "Irregular rhythm"
+          ]
+        },
+        "paneAnswers": {
+          "pr_bleeding": true,
+          "haemodynamic_instability": true
+        },
+        "durationDays": 0.3,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "bsg-lgib-2019"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-warfarin",
+          "severity": "critical",
+          "match": [
+            "warfarin",
+            "anticoag",
+            "inr"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-cta-first",
+          "severity": "critical",
+          "match": [
+            "ct angiogra",
+            "re:\\bcta\\b",
+            "re:\\bct\\b[^.;\\n]{0,30}angiogra",
+            "ct mesenteric angio"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No CT angiography output (see lgib-unstable-cta-first). The confirmed ICD K92.2 (GI haemorrhage, unspecified) matches the upper_gi_bleed protocol (icd10Prefixes K92) and the \"Upper GI Bleed\" dx-variant group; there is no lower GI bleeding protocol, so the plan is the variceal/non-variceal UGIB plan."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-reverse-warfarin",
+          "severity": "critical",
+          "match": [
+            "prothrombin complex",
+            "re:\\bpcc\\b",
+            "vitamin k",
+            "beriplex",
+            "octaplex"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ],
+          "note": "BSG 2019: interrupt warfarin at presentation; in unstable bleeding reverse with prothrombin complex concentrate and IV vitamin K.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-restart-anticoag-plan",
+          "severity": "quality",
+          "match": [
+            "re:(restart|resume|recommence)[^.]{0,60}(warfarin|anticoag|doac)"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ],
+          "note": "BSG 2019: plan when to restart warfarin (the guideline suggests about 7 days after the bleed in most patients) — the thrombotic risk of AF persists.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No output plans when to restart warfarin after the bleed; the only anticoagulant text is the reversal line and generic peri-operative bridging."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-lgib-2019",
+      "name": "BSG guideline — diagnosis and management of acute lower gastrointestinal bleeding",
+      "year": 2019,
+      "section": "Anticoagulants: interrupt warfarin; reverse with PCC and vitamin K in unstable haemorrhage; restart after the bleed; CTA first when unstable",
+      "citation": "Oakland K, Chadwick G, East JE, et al. Diagnosis and management of acute lower gastrointestinal bleeding: guidelines from the British Society of Gastroenterology. Gut. 2019;68:776–789.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: warfarin with a supratherapeutic INR. Checks that the anticoagulant is surfaced as a red flag and that reversal is part of the plan, not only the generic \"hold DOAC 48 h pre-op\" bridging text.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

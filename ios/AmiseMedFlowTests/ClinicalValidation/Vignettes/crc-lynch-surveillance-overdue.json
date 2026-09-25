@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "id": "crc-lynch-surveillance-overdue",
+  "condition": "Lynch syndrome — colonoscopic surveillance",
+  "category": "colorectal",
+  "permutationOf": null,
+  "summary": "38-year-old man with MLH1 Lynch syndrome, asymptomatic, last colonoscopy 3 years ago. BSG/ACPGBI/UKCGG 2020: 2-yearly colonoscopy from age 25 (MLH1/MSH2) — he is overdue; aspirin chemoprevention to be discussed.",
+  "tags": [
+    "crc",
+    "hereditary",
+    "lynch",
+    "surveillance"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 38,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 182,
+      "weightKg": 81
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "followUp",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Review about bowel surveillance",
+    "hpi": "Known Lynch syndrome (MLH1 pathogenic variant, found after his mother’s colorectal cancer at 44). Last colonoscopy 3 years ago: one 4 mm adenoma removed. No symptoms: no bleeding, bowels normal, weight steady. Not on aspirin.",
+    "symptoms": [],
+    "negatives": [
+      "rectal bleeding",
+      "change in bowel habit",
+      "weight loss"
+    ],
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Soft, non-tender, no masses."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 70,
+        "systolicBp": 124,
+        "diastolicBp": 78,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 14.8,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Colonoscopy (3 years ago)",
+        "modality": "Endoscopy",
+        "region": "Colon",
+        "result": "Complete to caecum, good preparation. 4 mm tubular adenoma, low-grade dysplasia, sigmoid — removed.",
+        "minutesAgo": 1576800
+      }
+    ],
+    "comorbidities": [
+      "Lynch syndrome (MLH1)",
+      "Family history of colorectal cancer (mother, age 44)"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Police officer. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Lynch syndrome (MLH1) — surveillance colonoscopy overdue",
+      "icd10": "Z15.09",
+      "assessmentText": "Lynch syndrome, MLH1 carrier. Surveillance colonoscopy overdue (last 3 years ago; 2-yearly interval)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Colonoscopy (diagnostic / surveillance)",
+        "symptoms": [
+          "follow-up"
+        ],
+        "durationDays": 0,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-lynch",
+          "severity": "critical",
+          "match": [
+            "lynch",
+            "hereditary",
+            "family history",
+            "fhx"
+          ],
+          "guidelineRefs": [
+            "bsg-hereditary-2020"
+          ],
+          "unverified": [
+            "ios",
+            "web"
+          ],
+          "note": "Not observable in the web harness: the dashboard feeds the Family History field (ClinicalPromptsStrip familyHistory) to computeClinicalPrompts, but the vignette schema has no family-history input, so web-runner passes []. In the dashboard the \"FHx colorectal cancer, age 35–49\" prompt would probably add a colonoscopy. Needs a familyHistory input in the schema and both runners. Triage itself never names Lynch syndrome."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-colonoscopy",
+          "severity": "critical",
+          "match": [
+            "colonoscop"
+          ],
+          "guidelineRefs": [
+            "bsg-hereditary-2020"
+          ],
+          "unverified": [
+            "ios",
+            "web"
+          ],
+          "note": "Not observable in the web harness: the dashboard feeds the Family History field (ClinicalPromptsStrip familyHistory) to computeClinicalPrompts, but the vignette schema has no family-history input, so web-runner passes []. In the dashboard the \"FHx colorectal cancer, age 35–49\" prompt would probably add a colonoscopy. Needs a familyHistory input in the schema and both runners."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-2-yearly",
+          "severity": "quality",
+          "match": [
+            "re:(2|two)[- ]?(year|yr)",
+            "biennial",
+            "every 2 years"
+          ],
+          "guidelineRefs": [
+            "bsg-hereditary-2020"
+          ],
+          "note": "BSG/ACPGBI/UKCGG 2020: colonoscopy every 2 years from age 25 for path_MLH1/path_MSH2 carriers.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No Lynch-specific rule: Z15.09 has no protocol, and the only colorectal family-history prompt (age 35–49, dashboard Family History field) says \"colonoscopy 10 years before youngest affected relative, or at 40\" with no 2-yearly Lynch interval.",
+          "proposedFix": "Add a hereditary-CRC rule (Lynch/MLH1/MSH2/MSH6/PMS2/FAP in PMH or family history) → colonoscopy every 2 years from 25/35 per gene; aspirin discussion (BSG/ACPGBI/UKCGG 2020)."
+        },
+        {
+          "id": "mgmt-aspirin-discussion",
+          "severity": "quality",
+          "match": [
+            "aspirin"
+          ],
+          "guidelineRefs": [
+            "bsg-hereditary-2020"
+          ],
+          "note": "Aspirin chemoprevention is recommended for Lynch syndrome (dose per current guidance; not asserted here).",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No aspirin chemoprevention output for Lynch syndrome on any path."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-hereditary-2020",
+      "name": "BSG/ACPGBI/UKCGG guidelines — management of hereditary colorectal cancer",
+      "year": 2020,
+      "section": "Lynch syndrome: 2-yearly colonoscopy from age 25 (MLH1, MSH2) or 35 (MSH6, PMS2); aspirin chemoprevention",
+      "citation": "Monahan KJ, Bradshaw N, Dolwani S, et al. Guidelines for the management of hereditary colorectal cancer from the British Society of Gastroenterology (BSG)/Association of Coloproctology of Great Britain and Ireland (ACPGBI)/United Kingdom Cancer Genetics Group (UKCGG). Gut. 2020;69:411–444.",
+      "verified": false
+    }
+  ],
+  "rationale": "Asymptomatic high-risk surveillance: the risk lives in the comorbidity list and the family history, not in symptoms. Tests whether any engine turns a Lynch diagnosis into a surveillance colonoscopy with the right interval.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 1,
+  "id": "fistula-in-ano-simple-low",
+  "condition": "Fistula-in-ano — simple, low intersphincteric",
+  "category": "anorectal",
+  "permutationOf": null,
+  "summary": "45-year-old man with recurrent discharge from an external opening 2 cm from the anal verge six months after a drained abscess; palpable cord to 7 o’clock. Simple low (Parks intersphincteric) fistula: fistulotomy. Not an anal fissure.",
+  "tags": [
+    "anorectal",
+    "fistula"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 45,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 85
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Discharge from a spot near the back passage",
+    "hpi": "Perianal abscess drained 6 months ago. Since then a small opening beside the anus discharges pus and blood-stained fluid every few days, with intermittent discomfort that settles when it drains. No bowel symptoms, no weight loss. No IBD.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago"
+      ],
+      "site": [
+        "Perianal"
+      ],
+      "associations": [
+        "Soiling"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "anal discharge",
+      "perianal pain"
+    ],
+    "negatives": [
+      "change in bowel habit",
+      "weight loss",
+      "fever"
+    ],
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Soft.",
+      "other": "Perianal: external opening 2 cm from the anal verge at 7 o’clock with granulation tissue; palpable cord towards the anal canal. DRE: normal tone, internal opening felt at the dentate line posteriorly. No abscess."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 72,
+        "systolicBp": 126,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [
+      "Incision and drainage of perianal abscess (6 months ago)"
+    ],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Office worker.",
+    "confirmedDiagnosis": {
+      "name": "Fistula-in-ano — simple low intersphincteric",
+      "icd10": "K60.3",
+      "assessmentText": "Simple low intersphincteric fistula-in-ano (Parks) after a drained abscess. Fistulotomy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "anal discharge",
+          "perianal pain"
+        ],
+        "examFindings": {
+          "perineal": [
+            "Fistula orifice",
+            "Discharge"
+          ],
+          "anal": [
+            "Fistula",
+            "Normal sphincter tone"
+          ]
+        },
+        "paneAnswers": {
+          "discharge_perianal": true,
+          "anal_pain": true,
+          "fever": false
+        },
+        "durationDays": 180,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-fistula-top3",
+          "severity": "quality",
+          "match": [
+            "fistula",
+            "icd:K60.3",
+            "perianal abscess / fistula"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-fistulotomy",
+          "severity": "critical",
+          "match": [
+            "fistulotomy",
+            "lay-open",
+            "lay open",
+            "laying open"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ],
+          "note": "ASCRS 2022: fistulotomy for simple fistulas with low risk of incontinence.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "getProtocolByIcd(\"K60.3\") returns the anal_fissure protocol (prefix K60 covers fissure K60.0–K60.2 and fistula K60.3–K60.5); there is no fistula-in-ano protocol, and the perianal_abscess protocol (which has fistula steps) is keyed to K61.",
+          "proposedFix": "Add a fistula-in-ano protocol keyed to K60.3–K60.5 (simple → fistulotomy; complex → MRI, loose seton, sphincter-preserving repair; Parks classification) and narrow anal_fissure to K60.0–K60.2."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-fissure-plan",
+          "severity": "critical",
+          "match": [
+            "sphincterotomy",
+            "botulinum",
+            "glyceryl trinitrate",
+            "re:\\bgtn\\b",
+            "diltiazem"
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "ios.radiation",
+            "ios.soap"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ],
+          "note": "A fistula-in-ano plan must not be an anal-fissure plan (chemical/surgical sphincterotomy).",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "getProtocolByIcd(\"K60.3\") returns the anal_fissure protocol (prefix K60 covers fissure K60.0–K60.2 and fistula K60.3–K60.5); there is no fistula-in-ano protocol, and the perianal_abscess protocol (which has fistula steps) is keyed to K61. The documented plan is GTN/diltiazem, botulinum toxin and lateral internal sphincterotomy."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ascrs-abscess-2022",
+      "name": "ASCRS clinical practice guidelines — anorectal abscess, fistula-in-ano and rectovaginal fistula",
+      "year": 2022,
+      "section": "Parks classification (Parks AG, Gordon PH, Hardcastle JD. Br J Surg 1976;63:1–12): inter-, trans-, supra-, extrasphincteric. Simple fistula-in-ano: fistulotomy; complex fistula: sphincter-preserving options; MRI/EUS for complex or recurrent disease",
+      "citation": "Gaertner WB, Burgess PL, Davids JS, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of anorectal abscess, fistula-in-ano, and rectovaginal fistula. Dis Colon Rectum. 2022;65:964–985.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base fistula case, confirmed diagnosis coded K60.3 (anal fistula). Checks that the protocol lookup returns a fistula plan: the K60 block contains fissures (K60.0–K60.2) and fistulas (K60.3–K60.5).",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

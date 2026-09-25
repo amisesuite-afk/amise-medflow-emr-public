@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 1,
+  "id": "fournier-sglt2-early-mimic",
+  "condition": "Early Fournier’s gangrene presenting as a perianal abscess (SGLT2 inhibitor)",
+  "category": "anorectal",
+  "permutationOf": "fournier-gangrene",
+  "permutationLabel": "Early, no crepitus, on empagliflozin — dangerous mimic of a perianal abscess",
+  "summary": "57-year-old man with diabetes on empagliflozin referred as a \"perianal abscess\": pain out of proportion, erythema spreading onto the scrotum within 12 h, T 38.3, HR 114, CRP 240, Na 132. No crepitus yet. Early NSTI must be suspected; surgical exploration, not simple drainage in clinic.",
+  "tags": [
+    "anorectal",
+    "nsti",
+    "must-not-miss",
+    "sglt2",
+    "diabetes",
+    "mimic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 57,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 174,
+      "weightKg": 96
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Painful swelling near the back passage",
+    "hpi": "Referred with a perianal abscess. Two days of perianal pain; since last night the pain is much worse than the swelling suggests and redness is spreading towards the scrotum. Feverish. Type 2 diabetes on metformin and empagliflozin (started 4 months ago).",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Perianal",
+        "Perineal"
+      ],
+      "character": [
+        "Burning",
+        "Throbbing"
+      ],
+      "associations": [
+        "Fever"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "perianal pain",
+      "perianal lump",
+      "fever",
+      "cellulitis"
+    ],
+    "negatives": [
+      "crepitus",
+      "skin necrosis"
+    ],
+    "exam": {
+      "general": "Unwell. Temperature 38.3°C, HR 114, BP 108/64, RR 22. Pain out of proportion to the signs.",
+      "abdomen": "Soft.",
+      "skin": "Ill-defined perianal induration with erythema spreading onto the perineum and the base of the scrotum, tender beyond the erythema; no crepitus, no necrosis yet.",
+      "other": "Perianal: tender induration at 5 o’clock without a clear fluctuant collection."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 114,
+        "systolicBp": 108,
+        "diastolicBp": 64,
+        "respiratoryRate": 22,
+        "temperatureC": 38.3,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 14.2
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 21.0,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 240,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 132,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 128,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 14.2,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 14.2,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Empagliflozin",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Farmer.",
+    "confirmedDiagnosis": {
+      "name": "Perianal sepsis — early necrotising soft-tissue infection (Fournier’s) suspected",
+      "icd10": "K61.0",
+      "paneDiseaseId": "perianal_abscess",
+      "assessmentText": "Perianal sepsis with pain out of proportion and erythema spreading to the scrotum in a diabetic on an SGLT2 inhibitor: early Fournier’s gangrene until proven otherwise. Emergency surgical exploration."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "perianal pain",
+          "perianal lump",
+          "fever",
+          "cellulitis",
+          "scrotal swelling"
+        ],
+        "examFindings": {
+          "perineal": [
+            "Erythema",
+            "Mass / swelling"
+          ],
+          "genital": [
+            "Scrotal swelling"
+          ]
+        },
+        "paneAnswers": {
+          "anal_pain": true,
+          "perianal_swelling": true,
+          "fever": true,
+          "erythema_surrounding": true,
+          "crepitus_soft_tissue": false
+        },
+        "durationDays": 2,
+        "painScore": 9
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-nsti",
+          "severity": "critical",
+          "match": [
+            "fournier",
+            "necrotising",
+            "necrotizing",
+            "nsti"
+          ],
+          "guidelineRefs": [
+            "wses-ssti-2018"
+          ],
+          "note": "Pain out of proportion + spreading erythema + SIRS in a diabetic: NSTI must be on the differential even without crepitus.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE’s necrotising_fasciitis disease is not reached from perineal presentations (the only anorectal features are anal_pain/perianal_swelling; the CC template is generic; crepitus/erythema answers do not outweigh the anorectal priors); symptom inference does rank Fournier’s first, but it is a secondary view. The confirmed \"perianal abscess\" label (K61.0) sends the plan to the perianal_abscess protocol, whose only NSTI mention is a red flag.",
+          "proposedFix": "Add Fournier’s gangrene as a PANE disease (or map perineal site + crepitus/necrosis/pain-out-of-proportion + SIRS to necrotising_fasciitis) and give N49.3/perineal NSTI the necrotising_fasciitis protocol; add a safety prompt for \"perianal/perineal infection + pain out of proportion or spreading to scrotum/perineum + SIRS\" → emergency surgical exploration."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-ssti-2018"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-sglt2",
+          "severity": "quality",
+          "match": [
+            "empagliflozin",
+            "sglt2",
+            "gliflozin"
+          ],
+          "guidelineRefs": [
+            "mhra-sglt2-2019"
+          ],
+          "note": "SGLT2 inhibitors carry a regulatory warning for Fournier’s gangrene; stop the drug.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "SGLT2 inhibitors are not recognised by any engine (no Fournier’s/genital-infection warning).",
+          "proposedFix": "Add an SGLT2-inhibitor medication flag for perineal/genital infection (MHRA 2019)."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-exploration",
+          "severity": "critical",
+          "match": [
+            "debridement",
+            "surgical exploration",
+            "examination under anaesthesia",
+            "eua",
+            "theatre"
+          ],
+          "guidelineRefs": [
+            "wses-ssti-2018"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No output recommends surgical exploration/debridement: the plan is incision and drainage of a perianal abscess.",
+          "proposedFix": "Add Fournier’s gangrene as a PANE disease (or map perineal site + crepitus/necrosis/pain-out-of-proportion + SIRS to necrotising_fasciitis) and give N49.3/perineal NSTI the necrotising_fasciitis protocol; add a safety prompt for \"perianal/perineal infection + pain out of proportion or spreading to scrotum/perineum + SIRS\" → emergency surgical exploration."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-ssti-2018",
+      "name": "WSES/SIS-E consensus — management of skin and soft-tissue infections (incl. necrotising soft-tissue infection, Fournier’s gangrene)",
+      "year": 2018,
+      "section": "Early NSTI: clinical suspicion (pain out of proportion, rapid spread, systemic toxicity) → surgical exploration without waiting for imaging",
+      "citation": "Sartelli M, Guirao X, Hardcastle TC, et al. 2018 WSES/SIS-E consensus conference: recommendations for the management of skin and soft-tissue infections. World J Emerg Surg. 2018;13:58.",
+      "verified": false
+    },
+    {
+      "id": "mhra-sglt2-2019",
+      "name": "MHRA Drug Safety Update — SGLT2 inhibitors: reports of Fournier’s gangrene",
+      "year": 2019,
+      "section": "Fournier’s gangrene reported with SGLT2 inhibitors: stop the drug and treat urgently",
+      "citation": "Medicines and Healthcare products Regulatory Agency. SGLT2 inhibitors: reports of Fournier’s gangrene (necrotising fasciitis of the genitalia or perineum). Drug Safety Update, February 2019 (also US FDA Drug Safety Communication, August 2018).",
+      "verified": false
+    }
+  ],
+  "rationale": "Dangerous-mimic permutation: the referral label and the confirmed diagnosis say \"perianal abscess\" (K61.0), which pulls every engine towards simple drainage. The discriminating features (pain out of proportion, spread to the scrotum, SIRS, SGLT2 inhibitor) are only in text and vitals.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

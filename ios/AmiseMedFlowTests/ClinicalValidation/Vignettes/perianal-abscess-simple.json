@@ -1,0 +1,262 @@
+{
+  "schemaVersion": 1,
+  "id": "perianal-abscess-simple",
+  "condition": "Perianal abscess",
+  "category": "anorectal",
+  "permutationOf": null,
+  "summary": "36-year-old man with three days of throbbing perianal pain and a fluctuant tender swelling at 5 o’clock, afebrile, not diabetic or immunosuppressed. ASCRS 2022: prompt incision and drainage; routine antibiotics are not needed after drainage of an uncomplicated abscess.",
+  "tags": [
+    "anorectal",
+    "abscess"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 36,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 82
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Painful lump near the back passage",
+    "hpi": "Three days of constant throbbing pain beside the anus, worse on sitting and opening bowels, with a tender lump. Not slept last night. No fevers. No previous abscesses. No bowel symptoms, no weight loss. Not diabetic.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Perianal"
+      ],
+      "character": [
+        "Throbbing"
+      ],
+      "exacerbating": [
+        "Sitting",
+        "Defaecation"
+      ],
+      "relieving": [
+        "Warm bath / sitz bath"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "perianal pain",
+      "perianal lump"
+    ],
+    "negatives": [
+      "fever",
+      "rectal bleeding",
+      "change in bowel habit"
+    ],
+    "exam": {
+      "general": "Uncomfortable. Temperature 37.3°C, HR 84, BP 128/80.",
+      "abdomen": "Soft, non-tender.",
+      "other": "Perianal: 3 cm fluctuant, erythematous, tender swelling at 5 o’clock, 2 cm from the anal verge; no surrounding cellulitis, no crepitus. DRE: tender at 5 o’clock, no mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 84,
+        "systolicBp": 128,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 37.3,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 11.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 38,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 5.6,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Construction worker. Smoker, 10 a day.",
+    "confirmedDiagnosis": {
+      "name": "Perianal abscess",
+      "icd10": "K61.0",
+      "paneDiseaseId": "perianal_abscess",
+      "assessmentText": "Uncomplicated perianal abscess at 5 o’clock. Incision and drainage today. No cellulitis, not immunosuppressed."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "perianal pain",
+          "perianal lump"
+        ],
+        "examFindings": {
+          "perineal": [
+            "Erythema",
+            "Mass / swelling"
+          ],
+          "anal": [
+            "Perianal abscess",
+            "Tenderness DRE"
+          ]
+        },
+        "paneAnswers": {
+          "anal_pain": true,
+          "perianal_swelling": true
+        },
+        "durationDays": 3,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-abscess-top3",
+          "severity": "critical",
+          "match": [
+            "perianal abscess",
+            "anorectal abscess",
+            "perianal sepsis",
+            "ischiorectal abscess",
+            "icd:K61"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-same-day",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "ascrs-abscess-2022"
+        ],
+        "note": "ASCRS 2022: prompt drainage. A routine booking for an undrained abscess risks spread (ischiorectal/horseshoe, necrotising infection).",
+        "unverified": [
+          "ios"
+        ]
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-drainage",
+          "severity": "critical",
+          "match": [
+            "incision and drainage",
+            "re:\\bi&d\\b",
+            "re:\\bi & d\\b",
+            "drainage"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-routine-antibiotics",
+          "severity": "quality",
+          "match": [
+            "antibiotic",
+            "co-amoxiclav",
+            "amoxicillin",
+            "metronidazole",
+            "piperacillin",
+            "flucloxacillin",
+            "clindamycin",
+            "ceftriaxone",
+            "meropenem"
+          ],
+          "unless": [
+            "cellulitis",
+            "immunocomp",
+            "immunosupp",
+            "sepsis",
+            "systemic",
+            "diabet",
+            "horseshoe",
+            "crohn",
+            "if "
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ],
+          "note": "ASCRS 2022: antibiotics after drainage only for cellulitis, systemic signs of infection or immunosuppression.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The perianal_abscess protocol medications include oral metronidazole \"anaerobic cover for fistula tract\" without an indication condition; ASCRS 2022 reserves antibiotics for cellulitis, systemic infection or immunosuppression."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ascrs-abscess-2022",
+      "name": "ASCRS clinical practice guidelines — anorectal abscess, fistula-in-ano and rectovaginal fistula",
+      "year": 2022,
+      "section": "Anorectal abscess: prompt incision and drainage; antibiotics selectively (cellulitis, systemic infection, immunosuppression)",
+      "citation": "Gaertner WB, Burgess PL, Davids JS, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of anorectal abscess, fistula-in-ano, and rectovaginal fistula. Dis Colon Rectum. 2022;65:964–985.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base anorectal sepsis case. Web: there is no presentation template for perianal pain, so the generic \"Other / general surgical\" template is used; the PANE features come from the site chip \"Perianal\" and the Q&A answers.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

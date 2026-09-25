@@ -1,0 +1,433 @@
+{
+  "schemaVersion": 1,
+  "id": "uc-toxic-megacolon",
+  "condition": "Toxic megacolon complicating ulcerative colitis",
+  "category": "gi-emergency",
+  "permutationOf": "uc-acute-severe-truelove-witts",
+  "permutationLabel": "Toxic megacolon (colonic dilatation with systemic toxicity)",
+  "summary": "34-year-old man with a UC flare now distended with fewer stools, T 38.9, HR 126, BP 94/58; AXR transverse colon 7.8 cm with mucosal islands. Emergency: resuscitation, IV steroids and antibiotics, urgent colorectal surgery (subtotal colectomy); colonoscopy and antimotility drugs contraindicated.",
+  "tags": [
+    "ibd",
+    "ulcerative-colitis",
+    "toxic-megacolon",
+    "must-not-miss",
+    "sepsis"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 34,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 68
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Swollen painful abdomen with bloody diarrhoea",
+    "hpi": "Ulcerative colitis (pancolitis) for 6 years. Six-day flare with bloody diarrhoea; took loperamide for the last 2 days and the stools have slowed, but the abdomen has become swollen and painful. Feels very unwell and shivery.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "Diffuse"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "associations": [
+        "Rectal bleeding",
+        "Fever",
+        "Rigors"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "bloody diarrhoea",
+      "abdominal distension",
+      "abdominal pain",
+      "fever",
+      "rigors"
+    ],
+    "negatives": [
+      "vomiting"
+    ],
+    "exam": {
+      "general": "Toxic, flushed. Temperature 38.9°C, HR 126, BP 94/58, RR 24.",
+      "abdomen": "Tensely distended, diffusely tender with guarding over the transverse colon, tympanic, bowel sounds reduced. No generalised rigidity."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 126,
+        "systolicBp": 94,
+        "diastolicBp": 58,
+        "respiratoryRate": 24,
+        "temperatureC": 38.9,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 9.2,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 18.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 520,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 210,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 22,
+        "unit": "g/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 3.0,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 110,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.8,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "AXR",
+        "modality": "XR",
+        "region": "Abdomen",
+        "result": "Transverse colon dilated to 7.8 cm with mucosal islands and loss of haustra. No free gas on erect CXR.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "Ulcerative colitis (pancolitis)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Mesalazine",
+        "dose": "4.8 g",
+        "frequency": "OD",
+        "indication": "Ulcerative colitis"
+      },
+      {
+        "drug": "Loperamide",
+        "dose": "2 mg",
+        "frequency": "PRN (self-started)",
+        "indication": "Diarrhoea"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Chef. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Toxic megacolon — acute severe ulcerative colitis",
+      "icd10": "K51.0",
+      "paneDiseaseId": "ulcerative_colitis",
+      "assessmentText": "Toxic megacolon complicating acute severe ulcerative colitis: transverse colon 7.8 cm with systemic toxicity. Emergency surgical review for subtotal colectomy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "diarrhoea",
+          "rectal bleeding",
+          "abdominal distension",
+          "abdominal pain",
+          "fever",
+          "rigors"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Diffuse",
+            "> 3 days",
+            "Constant",
+            "Severe (7–9)",
+            "Distension",
+            "Fever",
+            "Rigors",
+            "PR bleeding",
+            "Worsening over time"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Diffuse tenderness",
+            "Guarding"
+          ]
+        },
+        "paneAnswers": {
+          "pr_bleeding": true,
+          "abdominal_distension": true,
+          "fever": true,
+          "guarding": true
+        },
+        "durationDays": 6,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-perforation",
+          "severity": "quality",
+          "match": [
+            "perforat",
+            "toxic megacolon",
+            "megacolon"
+          ],
+          "guidelineRefs": [
+            "ecco-uc-surg-2022"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3 is appendicitis/cholangitis/cholecystitis for a distended toxic colitis; no toxic megacolon/perforation disease and the UC prior is not reached from \"Acute abdominal pain\"."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "ecco-uc-surg-2022",
+          "bsg-ibd-2019"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-toxic",
+          "severity": "critical",
+          "match": [
+            "emergency",
+            "sepsis",
+            "tachycardia",
+            "hypotension",
+            "megacolon"
+          ],
+          "guidelineRefs": [
+            "bsg-ibd-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-megacolon",
+          "severity": "critical",
+          "match": [
+            "megacolon"
+          ],
+          "guidelineRefs": [
+            "bsg-ibd-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustExclude": [
+        {
+          "id": "inv-no-colonoscopy",
+          "severity": "critical",
+          "match": [
+            "colonoscop"
+          ],
+          "unless": [
+            "avoid",
+            "contraindicat",
+            "do not",
+            "stop",
+            "caution",
+            "hold",
+            "withhold",
+            "surveillance"
+          ],
+          "sources": [
+            "web.plan",
+            "web.pane.seeded",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "bsg-ibd-2019"
+          ],
+          "note": "Colonoscopy (with insufflation) is contraindicated in toxic megacolon — perforation risk.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The ulcerative_colitis protocol lists \"Flexible sigmoidoscopy / colonoscopy + biopsies\" as an urgent investigation with no severity condition, so the documented plan orders a colonoscopy in toxic megacolon.",
+          "proposedFix": "Mark the UC colonoscopy investigation conditional (\"not in acute severe colitis/toxic megacolon — limited unprepared flexible sigmoidoscopy only\") and add a toxic-megacolon dx-variant that drops endoscopy."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-colectomy",
+          "severity": "critical",
+          "match": [
+            "subtotal colectomy",
+            "total colectomy",
+            "colectomy"
+          ],
+          "guidelineRefs": [
+            "ecco-uc-surg-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-iv-steroids",
+          "severity": "quality",
+          "match": [
+            "re:hydrocortisone[^.;\\n]{0,30}\\biv\\b",
+            "re:\\biv\\b[^.;\\n]{0,20}hydrocortisone",
+            "methylprednisolone",
+            "iv steroid",
+            "intravenous steroid",
+            "intravenous corticosteroid"
+          ],
+          "guidelineRefs": [
+            "bsg-ibd-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-antimotility",
+          "severity": "critical",
+          "match": [
+            "loperamide",
+            "codeine",
+            "diphenoxylate",
+            "lomotil",
+            "ibuprofen",
+            "diclofenac",
+            "naproxen",
+            "nsaid",
+            "hyoscine",
+            "buscopan"
+          ],
+          "unless": [
+            "avoid",
+            "contraindicat",
+            "do not",
+            "stop",
+            "caution",
+            "hold",
+            "withhold"
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "bsg-ibd-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-ibd-2019",
+      "name": "BSG consensus guidelines — management of inflammatory bowel disease in adults",
+      "year": 2019,
+      "section": "Toxic megacolon: colonic dilatation with systemic toxicity; stop antimotility/opioids/anticholinergics; urgent surgical opinion",
+      "citation": "Lamb CA, Kennedy NA, Raine T, et al. British Society of Gastroenterology consensus guidelines on the management of inflammatory bowel disease in adults. Gut. 2019;68(Suppl 3):s1–s106.",
+      "verified": false
+    },
+    {
+      "id": "ecco-uc-surg-2022",
+      "name": "ECCO guidelines on therapeutics in ulcerative colitis — surgical treatment",
+      "year": 2022,
+      "section": "Emergency subtotal colectomy with end ileostomy for toxic megacolon, perforation or haemorrhage",
+      "citation": "Spinelli A, Bonovas S, Burisch J, et al. ECCO guidelines on therapeutics in ulcerative colitis: surgical treatment. J Crohns Colitis. 2022;16:179–189.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: complication of the base case (antimotility drug as the precipitant). Critical checks: emergency level, colectomy in the plan, and that the plan does not order a colonoscopy (the UC protocol lists \"flexible sigmoidoscopy / colonoscopy\" as an urgent investigation).",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

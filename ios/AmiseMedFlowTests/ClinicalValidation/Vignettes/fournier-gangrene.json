@@ -1,0 +1,378 @@
+{
+  "schemaVersion": 1,
+  "id": "fournier-gangrene",
+  "condition": "Fournier’s gangrene (necrotising soft-tissue infection of the perineum)",
+  "category": "anorectal",
+  "permutationOf": null,
+  "summary": "61-year-old man with diabetes: 3 days of perineal and scrotal pain and swelling, crepitus, dusky skin, T 38.9, HR 118, BP 94/60, glucose 24, WBC 24, Na 131, creatinine 160, CRP 280. Must not miss: resuscitation, broad-spectrum IV antibiotics and emergency radical debridement.",
+  "tags": [
+    "anorectal",
+    "nsti",
+    "must-not-miss",
+    "sepsis",
+    "diabetes"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 61,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 170,
+      "weightKg": 101
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Severe pain and swelling between the legs",
+    "hpi": "Three days of pain in the perineum and scrotum, initially thought to be a boil near the anus. Now rapidly spreading swelling and redness onto the scrotum with dark patches, pain far worse than it looks, fevers and rigors, feels faint. Type 2 diabetes, poorly controlled; drinks heavily.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Perineal",
+        "Perianal"
+      ],
+      "character": [
+        "Burning"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "severity": [
+        "Worst (10/10)"
+      ]
+    },
+    "symptoms": [
+      "perianal pain",
+      "scrotal swelling",
+      "fever",
+      "rigors",
+      "cellulitis"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Toxic, confused at times. Temperature 38.9°C, HR 118, BP 94/60, RR 26. Pain out of proportion.",
+      "abdomen": "Soft, non-tender.",
+      "skin": "Perineum and scrotum: tense oedema, spreading erythema with dusky necrotic patches, crepitus on palpation, foul-smelling discharge near the anus.",
+      "other": "Perianal: small discharging abscess at 7 o’clock; necrotic skin extending to the scrotum."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 118,
+        "systolicBp": 94,
+        "diastolicBp": 60,
+        "respiratoryRate": 26,
+        "temperatureC": 38.9,
+        "spo2": 94,
+        "avpu": "C",
+        "onSupplementalO2": false,
+        "glucoseMmol": 24.1
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 24.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 280,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 131,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 160,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 24.1,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 12.8,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 4.2,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 140,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Alcohol excess",
+      "Obesity"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Fisherman. Drinks 40 units a week. Smoker.",
+    "scoreForms": {
+      "qsofa": {
+        "alteredMentation": true,
+        "rrAtLeast22": true,
+        "sbpAtMost100": true,
+        "suspectedInfection": true
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Fournier’s gangrene",
+      "icd10": "N49.3",
+      "assessmentText": "Fournier’s gangrene (necrotising fasciitis of the perineum and scrotum) from a perianal source, with septic shock. Resuscitation, broad-spectrum IV antibiotics, emergency radical debridement."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "perianal pain",
+          "scrotal swelling",
+          "fever",
+          "rigors",
+          "cellulitis",
+          "confusion"
+        ],
+        "examFindings": {
+          "perineal": [
+            "Erythema",
+            "Mass / swelling",
+            "Discharge"
+          ],
+          "genital": [
+            "Scrotal swelling"
+          ],
+          "wound": [
+            "Necrotic",
+            "Cellulitis",
+            "Malodorous"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "paneAnswers": {
+          "crepitus_soft_tissue": true,
+          "erythema_surrounding": true,
+          "fever": true,
+          "haemodynamic_instability": true,
+          "anal_pain": true,
+          "scrotal_swelling": true
+        },
+        "durationDays": 3,
+        "painScore": 10
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-nsti-top3",
+          "severity": "critical",
+          "match": [
+            "fournier",
+            "necrotising",
+            "necrotizing",
+            "nsti"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-ssti-2018"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE’s necrotising_fasciitis disease is not reached from perineal presentations (the only anorectal features are anal_pain/perianal_swelling; the CC template is generic; crepitus/erythema answers do not outweigh the anorectal priors); symptom inference does rank Fournier’s first, but it is a secondary view.",
+          "proposedFix": "Add Fournier’s gangrene as a PANE disease (or map perineal site + crepitus/necrosis/pain-out-of-proportion + SIRS to necrotising_fasciitis) and give N49.3/perineal NSTI the necrotising_fasciitis protocol; add a safety prompt for \"perianal/perineal infection + pain out of proportion or spreading to scrotum/perineum + SIRS\" → emergency surgical exploration."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-ssti-2018"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-nsti-or-sepsis",
+          "severity": "critical",
+          "match": [
+            "necrotising",
+            "necrotizing",
+            "fournier",
+            "sepsis",
+            "emergency"
+          ],
+          "guidelineRefs": [
+            "wses-ssti-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-lrinec",
+          "severity": "quality",
+          "score": "lrinec",
+          "guidelineRefs": [
+            "wong-lrinec-2004",
+            "wses-ssti-2018"
+          ],
+          "note": "LRINEC supports but must not delay or exclude the diagnosis (WSES 2018).",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No LRINEC calculator or CDS rule on web (Wagner and AUDIT are suggested instead)."
+        }
+      ],
+      "values": [
+        {
+          "id": "score-qsofa-calculator",
+          "severity": "quality",
+          "score": "qsofa",
+          "mode": "calculator",
+          "equals": 3,
+          "platforms": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "wses-ssti-2018"
+          ],
+          "note": "Altered mentation + RR ≥ 22 + SBP ≤ 100 = 3 (Sepsis-3).",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-debridement",
+          "severity": "critical",
+          "match": [
+            "debridement",
+            "debride"
+          ],
+          "guidelineRefs": [
+            "wses-ssti-2018"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "N49.3 (Fournier gangrene) has no protocol (necrotising_fasciitis is keyed to M72.6), so no plan contains debridement; the sepsis prompt gives antibiotics only.",
+          "proposedFix": "Add Fournier’s gangrene as a PANE disease (or map perineal site + crepitus/necrosis/pain-out-of-proportion + SIRS to necrotising_fasciitis) and give N49.3/perineal NSTI the necrotising_fasciitis protocol; add a safety prompt for \"perianal/perineal infection + pain out of proportion or spreading to scrotum/perineum + SIRS\" → emergency surgical exploration."
+        },
+        {
+          "id": "mgmt-broad-abx",
+          "severity": "critical",
+          "match": [
+            "meropenem",
+            "piperacillin",
+            "clindamycin",
+            "vancomycin",
+            "broad-spectrum",
+            "broad spectrum"
+          ],
+          "guidelineRefs": [
+            "wses-ssti-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-ssti-2018",
+      "name": "WSES/SIS-E consensus — management of skin and soft-tissue infections (incl. necrotising soft-tissue infection, Fournier’s gangrene)",
+      "year": 2018,
+      "section": "Necrotising soft-tissue infection/Fournier’s gangrene: early aggressive surgical debridement, broad-spectrum antibiotics, resuscitation; LRINEC should not be used to rule out",
+      "citation": "Sartelli M, Guirao X, Hardcastle TC, et al. 2018 WSES/SIS-E consensus conference: recommendations for the management of skin and soft-tissue infections. World J Emerg Surg. 2018;13:58.",
+      "verified": false
+    },
+    {
+      "id": "wong-lrinec-2004",
+      "name": "LRINEC score (Laboratory Risk Indicator for Necrotizing Fasciitis)",
+      "year": 2004,
+      "section": "LRINEC items: CRP, WBC, Hb, Na, creatinine, glucose",
+      "citation": "Wong CH, Khin LW, Heng KS, Tan KC, Low CO. The LRINEC score: a tool for distinguishing necrotizing fasciitis from other soft tissue infections. Crit Care Med. 2004;32:1535–1541.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base must-not-miss case. The ICD N49.3 (Fournier gangrene) is what the surgeon picks. LRINEC here: CRP ≥ 150 (4) + WBC 15–25 (1) + Hb 11–13.5 (1) + Na < 135 (2) + creatinine > 141 (2) + glucose > 10 (1) = 11 (not asserted as a value; no calculator exists).",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

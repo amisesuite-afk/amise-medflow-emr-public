@@ -1,0 +1,450 @@
+{
+  "schemaVersion": 1,
+  "id": "crohns-ileocaecal-abscess",
+  "condition": "Crohn’s disease with ileocaecal abscess",
+  "category": "colorectal",
+  "permutationOf": null,
+  "summary": "24-year-old man with ileocolonic Crohn’s on adalimumab and azathioprine: 5 days RIF pain, fever 38.7, tender mass; CT 4.5 cm ileocaecal abscess. IV antibiotics and percutaneous drainage, hold the biologic, avoid systemic steroids with an undrained abscess, then plan (delayed) ileocaecal resection.",
+  "tags": [
+    "ibd",
+    "crohns",
+    "abscess",
+    "immunosuppressed",
+    "sepsis"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 24,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 180,
+      "weightKg": 64
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right lower abdominal pain and fever",
+    "hpi": "Ileocolonic Crohn’s disease diagnosed at 19, on adalimumab and azathioprine. Five days of worsening right lower abdominal pain, fevers and sweats, off food. Bowels loose 3 times a day, no blood. Lost 3 kg.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "RLQ"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "associations": [
+        "Fever",
+        "Anorexia",
+        "Weight loss"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "fever",
+      "anorexia",
+      "diarrhoea",
+      "weight loss"
+    ],
+    "negatives": [
+      "rectal bleeding",
+      "vomiting"
+    ],
+    "exam": {
+      "general": "Unwell. Temperature 38.7°C, HR 108, BP 118/70.",
+      "abdomen": "Tender, firm 6 cm mass in the right iliac fossa with localised guarding; no generalised peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 108,
+        "systolicBp": 118,
+        "diastolicBp": 70,
+        "respiratoryRate": 20,
+        "temperatureC": 38.7,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.6,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 16.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 520,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 186,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 30,
+        "unit": "g/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 78,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Thickened terminal ileum (25 cm) with a 4.5 × 4 cm rim-enhancing ileocaecal abscess. No free gas. No obstruction.",
+        "minutesAgo": 40
+      }
+    ],
+    "comorbidities": [
+      "Crohn’s disease (ileocolonic)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Adalimumab",
+        "dose": "40 mg",
+        "frequency": "Every 2 weeks SC",
+        "indication": "Crohn’s disease"
+      },
+      {
+        "drug": "Azathioprine",
+        "dose": "125 mg",
+        "frequency": "OD",
+        "indication": "Crohn’s disease"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Student. Smoker, 5 a day.",
+    "confirmedDiagnosis": {
+      "name": "Crohn’s disease with ileocaecal abscess",
+      "icd10": "K50.8",
+      "paneDiseaseId": "crohns_disease",
+      "assessmentText": "Ileocolonic Crohn’s disease complicated by a 4.5 cm ileocaecal abscess, on adalimumab and azathioprine. IV antibiotics and percutaneous drainage; hold biologic; avoid steroids."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "fever",
+          "anorexia",
+          "diarrhoea",
+          "weight loss"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RLQ",
+            "> 3 days",
+            "Constant",
+            "Severe (7–9)",
+            "Fever",
+            "Anorexia",
+            "Diarrhoea",
+            "Worsening over time"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RLQ",
+            "Mass palpable",
+            "Guarding"
+          ]
+        },
+        "paneAnswers": {
+          "rlq_pain": true,
+          "fever": true,
+          "change_bowel_habit": true,
+          "weight_loss": true
+        },
+        "durationDays": 5,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-crohn-top3",
+          "severity": "quality",
+          "match": [
+            "crohn",
+            "icd:K50"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "ecco-cd-surg-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-admit",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "ecco-cd-surg-2020"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustNotAlarm": [
+        {
+          "id": "no-alarm-pneumoperitoneum",
+          "severity": "quality",
+          "match": [
+            "pneumoperitoneum",
+            "free air",
+            "free gas"
+          ],
+          "sources": [
+            "web.clinicalPrompts.safety",
+            "ios.textParser"
+          ],
+          "guidelineRefs": [
+            "ecco-cd-surg-2020"
+          ],
+          "note": "The CT report says \"No free gas\"; a pneumoperitoneum/emergency-laparotomy alarm is a false positive from negated text.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "computeClinicalPrompts \"Pneumoperitoneum on imaging → emergency laparotomy\" fires on the CT text \"No free gas\" (hasRadResult substring match, no negation).",
+          "proposedFix": "Add negation handling to hasRadResult (no/without/absent … free gas/free air)."
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-immunosuppressed",
+          "severity": "quality",
+          "match": [
+            "adalimumab",
+            "azathioprine",
+            "immunosupp",
+            "biologic"
+          ],
+          "guidelineRefs": [
+            "ecco-cd-surg-2020"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Adalimumab/azathioprine are not surfaced as immunosuppression (the triage comorbidity regex looks for \"immunosuppressed/steroid/chemotherapy\" in the comorbidity text only)."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-drainage",
+          "severity": "critical",
+          "match": [
+            "percutaneous drain",
+            "ct-guided drain",
+            "radiological drain",
+            "image-guided drain",
+            "re:\\bdrainage\\b"
+          ],
+          "guidelineRefs": [
+            "ecco-cd-surg-2020"
+          ],
+          "note": "ECCO 2020: intra-abdominal abscess → antibiotics and percutaneous drainage where feasible, then elective resection.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The crohns_disease protocol says \"Abscess or fistula — urgent imaging and intervention\" (red flag) but no step for percutaneous drainage; the management panel shows the appendicitis protocol because PANE ranks appendicitis first (0.71).",
+          "proposedFix": "Add \"intra-abdominal abscess: IV antibiotics + percutaneous drainage, then delayed resection; wean steroids\" to the crohns_disease protocol (ECCO 2020)."
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "piperacillin",
+            "co-amoxiclav",
+            "ceftriaxone",
+            "meropenem",
+            "ertapenem",
+            "re:metronidazole[^.;\\n]{0,30}\\biv\\b"
+          ],
+          "unless": [
+            "prophylaxis at induction",
+            "perianal"
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "ecco-cd-surg-2020"
+          ],
+          "note": "Systemic (IV) antibiotics for the abscess in the documented plan for the confirmed diagnosis; oral metronidazole for perianal disease suppression does not count, nor does the appendicitis panel shown because PANE ranks appendicitis first.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-resection-plan",
+          "severity": "quality",
+          "match": [
+            "ileocaecal resection",
+            "ileocolic resection",
+            "ileocecal resection",
+            "right hemicolectomy"
+          ],
+          "guidelineRefs": [
+            "ecco-cd-surg-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "sources": [
+            "web.plan",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "ecco-cd-surg-2020"
+          ],
+          "note": "A Crohn’s ileocaecal abscess is drained, then resected electively (ileocaecal resection); an emergency appendicectomy is the wrong operation.",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web computeClinicalPrompts fires \"Appendicitis — emergency surgical indication\" and adds the full \"LAPAROSCOPIC APPENDICECTOMY — OPERATIVE PLAN\" whenever examAbdomen contains \"guarding\" or \"rebound\" — including negated text (\"no guarding\") and localised guarding from other causes.",
+          "proposedFix": "Gate the appendicectomy operative-plan prompt on the confirmed working diagnosis (appendicitis) or imaging, not on the words \"guarding\"/\"rebound\"; add negation handling (no/without/absent) to exam() matching."
+        },
+        {
+          "id": "mgmt-no-steroids",
+          "severity": "critical",
+          "match": [
+            "prednisolone",
+            "hydrocortisone",
+            "budesonide",
+            "methylprednisolone"
+          ],
+          "unless": [
+            "taper",
+            "wean",
+            "avoid",
+            "stop",
+            "reduce",
+            "stress dose"
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "ios.radiation",
+            "ios.soap"
+          ],
+          "guidelineRefs": [
+            "ecco-cd-surg-2020"
+          ],
+          "note": "Systemic corticosteroids with an undrained intra-abdominal abscess increase septic and post-operative complications (ECCO 2020).",
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The crohns_disease protocol medications (prednisolone, budesonide, IV hydrocortisone \"flare induction\") are offered unconditionally, including for a septic abscess.",
+          "proposedFix": "Condition the Crohn’s steroid medications on \"no abscess/sepsis\" and add an explicit caution (ECCO 2020)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ecco-cd-surg-2020",
+      "name": "ECCO guidelines on therapeutics in Crohn’s disease — surgical treatment",
+      "year": 2020,
+      "section": "Intra-abdominal abscess: antibiotics + percutaneous drainage, then delayed resection; steroids increase post-operative complications and should be weaned before surgery",
+      "citation": "Adamina M, Bonovas S, Raine T, et al. ECCO guidelines on therapeutics in Crohn’s disease: surgical treatment. J Crohns Colitis. 2020;14:155–168.",
+      "verified": false
+    },
+    {
+      "id": "bsg-ibd-2019",
+      "name": "BSG consensus guidelines — management of inflammatory bowel disease in adults",
+      "year": 2019,
+      "section": "Exclude abscess before starting or continuing anti-TNF; drain sepsis first",
+      "citation": "Lamb CA, Kennedy NA, Raine T, et al. British Society of Gastroenterology consensus guidelines on the management of inflammatory bowel disease in adults. Gut. 2019;68(Suppl 3):s1–s106.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base Crohn’s case: penetrating disease with an abscess on imaging, on a biologic and a thiopurine. The critical risk is a flare plan (steroids) applied to a septic complication.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

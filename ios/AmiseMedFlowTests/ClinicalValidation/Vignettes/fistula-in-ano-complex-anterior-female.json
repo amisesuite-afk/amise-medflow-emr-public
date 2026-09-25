@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "id": "fistula-in-ano-complex-anterior-female",
+  "condition": "Fistula-in-ano — complex anterior transsphincteric (female)",
+  "category": "anorectal",
+  "permutationOf": "fistula-in-ano-simple-low",
+  "permutationLabel": "Complex: anterior, female, high transsphincteric, obstetric injury",
+  "summary": "38-year-old woman with an anterior fistula after two vaginal deliveries (one third-degree tear); probe suggests a high transsphincteric tract. MRI pelvis to map the tract; loose seton / sphincter-preserving repair; no primary fistulotomy.",
+  "tags": [
+    "anorectal",
+    "fistula",
+    "complex",
+    "continence-risk"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 38,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 162,
+      "weightKg": 68
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Recurrent discharge in front of the back passage",
+    "hpi": "Two drained abscesses in 18 months; persistent discharge from an opening in front of the anus. Two vaginal deliveries, the second with a third-degree tear; occasional urgency and flatus incontinence already. No IBD symptoms.",
+    "socrates": {
+      "onset": [
+        "Over a year"
+      ],
+      "site": [
+        "Anterior",
+        "Perianal"
+      ],
+      "associations": [
+        "Soiling"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "anal discharge",
+      "perianal pain",
+      "faecal urgency"
+    ],
+    "negatives": [
+      "rectal bleeding",
+      "weight loss",
+      "diarrhoea"
+    ],
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Soft.",
+      "other": "Perianal: external opening at 1 o’clock, 3 cm from the verge. DRE: reduced squeeze anteriorly; tract felt passing high towards the anorectal ring."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 70,
+        "systolicBp": 118,
+        "diastolicBp": 74,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "comorbidities": [
+      "Obstetric anal sphincter injury (third-degree tear)"
+    ],
+    "surgicalHistory": [
+      "Drainage of perianal abscess ×2"
+    ],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Receptionist.",
+    "confirmedDiagnosis": {
+      "name": "Complex anterior transsphincteric fistula-in-ano",
+      "icd10": "K60.3",
+      "assessmentText": "Complex fistula-in-ano: anterior, female, high transsphincteric, previous obstetric sphincter injury. MRI pelvis; loose seton; sphincter-preserving repair."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "anal discharge",
+          "perianal pain",
+          "faecal urgency"
+        ],
+        "examFindings": {
+          "perineal": [
+            "Fistula orifice",
+            "Discharge"
+          ],
+          "anal": [
+            "Fistula",
+            "Reduced tone"
+          ]
+        },
+        "paneAnswers": {
+          "discharge_perianal": true,
+          "anal_pain": true
+        },
+        "durationDays": 540,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-mri-pelvis",
+          "severity": "critical",
+          "match": [
+            "mri pelvis",
+            "pelvic mri",
+            "re:mri[^.;\\n]{0,20}(pelvi|fistula|perian)",
+            "endoanal ultrasound"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ],
+          "note": "Complex/anterior fistula in a woman: MRI (or endoanal ultrasound) before any division of sphincter.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-seton-or-sparing",
+          "severity": "critical",
+          "match": [
+            "seton",
+            "advancement flap",
+            "lift",
+            "ligation of intersphincteric"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "getProtocolByIcd(\"K60.3\") returns the anal_fissure protocol (prefix K60 covers fissure K60.0–K60.2 and fistula K60.3–K60.5); there is no fistula-in-ano protocol, and the perianal_abscess protocol (which has fistula steps) is keyed to K61."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-primary-fistulotomy",
+          "severity": "critical",
+          "match": [
+            "fistulotomy",
+            "lay-open",
+            "lay open",
+            "laying open"
+          ],
+          "unless": [
+            "simple",
+            "low",
+            "avoid",
+            "not "
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-sphincterotomy",
+          "severity": "critical",
+          "match": [
+            "sphincterotomy"
+          ],
+          "unless": [
+            "avoid",
+            "not "
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "ios.radiation",
+            "ios.soap"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "getProtocolByIcd(\"K60.3\") returns the anal_fissure protocol (prefix K60 covers fissure K60.0–K60.2 and fistula K60.3–K60.5); there is no fistula-in-ano protocol, and the perianal_abscess protocol (which has fistula steps) is keyed to K61. A lateral internal sphincterotomy in a woman with a complex anterior fistula and an obstetric sphincter injury risks incontinence."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ascrs-abscess-2022",
+      "name": "ASCRS clinical practice guidelines — anorectal abscess, fistula-in-ano and rectovaginal fistula",
+      "year": 2022,
+      "section": "Complex fistula (anterior in women, high transsphincteric, pre-existing incontinence): imaging and sphincter-preserving repair; avoid fistulotomy",
+      "citation": "Gaertner WB, Burgess PL, Davids JS, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of anorectal abscess, fistula-in-ano, and rectovaginal fistula. Dis Colon Rectum. 2022;65:964–985.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: every complex-fistula feature (anterior, female, high tract, prior obstetric injury, pre-existing incontinence symptoms). A fistulotomy here risks incontinence.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}
