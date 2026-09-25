@@ -44,7 +44,7 @@ final class CalendarService: ObservableObject {
                 }
             }
             if granted {
-                loadEvents()
+                await loadEvents()
             } else {
                 error = "Calendar access denied — enable in Settings → Privacy & Security → Calendars."
             }
@@ -84,7 +84,7 @@ final class CalendarService: ObservableObject {
         event.notes = notes.isEmpty ? nil : notes
         event.calendar = calendar ?? store.defaultCalendarForNewEvents
         try store.save(event, span: .thisEvent)
-        loadEvents()
+        await loadEvents()
         return event
     }
 
@@ -113,7 +113,7 @@ final class CalendarService: ObservableObject {
         if !notes.isEmpty { event.notes = notes }
         event.calendar = store.defaultCalendarForNewEvents
         try store.save(event, span: .thisEvent)
-        loadEvents()
+        await loadEvents()
         return event
     }
 
@@ -142,7 +142,7 @@ final class CalendarService: ObservableObject {
         if !notes.isEmpty { event.notes = notes }
         event.calendar = store.defaultCalendarForNewEvents
         try store.save(event, span: .thisEvent)
-        loadEvents()
+        await loadEvents()
         return event
     }
 
@@ -150,12 +150,52 @@ final class CalendarService: ObservableObject {
         store.calendars(for: .event).filter { $0.allowsContentModifications }
     }
 
-    private func loadEvents() {
+    // MARK: - Loading events
+
+    /// The load in flight, if any: one EventKit fetch at a time.
+    private var loadTask: Task<Void, Never>?
+    /// Set when a load is asked for while one is running: the running load does one more pass
+    /// (the store may have changed since it started, e.g. a booking was just saved).
+    private var reloadRequested = false
+
+    /// Refreshes `events`. Returns once `events` reflects the store as of this call.
+    private func loadEvents() async {
+        if let running = loadTask {
+            reloadRequested = true
+            await running.value
+            return
+        }
+        let task = Task { await self.runLoads() }
+        loadTask = task
+        await task.value
+    }
+
+    private func runLoads() async {
+        repeat {
+            reloadRequested = false
+            // Fetched off the main thread; published here, on the main actor.
+            events = await Self.fetchEvents(from: store)
+        } while reloadRequested
+        loadTask = nil
+    }
+
+    /// `events(matching:)` is synchronous and four months of events can take a while, so it runs
+    /// on a background queue (Apple: run it on another thread). Same store, so the returned
+    /// events stay usable with it.
+    nonisolated private static func fetchEvents(from store: EKEventStore) async -> [EKEvent] {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                continuation.resume(returning: Self.matchingEvents(in: store))
+            }
+        }
+    }
+
+    nonisolated private static func matchingEvents(in store: EKEventStore) -> [EKEvent] {
         // Fetch ±1 month in past, +3 months forward — anchored in ECT
         let start = Calendar.ect.date(byAdding: .month, value: -1, to: .now) ?? .now
         let end   = Calendar.ect.date(byAdding: .month, value: 3,  to: .now) ?? .now
         let pred  = store.predicateForEvents(withStart: start, end: end, calendars: nil)
-        events = store.events(matching: pred).filter { event in
+        return store.events(matching: pred).filter { event in
             // Only show events created by the current user (Dr Kabiye).
             // Shared theatre calendars from other doctors have organizer.isCurrentUser == false.
             if let org = event.organizer, !org.isCurrentUser { return false }
