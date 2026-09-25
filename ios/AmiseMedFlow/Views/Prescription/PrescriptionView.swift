@@ -7,6 +7,8 @@ struct PrescriptionView: View {
     @State var showAddSheet = false
     @State var radiationExpanded = false
     @State var dosingExpanded = false
+    /// Accessibility text sizes stack the dosing guide header and rows vertically.
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var interactions: [DrugInteractionAlert] {
         let names = patient.prescriptions.map { $0.drug }
@@ -71,6 +73,7 @@ struct PrescriptionView: View {
                             .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Share medication list")
                 }
 
                 Button { showAddSheet = true } label: {
@@ -82,6 +85,7 @@ struct PrescriptionView: View {
                         .shadow(color: AMColor.accent.opacity(0.4), radius: 8, y: 4)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Add prescription")
             }
             .padding(.trailing, 20)
             .padding(.bottom, 24)
@@ -142,37 +146,41 @@ struct PrescriptionView: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 8) {
                     Image(systemName: "wand.and.stars")
-                        .font(.system(size: 13, weight: .semibold))
+                        .scaledFont(size: 13, weight: .semibold)
                         .foregroundStyle(.teal)
+                        .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 1) {
                         Text("Suggested Management")
-                            .font(.system(size: 12, weight: .bold))
+                            .scaledFont(size: 12, weight: .bold)
                             .foregroundStyle(.teal)
                         Text(plan.conditionName)
-                            .font(.system(size: 11))
+                            .scaledFont(size: 11)
                             .foregroundStyle(.secondary)
                     }
+                    .accessibilityElement(children: .combine)
                     Spacer()
                     Button {
                         withAnimation(.easeInOut(duration: 0.2)) { radiationExpanded.toggle() }
                     } label: {
                         Image(systemName: radiationExpanded ? "chevron.up" : "chevron.down")
-                            .font(.system(size: 11))
+                            .scaledFont(size: 11)
                             .foregroundStyle(.secondary)
+                            .expandedHitArea(horizontal: 14, vertical: 14)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel(radiationExpanded ? "Show less of the plan" : "Show the full plan")
                 }
 
                 if !plan.planTemplate.isEmpty {
                     if radiationExpanded {
                         Text(plan.planTemplate)
-                            .font(.system(size: 11))
+                            .scaledFont(size: 11)
                             .foregroundStyle(.secondary)
                     } else {
                         Text(plan.planTemplate)
-                            .font(.system(size: 11))
+                            .scaledFont(size: 11)
                             .foregroundStyle(.secondary)
-                            .lineLimit(3)
+                            .lineLimit(dynamicTypeSize.isAccessibilitySize ? 6 : 3)
                     }
                 }
 
@@ -181,13 +189,16 @@ struct PrescriptionView: View {
                         ForEach(plan.redFlags.prefix(2), id: \.self) { flag in
                             HStack(alignment: .top, spacing: 5) {
                                 Image(systemName: "flag.fill")
-                                    .font(.system(size: 8))
+                                    .scaledFont(size: 8)
                                     .foregroundStyle(.red)
                                     .padding(.top, 2)
+                                    .accessibilityHidden(true)
                                 Text(flag)
-                                    .font(.system(size: 10))
+                                    .scaledFont(size: 10)
                                     .foregroundStyle(.red.opacity(0.8))
                             }
+                            .accessibilityElement(children: .combine)
+                            .accessibilityLabel(Text("Red flag: \(flag)"))
                         }
                     }
                 }

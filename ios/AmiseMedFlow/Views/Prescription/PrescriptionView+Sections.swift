@@ -23,28 +23,28 @@ extension PrescriptionView {
                 } label: {
                     HStack(spacing: 8) {
                         Image(systemName: "pills.fill")
-                            .font(.system(size: 13))
+                            .scaledFont(size: 13)
                             .foregroundStyle(.indigo)
                         VStack(alignment: .leading, spacing: 1) {
                             Text("Dosing Guide")
-                                .font(.system(size: 12, weight: .bold))
+                                .scaledFont(size: 12, weight: .bold)
                                 .foregroundStyle(.indigo)
                             Text("\(entries.count) drug\(entries.count == 1 ? "" : "s") for \(dx)")
-                                .font(.system(size: 11))
+                                .scaledFont(size: 11)
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
                         // Inline renal/hepatic lab value chips
                         if let cr = labs.creatinine, entries.contains(where: { $0.renalCaution }) {
                             Text("Cr \(Int(cr.value)) µmol/L")
-                                .font(.system(size: 9, weight: .semibold))
+                                .scaledFont(size: 9, weight: .semibold)
                                 .foregroundStyle(cr.value > 150 ? .orange : .secondary)
                                 .padding(.horizontal, 5).padding(.vertical, 2)
                                 .background((cr.value > 150 ? Color.orange : Color(.systemGray5)).opacity(cr.value > 150 ? 0.15 : 1), in: Capsule())
                         }
                         if let bil = labs.bilirubin, entries.contains(where: { $0.hepaticCaution }) {
                             Text("Bil \(Int(bil.value)) µmol/L")
-                                .font(.system(size: 9, weight: .semibold))
+                                .scaledFont(size: 9, weight: .semibold)
                                 .foregroundStyle(bil.value > 35 ? .purple : .secondary)
                                 .padding(.horizontal, 5).padding(.vertical, 2)
                                 .background((bil.value > 35 ? Color.purple : Color(.systemGray5)).opacity(bil.value > 35 ? 0.15 : 1), in: Capsule())
@@ -57,13 +57,19 @@ extension PrescriptionView {
                                 .background(Color(.systemGray5), in: Capsule())
                         }
                         Image(systemName: dosingExpanded ? "chevron.up" : "chevron.down")
-                            .font(.system(size: 11))
+                            .scaledFont(size: 11)
                             .foregroundStyle(.secondary)
                     }
+                    // Lab chips are capped so the header stays one line up to xxxLarge.
+                    .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
                     .padding(.vertical, 4)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                // The chips' orange / purple tint was the only sign of a raised value.
+                .accessibilityLabel(Text(dosingHeaderAccessibilityLabel(entries: entries, dx: dx,
+                                                                        labs: labs, weightKg: weightKg)))
+                .accessibilityValue(dosingExpanded ? "Expanded" : "Collapsed")
 
                 if dosingExpanded {
                     Divider().padding(.top, 6)
@@ -92,46 +98,78 @@ extension PrescriptionView {
         }
     }
 
+    /// "Dosing guide, 4 drugs for Cholecystitis, creatinine 180 µmol/L, raised, …".
+    func dosingHeaderAccessibilityLabel(entries: [DosingEntry], dx: String,
+                                        labs: LabPanel, weightKg: Double?) -> String {
+        var parts: [String?] = ["Dosing guide",
+                                "\(entries.count) drug\(entries.count == 1 ? "" : "s") for \(dx)"]
+        if let cr = labs.creatinine, entries.contains(where: { $0.renalCaution }) {
+            parts.append("creatinine \(Int(cr.value)) µmol/L\(cr.value > 150 ? ", raised" : "")")
+        }
+        if let bil = labs.bilirubin, entries.contains(where: { $0.hepaticCaution }) {
+            parts.append("bilirubin \(Int(bil.value)) µmol/L\(bil.value > 35 ? ", raised" : "")")
+        }
+        if let wt = weightKg { parts.append(String(format: "weight %.0f kg", wt)) }
+        return A11yLabel.joined(parts)
+    }
+
+    /// Drug + indication beside the dose, or the dose below at accessibility text sizes (so
+    /// the drug name and dose wrap instead of squeezing each other).
+    var dosingRowLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+            : AnyLayout(HStackLayout(alignment: .top, spacing: 6))
+    }
+
+    /// Caution badges in a row, or one per line at accessibility sizes.
+    var badgeLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+            : AnyLayout(HStackLayout(spacing: 5))
+    }
+
     @ViewBuilder
     func dosingRow(entry: DosingEntry, weightKg: Double?, contraindicated: Bool, labs: LabPanel = LabPanel()) -> some View {
         VStack(alignment: .leading, spacing: 5) {
-            HStack(alignment: .top, spacing: 6) {
+            dosingRowLayout {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 5) {
                         Text(entry.drug)
-                            .font(.system(size: 13, weight: .semibold))
+                            .scaledFont(size: 13, weight: .semibold)
                             .foregroundStyle(contraindicated ? .red : .primary)
                         if contraindicated {
                             Label("CONTRAINDICATED", systemImage: "exclamationmark.triangle.fill")
-                                .font(.system(size: 9, weight: .black))
+                                .scaledFont(size: 9, weight: .black)
                                 .foregroundStyle(.white)
                                 .padding(.horizontal, 5).padding(.vertical, 2)
                                 .background(Color.red, in: Capsule())
+                                .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+                                .fixedSize()
                         }
                     }
                     Text(entry.indication)
-                        .font(.system(size: 11))
+                        .scaledFont(size: 11)
                         .foregroundStyle(.secondary)
                 }
-                Spacer()
-                VStack(alignment: .trailing, spacing: 2) {
+                if !dynamicTypeSize.isAccessibilitySize { Spacer() }
+                VStack(alignment: dynamicTypeSize.isAccessibilitySize ? .leading : .trailing, spacing: 2) {
                     // Weight-adjusted dose if weight is known
                     if entry.weightBased, let wt = weightKg,
                        let num = parseWeightDoseMultiplier(entry.dose) {
                         let computed = num * wt
                         Text(String(format: "≈ %.0f mg", computed))
-                            .font(.system(size: 12, weight: .bold))
+                            .scaledFont(size: 12, weight: .bold)
                             .foregroundStyle(.indigo)
                         Text(entry.dose)
-                            .font(.system(size: 10))
+                            .scaledFont(size: 10)
                             .foregroundStyle(.tertiary)
                     } else {
                         Text(entry.dose)
-                            .font(.system(size: 12, weight: .semibold))
+                            .scaledFont(size: 12, weight: .semibold)
                             .foregroundStyle(.primary)
                     }
                     Text(entry.route)
-                        .font(.system(size: 10))
+                        .scaledFont(size: 10)
                         .foregroundStyle(.secondary)
                 }
             }
@@ -139,20 +177,21 @@ extension PrescriptionView {
             // Caution badges with actual lab values where available
             let badges = cautionBadges(entry: entry, labs: labs)
             if !badges.isEmpty {
-                HStack(spacing: 5) {
+                badgeLayout {
                     ForEach(badges, id: \.0) { (label, color) in
                         Text(label)
-                            .font(.system(size: 9, weight: .semibold))
+                            .scaledFont(size: 9, weight: .semibold)
                             .foregroundStyle(.white)
                             .padding(.horizontal, 5).padding(.vertical, 2)
                             .background(color, in: Capsule())
+                            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
                     }
                 }
             }
 
             if let note = entry.notes {
                 Text(note)
-                    .font(.system(size: 10))
+                    .scaledFont(size: 10)
                     .foregroundStyle(.orange)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -160,6 +199,7 @@ extension PrescriptionView {
         .padding(.vertical, 7)
         .padding(.horizontal, 2)
         .opacity(contraindicated ? 0.8 : 1.0)
+        .accessibilityElement(children: .combine)
     }
 
     func cautionBadges(entry: DosingEntry, labs: LabPanel = LabPanel()) -> [(String, Color)] {
@@ -208,12 +248,14 @@ extension PrescriptionView {
                         HStack(spacing: 6) {
                             Image(systemName: alert.interaction.severity.icon)
                                 .foregroundStyle(alert.interaction.severity.color)
+                                .accessibilityHidden(true)
                             Text(alert.pairDisplay)
                                 .font(.subheadline.weight(.semibold))
                             Spacer()
                             Text(alert.interaction.severity.rawValue)
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(alert.interaction.severity.color)
+                                .fixedSize()   // the severity never truncates; the drug pair wraps
                         }
                         Text(alert.interaction.clinicalEffect)
                             .font(.caption)
@@ -224,6 +266,8 @@ extension PrescriptionView {
                         InteractionRelatedEffects(related: alert.related)
                     }
                     .padding(.vertical, 2)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(Text(InteractionAccessibility.label(for: alert, includeManagement: true)))
                 }
             }
         } header: {
@@ -242,6 +286,13 @@ extension PrescriptionView {
 
     // MARK: - Prescription list
 
+    /// Duration and indication side by side, or stacked at accessibility text sizes.
+    private var rxMetaLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 2))
+            : AnyLayout(HStackLayout(spacing: 8))
+    }
+
     @ViewBuilder
     var prescriptionsSection: some View {
         Section {
@@ -257,7 +308,7 @@ extension PrescriptionView {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(rx.drug).font(.subheadline.weight(.semibold))
                         Text(rx.displayLine).font(.caption).foregroundStyle(.secondary)
-                        HStack(spacing: 8) {
+                        rxMetaLayout {
                             if !rx.duration.isEmpty {
                                 Label(rx.duration, systemImage: "clock")
                                     .font(.caption2)
@@ -272,6 +323,7 @@ extension PrescriptionView {
                         }
                     }
                     .padding(.vertical, 2)
+                    .accessibilityElement(children: .combine)
                 }
                 .onDelete { indexSet in
                     let sorted = patient.prescriptions.sorted { $0.prescribedAt > $1.prescribedAt }

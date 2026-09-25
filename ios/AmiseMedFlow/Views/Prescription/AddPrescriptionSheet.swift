@@ -52,16 +52,24 @@ struct AddPrescriptionSheet: View {
             HStack(spacing: 6) {
                 ForEach(values, id: \.self) { v in
                     let sel = v == current
-                    Button(v) { onTap(v) }
-                        .font(.caption2.weight(sel ? .semibold : .regular))
-                        .padding(.horizontal, 8).padding(.vertical, 3)
-                        .background(sel ? AMColor.accent : AMColor.accentLt, in: Capsule())
-                        .foregroundStyle(sel ? Color.white : AMColor.accent)
-                        .buttonStyle(.plain)
+                    Button { onTap(v) } label: {
+                        Text(v)
+                            .font(.caption2.weight(sel ? .semibold : .regular))
+                            .padding(.horizontal, 8).padding(.vertical, 3)
+                            .background(sel ? AMColor.accent : AMColor.accentLt, in: Capsule())
+                            .foregroundStyle(sel ? Color.white : AMColor.accent)
+                            // 44 pt tall hit area; the capsule keeps its size.
+                            .frame(minHeight: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityAddTraits(sel ? .isSelected : [])
                 }
             }
-            .padding(.vertical, 2)
         }
+        // The 44 pt chip targets reach into the row's own vertical inset, so the row keeps
+        // its height (the chips used to add 2 pt of padding here).
+        .padding(.vertical, -8)
     }
 
     var body: some View {
@@ -71,6 +79,7 @@ struct AddPrescriptionSheet: View {
                     VStack(alignment: .leading, spacing: 0) {
                         HStack {
                             Image(systemName: "pills").foregroundStyle(.secondary)
+                                .accessibilityHidden(true)
                             TextField("Search drug name", text: $drugQuery)
                                 .autocorrectionDisabled()
                                 .onChange(of: drugQuery) { _, q in
@@ -148,7 +157,8 @@ struct AddPrescriptionSheet: View {
                             HStack(alignment: .top, spacing: 8) {
                                 Image(systemName: "exclamationmark.shield.fill")
                                     .foregroundStyle(.red)
-                                    .font(.system(size: 14))
+                                    .scaledFont(size: 14)
+                                    .accessibilityHidden(true)
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text("ALLERGY: \(entry.name)")
                                         .font(.subheadline.weight(.bold))
@@ -159,6 +169,7 @@ struct AddPrescriptionSheet: View {
                                 }
                             }
                             .padding(.vertical, 2)
+                            .accessibilityElement(children: .combine)
                         }
                     } header: {
                         Label("Allergy Alert", systemImage: "exclamationmark.shield.fill")
@@ -183,6 +194,9 @@ struct AddPrescriptionSheet: View {
                                     .font(.caption)
                                 InteractionRelatedEffects(related: alert.related)
                             }
+                            // Severity is shown only by the icon's shape and colour here: speak it.
+                            .accessibilityElement(children: .ignore)
+                            .accessibilityLabel(Text(InteractionAccessibility.label(for: alert, includeManagement: false)))
                         }
                     } header: {
                         Label("Interaction Warning", systemImage: "exclamationmark.triangle.fill")

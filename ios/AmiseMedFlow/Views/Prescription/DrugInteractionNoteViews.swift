@@ -16,6 +16,7 @@ struct InteractionRelatedEffects: View {
                         Image(systemName: rule.severity.icon)
                             .font(.caption2)
                             .foregroundStyle(rule.severity.color)
+                            .accessibilityHidden(true)   // the line says the severity
                         Text(Self.line(for: rule))
                             .font(.caption2)
                             .foregroundStyle(.secondary)
@@ -47,11 +48,27 @@ struct InteractionAbsenceNote: View {
             Image(systemName: "info.circle")
                 .font(.caption2)
                 .foregroundStyle(.secondary)
+                .accessibilityHidden(true)
             Text(message)
                 .font(.caption2)
                 .italic()
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
+    }
+}
+
+/// Spoken text for one interaction alert: severity first (on screen it can be only the icon's
+/// shape and colour), then the drug pair, effect, management and the related rules.
+enum InteractionAccessibility {
+    static func label(for alert: DrugInteractionAlert, includeManagement: Bool) -> String {
+        var parts: [String?] = [
+            "\(alert.interaction.severity.rawValue) interaction",
+            alert.pairDisplay,
+            alert.interaction.clinicalEffect,
+        ]
+        if includeManagement { parts.append(alert.interaction.management) }
+        parts.append(contentsOf: alert.related.map { InteractionRelatedEffects.line(for: $0) })
+        return A11yLabel.joined(parts)
     }
 }
