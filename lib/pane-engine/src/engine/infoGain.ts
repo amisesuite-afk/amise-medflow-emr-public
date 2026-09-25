@@ -1,8 +1,9 @@
 import type { DiseaseNode, Feature, PaneState, RankedDiagnosis } from '../types.js';
 import { updatePosterior } from './bayes.js';
-import { CONVERGENCE_THRESHOLD, DEFAULT_SENSITIVITY, MAX_QUESTIONS } from '../constants.js';
+import { CONVERGENCE_THRESHOLD, MAX_QUESTIONS } from '../constants.js';
+import { featureLikelihood } from './likelihood.js';
 
-export { applyModifiers, SURGICAL_OPD_MODIFIERS } from './modifiers.js';
+export { applyModifiers, PRIOR_MODIFIERS, SURGICAL_OPD_MODIFIERS, PREGNANCY_POSSIBLE_MULTIPLIER, isApplicable } from './modifiers.js';
 export type { PriorModifier } from './modifiers.js';
 
 function entropy(posteriors: Record<string, number>): number {
@@ -13,7 +14,7 @@ function entropy(posteriors: Record<string, number>): number {
 
 function marginalPresent(state: PaneState, diseases: DiseaseNode[], featureId: string): number {
   return diseases.reduce((sum, d) => {
-    const sens = d.features[featureId] ?? DEFAULT_SENSITIVITY;
+    const sens = featureLikelihood(d, featureId);
     return sum + sens * (state.posteriors[d.id] ?? 0);
   }, 0);
 }
@@ -78,6 +79,8 @@ export function topDiagnoses(
   return diseases
     .filter(d => d.id !== '_other_')
     .map(d => ({ disease: d, probability: state.posteriors[d.id] ?? 0 }))
+    // A disease the patient is outside of (applicability → prior 0) is never listed.
+    .filter(r => r.probability > 0)
     .sort((a, b) => b.probability - a.probability)
     .slice(0, n);
 }

@@ -12,6 +12,7 @@ const _features: Feature[] = [];
 const _seenD = new Set<string>();
 const _seenF = new Set<string>();
 const _specialtyMap = new Map<string, string>();
+const _baseRates = new Map<string, number>();
 
 export function registerModule(mod: DiseaseModule): void {
   for (const d of mod.diseases) {
@@ -22,7 +23,11 @@ export function registerModule(mod: DiseaseModule): void {
     }
   }
   for (const f of mod.features) {
-    if (!_seenF.has(f.id)) { _features.push(f); _seenF.add(f.id); }
+    if (!_seenF.has(f.id)) {
+      _features.push(f);
+      _seenF.add(f.id);
+      if (typeof f.baseRate === 'number') _baseRates.set(f.id, f.baseRate);
+    }
   }
 }
 
@@ -32,3 +37,5 @@ export function getRegisteredDiseases(): DiseaseNode[] { return _diseases; }
 export function getRegisteredFeatures(): Feature[] { return _features; }
 /** Returns the specialty key for a registered disease id, or 'other' if unknown. */
 export function getDiseaseSpecialty(id: string): string { return _specialtyMap.get(id) ?? 'other'; }
+/** The declared background rate of a registered feature, or undefined. */
+export function getFeatureBaseRate(id: string): number | undefined { return _baseRates.get(id); }
