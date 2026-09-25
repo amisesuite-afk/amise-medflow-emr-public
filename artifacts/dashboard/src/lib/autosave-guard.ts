@@ -160,7 +160,81 @@ export function checkAutosave(
   return { allow: true, unblocked: false };
 }
 
-/** Stable text of a section's value, for comparing with its baseline. */
+/** Stable text of a section's value (object keys sorted), for comparing with its baseline. */
 export function fingerprint(value: unknown): string {
-  return JSON.stringify(value ?? null);
+  return JSON.stringify(value ?? null, (_k, v: unknown) => (
+    v && typeof v === 'object' && !Array.isArray(v)
+      ? Object.fromEntries(Object.entries(v as Record<string, unknown>).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)))
+      : v
+  ));
+}
+
+/** The AppContext values a section's autosave writes. */
+export interface SectionState {
+  assessment: string; differentials: string; icdCodes: string[]; cptCodes: string[];
+  plan: string;
+  medications: string[]; medicationsText: string;
+  examFindings: Record<string, string[]>; examNotes: Record<string, string>;
+  rosFindings: unknown; procedureData: unknown; traumaData: unknown;
+  hpiNotes: string;
+  orderedInvestigations: string[];
+  /** toDbEncounterType(encounterType, encounterMode). */
+  dbEncounterType: string;
+  inpatient: Record<string, string>;
+  clinicalScores: unknown; extractedLabs: unknown;
+  allergies: string;
+  surgicalHistory: string[]; surgicalNotes: string; recentSurgeryDate: string;
+  toxicHabits: string[];
+  pmhNotes: string; familyHistoryNotes: string;
+}
+
+const allergenList = (text: string) => text.split(',').map(t => t.trim()).filter(Boolean);
+
+/** A section's value as AppContext holds it (used for the baseline taken right after a load). */
+export function sectionValueFromState(section: SaveSection, s: SectionState): unknown {
+  switch (section) {
+    case 'assessment': return [s.assessment, s.differentials, s.icdCodes, s.cptCodes];
+    case 'plan': return s.plan;
+    case 'medications': return [s.medications, s.medicationsText];
+    case 'exam': return [s.examFindings, s.examNotes];
+    case 'ros': return s.rosFindings;
+    case 'procedure_data': return s.procedureData;
+    case 'trauma': return s.traumaData;
+    case 'hpi': return s.hpiNotes.trim() ? s.hpiNotes : '';
+    case 'investigations': return s.orderedInvestigations;
+    case 'encounter_type': return s.dbEncounterType;
+    case 'inpatient': return s.inpatient;
+    case 'clinical_scores': return [s.clinicalScores, s.extractedLabs];
+    case 'allergies': return allergenList(s.allergies);
+    case 'surgical_history': return [s.surgicalHistory, s.surgicalNotes, s.recentSurgeryDate];
+    case 'toxic_habits': return s.toxicHabits;
+    case 'pmh_notes': return [s.pmhNotes, s.familyHistoryNotes];
+  }
+}
+
+/**
+ * The same value read from a trackedSave descriptor payload (the shape AppContext and
+ * sync-executors.ts use), so the check when a debounced save fires compares like with like.
+ */
+export function sectionValueFromPayload(entityType: string, p: Record<string, unknown>): unknown {
+  switch (entityType) {
+    case 'assessment': return [p.diagnosis, p.differentials, p.icdCodes, p.cptCodes];
+    case 'plan': return p.description;
+    case 'medications': return [p.chipMeds, p.freeText];
+    case 'exam_findings': return [p.examFindings, p.examNotes];
+    case 'ros_findings': return p.rosFindings;
+    case 'procedure_data': return p.procedureData;
+    case 'trauma_record': return p.traumaData;
+    case 'hpi_note': return typeof p.hpiNotes === 'string' && p.hpiNotes.trim() ? p.hpiNotes : '';
+    case 'hpi_note_clear': return '';
+    case 'investigation_orders': return p.orderedInvestigations;
+    case 'encounter_type': return p.dbType;
+    case 'inpatient_details': return p.data;
+    case 'clinical_scores': return [p.clinicalScores, p.extractedLabs];
+    case 'allergies': return p.allergens;
+    case 'surgical_history': return [p.procedures, p.notes, p.recentSurgeryDate];
+    case 'toxic_habits': return p.habits;
+    case 'pmh_notes': return [p.pmhNotes, p.familyHistoryNotes];
+    default: return p;
+  }
 }
