@@ -13,6 +13,11 @@
  *
  * Run (dashboard dev server on http://localhost:3000, or E2E_BASE_URL):
  *   node e2e/encounter-switch.mjs
+ * Also (autosave guard, artifacts/dashboard/src/lib/autosave-guard.ts): loading an open encounter
+ * whose `medications` and `investigation_results` reads fail must not write either table (the
+ * failed read must not become an empty list saved over the record), shows "Couldn't load" and
+ * recovers with Retry; loading a CLOSED encounter must write nothing into it.
+ *
  * Browser resolution is the same as e2e/emr-walkthrough.mjs (sandbox Chromium when present,
  * otherwise the `playwright` root devDependency).
  */
@@ -47,7 +52,8 @@ const MOCK_PROFILE = { id: 'test-uid-123', email: 'dawit@amise.lc', full_name: '
 const PATIENT  = '11111111-1111-4111-8111-111111111111';
 const CURRENT  = '22222222-2222-4222-8222-222222222222'; // open encounter being documented
 const NEW      = '33333333-3333-4333-8333-333333333333'; // created by "+ New encounter"
-const PREVIOUS = '44444444-4444-4444-8444-444444444444'; // older closed encounter ("Load this encounter")
+const PREVIOUS = '44444444-4444-4444-8444-444444444444'; // older CLOSED encounter ("Load this encounter")
+const STORED   = '55555555-5555-4555-8555-555555555555'; // older OPEN encounter whose medicines / orders fail to load
 const OLD_MARK = 'OLD VISIT';
 const PREV_MARK = 'PREVIOUS VISIT';
 
@@ -59,6 +65,7 @@ const summary = (id, status, createdAt, dx) => ({
 
 /** Supabase writes (and the api encounter create) in the order the page sent them. */
 const writes = [];
+let failStoredReads = true;
 
 (async () => {
   const browser = await chromium.launch({
@@ -88,6 +95,15 @@ const writes = [];
       if (url.includes('/rest/v1/plans')) return j([{ description: `${PREV_MARK} PLAN`, updated_at: '2026-01-10T15:00:00.000Z' }]);
       if (url.includes('/rest/v1/medications')) return j([{ drug_name: `${PREV_MARK} Amlodipine`, dose: null }]);
     }
+    // The stored open encounter: its medicine list and investigation orders fail to load.
+    if (meth === 'GET' && url.includes(STORED)) {
+      if (failStoredReads && (url.includes('/rest/v1/medications') || url.includes('/rest/v1/investigation_results'))) {
+        return j({ code: 'XX000', message: 'internal error', details: null, hint: null }, 500);
+      }
+      if (url.includes('/rest/v1/medications')) return j([{ drug_name: 'Stored Losartan', dose: null }]);
+      if (url.includes('/rest/v1/investigation_results')) return j([{ test_name: 'Stored LFT' }]);
+      if (url.includes('/rest/v1/plans')) return j([{ description: 'Stored plan', updated_at: '2026-05-01T15:00:00.000Z' }]);
+    }
     if (meth === 'GET') return j([]);
     return j([{ updated_at: new Date().toISOString() }], 201);
   });
@@ -99,6 +115,7 @@ const writes = [];
     if (url.includes('/api/encounters/patient/')) {
       const list = [
         summary(CURRENT, 'open', now, `${OLD_MARK} DX`),
+        summary(STORED, 'open', '2026-05-01T14:00:00.000Z', 'Stored open visit'),
         summary(PREVIOUS, 'closed', '2026-01-10T14:00:00.000Z', 'Previous visit diagnosis'),
       ];
       if (created) list.unshift(summary(NEW, 'open', new Date().toISOString(), null));
@@ -163,28 +180,84 @@ const writes = [];
     else pass('Last visit medicines not copied into the new encounter');
   }
 
-  // ── 2. "Load this encounter" (stored, older) ─────────────────────────────────
+  const touches = (w, id) => w.url.includes(id) || w.body.includes(id);
+  /** The "Load this encounter" button of the history card whose text contains `text`. */
+  const loadButtonFor = text => {
+    const card = `div[contains(., "${text}") and .//button[contains(., "Load this encounter")]]`;
+    // The innermost such div is the card itself (the list container matches too).
+    return page.locator(`xpath=//${card}[not(.//${card})]//button[contains(., "Load this encounter")]`).first();
+  };
+
+  // ── 2. Load an open stored encounter whose medicines and orders fail to load ─────
   await setVisitType();
-  const before = writes.length;
-  const loadBtns = page.locator('button', { hasText: 'Load this encounter' });
-  // The list is newest first: NEW (current, no button), CURRENT, PREVIOUS — the last button is PREVIOUS.
-  if (!(await loadBtns.count())) {
-    fail('Load this encounter', 'button not found');
-  } else {
-    await loadBtns.last().click();
-    await page.waitForTimeout(5000);
-    const after = writes.slice(before);
-    const touches = (w, id) => w.url.includes(id) || w.body.includes(id);
-    // The stored encounter's content goes nowhere but the stored encounter …
-    const prevElsewhere = after.filter(w => w.body.includes(PREV_MARK) && !touches(w, PREVIOUS));
-    // … and nothing of the other encounters goes into it.
-    const intoPrev = after.filter(w => touches(w, PREVIOUS) && w.body.includes(OLD_MARK));
-    if (prevElsewhere.length) fail('Loaded encounter content stays in the loaded encounter', `${prevElsewhere.length} write(s) put it into another encounter: ${prevElsewhere.map(w => w.url.split('?')[0]).join(', ')}`);
-    else pass('Loaded encounter content is not written into the encounter that was open before');
-    if (intoPrev.length) fail('Loaded encounter starts clean', `${intoPrev.length} write(s) carried another encounter's content into it`);
-    else pass('Nothing of the other encounters is written into the loaded encounter');
-    if (after.some(w => touches(w, PREVIOUS))) pass('After loading, autosave targets the loaded encounter');
-    else fail('Load this encounter', 'no write targeted the loaded encounter — did the load switch the encounter?');
+  {
+    const before = writes.length;
+    const btn = loadButtonFor('Stored open visit');
+    if (!(await btn.count())) {
+      fail('Load stored open encounter', 'button not found');
+    } else {
+      await btn.click();
+      await page.waitForTimeout(5000); // longer than every autosave debounce
+      await page.screenshot({ path: join(OUT, 'encounter-switch-failed-load.png') });
+      const after = writes.slice(before);
+      const failedTables = after.filter(w => touches(w, STORED)
+        && (w.url.startsWith('rpc/sync_medications_list') || w.url.startsWith('investigation_results')));
+      if (failedTables.length) fail('A failed read is not written back', `${failedTables.length} write(s): ${failedTables.map(w => w.url.split('?')[0]).join(', ')}`);
+      else pass('Failed reads (medicines, investigation orders): no write to either table');
+      const unchanged = after.filter(w => touches(w, STORED));
+      if (unchanged.length) fail('Nothing unchanged is re-written after a load', unchanged.map(w => w.url.split('?')[0]).join(', '));
+      else pass('Nothing loaded and unchanged is re-written');
+      const notice = page.locator('[data-testid="record-not-loaded"]');
+      const text = (await notice.count()) ? await notice.innerText() : '';
+      if (/Medicines/.test(text) && /Investigation orders/.test(text)) pass('"Couldn\'t load" notice names the failed sections');
+      else fail('"Couldn\'t load" notice', text ? text.slice(0, 160) : 'not shown');
+
+      // Retry once the reads work again.
+      failStoredReads = false;
+      const retry = notice.locator('button', { hasText: 'Retry' });
+      const beforeRetry = writes.length;
+      if (await retry.count()) {
+        await retry.click();
+        await page.waitForTimeout(4500);
+        if (await page.locator('[data-testid="record-not-loaded"]').count()) fail('Retry', 'notice still shown after a successful retry');
+        else pass('Retry loads the missing sections and clears the notice');
+        const afterRetry = writes.slice(beforeRetry).filter(w => touches(w, STORED));
+        if (afterRetry.length) fail('Retry writes nothing', afterRetry.map(w => w.url.split('?')[0]).join(', '));
+        else pass('Retry writes nothing back');
+      } else {
+        fail('Retry', 'no Retry button');
+      }
+    }
+  }
+
+  // ── 3. Load a CLOSED stored encounter: read-only ─────────────────────────────
+  // Loading opened the Assess step; go back to the Encounter history tab.
+  await page.evaluate(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('tab', 'encounter_history');
+    window.history.pushState(null, '', url.toString());
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  });
+  await page.waitForTimeout(600);
+  await setVisitType();
+  {
+    const before = writes.length;
+    const btn = loadButtonFor('Previous visit diagnosis');
+    if (!(await btn.count())) {
+      fail('Load closed encounter', 'button not found');
+    } else {
+      await btn.click();
+      await page.waitForTimeout(5000);
+      const after = writes.slice(before);
+      const intoPrev = after.filter(w => touches(w, PREVIOUS));
+      if (intoPrev.length) fail('A closed encounter is read-only', `${intoPrev.length} write(s) into it: ${intoPrev.map(w => w.url.split('?')[0]).join(', ')}`);
+      else pass('Loading a closed encounter writes nothing into it');
+      const prevElsewhere = after.filter(w => w.body.includes(PREV_MARK) && !touches(w, PREVIOUS));
+      if (prevElsewhere.length) fail('Loaded encounter content stays in the loaded encounter', `${prevElsewhere.length} write(s) put it into another encounter: ${prevElsewhere.map(w => w.url.split('?')[0]).join(', ')}`);
+      else pass('Loaded encounter content is not written into the encounter that was open before');
+      if (await page.locator('[data-testid="encounter-read-only"]').count()) pass('Closed encounter shows the read-only notice with Reopen');
+      else fail('Closed encounter notice', 'read-only notice not shown — did the load switch the encounter?');
+    }
   }
 
   await page.screenshot({ path: join(OUT, 'encounter-switch.png') });
