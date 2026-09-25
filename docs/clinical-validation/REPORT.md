@@ -1,10 +1,10 @@
 # Clinical validation report — consultation engines vs guidelines
 
-Generated 2026-09-25T15:42:47.003Z.
+Generated 2026-09-25T15:51:32.304Z.
 
 - iOS: 243 vignette results from `docs/clinical-validation/results/ios-latest.jsonl` (generated 2026-09-25T15:32:05Z).
 - iOS differential engine mode: fallback (BayesianDiagnosisEngine could not decode DiagnosticDatabase.json and used its built-in lists).
-- Web: 317 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-25T15:42:39.380Z, clinval-web/1).
+- Web: 357 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-25T15:51:29.734Z, clinval-web/1).
 
 Status legend: PASS; FAIL — BLOCKING (critical, not flagged: fails the test run); FAIL (known gap) and
 FAIL (unverified) are reported only; "PASS (gap resolved)" means the flag can be removed from the vignette;
@@ -15,7 +15,7 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
 | ios | 243 | 1954 | 843 | 1022 | 89 | 595 | 0 | 61 | 961 | 734 |
-| web | 317 | 2488 | 1568 | 841 | 79 | 375 | 0 | 838 | 3 | 131 |
+| web | 357 | 2822 | 1749 | 994 | 79 | 484 | 0 | 991 | 3 | 131 |
 
 ## Blocking failures
 
@@ -682,6 +682,10 @@ None.
 - `acutemed-syncope-exertional-high-risk` / **mnm-cardiac-syncope** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis [known gap: Web run 2026-09-25: not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis. PANE has no syncope, arrhythmia or valve-disease node.]
 - `acutemed-syncope-exertional-high-risk` / **inv-ecg** (web, FAIL (known gap)): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 18 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). It appears only as plan text: "• 12-lead ECG — pre-operative cardiac baseline (age ≥ 40)." (web.clinicalPrompts).]
 - `adrenal-suspected-phaeochromocytoma` / **mnm-phaeochromocytoma** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no phaeochromocytoma disease (only adrenal_incidentaloma) and applied no feature; the symptom engine ranks phaeochromocytoma #1 from the chips.]
+- `aki-obstructive-chronic-retention-elderly` / **mnm-retention** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis [known gap: Web: PANE top 3 inguinal hernia, GORD, diverticulitis: the urinary chips (incontinence, poor stream, incomplete emptying) are not mapped to PANE features ("Other / general surgical" CC, no SOCRATES). Symptom inference ranks BPH #1.]
+- `aki-obstructive-chronic-retention-elderly` / **mgmt-catheterise** (web, FAIL (known gap)): no management item matched among 13 (web.clinicalPrompts) [known gap: Web: No catheter: the AKI prompt treats creatinine 486 as pre-renal ("IV fluid challenge") and refers to nephrology; the ultrasound report (1.6 L bladder, bilateral hydronephrosis) is not read, and N13.8 has no protocol.]
+- `aki-obstructive-chronic-retention-elderly` / **mgmt-post-obstructive-diuresis** (web, FAIL (known gap)): no management item matched among 13 (web.clinicalPrompts) [known gap: Web: Not mentioned (the retention protocol has it, but no protocol is active).]
+- `aki-prerenal-diarrhoea-acei-nsaid` / **mnm-aki** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, GORD, peptic ulcer. The AKI (creatinine) prompt fires.]
 - `ali-embolic-af` / **dx-ali-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Acute cholecystitis, GORD, Acute diverticulitis — PANE has no ALI disease. Symptom inference ranks ALI #1.]
 - `ali-embolic-af` / **alarm-ali** (web, FAIL (known gap)): no alarm matched among 2 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains "severe pain" (read as the acute-abdomen rule) plus age/comorbidity points.]
 - `ali-embolic-af` / **mgmt-heparin** (web, FAIL (known gap)): no management item matched among 9 (web.clinicalPrompts) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains "severe pain" (read as the acute-abdomen rule) plus age/comorbidity points.]
@@ -751,6 +755,16 @@ None.
 - `burns-inhalation-enclosed-space` / **flag-inhalation** (web, FAIL (known gap)): no red flag matched among 14 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.]
 - `burns-inhalation-enclosed-space` / **mgmt-burns-referral** (web, FAIL (known gap)): no management item matched among 20 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.]
 - `caecal-volvulus` / **mgmt-resection** (web, FAIL (known gap)): no management item matched among 35 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No right hemicolectomy/ileocaecal resection in any output; the volvulus variant reuses the generic bowel-obstruction steps.]
+- `cauda-equina-retention-presentation` / **mnm-cauda-equina** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease [known gap: Web: PANE top 3 cholecystitis, GORD, peptic ulcer; symptom inference ranks sciatica/disc disease then BPH.]
+- `cauda-equina-retention-presentation` / **level-emergency** (web, FAIL (known gap)): web.triage: routine (acuity=routine, action=routine_booking, score=0); expected ≥ emergency [known gap: Web: Triage "routine_booking" (score 0) for painless retention with saddle anaesthesia: neither "urinary retention" nor the back-pain red-flag answers are triage rules.]
+- `cauda-equina-retention-presentation` / **alarm-cauda-equina** (web, FAIL (known gap)): no alarm matched among 1 (web.clinicalPrompts.safety) [known gap: Web: No CES alarm.]
+- `cauda-equina-retention-presentation` / **inv-emergency-mri** (web, FAIL (known gap)): no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No MRI.]
+- `cauda-equina-retention-presentation` / **mgmt-spinal-surgical-referral** (web, FAIL (known gap)): no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No spinal referral.]
+- `cauda-equina-syndrome-disc` / **mnm-cauda-equina** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: Web: PANE has no spinal node; top 3 inguinal hernia, cholecystitis, GORD. Symptom inference ranks lumbar disc disease / sciatica, not CES.]
+- `cauda-equina-syndrome-disc` / **level-emergency** (web, FAIL (known gap)): web.triage: priority (acuity=review, action=priority_24_48h, score=20); expected ≥ emergency [known gap: Web: Triage "priority_24_48h" (score 20): the back-pain branch answers "Saddle anaesthesia" and "Bladder / bowel dysfunction" are collected by the picker but no triage rule reads them.]
+- `cauda-equina-syndrome-disc` / **alarm-cauda-equina** (web, FAIL (known gap)): no alarm matched among 1 (web.clinicalPrompts.safety) [known gap: Web: No CES alarm (only pre-op bloods).]
+- `cauda-equina-syndrome-disc` / **inv-emergency-mri** (web, FAIL (known gap)): no investigation matched among 17 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No MRI.]
+- `cauda-equina-syndrome-disc` / **mgmt-spinal-surgical-referral** (web, FAIL (known gap)): no management item matched among 2 (web.clinicalPrompts) [known gap: Web: No spinal referral.]
 - `cdiff-fulminant-colitis` / **mnm-cdiff** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Diverticulitis \| 2. Acute Cholecystitis \| 3. Acute Cholangitis [known gap: C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inference has only "Acute gastroenteritis".]
 - `cdiff-fulminant-colitis` / **mgmt-vancomycin-metronidazole** (web, FAIL (known gap)): no management item matched among 35 (web.clinicalPrompts) [known gap: C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inference has only "Acute gastroenteritis". The only vancomycin is IV vancomycin in the septic-shock prompt, which does not treat CDI.]
 - `cdiff-fulminant-colitis` / **mgmt-surgical-consult** (web, FAIL (known gap)): no management item matched among 35 (web.clinicalPrompts) [known gap: No surgical consultation/colectomy output for fulminant CDI (no protocol; prompts cover sepsis only).]
@@ -795,6 +809,16 @@ None.
 - `diverticulitis-immunosuppressed` / **level-at-least-urgent** (web, FAIL (known gap)): web.triage: priority (acuity=review, action=priority_24_48h, score=19); expected ≥ urgent [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Left lower abdominal discomfort' gives 'routine'. Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Systemic red flag symptom). With negation-aware matching web triage gives acuity=review, action=priority_24_48h, score=19: no triage rule covers this presentation.]
 - `diverticulitis-purulent-peritonitis` / **dx-diverticulitis-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Appendicitis; also in web.symptomInference#2, web.triageSurgical#1 [known gap: Web: PANE top 3: cholecystitis, inguinal/femoral hernia, appendicitis (features lif_pain, nausea_vomiting, fever) — the same likelihood problem as the base case.]
 - `diverticulitis-uncomplicated-outpatient` / **dx-diverticulitis-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Appendicitis; also in web.symptomInference#2, web.triageSurgical#1 [known gap: Web: PANE top 3: cholecystitis (0.13), inguinal/femoral hernia, appendicitis, with lif_pain, nausea_vomiting and fever all extracted — LIF pain does not bring diverticulitis into the top 3. Symptom inference ranks diverticulitis #2.]
+- `dka-euglycaemic-sglt2-postop` / **mnm-dka** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, cholecystitis, GORD. Symptom inference does not rank DKA in its top 5 either (glucose 10.2 is below its trigger).]
+- `dka-euglycaemic-sglt2-postop` / **alarm-ketoacidosis** (web, FAIL (known gap)): no alarm matched among 5 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Every DKA trigger keys on glucose (triage vital flag >20, prompt BGL >15, lab glucose >11). With glucose 10.2 and ketones 5.1 / pH 7.19 no DKA alarm appears; ketones and pH are not read.]
+- `dka-euglycaemic-sglt2-postop` / **mgmt-ketone-monitoring** (web, FAIL (known gap)): no management item matched among 11 (web.clinicalPrompts) [known gap: Web: No ketone action: the ketone lines belong to the glucose-triggered prompts.]
+- `dka-euglycaemic-sglt2-postop` / **mgmt-stop-sglt2** (web, FAIL (known gap)): no management item matched among 11 (web.clinicalPrompts) [known gap: Web: No output mentions the SGLT2 inhibitor; empagliflozin is not recognised by any rule.]
+- `dka-euglycaemic-sglt2-postop` / **mgmt-fixed-rate-insulin** (web, FAIL (known gap)): no management item matched among 11 (web.clinicalPrompts) [known gap: Web: No insulin plan (glucose-triggered prompts only).]
+- `dka-euglycaemic-sglt2-postop` / **mgmt-glucose-with-insulin** (web, FAIL (known gap)): no management item matched among 11 (web.clinicalPrompts) [known gap: Web: No glucose-with-insulin plan. Even when the DKA prompt fires it offers insulin without 10% glucose.]
+- `dka-pregnant-28wk` / **mnm-dka** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Peptic Ulcer Disease [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, appendicitis, peptic ulcer. Symptom inference ranks cholecystitis first and does not list DKA (the chips are abdominal).]
+- `dka-pregnant-28wk` / **mgmt-obstetric-fetal** (web, FAIL (known gap)): no management item matched among 15 (web.clinicalPrompts) [known gap: Web: No obstetric or fetal-monitoring action. The only pregnancy outputs are the triage "Pregnancy mentioned" reason and the β-hCG prompt ("If urine β-HCG positive … exclude ectopic") in a known 28-week pregnancy.]
+- `dka-type1-young-typical` / **mnm-dka** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, appendicitis, peptic ulcer. Symptom inference ranks DKA/HHS #1.]
+- `dka-type1-young-typical` / **mgmt-potassium-replacement** (web, FAIL (known gap)): no management item matched among 15 (web.clinicalPrompts) [known gap: Web: The DKA prompt says "Monitor K⁺ hourly" and "VRIII … + potassium replacement" only in the step label; the plan line added has no potassium replacement.]
 - `dvt-pregnancy-22wk` / **mgmt-no-doac-in-pregnancy** (web, FAIL (known gap)): forbidden management item present in web.plan: "[conservative] direct oral anticoagulant (doac): rivaroxaban 15 mg bd for 21 days then 20 mg od; or apixaban 10 mg bd for 7 days then 5 mg b..." (+5 more) [known gap: The DVT plan offers rivaroxaban/apixaban as first line with no pregnancy check although the record says pregnant (22 weeks) and pregnancyPossible is true; the protocol has no pregnancy-aware variant.]
 - `dvt-pregnancy-22wk` / **mgmt-no-warfarin-in-pregnancy** (web, FAIL (known gap)): forbidden management item present in web.plan: "[conservative] alternative: lmwh bridging to warfarin (target inr 2-3) if doac contraindicated (severe renal failure, pregnancy)." (+2 more) [known gap: The DVT plan says "LMWH bridging to warfarin (target INR 2–3) if DOAC contraindicated (severe renal failure, pregnancy)" and lists "Warfarin 5 mg OD — if DOAC contraindicated": read literally, it proposes warfarin in pregnancy.]
 - `dysphagia-progressive-over55` / **dx-oesophageal-cancer-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Inguinal / Femoral Hernia \| 3. Hiatus Hernia; also in web.symptomInference#1, web.passive#2 [known gap: PANE top 3: GORD, inguinal hernia, hiatus hernia. PANE never gets dysphagia_progressive: the "Dysphagia" CC template has no CC hint and the iOS dysphagia chip set has no "Dysphagia" association to scan, so only weight_loss/regurgitation/heartburn reach it; the male hernia prior modifier does the rest. Symptom inference ranks oesophageal/gastric carcinoma #1.]
@@ -822,6 +846,9 @@ None.
 - `groin-mimic-testicular-torsion` / **mnm-torsion** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Appendicitis \| 3. Epididymo-orchitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3 = inguinal hernia, appendicitis, epididymo-orchitis: testicular_torsion (prior 0.01) is outranked although testicular_pain/scrotal_swelling are applied; vomiting and "sudden" onset are not mapped to features. The safety prompt and the ICD plan (N44.00 → testicular_torsion) are correct.]
 - `groin-mimic-testicular-torsion` / **mgmt-no-hernia-repair** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• consent: hernia repair - recurrence (1-2% tapp), chronic groin pain (5%), mesh infection (< 1%), testi..." (+1 more) [known gap: Assessment ManagementPanel follows the PANE top disease (≥0.20), which is the inguinal hernia because the only groin CC template is "Inguinal / groin hernia" and site "groin" maps to groin_swelling; the surgeon's confirmed diagnosis (ICD) is not used for the panel while PANE is ≥0.20. The PANE top (inguinal hernia 0.22) drives the ManagementPanel, so an elective mesh repair is shown next to the emergency exploration plan.]
 - `h-pylori-penicillin-anaphylaxis` / **mgmt-no-amoxicillin** (web, FAIL (known gap)): forbidden management item present in web.plan: "[conservative] h. pylori eradication: triple therapy (ppi + amoxicillin + clarithromycin × 7 days); confirm eradication with breath test at 4 weeks." (+2 more) [known gap: Gastritis protocol plan line and medications list amoxicillin despite a recorded penicillin anaphylaxis (the allergy shows only in the header).]
+- `haematuria-anticoagulated-clot-retention` / **inv-cystoscopy** (web, FAIL (known gap)): no investigation matched among 25 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Web: R33.8 selects the urinary-retention protocol (catheter, tamsulosin, TWOC); the haematuria protocol (which has cystoscopy, CT urogram and a clot-retention irrigation red flag) is not used, so the haematuria is not investigated.]
+- `haematuria-visible-smoker-2ww` / **dx-haematuria-bladder-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#2 [known gap: Web: PANE top 3 inguinal hernia, cholecystitis, GORD: the haematuria chip is not mapped to a PANE feature without SOCRATES text. Symptom inference ranks bladder cancer #1.]
+- `haematuria-visible-smoker-2ww` / **level-priority** (web, FAIL (known gap)): web.triage: routine (acuity=routine, action=routine_booking, score=7); expected ≥ priority [known gap: Web: Triage "routine_booking" (score 7): there is no haematuria rule in RED_FLAGS, and the cancer screen does not trigger on visible haematuria. The protocol does say 2WW.]
 - `hernia-femoral-elderly-woman` / **dx-femoral-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis [known gap: PANE top 3 = cholecystitis, GORD, diverticulitis; femoral_hernia is not listed despite groin_swelling. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
 - `hernia-femoral-richter-obstruction` / **mnm-hernia-cause** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Bowel Obstruction; also in web.triageSurgical#1 [known gap: PANE top 3 = cholecystitis, appendicitis, bowel obstruction (from the abdominal-pain template). No hernia: groin findings are only in exam text/chips, which PANE does not read. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
 - `hernia-groin-incarcerated` / **level-at-least-urgent** (web, FAIL (known gap)): web.triage: routine (acuity=routine, action=routine_booking, score=7); expected ≥ urgent [known gap: Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Systemic red flag symptom, Vomiting or possible dehydration). With negation-aware matching web triage gives acuity=routine, action=routine_booking, score=7: no triage rule covers this presentation.]
@@ -835,6 +862,29 @@ None.
 - `hernia-umbilical-adult-elective` / **dx-umbilical-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3 = inguinal hernia (male x5), cholecystitis, GORD; umbilical_hernia (0.03, umbilical_swelling 0.90) is outranked. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
 - `hernia-umbilical-cirrhosis-ascites` / **flag-rupture-risk** (web, FAIL (known gap)): no red flag matched among 17 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: No web output mentions rupture/skin ulceration/leak for an umbilical hernia with ascites; the umbilical protocol red flag is only "Irreducible or tender".]
 - `hernia-umbilical-cirrhosis-ascites` / **mgmt-ascites-control** (web, FAIL (known gap)): no management item matched among 33 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No ascites-control / hepatology step in the umbilical_hernia protocol, the dx variant or the prompts.]
+- `hhs-elderly-type2` / **mnm-hhs** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Diverticulitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, diverticulitis, GORD. No PANE features were extracted. Symptom inference ranks DKA/HHS #1.]
+- `hhs-elderly-type2` / **inv-osmolality** (web, FAIL (known gap)): no investigation matched among 26 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No osmolality anywhere. The glucose prompt ("DKA / HHS — exclude") asks for ketones, ABG and U&E only.]
+- `hhs-elderly-type2` / **mgmt-saline-first** (web, FAIL (known gap)): no management item matched among 23 (web.clinicalPrompts) [known gap: Web: Fluids appear only as the AKI prompt's "IV fluid challenge (500ml Hartmann's)" and the tachycardia "fluid challenge 500 ml"; no 0.9% sodium chloride replacement plan.]
+- `hhs-elderly-type2` / **mgmt-no-early-fixed-rate-0-1** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• variable-rate insulin infusion (vriii): dka fixed-rate 0.1 units/kg/h. monitor k⁺ hourly." [known gap: Web: The same prompt serves DKA and HHS: "Variable-rate insulin infusion (VRIII): DKA fixed-rate 0.1 units/kg/h" is offered to a non-ketotic HHS patient (ketones 0.9).]
+- `hypercalcaemia-malignancy-bone-mets` / **mnm-hypercalcaemia** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Bowel Obstruction \| 3. Post-operative Ileus; also in web.symptomInference#1, web.passive#2 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, bowel obstruction, post-operative ileus. Symptom inference ranks hypercalcaemia #1.]
+- `hypercalcaemia-malignancy-bone-mets` / **flag-hypercalcaemia** (web, FAIL (known gap)): no red flag matched among 16 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: Web: Adjusted calcium 3.62 is not read: there is no calcium rule in clinical-inference.ts, and E83.52 has no protocol.]
+- `hypercalcaemia-malignancy-bone-mets` / **mgmt-iv-saline** (web, FAIL (known gap)): no management item matched among 12 (web.clinicalPrompts) [known gap: Web: No saline rehydration for hypercalcaemia; the only fluid line is the AKI prompt's 500 mL fluid challenge.]
+- `hypercalcaemia-malignancy-bone-mets` / **mgmt-antiresorptive** (web, FAIL (known gap)): no management item matched among 12 (web.clinicalPrompts) [known gap: Web: No bisphosphonate or denosumab.]
+- `hypercalcaemia-myeloma-aki-elderly` / **flag-hypercalcaemia** (web, FAIL (known gap)): no red flag matched among 14 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: Web: Calcium 3.21 is not read (no calcium rule). The case is steered to other cancers: "Cancer screening triggered (pancreatic) — 2-week-wait", an occult-malignancy CT and OGD.]
+- `hypercalcaemia-myeloma-aki-elderly` / **inv-myeloma-screen** (web, FAIL (known gap)): no investigation matched among 23 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No serum protein electrophoresis / free light chains. Outputs are an occult-malignancy CT chest/abdomen/pelvis, OGD and colonoscopy.]
+- `hypercalcaemia-myeloma-aki-elderly` / **mgmt-iv-saline** (web, FAIL (known gap)): no management item matched among 13 (web.clinicalPrompts) [known gap: Web: No saline rehydration for hypercalcaemia; only the AKI prompt's "IV fluid challenge (500ml Hartmann's) if pre-renal cause".]
+- `hyperkalaemia-postop-aki-oliguric` / **level-emergency** (web, FAIL (known gap)): web.triage: urgent (acuity=priority, action=same_day_call, score=44); expected ≥ emergency [known gap: Web: Triage "same_day_call" (score 44, one point below the emergency threshold): potassium 6.7 with peaked T waves and oliguric AKI are not triage inputs. The emergency level previously came from negated history.]
+- `hyperkalaemia-severe-ckd-acei` / **mnm-hyperkalaemia** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, GORD, cholecystitis. The hyperkalaemia prompt itself fires (K 7.2).]
+- `hyperkalaemia-severe-ckd-acei` / **level-emergency** (web, FAIL (known gap)): web.triage: urgent (acuity=priority, action=same_day_call, score=30); expected ≥ emergency [known gap: Web: Triage "same_day_call" (score 30): no triage rule reads potassium, ECG changes or bradycardia (HR 46 is not a vital red flag; only >120 is). Before the negation fix, "No chest pain" in the HPI scored as a cardiac red flag and gave emergency_now for the wrong reason.]
+- `hypoglycaemia-stroke-mimic` / **mnm-hypoglycaemia** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#2, web.passive#2 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, cholecystitis, GORD. Symptom inference ranks stroke/TIA #1 and hypoglycaemia #2.]
+- `hypoglycaemia-stroke-mimic` / **mgmt-treat-hypoglycaemia** (web, FAIL (known gap)): no management item matched among 5 (web.clinicalPrompts) [known gap: Web: Only the triage vital flag fires; the five management outputs are preventative (PSA, colonoscopy, ACR, pre-op ECG). No glucose treatment.]
+- `hypoglycaemia-sulfonylurea-ckd-elderly` / **mnm-hypoglycaemia** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, GORD, cholecystitis. Symptom inference ranks hypoglycaemia #1.]
+- `hypoglycaemia-sulfonylurea-ckd-elderly` / **mgmt-treat-hypoglycaemia** (web, FAIL (known gap)): no management item matched among 11 (web.clinicalPrompts) [known gap: Web: The triage vital flag "Hypoglycaemia" fires, but no prompt offers treatment: there is no hypoglycaemia rule in clinical-inference.ts (only BGL >15 and glucose >11 rules).]
+- `hypoglycaemia-sulfonylurea-ckd-elderly` / **mgmt-prolonged-monitoring** (web, FAIL (known gap)): no management item matched among 11 (web.clinicalPrompts) [known gap: Web: No glucose monitoring plan.]
+- `hyponatraemia-elderly-thiazide-ssri` / **mgmt-stop-thiazide** (web, FAIL (known gap)): no management item matched among 14 (web.clinicalPrompts) [known gap: Web: Only "Review medications for SIADH causes: diuretics, SSRIs, carbamazepine" — the thiazide is framed as an SIADH cause and never stopped.]
+- `hyponatraemia-hypovolaemic-ileostomy` / **mgmt-no-fluid-restriction** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• fluid restriction 1l/day - euvolaemic siadh. correct slowly." [known gap: Web: At Na 126 the prompt adds "Fluid restriction 1L/day — euvolaemic SIADH" without any volume assessment, in a hypovolaemic patient with urine sodium 8 and AKI.]
+- `hyponatraemia-severe-postop-seizure` / **mnm-hyponatraemia** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, appendicitis, GORD. The hyponatraemia prompt itself fires (Na 116).]
+- `hyponatraemia-severe-postop-seizure` / **mgmt-stop-hypotonic-fluids** (web, FAIL (known gap)): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No output addresses the cause: the 5% glucose infusion is not flagged and "Review medications for SIADH causes" does not mention IV fluids.]
 - `infective-colitis-bloody-diarrhoea` / **inv-stool-culture** (web, FAIL (known gap)): no investigation matched among 33 (web.pane.seeded, web.clinicalPrompts) [known gap: No stool culture/STEC testing output (A09 has no protocol; PANE-seeded tests are for appendicitis/biliary disease).]
 - `iron-deficiency-anaemia-over60` / **flag-ida** (web, FAIL (known gap)): no red flag matched among 9 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: Nothing reads the anaemia indices: severe_anaemia prompt needs Hb <8; the NG12 IDA criterion in cancer-screening needs the words "anaemia/pale/unusually tired" in the symptom chips. Hb 9.1 / MCV 72 / ferritin 6 raise nothing.]
 - `iron-deficiency-anaemia-over60` / **inv-colonoscopy** (web, FAIL (known gap)): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol for D50.9 and no IDA prompt; colonoscopy never suggested.]
@@ -848,6 +898,13 @@ None.
 - `lgib-unstable-cta-first` / **inv-cta-first** (web, FAIL (known gap)): no investigation matched among 27 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No output recommends CT angiography for unstable haematochezia: the plan is the UGIB protocol (OGD) and the GI-bleed prompt offers "urgent OGD / colonoscopy". The confirmed ICD K92.2 (GI haemorrhage, unspecified) matches the upper_gi_bleed protocol (icd10Prefixes K92) and the "Upper GI Bleed" dx-variant group; there is no lower GI bleeding protocol, so the plan is the variceal/non-variceal UGIB plan.]
 - `lgib-unstable-cta-first` / **mgmt-no-terlipressin** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] suspected varices: terlipressin 2 mg qds + prophylactic iv ceftriaxone." (+1 more) [known gap: The confirmed ICD K92.2 (GI haemorrhage, unspecified) matches the upper_gi_bleed protocol (icd10Prefixes K92) and the "Upper GI Bleed" dx-variant group; there is no lower GI bleeding protocol, so the plan is the variceal/non-variceal UGIB plan. The plan text includes "Suspected varices: terlipressin" and variceal steps for a patient without liver disease.]
 - `lgib-unstable-warfarin` / **inv-cta-first** (web, FAIL (known gap)): no investigation matched among 39 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No CT angiography output (see lgib-unstable-cta-first). The confirmed ICD K92.2 (GI haemorrhage, unspecified) matches the upper_gi_bleed protocol (icd10Prefixes K92) and the "Upper GI Bleed" dx-variant group; there is no lower GI bleeding protocol, so the plan is the variceal/non-variceal UGIB plan.]
+- `meningitis-elderly-immunosuppressed-listeria` / **mnm-meningitis** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, GORD, diverticulitis. Symptom inference ranks meningitis #1.]
+- `meningitis-elderly-immunosuppressed-listeria` / **alarm-meningitis** (web, FAIL (known gap)): no alarm matched among 4 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Only the sepsis (fever + tachycardia) and leucocytosis prompts fire.]
+- `meningitis-elderly-immunosuppressed-listeria` / **mgmt-ceftriaxone** (web, FAIL (known gap)): no management item matched among 15 (web.clinicalPrompts) [known gap: Web: Pip-tazo from the sepsis prompt; no ceftriaxone.]
+- `meningitis-elderly-immunosuppressed-listeria` / **mgmt-listeria-amoxicillin** (web, FAIL (known gap)): no management item matched among 15 (web.clinicalPrompts) [known gap: Web: No amoxicillin (Listeria) for age 71 on methotrexate and prednisolone.]
+- `meningitis-meningococcal-young` / **mnm-meningitis** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, appendicitis, GORD. Symptom inference ranks meningitis #1.]
+- `meningitis-meningococcal-young` / **alarm-meningitis** (web, FAIL (known gap)): no alarm matched among 6 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Emergency level is reached (tachycardia, fever), but the only safety prompts are the acute-abdomen panel, pre-op bloods, leucocytosis and a "Sepsis criteria" bundle — no meningitis or non-blanching-rash alarm.]
+- `meningitis-meningococcal-young` / **mgmt-ceftriaxone-now** (web, FAIL (known gap)): no management item matched among 9 (web.clinicalPrompts) [known gap: Web: The sepsis prompt gives "IV Piperacillin-tazobactam 4.5g TDS", which does not treat meningitis (poor CSF penetration); no ceftriaxone.]
 - `mi-presenting-as-epigastric-pain` / **mnm-acs** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. GORD / Reflux Oesophagitis [known gap: PANE has no cardiac disease; top 3 cholecystitis, peptic ulcer, GORD.]
 - `mi-presenting-as-epigastric-pain` / **level-emergency** (web, FAIL (known gap)): web.triage: urgent (acuity=priority, action=same_day_call, score=33); expected ≥ emergency [known gap: Same-day call only (score 33): CHEST_PAIN_TERMS and the cardiac red flag need the words "chest pain/crushing/left arm/jaw"; epigastric pain with sweating in a diabetic scores age and comorbidity only.]
 - `mi-presenting-as-epigastric-pain` / **alarm-cardiac** (web, FAIL (known gap)): no alarm matched among 2 (web.clinicalPrompts.safety) [known gap: Safety prompts fired are "Appendicitis — emergency surgical indication" (from "Acute abdominal pain" CC) and "Acute abdominal presentation"; nothing cardiac.]
@@ -871,6 +928,14 @@ None.
 - `mimic-ruptured-aaa` / **alarm-aaa** (web, FAIL (known gap)): no alarm matched among 8 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Alarms are 'Hypotension', 'Tachycardia' and the generic 'SBP 84 → Shock Protocol'; none names the aneurysm.]
 - `mimic-testicular-torsion` / **dx-torsion-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3: appendicitis, inguinal/femoral hernia, cholecystitis; the SOCRATES site text 'right testicle (scrotal)' adds testicular features but not enough. Symptom inference ranks torsion #1.]
 - `mimic-testicular-torsion` / **level-emergency** (web, FAIL (known gap)): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 35). No torsion/testicular rule; the scrotal-swelling chip does not raise acuity. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Right lower abdominal pain and vomiting' gives 'routine'.]
+- `mscc-pain-only-breast-cancer` / **mnm-spinal-metastases** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, GORD, peptic ulcer. Symptom inference ranks sickle cell crisis, osteoarthritis, osteomyelitis, aortic dissection.]
+- `mscc-pain-only-breast-cancer` / **inv-mri-spine** (web, FAIL (known gap)): no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No MRI.]
+- `mscc-pain-only-breast-cancer` / **mgmt-mscc-safety-net** (web, FAIL (known gap)): no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No safety-netting for MSCC symptoms.]
+- `mscc-prostate-cancer-weakness` / **mnm-mscc** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, GORD, cholecystitis. Symptom inference ranks BPH, stroke/TIA, sciatica, prostate cancer, AAA — not MSCC.]
+- `mscc-prostate-cancer-weakness` / **alarm-mscc** (web, FAIL (known gap)): no alarm matched among 3 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Triage reaches emergency_now (malignancy, age, pain score), but there is no MSCC alarm: only pre-op bloods and a "PSA 48 — elevated" prompt offering mpMRI prostate and biopsy for known metastatic prostate cancer.]
+- `mscc-prostate-cancer-weakness` / **inv-mri-whole-spine** (web, FAIL (known gap)): no investigation matched among 17 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No MRI.]
+- `mscc-prostate-cancer-weakness` / **mgmt-dexamethasone** (web, FAIL (known gap)): no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No dexamethasone.]
+- `mscc-prostate-cancer-weakness` / **mgmt-mscc-coordinator** (web, FAIL (known gap)): no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No oncology / MSCC coordinator / spinal referral.]
 - `nsti-early-low-lrinec` / **mnm-nsti** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Cellulitis \| 3. Skin Abscess / Furuncle; also in web.symptomInference#2, web.passive#2 [known gap: PANE top 3: Acute cholecystitis, Cellulitis, Skin abscess. socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up. Symptom inference ranks NSTI #2.]
 - `nsti-fournier-diabetic` / **mnm-fournier** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholangitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Inguinal/femoral hernia, Acute cholangitis, Acute cholecystitis. The 'Groin' site chip maps to groin_swelling (hernia) and PANE has no Fournier's disease. Symptom inference ranks Fournier's #1.]
 - `nsti-leg-diabetic-sepsis` / **dx-nsti-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholangitis \| 2. Acute Cholecystitis \| 3. Acute Appendicitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Acute cholangitis, Acute cholecystitis, Acute appendicitis — even with crepitus, erythema, instability and raised WBC answered in PANE. NSTI prior is 0.003; fever/rigors favour biliary diseases and socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up. Symptom inference ranks NSTI #1.]
@@ -941,12 +1006,48 @@ None.
 - `ppu-elderly-steroids-masked` / **alarm-sepsis** (web, FAIL (known gap)): no alarm matched among 9 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Sepsis prompts need temperature ≥38 °C with HR >100 (or SBP <90 for the shock prompt); an afebrile patient with qSOFA 3, lactate 3.1 and AKI raises no sepsis alarm.]
 - `ppu-perforated-peptic-ulcer` / **level-emergency** (web, FAIL (known gap)): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 35). The CC 'Sudden severe upper abdominal pain' misses the red-flag regex 'severe (abdominal\|belly\|stomach)? pain' because of the word 'upper'; HR 112 is below the >120 vital flag; rigidity/free air are not read by triage. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Sudden severe upper abdominal pain' gives 'routine'.]
 - `ppu-septic-shock-delayed` / **dx-perforation-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Pancreatitis; also in web.symptomInference#2, web.passive#1 [known gap: Web: PANE top 3: cholecystitis, inguinal/femoral hernia, pancreatitis (alcohol history). PANE has no perforation node and no feature for rigidity/free gas; symptom inference ranks perforated peptic ulcer #2.]
+- `pyelonephritis-adult-female` / **dx-pyelonephritis-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Acute Cholangitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE features loin_pain, dysuria, fever, rigors, nausea_vomiting are applied, yet PANE ranks cholecystitis (0.15), appendicitis (0.11), cholangitis; UTI is not in the top 3 and there is no pyelonephritis node. Symptom inference ranks pyelonephritis #1.]
+- `pyelonephritis-adult-female` / **inv-urine-culture** (web, FAIL (known gap)): no investigation matched among 32 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No urine culture: N10 has no protocol (the UTI protocol maps only N39.0/N30) and PANE seeds cholecystitis/appendicitis/cholangitis tests (MRCP, CT).]
+- `pyelonephritis-pregnant-24wk` / **dx-pyelonephritis-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Acute Cholangitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: Same PANE features as the base case; PANE ranks cholecystitis (0.22), appendicitis, cholangitis. Symptom inference ranks pyelonephritis #1.]
+- `pyelonephritis-pregnant-24wk` / **inv-urine-culture** (web, FAIL (known gap)): no investigation matched among 31 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No urine culture (O23.0 unmapped; PANE seeds biliary/appendix tests).]
+- `pyelonephritis-pregnant-24wk` / **mgmt-obstetric** (web, FAIL (known gap)): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No obstetric review or fetal monitoring. The β-hCG prompt ("If urine β-HCG positive … exclude ectopic") fires in a known 24-week pregnancy.]
 - `raaa-shock` / **dx-aaa-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Peptic Ulcer Disease \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Acute pancreatitis (0.35), Peptic ulcer, GORD — even with pulsatile mass and instability answered; the aortic_aneurysm prior is 0.01 and epigastric pain radiating to the back favours pancreatitis. The management panel therefore shows the pancreatitis protocol. Symptom inference ranks ruptured AAA #1.]
+- `renal-colic-infected-obstructed` / **flag-infected-obstruction** (web, FAIL (known gap)): no red flag matched among 26 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: Web: The renal colic protocol's red flag ("infected obstructed kidney — IV antibiotics + urgent drainage") is not shown: N13.6 has no protocol and the PANE top is cholecystitis (0.19 < 0.20). Renal colic is PANE #2.]
+- `renal-colic-infected-obstructed` / **mgmt-urgent-decompression** (web, FAIL (known gap)): no management item matched among 26 (web.clinicalPrompts) [known gap: Web: No nephrostomy or stent. Sepsis prompts give cultures, pip-tazo and fluids, and "Identify source … abdominal CT"; the CT result (stone + hydronephrosis) is not read.]
+- `renal-colic-pregnant` / **mgmt-obstetric** (web, FAIL (known gap)): no management item matched among 8 (web.clinicalPrompts) [known gap: Web: No obstetric review; the β-hCG/ectopic prompt fires instead.]
+- `renal-colic-pregnant` / **mgmt-no-ercp** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• ercp - therapeutic: stone extraction (choledocholithiasis) or stenting (malignant st..." (+1 more) [known gap: Web: "Dilated proximal ureter" in the ultrasound report matches the dilated-CBD rule (any "dilated"): MRCP, "ERCP — therapeutic", CA 19-9 and "HPB surgical review — Whipple / Hartmann's" are offered to a pregnant woman with hydronephrosis.]
+- `renal-colic-solitary-kidney-anticoagulated` / **mgmt-urgent-decompression** (web, FAIL (known gap)): no management item matched among 43 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Plan and panel give the standard colic pathway (diclofenac, MET, ESWL/URS/PCNL); the solitary-kidney red flag says "emergency urological referral" but no decompression; the anuria is not read.]
+- `renal-colic-solitary-kidney-anticoagulated` / **mgmt-no-nsaid** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] analgesia: diclofenac 75 mg im / pr (first-line); opioids if nsaids contraindicated; antiemetic." (+2 more) [known gap: Web: "Diclofenac 75 mg IM / PR (first-line)" in plan, panel and medications for AKI on CKD in a solitary kidney on apixaban.]
+- `sah-late-presentation-day5` / **mnm-sah** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#2, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, cholecystitis, GORD. Symptom inference ranks SAH #2.]
+- `sah-late-presentation-day5` / **level-urgent** (web, FAIL (known gap)): web.triage: priority (acuity=review, action=priority_24_48h, score=15); expected ≥ urgent [known gap: Web: Triage "priority_24_48h" (score 15). Instead, "Hernia — elective repair indicated" fires from the healed repair in the exam text.]
+- `sah-late-presentation-day5` / **alarm-sah** (web, FAIL (known gap)): no alarm matched among 2 (web.clinicalPrompts.safety) [known gap: Web: No SAH alarm; the only safety prompts are pre-op bloods and an elective hernia repair.]
+- `sah-late-presentation-day5` / **inv-ct-cta-or-lp** (web, FAIL (known gap)): no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No CT head, CTA or LP.]
+- `sah-thunderclap-headache` / **mnm-sah** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#3, web.passive#3 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, GORD, peptic ulcer. Symptom inference ranks meningitis ×2 then SAH #3.]
+- `sah-thunderclap-headache` / **level-emergency** (web, FAIL (known gap)): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: Triage "same_day_call" (score 35): the "thunderclap headache" chip and "worst ever" text are not red flags.]
+- `sah-thunderclap-headache` / **alarm-sah** (web, FAIL (known gap)): no alarm matched among 3 (web.clinicalPrompts.safety) [known gap: Web: Alarms are the β-hCG prompt, the acute-abdomen panel (the "vomiting" chip) and pre-op bloods.]
+- `sah-thunderclap-headache` / **inv-ct-head** (web, FAIL (known gap)): no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No CT head.]
+- `sah-thunderclap-headache` / **mgmt-neurosurgery** (web, FAIL (known gap)): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No neurosurgical referral.]
 - `sbo-adhesive-base` / **level-at-least-urgent** (web, FAIL (known gap)): web.triage: priority (acuity=review, action=priority_24_48h, score=23); expected ≥ urgent [known gap: Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Possible malignancy, Systemic red flag symptom, Lower GI red flag). With negation-aware matching web triage gives acuity=review, action=priority_24_48h, score=23: no triage rule covers this presentation.]
 - `sbo-strangulated-femoral-hernia` / **dx-hernia-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Small Bowel Obstruction — Adhesions \| 3. Post-operative Ileus; also in web.triageSurgical#1 [known gap: Web: PANE top 3: bowel obstruction, adhesive SBO, post-operative ileus. The SOCRATES site text 'Right groin lump' maps to groin_swelling but the obstruction features dominate; hernia appears only in the triage surgical match list. The 'hernia' symptom-branch details are not read by PANE.]
 - `sbo-strangulation` / **mgmt-no-nom-trial-with-strangulation** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] ng tube insertion - "drip and suck" decompression." [known gap: Web: Documented plan = 'Small Bowel Obstruction — Non-Operative Trial (Drip and Suck)' and the Gastrografin step, for CT-proven strangulation with lactate 4.1.]
+- `seizure-first-unprovoked-adult` / **mnm-seizure** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, appendicitis, GORD. Symptom inference ranks epilepsy/seizure #1.]
+- `seizure-first-unprovoked-adult` / **mgmt-ecg** (web, FAIL (known gap)): no management item matched among 2 (web.clinicalPrompts) [known gap: Web: No ECG (the pre-operative ECG prompt is age ≥40 only).]
+- `seizure-first-unprovoked-adult` / **mgmt-first-seizure-referral** (web, FAIL (known gap)): no management item matched among 2 (web.clinicalPrompts) [known gap: Web: No neurology / first-seizure referral; only two cervical-screening lines in management.]
+- `seizure-first-unprovoked-adult` / **mgmt-driving-safety-advice** (web, FAIL (known gap)): no management item matched among 2 (web.clinicalPrompts) [known gap: Web: No driving advice.]
+- `seizure-pregnant-eclampsia` / **mnm-eclampsia** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, appendicitis, GORD. Symptom inference ranks hypertensive emergency, epilepsy, migraine; no eclampsia entry.]
+- `seizure-pregnant-eclampsia` / **alarm-eclampsia-or-severe-hypertension** (web, FAIL (known gap)): no alarm matched among 3 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: BP 172/114 does not fire the hypertensive prompt (SBP ≥180 only); pregnancy is not combined with BP, proteinuria or seizure. Only the β-hCG prompt fires ("exclude ectopic" at 34 weeks).]
+- `seizure-pregnant-eclampsia` / **mgmt-magnesium-sulfate** (web, FAIL (known gap)): no management item matched among 4 (web.clinicalPrompts) [known gap: Web: No magnesium sulfate.]
+- `seizure-pregnant-eclampsia` / **mgmt-antihypertensive** (web, FAIL (known gap)): no management item matched among 4 (web.clinicalPrompts) [known gap: Web: No antihypertensive (SBP below the 180 threshold).]
+- `seizure-pregnant-eclampsia` / **mgmt-obstetric-emergency** (web, FAIL (known gap)): no management item matched among 4 (web.clinicalPrompts) [known gap: Web: No obstetric involvement.]
 - `sigmoid-volvulus-base` / **level-at-least-urgent** (web, FAIL (known gap)): web.triage: priority (acuity=review, action=priority_24_48h, score=27); expected ≥ urgent [known gap: Web: adaptiveTriage: 'priority_24_48h' (score 27: age ≥70, vomiting). 'Massive distension' and 'no flatus or stool' are not red-flag phrases ('unable to pass gas/stool' is).]
 - `sigmoid-volvulus-base` / **mgmt-endoscopic-decompression** (web, FAIL (known gap)): no management item matched among 35 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No endoscopic decompression step in any management output; the lbo_volvulus plan prefix is only a heading ('Sigmoid/Caecal Volvulus — Management:') followed by bowel-obstruction steps. Decompression appears only in the dx-variant urgency note.]
+- `stroke-acute-fast-positive` / **mnm-stroke** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, cholecystitis, GORD. Symptom inference ranks stroke/TIA #1.]
+- `stroke-acute-fast-positive` / **level-emergency** (web, FAIL (known gap)): web.triage: priority (acuity=review, action=priority_24_48h, score=19); expected ≥ emergency [known gap: Web: Triage "priority_24_48h" (score 19) for a FAST-positive stroke at 75 minutes: RED_FLAGS has no neurological rule; facial weakness / limb weakness / speech chips add nothing.]
+- `stroke-acute-fast-positive` / **alarm-stroke** (web, FAIL (known gap)): no alarm matched among 2 (web.clinicalPrompts.safety) [known gap: Web: Only the SBP 182 "hypertensive urgency" prompt fires, and it offers oral amlodipine.]
+- `stroke-acute-fast-positive` / **inv-ct-head** (web, FAIL (known gap)): no investigation matched among 16 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No CT head (I63 has no protocol; no neurological prompts).]
+- `stroke-acute-fast-positive` / **mgmt-reperfusion** (web, FAIL (known gap)): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No thrombolysis / thrombectomy / stroke team.]
+- `stroke-anticoagulated-apixaban-elderly` / **alarm-stroke** (web, FAIL (known gap)): no alarm matched among 3 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Triage reaches emergency_now only because "left arm" in the HPI matches the cardiac red flag ("Possible cardiac event", Chest Pain Pathway); the right-sided stroke in the base vignette stays at priority. No stroke alarm exists.]
+- `stroke-anticoagulated-apixaban-elderly` / **inv-ct-head** (web, FAIL (known gap)): no investigation matched among 20 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No CT head; the anticoagulation prompt offers peri-operative DOAC bridging instead.]
 - `svt-gsv-near-sfj` / **mgmt-anticoagulation** (web, FAIL (known gap)): no management item matched among 7 (web.clinicalPrompts) [known gap: ICD I80.02 matches no pane-engine protocol and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The varicose-veins protocol only mentions "superficial thrombophlebitis extending to SFJ" as a red flag.]
 - `thyroid-bethesda-1-nondiagnostic` / **mgmt-no-thyroidectomy-plan** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "total thyroidectomy - operative plan ────────────────────────────────────── pre-operative: • tfts normal (euthyroid)..." [known gap: computeClinicalPrompts "thyroidectomy_pathway" fires on any radiology result containing "bethesda" (any category) and attaches the TOTAL THYROIDECTOMY operative plan. Here after a non-diagnostic FNA.]
 - `thyroid-bethesda-2-benign` / **mgmt-no-thyroidectomy-plan** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "total thyroidectomy - operative plan ────────────────────────────────────── pre-operative: • tfts normal (euthyroid)..." [known gap: computeClinicalPrompts "thyroidectomy_pathway" fires on any radiology result containing "bethesda" (any category) and attaches the TOTAL THYROIDECTOMY operative plan. Here for benign cytology (rationale text: "Bethesda class III–VI or clinical thyroid malignancy").]
@@ -959,6 +1060,11 @@ None.
 - `thyroid-rapid-enlargement-stridor` / **inv-core-biopsy** (web, FAIL (known gap)): no investigation matched among 35 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Only FNAC is proposed (protocol and prompt); no core/open biopsy to distinguish anaplastic carcinoma from lymphoma.]
 - `thyroid-rapid-enlargement-stridor` / **mgmt-airway** (web, FAIL (known gap)): no management item matched among 48 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No airway step in any web output: triage has no stridor rule (the emergency comes from RR/SpO2), prompts have no airway rule, and the C73 protocol lists stridor only as a red flag.]
 - `thyroid-retrosternal-goitre-compression` / **flag-compression** (web, FAIL (known gap)): no red flag matched among 16 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No red flag names tracheal compression, stridor or retrosternal extension; triage escalates only because "breathless" matches the post-operative-concern rule. E04.2 maps to no protocol.]
+- `tia-transient-weakness-dysarthria` / **mnm-tia** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, cholecystitis, GORD. Symptom inference ranks stroke/TIA #1.]
+- `tia-transient-weakness-dysarthria` / **mgmt-aspirin-300** (web, FAIL (known gap)): no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No aspirin. The scales panel instead recommends ABCD2, which NICE NG128 says not to use.]
+- `tia-transient-weakness-dysarthria` / **mgmt-specialist-24h** (web, FAIL (known gap)): no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No TIA clinic / stroke specialist referral.]
+- `torsion-adult-mimicking-epididymitis` / **dx-torsion-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE applies testicular_pain, scrotal_swelling, radiation_to_groin and nausea_vomiting, but ranks appendicitis (0.11), inguinal hernia, cholecystitis; torsion (prior 0.01) is not in the top 3. The torsion prompt, protocol and emergency level are all correct.]
+- `torsion-adult-mimicking-epididymitis` / **level-emergency** (web, FAIL (known gap)): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: Triage "same_day_call" (score 35): there is no torsion/scrotal rule in rules.ts; the earlier emergency_now came from "no fever" in the HPI. The torsion safety prompt and the N44.0 protocol are correct.]
 - `trauma-head-injury-gcs12` / **flag-gcs** (web, FAIL (known gap)): no red flag matched among 9 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.triage.emergency) [known gap: No red flag mentions GCS 12: triage has no GCS input, and S06.0X1A maps to no protocol (the TBI protocol is registered as S09.9), so protocol red flags are absent; PANE (0.37) shows TBI only in the management panel.]
 - `trauma-paediatric-nai-bruising` / **flag-safeguarding** (web, FAIL (known gap)): no red flag matched among 9 (web.triage.reasons, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No safeguarding rule exists in triage, prompts or protocols; T76.12XA maps to no protocol.]
 - `trauma-paediatric-nai-bruising` / **mgmt-safeguarding-referral** (web, FAIL (known gap)): no management item matched among 3 (web.clinicalPrompts) [known gap: No safeguarding referral is suggested.]
@@ -988,6 +1094,9 @@ None.
 - `ugib-on-warfarin-high-inr` / **mgmt-no-lmwh-bridging** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "...dging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haematology protocol." [known gap: computeClinicalPrompts anticoag_check (any anticoagulant) adds the elective peri-operative plan line "hold DOAC 48–72h pre-op; warfarin — bridge with LMWH per haematology protocol" to an actively bleeding patient.]
 - `ugib-on-warfarin-high-inr` / **mgmt-no-tranexamic-acid** (web, FAIL (known gap)): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
 - `upper-abdominal-pain-weight-loss-over55` / **dx-gastric-cancer-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1, web.triageSurgical#1 [known gap: PANE top 3: cholecystitis, peptic ulcer, GORD — weight_loss/anorexia do not outweigh the cholecystitis prior (×2 female, ×1.6 age 30–70). Symptom inference, passive ranking and triageSurgical all rank gastric carcinoma #1.]
+- `urinary-retention-acute-bph` / **dx-retention-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis [known gap: Web: PANE applies only suprapubic_pain; top 3 inguinal hernia, GORD, cholecystitis. The "urinary retention" chip does not reach PANE (urinary_retention_symptoms is never set by socrates-to-features). The R33 protocol is still used from the ICD.]
+- `urosepsis-elderly-immunosuppressed-catheter` / **mnm-urosepsis** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3 inguinal hernia, GORD, cholecystitis (no features; no sepsis or urosepsis node). Symptom inference ranks sepsis #1.]
+- `urosepsis-elderly-immunosuppressed-catheter` / **mgmt-steroid-cover** (web, FAIL (known gap)): no management item matched among 43 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Prednisolone is not recognised: no hydrocortisone / steroid-cover action in septic shock.]
 - `variceal-bleed-known-cirrhosis` / **dx-ugib-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Appendicitis; also in web.symptomInference#1, web.passive#4, web.triageSurgical#1 [known gap: PANE top 3: inguinal hernia, GORD, appendicitis. PANE never receives haematemesis/melaena: socrates-to-features has no answer rule for melaena, haematemesis, "vomiting blood" or coffee-ground vomit, and the "Upper GI bleed" CC hint sets only nausea_vomiting. With only epigastric_pain + nausea_vomiting, the male ×5 (×1.8 at ≥50) inguinal-hernia prior modifier or the cholecystitis/GORD priors win. Symptom inference and triageSurgical rank the bleed #1. PANE also has no variceal node.]
 - `variceal-bleed-known-cirrhosis` / **mgmt-endoscopy-12h** (web, FAIL (known gap)): no management item matched among 32 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No management protocol loads: getProtocolByIcd has no I85 prefix (upper_gi_bleed covers K92.x only), and PANE top is <0.20. Only generic GI-bleed prompts remain (no terlipressin, antibiotics, EVL or 12 h endoscopy on the plan).]
 - `variceal-bleed-known-cirrhosis` / **mgmt-no-liberal-transfusion-varices** (web, FAIL (known gap)): forbidden management item present in web.managementPanel: "...uid resuscitation (crystalloid); transfuse to hb 70-90 g/l (80-100 in varices)." [known gap: Web, since the engine-matching fixes (2026-09): this passed only because no protocol loaded. The Assessment management panel now follows the confirmed diagnosis (upper_gi_bleed), whose step says "transfuse to Hb 70-90 g/L (80-100 in varices)" (Baveno VII: 70-80).]
@@ -2292,6 +2401,71 @@ Guidelines:
 
 - **es-phaeo-2014** — Endocrine Society guideline — phaeochromocytoma and paraganglioma (2014), Biochemical testing (plasma free or urinary fractionated metanephrines); pre-operative alpha-adrenoceptor blockade for 7–14 days; beta-blockade only after alpha-blockade. Lenders JWM, Duh QY, Eisenhofer G, et al. Pheochromocytoma and paraganglioma: an Endocrine Society clinical practice guideline. J Clin Endocrinol Metab. 2014;99:1915–1942. *(statement wording/numbering not yet verified against the source)*
 - **ese-adrenal-2023** — ESE/ENSAT guidelines — adrenal incidentalomas (2023 update) (2023), Imaging (unenhanced CT HU ≤10 benign; indeterminate masses); hormonal work-up (1 mg dexamethasone suppression test in all; plasma/urine metanephrines unless HU ≤10; aldosterone/renin in hypertension or hypokalaemia); no adrenal biopsy before phaeochromocytoma is excluded; surgery for indeterminate or functioning masses. Fassnacht M, Tsagarakis S, Terzolo M, et al. European Society of Endocrinology clinical practice guidelines on the management of adrenal incidentalomas, in collaboration with the European Network for the Study of Adrenal Tumors. Eur J Endocrinol. 2023;189:G1–G42. *(statement wording/numbering not yet verified against the source)*
+
+### Obstructive AKI from high-pressure chronic retention
+
+#### `aki-obstructive-chronic-retention-elderly` — Elderly man, painless chronic retention, AKI stage 3
+
+83-year-old man with dribbling incontinence, confusion and a painless bladder to the umbilicus; 1.6 L, bilateral hydronephrosis, creatinine 486, K 6.2.
+
+Permutation of `aki-prerenal-diarrhoea-acei-nsaid`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-retention | mustNotMiss | critical | not run | FAIL (known gap) | NICE NG148 2019; KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024; NICE CG97 2010 | Calibrate pane-engine urology likelihoods/priors and map the urinary chips (loin pain, dysuria, retention, haematuria, scrotal) and the "Other / general surgical" CC into PANE features, as SmartSymptomPicker chips do for symptom inference. |
+| level-urgent | emergencyLevel | critical | not run | PASS | NICE NG148 2019; KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024; NICE CG97 2010 |  |
+| alarm-aki | mustAlarm | critical | not run | PASS | NICE NG148 2019; KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012 |  |
+| mgmt-catheterise | managementInclude | critical | not run | FAIL (known gap) | NICE NG148 2019; EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 | Read hydronephrosis/bladder volume from imaging and a palpable bladder from the exam: add "catheterise, measure residual, urology" to the AKI prompt; map N13 to the urinary-retention protocol. |
+| mgmt-post-obstructive-diuresis | managementInclude | critical | not run | FAIL (known gap) | NICE CG97 2010; EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 | As mgmt-catheterise. |
+| flag-hyperkalaemia | redFlags | quality | not run | PASS | NICE NG148 2019 |  |
+| mgmt-urology | managementInclude | quality | not run | FAIL (known gap) | NICE NG148 2019 | As mgmt-catheterise. |
+| mgmt-stop-anticholinergic | managementInclude | quality | not run | FAIL (known gap) | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 | Add anticholinergic drugs to a retention precipitant check. |
+| mgmt-no-early-twoc | managementExclude | quality | not run | PASS | NICE CG97 2010 |  |
+
+Failure details:
+
+- **mnm-retention** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis [known gap: Web: PANE top 3 inguinal hernia, GORD, diverticulitis: the urinary chips (incontinence, poor stream, incomplete emptying) are not mapped to PANE features ("Other / general surgical" CC, no SOCRATES). Symptom inference ranks BPH #1.]
+- **mgmt-catheterise** (web): no management item matched among 13 (web.clinicalPrompts) [known gap: Web: No catheter: the AKI prompt treats creatinine 486 as pre-renal ("IV fluid challenge") and refers to nephrology; the ultrasound report (1.6 L bladder, bilateral hydronephrosis) is not read, and N13.8 has no protocol.]
+- **mgmt-post-obstructive-diuresis** (web): no management item matched among 13 (web.clinicalPrompts) [known gap: Web: Not mentioned (the retention protocol has it, but no protocol is active).]
+- **mgmt-urology** (web): no management item matched among 13 (web.clinicalPrompts) [known gap: Web: Nephrology only; no urology referral.]
+- **mgmt-stop-anticholinergic** (web): no management item matched among 13 (web.clinicalPrompts) [known gap: Web: Amitriptyline is not recognised as a retention precipitant.]
+
+Guidelines:
+
+- **nice-ng148** — NICE NG148 — Acute kidney injury: prevention, detection and management (2019), Detection (creatinine against baseline); urinalysis for all with AKI; ultrasound of the urinary tract within 24 h when obstruction is suspected (immediately if pyonephrosis suspected); stop/withhold nephrotoxic drugs (NSAIDs, ACE inhibitors, ARBs, diuretics) and review metformin; refer to urology immediately for pyonephrosis, obstructed solitary kidney, bilateral upper tract obstruction or complications of obstruction; nephrology referral criteria. National Institute for Health and Care Excellence. Acute kidney injury: prevention, detection and management. NICE guideline NG148. London: NICE; 2019. *(statement wording/numbering not yet verified against the source)*
+- **kdigo-aki-2012** — KDIGO Clinical Practice Guideline for Acute Kidney Injury (2012), 2.1 Definition and staging (creatinine rise ≥26.5 µmol/L in 48 h or ≥1.5× baseline in 7 days, or urine output <0.5 mL/kg/h for 6 h; stage by creatinine ratio/urine output); 3.1 fluids and haemodynamic management; discontinue nephrotoxic agents; evaluate cause. Kidney Disease: Improving Global Outcomes (KDIGO) Acute Kidney Injury Work Group. KDIGO Clinical Practice Guideline for Acute Kidney Injury. Kidney Int Suppl. 2012;2:1–138. *(statement wording/numbering not yet verified against the source)*
+- **eau-luts-2024** — EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) (2024), Acute urinary retention: bladder decompression by urethral (or suprapubic) catheter; alpha-blocker before trial without catheter; renal function; identify precipitants (anticholinergics, constipation). Gravas S, Gacci M, Gratzke C, et al. EAU Guidelines on Management of Non-Neurogenic Male LUTS. EAU Guidelines Office, Arnhem; 2024 edition. *(statement wording/numbering not yet verified against the source)*
+- **nice-cg97** — NICE CG97 — Lower urinary tract symptoms in men: management (2010), Acute urinary retention: offer an alpha blocker before catheter removal; chronic retention with renal impairment (high-pressure chronic retention): catheterise and refer to urology before bladder outflow surgery. National Institute for Health and Care Excellence. Lower urinary tract symptoms in men: management. Clinical guideline CG97. London: NICE; 2010 (updated 2015). *(statement wording/numbering not yet verified against the source)*
+
+### Acute kidney injury (pre-renal, nephrotoxic drugs)
+
+#### `aki-prerenal-diarrhoea-acei-nsaid` — Elderly, volume depletion, ACE inhibitor + NSAID + diuretic
+
+74-year-old woman with 4 days of diarrhoea and vomiting still taking ramipril, furosemide, metformin and ibuprofen; BP 96/58, creatinine 248 (baseline 96).
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-aki | mustNotMiss | critical | not run | FAIL (known gap) | KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; NICE NG148 2019 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-urgent | emergencyLevel | critical | not run | PASS | KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; NICE NG148 2019 |  |
+| alarm-aki | mustAlarm | critical | not run | PASS | KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; NICE NG148 2019 |  |
+| mgmt-stop-acei | managementInclude | critical | not run | PASS | KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; NICE NG148 2019 |  |
+| mgmt-stop-nsaid | managementInclude | critical | not run | PASS | KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; NICE NG148 2019 |  |
+| mgmt-iv-fluids | managementInclude | critical | not run | PASS | KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; NICE NG148 2019 |  |
+| mnm-aki-symptom-engine | mustNotMiss | quality | not run | FAIL (known gap) | KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; NICE NG148 2019 | Feed creatinine against baseline into symptom inference. |
+| mgmt-urinalysis | managementInclude | quality | not run | PASS | NICE NG148 2019 |  |
+| mgmt-stop-diuretic | managementInclude | quality | not run | FAIL (known gap) | NICE NG148 2019 | Add diuretics to the AKI hold list (NICE NG148). |
+| mgmt-hold-metformin | managementInclude | quality | not run | PASS | NICE NG148 2019 |  |
+
+Failure details:
+
+- **mnm-aki** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, GORD, peptic ulcer. The AKI (creatinine) prompt fires.]
+- **mnm-aki-symptom-engine** (web): not in top 5 of web.symptomInference: 1. Acute gastroenteritis \| 2. Hypertrophic pyloric stenosis \| 3. Acute cholecystitis \| 4. BPPV / labyrinthitis / vestibular neuritis \| 5. DKA / hyperglycaemic hyperosmolar state [known gap: Web: Symptom inference ranks gastroenteritis, pyloric stenosis, cholecystitis, BPPV and DKA; AKI is not in its top 5 (it reads chips, not creatinine).]
+- **mgmt-stop-diuretic** (web): no management item matched among 16 (web.clinicalPrompts) [known gap: Web: The AKI prompt holds "NSAIDs, ACE-I, ARBs, metformin" but not diuretics (furosemide continues).]
+
+Guidelines:
+
+- **kdigo-aki-2012** — KDIGO Clinical Practice Guideline for Acute Kidney Injury (2012), 2.1 Definition and staging (creatinine rise ≥26.5 µmol/L in 48 h or ≥1.5× baseline in 7 days, or urine output <0.5 mL/kg/h for 6 h; stage by creatinine ratio/urine output); 3.1 fluids and haemodynamic management; discontinue nephrotoxic agents; evaluate cause. Kidney Disease: Improving Global Outcomes (KDIGO) Acute Kidney Injury Work Group. KDIGO Clinical Practice Guideline for Acute Kidney Injury. Kidney Int Suppl. 2012;2:1–138. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng148** — NICE NG148 — Acute kidney injury: prevention, detection and management (2019), Detection (creatinine against baseline); urinalysis for all with AKI; ultrasound of the urinary tract within 24 h when obstruction is suspected (immediately if pyonephrosis suspected); stop/withhold nephrotoxic drugs (NSAIDs, ACE inhibitors, ARBs, diuretics) and review metformin; refer to urology immediately for pyonephrosis, obstructed solitary kidney, bilateral upper tract obstruction or complications of obstruction; nephrology referral criteria. National Institute for Health and Care Excellence. Acute kidney injury: prevention, detection and management. NICE guideline NG148. London: NICE; 2019. *(statement wording/numbering not yet verified against the source)*
 
 ### Acute limb ischaemia (embolic)
 
@@ -4128,6 +4302,66 @@ Guidelines:
 - **ascrs-volvulus-2021** — ASCRS clinical practice guidelines — colonic volvulus and acute colonic pseudo-obstruction (2021), Sigmoid volvulus: endoscopic detorsion without peritonitis/ischaemia, then sigmoid colectomy during the same admission; emergency resection for gangrene/perforation; caecal volvulus: operative management, endoscopic reduction not recommended. Alavi K, Poylin V, Davids JS, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of colonic volvulus and acute colonic pseudo-obstruction. Dis Colon Rectum. 2021;64:1046–57. *(statement wording/numbering not yet verified against the source)*
 - **nice-ng126** — NICE NG126 — ectopic pregnancy and miscarriage: diagnosis and initial management (2019), Pregnancy test in every woman of reproductive age with abdominal pain; transvaginal ultrasound; immediate referral if haemodynamically unstable; surgical management of ruptured ectopic; anti-D. National Institute for Health and Care Excellence. Ectopic pregnancy and miscarriage: diagnosis and initial management. NICE guideline NG126, 2019 (updated 2023). *(statement wording/numbering not yet verified against the source)*
 
+### Cauda equina syndrome presenting as urinary retention
+
+#### `cauda-equina-retention-presentation` — Presents as painless retention (CES-R), woman
+
+52-year-old woman with back pain after lifting presents with painless urinary retention (950 mL), saddle numbness and lax anal tone.
+
+Permutation of `cauda-equina-syndrome-disc`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-cauda-equina | mustNotMiss | critical | not run | FAIL (known gap) | SBNS/BASS 2018 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-emergency | emergencyLevel | critical | not run | FAIL (known gap) | SBNS/BASS 2018 | Add neurological red-flag rules to lib/triage-engine rules.ts (sudden focal weakness/facial droop/speech disturbance, thunderclap headache, neck stiffness with fever/non-blanching rash, saddle anaesthesia with bladder/bowel change, new leg weakness with known cancer) → emergency. |
+| alarm-cauda-equina | mustAlarm | critical | not run | FAIL (known gap) | SBNS/BASS 2018 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| inv-emergency-mri | investigationInclude | critical | not run | FAIL (known gap) | SBNS/BASS 2018 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-spinal-surgical-referral | managementInclude | critical | not run | FAIL (known gap) | SBNS/BASS 2018 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-no-bph-retention-plan | managementExclude | critical | not run | PASS | SBNS/BASS 2018 |  |
+| mgmt-catheterise | managementInclude | quality | not run | FAIL (known gap) | SBNS/BASS 2018 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+
+Failure details:
+
+- **mnm-cauda-equina** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease [known gap: Web: PANE top 3 cholecystitis, GORD, peptic ulcer; symptom inference ranks sciatica/disc disease then BPH.]
+- **level-emergency** (web): web.triage: routine (acuity=routine, action=routine_booking, score=0); expected ≥ emergency [known gap: Web: Triage "routine_booking" (score 0) for painless retention with saddle anaesthesia: neither "urinary retention" nor the back-pain red-flag answers are triage rules.]
+- **alarm-cauda-equina** (web): no alarm matched among 1 (web.clinicalPrompts.safety) [known gap: Web: No CES alarm.]
+- **inv-emergency-mri** (web): no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No MRI.]
+- **mgmt-spinal-surgical-referral** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No spinal referral.]
+- **mgmt-catheterise** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No catheter either (G83.4 has no protocol; the retention chip does not reach any prompt).]
+
+Guidelines:
+
+- **bass-sbns-ces-2018** — SBNS/BASS — Standards of care for investigation and management of cauda equina syndrome (2018), Suspected CES (bilateral radicular pain, saddle sensory change, bladder/bowel/sexual dysfunction): emergency MRI; immediate discussion with the on-call spinal surgical team; decompression as soon as possible; do not wait for urinary retention (retention indicates CES-R); post-void residual bladder scan as part of assessment. Society of British Neurological Surgeons & British Association of Spine Surgeons. Standards of care for investigation and management of cauda equina syndrome. 2018. See also: GIRFT National Suspected Cauda Equina Syndrome Pathway, 2023. *(statement wording/numbering not yet verified against the source)*
+
+### Cauda equina syndrome
+
+#### `cauda-equina-syndrome-disc` — Incomplete CES (CES-I) from L4/5 disc
+
+41-year-old man with known L4/5 disc: 2 days of bilateral sciatica, saddle numbness, urinary hesitancy and reduced anal tone; post-void residual 180 mL.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-cauda-equina | mustNotMiss | critical | not run | FAIL (known gap) | SBNS/BASS 2018 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-emergency | emergencyLevel | critical | not run | FAIL (known gap) | SBNS/BASS 2018 | Add neurological red-flag rules to lib/triage-engine rules.ts (sudden focal weakness/facial droop/speech disturbance, thunderclap headache, neck stiffness with fever/non-blanching rash, saddle anaesthesia with bladder/bowel change, new leg weakness with known cancer) → emergency. |
+| alarm-cauda-equina | mustAlarm | critical | not run | FAIL (known gap) | SBNS/BASS 2018 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| inv-emergency-mri | investigationInclude | critical | not run | FAIL (known gap) | SBNS/BASS 2018 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-spinal-surgical-referral | managementInclude | critical | not run | FAIL (known gap) | SBNS/BASS 2018 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| inv-bladder-scan | investigationInclude | quality | not run | FAIL (known gap) | SBNS/BASS 2018 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-no-conservative-only | managementExclude | quality | not run | PASS | SBNS/BASS 2018 |  |
+
+Failure details:
+
+- **mnm-cauda-equina** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: Web: PANE has no spinal node; top 3 inguinal hernia, cholecystitis, GORD. Symptom inference ranks lumbar disc disease / sciatica, not CES.]
+- **level-emergency** (web): web.triage: priority (acuity=review, action=priority_24_48h, score=20); expected ≥ emergency [known gap: Web: Triage "priority_24_48h" (score 20): the back-pain branch answers "Saddle anaesthesia" and "Bladder / bowel dysfunction" are collected by the picker but no triage rule reads them.]
+- **alarm-cauda-equina** (web): no alarm matched among 1 (web.clinicalPrompts.safety) [known gap: Web: No CES alarm (only pre-op bloods).]
+- **inv-emergency-mri** (web): no investigation matched among 17 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No MRI.]
+- **inv-bladder-scan** (web): no investigation matched among 17 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No bladder scan / post-void residual.]
+- **mgmt-spinal-surgical-referral** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: Web: No spinal referral.]
+
+Guidelines:
+
+- **bass-sbns-ces-2018** — SBNS/BASS — Standards of care for investigation and management of cauda equina syndrome (2018), Suspected CES (bilateral radicular pain, saddle sensory change, bladder/bowel/sexual dysfunction): emergency MRI; immediate discussion with the on-call spinal surgical team; decompression as soon as possible; do not wait for urinary retention (retention indicates CES-R); post-void residual bladder scan as part of assessment. Society of British Neurological Surgeons & British Association of Spine Surgeons. Standards of care for investigation and management of cauda equina syndrome. 2018. See also: GIRFT National Suspected Cauda Equina Syndrome Pathway, 2023. *(statement wording/numbering not yet verified against the source)*
+
 ### Caustic (alkali) ingestion
 
 #### `caustic-ingestion-alkali` — 
@@ -5750,6 +5984,114 @@ Guidelines:
 - **hinchey-mod-1999** — Modified Hinchey classification (1999), 0 mild; Ia confined pericolic inflammation/phlegmon; Ib pericolic or mesocolic abscess; II pelvic/distant abscess; III generalised purulent peritonitis; IV faecal peritonitis. Wasvary H, Turfah F, Kadro O, Beauregard W. Same hospitalization resection for acute diverticulitis. Am Surg. 1999;65:632–5. *(statement wording/numbering not yet verified against the source)*
 - **ssc-2021** — Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021 (2021), Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
 
+### Euglycaemic diabetic ketoacidosis (SGLT2 inhibitor)
+
+#### `dka-euglycaemic-sglt2-postop` — Type 2 diabetes on empagliflozin, post-operative day 2, glucose 10.2
+
+58-year-old man with type 2 diabetes on empagliflozin, day 2 after laparoscopic cholecystectomy, vomiting and tachypnoea; glucose 10.2 but ketones 5.1, pH 7.19.
+
+Permutation of `dka-type1-young-typical`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-dka | mustNotMiss | critical | not run | FAIL (known gap) | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024; CPOC 2022 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-emergency | emergencyLevel | critical | not run | PASS | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024; CPOC 2022 |  |
+| alarm-ketoacidosis | mustAlarm | critical | not run | FAIL (known gap) | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024; CPOC 2022 | Trigger a DKA prompt on blood ketones ≥3.0 mmol/L or pH <7.3 / bicarbonate <15 at any glucose, and flag SGLT2 inhibitors (empagliflozin, dapagliflozin, canagliflozin) as a euglycaemic-DKA risk. |
+| mgmt-ketone-monitoring | managementInclude | critical | not run | FAIL (known gap) | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024; CPOC 2022 | Same as alarm-ketoacidosis. |
+| mgmt-stop-sglt2 | managementInclude | critical | not run | FAIL (known gap) | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024; CPOC 2022 | Add an SGLT2-inhibitor rule: stop/withhold when unwell or peri-operative, check ketones (CPOC, MHRA). |
+| mgmt-fixed-rate-insulin | managementInclude | critical | not run | FAIL (known gap) | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024; CPOC 2022 | Same as alarm-ketoacidosis. |
+| mgmt-glucose-with-insulin | managementInclude | critical | not run | FAIL (known gap) | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024; CPOC 2022 | In the DKA prompt, add 10% glucose alongside the insulin infusion when glucose <14 mmol/L (always in euglycaemic DKA). |
+| mgmt-no-laparotomy | managementExclude | critical | not run | PASS | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024; CPOC 2022 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024; CPOC 2022 |  |
+| inv-blood-gas | investigationInclude | quality | not run | FAIL (known gap) | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024; CPOC 2022 | Same as alarm-ketoacidosis. |
+| mgmt-iv-fluids | managementInclude | quality | not run | PASS | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024; CPOC 2022 |  |
+
+Failure details:
+
+- **mnm-dka** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, cholecystitis, GORD. Symptom inference does not rank DKA in its top 5 either (glucose 10.2 is below its trigger).]
+- **alarm-ketoacidosis** (web): no alarm matched among 5 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Every DKA trigger keys on glucose (triage vital flag >20, prompt BGL >15, lab glucose >11). With glucose 10.2 and ketones 5.1 / pH 7.19 no DKA alarm appears; ketones and pH are not read.]
+- **inv-blood-gas** (web): no investigation matched among 22 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No blood gas is suggested: the ABG action sits in the BGL >15 prompt, which does not fire.]
+- **mgmt-ketone-monitoring** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: Web: No ketone action: the ketone lines belong to the glucose-triggered prompts.]
+- **mgmt-stop-sglt2** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: Web: No output mentions the SGLT2 inhibitor; empagliflozin is not recognised by any rule.]
+- **mgmt-fixed-rate-insulin** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: Web: No insulin plan (glucose-triggered prompts only).]
+- **mgmt-glucose-with-insulin** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: Web: No glucose-with-insulin plan. Even when the DKA prompt fires it offers insulin without 10% glucose.]
+
+Guidelines:
+
+- **jbds-dka-2023** — JBDS-IP — The management of diabetic ketoacidosis in adults (current revision) (2023), Diagnosis (ketonaemia ≥3.0 mmol/L or ketonuria ≥2+, bicarbonate <15 mmol/L and/or venous pH <7.3, glucose >11 mmol/L or known diabetes); fixed-rate IV insulin infusion (0.1 units/kg/h); 0.9% sodium chloride; potassium replacement by serum level; continue long-acting insulin; add 10% glucose when glucose falls below 14 mmol/L; euglycaemic DKA with SGLT2 inhibitors (glucose may be normal). Dhatariya KK; Joint British Diabetes Societies for Inpatient Care. The management of diabetic ketoacidosis in adults — an updated guideline from the Joint British Diabetes Society for Inpatient Care. Diabet Med. 2022;39:e14788 (JBDS-IP 02; edition/year to be confirmed against the current JBDS document). *(statement wording/numbering not yet verified against the source)*
+- **ada-hhc-2024** — Hyperglycaemic crises in adults with diabetes — consensus report (ADA/EASD/JBDS/AACE/DTS) (2024), DKA diagnosis (glucose or prior diabetes, ketones, pH/bicarbonate) including euglycaemic DKA with SGLT2 inhibitors; HHS diagnosis (marked hyperglycaemia, hyperosmolality, no significant ketoacidosis); IV fluids, insulin, potassium; search for precipitant. Umpierrez GE, Davis GM, ElSayed NA, et al. Hyperglycemic crises in adults with diabetes: a consensus report. Diabetes Care. 2024;47:1257–75. *(statement wording/numbering not yet verified against the source)*
+- **cpoc-diabetes-2022** — CPOC — Guideline for perioperative care for people with diabetes mellitus undergoing elective and emergency surgery (2022), SGLT2 inhibitors: omit before surgery and restart only when eating and drinking normally; check blood ketones in unwell patients on SGLT2 inhibitors even when glucose is normal (euglycaemic DKA). Centre for Perioperative Care. Guideline for perioperative care for people with diabetes mellitus undergoing elective and emergency surgery. London: CPOC; 2021 (updated 2022). *(statement wording/numbering not yet verified against the source)*
+
+### Diabetic ketoacidosis in pregnancy
+
+#### `dka-pregnant-28wk` — Pregnant, 28 weeks, pump failure
+
+27-year-old at 28 weeks with type 1 diabetes on a pump, 36 h of vomiting and diffuse abdominal pain; glucose 15.8, ketones 4.2, pH 7.21, reduced fetal movements.
+
+Permutation of `dka-type1-young-typical`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-dka | mustNotMiss | critical | not run | FAIL (known gap) | NICE NG3 2015; JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-emergency | emergencyLevel | critical | not run | PASS | NICE NG3 2015; JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| alarm-dka | mustAlarm | critical | not run | PASS | NICE NG3 2015; JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| mgmt-ketone-monitoring | managementInclude | critical | not run | PASS | NICE NG3 2015; JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| mgmt-obstetric-fetal | managementInclude | critical | not run | FAIL (known gap) | NICE NG3 2015 | When pregnancy is recorded, add an obstetric-review / fetal-monitoring action to every emergency prompt and strip NSAIDs from protocol medications. |
+| mgmt-fixed-rate-insulin | managementInclude | critical | not run | PASS | NICE NG3 2015; JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| mgmt-no-nsaid-pregnancy | managementExclude | critical | not run | PASS | FDA Drug Safety Communication 2020 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS | NICE NG3 2015; JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| mgmt-no-laparotomy | managementExclude | critical | not run | PASS | NICE NG3 2015; JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| mgmt-iv-fluids | managementInclude | quality | not run | PASS | NICE NG3 2015; JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| mgmt-potassium-replacement | managementInclude | quality | not run | FAIL (known gap) | NICE NG3 2015; JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 | As for dka-type1-young-typical. |
+
+Failure details:
+
+- **mnm-dka** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Peptic Ulcer Disease [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, appendicitis, peptic ulcer. Symptom inference ranks cholecystitis first and does not list DKA (the chips are abdominal).]
+- **mgmt-obstetric-fetal** (web): no management item matched among 15 (web.clinicalPrompts) [known gap: Web: No obstetric or fetal-monitoring action. The only pregnancy outputs are the triage "Pregnancy mentioned" reason and the β-hCG prompt ("If urine β-HCG positive … exclude ectopic") in a known 28-week pregnancy.]
+- **mgmt-potassium-replacement** (web): no management item matched among 15 (web.clinicalPrompts) [known gap: Web: Only "Monitor K⁺ hourly" inside the insulin line; no potassium replacement.]
+
+Guidelines:
+
+- **nice-ng3** — NICE NG3 — Diabetes in pregnancy: management from preconception to the postnatal period (2015), Pregnant women with type 1 diabetes who become unwell: test capillary ketones immediately; suspected DKA → admit immediately for level 2 critical care where both medical and obstetric care are available. National Institute for Health and Care Excellence. Diabetes in pregnancy: management from preconception to the postnatal period. NICE guideline NG3. London: NICE; 2015 (updated 2020). *(statement wording/numbering not yet verified against the source)*
+- **jbds-dka-2023** — JBDS-IP — The management of diabetic ketoacidosis in adults (current revision) (2023), Diagnosis (ketonaemia ≥3.0 mmol/L or ketonuria ≥2+, bicarbonate <15 mmol/L and/or venous pH <7.3, glucose >11 mmol/L or known diabetes); fixed-rate IV insulin infusion (0.1 units/kg/h); 0.9% sodium chloride; potassium replacement by serum level; continue long-acting insulin; add 10% glucose when glucose falls below 14 mmol/L; euglycaemic DKA with SGLT2 inhibitors (glucose may be normal). Dhatariya KK; Joint British Diabetes Societies for Inpatient Care. The management of diabetic ketoacidosis in adults — an updated guideline from the Joint British Diabetes Society for Inpatient Care. Diabet Med. 2022;39:e14788 (JBDS-IP 02; edition/year to be confirmed against the current JBDS document). *(statement wording/numbering not yet verified against the source)*
+- **ada-hhc-2024** — Hyperglycaemic crises in adults with diabetes — consensus report (ADA/EASD/JBDS/AACE/DTS) (2024), DKA diagnosis (glucose or prior diabetes, ketones, pH/bicarbonate) including euglycaemic DKA with SGLT2 inhibitors; HHS diagnosis (marked hyperglycaemia, hyperosmolality, no significant ketoacidosis); IV fluids, insulin, potassium; search for precipitant. Umpierrez GE, Davis GM, ElSayed NA, et al. Hyperglycemic crises in adults with diabetes: a consensus report. Diabetes Care. 2024;47:1257–75. *(statement wording/numbering not yet verified against the source)*
+- **fda-nsaid-2020** — FDA Drug Safety Communication — avoid NSAIDs in pregnancy at 20 weeks or later (2020), NSAIDs at about 20 weeks of gestation or later can cause fetal renal dysfunction and oligohydramnios; avoid unless specifically advised (low-dose aspirin excepted). US Food and Drug Administration. FDA recommends avoiding use of NSAIDs in pregnancy at 20 weeks or later because they can result in low amniotic fluid. Drug Safety Communication, 15 October 2020. *(statement wording/numbering not yet verified against the source)*
+
+### Diabetic ketoacidosis
+
+#### `dka-type1-young-typical` — Type 1 diabetes, typical DKA precipitated by gastroenteritis
+
+24-year-old woman with type 1 diabetes, 2 days of vomiting with reduced insulin; Kussmaul breathing, glucose 27.8, ketones 4.9, pH 7.14, bicarbonate 10.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-dka | mustNotMiss | critical | not run | FAIL (known gap) | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-emergency | emergencyLevel | critical | not run | PASS | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| alarm-dka | mustAlarm | critical | not run | PASS | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| inv-potassium | investigationInclude | critical | not run | PASS | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| mgmt-ketone-monitoring | managementInclude | critical | not run | PASS | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| mgmt-fixed-rate-insulin | managementInclude | critical | not run | PASS | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| mgmt-iv-fluids | managementInclude | critical | not run | PASS | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| mgmt-potassium-replacement | managementInclude | critical | not run | FAIL (known gap) | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 | Add a potassium-replacement line (by serum level, per JBDS) to the BGL >15 DKA/HHS prompt plan text. |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| mgmt-no-laparotomy | managementExclude | critical | not run | PASS | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| mnm-dka-symptom-engine | mustNotMiss | quality | not run | PASS | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| inv-blood-gas | investigationInclude | quality | not run | PASS | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| mgmt-continue-basal-insulin | managementInclude | quality | not run | FAIL (known gap) | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 | Add "continue long-acting insulin" to the DKA prompt. |
+| mgmt-glucose-when-falling | managementInclude | quality | not run | FAIL (known gap) | JBDS-IP 2023; Hyperglycaemic crises in adults with diabetes 2024 | Add "start 10% glucose when glucose <14 mmol/L" to the DKA prompt. |
+
+Failure details:
+
+- **mnm-dka** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, appendicitis, peptic ulcer. Symptom inference ranks DKA/HHS #1.]
+- **mgmt-potassium-replacement** (web): no management item matched among 15 (web.clinicalPrompts) [known gap: Web: The DKA prompt says "Monitor K⁺ hourly" and "VRIII … + potassium replacement" only in the step label; the plan line added has no potassium replacement.]
+- **mgmt-continue-basal-insulin** (web): no management item matched among 15 (web.clinicalPrompts) [known gap: Web: No output mentions continuing long-acting insulin.]
+- **mgmt-glucose-when-falling** (web): no management item matched among 15 (web.clinicalPrompts) [known gap: Web: No output adds 10% glucose as glucose falls.]
+
+Guidelines:
+
+- **jbds-dka-2023** — JBDS-IP — The management of diabetic ketoacidosis in adults (current revision) (2023), Diagnosis (ketonaemia ≥3.0 mmol/L or ketonuria ≥2+, bicarbonate <15 mmol/L and/or venous pH <7.3, glucose >11 mmol/L or known diabetes); fixed-rate IV insulin infusion (0.1 units/kg/h); 0.9% sodium chloride; potassium replacement by serum level; continue long-acting insulin; add 10% glucose when glucose falls below 14 mmol/L; euglycaemic DKA with SGLT2 inhibitors (glucose may be normal). Dhatariya KK; Joint British Diabetes Societies for Inpatient Care. The management of diabetic ketoacidosis in adults — an updated guideline from the Joint British Diabetes Society for Inpatient Care. Diabet Med. 2022;39:e14788 (JBDS-IP 02; edition/year to be confirmed against the current JBDS document). *(statement wording/numbering not yet verified against the source)*
+- **ada-hhc-2024** — Hyperglycaemic crises in adults with diabetes — consensus report (ADA/EASD/JBDS/AACE/DTS) (2024), DKA diagnosis (glucose or prior diabetes, ketones, pH/bicarbonate) including euglycaemic DKA with SGLT2 inhibitors; HHS diagnosis (marked hyperglycaemia, hyperosmolality, no significant ketoacidosis); IV fluids, insulin, potassium; search for precipitant. Umpierrez GE, Davis GM, ElSayed NA, et al. Hyperglycemic crises in adults with diabetes: a consensus report. Diabetes Care. 2024;47:1257–75. *(statement wording/numbering not yet verified against the source)*
+
 ### Deep vein thrombosis in pregnancy
 
 #### `dvt-pregnancy-22wk` — Pregnant, 22 weeks
@@ -5957,6 +6299,38 @@ Guidelines:
 
 - **bsg-eoe-2022** — BSG/BSPGHAN joint consensus guidelines — diagnosis and management of eosinophilic oesophagitis in children and adults (2022), Suspect EoE in dysphagia or food bolus obstruction, especially young atopic men; OGD with at least 6 biopsies from at least two oesophageal levels; first-line PPI, topical steroid (orodispersible budesonide) or dietary therapy; dilatation for strictures. Dhar A, Haboubi HN, Attwood SE, et al. Gut. 2022;71:1459–1487. *(statement wording/numbering not yet verified against the source)*
 - **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (oesophageal and stomach cancer) (2015), Dysphagia at any age: urgent direct-access OGD. National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+### Epididymo-orchitis (sexually transmitted)
+
+#### `epididymo-orchitis-sti-young` — Reverse mimic: gradual onset STI epididymo-orchitis with normal Doppler
+
+27-year-old man with 3 days of gradual right scrotal pain, dysuria, urethral discharge and fever 38.1; tender epididymis, cremasteric reflex present, Doppler normal testicular flow.
+
+Permutation of `mimic-testicular-torsion`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-antibiotic | managementInclude | critical | not run | PASS | IUSTI/WHO European guideline on the management of epididymo-orchitis 2016 |  |
+| dx-epididymo-orchitis-top3 | mustRankTopK | quality | not run | PASS | IUSTI/WHO European guideline on the management of epididymo-orchitis 2016 |  |
+| mnm-torsion-considered | mustNotMiss | quality | not run | FAIL (known gap) | IUSTI/WHO European guideline on the management of epididymo-orchitis 2016; EAU/ESPU Guidelines on Paediatric Urology 2024 | Calibrate pane-engine urology likelihoods/priors and map the urinary chips (loin pain, dysuria, retention, haematuria, scrotal) and the "Other / general surgical" CC into PANE features, as SmartSymptomPicker chips do for symptom inference. |
+| level-priority | emergencyLevel | quality | not run | FAIL (known gap) | IUSTI/WHO European guideline on the management of epididymo-orchitis 2016 | Negation handling in triage free text; do not escalate gradual scrotal pain with normal Doppler flow. |
+| inv-sti-testing | investigationInclude | quality | not run | PASS | IUSTI/WHO European guideline on the management of epididymo-orchitis 2016 |  |
+| inv-urine-culture | investigationInclude | quality | not run | PASS | IUSTI/WHO European guideline on the management of epididymo-orchitis 2016 |  |
+| mgmt-sti-regimen | managementInclude | quality | not run | PASS | IUSTI/WHO European guideline on the management of epididymo-orchitis 2016 |  |
+| mgmt-partner-notification | managementInclude | quality | not run | PASS | IUSTI/WHO European guideline on the management of epididymo-orchitis 2016 |  |
+| mgmt-no-orchidectomy | managementExclude | quality | not run | PASS | IUSTI/WHO European guideline on the management of epididymo-orchitis 2016 |  |
+| mgmt-no-unconditional-exploration | managementExclude | quality | not run | FAIL (known gap) | IUSTI/WHO European guideline on the management of epididymo-orchitis 2016; EAU/ESPU Guidelines on Paediatric Urology 2024 | Condition the torsion prompt on sudden onset / absent cremasteric reflex, or phrase exploration as "if torsion cannot be excluded". |
+
+Failure details:
+
+- **mnm-torsion-considered** (web): not in top 3 of web.pane: 1. Epididymo-orchitis \| 2. Acute Appendicitis \| 3. Inguinal / Femoral Hernia; also in web.symptomInference#2, web.passive#5 [known gap: Web: PANE ranks epididymo-orchitis, appendicitis, inguinal hernia; torsion is not in the top 3 (symptom inference lists "torsion / epididymo-orchitis" #2).]
+- **level-priority** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=48); expected ≥ priority, ≤ urgent [known gap: Web: Triage "emergency_now" (score 48): fever in the text and the 38.1 °C vital plus a moderate pain score add up past the emergency threshold (45); the scrotal chip itself adds nothing.]
+- **mgmt-no-unconditional-exploration** (web): forbidden management item present in web.clinicalPrompts: "• emergency scrotal exploration - de-torsion, assess viability, bilateral fixation (orchidopexy)." [known gap: Web: The scrotal-chip torsion prompt always adds "Emergency scrotal exploration" regardless of onset, Doppler result or confirmed epididymo-orchitis.]
+
+Guidelines:
+
+- **iusti-eo-2016** — IUSTI/WHO European guideline on the management of epididymo-orchitis (2016), Exclude torsion (surgical exploration if in doubt); test for chlamydia and gonorrhoea (NAAT) and urine culture; likely STI: ceftriaxone plus doxycycline; enteric organisms likely: fluoroquinolone; scrotal support and analgesia; partner notification. Street EJ, Justice ED, Kopa Z, et al. The 2016 European guideline on the management of epididymo-orchitis. Int J STD AIDS. 2017;28:744–749. *(statement wording/numbering not yet verified against the source)*
+- **eau-paed-2024** — EAU/ESPU Guidelines on Paediatric Urology — acute scrotum (2024), Testicular torsion is a clinical diagnosis; urgent surgical exploration; Doppler ultrasound must not delay surgery; explore when torsion cannot be excluded. Radmayr C, Bogaert G, Burgu B, et al. EAU Guidelines on Paediatric Urology. EAU Guidelines Office, Arnhem; 2024 edition. Section: Acute scrotum in children. *(statement wording/numbering not yet verified against the source)*
 
 ### Fistula-in-ano — complex anterior transsphincteric (female)
 
@@ -6349,6 +6723,61 @@ Guidelines:
 
 - **maastricht-6** — Maastricht VI/Florence consensus report — management of Helicobacter pylori infection (2022), First-line: bismuth quadruple therapy for 14 days where clarithromycin resistance is high (>15%) or unknown; PPI-clarithromycin triple therapy only with known susceptibility, 14 days; avoid clarithromycin after prior macrolide exposure; confirm eradication (UBT or stool antigen) at least 4 weeks after therapy. Malfertheiner P, Megraud F, Rokkas T, et al. Gut. 2022;71:1724–1762. *(statement wording/numbering not yet verified against the source)*
 - **nice-cg184** — NICE CG184 — Gastro-oesophageal reflux disease and dyspepsia in adults: investigation and management (2014), Offer eradication therapy to H. pylori-positive dyspepsia; retest only if indicated. National Institute for Health and Care Excellence. Clinical guideline CG184. London: NICE; 2014 (last updated 2019). *(statement wording/numbering not yet verified against the source)*
+
+### Visible haematuria with clot retention (anticoagulated)
+
+#### `haematuria-anticoagulated-clot-retention` — Anticoagulated (apixaban), clot retention
+
+78-year-old man on apixaban with 2 days of visible haematuria and clots, now in retention (850 mL with clot), Hb 10.8 from 13.2.
+
+Permutation of `haematuria-visible-smoker-2ww`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-urgent | emergencyLevel | critical | not run | PASS | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 |  |
+| inv-cystoscopy | investigationInclude | critical | not run | FAIL (known gap) | EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) 2024 | Add a clot-retention/haematuria branch: when haematuria is recorded with retention, keep the haematuria protocol investigations. |
+| mgmt-catheterise | managementInclude | critical | not run | PASS | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 |  |
+| inv-fbc-group | investigationInclude | quality | not run | PASS | EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) 2024 |  |
+| mgmt-three-way-irrigation | managementInclude | quality | not run | FAIL (known gap) | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 | As inv-cystoscopy. |
+| mgmt-anticoagulant-review | managementInclude | quality | not run | PASS | EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) 2024 |  |
+| mgmt-urology-referral | managementInclude | quality | not run | PASS | NICE NG12 2015 |  |
+
+Failure details:
+
+- **inv-cystoscopy** (web): no investigation matched among 25 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Web: R33.8 selects the urinary-retention protocol (catheter, tamsulosin, TWOC); the haematuria protocol (which has cystoscopy, CT urogram and a clot-retention irrigation red flag) is not used, so the haematuria is not investigated.]
+- **mgmt-three-way-irrigation** (web): no management item matched among 34 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No three-way catheter or irrigation; a standard Foley is suggested.]
+
+Guidelines:
+
+- **eau-nmibc-2024** — EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) (2024), Visible haematuria: cystoscopy and upper tract imaging (CT urography); haematuria in patients on anticoagulant or antiplatelet treatment is investigated in the same way. Gontero P, Birtle A, Compérat E, et al. EAU Guidelines on Non-muscle-invasive Bladder Cancer (TaT1 and CIS). EAU Guidelines Office, Arnhem; 2024 edition. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Urological cancers: refer using a suspected cancer pathway (2-week wait) for bladder or kidney cancer if aged ≥45 with unexplained visible haematuria without urinary tract infection, or visible haematuria that persists or recurs after successful treatment of UTI; suspected spinal metastases in people with cancer. National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated). *(statement wording/numbering not yet verified against the source)*
+- **eau-luts-2024** — EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) (2024), Acute urinary retention: bladder decompression by urethral (or suprapubic) catheter; alpha-blocker before trial without catheter; renal function; identify precipitants (anticholinergics, constipation). Gravas S, Gacci M, Gratzke C, et al. EAU Guidelines on Management of Non-Neurogenic Male LUTS. EAU Guidelines Office, Arnhem; 2024 edition. *(statement wording/numbering not yet verified against the source)*
+
+### Visible haematuria (suspected bladder cancer)
+
+#### `haematuria-visible-smoker-2ww` — Smoker, 66, culture-negative painless visible haematuria
+
+66-year-old smoker with occupational exposure and two episodes of painless visible haematuria, culture negative, Hb 13.4.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-haematuria-bladder-top3 | mustRankTopK | critical | not run | FAIL (known gap) | NICE NG12 2015; EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) 2024 | Calibrate pane-engine urology likelihoods/priors and map the urinary chips (loin pain, dysuria, retention, haematuria, scrotal) and the "Other / general surgical" CC into PANE features, as SmartSymptomPicker chips do for symptom inference. |
+| level-priority | emergencyLevel | critical | not run | FAIL (known gap) | NICE NG12 2015 | Add "blood in urine / haematuria" to the malignancy red flag (priority) and a NG12 urological rule to cancer-screening (age ≥45, visible haematuria without UTI). |
+| inv-cystoscopy | investigationInclude | critical | not run | PASS | EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) 2024 |  |
+| mgmt-suspected-cancer-referral | managementInclude | critical | not run | PASS | NICE NG12 2015 |  |
+| inv-upper-tract-imaging | investigationInclude | quality | not run | PASS | EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) 2024 |  |
+| mgmt-smoking-cessation | managementInclude | quality | not run | PASS | EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) 2024 |  |
+| mgmt-no-antibiotics-only | managementExclude | quality | not run | PASS | NICE NG12 2015 |  |
+
+Failure details:
+
+- **dx-haematuria-bladder-top3** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#2 [known gap: Web: PANE top 3 inguinal hernia, cholecystitis, GORD: the haematuria chip is not mapped to a PANE feature without SOCRATES text. Symptom inference ranks bladder cancer #1.]
+- **level-priority** (web): web.triage: routine (acuity=routine, action=routine_booking, score=7); expected ≥ priority [known gap: Web: Triage "routine_booking" (score 7): there is no haematuria rule in RED_FLAGS, and the cancer screen does not trigger on visible haematuria. The protocol does say 2WW.]
+
+Guidelines:
+
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Urological cancers: refer using a suspected cancer pathway (2-week wait) for bladder or kidney cancer if aged ≥45 with unexplained visible haematuria without urinary tract infection, or visible haematuria that persists or recurs after successful treatment of UTI; suspected spinal metastases in people with cancer. National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated). *(statement wording/numbering not yet verified against the source)*
+- **eau-nmibc-2024** — EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) (2024), Visible haematuria: cystoscopy and upper tract imaging (CT urography); haematuria in patients on anticoagulant or antiplatelet treatment is investigated in the same way. Gontero P, Birtle A, Compérat E, et al. EAU Guidelines on Non-muscle-invasive Bladder Cancer (TaT1 and CIS). EAU Guidelines Office, Arnhem; 2024 edition. *(statement wording/numbering not yet verified against the source)*
 
 ### Bleeding haemorrhoids in an anticoagulated 71-year-old
 
@@ -6898,6 +7327,298 @@ Guidelines:
 
 - **ehs-ahs-umbilical-2020** — EHS/AHS guidelines — treatment of umbilical and epigastric hernias (2020), Indication for repair; mesh vs suture by defect size; open preperitoneal flat mesh; patients with liver cirrhosis and ascites. Henriksen NA, Montgomery A, Kaufmann R, et al. Guidelines for treatment of umbilical and epigastric hernias from the European Hernia Society and Americas Hernia Society. Br J Surg. 2020;107:171–190. *(statement wording/numbering not yet verified against the source)*
 - **easl-cirrhosis-2018** — EASL Clinical Practice Guidelines — decompensated cirrhosis (2018), Ascites management (diuretics, large-volume paracentesis); umbilical hernia in patients with ascites (ascites control before repair; risk of rupture). European Association for the Study of the Liver. EASL Clinical Practice Guidelines for the management of patients with decompensated cirrhosis. J Hepatol. 2018;69:406–460. *(statement wording/numbering not yet verified against the source)*
+
+### Hyperosmolar hyperglycaemic state
+
+#### `hhs-elderly-type2` — Elderly, type 2 diabetes, sepsis-precipitated HHS
+
+81-year-old woman with type 2 diabetes, 5 days of confusion and polyuria; glucose 46.2, sodium 151, osmolality 372, ketones 0.9, AKI and probable UTI.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-hhs | mustNotMiss | critical | not run | FAIL (known gap) | JBDS-IP 2022; Hyperglycaemic crises in adults with diabetes 2024 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-emergency | emergencyLevel | critical | not run | PASS | JBDS-IP 2022; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| alarm-hyperglycaemia | mustAlarm | critical | not run | PASS | JBDS-IP 2022; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| inv-osmolality | investigationInclude | critical | not run | FAIL (known gap) | JBDS-IP 2022; Hyperglycaemic crises in adults with diabetes 2024 | Add measured/calculated serum osmolality and its rate of fall to the DKA/HHS prompt when glucose ≥30 or sodium is high. |
+| mgmt-saline-first | managementInclude | critical | not run | FAIL (known gap) | JBDS-IP 2022; Hyperglycaemic crises in adults with diabetes 2024 | An HHS branch of the hyperglycaemia prompt: 0.9% sodium chloride first, then insulin only when glucose stops falling (JBDS 2022). |
+| mgmt-no-early-fixed-rate-0-1 | managementExclude | critical | not run | FAIL (known gap) | JBDS-IP 2022; Hyperglycaemic crises in adults with diabetes 2024 | Split the prompt: DKA (ketones ≥3 / acidosis) → FRIII 0.1 u/kg/h; HHS (osmolality high, ketones <3) → fluids first, FRIII 0.05 u/kg/h only if glucose stops falling. |
+| mnm-hhs-symptom-engine | mustNotMiss | quality | not run | PASS | JBDS-IP 2022; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| mgmt-ketone-check | managementInclude | quality | not run | PASS | JBDS-IP 2022; Hyperglycaemic crises in adults with diabetes 2024 |  |
+| mgmt-vte-prophylaxis | managementInclude | quality | not run | FAIL (known gap) | JBDS-IP 2022; Hyperglycaemic crises in adults with diabetes 2024 | Add LMWH prophylaxis to the HHS branch. |
+| mgmt-foot-protection | managementInclude | quality | not run | FAIL (known gap) | JBDS-IP 2022; Hyperglycaemic crises in adults with diabetes 2024 | Add foot protection to the HHS branch. |
+| mgmt-hold-metformin | managementInclude | quality | not run | PASS | JBDS-IP 2022 |  |
+
+Failure details:
+
+- **mnm-hhs** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Diverticulitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, diverticulitis, GORD. No PANE features were extracted. Symptom inference ranks DKA/HHS #1.]
+- **inv-osmolality** (web): no investigation matched among 26 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No osmolality anywhere. The glucose prompt ("DKA / HHS — exclude") asks for ketones, ABG and U&E only.]
+- **mgmt-saline-first** (web): no management item matched among 23 (web.clinicalPrompts) [known gap: Web: Fluids appear only as the AKI prompt's "IV fluid challenge (500ml Hartmann's)" and the tachycardia "fluid challenge 500 ml"; no 0.9% sodium chloride replacement plan.]
+- **mgmt-vte-prophylaxis** (web): no management item matched among 23 (web.clinicalPrompts) [known gap: Web: No VTE prophylaxis.]
+- **mgmt-foot-protection** (web): no management item matched among 23 (web.clinicalPrompts) [known gap: Web: No foot/heel protection.]
+- **mgmt-no-early-fixed-rate-0-1** (web): forbidden management item present in web.clinicalPrompts: "• variable-rate insulin infusion (vriii): dka fixed-rate 0.1 units/kg/h. monitor k⁺ hourly." [known gap: Web: The same prompt serves DKA and HHS: "Variable-rate insulin infusion (VRIII): DKA fixed-rate 0.1 units/kg/h" is offered to a non-ketotic HHS patient (ketones 0.9).]
+
+Guidelines:
+
+- **jbds-hhs-2022** — JBDS-IP — The management of the hyperosmolar hyperglycaemic state (HHS) in adults (2022), Diagnosis (hypovolaemia, marked hyperglycaemia, high osmolality, without significant ketonaemia or acidosis); fluid replacement with 0.9% sodium chloride first; insulin (fixed rate 0.05 units/kg/h) only once glucose stops falling with fluids alone, unless significant ketonaemia; monitor osmolality and avoid rapid falls; VTE prophylaxis; foot protection. Mustafa OG, Haq M, Dashora U, Castro E, Dhatariya KK; Joint British Diabetes Societies for Inpatient Care. Management of hyperosmolar hyperglycaemic state (HHS) in adults: an updated guideline from the JBDS for Inpatient Care Group. Diabet Med. 2023;40:e15005. *(statement wording/numbering not yet verified against the source)*
+- **ada-hhc-2024** — Hyperglycaemic crises in adults with diabetes — consensus report (ADA/EASD/JBDS/AACE/DTS) (2024), DKA diagnosis (glucose or prior diabetes, ketones, pH/bicarbonate) including euglycaemic DKA with SGLT2 inhibitors; HHS diagnosis (marked hyperglycaemia, hyperosmolality, no significant ketoacidosis); IV fluids, insulin, potassium; search for precipitant. Umpierrez GE, Davis GM, ElSayed NA, et al. Hyperglycemic crises in adults with diabetes: a consensus report. Diabetes Care. 2024;47:1257–75. *(statement wording/numbering not yet verified against the source)*
+
+### Hypercalcaemia of malignancy
+
+#### `hypercalcaemia-malignancy-bone-mets` — Bone metastases, PTH suppressed, AKI
+
+61-year-old woman with metastatic breast cancer, one week of polyuria, constipation, vomiting and new confusion; adjusted calcium 3.62, PTH suppressed, creatinine 156.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-hypercalcaemia | mustNotMiss | critical | not run | FAIL (known gap) | Society for Endocrinology 2016; Endocrine Society clinical practice guideline 2023 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-urgent | emergencyLevel | critical | not run | PASS | Society for Endocrinology 2016; Endocrine Society clinical practice guideline 2023 |  |
+| flag-hypercalcaemia | redFlags | critical | not run | FAIL (known gap) | Society for Endocrinology 2016; Endocrine Society clinical practice guideline 2023 | Add a hypercalcaemia prompt (adjusted Ca >3.0 or symptomatic): IV 0.9% saline, IV bisphosphonate/denosumab, PTH, stop calcium/vitamin D/thiazide; map E83.5 to a protocol. |
+| mgmt-iv-saline | managementInclude | critical | not run | FAIL (known gap) | Society for Endocrinology 2016; Endocrine Society clinical practice guideline 2023 | As flag-hypercalcaemia. |
+| mgmt-antiresorptive | managementInclude | critical | not run | FAIL (known gap) | Society for Endocrinology 2016; Endocrine Society clinical practice guideline 2023 | As flag-hypercalcaemia. |
+| mgmt-no-parathyroidectomy | managementExclude | critical | not run | PASS | Society for Endocrinology 2016; Endocrine Society clinical practice guideline 2023 |  |
+| mgmt-no-laparotomy | managementExclude | critical | not run | PASS | Society for Endocrinology 2016; Endocrine Society clinical practice guideline 2023 |  |
+| inv-pth | investigationInclude | quality | not run | FAIL (known gap) | Society for Endocrinology 2016; Endocrine Society clinical practice guideline 2023 | As flag-hypercalcaemia. |
+| mgmt-stop-calcium-vitd | managementInclude | quality | not run | FAIL (known gap) | Society for Endocrinology 2016 | As flag-hypercalcaemia; also suppress the osteoporosis calcium/vitamin D prompt when calcium is high. |
+| mgmt-oncology | managementInclude | quality | not run | FAIL (known gap) | Endocrine Society clinical practice guideline 2023 | As flag-hypercalcaemia. |
+
+Failure details:
+
+- **mnm-hypercalcaemia** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Bowel Obstruction \| 3. Post-operative Ileus; also in web.symptomInference#1, web.passive#2 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, bowel obstruction, post-operative ileus. Symptom inference ranks hypercalcaemia #1.]
+- **flag-hypercalcaemia** (web): no red flag matched among 16 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: Web: Adjusted calcium 3.62 is not read: there is no calcium rule in clinical-inference.ts, and E83.52 has no protocol.]
+- **inv-pth** (web): no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No PTH.]
+- **mgmt-iv-saline** (web): no management item matched among 12 (web.clinicalPrompts) [known gap: Web: No saline rehydration for hypercalcaemia; the only fluid line is the AKI prompt's 500 mL fluid challenge.]
+- **mgmt-antiresorptive** (web): no management item matched among 12 (web.clinicalPrompts) [known gap: Web: No bisphosphonate or denosumab.]
+- **mgmt-stop-calcium-vitd** (web): no management item matched among 12 (web.clinicalPrompts) [known gap: Web: The calcium and vitamin D supplements on the medication list are not stopped.]
+- **mgmt-oncology** (web): no management item matched among 12 (web.clinicalPrompts) [known gap: Web: No oncology referral.]
+
+Guidelines:
+
+- **sfe-hypercalc-2016** — Society for Endocrinology — Emergency management of acute hypercalcaemia in adult patients (2016), Symptomatic or severe hypercalcaemia: IV 0.9% sodium chloride rehydration guided by fluid status, then IV bisphosphonate; measure PTH to separate PTH-dependent from PTH-independent (malignancy) causes; stop calcium, vitamin D and thiazides. Walsh J, Gittoes N, Selby P; Society for Endocrinology Clinical Committee. Society for Endocrinology endocrine emergency guidance: emergency management of acute hypercalcaemia in adult patients. Endocr Connect. 2016;5:G9–G11. *(statement wording/numbering not yet verified against the source)*
+- **endo-hcm-2023** — Endocrine Society clinical practice guideline — Treatment of hypercalcemia of malignancy in adults (2023), IV hydration plus an antiresorptive (IV bisphosphonate, preferably zoledronic acid, or denosumab); calcitonin only as short-term adjunct for severe hypercalcaemia; treat the underlying malignancy; adjust bisphosphonate for renal function. El-Hajj Fuleihan G, Clines GA, Hu MI, et al. Treatment of hypercalcemia of malignancy in adults: an Endocrine Society clinical practice guideline. J Clin Endocrinol Metab. 2023;108:507–528. *(statement wording/numbering not yet verified against the source)*
+
+### Hypercalcaemia with AKI (suspected myeloma)
+
+#### `hypercalcaemia-myeloma-aki-elderly` — Elderly, AKI, undiagnosed myeloma presenting as constipation
+
+76-year-old man referred with constipation; back and rib pain, weight loss, adjusted calcium 3.21, creatinine 298, Hb 8.9, globulin 58, lytic lesions.
+
+Permutation of `hypercalcaemia-malignancy-bone-mets`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-urgent | emergencyLevel | critical | not run | PASS | Society for Endocrinology 2016; NICE NG35 2016; NICE NG148 2019 |  |
+| flag-hypercalcaemia | redFlags | critical | not run | FAIL (known gap) | Society for Endocrinology 2016 | Hypercalcaemia prompt as above. |
+| inv-myeloma-screen | investigationInclude | critical | not run | FAIL (known gap) | NICE NG35 2016 | Add a myeloma prompt: hypercalcaemia or AKI with anaemia, bone pain or lytic lesions → serum protein electrophoresis + serum free light chains (NICE NG35). |
+| mgmt-iv-saline | managementInclude | critical | not run | FAIL (known gap) | Society for Endocrinology 2016 | Hypercalcaemia prompt as above. |
+| mgmt-stop-nsaid-acei | managementInclude | critical | not run | PASS | NICE NG148 2019 |  |
+| mgmt-no-nsaid | managementExclude | critical | not run | PASS | NICE NG148 2019 |  |
+
+Failure details:
+
+- **flag-hypercalcaemia** (web): no red flag matched among 14 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: Web: Calcium 3.21 is not read (no calcium rule). The case is steered to other cancers: "Cancer screening triggered (pancreatic) — 2-week-wait", an occult-malignancy CT and OGD.]
+- **inv-myeloma-screen** (web): no investigation matched among 23 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No serum protein electrophoresis / free light chains. Outputs are an occult-malignancy CT chest/abdomen/pelvis, OGD and colonoscopy.]
+- **mgmt-iv-saline** (web): no management item matched among 13 (web.clinicalPrompts) [known gap: Web: No saline rehydration for hypercalcaemia; only the AKI prompt's "IV fluid challenge (500ml Hartmann's) if pre-renal cause".]
+
+Guidelines:
+
+- **sfe-hypercalc-2016** — Society for Endocrinology — Emergency management of acute hypercalcaemia in adult patients (2016), Symptomatic or severe hypercalcaemia: IV 0.9% sodium chloride rehydration guided by fluid status, then IV bisphosphonate; measure PTH to separate PTH-dependent from PTH-independent (malignancy) causes; stop calcium, vitamin D and thiazides. Walsh J, Gittoes N, Selby P; Society for Endocrinology Clinical Committee. Society for Endocrinology endocrine emergency guidance: emergency management of acute hypercalcaemia in adult patients. Endocr Connect. 2016;5:G9–G11. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng35** — NICE NG35 — Myeloma: diagnosis and management (2016), Suspected myeloma: serum protein electrophoresis and serum free light chain assay (with urine protein electrophoresis/Bence Jones protein when needed); refer to haematology. National Institute for Health and Care Excellence. Myeloma: diagnosis and management. NICE guideline NG35. London: NICE; 2016 (updated 2018). *(statement wording/numbering not yet verified against the source)*
+- **nice-ng148** — NICE NG148 — Acute kidney injury: prevention, detection and management (2019), Detection (creatinine against baseline); urinalysis for all with AKI; ultrasound of the urinary tract within 24 h when obstruction is suspected (immediately if pyonephrosis suspected); stop/withhold nephrotoxic drugs (NSAIDs, ACE inhibitors, ARBs, diuretics) and review metformin; refer to urology immediately for pyonephrosis, obstructed solitary kidney, bilateral upper tract obstruction or complications of obstruction; nephrology referral criteria. National Institute for Health and Care Excellence. Acute kidney injury: prevention, detection and management. NICE guideline NG148. London: NICE; 2019. *(statement wording/numbering not yet verified against the source)*
+
+### Hyperkalaemia with post-operative AKI
+
+#### `hyperkalaemia-postop-aki-oliguric` — Post-operative day 3, oliguric AKI stage 3, nephrotoxins
+
+66-year-old woman, day 3 after Hartmann's procedure, oliguric; creatinine 268 (baseline 78), K 6.7 with peaked T waves, on gentamicin, ibuprofen and ramipril.
+
+Permutation of `hyperkalaemia-severe-ckd-acei`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-emergency | emergencyLevel | critical | not run | FAIL (known gap) | UK Kidney Association 2023 | As hyperkalaemia-severe-ckd-acei; add oliguria / AKI stage 3. |
+| alarm-hyperkalaemia | mustAlarm | critical | not run | PASS | UK Kidney Association 2023 |  |
+| alarm-aki | mustAlarm | critical | not run | PASS | KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; NICE NG148 2019 |  |
+| mgmt-ecg-monitoring | managementInclude | critical | not run | PASS | UK Kidney Association 2023 |  |
+| mgmt-iv-calcium | managementInclude | critical | not run | PASS | UK Kidney Association 2023 |  |
+| mgmt-insulin-glucose | managementInclude | critical | not run | PASS | UK Kidney Association 2023 |  |
+| mgmt-stop-nephrotoxins | managementInclude | critical | not run | PASS | NICE NG148 2019; KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012 |  |
+| mgmt-no-nsaid-in-aki | managementExclude | critical | not run | PASS | NICE NG148 2019 |  |
+| mgmt-urinalysis | managementInclude | quality | not run | PASS | NICE NG148 2019 |  |
+| mgmt-fluid-assessment | managementInclude | quality | not run | PASS | NICE NG148 2019; KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012 |  |
+
+Failure details:
+
+- **level-emergency** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=44); expected ≥ emergency [known gap: Web: Triage "same_day_call" (score 44, one point below the emergency threshold): potassium 6.7 with peaked T waves and oliguric AKI are not triage inputs. The emergency level previously came from negated history.]
+
+Guidelines:
+
+- **ukka-hyperk-2023** — UK Kidney Association — Clinical practice guideline: treatment of acute hyperkalaemia in adults (2023), Severity (mild 5.5–5.9, moderate 6.0–6.4, severe ≥6.5 mmol/L); urgent 12-lead ECG and cardiac monitoring; IV calcium (calcium chloride 10% 10 mL or calcium gluconate 10% 30 mL) for ECG changes; insulin–glucose (10 units soluble insulin with 25 g glucose) with glucose monitoring to prevent hypoglycaemia; nebulised salbutamol as adjunct; stop/withhold drugs that raise potassium; treat the cause; dialysis for refractory hyperkalaemia. UK Kidney Association. Clinical Practice Guidelines: Treatment of Acute Hyperkalaemia in Adults. UKKA; 2023 (update of the 2020 Renal Association guideline). *(statement wording/numbering not yet verified against the source)*
+- **kdigo-aki-2012** — KDIGO Clinical Practice Guideline for Acute Kidney Injury (2012), 2.1 Definition and staging (creatinine rise ≥26.5 µmol/L in 48 h or ≥1.5× baseline in 7 days, or urine output <0.5 mL/kg/h for 6 h; stage by creatinine ratio/urine output); 3.1 fluids and haemodynamic management; discontinue nephrotoxic agents; evaluate cause. Kidney Disease: Improving Global Outcomes (KDIGO) Acute Kidney Injury Work Group. KDIGO Clinical Practice Guideline for Acute Kidney Injury. Kidney Int Suppl. 2012;2:1–138. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng148** — NICE NG148 — Acute kidney injury: prevention, detection and management (2019), Detection (creatinine against baseline); urinalysis for all with AKI; ultrasound of the urinary tract within 24 h when obstruction is suspected (immediately if pyonephrosis suspected); stop/withhold nephrotoxic drugs (NSAIDs, ACE inhibitors, ARBs, diuretics) and review metformin; refer to urology immediately for pyonephrosis, obstructed solitary kidney, bilateral upper tract obstruction or complications of obstruction; nephrology referral criteria. National Institute for Health and Care Excellence. Acute kidney injury: prevention, detection and management. NICE guideline NG148. London: NICE; 2019. *(statement wording/numbering not yet verified against the source)*
+
+### Severe hyperkalaemia
+
+#### `hyperkalaemia-severe-ckd-acei` — CKD 4, ACE inhibitor + spironolactone + trimethoprim, ECG changes
+
+71-year-old man with CKD 4 and heart failure on ramipril, spironolactone and recent trimethoprim; weakness, HR 46, K 7.2 with peaked T waves and QRS 140 ms.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-hyperkalaemia | mustNotMiss | critical | not run | FAIL (known gap) | UK Kidney Association 2023 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-emergency | emergencyLevel | critical | not run | FAIL (known gap) | UK Kidney Association 2023 | Feed critical labs into adaptiveTriage (K ≥6.5, or ≥6.0 with ECG change; Na <120; glucose <3.5 or >30; Ca >3.5) and add bradycardia <50 as a vital red flag. |
+| alarm-hyperkalaemia | mustAlarm | critical | not run | PASS | UK Kidney Association 2023 |  |
+| mgmt-ecg-monitoring | managementInclude | critical | not run | PASS | UK Kidney Association 2023 |  |
+| mgmt-iv-calcium | managementInclude | critical | not run | PASS | UK Kidney Association 2023 |  |
+| mgmt-insulin-glucose | managementInclude | critical | not run | PASS | UK Kidney Association 2023 |  |
+| mgmt-glucose-monitoring | managementInclude | critical | not run | PASS | UK Kidney Association 2023 |  |
+| mgmt-iv-calcium-dose | managementInclude | quality | not run | FAIL (known gap) | UK Kidney Association 2023 | Change the plan text to "10% calcium gluconate 30 mL IV (or 10% calcium chloride 10 mL)" after surgeon/pharmacy confirmation. |
+| mgmt-salbutamol | managementInclude | quality | not run | PASS | UK Kidney Association 2023 |  |
+| mgmt-stop-causative-drugs | managementInclude | quality | not run | PASS | UK Kidney Association 2023 |  |
+| mgmt-renal-referral | managementInclude | quality | not run | PASS | UK Kidney Association 2023 |  |
+
+Failure details:
+
+- **mnm-hyperkalaemia** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, GORD, cholecystitis. The hyperkalaemia prompt itself fires (K 7.2).]
+- **level-emergency** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=30); expected ≥ emergency [known gap: Web: Triage "same_day_call" (score 30): no triage rule reads potassium, ECG changes or bradycardia (HR 46 is not a vital red flag; only >120 is). Before the negation fix, "No chest pain" in the HPI scored as a cardiac red flag and gave emergency_now for the wrong reason.]
+- **mgmt-iv-calcium-dose** (web): no management item matched among 18 (web.clinicalPrompts) [known gap: Web: The prompt gives "IV Calcium gluconate 10ml 10%" — one third of the UKKA 2023 dose (calcium gluconate 10% 30 mL or calcium chloride 10% 10 mL).]
+
+Guidelines:
+
+- **ukka-hyperk-2023** — UK Kidney Association — Clinical practice guideline: treatment of acute hyperkalaemia in adults (2023), Severity (mild 5.5–5.9, moderate 6.0–6.4, severe ≥6.5 mmol/L); urgent 12-lead ECG and cardiac monitoring; IV calcium (calcium chloride 10% 10 mL or calcium gluconate 10% 30 mL) for ECG changes; insulin–glucose (10 units soluble insulin with 25 g glucose) with glucose monitoring to prevent hypoglycaemia; nebulised salbutamol as adjunct; stop/withhold drugs that raise potassium; treat the cause; dialysis for refractory hyperkalaemia. UK Kidney Association. Clinical Practice Guidelines: Treatment of Acute Hyperkalaemia in Adults. UKKA; 2023 (update of the 2020 Renal Association guideline). *(statement wording/numbering not yet verified against the source)*
+
+### Hypoglycaemia presenting as stroke (stroke mimic)
+
+#### `hypoglycaemia-stroke-mimic` — Mimic: insulin-treated diabetic with focal deficit and glucose 1.9
+
+63-year-old man with type 1 diabetes found with right facial droop, right arm weakness and dysarthria after exercise and a missed meal; capillary glucose 1.9.
+
+Permutation of `stroke-acute-fast-positive`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-hypoglycaemia | mustNotMiss | critical | not run | FAIL (known gap) | NICE NG128 2019; JBDS-IP 2023 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-emergency | emergencyLevel | critical | not run | PASS | NICE NG128 2019; JBDS-IP 2023 |  |
+| alarm-hypoglycaemia | mustAlarm | critical | not run | PASS | NICE NG128 2019; JBDS-IP 2023 |  |
+| mgmt-treat-hypoglycaemia | managementInclude | critical | not run | FAIL (known gap) | NICE NG128 2019; JBDS-IP 2023 | Add a hypoglycaemia prompt (glucose <4.0 from vitals or labs): IV glucose / glucagon or oral carbohydrate, recheck in 10–15 min, prolonged monitoring for sulfonylureas, review the drug. |
+| mgmt-no-thrombolysis-before-glucose | managementExclude | critical | not run | PASS | NICE NG128 2019 |  |
+
+Failure details:
+
+- **mnm-hypoglycaemia** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#2, web.passive#2 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, cholecystitis, GORD. Symptom inference ranks stroke/TIA #1 and hypoglycaemia #2.]
+- **mgmt-treat-hypoglycaemia** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: Web: Only the triage vital flag fires; the five management outputs are preventative (PSA, colonoscopy, ACR, pre-op ECG). No glucose treatment.]
+
+Guidelines:
+
+- **nice-ng128** — NICE NG128 — Stroke and transient ischaemic attack in over 16s: diagnosis and initial management (2019), 1.1 Rapid recognition (FAST); exclude hypoglycaemia as the cause of sudden-onset neurological symptoms; suspected TIA: aspirin 300 mg immediately unless contraindicated and specialist assessment within 24 h; do not use scoring systems (ABCD2) to assess TIA risk; 1.2 imaging: non-enhanced CT immediately if thrombolysis/thrombectomy indicated, on anticoagulants or bleeding tendency; thrombolysis with alteplase within 4.5 h; thrombectomy; aspirin 300 mg after haemorrhage excluded; admit to a stroke unit. National Institute for Health and Care Excellence. Stroke and transient ischaemic attack in over 16s: diagnosis and initial management. NICE guideline NG128. London: NICE; 2019 (updated 2022). *(statement wording/numbering not yet verified against the source)*
+- **jbds-hypo-2023** — JBDS-IP — The hospital management of hypoglycaemia in adults with diabetes mellitus (2023), Hypoglycaemia <4.0 mmol/L; conscious and able to swallow: quick-acting carbohydrate, recheck in 10–15 min; unconscious, fitting or nil by mouth: IV glucose (10% or 20%) or IM glucagon; sulfonylurea-induced hypoglycaemia can be prolonged or recur — monitor and review the drug. Joint British Diabetes Societies for Inpatient Care. The hospital management of hypoglycaemia in adults with diabetes mellitus (JBDS-IP 01, revised edition; year to be confirmed). *(statement wording/numbering not yet verified against the source)*
+
+### Hypoglycaemia (sulfonylurea, CKD)
+
+#### `hypoglycaemia-sulfonylurea-ckd-elderly` — Elderly, CKD 4, gliclazide, poor intake
+
+77-year-old man with CKD 4 on gliclazide 160 mg BD, poor intake after dental extraction, found sweaty and confused; capillary glucose 2.2.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-hypoglycaemia | mustNotMiss | critical | not run | FAIL (known gap) | JBDS-IP 2023 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-emergency | emergencyLevel | critical | not run | PASS | JBDS-IP 2023 |  |
+| alarm-hypoglycaemia | mustAlarm | critical | not run | PASS | JBDS-IP 2023 |  |
+| mgmt-treat-hypoglycaemia | managementInclude | critical | not run | FAIL (known gap) | JBDS-IP 2023 | Add a hypoglycaemia prompt (glucose <4.0 from vitals or labs): IV glucose / glucagon or oral carbohydrate, recheck in 10–15 min, prolonged monitoring for sulfonylureas, review the drug. |
+| mgmt-prolonged-monitoring | managementInclude | critical | not run | FAIL (known gap) | JBDS-IP 2023 | Add a hypoglycaemia prompt (glucose <4.0 from vitals or labs): IV glucose / glucagon or oral carbohydrate, recheck in 10–15 min, prolonged monitoring for sulfonylureas, review the drug. |
+| mnm-hypoglycaemia-symptom-engine | mustNotMiss | quality | not run | PASS | JBDS-IP 2023 |  |
+| mgmt-review-sulfonylurea | managementInclude | quality | not run | FAIL (known gap) | JBDS-IP 2023 | Add a hypoglycaemia prompt (glucose <4.0 from vitals or labs): IV glucose / glucagon or oral carbohydrate, recheck in 10–15 min, prolonged monitoring for sulfonylureas, review the drug. |
+
+Failure details:
+
+- **mnm-hypoglycaemia** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, GORD, cholecystitis. Symptom inference ranks hypoglycaemia #1.]
+- **mgmt-treat-hypoglycaemia** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: Web: The triage vital flag "Hypoglycaemia" fires, but no prompt offers treatment: there is no hypoglycaemia rule in clinical-inference.ts (only BGL >15 and glucose >11 rules).]
+- **mgmt-prolonged-monitoring** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: Web: No glucose monitoring plan.]
+- **mgmt-review-sulfonylurea** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: Web: Gliclazide is not mentioned in any output.]
+
+Guidelines:
+
+- **jbds-hypo-2023** — JBDS-IP — The hospital management of hypoglycaemia in adults with diabetes mellitus (2023), Hypoglycaemia <4.0 mmol/L; conscious and able to swallow: quick-acting carbohydrate, recheck in 10–15 min; unconscious, fitting or nil by mouth: IV glucose (10% or 20%) or IM glucagon; sulfonylurea-induced hypoglycaemia can be prolonged or recur — monitor and review the drug. Joint British Diabetes Societies for Inpatient Care. The hospital management of hypoglycaemia in adults with diabetes mellitus (JBDS-IP 01, revised edition; year to be confirmed). *(statement wording/numbering not yet verified against the source)*
+
+### Hyponatraemia (thiazide + SSRI, elderly)
+
+#### `hyponatraemia-elderly-thiazide-ssri` — Elderly, chronic, thiazide + SSRI, moderately severe symptoms
+
+82-year-old woman on bendroflumethiazide and newly started sertraline with nausea, confusion and a fall; sodium 119, potassium 3.1, euvolaemic.
+
+Permutation of `hyponatraemia-severe-postop-seizure`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-urgent | emergencyLevel | critical | not run | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
+| alarm-hyponatraemia | mustAlarm | critical | not run | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
+| mgmt-stop-thiazide | managementInclude | critical | not run | FAIL (known gap) | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 | When a thiazide is on the medication list and Na <130, add "stop the thiazide". |
+| mgmt-correction-limit | managementInclude | critical | not run | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
+| flag-hypokalaemia | redFlags | quality | not run | FAIL (known gap) | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 | Add a hypokalaemia prompt, and warn that correcting potassium raises sodium. |
+| mgmt-osmolality-urine-sodium | managementInclude | quality | not run | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
+| mgmt-stop-ssri | managementInclude | quality | not run | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
+| mgmt-single-hypertonic-150 | managementInclude | quality | not run | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
+
+Failure details:
+
+- **flag-hypokalaemia** (web): no red flag matched among 10 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: Web: Potassium 3.1 is not flagged: there is no hypokalaemia prompt.]
+- **mgmt-stop-thiazide** (web): no management item matched among 14 (web.clinicalPrompts) [known gap: Web: Only "Review medications for SIADH causes: diuretics, SSRIs, carbamazepine" — the thiazide is framed as an SIADH cause and never stopped.]
+
+Guidelines:
+
+- **eur-hypona-2014** — European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) (2014), Severe symptoms (seizure, vomiting, reduced consciousness): 150 mL 3% hypertonic saline over 20 min, repeated (up to twice) checking sodium, target +5 mmol/L; moderately severe symptoms: single 150 mL 3% infusion; limit the rise to 10 mmol/L in the first 24 h and 8 mmol/L in each subsequent 24 h; hypovolaemic hyponatraemia: restore volume with 0.9% saline or balanced crystalloid; SIADH: fluid restriction first line; stop contributing drugs. Spasovski G, Vanholder R, Allolio B, et al. Clinical practice guideline on diagnosis and treatment of hyponatraemia. Eur J Endocrinol. 2014;170:G1–47. *(statement wording/numbering not yet verified against the source)*
+
+### Hypovolaemic hyponatraemia (high-output ileostomy)
+
+#### `hyponatraemia-hypovolaemic-ileostomy` — Hypovolaemic: high-output stoma with AKI
+
+48-year-old man 3 weeks after anterior resection with loop ileostomy, output 2.5 L/day, postural hypotension; sodium 126, urine sodium 8, creatinine 142.
+
+Permutation of `hyponatraemia-severe-postop-seizure`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-urgent | emergencyLevel | critical | not run | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014; NICE NG148 2019 |  |
+| alarm-hyponatraemia | mustAlarm | critical | not run | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
+| mgmt-isotonic-volume | managementInclude | critical | not run | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014; NICE NG148 2019 |  |
+| mgmt-no-fluid-restriction | managementExclude | critical | not run | FAIL (known gap) | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 | Branch on volume status (urine sodium <20/30, postural drop, stoma output, AKI): hypovolaemic → isotonic fluid; fluid restriction only for euvolaemic SIADH. |
+| flag-aki | redFlags | quality | not run | PASS | NICE NG148 2019 |  |
+
+Failure details:
+
+- **mgmt-no-fluid-restriction** (web): forbidden management item present in web.clinicalPrompts: "• fluid restriction 1l/day - euvolaemic siadh. correct slowly." [known gap: Web: At Na 126 the prompt adds "Fluid restriction 1L/day — euvolaemic SIADH" without any volume assessment, in a hypovolaemic patient with urine sodium 8 and AKI.]
+
+Guidelines:
+
+- **eur-hypona-2014** — European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) (2014), Severe symptoms (seizure, vomiting, reduced consciousness): 150 mL 3% hypertonic saline over 20 min, repeated (up to twice) checking sodium, target +5 mmol/L; moderately severe symptoms: single 150 mL 3% infusion; limit the rise to 10 mmol/L in the first 24 h and 8 mmol/L in each subsequent 24 h; hypovolaemic hyponatraemia: restore volume with 0.9% saline or balanced crystalloid; SIADH: fluid restriction first line; stop contributing drugs. Spasovski G, Vanholder R, Allolio B, et al. Clinical practice guideline on diagnosis and treatment of hyponatraemia. Eur J Endocrinol. 2014;170:G1–47. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng148** — NICE NG148 — Acute kidney injury: prevention, detection and management (2019), Detection (creatinine against baseline); urinalysis for all with AKI; ultrasound of the urinary tract within 24 h when obstruction is suspected (immediately if pyonephrosis suspected); stop/withhold nephrotoxic drugs (NSAIDs, ACE inhibitors, ARBs, diuretics) and review metformin; refer to urology immediately for pyonephrosis, obstructed solitary kidney, bilateral upper tract obstruction or complications of obstruction; nephrology referral criteria. National Institute for Health and Care Excellence. Acute kidney injury: prevention, detection and management. NICE guideline NG148. London: NICE; 2019. *(statement wording/numbering not yet verified against the source)*
+
+### Severe symptomatic hyponatraemia
+
+#### `hyponatraemia-severe-postop-seizure` — Acute post-operative hyponatraemia with seizure
+
+34-year-old woman, day 1 after laparoscopic cholecystectomy, 3 L of 5% glucose overnight, vomiting and a generalised seizure; sodium 116 (139 pre-op).
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-hyponatraemia | mustNotMiss | critical | not run | FAIL (known gap) | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-emergency | emergencyLevel | critical | not run | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
+| alarm-hyponatraemia | mustAlarm | critical | not run | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
+| mgmt-hypertonic-saline | managementInclude | critical | not run | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
+| mgmt-correction-limit | managementInclude | critical | not run | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
+| mgmt-stop-hypotonic-fluids | managementInclude | critical | not run | FAIL (known gap) | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 | When post-operative or on IV fluids, add "stop hypotonic IV fluids" to the hyponatraemia prompt. |
+| mgmt-sodium-recheck | managementInclude | quality | not run | FAIL (known gap) | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 | Add "recheck sodium after each bolus, then 4-hourly" to the hyponatraemia prompt. |
+| mgmt-hypertonic-bolus-150 | managementInclude | quality | not run | FAIL (known gap) | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 | For Na <125 with severe symptoms (seizure, reduced GCS, vomiting): 150 mL 3% over 20 min, repeat up to twice, target +5 mmol/L. |
+
+Failure details:
+
+- **mnm-hyponatraemia** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, appendicitis, GORD. The hyponatraemia prompt itself fires (Na 116).]
+- **mgmt-sodium-recheck** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No sodium recheck interval.]
+- **mgmt-hypertonic-bolus-150** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: Hypertonic saline is given as an infusion, "IV 3% saline 1–2ml/kg/h", not the 150 mL/20-minute bolus the European guideline gives for severe symptoms.]
+- **mgmt-stop-hypotonic-fluids** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No output addresses the cause: the 5% glucose infusion is not flagged and "Review medications for SIADH causes" does not mention IV fluids.]
+
+Guidelines:
+
+- **eur-hypona-2014** — European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) (2014), Severe symptoms (seizure, vomiting, reduced consciousness): 150 mL 3% hypertonic saline over 20 min, repeated (up to twice) checking sodium, target +5 mmol/L; moderately severe symptoms: single 150 mL 3% infusion; limit the rise to 10 mmol/L in the first 24 h and 8 mmol/L in each subsequent 24 h; hypovolaemic hyponatraemia: restore volume with 0.9% saline or balanced crystalloid; SIADH: fluid restriction first line; stop contributing drugs. Spasovski G, Vanholder R, Allolio B, et al. Clinical practice guideline on diagnosis and treatment of hyponatraemia. Eur J Endocrinol. 2014;170:G1–47. *(statement wording/numbering not yet verified against the source)*
 
 ### Infective colitis with bloody diarrhoea (possible STEC)
 
@@ -7528,6 +8249,69 @@ Guidelines:
 - **acg-2021** — ACG Clinical Guideline — upper gastrointestinal and ulcer bleeding (2021), GBS 0–1: discharge with outpatient follow-up. Laine L, Barkun AN, Saltzman JR, Martel M, Leontiadis GI. Am J Gastroenterol. 2021;116:899–917. *(statement wording/numbering not yet verified against the source)*
 - **halt-it-2020** — HALT-IT randomised trial — tranexamic acid in gastrointestinal bleeding (2020), Tranexamic acid: no benefit, more venous thromboembolism. HALT-IT Trial Collaborators. Effects of a high-dose 24-h infusion of tranexamic acid on death and thromboembolic events in patients with acute gastrointestinal bleeding (HALT-IT). Lancet. 2020;395:1927–1936. *(statement wording/numbering not yet verified against the source)*
 
+### Bacterial meningitis (older, immunosuppressed)
+
+#### `meningitis-elderly-immunosuppressed-listeria` — Elderly and immunosuppressed: Listeria cover
+
+71-year-old woman on methotrexate and prednisolone with 2 days of fever, headache and confusion, mild neck stiffness, no rash.
+
+Permutation of `meningitis-meningococcal-young`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-meningitis | mustNotMiss | critical | not run | FAIL (known gap) | NICE NG240 2024; UK joint specialist societies guideline on the diagnosis and management of acute meningitis and meningococcal sepsis in immunocompetent adults 2016 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-emergency | emergencyLevel | critical | not run | PASS | NICE NG240 2024; UK joint specialist societies guideline on the diagnosis and management of acute meningitis and meningococcal sepsis in immunocompetent adults 2016 |  |
+| alarm-meningitis | mustAlarm | critical | not run | FAIL (known gap) | NICE NG240 2024; UK joint specialist societies guideline on the diagnosis and management of acute meningitis and meningococcal sepsis in immunocompetent adults 2016 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-blood-cultures | managementInclude | critical | not run | PASS | NICE NG240 2024; UK joint specialist societies guideline on the diagnosis and management of acute meningitis and meningococcal sepsis in immunocompetent adults 2016 |  |
+| mgmt-ceftriaxone | managementInclude | critical | not run | FAIL (known gap) | NICE NG240 2024; UK joint specialist societies guideline on the diagnosis and management of acute meningitis and meningococcal sepsis in immunocompetent adults 2016 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-listeria-amoxicillin | managementInclude | critical | not run | FAIL (known gap) | UK joint specialist societies guideline on the diagnosis and management of acute meningitis and meningococcal sepsis in immunocompetent adults 2016 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-steroid-cover | managementInclude | quality | not run | FAIL (known gap) | Guidance for the prevention and emergency management of adult patients with adrenal insufficiency (Society for Endocrinology / AAGBI / RCP) 2020 | Steroid-dependence rule, as in the urosepsis vignette. |
+
+Failure details:
+
+- **mnm-meningitis** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, GORD, diverticulitis. Symptom inference ranks meningitis #1.]
+- **alarm-meningitis** (web): no alarm matched among 4 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Only the sepsis (fever + tachycardia) and leucocytosis prompts fire.]
+- **mgmt-ceftriaxone** (web): no management item matched among 15 (web.clinicalPrompts) [known gap: Web: Pip-tazo from the sepsis prompt; no ceftriaxone.]
+- **mgmt-listeria-amoxicillin** (web): no management item matched among 15 (web.clinicalPrompts) [known gap: Web: No amoxicillin (Listeria) for age 71 on methotrexate and prednisolone.]
+- **mgmt-steroid-cover** (web): no management item matched among 15 (web.clinicalPrompts) [known gap: Web: Prednisolone dependence not recognised.]
+
+Guidelines:
+
+- **nice-ng240** — NICE NG240 — Meningitis (bacterial) and meningococcal disease: recognition, diagnosis and management (2024), Suspected bacterial meningitis or meningococcal disease: IV ceftriaxone without delay (do not delay for lumbar puncture or imaging); blood cultures; dexamethasone for suspected bacterial meningitis; senior/critical care review; public health notification. National Institute for Health and Care Excellence. Meningitis (bacterial) and meningococcal disease: recognition, diagnosis and management. NICE guideline NG240. London: NICE; 2024. *(statement wording/numbering not yet verified against the source)*
+- **uk-meningitis-2016** — UK joint specialist societies guideline on the diagnosis and management of acute meningitis and meningococcal sepsis in immunocompetent adults (2016), Empirical ceftriaxone (or cefotaxime) plus amoxicillin for Listeria cover in patients aged over 60 (and in immunocompromise, per section on special groups); antibiotics within 1 hour; CT before LP only with specific indications. McGill F, Heyderman RS, Michael BD, et al. The UK joint specialist societies guideline on the diagnosis and management of acute meningitis and meningococcal sepsis in immunocompetent adults. J Infect. 2016;72:405–438. *(statement wording/numbering not yet verified against the source)*
+- **sfe-steroid-2020** — Guidance for the prevention and emergency management of adult patients with adrenal insufficiency (Society for Endocrinology / AAGBI / RCP) (2020), Patients on long-term glucocorticoids (e.g. prednisolone ≥5 mg daily for ≥4 weeks) are at risk of adrenal crisis; during acute illness or sepsis give parenteral hydrocortisone / increased steroid cover. Simpson H, Tomlinson J, Wass J, Dean J, Arlt W. Guidance for the prevention and emergency management of adult patients with adrenal insufficiency. Clin Med (Lond). 2020;20:371–378. *(statement wording/numbering not yet verified against the source)*
+
+### Bacterial meningitis / meningococcal disease
+
+#### `meningitis-meningococcal-young` — Young adult, non-blanching rash, shock
+
+19-year-old student with 12 h of fever, headache, vomiting, neck stiffness, photophobia and a non-blanching purpuric rash; HR 128, BP 96/58.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-meningitis | mustNotMiss | critical | not run | FAIL (known gap) | NICE NG240 2024; NICE NG51 2024 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-emergency | emergencyLevel | critical | not run | PASS | NICE NG240 2024; NICE NG51 2024 |  |
+| alarm-meningitis | mustAlarm | critical | not run | FAIL (known gap) | NICE NG240 2024 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-blood-cultures | managementInclude | critical | not run | PASS | NICE NG240 2024; NICE NG51 2024 |  |
+| mgmt-ceftriaxone-now | managementInclude | critical | not run | FAIL (known gap) | NICE NG240 2024 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mnm-meningitis-symptom-engine | mustNotMiss | quality | not run | PASS | NICE NG240 2024; NICE NG51 2024 |  |
+| alarm-sepsis | mustAlarm | quality | not run | PASS | NICE NG51 2024 |  |
+| mgmt-dexamethasone | managementInclude | quality | not run | FAIL (known gap) | NICE NG240 2024 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-public-health | managementInclude | quality | not run | FAIL (known gap) | NICE NG240 2024 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+
+Failure details:
+
+- **mnm-meningitis** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, appendicitis, GORD. Symptom inference ranks meningitis #1.]
+- **alarm-meningitis** (web): no alarm matched among 6 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Emergency level is reached (tachycardia, fever), but the only safety prompts are the acute-abdomen panel, pre-op bloods, leucocytosis and a "Sepsis criteria" bundle — no meningitis or non-blanching-rash alarm.]
+- **mgmt-ceftriaxone-now** (web): no management item matched among 9 (web.clinicalPrompts) [known gap: Web: The sepsis prompt gives "IV Piperacillin-tazobactam 4.5g TDS", which does not treat meningitis (poor CSF penetration); no ceftriaxone.]
+- **mgmt-dexamethasone** (web): no management item matched among 9 (web.clinicalPrompts) [known gap: Web: No dexamethasone.]
+- **mgmt-public-health** (web): no management item matched among 9 (web.clinicalPrompts) [known gap: Web: No public-health notification.]
+
+Guidelines:
+
+- **nice-ng240** — NICE NG240 — Meningitis (bacterial) and meningococcal disease: recognition, diagnosis and management (2024), Suspected bacterial meningitis or meningococcal disease: IV ceftriaxone without delay (do not delay for lumbar puncture or imaging); blood cultures; dexamethasone for suspected bacterial meningitis; senior/critical care review; public health notification. National Institute for Health and Care Excellence. Meningitis (bacterial) and meningococcal disease: recognition, diagnosis and management. NICE guideline NG240. London: NICE; 2024. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng51** — NICE NG51 — Suspected sepsis: recognition, diagnosis and early management (2024), High-risk criteria (new confusion, SBP ≤90, HR >130, RR ≥25, lactate); blood cultures and broad-spectrum IV antibiotics within 1 hour for high risk; IV fluid bolus; lactate; senior review; source control. National Institute for Health and Care Excellence. Suspected sepsis in people aged 16 or over: recognition, assessment and early management. NICE guideline NG51 (updated 2024). London: NICE. *(statement wording/numbering not yet verified against the source)*
+
 ### Acute myocardial infarction presenting as epigastric pain
 
 #### `mi-presenting-as-epigastric-pain` — 
@@ -7829,6 +8613,60 @@ Failure details:
 Guidelines:
 
 - **eau-paed-2024** — EAU guidelines on paediatric urology — acute scrotum / testicular torsion (2024), Torsion is a clinical diagnosis; urgent surgical exploration; Doppler only if it does not delay surgery. Radmayr C, Bogaert G, Burgu B, et al. EAU guidelines on paediatric urology. EAU Guidelines Office, Arnhem, 2024. *(statement wording/numbering not yet verified against the source)*
+
+### Suspected spinal metastases (pain only)
+
+#### `mscc-pain-only-breast-cancer` — Previous breast cancer, pain only, no deficit
+
+58-year-old woman treated for breast cancer 4 years ago, 5 weeks of progressive thoracic back pain worse at night and on coughing, normal neurology.
+
+Permutation of `mscc-prostate-cancer-weakness`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-spinal-metastases | mustNotMiss | critical | not run | FAIL (known gap) | NICE NG234 2023 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-priority | emergencyLevel | critical | not run | PASS | NICE NG234 2023 |  |
+| inv-mri-spine | investigationInclude | critical | not run | FAIL (known gap) | NICE NG234 2023 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-mscc-safety-net | managementInclude | critical | not run | FAIL (known gap) | NICE NG234 2023 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-oncology | managementInclude | quality | not run | FAIL (known gap) | NICE NG234 2023 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+
+Failure details:
+
+- **mnm-spinal-metastases** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, GORD, peptic ulcer. Symptom inference ranks sickle cell crisis, osteoarthritis, osteomyelitis, aortic dissection.]
+- **inv-mri-spine** (web): no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No MRI.]
+- **mgmt-mscc-safety-net** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No safety-netting for MSCC symptoms.]
+- **mgmt-oncology** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No oncology referral.]
+
+Guidelines:
+
+- **nice-ng234** — NICE NG234 — Spinal metastases and metastatic spinal cord compression (2023), Neurological symptoms or signs suggesting MSCC: MRI whole spine immediately (within 24 h), contact the MSCC coordinator immediately, dexamethasone unless lymphoma suspected; spinal pain suggesting spinal metastases without neurological symptoms: MRI within 1 week; definitive treatment (surgery / radiotherapy) planning. National Institute for Health and Care Excellence. Spinal metastases and metastatic spinal cord compression. NICE guideline NG234. London: NICE; 2023. *(statement wording/numbering not yet verified against the source)*
+
+### Metastatic spinal cord compression
+
+#### `mscc-prostate-cancer-weakness` — Known prostate cancer, established neurological deficit
+
+71-year-old man with metastatic prostate cancer: 3 weeks of band-like thoracic back pain worse lying flat, 2 days of leg weakness, sensory level T10, hesitancy.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-mscc | mustNotMiss | critical | not run | FAIL (known gap) | NICE NG234 2023 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-emergency | emergencyLevel | critical | not run | PASS | NICE NG234 2023 |  |
+| alarm-mscc | mustAlarm | critical | not run | FAIL (known gap) | NICE NG234 2023 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| inv-mri-whole-spine | investigationInclude | critical | not run | FAIL (known gap) | NICE NG234 2023 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-dexamethasone | managementInclude | critical | not run | FAIL (known gap) | NICE NG234 2023 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-mscc-coordinator | managementInclude | critical | not run | FAIL (known gap) | NICE NG234 2023 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+
+Failure details:
+
+- **mnm-mscc** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, GORD, cholecystitis. Symptom inference ranks BPH, stroke/TIA, sciatica, prostate cancer, AAA — not MSCC.]
+- **alarm-mscc** (web): no alarm matched among 3 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Triage reaches emergency_now (malignancy, age, pain score), but there is no MSCC alarm: only pre-op bloods and a "PSA 48 — elevated" prompt offering mpMRI prostate and biopsy for known metastatic prostate cancer.]
+- **inv-mri-whole-spine** (web): no investigation matched among 17 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No MRI.]
+- **mgmt-dexamethasone** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No dexamethasone.]
+- **mgmt-mscc-coordinator** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No oncology / MSCC coordinator / spinal referral.]
+
+Guidelines:
+
+- **nice-ng234** — NICE NG234 — Spinal metastases and metastatic spinal cord compression (2023), Neurological symptoms or signs suggesting MSCC: MRI whole spine immediately (within 24 h), contact the MSCC coordinator immediately, dexamethasone unless lymphoma suspected; spinal pain suggesting spinal metastases without neurological symptoms: MRI within 1 week; definitive treatment (surgery / radiotherapy) planning. National Institute for Health and Care Excellence. Spinal metastases and metastatic spinal cord compression. NICE guideline NG234. London: NICE; 2023. *(statement wording/numbering not yet verified against the source)*
 
 ### NSAID-associated gastric ulcer (uncomplicated)
 
@@ -10199,6 +11037,70 @@ Guidelines:
 - **wses-ppu-2020** — WSES guidelines — perforated and bleeding peptic ulcer (2020), CT/erect CXR for free air; early source control (laparoscopic or open repair / omental patch); broad-spectrum antibiotics; resuscitation; H. pylori testing and eradication; risk scores (Boey, PULP). Tarasconi A, Coccolini F, Biffl WL, et al. Perforated and bleeding peptic ulcer: WSES guidelines. World J Emerg Surg. 2020;15:3. *(statement wording/numbering not yet verified against the source)*
 - **ssc-2021** — Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021 (2021), Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
 
+### Acute pyelonephritis
+
+#### `pyelonephritis-adult-female` — Young woman, not pregnant, systemically unwell
+
+29-year-old woman with 2 days of dysuria then right loin pain, fever 38.9 and rigors; nitrite-positive urine, WBC 16.1, CRP 128.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-pyelonephritis-top3 | mustRankTopK | critical | not run | FAIL (known gap) | NICE NG111 2018 | Calibrate pane-engine urology likelihoods/priors and map the urinary chips (loin pain, dysuria, retention, haematuria, scrotal) and the "Other / general surgical" CC into PANE features, as SmartSymptomPicker chips do for symptom inference. |
+| inv-urine-culture | investigationInclude | critical | not run | FAIL (known gap) | NICE NG111 2018 | Map N10 (and N12) to the UTI protocol, or add a pyelonephritis protocol with MSU culture. |
+| mgmt-antibiotic | managementInclude | critical | not run | PASS | NICE NG111 2018 |  |
+| mgmt-no-laparotomy | managementExclude | critical | not run | PASS | NICE NG111 2018 |  |
+| mgmt-no-nitrofurantoin | managementExclude | critical | not run | PASS | NICE NG111 2018 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS | NICE NG111 2018 |  |
+| level-urgent | emergencyLevel | quality | not run | PASS | NICE NG111 2018 |  |
+| inv-blood-culture | investigationInclude | quality | not run | PASS | NICE NG51 2024 |  |
+| mgmt-ng111-antibiotic | managementInclude | quality | not run | FAIL (known gap) | NICE NG111 2018 | Pyelonephritis protocol with NG111 options. |
+
+Failure details:
+
+- **dx-pyelonephritis-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Acute Cholangitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE features loin_pain, dysuria, fever, rigors, nausea_vomiting are applied, yet PANE ranks cholecystitis (0.15), appendicitis (0.11), cholangitis; UTI is not in the top 3 and there is no pyelonephritis node. Symptom inference ranks pyelonephritis #1.]
+- **inv-urine-culture** (web): no investigation matched among 32 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No urine culture: N10 has no protocol (the UTI protocol maps only N39.0/N30) and PANE seeds cholecystitis/appendicitis/cholangitis tests (MRCP, CT).]
+- **mgmt-ng111-antibiotic** (web): no management item matched among 13 (web.clinicalPrompts) [known gap: Web: The only antibiotic is pip-tazo from the SIRS and peritonism prompts; no NG111 choice.]
+
+Guidelines:
+
+- **nice-ng111** — NICE NG111 — Pyelonephritis (acute): antimicrobial prescribing (2018), Send midstream urine for culture; non-pregnant adults: cefalexin, co-amoxiclav (only with culture susceptibility), trimethoprim (only with culture susceptibility) or ciprofloxacin; pregnant: oral cefalexin, IV cefuroxime if severely unwell; refer to hospital if signs of sepsis; nitrofurantoin not used (inadequate renal tissue levels). National Institute for Health and Care Excellence. Pyelonephritis (acute): antimicrobial prescribing. NICE guideline NG111. London: NICE; 2018. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng51** — NICE NG51 — Suspected sepsis: recognition, diagnosis and early management (2024), High-risk criteria (new confusion, SBP ≤90, HR >130, RR ≥25, lactate); blood cultures and broad-spectrum IV antibiotics within 1 hour for high risk; IV fluid bolus; lactate; senior review; source control. National Institute for Health and Care Excellence. Suspected sepsis in people aged 16 or over: recognition, assessment and early management. NICE guideline NG51 (updated 2024). London: NICE. *(statement wording/numbering not yet verified against the source)*
+
+### Acute pyelonephritis in pregnancy
+
+#### `pyelonephritis-pregnant-24wk` — Pregnant, 24 weeks
+
+31-year-old at 24 weeks with dysuria, left loin pain, fever 38.6 and rigors; nitrite-positive urine.
+
+Permutation of `pyelonephritis-adult-female`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-pyelonephritis-top3 | mustRankTopK | critical | not run | FAIL (known gap) | NICE NG111 2018 | Calibrate pane-engine urology likelihoods/priors and map the urinary chips (loin pain, dysuria, retention, haematuria, scrotal) and the "Other / general surgical" CC into PANE features, as SmartSymptomPicker chips do for symptom inference. |
+| level-urgent | emergencyLevel | critical | not run | PASS | NICE NG111 2018 |  |
+| inv-urine-culture | investigationInclude | critical | not run | FAIL (known gap) | NICE NG111 2018 | Map O23.0/N10 to a pyelonephritis protocol. |
+| mgmt-pregnancy-safe-antibiotic | managementInclude | critical | not run | PASS | NICE NG111 2018 |  |
+| mgmt-obstetric | managementInclude | critical | not run | FAIL (known gap) | NICE NG111 2018 | When pregnancy is recorded, add an obstetric-review / fetal-monitoring action to every emergency prompt and strip NSAIDs from protocol medications. |
+| mgmt-no-quinolone | managementExclude | critical | not run | PASS | NICE NG111 2018 |  |
+| mgmt-no-nitrofurantoin | managementExclude | critical | not run | PASS | NICE NG111 2018 |  |
+| mgmt-no-nsaid-pregnancy | managementExclude | critical | not run | PASS | FDA Drug Safety Communication 2020 |  |
+| mgmt-no-cholecystectomy | managementExclude | critical | not run | PASS | NICE NG111 2018 |  |
+| mgmt-no-laparotomy | managementExclude | critical | not run | PASS | NICE NG111 2018 |  |
+| mgmt-ng111-pregnancy-antibiotic | managementInclude | quality | not run | FAIL (known gap) | NICE NG111 2018 | Map O23.0/N10 to a pyelonephritis protocol with an NG111 pregnancy branch. |
+| mgmt-no-trimethoprim | managementExclude | quality | not run | PASS | NICE NG111 2018 |  |
+
+Failure details:
+
+- **dx-pyelonephritis-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Acute Cholangitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: Same PANE features as the base case; PANE ranks cholecystitis (0.22), appendicitis, cholangitis. Symptom inference ranks pyelonephritis #1.]
+- **inv-urine-culture** (web): no investigation matched among 31 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No urine culture (O23.0 unmapped; PANE seeds biliary/appendix tests).]
+- **mgmt-ng111-pregnancy-antibiotic** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: The only antibiotic is pip-tazo from the SIRS prompt; no cefalexin or cefuroxime (O23.0 has no protocol).]
+- **mgmt-obstetric** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No obstetric review or fetal monitoring. The β-hCG prompt ("If urine β-HCG positive … exclude ectopic") fires in a known 24-week pregnancy.]
+
+Guidelines:
+
+- **nice-ng111** — NICE NG111 — Pyelonephritis (acute): antimicrobial prescribing (2018), Send midstream urine for culture; non-pregnant adults: cefalexin, co-amoxiclav (only with culture susceptibility), trimethoprim (only with culture susceptibility) or ciprofloxacin; pregnant: oral cefalexin, IV cefuroxime if severely unwell; refer to hospital if signs of sepsis; nitrofurantoin not used (inadequate renal tissue levels). National Institute for Health and Care Excellence. Pyelonephritis (acute): antimicrobial prescribing. NICE guideline NG111. London: NICE; 2018. *(statement wording/numbering not yet verified against the source)*
+- **fda-nsaid-2020** — FDA Drug Safety Communication — avoid NSAIDs in pregnancy at 20 weeks or later (2020), NSAIDs at about 20 weeks of gestation or later can cause fetal renal dysfunction and oligohydramnios; avoid unless specifically advised (low-dose aspirin excepted). US Food and Drug Administration. FDA recommends avoiding use of NSAIDs in pregnancy at 20 weeks or later because they can result in low amniotic fluid. Drug Safety Communication, 15 October 2020. *(statement wording/numbering not yet verified against the source)*
+
 ### Ruptured abdominal aortic aneurysm
 
 #### `raaa-shock` — 
@@ -10299,6 +11201,180 @@ Failure details:
 Guidelines:
 
 - **ascrs-prolapse-2017** — ASCRS clinical practice guidelines — treatment of rectal prolapse (2017), Incarcerated or strangulated prolapse: reduction if viable; perineal rectosigmoidectomy for non-viable bowel; perineal procedures favoured in frail patients. Bordeianou L, Paquette I, Johnson E, et al. Clinical practice guidelines for the treatment of rectal prolapse. Dis Colon Rectum. 2017;60:1121–1131. *(statement wording/numbering not yet verified against the source)*
+
+### Obstructed infected kidney (ureteric stone with sepsis)
+
+#### `renal-colic-infected-obstructed` — Infected obstructed kidney, septic, diabetic
+
+52-year-old diabetic woman with 2 days of right loin pain then fever 39.2, rigors, BP 94/56, lactate 3.0; CT 9 mm proximal ureteric stone with hydronephrosis.
+
+Permutation of `renal-colic-typical`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-stone-or-infection-top3 | mustRankTopK | critical | not run | PASS | EAU Guidelines on Urolithiasis 2024 |  |
+| level-emergency | emergencyLevel | critical | not run | PASS | EAU Guidelines on Urolithiasis 2024; NICE NG51 2024; NICE NG148 2019 |  |
+| alarm-sepsis | mustAlarm | critical | not run | PASS | NICE NG51 2024 |  |
+| flag-infected-obstruction | redFlags | critical | not run | FAIL (known gap) | EAU Guidelines on Urolithiasis 2024 | Map N13.6 (pyonephrosis) and N13.2 to the renal colic protocol, and add a prompt: fever/sepsis + hydronephrosis or ureteric stone on imaging → decompression. |
+| inv-cultures | investigationInclude | critical | not run | PASS | EAU Guidelines on Urolithiasis 2024; NICE NG51 2024 |  |
+| mgmt-urgent-decompression | managementInclude | critical | not run | FAIL (known gap) | EAU Guidelines on Urolithiasis 2024; NICE NG148 2019 | As flag-infected-obstruction. |
+| mgmt-iv-antibiotics | managementInclude | critical | not run | PASS | EAU Guidelines on Urolithiasis 2024; NICE NG51 2024 |  |
+| mgmt-no-definitive-stone-treatment | managementExclude | critical | not run | PASS | EAU Guidelines on Urolithiasis 2024 |  |
+| mgmt-no-laparotomy | managementExclude | critical | not run | PASS | EAU Guidelines on Urolithiasis 2024 |  |
+| mgmt-urology | managementInclude | quality | not run | FAIL (known gap) | NICE NG148 2019 | As flag-infected-obstruction. |
+
+Failure details:
+
+- **flag-infected-obstruction** (web): no red flag matched among 26 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: Web: The renal colic protocol's red flag ("infected obstructed kidney — IV antibiotics + urgent drainage") is not shown: N13.6 has no protocol and the PANE top is cholecystitis (0.19 < 0.20). Renal colic is PANE #2.]
+- **mgmt-urgent-decompression** (web): no management item matched among 26 (web.clinicalPrompts) [known gap: Web: No nephrostomy or stent. Sepsis prompts give cultures, pip-tazo and fluids, and "Identify source … abdominal CT"; the CT result (stone + hydronephrosis) is not read.]
+- **mgmt-urology** (web): no management item matched among 26 (web.clinicalPrompts) [known gap: Web: No urology referral.]
+
+Guidelines:
+
+- **eau-urolith-2024** — EAU Guidelines on Urolithiasis (2024), Renal colic: NSAIDs first-line analgesia (caution in reduced renal function); low-dose non-contrast CT to confirm; pregnancy: ultrasound first-line, MRI second-line, low-dose CT last resort; medical expulsive therapy (alpha-blocker) for distal ureteric stones >5 mm; obstructed infected kidney: urgent decompression (percutaneous nephrostomy or retrograde ureteral stent) with antibiotics, urine and blood cultures, definitive stone treatment delayed until infection resolved; anuria / obstructed solitary kidney: urgent decompression. Skolarikos A, Jung H, Neisius A, et al. EAU Guidelines on Urolithiasis. EAU Guidelines Office, Arnhem; 2024 edition. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng51** — NICE NG51 — Suspected sepsis: recognition, diagnosis and early management (2024), High-risk criteria (new confusion, SBP ≤90, HR >130, RR ≥25, lactate); blood cultures and broad-spectrum IV antibiotics within 1 hour for high risk; IV fluid bolus; lactate; senior review; source control. National Institute for Health and Care Excellence. Suspected sepsis in people aged 16 or over: recognition, assessment and early management. NICE guideline NG51 (updated 2024). London: NICE. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng148** — NICE NG148 — Acute kidney injury: prevention, detection and management (2019), Detection (creatinine against baseline); urinalysis for all with AKI; ultrasound of the urinary tract within 24 h when obstruction is suspected (immediately if pyonephrosis suspected); stop/withhold nephrotoxic drugs (NSAIDs, ACE inhibitors, ARBs, diuretics) and review metformin; refer to urology immediately for pyonephrosis, obstructed solitary kidney, bilateral upper tract obstruction or complications of obstruction; nephrology referral criteria. National Institute for Health and Care Excellence. Acute kidney injury: prevention, detection and management. NICE guideline NG148. London: NICE; 2019. *(statement wording/numbering not yet verified against the source)*
+
+### Renal colic in pregnancy
+
+#### `renal-colic-pregnant` — Pregnant, 26 weeks
+
+28-year-old at 26 weeks with right loin-to-groin colic and haematuria, afebrile; ultrasound shows right hydronephrosis beyond the pelvic brim.
+
+Permutation of `renal-colic-typical`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-renal-colic-top3 | mustRankTopK | critical | not run | PASS | EAU Guidelines on Urolithiasis 2024 |  |
+| level-urgent | emergencyLevel | critical | not run | PASS | EAU Guidelines on Urolithiasis 2024 |  |
+| inv-ultrasound-first | investigationInclude | critical | not run | PASS | EAU Guidelines on Urolithiasis 2024 |  |
+| mgmt-obstetric | managementInclude | critical | not run | FAIL (known gap) | EAU Guidelines on Urolithiasis 2024 | When pregnancy is recorded, add an obstetric-review / fetal-monitoring action to every emergency prompt and strip NSAIDs from protocol medications. |
+| mgmt-no-nsaid-pregnancy | managementExclude | critical | not run | PASS | FDA Drug Safety Communication 2020; EAU Guidelines on Urolithiasis 2024 |  |
+| mgmt-no-ercp | managementExclude | critical | not run | FAIL (known gap) | EAU Guidelines on Urolithiasis 2024 | Require "CBD"/"bile duct" in the dilated-CBD rule (hasRadResult) and parse the organ, not the word "dilated". |
+| inv-no-ct-first | investigationExclude | quality | not run | FAIL (known gap) | EAU Guidelines on Urolithiasis 2024 | Do not seed ionising imaging when pregnant (HpiTab.seedInvestigationsFromPane); prefer the USS KUB line. |
+| mgmt-paracetamol-opioid | managementInclude | quality | not run | FAIL (known gap) | EAU Guidelines on Urolithiasis 2024 | Map pregnancy-coded ureteric colic (O26.8 with N20) to the renal colic protocol with a pregnancy branch: paracetamol/opioid, no NSAID, ultrasound first. |
+
+Failure details:
+
+- **inv-no-ct-first** (web): forbidden investigation present in web.pane.seeded: "ct kub (non-contrast) - stone size, location, hydronephrosis (renal_colic)" (+2 more) [known gap: Web: PANE seeds "CT KUB (non-contrast)" (renal_colic) and "CT abdomen/pelvis with IV contrast" (appendicitis) as urgent orders in a 26-week pregnancy.]
+- **mgmt-obstetric** (web): no management item matched among 8 (web.clinicalPrompts) [known gap: Web: No obstetric review; the β-hCG/ectopic prompt fires instead.]
+- **mgmt-paracetamol-opioid** (web): no management item matched among 8 (web.clinicalPrompts) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the renal colic plan is no longer shown. Before the fix the only analgesia was diclofenac first-line.]
+- **mgmt-no-ercp** (web): forbidden management item present in web.clinicalPrompts: "• ercp - therapeutic: stone extraction (choledocholithiasis) or stenting (malignant st..." (+1 more) [known gap: Web: "Dilated proximal ureter" in the ultrasound report matches the dilated-CBD rule (any "dilated"): MRCP, "ERCP — therapeutic", CA 19-9 and "HPB surgical review — Whipple / Hartmann's" are offered to a pregnant woman with hydronephrosis.]
+
+Guidelines:
+
+- **eau-urolith-2024** — EAU Guidelines on Urolithiasis (2024), Renal colic: NSAIDs first-line analgesia (caution in reduced renal function); low-dose non-contrast CT to confirm; pregnancy: ultrasound first-line, MRI second-line, low-dose CT last resort; medical expulsive therapy (alpha-blocker) for distal ureteric stones >5 mm; obstructed infected kidney: urgent decompression (percutaneous nephrostomy or retrograde ureteral stent) with antibiotics, urine and blood cultures, definitive stone treatment delayed until infection resolved; anuria / obstructed solitary kidney: urgent decompression. Skolarikos A, Jung H, Neisius A, et al. EAU Guidelines on Urolithiasis. EAU Guidelines Office, Arnhem; 2024 edition. *(statement wording/numbering not yet verified against the source)*
+- **fda-nsaid-2020** — FDA Drug Safety Communication — avoid NSAIDs in pregnancy at 20 weeks or later (2020), NSAIDs at about 20 weeks of gestation or later can cause fetal renal dysfunction and oligohydramnios; avoid unless specifically advised (low-dose aspirin excepted). US Food and Drug Administration. FDA recommends avoiding use of NSAIDs in pregnancy at 20 weeks or later because they can result in low amniotic fluid. Drug Safety Communication, 15 October 2020. *(statement wording/numbering not yet verified against the source)*
+
+### Obstructed solitary kidney (ureteric stone, anuria)
+
+#### `renal-colic-solitary-kidney-anticoagulated` — Solitary kidney, CKD 3b, anticoagulated (apixaban), anuric
+
+64-year-old man with a solitary kidney, CKD 3b and AF on apixaban; 18 h of left colic, anuric for 10 h, creatinine 420, K 5.9; 7 mm ureteric stone.
+
+Permutation of `renal-colic-typical`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-emergency | emergencyLevel | critical | not run | PASS | EAU Guidelines on Urolithiasis 2024; NICE NG148 2019 |  |
+| alarm-aki | mustAlarm | critical | not run | PASS | NICE NG148 2019 |  |
+| mgmt-urgent-decompression | managementInclude | critical | not run | FAIL (known gap) | EAU Guidelines on Urolithiasis 2024; NICE NG148 2019 | Renal colic protocol: an "obstructed solitary kidney / anuria / bilateral obstruction" branch with urgent nephrostomy or stent, driven by creatinine rise, anuria or history of nephrectomy. |
+| mgmt-no-nsaid | managementExclude | critical | not run | FAIL (known gap) | EAU Guidelines on Urolithiasis 2024; NICE NG148 2019 | Suppress NSAIDs when eGFR is low, creatinine is rising, or an anticoagulant is recorded. |
+| mgmt-urology | managementInclude | quality | not run | PASS | NICE NG148 2019 |  |
+| mgmt-anticoagulant-plan | managementInclude | quality | not run | PASS | EAU Guidelines on Urolithiasis 2024 |  |
+| mgmt-no-conservative-met | managementExclude | quality | not run | FAIL (known gap) | EAU Guidelines on Urolithiasis 2024 | As mgmt-urgent-decompression. |
+
+Failure details:
+
+- **mgmt-urgent-decompression** (web): no management item matched among 43 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Plan and panel give the standard colic pathway (diclofenac, MET, ESWL/URS/PCNL); the solitary-kidney red flag says "emergency urological referral" but no decompression; the anuria is not read.]
+- **mgmt-no-nsaid** (web): forbidden management item present in web.plan: "[immediate] analgesia: diclofenac 75 mg im / pr (first-line); opioids if nsaids contraindicated; antiemetic." (+2 more) [known gap: Web: "Diclofenac 75 mg IM / PR (first-line)" in plan, panel and medications for AKI on CKD in a solitary kidney on apixaban.]
+- **mgmt-no-conservative-met** (web): forbidden management item present in web.plan: "[conservative] met (medical expulsive therapy): tamsulosin 0.4 mg od for distal ureteric stone ≤10 mm × 4 weeks." (+3 more) [known gap: Web: MET (tamsulosin × 4 weeks) is offered for an anuric solitary kidney.]
+
+Guidelines:
+
+- **eau-urolith-2024** — EAU Guidelines on Urolithiasis (2024), Renal colic: NSAIDs first-line analgesia (caution in reduced renal function); low-dose non-contrast CT to confirm; pregnancy: ultrasound first-line, MRI second-line, low-dose CT last resort; medical expulsive therapy (alpha-blocker) for distal ureteric stones >5 mm; obstructed infected kidney: urgent decompression (percutaneous nephrostomy or retrograde ureteral stent) with antibiotics, urine and blood cultures, definitive stone treatment delayed until infection resolved; anuria / obstructed solitary kidney: urgent decompression. Skolarikos A, Jung H, Neisius A, et al. EAU Guidelines on Urolithiasis. EAU Guidelines Office, Arnhem; 2024 edition. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng148** — NICE NG148 — Acute kidney injury: prevention, detection and management (2019), Detection (creatinine against baseline); urinalysis for all with AKI; ultrasound of the urinary tract within 24 h when obstruction is suspected (immediately if pyonephrosis suspected); stop/withhold nephrotoxic drugs (NSAIDs, ACE inhibitors, ARBs, diuretics) and review metformin; refer to urology immediately for pyonephrosis, obstructed solitary kidney, bilateral upper tract obstruction or complications of obstruction; nephrology referral criteria. National Institute for Health and Care Excellence. Acute kidney injury: prevention, detection and management. NICE guideline NG148. London: NICE; 2019. *(statement wording/numbering not yet verified against the source)*
+
+### Renal colic (ureteric calculus)
+
+#### `renal-colic-typical` — Typical, afebrile, 5 mm distal stone
+
+36-year-old man with sudden left loin-to-groin colic, vomiting and haematuria; CT KUB 5 mm left VUJ stone, afebrile, creatinine 94.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-renal-colic-top3 | mustRankTopK | critical | not run | PASS | EAU Guidelines on Urolithiasis 2024 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS | EAU Guidelines on Urolithiasis 2024 |  |
+| mgmt-no-laparotomy | managementExclude | critical | not run | PASS | EAU Guidelines on Urolithiasis 2024 |  |
+| level-urgent | emergencyLevel | quality | not run | PASS | EAU Guidelines on Urolithiasis 2024 |  |
+| inv-ncct | investigationInclude | quality | not run | PASS | EAU Guidelines on Urolithiasis 2024 |  |
+| inv-urinalysis | investigationInclude | quality | not run | PASS | EAU Guidelines on Urolithiasis 2024 |  |
+| inv-renal-function | investigationInclude | quality | not run | PASS | EAU Guidelines on Urolithiasis 2024 |  |
+| mgmt-nsaid-analgesia | managementInclude | quality | not run | PASS | EAU Guidelines on Urolithiasis 2024 |  |
+| mgmt-met-alpha-blocker | managementInclude | quality | not run | PASS | EAU Guidelines on Urolithiasis 2024 |  |
+
+Guidelines:
+
+- **eau-urolith-2024** — EAU Guidelines on Urolithiasis (2024), Renal colic: NSAIDs first-line analgesia (caution in reduced renal function); low-dose non-contrast CT to confirm; pregnancy: ultrasound first-line, MRI second-line, low-dose CT last resort; medical expulsive therapy (alpha-blocker) for distal ureteric stones >5 mm; obstructed infected kidney: urgent decompression (percutaneous nephrostomy or retrograde ureteral stent) with antibiotics, urine and blood cultures, definitive stone treatment delayed until infection resolved; anuria / obstructed solitary kidney: urgent decompression. Skolarikos A, Jung H, Neisius A, et al. EAU Guidelines on Urolithiasis. EAU Guidelines Office, Arnhem; 2024 edition. *(statement wording/numbering not yet verified against the source)*
+
+### Subarachnoid haemorrhage (late presentation)
+
+#### `sah-late-presentation-day5` — Late presentation (day 5) at a surgical follow-up clinic
+
+52-year-old man at his post-hernia-repair review mentions a sudden worst-ever headache while lifting 5 days ago, now a milder persistent headache and neck ache.
+
+Permutation of `sah-thunderclap-headache`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-sah | mustNotMiss | critical | not run | FAIL (known gap) | NICE NG228 2022 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-urgent | emergencyLevel | critical | not run | FAIL (known gap) | NICE NG228 2022 | Add neurological red-flag rules to lib/triage-engine rules.ts (sudden focal weakness/facial droop/speech disturbance, thunderclap headache, neck stiffness with fever/non-blanching rash, saddle anaesthesia with bladder/bowel change, new leg weakness with known cancer) → emergency. |
+| alarm-sah | mustAlarm | critical | not run | FAIL (known gap) | NICE NG228 2022 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| inv-ct-cta-or-lp | investigationInclude | critical | not run | FAIL (known gap) | NICE NG228 2022 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-no-migraine-label | managementExclude | quality | not run | PASS | NICE NG228 2022 |  |
+
+Failure details:
+
+- **mnm-sah** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#2, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, cholecystitis, GORD. Symptom inference ranks SAH #2.]
+- **level-urgent** (web): web.triage: priority (acuity=review, action=priority_24_48h, score=15); expected ≥ urgent [known gap: Web: Triage "priority_24_48h" (score 15). Instead, "Hernia — elective repair indicated" fires from the healed repair in the exam text.]
+- **alarm-sah** (web): no alarm matched among 2 (web.clinicalPrompts.safety) [known gap: Web: No SAH alarm; the only safety prompts are pre-op bloods and an elective hernia repair.]
+- **inv-ct-cta-or-lp** (web): no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No CT head, CTA or LP.]
+
+Guidelines:
+
+- **nice-ng228** — NICE NG228 — Subarachnoid haemorrhage caused by a ruptured aneurysm: diagnosis and management (2022), Suspect SAH with thunderclap headache (sudden, severe, peaking within minutes); non-contrast CT head immediately; if CT is normal and done more than 6 h after onset, consider lumbar puncture at least 12 h after onset; if SAH confirmed: CT angiography and discussion with a neurosurgical centre; nimodipine. National Institute for Health and Care Excellence. Subarachnoid haemorrhage caused by a ruptured aneurysm: diagnosis and management. NICE guideline NG228. London: NICE; 2022. *(statement wording/numbering not yet verified against the source)*
+
+### Subarachnoid haemorrhage
+
+#### `sah-thunderclap-headache` — Thunderclap headache with meningism, 4 h
+
+46-year-old hypertensive smoker with sudden worst-ever occipital headache peaking within a minute, vomiting, neck stiffness and photophobia; GCS 15.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-sah | mustNotMiss | critical | not run | FAIL (known gap) | NICE NG228 2022 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-emergency | emergencyLevel | critical | not run | FAIL (known gap) | NICE NG228 2022 | Add neurological red-flag rules to lib/triage-engine rules.ts (sudden focal weakness/facial droop/speech disturbance, thunderclap headache, neck stiffness with fever/non-blanching rash, saddle anaesthesia with bladder/bowel change, new leg weakness with known cancer) → emergency. |
+| alarm-sah | mustAlarm | critical | not run | FAIL (known gap) | NICE NG228 2022 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| inv-ct-head | investigationInclude | critical | not run | FAIL (known gap) | NICE NG228 2022 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-neurosurgery | managementInclude | critical | not run | FAIL (known gap) | NICE NG228 2022 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-no-antithrombotic | managementExclude | critical | not run | PASS | NICE NG228 2022 |  |
+| mnm-sah-symptom-engine | mustNotMiss | quality | not run | PASS | NICE NG228 2022 |  |
+| inv-lp-if-ct-negative | investigationInclude | quality | not run | FAIL (known gap) | NICE NG228 2022 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-nimodipine | managementInclude | quality | not run | FAIL (known gap) | NICE NG228 2022 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+
+Failure details:
+
+- **mnm-sah** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#3, web.passive#3 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, GORD, peptic ulcer. Symptom inference ranks meningitis ×2 then SAH #3.]
+- **level-emergency** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: Triage "same_day_call" (score 35): the "thunderclap headache" chip and "worst ever" text are not red flags.]
+- **alarm-sah** (web): no alarm matched among 3 (web.clinicalPrompts.safety) [known gap: Web: Alarms are the β-hCG prompt, the acute-abdomen panel (the "vomiting" chip) and pre-op bloods.]
+- **inv-ct-head** (web): no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No CT head.]
+- **inv-lp-if-ct-negative** (web): no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No LP / CTA pathway.]
+- **mgmt-neurosurgery** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No neurosurgical referral.]
+- **mgmt-nimodipine** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No nimodipine.]
+
+Guidelines:
+
+- **nice-ng228** — NICE NG228 — Subarachnoid haemorrhage caused by a ruptured aneurysm: diagnosis and management (2022), Suspect SAH with thunderclap headache (sudden, severe, peaking within minutes); non-contrast CT head immediately; if CT is normal and done more than 6 h after onset, consider lumbar puncture at least 12 h after onset; if SAH confirmed: CT angiography and discussion with a neurosurgical centre; nimodipine. National Institute for Health and Care Excellence. Subarachnoid haemorrhage caused by a ruptured aneurysm: diagnosis and management. NICE guideline NG228. London: NICE; 2022. *(statement wording/numbering not yet verified against the source)*
 
 ### Small bowel obstruction
 
@@ -10504,6 +11580,63 @@ Guidelines:
 
 - **wses-sbo-2018** — WSES Bologna guidelines — adhesive small bowel obstruction (2017 update) (2018), CT with IV contrast for strangulation signs; non-operative management (NGT, fluids) up to 72 h without strangulation; water-soluble contrast challenge (colon within 24 h predicts success); surgery for strangulation, peritonitis or failed NOM; virgin abdomen and hernia causes. ten Broek RPG, Krielen P, Di Saverio S, et al. Bologna guidelines for diagnosis and management of adhesive small bowel obstruction (ASBO): 2017 update of the evidence-based guidelines from the WSES ASBO working group. World J Emerg Surg. 2018;13:24. *(statement wording/numbering not yet verified against the source)*
 
+### First unprovoked seizure
+
+#### `seizure-first-unprovoked-adult` — Young woman, recovered, drives
+
+28-year-old woman with a witnessed 2-minute generalised tonic-clonic seizure, tongue bite and incontinence, now fully recovered; glucose, sodium and calcium normal.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-seizure | mustNotMiss | critical | not run | FAIL (known gap) | NICE NG217 2022 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| mgmt-ecg | managementInclude | critical | not run | FAIL (known gap) | NICE NG217 2022 | Add a first-seizure prompt: ECG, glucose, first-seizure clinic within 2 weeks, driving/safety advice (NICE NG217). |
+| mgmt-first-seizure-referral | managementInclude | critical | not run | FAIL (known gap) | NICE NG217 2022 | As mgmt-ecg. |
+| mgmt-driving-safety-advice | managementInclude | critical | not run | FAIL (known gap) | NICE NG217 2022 | As mgmt-ecg. |
+| mnm-seizure-symptom-engine | mustNotMiss | quality | not run | PASS | NICE NG217 2022 |  |
+| level-priority | emergencyLevel | quality | not run | PASS | NICE NG217 2022 |  |
+| mgmt-no-aed-before-specialist | managementExclude | quality | not run | PASS | NICE NG217 2022 |  |
+
+Failure details:
+
+- **mnm-seizure** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, appendicitis, GORD. Symptom inference ranks epilepsy/seizure #1.]
+- **mgmt-ecg** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: Web: No ECG (the pre-operative ECG prompt is age ≥40 only).]
+- **mgmt-first-seizure-referral** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: Web: No neurology / first-seizure referral; only two cervical-screening lines in management.]
+- **mgmt-driving-safety-advice** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: Web: No driving advice.]
+
+Guidelines:
+
+- **nice-ng217** — NICE NG217 — Epilepsies in children, young people and adults (2022), After a first suspected seizure: urgent referral to a specialist (seen within 2 weeks); 12-lead ECG in adults; blood glucose; advice on driving and safety (DVLA), and on what to do if another seizure happens; status epilepticus: benzodiazepine (buccal midazolam or IV lorazepam). National Institute for Health and Care Excellence. Epilepsies in children, young people and adults. NICE guideline NG217. London: NICE; 2022. *(statement wording/numbering not yet verified against the source)*
+
+### Eclampsia (seizure in pregnancy)
+
+#### `seizure-pregnant-eclampsia` — Pregnant, 34 weeks: eclampsia
+
+32-year-old primigravida at 34 weeks with a day of headache and visual disturbance then a generalised seizure; BP 172/114, proteinuria 3+, platelets 92, ALT 110.
+
+Permutation of `seizure-first-unprovoked-adult`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-eclampsia | mustNotMiss | critical | not run | FAIL (known gap) | NICE NG133 2019 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-emergency | emergencyLevel | critical | not run | PASS | NICE NG133 2019 |  |
+| alarm-eclampsia-or-severe-hypertension | mustAlarm | critical | not run | FAIL (known gap) | NICE NG133 2019 | Add a pregnancy hypertension rule: pregnant/postpartum + BP ≥160/110 (or ≥140/90 with proteinuria/symptoms) or seizure → eclampsia/pre-eclampsia prompt with magnesium sulfate, antihypertensive, obstetric emergency (NICE NG133). |
+| mgmt-magnesium-sulfate | managementInclude | critical | not run | FAIL (known gap) | NICE NG133 2019 | As alarm-eclampsia-or-severe-hypertension. |
+| mgmt-antihypertensive | managementInclude | critical | not run | FAIL (known gap) | NICE NG133 2019 | As alarm-eclampsia-or-severe-hypertension. |
+| mgmt-obstetric-emergency | managementInclude | critical | not run | FAIL (known gap) | NICE NG133 2019 | When pregnancy is recorded, add an obstetric-review / fetal-monitoring action to every emergency prompt and strip NSAIDs from protocol medications. |
+| mgmt-no-aed-first-line | managementExclude | quality | not run | PASS | NICE NG133 2019 |  |
+
+Failure details:
+
+- **mnm-eclampsia** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, appendicitis, GORD. Symptom inference ranks hypertensive emergency, epilepsy, migraine; no eclampsia entry.]
+- **alarm-eclampsia-or-severe-hypertension** (web): no alarm matched among 3 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: BP 172/114 does not fire the hypertensive prompt (SBP ≥180 only); pregnancy is not combined with BP, proteinuria or seizure. Only the β-hCG prompt fires ("exclude ectopic" at 34 weeks).]
+- **mgmt-magnesium-sulfate** (web): no management item matched among 4 (web.clinicalPrompts) [known gap: Web: No magnesium sulfate.]
+- **mgmt-antihypertensive** (web): no management item matched among 4 (web.clinicalPrompts) [known gap: Web: No antihypertensive (SBP below the 180 threshold).]
+- **mgmt-obstetric-emergency** (web): no management item matched among 4 (web.clinicalPrompts) [known gap: Web: No obstetric involvement.]
+
+Guidelines:
+
+- **nice-ng133** — NICE NG133 — Hypertension in pregnancy: diagnosis and management (2019), Eclampsia: IV magnesium sulfate; treat severe hypertension (≥160/110 mmHg) in critical care; senior obstetric and anaesthetic involvement; plan birth once stabilised. National Institute for Health and Care Excellence. Hypertension in pregnancy: diagnosis and management. NICE guideline NG133. London: NICE; 2019 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+
 ### Sigmoid volvulus
 
 #### `sigmoid-volvulus-base` — Sigmoid volvulus, viable (base case)
@@ -10574,6 +11707,66 @@ Guidelines:
 - **ascrs-volvulus-2021** — ASCRS clinical practice guidelines — colonic volvulus and acute colonic pseudo-obstruction (2021), Sigmoid volvulus: endoscopic detorsion without peritonitis/ischaemia, then sigmoid colectomy during the same admission; emergency resection for gangrene/perforation; caecal volvulus: operative management, endoscopic reduction not recommended. Alavi K, Poylin V, Davids JS, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of colonic volvulus and acute colonic pseudo-obstruction. Dis Colon Rectum. 2021;64:1046–57. *(statement wording/numbering not yet verified against the source)*
 - **wses-volvulus-2023** — WSES consensus guidelines — sigmoid volvulus management (2023), Endoscopic decompression when no peritonitis/ischaemia; emergency surgery (Hartmann's) for gangrene, perforation or failed decompression; elective sigmoidectomy after decompression. Tian BWCA, Vigutto G, Tan E, et al. WSES consensus guidelines on sigmoid volvulus management. World J Emerg Surg. 2023;18:34. *(statement wording/numbering not yet verified against the source)*
 - **ssc-2021** — Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021 (2021), Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+
+### Acute ischaemic stroke
+
+#### `stroke-acute-fast-positive` — FAST positive within the thrombolysis window
+
+69-year-old man with AF (not anticoagulated): sudden right facial droop, right arm weakness and dysphasia 75 min ago; BP 182/98, glucose 6.8, NIHSS 11.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-stroke | mustNotMiss | critical | not run | FAIL (known gap) | NICE NG128 2019 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-emergency | emergencyLevel | critical | not run | FAIL (known gap) | NICE NG128 2019 | Add neurological red-flag rules to lib/triage-engine rules.ts (sudden focal weakness/facial droop/speech disturbance, thunderclap headache, neck stiffness with fever/non-blanching rash, saddle anaesthesia with bladder/bowel change, new leg weakness with known cancer) → emergency. |
+| alarm-stroke | mustAlarm | critical | not run | FAIL (known gap) | NICE NG128 2019 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| inv-ct-head | investigationInclude | critical | not run | FAIL (known gap) | NICE NG128 2019 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-reperfusion | managementInclude | critical | not run | FAIL (known gap) | NICE NG128 2019 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-no-aspirin-before-imaging | managementExclude | critical | not run | PASS | NICE NG128 2019 |  |
+| mnm-stroke-symptom-engine | mustNotMiss | quality | not run | PASS | NICE NG128 2019 |  |
+| mgmt-stroke-unit | managementInclude | quality | not run | FAIL (known gap) | NICE NG128 2019 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-swallow-screen | managementInclude | quality | not run | FAIL (known gap) | NICE NG128 2019 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+
+Failure details:
+
+- **mnm-stroke** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, cholecystitis, GORD. Symptom inference ranks stroke/TIA #1.]
+- **level-emergency** (web): web.triage: priority (acuity=review, action=priority_24_48h, score=19); expected ≥ emergency [known gap: Web: Triage "priority_24_48h" (score 19) for a FAST-positive stroke at 75 minutes: RED_FLAGS has no neurological rule; facial weakness / limb weakness / speech chips add nothing.]
+- **alarm-stroke** (web): no alarm matched among 2 (web.clinicalPrompts.safety) [known gap: Web: Only the SBP 182 "hypertensive urgency" prompt fires, and it offers oral amlodipine.]
+- **inv-ct-head** (web): no investigation matched among 16 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No CT head (I63 has no protocol; no neurological prompts).]
+- **mgmt-reperfusion** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No thrombolysis / thrombectomy / stroke team.]
+- **mgmt-stroke-unit** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No stroke team or stroke unit; "focal neurology (stroke)" appears only as an end-organ check inside the hypertension prompt.]
+- **mgmt-swallow-screen** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No swallow screen.]
+
+Guidelines:
+
+- **nice-ng128** — NICE NG128 — Stroke and transient ischaemic attack in over 16s: diagnosis and initial management (2019), 1.1 Rapid recognition (FAST); exclude hypoglycaemia as the cause of sudden-onset neurological symptoms; suspected TIA: aspirin 300 mg immediately unless contraindicated and specialist assessment within 24 h; do not use scoring systems (ABCD2) to assess TIA risk; 1.2 imaging: non-enhanced CT immediately if thrombolysis/thrombectomy indicated, on anticoagulants or bleeding tendency; thrombolysis with alteplase within 4.5 h; thrombectomy; aspirin 300 mg after haemorrhage excluded; admit to a stroke unit. National Institute for Health and Care Excellence. Stroke and transient ischaemic attack in over 16s: diagnosis and initial management. NICE guideline NG128. London: NICE; 2019 (updated 2022). *(statement wording/numbering not yet verified against the source)*
+
+### Acute ischaemic stroke on a DOAC
+
+#### `stroke-anticoagulated-apixaban-elderly` — Elderly, anticoagulated (apixaban 3 h ago)
+
+84-year-old woman on apixaban (last dose 3 h ago) with sudden left hemiparesis, facial droop and neglect 2 h ago; NIHSS 14.
+
+Permutation of `stroke-acute-fast-positive`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-emergency | emergencyLevel | critical | not run | PASS | NICE NG128 2019; European Stroke Organisation guidelines on intravenous thrombolysis for acute ischaemic stroke 2021 |  |
+| alarm-stroke | mustAlarm | critical | not run | FAIL (known gap) | NICE NG128 2019 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| inv-ct-head | investigationInclude | critical | not run | FAIL (known gap) | NICE NG128 2019 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-no-thrombolysis-on-doac | managementExclude | critical | not run | PASS | European Stroke Organisation guidelines on intravenous thrombolysis for acute ischaemic stroke 2021 |  |
+| inv-coagulation | investigationInclude | quality | not run | PASS | European Stroke Organisation guidelines on intravenous thrombolysis for acute ischaemic stroke 2021 |  |
+| mgmt-thrombectomy-option | managementInclude | quality | not run | FAIL (known gap) | NICE NG128 2019; European Stroke Organisation guidelines on intravenous thrombolysis for acute ischaemic stroke 2021 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+
+Failure details:
+
+- **alarm-stroke** (web): no alarm matched among 3 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Triage reaches emergency_now only because "left arm" in the HPI matches the cardiac red flag ("Possible cardiac event", Chest Pain Pathway); the right-sided stroke in the base vignette stays at priority. No stroke alarm exists.]
+- **inv-ct-head** (web): no investigation matched among 20 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No CT head; the anticoagulation prompt offers peri-operative DOAC bridging instead.]
+- **mgmt-thrombectomy-option** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No thrombectomy.]
+
+Guidelines:
+
+- **nice-ng128** — NICE NG128 — Stroke and transient ischaemic attack in over 16s: diagnosis and initial management (2019), 1.1 Rapid recognition (FAST); exclude hypoglycaemia as the cause of sudden-onset neurological symptoms; suspected TIA: aspirin 300 mg immediately unless contraindicated and specialist assessment within 24 h; do not use scoring systems (ABCD2) to assess TIA risk; 1.2 imaging: non-enhanced CT immediately if thrombolysis/thrombectomy indicated, on anticoagulants or bleeding tendency; thrombolysis with alteplase within 4.5 h; thrombectomy; aspirin 300 mg after haemorrhage excluded; admit to a stroke unit. National Institute for Health and Care Excellence. Stroke and transient ischaemic attack in over 16s: diagnosis and initial management. NICE guideline NG128. London: NICE; 2019 (updated 2022). *(statement wording/numbering not yet verified against the source)*
+- **eso-ivt-2021** — European Stroke Organisation guidelines on intravenous thrombolysis for acute ischaemic stroke (2021), Patients who took a direct oral anticoagulant within the previous 48 h: IV thrombolysis not recommended (unless specific drug levels/tests normal or dabigatran reversed with idarucizumab); mechanical thrombectomy remains an option for large vessel occlusion. Berge E, Whiteley W, Audebert H, et al. European Stroke Organisation (ESO) guidelines on intravenous thrombolysis for acute ischaemic stroke. Eur Stroke J. 2021;6:I–LXII. *(statement wording/numbering not yet verified against the source)*
 
 ### Superficial vein thrombosis (great saphenous vein, near the saphenofemoral junction)
 
@@ -10985,6 +12178,65 @@ Failure details:
 Guidelines:
 
 - **nice-ng145-2019** — NICE NG145 — Thyroid disease: assessment and management (2019), Non-malignant thyroid enlargement: investigation and referral (compressive symptoms, stridor); surgery for compressive goitre. National Institute for Health and Care Excellence. Thyroid disease: assessment and management. NICE guideline NG145. London: NICE; 2019. *(statement wording/numbering not yet verified against the source)*
+
+### Transient ischaemic attack
+
+#### `tia-transient-weakness-dysarthria` — Resolved symptoms, found at a pre-operative visit
+
+61-year-old smoker with hypertension and diabetes; 40 minutes of left arm weakness and slurred speech 3 h ago, now resolved, at a pre-op hernia assessment.
+
+Permutation of `stroke-acute-fast-positive`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-tia | mustNotMiss | critical | not run | FAIL (known gap) | NICE NG128 2019 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-urgent | emergencyLevel | critical | not run | PASS | NICE NG128 2019 |  |
+| mgmt-aspirin-300 | managementInclude | critical | not run | FAIL (known gap) | NICE NG128 2019 | Add a TIA prompt (aspirin 300 mg, specialist within 24 h) and remove ABCD2 from the CDS suggestions. |
+| mgmt-specialist-24h | managementInclude | critical | not run | FAIL (known gap) | NICE NG128 2019 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| inv-vascular-imaging | investigationInclude | quality | not run | FAIL (known gap) | NICE NG128 2019 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-defer-elective-surgery | managementInclude | quality | not run | FAIL (known gap) | NICE NG128 2019 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+
+Failure details:
+
+- **mnm-tia** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, cholecystitis, GORD. Symptom inference ranks stroke/TIA #1.]
+- **inv-vascular-imaging** (web): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No carotid imaging.]
+- **mgmt-aspirin-300** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No aspirin. The scales panel instead recommends ABCD2, which NICE NG128 says not to use.]
+- **mgmt-specialist-24h** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No TIA clinic / stroke specialist referral.]
+- **mgmt-defer-elective-surgery** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: Web: The pending hernia repair is not deferred (no TIA rule).]
+
+Guidelines:
+
+- **nice-ng128** — NICE NG128 — Stroke and transient ischaemic attack in over 16s: diagnosis and initial management (2019), 1.1 Rapid recognition (FAST); exclude hypoglycaemia as the cause of sudden-onset neurological symptoms; suspected TIA: aspirin 300 mg immediately unless contraindicated and specialist assessment within 24 h; do not use scoring systems (ABCD2) to assess TIA risk; 1.2 imaging: non-enhanced CT immediately if thrombolysis/thrombectomy indicated, on anticoagulants or bleeding tendency; thrombolysis with alteplase within 4.5 h; thrombectomy; aspirin 300 mg after haemorrhage excluded; admit to a stroke unit. National Institute for Health and Care Excellence. Stroke and transient ischaemic attack in over 16s: diagnosis and initial management. NICE guideline NG128. London: NICE; 2019 (updated 2022). *(statement wording/numbering not yet verified against the source)*
+
+### Testicular torsion (adult, epididymitis look-alike)
+
+#### `torsion-adult-mimicking-epididymitis` — Young sexually active adult: risk of labelling as epididymo-orchitis
+
+23-year-old sexually active man woken by sudden left testicular pain 4 h ago, vomiting, high-riding horizontal testis, absent cremasteric reflex, clear urine.
+
+Permutation of `mimic-testicular-torsion`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-torsion-top3 | mustRankTopK | critical | not run | FAIL (known gap) | EAU/ESPU Guidelines on Paediatric Urology 2024; IUSTI/WHO European guideline on the management of epididymo-orchitis 2016 | Calibrate pane-engine urology likelihoods/priors and map the urinary chips (loin pain, dysuria, retention, haematuria, scrotal) and the "Other / general surgical" CC into PANE features, as SmartSymptomPicker chips do for symptom inference. |
+| level-emergency | emergencyLevel | critical | not run | FAIL (known gap) | EAU/ESPU Guidelines on Paediatric Urology 2024; IUSTI/WHO European guideline on the management of epididymo-orchitis 2016 | Add a triage red flag: male with sudden testicular/scrotal pain (or the scrotal-swelling chip with sudden onset) → emergency (as proposed for mimic-testicular-torsion). |
+| alarm-torsion | mustAlarm | critical | not run | PASS | EAU/ESPU Guidelines on Paediatric Urology 2024; IUSTI/WHO European guideline on the management of epididymo-orchitis 2016 |  |
+| mgmt-scrotal-exploration | managementInclude | critical | not run | PASS | EAU/ESPU Guidelines on Paediatric Urology 2024; IUSTI/WHO European guideline on the management of epididymo-orchitis 2016 |  |
+| mgmt-no-epididymitis-plan | managementExclude | critical | not run | PASS | IUSTI/WHO European guideline on the management of epididymo-orchitis 2016 |  |
+| dx-torsion-first | mustRankTopK | quality | not run | FAIL (known gap) | EAU/ESPU Guidelines on Paediatric Urology 2024; IUSTI/WHO European guideline on the management of epididymo-orchitis 2016 | Calibrate pane-engine urology likelihoods/priors and map the urinary chips (loin pain, dysuria, retention, haematuria, scrotal) and the "Other / general surgical" CC into PANE features, as SmartSymptomPicker chips do for symptom inference. |
+| mgmt-bilateral-fixation | managementInclude | quality | not run | PASS | EAU/ESPU Guidelines on Paediatric Urology 2024 |  |
+| mgmt-no-doppler-delay | managementExclude | quality | not run | PASS | EAU/ESPU Guidelines on Paediatric Urology 2024 |  |
+
+Failure details:
+
+- **dx-torsion-top3** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE applies testicular_pain, scrotal_swelling, radiation_to_groin and nausea_vomiting, but ranks appendicitis (0.11), inguinal hernia, cholecystitis; torsion (prior 0.01) is not in the top 3. The torsion prompt, protocol and emergency level are all correct.]
+- **dx-torsion-first** (web): not in top 1 of web.pane: 1. Acute Appendicitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: As dx-torsion-top3.]
+- **level-emergency** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: Triage "same_day_call" (score 35): there is no torsion/scrotal rule in rules.ts; the earlier emergency_now came from "no fever" in the HPI. The torsion safety prompt and the N44.0 protocol are correct.]
+
+Guidelines:
+
+- **eau-paed-2024** — EAU/ESPU Guidelines on Paediatric Urology — acute scrotum (2024), Testicular torsion is a clinical diagnosis; urgent surgical exploration; Doppler ultrasound must not delay surgery; explore when torsion cannot be excluded. Radmayr C, Bogaert G, Burgu B, et al. EAU Guidelines on Paediatric Urology. EAU Guidelines Office, Arnhem; 2024 edition. Section: Acute scrotum in children. *(statement wording/numbering not yet verified against the source)*
+- **iusti-eo-2016** — IUSTI/WHO European guideline on the management of epididymo-orchitis (2016), Exclude torsion (surgical exploration if in doubt); test for chlamydia and gonorrhoea (NAAT) and urine culture; likely STI: ceftriaxone plus doxycycline; enteric organisms likely: fluoroquinolone; scrotal support and analgesia; partner notification. Street EJ, Justice ED, Kopa Z, et al. The 2016 European guideline on the management of epididymo-orchitis. Int J STD AIDS. 2017;28:744–749. *(statement wording/numbering not yet verified against the source)*
 
 ### Blunt polytrauma with haemorrhagic shock (ATLS class III)
 
@@ -11962,6 +13214,69 @@ Guidelines:
 
 - **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (oesophageal and stomach cancer) (2015), Offer urgent direct access upper GI endoscopy (within 2 weeks) to assess for oesophageal or stomach cancer in people with dysphagia (any age), or aged ≥55 with weight loss and any of upper abdominal pain, reflux or dyspepsia; consider urgent OGD in people aged ≥55 with upper abdominal pain and low haemoglobin, or raised platelets with upper abdominal pain. National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023). *(statement wording/numbering not yet verified against the source)*
 - **nice-cg184** — NICE CG184 — Gastro-oesophageal reflux disease and dyspepsia in adults: investigation and management (2014), Alarm features: refer under NG12 rather than empirical treatment. National Institute for Health and Care Excellence. Clinical guideline CG184. London: NICE; 2014 (last updated 2019). *(statement wording/numbering not yet verified against the source)*
+
+### Acute urinary retention
+
+#### `urinary-retention-acute-bph` — Typical: BPE, precipitated by cold remedy
+
+74-year-old man with LUTS, unable to pass urine for 12 h after a pseudoephedrine/chlorphenamine cold remedy; tender bladder, 1100 mL on scan.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-retention-top3 | mustRankTopK | critical | not run | FAIL (known gap) | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024; NICE CG97 2010 | Calibrate pane-engine urology likelihoods/priors and map the urinary chips (loin pain, dysuria, retention, haematuria, scrotal) and the "Other / general surgical" CC into PANE features, as SmartSymptomPicker chips do for symptom inference. |
+| level-urgent | emergencyLevel | critical | not run | PASS | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024; NICE CG97 2010 |  |
+| mgmt-catheterise | managementInclude | critical | not run | PASS | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024; NICE CG97 2010 |  |
+| mgmt-no-laparotomy | managementExclude | critical | not run | PASS | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024; NICE CG97 2010 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024; NICE CG97 2010 |  |
+| inv-renal-function | investigationInclude | quality | not run | PASS | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024; NICE CG97 2010 |  |
+| mgmt-alpha-blocker | managementInclude | quality | not run | PASS | NICE CG97 2010 |  |
+| mgmt-twoc | managementInclude | quality | not run | PASS | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024; NICE CG97 2010 |  |
+| mgmt-stop-precipitant | managementInclude | quality | not run | PASS | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 |  |
+
+Failure details:
+
+- **dx-retention-top3** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis [known gap: Web: PANE applies only suprapubic_pain; top 3 inguinal hernia, GORD, cholecystitis. The "urinary retention" chip does not reach PANE (urinary_retention_symptoms is never set by socrates-to-features). The R33 protocol is still used from the ICD.]
+
+Guidelines:
+
+- **eau-luts-2024** — EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) (2024), Acute urinary retention: bladder decompression by urethral (or suprapubic) catheter; alpha-blocker before trial without catheter; renal function; identify precipitants (anticholinergics, constipation). Gravas S, Gacci M, Gratzke C, et al. EAU Guidelines on Management of Non-Neurogenic Male LUTS. EAU Guidelines Office, Arnhem; 2024 edition. *(statement wording/numbering not yet verified against the source)*
+- **nice-cg97** — NICE CG97 — Lower urinary tract symptoms in men: management (2010), Acute urinary retention: offer an alpha blocker before catheter removal; chronic retention with renal impairment (high-pressure chronic retention): catheterise and refer to urology before bladder outflow surgery. National Institute for Health and Care Excellence. Lower urinary tract symptoms in men: management. Clinical guideline CG97. London: NICE; 2010 (updated 2015). *(statement wording/numbering not yet verified against the source)*
+
+### Urosepsis (catheter-associated) with septic shock
+
+#### `urosepsis-elderly-immunosuppressed-catheter` — Elderly, immunosuppressed (steroid + methotrexate), long-term catheter
+
+78-year-old man with a long-term catheter on prednisolone and methotrexate; confusion, rigors, BP 86/50, HR 124, lactate 4.1, cloudy catheter urine.
+
+Permutation of `pyelonephritis-adult-female`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-urosepsis | mustNotMiss | critical | not run | FAIL (known gap) | NICE NG51 2024 | Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node. |
+| level-emergency | emergencyLevel | critical | not run | PASS | NICE NG51 2024 |  |
+| alarm-sepsis | mustAlarm | critical | not run | PASS | NICE NG51 2024 |  |
+| inv-blood-culture | investigationInclude | critical | not run | PASS | NICE NG51 2024 |  |
+| mgmt-iv-antibiotics | managementInclude | critical | not run | PASS | NICE NG51 2024 |  |
+| mgmt-fluid-bolus | managementInclude | critical | not run | PASS | NICE NG51 2024 |  |
+| mgmt-steroid-cover | managementInclude | critical | not run | FAIL (known gap) | Guidance for the prevention and emergency management of adult patients with adrenal insufficiency (Society for Endocrinology / AAGBI / RCP) 2020 | Add a steroid-dependence rule (prednisolone ≥5 mg or equivalent): parenteral hydrocortisone in sepsis/surgery (SfE/AAGBI/RCP 2020). |
+| mgmt-no-laparotomy | managementExclude | critical | not run | PASS | NICE NG51 2024 |  |
+| score-news2 | scoreRecommended | quality | not run | PASS | NICE NG51 2024 |  |
+| inv-lactate | investigationInclude | quality | not run | PASS | NICE NG51 2024 |  |
+| inv-urine-from-new-catheter | investigationInclude | quality | not run | FAIL (known gap) | NICE NG51 2024 | When a catheter is recorded, ask for a catheter specimen after changing the catheter. |
+| mgmt-hold-methotrexate | managementInclude | quality | not run | FAIL (known gap) | NICE NG51 2024 | Add immunosuppressant review to the sepsis prompt. |
+
+Failure details:
+
+- **mnm-urosepsis** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3 inguinal hernia, GORD, cholecystitis (no features; no sepsis or urosepsis node). Symptom inference ranks sepsis #1.]
+- **inv-urine-from-new-catheter** (web): no investigation matched among 21 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Web: The UTI protocol asks for "MSU C&S (mid-stream urine)" in a catheterised man; the catheter change appears only as plan text ("CAUTI: remove or change catheter").]
+- **mgmt-steroid-cover** (web): no management item matched among 43 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Prednisolone is not recognised: no hydrocortisone / steroid-cover action in septic shock.]
+- **mgmt-hold-methotrexate** (web): no management item matched among 43 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Methotrexate is not mentioned.]
+
+Guidelines:
+
+- **nice-ng51** — NICE NG51 — Suspected sepsis: recognition, diagnosis and early management (2024), High-risk criteria (new confusion, SBP ≤90, HR >130, RR ≥25, lactate); blood cultures and broad-spectrum IV antibiotics within 1 hour for high risk; IV fluid bolus; lactate; senior review; source control. National Institute for Health and Care Excellence. Suspected sepsis in people aged 16 or over: recognition, assessment and early management. NICE guideline NG51 (updated 2024). London: NICE. *(statement wording/numbering not yet verified against the source)*
+- **sfe-steroid-2020** — Guidance for the prevention and emergency management of adult patients with adrenal insufficiency (Society for Endocrinology / AAGBI / RCP) (2020), Patients on long-term glucocorticoids (e.g. prednisolone ≥5 mg daily for ≥4 weeks) are at risk of adrenal crisis; during acute illness or sepsis give parenteral hydrocortisone / increased steroid cover. Simpson H, Tomlinson J, Wass J, Dean J, Arlt W. Guidance for the prevention and emergency management of adult patients with adrenal insufficiency. Clin Med (Lond). 2020;20:371–378. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng148** — NICE NG148 — Acute kidney injury: prevention, detection and management (2019), Detection (creatinine against baseline); urinalysis for all with AKI; ultrasound of the urinary tract within 24 h when obstruction is suspected (immediately if pyonephrosis suspected); stop/withhold nephrotoxic drugs (NSAIDs, ACE inhibitors, ARBs, diuretics) and review metformin; refer to urology immediately for pyonephrosis, obstructed solitary kidney, bilateral upper tract obstruction or complications of obstruction; nephrology referral criteria. National Institute for Health and Care Excellence. Acute kidney injury: prevention, detection and management. NICE guideline NG148. London: NICE; 2019. *(statement wording/numbering not yet verified against the source)*
 
 ### Acute variceal bleeding in cirrhosis
 
@@ -13231,6 +14546,14 @@ Guidelines:
 | `acutemed-syncope-vasovagal-low-risk` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=50); expected ≤ priority [known gap: Web run 2026-09-25: web.triage: emergency (acuity=urgent, action=emergency_now, score=90); expected ≤ priority. Triage reasons: Possible  |
 | `acutemed-syncope-vasovagal-low-risk` | inv-ecg | web | quality | known gap | no investigation matched among 20 (web.pane.seeded, web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 20 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). First items: FBC, CRP (cholecystitis) \| LFTs,  |
 | `adrenal-suspected-phaeochromocytoma` | mnm-phaeochromocytoma | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no phaeochromocytoma disease (only adrenal_incidentaloma) and a |
+| `aki-obstructive-chronic-retention-elderly` | mnm-retention | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis [known gap: Web: PANE top 3 inguinal hernia, GORD, diverticulitis: the urinary chips (incontinence, poor stream, incomplete e |
+| `aki-obstructive-chronic-retention-elderly` | mgmt-catheterise | web | critical | known gap | no management item matched among 13 (web.clinicalPrompts) [known gap: Web: No catheter: the AKI prompt treats creatinine 486 as pre-renal ("IV fluid challenge") and refers to nephrology; the ultrasound report (1.6 L bladder, bilateral hydro |
+| `aki-obstructive-chronic-retention-elderly` | mgmt-post-obstructive-diuresis | web | critical | known gap | no management item matched among 13 (web.clinicalPrompts) [known gap: Web: Not mentioned (the retention protocol has it, but no protocol is active).] |
+| `aki-obstructive-chronic-retention-elderly` | mgmt-urology | web | quality | known gap | no management item matched among 13 (web.clinicalPrompts) [known gap: Web: Nephrology only; no urology referral.] |
+| `aki-obstructive-chronic-retention-elderly` | mgmt-stop-anticholinergic | web | quality | known gap | no management item matched among 13 (web.clinicalPrompts) [known gap: Web: Amitriptyline is not recognised as a retention precipitant.] |
+| `aki-prerenal-diarrhoea-acei-nsaid` | mnm-aki | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, GORD, peptic ulcer. The AKI (cr |
+| `aki-prerenal-diarrhoea-acei-nsaid` | mnm-aki-symptom-engine | web | quality | known gap | not in top 5 of web.symptomInference: 1. Acute gastroenteritis \| 2. Hypertrophic pyloric stenosis \| 3. Acute cholecystitis \| 4. BPPV / labyrinthitis / vestibular neuritis \| 5. DKA / hyperglycaemic hyperosmolar state [known gap: Web: Sym |
+| `aki-prerenal-diarrhoea-acei-nsaid` | mgmt-stop-diuretic | web | quality | known gap | no management item matched among 16 (web.clinicalPrompts) [known gap: Web: The AKI prompt holds "NSAIDs, ACE-I, ARBs, metformin" but not diuretics (furosemide continues).] |
 | `ali-embolic-af` | dx-ali-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Acute cholecystitis, GORD, Acute diverticulitis — PANE has n |
 | `ali-embolic-af` | alarm-ali | web | critical | known gap | no alarm matched among 2 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emerge |
 | `ali-embolic-af` | flag-af-embolic-source | web | quality | known gap | no red flag matched among 12 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: PANE has no acute limb ischaemia disease and no protocol ma |
@@ -13380,6 +14703,18 @@ Guidelines:
 | `burns-inhalation-enclosed-space` | flag-special-areas | web | quality | known gap | no red flag matched among 14 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury p |
 | `burns-inhalation-enclosed-space` | mgmt-burns-referral | web | critical | known gap | no management item matched among 20 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the  |
 | `caecal-volvulus` | mgmt-resection | web | critical | known gap | no management item matched among 35 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No right hemicolectomy/ileocaecal resection in any output; the volvulus variant reuses the generic bowe |
+| `cauda-equina-retention-presentation` | mnm-cauda-equina | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease [known gap: Web: PANE top 3 cholecystitis, GORD, peptic ulcer; symptom inference ranks sciatica/disc disease then BPH.] |
+| `cauda-equina-retention-presentation` | level-emergency | web | critical | known gap | web.triage: routine (acuity=routine, action=routine_booking, score=0); expected ≥ emergency [known gap: Web: Triage "routine_booking" (score 0) for painless retention with saddle anaesthesia: neither "urinary retention" nor the back-pain re |
+| `cauda-equina-retention-presentation` | alarm-cauda-equina | web | critical | known gap | no alarm matched among 1 (web.clinicalPrompts.safety) [known gap: Web: No CES alarm.] |
+| `cauda-equina-retention-presentation` | inv-emergency-mri | web | critical | known gap | no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No MRI.] |
+| `cauda-equina-retention-presentation` | mgmt-spinal-surgical-referral | web | critical | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No spinal referral.] |
+| `cauda-equina-retention-presentation` | mgmt-catheterise | web | quality | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No catheter either (G83.4 has no protocol; the retention chip does not reach any prompt).] |
+| `cauda-equina-syndrome-disc` | mnm-cauda-equina | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: Web: PANE has no spinal node; top 3 inguinal hernia, cholecystitis, GORD. Symptom inference ranks lumbar disc dise |
+| `cauda-equina-syndrome-disc` | level-emergency | web | critical | known gap | web.triage: priority (acuity=review, action=priority_24_48h, score=20); expected ≥ emergency [known gap: Web: Triage "priority_24_48h" (score 20): the back-pain branch answers "Saddle anaesthesia" and "Bladder / bowel dysfunction" are colle |
+| `cauda-equina-syndrome-disc` | alarm-cauda-equina | web | critical | known gap | no alarm matched among 1 (web.clinicalPrompts.safety) [known gap: Web: No CES alarm (only pre-op bloods).] |
+| `cauda-equina-syndrome-disc` | inv-emergency-mri | web | critical | known gap | no investigation matched among 17 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No MRI.] |
+| `cauda-equina-syndrome-disc` | inv-bladder-scan | web | quality | known gap | no investigation matched among 17 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No bladder scan / post-void residual.] |
+| `cauda-equina-syndrome-disc` | mgmt-spinal-surgical-referral | web | critical | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: Web: No spinal referral.] |
 | `caustic-ingestion-alkali` | inv-airway-assessment | web | quality | known gap | no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: No caustic-ingestion protocol or prompt; nothing mentions airway assessment.] |
 | `caustic-ingestion-alkali` | mgmt-psychiatric-assessment | web | quality | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: Only the triage reason "Mental health crisis"; no plan line.] |
 | `caustic-ingestion-alkali` | mgmt-nil-by-mouth | web | quality | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: No plan output at all for T54.3.] |
@@ -13494,6 +14829,20 @@ Guidelines:
 | `diverticulitis-uncomplicated-outpatient` | mgmt-selective-antibiotics | web | quality | known gap | no management item matched among 34 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No antibiotic-free option; protocol and variant prescribe co-amoxiclav for 5– |
 | `diverticulitis-uncomplicated-outpatient` | mgmt-no-routine-antibiotics | web | quality | known gap | forbidden management item present in web.plan: "[conservative] uncomplicated: oral co-amoxiclav 625 mg tds for 5-7 days; liquid diet." (+1 more) [known gap: Web: '[conservative] Uncomplicated: oral co-amoxiclav 625 mg TDS for 5–7 days' in t |
 | `diverticulitis-uncomplicated-outpatient` | variant-uncomplicated | web | quality | known gap | detected (none) in group Diverticulitis; expected diverticulitis_uncomplicated [known gap: Web: Keyword 'uncomplicated diverticulitis' is not a substring of 'Uncomplicated acute sigmoid diverticulitis'; no variant is selected.] |
+| `dka-euglycaemic-sglt2-postop` | mnm-dka | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, cholecystitis, GORD. Sym |
+| `dka-euglycaemic-sglt2-postop` | alarm-ketoacidosis | web | critical | known gap | no alarm matched among 5 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Every DKA trigger keys on glucose (triage vital flag >20, prompt BGL >15, lab glucose >11). With glucose 10.2 and ketones |
+| `dka-euglycaemic-sglt2-postop` | inv-blood-gas | web | quality | known gap | no investigation matched among 22 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No blood gas is suggested: the ABG action sits in the BGL >15 prompt, which does not fire.] |
+| `dka-euglycaemic-sglt2-postop` | mgmt-ketone-monitoring | web | critical | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: Web: No ketone action: the ketone lines belong to the glucose-triggered prompts.] |
+| `dka-euglycaemic-sglt2-postop` | mgmt-stop-sglt2 | web | critical | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: Web: No output mentions the SGLT2 inhibitor; empagliflozin is not recognised by any rule.] |
+| `dka-euglycaemic-sglt2-postop` | mgmt-fixed-rate-insulin | web | critical | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: Web: No insulin plan (glucose-triggered prompts only).] |
+| `dka-euglycaemic-sglt2-postop` | mgmt-glucose-with-insulin | web | critical | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: Web: No glucose-with-insulin plan. Even when the DKA prompt fires it offers insulin without 10% glucose.] |
+| `dka-pregnant-28wk` | mnm-dka | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Peptic Ulcer Disease [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, appendicitis, peptic ulcer. Symptom inf |
+| `dka-pregnant-28wk` | mgmt-obstetric-fetal | web | critical | known gap | no management item matched among 15 (web.clinicalPrompts) [known gap: Web: No obstetric or fetal-monitoring action. The only pregnancy outputs are the triage "Pregnancy mentioned" reason and the β-hCG prompt ("If urine β-HCG positive … excl |
+| `dka-pregnant-28wk` | mgmt-potassium-replacement | web | quality | known gap | no management item matched among 15 (web.clinicalPrompts) [known gap: Web: Only "Monitor K⁺ hourly" inside the insulin line; no potassium replacement.] |
+| `dka-type1-young-typical` | mnm-dka | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecy |
+| `dka-type1-young-typical` | mgmt-potassium-replacement | web | critical | known gap | no management item matched among 15 (web.clinicalPrompts) [known gap: Web: The DKA prompt says "Monitor K⁺ hourly" and "VRIII … + potassium replacement" only in the step label; the plan line added has no potassium replacement.] |
+| `dka-type1-young-typical` | mgmt-continue-basal-insulin | web | quality | known gap | no management item matched among 15 (web.clinicalPrompts) [known gap: Web: No output mentions continuing long-acting insulin.] |
+| `dka-type1-young-typical` | mgmt-glucose-when-falling | web | quality | known gap | no management item matched among 15 (web.clinicalPrompts) [known gap: Web: No output adds 10% glucose as glucose falls.] |
 | `dvt-pregnancy-22wk` | inv-no-ddimer-in-pregnancy | web | quality | known gap | forbidden investigation present in web.plan.investigations: "d-dimer (only if pre-test probability low/intermediate)" (+1 more) [known gap: The DVT protocol lists "D-dimer (only if pre-test probability low/intermediate)" without a pregnancy |
 | `dvt-pregnancy-22wk` | mgmt-no-doac-in-pregnancy | web | critical | known gap | forbidden management item present in web.plan: "[conservative] direct oral anticoagulant (doac): rivaroxaban 15 mg bd for 21 days then 20 mg od; or apixaban 10 mg bd for 7 days then 5 mg b..." (+5 more) [known gap: The DVT plan offers rivar |
 | `dvt-pregnancy-22wk` | mgmt-no-warfarin-in-pregnancy | web | critical | known gap | forbidden management item present in web.plan: "[conservative] alternative: lmwh bridging to warfarin (target inr 2-3) if doac contraindicated (severe renal failure, pregnancy)." (+2 more) [known gap: The DVT plan says "LMWH bridging to war |
@@ -13508,6 +14857,9 @@ Guidelines:
 | `eoe-young-atopic-recurrent-bolus` | inv-oesophageal-biopsies | web | critical | known gap | no investigation matched among 10 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol for K20.0 and nothing else asks for biopsies.] |
 | `eoe-young-atopic-recurrent-bolus` | inv-six-biopsies-two-levels | web | quality | known gap | no investigation matched among 10 (web.pane.seeded, web.clinicalPrompts) [known gap: As inv-oesophageal-biopsies.] |
 | `eoe-young-atopic-recurrent-bolus` | mgmt-eoe-treatment-options | web | quality | known gap | no management item output on web [known gap: No management output at all for K20.0.] |
+| `epididymo-orchitis-sti-young` | mnm-torsion-considered | web | quality | known gap | not in top 3 of web.pane: 1. Epididymo-orchitis \| 2. Acute Appendicitis \| 3. Inguinal / Femoral Hernia; also in web.symptomInference#2, web.passive#5 [known gap: Web: PANE ranks epididymo-orchitis, appendicitis, inguinal hernia; torsion i |
+| `epididymo-orchitis-sti-young` | level-priority | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=48); expected ≥ priority, ≤ urgent [known gap: Web: Triage "emergency_now" (score 48): fever in the text and the 38.1 °C vital plus a moderate pain score add up past the emer |
+| `epididymo-orchitis-sti-young` | mgmt-no-unconditional-exploration | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• emergency scrotal exploration - de-torsion, assess viability, bilateral fixation (orchidopexy)." [known gap: Web: The scrotal-chip torsion prompt always adds "Emergency scrotal ex |
 | `fistula-in-ano-complex-anterior-female` | mgmt-seton-or-sparing | web | critical | known gap | no management item matched among 23 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: getProtocolByIcd("K60.3") returns the anal_fissure protocol (prefix K60 covers fis |
 | `fistula-in-ano-complex-anterior-female` | mgmt-no-sphincterotomy | web | critical | known gap | forbidden management item present in web.plan: "[surgical] lateral internal sphincterotomy (lis) - highly effective but 1-2% incontinence risk." (+2 more) [known gap: getProtocolByIcd("K60.3") returns the anal_fissure protocol (prefix K60 c |
 | `fistula-in-ano-simple-low` | mgmt-fistulotomy | web | critical | known gap | no management item matched among 22 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: getProtocolByIcd("K60.3") returns the anal_fissure protocol (prefix K60 covers fis |
@@ -13541,6 +14893,10 @@ Guidelines:
 | `h-pylori-penicillin-anaphylaxis` | mgmt-no-amoxicillin | web | critical | known gap | forbidden management item present in web.plan: "[conservative] h. pylori eradication: triple therapy (ppi + amoxicillin + clarithromycin × 7 days); confirm eradication with breath test at 4 weeks." (+2 more) [known gap: Gastritis protocol p |
 | `h-pylori-positive-eradication` | mgmt-14-day-or-bismuth | web | quality | known gap | no management item matched among 25 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Gastritis protocol: "triple therapy (PPI + amoxicillin + clarithromycin × 7 days)" |
 | `h-pylori-positive-eradication` | mgmt-no-7-day-clarithromycin-triple | web | quality | known gap | forbidden management item present in web.plan: "... h. pylori eradication: triple therapy (ppi + amoxicillin + clarithromycin × 7 days); confirm eradication with breath test at 4 weeks." (+1 more) [known gap: Gastritis protocol plan line an |
+| `haematuria-anticoagulated-clot-retention` | inv-cystoscopy | web | critical | known gap | no investigation matched among 25 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Web: R33.8 selects the urinary-retention protocol (catheter, tamsulosin, TWOC); the haematuria protocol (which has cystoscopy, CT  |
+| `haematuria-anticoagulated-clot-retention` | mgmt-three-way-irrigation | web | quality | known gap | no management item matched among 34 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No three-way catheter or irrigation; a standard Foley is suggested.] |
+| `haematuria-visible-smoker-2ww` | dx-haematuria-bladder-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#2 [known gap: Web: PANE top 3 inguinal hernia, cholecystitis, GORD: the haematuri |
+| `haematuria-visible-smoker-2ww` | level-priority | web | critical | known gap | web.triage: routine (acuity=routine, action=routine_booking, score=7); expected ≥ priority [known gap: Web: Triage "routine_booking" (score 7): there is no haematuria rule in RED_FLAGS, and the cancer screen does not trigger on visible haem |
 | `haemorrhoids-grade3-over-50` | mnm-crc | web | quality | known gap | not in top 3 of web.pane: 1. Haemorrhoids \| 2. Inguinal / Femoral Hernia \| 3. Anal Fissure; also in web.symptomInference#4 [known gap: PANE top 3 (haemorrhoids, hernia, fissure) does not keep colorectal cancer visible in a 58-year-old wit |
 | `haemorrhoids-thrombosed-external-48h` | mgmt-excision-72h | web | quality | known gap | no management item matched among 25 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The haemorrhoids protocol mentions "acutely thrombosed external haemorrhoid (< 72  |
 | `hernia-femoral-elderly-woman` | dx-femoral-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis [known gap: PANE top 3 = cholecystitis, GORD, diverticulitis; femoral_hernia is not listed despite groin_swelling. PANE: unlisted f |
@@ -13576,6 +14932,39 @@ Guidelines:
 | `hernia-umbilical-cirrhosis-ascites` | flag-rupture-risk | web | critical | known gap | no red flag matched among 17 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: No web output mentions rupture/skin ulceration/leak for an |
 | `hernia-umbilical-cirrhosis-ascites` | mgmt-ascites-control | web | critical | known gap | no management item matched among 33 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No ascites-control / hepatology step in the umbilical_hernia protocol, the dx vari |
 | `hernia-umbilical-cirrhosis-ascites` | mgmt-no-standard-day-case-plan | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "... male (reduces haematoma). • ice pack to groin prn × 24h. • day-case discharge: pain controlled on oral analgesia, tolerating oral fluids, voiding. ..." [known gap: computeClinic |
+| `hhs-elderly-type2` | mnm-hhs | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Diverticulitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 |
+| `hhs-elderly-type2` | inv-osmolality | web | critical | known gap | no investigation matched among 26 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No osmolality anywhere. The glucose prompt ("DKA / HHS — exclude") asks for ketones, ABG and U&E only.] |
+| `hhs-elderly-type2` | mgmt-saline-first | web | critical | known gap | no management item matched among 23 (web.clinicalPrompts) [known gap: Web: Fluids appear only as the AKI prompt's "IV fluid challenge (500ml Hartmann's)" and the tachycardia "fluid challenge 500 ml"; no 0.9% sodium chloride replacement plan |
+| `hhs-elderly-type2` | mgmt-vte-prophylaxis | web | quality | known gap | no management item matched among 23 (web.clinicalPrompts) [known gap: Web: No VTE prophylaxis.] |
+| `hhs-elderly-type2` | mgmt-foot-protection | web | quality | known gap | no management item matched among 23 (web.clinicalPrompts) [known gap: Web: No foot/heel protection.] |
+| `hhs-elderly-type2` | mgmt-no-early-fixed-rate-0-1 | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• variable-rate insulin infusion (vriii): dka fixed-rate 0.1 units/kg/h. monitor k⁺ hourly." [known gap: Web: The same prompt serves DKA and HHS: "Variable-rate insulin infusion (VR |
+| `hypercalcaemia-malignancy-bone-mets` | mnm-hypercalcaemia | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Bowel Obstruction \| 3. Post-operative Ileus; also in web.symptomInference#1, web.passive#2 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecys |
+| `hypercalcaemia-malignancy-bone-mets` | flag-hypercalcaemia | web | critical | known gap | no red flag matched among 16 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: Web: Adjusted calcium 3.62 is not read: there is no calcium rule in clinical-inference.ts, and |
+| `hypercalcaemia-malignancy-bone-mets` | inv-pth | web | quality | known gap | no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No PTH.] |
+| `hypercalcaemia-malignancy-bone-mets` | mgmt-iv-saline | web | critical | known gap | no management item matched among 12 (web.clinicalPrompts) [known gap: Web: No saline rehydration for hypercalcaemia; the only fluid line is the AKI prompt's 500 mL fluid challenge.] |
+| `hypercalcaemia-malignancy-bone-mets` | mgmt-antiresorptive | web | critical | known gap | no management item matched among 12 (web.clinicalPrompts) [known gap: Web: No bisphosphonate or denosumab.] |
+| `hypercalcaemia-malignancy-bone-mets` | mgmt-stop-calcium-vitd | web | quality | known gap | no management item matched among 12 (web.clinicalPrompts) [known gap: Web: The calcium and vitamin D supplements on the medication list are not stopped.] |
+| `hypercalcaemia-malignancy-bone-mets` | mgmt-oncology | web | quality | known gap | no management item matched among 12 (web.clinicalPrompts) [known gap: Web: No oncology referral.] |
+| `hypercalcaemia-myeloma-aki-elderly` | flag-hypercalcaemia | web | critical | known gap | no red flag matched among 14 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: Web: Calcium 3.21 is not read (no calcium rule). The case is steered to other can |
+| `hypercalcaemia-myeloma-aki-elderly` | inv-myeloma-screen | web | critical | known gap | no investigation matched among 23 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No serum protein electrophoresis / free light chains. Outputs are an occult-malignancy CT chest/abdomen/pelvis, OGD and colonoscopy.] |
+| `hypercalcaemia-myeloma-aki-elderly` | mgmt-iv-saline | web | critical | known gap | no management item matched among 13 (web.clinicalPrompts) [known gap: Web: No saline rehydration for hypercalcaemia; only the AKI prompt's "IV fluid challenge (500ml Hartmann's) if pre-renal cause".] |
+| `hyperkalaemia-postop-aki-oliguric` | level-emergency | web | critical | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=44); expected ≥ emergency [known gap: Web: Triage "same_day_call" (score 44, one point below the emergency threshold): potassium 6.7 with peaked T waves and oliguric AKI are n |
+| `hyperkalaemia-severe-ckd-acei` | mnm-hyperkalaemia | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, GORD, cholecystitis. The |
+| `hyperkalaemia-severe-ckd-acei` | level-emergency | web | critical | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=30); expected ≥ emergency [known gap: Web: Triage "same_day_call" (score 30): no triage rule reads potassium, ECG changes or bradycardia (HR 46 is not a vital red flag; only > |
+| `hyperkalaemia-severe-ckd-acei` | mgmt-iv-calcium-dose | web | quality | known gap | no management item matched among 18 (web.clinicalPrompts) [known gap: Web: The prompt gives "IV Calcium gluconate 10ml 10%" — one third of the UKKA 2023 dose (calcium gluconate 10% 30 mL or calcium chloride 10% 10 mL).] |
+| `hypoglycaemia-stroke-mimic` | mnm-hypoglycaemia | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#2, web.passive#2 [known gap: Web: PANE has no node for this condition (surgical diseases only);  |
+| `hypoglycaemia-stroke-mimic` | mgmt-treat-hypoglycaemia | web | critical | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: Web: Only the triage vital flag fires; the five management outputs are preventative (PSA, colonoscopy, ACR, pre-op ECG). No glucose treatment.] |
+| `hypoglycaemia-sulfonylurea-ckd-elderly` | mnm-hypoglycaemia | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only);  |
+| `hypoglycaemia-sulfonylurea-ckd-elderly` | mgmt-treat-hypoglycaemia | web | critical | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: Web: The triage vital flag "Hypoglycaemia" fires, but no prompt offers treatment: there is no hypoglycaemia rule in clinical-inference.ts (only BGL >15 and glucose >11 ru |
+| `hypoglycaemia-sulfonylurea-ckd-elderly` | mgmt-prolonged-monitoring | web | critical | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: Web: No glucose monitoring plan.] |
+| `hypoglycaemia-sulfonylurea-ckd-elderly` | mgmt-review-sulfonylurea | web | quality | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: Web: Gliclazide is not mentioned in any output.] |
+| `hyponatraemia-elderly-thiazide-ssri` | flag-hypokalaemia | web | quality | known gap | no red flag matched among 10 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: Web: Potassium 3.1 is not flagged: there is no hypokalaemia prompt.] |
+| `hyponatraemia-elderly-thiazide-ssri` | mgmt-stop-thiazide | web | critical | known gap | no management item matched among 14 (web.clinicalPrompts) [known gap: Web: Only "Review medications for SIADH causes: diuretics, SSRIs, carbamazepine" — the thiazide is framed as an SIADH cause and never stopped.] |
+| `hyponatraemia-hypovolaemic-ileostomy` | mgmt-no-fluid-restriction | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• fluid restriction 1l/day - euvolaemic siadh. correct slowly." [known gap: Web: At Na 126 the prompt adds "Fluid restriction 1L/day — euvolaemic SIADH" without any volume assessmen |
+| `hyponatraemia-severe-postop-seizure` | mnm-hyponatraemia | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, appendicitis, GORD. The hyponatra |
+| `hyponatraemia-severe-postop-seizure` | mgmt-sodium-recheck | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No sodium recheck interval.] |
+| `hyponatraemia-severe-postop-seizure` | mgmt-hypertonic-bolus-150 | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Web: Hypertonic saline is given as an infusion, "IV 3% saline 1–2ml/kg/h", not the 150 mL/20-minute bolus the European guideline gives for severe symptoms.] |
+| `hyponatraemia-severe-postop-seizure` | mgmt-stop-hypotonic-fluids | web | critical | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No output addresses the cause: the 5% glucose infusion is not flagged and "Review medications for SIADH causes" does not mention IV fluids.] |
 | `infective-colitis-bloody-diarrhoea` | dx-infective-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Cholangitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no infective colitis/gastroenteritis disease; top 3 is appendicitis/cholec |
 | `infective-colitis-bloody-diarrhoea` | mnm-ibd | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Cholangitis; also in web.symptomInference#5, web.passive#4 [known gap: IBD is not in the PANE top 3 (the "Change in bowel habit" template has no CC hint). |
 | `infective-colitis-bloody-diarrhoea` | inv-stool-culture | web | critical | known gap | no investigation matched among 33 (web.pane.seeded, web.clinicalPrompts) [known gap: No stool culture/STEC testing output (A09 has no protocol; PANE-seeded tests are for appendicitis/biliary disease).] |
@@ -13616,6 +15005,16 @@ Guidelines:
 | `liver-abscess-elderly-biliary-septic` | mnm-sepsis | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholangitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Diverticulitis; also in web.symptomInference#2, web.passive#1 [known gap: PANE has no sepsis node (top 3: cholangitis, inguinal hernia, diverticuliti |
 | `mallory-weiss-young-binge` | dx-mallory-weiss-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Peptic Ulcer Disease \| 3. Acute Pancreatitis [known gap: PANE top 3: appendicitis, peptic ulcer, pancreatitis — no haematemesis/vomiting_effortless features reach PANE (see UGIB gap).] |
 | `mallory-weiss-young-binge` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=80); expected ≤ urgent [known gap: Emergency now (score 120): any "blood"/"bleed" word is an urgent red flag regardless of volume or GBS, and "No chest pain" in the HPI fires |
+| `meningitis-elderly-immunosuppressed-listeria` | mnm-meningitis | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 |
+| `meningitis-elderly-immunosuppressed-listeria` | alarm-meningitis | web | critical | known gap | no alarm matched among 4 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Only the sepsis (fever + tachycardia) and leucocytosis prompts fire.] |
+| `meningitis-elderly-immunosuppressed-listeria` | mgmt-ceftriaxone | web | critical | known gap | no management item matched among 15 (web.clinicalPrompts) [known gap: Web: Pip-tazo from the sepsis prompt; no ceftriaxone.] |
+| `meningitis-elderly-immunosuppressed-listeria` | mgmt-listeria-amoxicillin | web | critical | known gap | no management item matched among 15 (web.clinicalPrompts) [known gap: Web: No amoxicillin (Listeria) for age 71 on methotrexate and prednisolone.] |
+| `meningitis-elderly-immunosuppressed-listeria` | mgmt-steroid-cover | web | quality | known gap | no management item matched among 15 (web.clinicalPrompts) [known gap: Web: Prednisolone dependence not recognised.] |
+| `meningitis-meningococcal-young` | mnm-meningitis | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); t |
+| `meningitis-meningococcal-young` | alarm-meningitis | web | critical | known gap | no alarm matched among 6 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Emergency level is reached (tachycardia, fever), but the only safety prompts are the acute-abdomen panel, pre-op bloods,  |
+| `meningitis-meningococcal-young` | mgmt-ceftriaxone-now | web | critical | known gap | no management item matched among 9 (web.clinicalPrompts) [known gap: Web: The sepsis prompt gives "IV Piperacillin-tazobactam 4.5g TDS", which does not treat meningitis (poor CSF penetration); no ceftriaxone.] |
+| `meningitis-meningococcal-young` | mgmt-dexamethasone | web | quality | known gap | no management item matched among 9 (web.clinicalPrompts) [known gap: Web: No dexamethasone.] |
+| `meningitis-meningococcal-young` | mgmt-public-health | web | quality | known gap | no management item matched among 9 (web.clinicalPrompts) [known gap: Web: No public-health notification.] |
 | `mi-presenting-as-epigastric-pain` | mnm-acs | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. GORD / Reflux Oesophagitis [known gap: PANE has no cardiac disease; top 3 cholecystitis, peptic ulcer, GORD.] |
 | `mi-presenting-as-epigastric-pain` | mnm-acs-symptom-inference | web | quality | known gap | not in top 5 of web.symptomInference: 1. GORD / acid reflux / oesophagitis \| 2. Gallstone pancreatitis \| 3. Acute alcoholic pancreatitis \| 4. Perforated peptic ulcer \| 5. Gastric carcinoma [known gap: Symptom inference needs the chip "c |
 | `mi-presenting-as-epigastric-pain` | level-emergency | web | critical | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=33); expected ≥ emergency [known gap: Same-day call only (score 33): CHEST_PAIN_TERMS and the cardiac red flag need the words "chest pain/crushing/left arm/jaw"; epigastric pa |
@@ -13644,6 +15043,15 @@ Guidelines:
 | `mimic-ruptured-aaa` | mgmt-no-large-fluid-bolus | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min." [known gap: Web: Shock prompt: 'Hartmann's 1L bolus — reassess BP and HR at 15 min' for a ruptured |
 | `mimic-testicular-torsion` | dx-torsion-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3: appendicitis, inguinal/femoral hernia, cholecystitis; the  |
 | `mimic-testicular-torsion` | level-emergency | web | critical | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 35). No torsion/testicular rule; the scrotal-swelling chip does not raise acuity. iOS: Clinic |
+| `mscc-pain-only-breast-cancer` | mnm-spinal-metastases | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, GORD, peptic ulcer. Symptom inf |
+| `mscc-pain-only-breast-cancer` | inv-mri-spine | web | critical | known gap | no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No MRI.] |
+| `mscc-pain-only-breast-cancer` | mgmt-mscc-safety-net | web | critical | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No safety-netting for MSCC symptoms.] |
+| `mscc-pain-only-breast-cancer` | mgmt-oncology | web | quality | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No oncology referral.] |
+| `mscc-prostate-cancer-weakness` | mnm-mscc | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, GORD, cholecystitis. Sym |
+| `mscc-prostate-cancer-weakness` | alarm-mscc | web | critical | known gap | no alarm matched among 3 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Triage reaches emergency_now (malignancy, age, pain score), but there is no MSCC alarm: only pre-op bloods and a "PSA 48 — elevated" prompt offerin |
+| `mscc-prostate-cancer-weakness` | inv-mri-whole-spine | web | critical | known gap | no investigation matched among 17 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No MRI.] |
+| `mscc-prostate-cancer-weakness` | mgmt-dexamethasone | web | critical | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No dexamethasone.] |
+| `mscc-prostate-cancer-weakness` | mgmt-mscc-coordinator | web | critical | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No oncology / MSCC coordinator / spinal referral.] |
 | `nsaid-associated-gastric-ulcer` | mgmt-ppi-8-weeks | web | quality | known gap | no management item matched among 37 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: peptic_ulcer protocol gives omeprazole 20 mg OD "4–8 weeks" in medications (matche |
 | `nsti-early-low-lrinec` | mnm-nsti | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Cellulitis \| 3. Skin Abscess / Furuncle; also in web.symptomInference#2, web.passive#2 [known gap: PANE top 3: Acute cholecystitis, Cellulitis, Skin abscess. socrates-to-features maps  |
 | `nsti-fournier-diabetic` | dx-fournier-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholangitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Inguinal/femoral hernia, Acute cholangitis, Acute cholecystitis. |
@@ -13820,12 +15228,40 @@ Guidelines:
 | `ppu-perforated-peptic-ulcer` | score-rec-boey | web | quality | known gap | boey not recommended; recommended: alvarado, ranson, qsofa, news2, web:gerdq [known gap: Web: No Boey or PULP score on either platform.] |
 | `ppu-perforated-peptic-ulcer` | inv-no-urgent-ogd-in-perforation | web | quality | known gap | forbidden investigation present in web.plan.investigations: "upper gi endoscopy (ogd)" [known gap: Web: K27.5 maps to the peptic_ulcer protocol and its 'Upper GI endoscopy (OGD) (urgent)' investigation is shown for a free perforation; ICD K |
 | `ppu-septic-shock-delayed` | dx-perforation-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Pancreatitis; also in web.symptomInference#2, web.passive#1 [known gap: Web: PANE top 3: cholecystitis, inguinal/femoral hernia, pancreatitis (alco |
+| `pyelonephritis-adult-female` | dx-pyelonephritis-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Acute Cholangitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE features loin_pain, dysuria, fever, rigors, nausea_vomiting are applied,  |
+| `pyelonephritis-adult-female` | inv-urine-culture | web | critical | known gap | no investigation matched among 32 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No urine culture: N10 has no protocol (the UTI protocol maps only N39.0/N30) and PANE seeds cholecystitis/appendicitis/cholangitis tests (MRCP, CT).] |
+| `pyelonephritis-adult-female` | mgmt-ng111-antibiotic | web | quality | known gap | no management item matched among 13 (web.clinicalPrompts) [known gap: Web: The only antibiotic is pip-tazo from the SIRS and peritonism prompts; no NG111 choice.] |
+| `pyelonephritis-pregnant-24wk` | dx-pyelonephritis-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Acute Cholangitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: Same PANE features as the base case; PANE ranks cholecystitis (0.22), appendic |
+| `pyelonephritis-pregnant-24wk` | inv-urine-culture | web | critical | known gap | no investigation matched among 31 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No urine culture (O23.0 unmapped; PANE seeds biliary/appendix tests).] |
+| `pyelonephritis-pregnant-24wk` | mgmt-ng111-pregnancy-antibiotic | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Web: The only antibiotic is pip-tazo from the SIRS prompt; no cefalexin or cefuroxime (O23.0 has no protocol).] |
+| `pyelonephritis-pregnant-24wk` | mgmt-obstetric | web | critical | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No obstetric review or fetal monitoring. The β-hCG prompt ("If urine β-HCG positive … exclude ectopic") fires in a known 24-week pregnancy.] |
 | `raaa-shock` | dx-aaa-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Peptic Ulcer Disease \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Acute pancreatitis (0.35), Peptic ulcer, GORD — even with pul |
 | `raaa-shock` | alarm-raaa | web | quality | known gap | no alarm matched among 9 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web alarms are the generic hypotension flag and "Emergency now"; nothing names ruptured AAA.] |
 | `raaa-shock` | mgmt-no-large-fluid-bolus | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min." [known gap: The hypotension clinical prompt ('shock_non_infective', clinical-inference.ts) always  |
 | `rectal-bleeding-young-haemorrhoidal` | level-routine-or-priority | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=90); expected ≤ priority [known gap: Web adaptiveTriage has no negation handling and treats any "bleed/bleeding" as an urgent red flag (RED_FLAGS "GI or other bleeding" → eme |
 | `rectal-bleeding-young-haemorrhoidal` | mgmt-no-resuscitation | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: Web computeClinicalPrompts fires the "GI haemorrhage" resuscitation prompt (2 large-bore  |
 | `rectal-prolapse-incarcerated` | dx-prolapse-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Haemorrhoids \| 2. Anal Fissure \| 3. Acute Cholecystitis; also in web.symptomInference#3, web.passive#4, web.triageSurgical#1 [known gap: PANE ranks haemorrhoids/fissure: the "rectal prolapse" chip is not a PAN |
+| `renal-colic-infected-obstructed` | flag-infected-obstruction | web | critical | known gap | no red flag matched among 26 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: Web: The renal colic protocol's r |
+| `renal-colic-infected-obstructed` | mgmt-urgent-decompression | web | critical | known gap | no management item matched among 26 (web.clinicalPrompts) [known gap: Web: No nephrostomy or stent. Sepsis prompts give cultures, pip-tazo and fluids, and "Identify source … abdominal CT"; the CT result (stone + hydronephrosis) is not read. |
+| `renal-colic-infected-obstructed` | mgmt-urology | web | quality | known gap | no management item matched among 26 (web.clinicalPrompts) [known gap: Web: No urology referral.] |
+| `renal-colic-pregnant` | inv-no-ct-first | web | quality | known gap | forbidden investigation present in web.pane.seeded: "ct kub (non-contrast) - stone size, location, hydronephrosis (renal_colic)" (+2 more) [known gap: Web: PANE seeds "CT KUB (non-contrast)" (renal_colic) and "CT abdomen/pelvis with IV cont |
+| `renal-colic-pregnant` | mgmt-obstetric | web | critical | known gap | no management item matched among 8 (web.clinicalPrompts) [known gap: Web: No obstetric review; the β-hCG/ectopic prompt fires instead.] |
+| `renal-colic-pregnant` | mgmt-paracetamol-opioid | web | quality | known gap | no management item matched among 8 (web.clinicalPrompts) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the renal colic pla |
+| `renal-colic-pregnant` | mgmt-no-ercp | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• ercp - therapeutic: stone extraction (choledocholithiasis) or stenting (malignant st..." (+1 more) [known gap: Web: "Dilated proximal ureter" in the ultrasound report matches the  |
+| `renal-colic-solitary-kidney-anticoagulated` | mgmt-urgent-decompression | web | critical | known gap | no management item matched among 43 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Plan and panel give the standard colic pathway (diclofenac, MET, ESWL/URS/PCN |
+| `renal-colic-solitary-kidney-anticoagulated` | mgmt-no-nsaid | web | critical | known gap | forbidden management item present in web.plan: "[immediate] analgesia: diclofenac 75 mg im / pr (first-line); opioids if nsaids contraindicated; antiemetic." (+2 more) [known gap: Web: "Diclofenac 75 mg IM / PR (first-line)" in plan, panel  |
+| `renal-colic-solitary-kidney-anticoagulated` | mgmt-no-conservative-met | web | quality | known gap | forbidden management item present in web.plan: "[conservative] met (medical expulsive therapy): tamsulosin 0.4 mg od for distal ureteric stone ≤10 mm × 4 weeks." (+3 more) [known gap: Web: MET (tamsulosin × 4 weeks) is offered for an anuric |
+| `sah-late-presentation-day5` | mnm-sah | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#2, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only);  |
+| `sah-late-presentation-day5` | level-urgent | web | critical | known gap | web.triage: priority (acuity=review, action=priority_24_48h, score=15); expected ≥ urgent [known gap: Web: Triage "priority_24_48h" (score 15). Instead, "Hernia — elective repair indicated" fires from the healed repair in the exam text.] |
+| `sah-late-presentation-day5` | alarm-sah | web | critical | known gap | no alarm matched among 2 (web.clinicalPrompts.safety) [known gap: Web: No SAH alarm; the only safety prompts are pre-op bloods and an elective hernia repair.] |
+| `sah-late-presentation-day5` | inv-ct-cta-or-lp | web | critical | known gap | no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No CT head, CTA or LP.] |
+| `sah-thunderclap-headache` | mnm-sah | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#3, web.passive#3 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 |
+| `sah-thunderclap-headache` | level-emergency | web | critical | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: Triage "same_day_call" (score 35): the "thunderclap headache" chip and "worst ever" text are not red flags.] |
+| `sah-thunderclap-headache` | alarm-sah | web | critical | known gap | no alarm matched among 3 (web.clinicalPrompts.safety) [known gap: Web: Alarms are the β-hCG prompt, the acute-abdomen panel (the "vomiting" chip) and pre-op bloods.] |
+| `sah-thunderclap-headache` | inv-ct-head | web | critical | known gap | no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No CT head.] |
+| `sah-thunderclap-headache` | inv-lp-if-ct-negative | web | quality | known gap | no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No LP / CTA pathway.] |
+| `sah-thunderclap-headache` | mgmt-neurosurgery | web | critical | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No neurosurgical referral.] |
+| `sah-thunderclap-headache` | mgmt-nimodipine | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No nimodipine.] |
 | `sbo-adhesive-base` | level-at-least-urgent | web | critical | known gap | web.triage: priority (acuity=review, action=priority_24_48h, score=23); expected ≥ urgent [known gap: Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings |
 | `sbo-adhesive-base` | mgmt-potassium | web | quality | known gap | no management item matched among 44 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No potassium replacement despite K 3.3: getProtocolByIcd('K56.50') returns the generic bowel_obstructio |
 | `sbo-gastrografin-failed` | mgmt-surgery-in-documented-plan | web | quality | known gap | no management item matched among 14 (web.plan) [known gap: Web: sbo_adhesional variant (no 'surgical' phase) is selected; the failed contrast challenge is not a variant trigger, so the documented plan stays conservative.] |
@@ -13837,11 +15273,30 @@ Guidelines:
 | `sbo-virgin-abdomen` | mnm-neoplasm | web | quality | known gap | not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Acute Cholecystitis \| 3. Acute Appendicitis [known gap: Web: PANE top 3: bowel obstruction, cholecystitis, appendicitis, although weight_loss was extracted; PANE has no small-bowel neopl |
 | `sbo-virgin-abdomen` | mnm-hernia | web | quality | known gap | not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Acute Cholecystitis \| 3. Acute Appendicitis [known gap: Web: PANE top 3 has no hernia (no groin feature because no lump was found).] |
 | `sbo-virgin-abdomen` | mgmt-no-adhesion-label-in-plan | web | quality | known gap | forbidden management item present in web.plan: "[conservative] adhesive sbo: conservative 48 h trial if no peritonism; water-soluble contrast study at 24 h..." [known gap: Web: Variant 'sbo_adhesional' is chosen from the words 'small bowel  |
+| `seizure-first-unprovoked-adult` | mnm-seizure | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 c |
+| `seizure-first-unprovoked-adult` | mgmt-ecg | web | critical | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: Web: No ECG (the pre-operative ECG prompt is age ≥40 only).] |
+| `seizure-first-unprovoked-adult` | mgmt-first-seizure-referral | web | critical | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: Web: No neurology / first-seizure referral; only two cervical-screening lines in management.] |
+| `seizure-first-unprovoked-adult` | mgmt-driving-safety-advice | web | critical | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: Web: No driving advice.] |
+| `seizure-pregnant-eclampsia` | mnm-eclampsia | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, appendicitis, GORD. Symptom infer |
+| `seizure-pregnant-eclampsia` | alarm-eclampsia-or-severe-hypertension | web | critical | known gap | no alarm matched among 3 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: BP 172/114 does not fire the hypertensive prompt (SBP ≥180 only); pregnancy is not combined with BP, proteinuria or seizure. Only the β-hCG prompt  |
+| `seizure-pregnant-eclampsia` | mgmt-magnesium-sulfate | web | critical | known gap | no management item matched among 4 (web.clinicalPrompts) [known gap: Web: No magnesium sulfate.] |
+| `seizure-pregnant-eclampsia` | mgmt-antihypertensive | web | critical | known gap | no management item matched among 4 (web.clinicalPrompts) [known gap: Web: No antihypertensive (SBP below the 180 threshold).] |
+| `seizure-pregnant-eclampsia` | mgmt-obstetric-emergency | web | critical | known gap | no management item matched among 4 (web.clinicalPrompts) [known gap: Web: No obstetric involvement.] |
 | `sigmoid-volvulus-base` | mnm-volvulus | web | quality | known gap | not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Small Bowel Obstruction — Adhesions \| 3. Inguinal / Femoral Hernia; also in web.symptomInference#2, web.passive#3 [known gap: Web: PANE has no volvulus disease node, so it can never appe |
 | `sigmoid-volvulus-base` | level-at-least-urgent | web | critical | known gap | web.triage: priority (acuity=review, action=priority_24_48h, score=27); expected ≥ urgent [known gap: Web: adaptiveTriage: 'priority_24_48h' (score 27: age ≥70, vomiting). 'Massive distension' and 'no flatus or stool' are not red-flag phras |
 | `sigmoid-volvulus-base` | mgmt-endoscopic-decompression | web | critical | known gap | no management item matched among 35 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No endoscopic decompression step in any management output; the lbo_volvulus plan prefix is only a headi |
 | `sigmoid-volvulus-base` | mgmt-same-admission-resection | web | quality | known gap | no management item matched among 35 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No sigmoid colectomy after decompression.] |
 | `sigmoid-volvulus-base` | mgmt-potassium | web | quality | known gap | no management item matched among 35 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No potassium replacement despite K 3.2.] |
+| `stroke-acute-fast-positive` | mnm-stroke | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only);  |
+| `stroke-acute-fast-positive` | level-emergency | web | critical | known gap | web.triage: priority (acuity=review, action=priority_24_48h, score=19); expected ≥ emergency [known gap: Web: Triage "priority_24_48h" (score 19) for a FAST-positive stroke at 75 minutes: RED_FLAGS has no neurological rule; facial weakness  |
+| `stroke-acute-fast-positive` | alarm-stroke | web | critical | known gap | no alarm matched among 2 (web.clinicalPrompts.safety) [known gap: Web: Only the SBP 182 "hypertensive urgency" prompt fires, and it offers oral amlodipine.] |
+| `stroke-acute-fast-positive` | inv-ct-head | web | critical | known gap | no investigation matched among 16 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No CT head (I63 has no protocol; no neurological prompts).] |
+| `stroke-acute-fast-positive` | mgmt-reperfusion | web | critical | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No thrombolysis / thrombectomy / stroke team.] |
+| `stroke-acute-fast-positive` | mgmt-stroke-unit | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No stroke team or stroke unit; "focal neurology (stroke)" appears only as an end-organ check inside the hypertension prompt.] |
+| `stroke-acute-fast-positive` | mgmt-swallow-screen | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No swallow screen.] |
+| `stroke-anticoagulated-apixaban-elderly` | alarm-stroke | web | critical | known gap | no alarm matched among 3 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Triage reaches emergency_now only because "left arm" in the HPI matches the cardiac red flag ("Possible cardiac event", Chest Pain Pathway); the ri |
+| `stroke-anticoagulated-apixaban-elderly` | inv-ct-head | web | critical | known gap | no investigation matched among 20 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No CT head; the anticoagulation prompt offers peri-operative DOAC bridging instead.] |
+| `stroke-anticoagulated-apixaban-elderly` | mgmt-thrombectomy-option | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No thrombectomy.] |
 | `svt-gsv-near-sfj` | mnm-svt | web | quality | known gap | not in top 3 of web.pane: 1. Varicose Veins \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE has no superficial vein thrombosis disease; top 3: Varicose veins, Acute cholecystitis, GORD. Symptom inference has no S |
 | `svt-gsv-near-sfj` | level-at-least-priority | web | quality | known gap | web.triage: routine (acuity=routine, action=routine_booking, score=8); expected ≥ priority [known gap: Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive finding |
 | `svt-gsv-near-sfj` | flag-sfj-extension | web | quality | known gap | no red flag matched among 7 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: ICD I80.02 matches no pane-engine protocol and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the  |
@@ -13873,6 +15328,14 @@ Guidelines:
 | `thyroid-rapid-enlargement-stridor` | mgmt-airway | web | critical | known gap | no management item matched among 48 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No airway step in any web output: triage has no stridor rule (the emergency comes  |
 | `thyroid-retrosternal-goitre-compression` | flag-compression | web | critical | known gap | no red flag matched among 16 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No red flag names tracheal compression, stridor or retroste |
 | `thyroid-retrosternal-goitre-compression` | inv-ct | web | quality | known gap | no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: CT neck/thorax appears only inside the thyroidectomy prompt plan text, not as an investigation.] |
+| `tia-transient-weakness-dysarthria` | mnm-tia | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only);  |
+| `tia-transient-weakness-dysarthria` | inv-vascular-imaging | web | quality | known gap | no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No carotid imaging.] |
+| `tia-transient-weakness-dysarthria` | mgmt-aspirin-300 | web | critical | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No aspirin. The scales panel instead recommends ABCD2, which NICE NG128 says not to use.] |
+| `tia-transient-weakness-dysarthria` | mgmt-specialist-24h | web | critical | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: Web: No TIA clinic / stroke specialist referral.] |
+| `tia-transient-weakness-dysarthria` | mgmt-defer-elective-surgery | web | quality | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: Web: The pending hernia repair is not deferred (no TIA rule).] |
+| `torsion-adult-mimicking-epididymitis` | dx-torsion-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE applies testicular_pain, scrotal_swelling, radiation_to_groin and |
+| `torsion-adult-mimicking-epididymitis` | dx-torsion-first | web | quality | known gap | not in top 1 of web.pane: 1. Acute Appendicitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: As dx-torsion-top3.] |
+| `torsion-adult-mimicking-epididymitis` | level-emergency | web | critical | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: Triage "same_day_call" (score 35): there is no torsion/scrotal rule in rules.ts; the earlier emergency_now came from "no fever" in t |
 | `trauma-blunt-polytrauma-class3-shock` | flag-shock-class | web | quality | known gap | no red flag matched among 32 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No engine names the ATLS haemorrhage class; the protocol u |
 | `trauma-blunt-polytrauma-class3-shock` | mgmt-pelvic-binder | web | quality | known gap | no management item matched among 53 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The blunt abdominal trauma protocol does not mention a pelvic binder for pelvic te |
 | `trauma-blunt-polytrauma-class3-shock` | mgmt-no-ct-while-unstable | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• ct abdomen/pelvis with iv contrast - level (sbo/lbo), transition point, closed loop, ischaemia (..." [known gap: The bowel-obstruction clinical prompt fires on abdominal distensio |
@@ -13931,6 +15394,11 @@ Guidelines:
 | `ugib-on-warfarin-high-inr` | mgmt-no-lmwh-bridging | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "...dging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haematology protocol." [known gap: computeClinicalPrompts anticoag_check (any anticoagulant) adds |
 | `ugib-on-warfarin-high-inr` | mgmt-no-tranexamic-acid | web | critical | known gap | forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat |
 | `upper-abdominal-pain-weight-loss-over55` | dx-gastric-cancer-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1, web.triageSurgical#1 [known gap: PANE top 3: cholecystitis, peptic ulcer, GORD — we |
+| `urinary-retention-acute-bph` | dx-retention-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis [known gap: Web: PANE applies only suprapubic_pain; top 3 inguinal hernia, GORD, cholecystitis. The "urinary retention" chip d |
+| `urosepsis-elderly-immunosuppressed-catheter` | mnm-urosepsis | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3 inguinal hernia, GORD, cholecystitis (no features;  |
+| `urosepsis-elderly-immunosuppressed-catheter` | inv-urine-from-new-catheter | web | quality | known gap | no investigation matched among 21 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Web: The UTI protocol asks for "MSU C&S (mid-stream urine)" in a catheterised man; the catheter change appears only as plan text ( |
+| `urosepsis-elderly-immunosuppressed-catheter` | mgmt-steroid-cover | web | critical | known gap | no management item matched among 43 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Prednisolone is not recognised: no hydrocortisone / steroid-cover action in s |
+| `urosepsis-elderly-immunosuppressed-catheter` | mgmt-hold-methotrexate | web | quality | known gap | no management item matched among 43 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Methotrexate is not mentioned.] |
 | `variceal-bleed-known-cirrhosis` | dx-ugib-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Appendicitis; also in web.symptomInference#1, web.passive#4, web.triageSurgical#1 [known gap: PANE top 3: inguinal hernia, GORD, appendiciti |
 | `variceal-bleed-known-cirrhosis` | mnm-variceal | web | quality | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Appendicitis; also in web.symptomInference#2, web.passive#1 [known gap: PANE has no variceal/portal-hypertension disease; symptom inference  |
 | `variceal-bleed-known-cirrhosis` | mgmt-endoscopy-12h | web | critical | known gap | no management item matched among 32 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No management protocol loads: getProtocolByIcd has no I85 prefix (upper_gi_bleed covers K92.x only), and PANE top is < |
