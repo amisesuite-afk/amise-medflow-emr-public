@@ -538,13 +538,6 @@ extension PeerSyncService {
 
     // MARK: - Helpers
 
-    // DJB2 — stable across devices/processes, unlike Swift's randomized hashValue
-    static func stableHash(_ s: String) -> String {
-        var h: UInt64 = 5381
-        for byte in s.utf8 { h = h &* 33 &+ UInt64(byte) }
-        return String(h)
-    }
-
     func acuityFrom(_ s: String) -> Acuity {
         switch s {
         case "emergency": return .emergency

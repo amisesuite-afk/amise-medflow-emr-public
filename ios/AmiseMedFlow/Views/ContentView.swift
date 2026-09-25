@@ -39,8 +39,8 @@ struct ContentView: View {
                 peerSync.signOut()
                 return
             }
-            // Stop any session that may have started with an empty email hash,
-            // then restart with the real address so peer matching is correct.
+            // Restart under the new account: the same-account check inside each
+            // authenticated peer session compares against this address.
             peerSync.stop()
             peerSync.start(context: modelContext, email: email)
         }

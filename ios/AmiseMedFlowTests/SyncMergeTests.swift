@@ -118,15 +118,8 @@ final class PeerSyncMergeTests: XCTestCase {
         XCTAssertNil(service.mergeDoc(nil, nil, remoteIsNewer: true))
     }
 
-    // MARK: - Helpers used for peer matching
-
-    func testStableHashIsDJB2() {
-        XCTAssertEqual(PeerSyncService.stableHash(""), "5381")
-        XCTAssertEqual(PeerSyncService.stableHash("a"), "177670")
-        XCTAssertEqual(PeerSyncService.stableHash("ab"), "5863208")
-        XCTAssertEqual(PeerSyncService.stableHash("dr@example.com"), PeerSyncService.stableHash("dr@example.com"))
-        XCTAssertNotEqual(PeerSyncService.stableHash("a"), PeerSyncService.stableHash("b"))
-    }
+    // MARK: - Helpers
+    // (Peer matching no longer uses an email hash: see PeerPairingTests.swift.)
 
     func testAcuityMapping() {
         XCTAssertEqual(service.acuityFrom("emergency"), .emergency)

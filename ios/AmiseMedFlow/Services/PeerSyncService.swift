@@ -5,10 +5,16 @@ import UIKit
 
 // MARK: - Peer-to-peer sync (Multipeer Connectivity)
 //
-// Works over Bluetooth + WiFi with no internet. Devices running the same
-// signed-in account discover each other automatically and exchange
-// whichever records each side is missing or has newer. Safe to run
+// Works over Bluetooth + WiFi with no internet. Devices that have been paired once
+// (Settings → Nearby devices → Pair a device) and are signed in to the same account
+// exchange whichever records each side is missing or has newer. Safe to run
 // alongside Supabase sync.
+//
+// Admission and transport security (PeerSyncService+Pairing.swift, protocol in
+// PeerPairingCrypto.swift): one encrypted MCSession per peer; discovery info carries only a
+// random device id and a pairing-mode flag; every session runs a mutual HMAC challenge-response
+// with the Keychain pair secret, then the same-account check, before any manifest or record is
+// sent or read.
 //
 // Matching key: syncCode (a UUID string generated locally at record creation).
 // This lets offline-created records — ones that have never reached Supabase
@@ -38,31 +44,58 @@ final class PeerSyncService: NSObject, ObservableObject {
     @Published var peerSyncStatus: String = ""
     @Published var syncHistory: [PeerSyncEvent] = []   // last 20 sync events
 
-    private static let serviceType = "amise-medflow"   // ≤15 chars, alphanumeric+hyphen
+    // Pairing (PeerSyncService+Pairing.swift)
+    @Published var pairedDevices: [PairedPeerDevice] = []
+    @Published var pairingCode: String?            // shown on this device while pairing
+    @Published var pairingCodeExpiresAt: Date?
+    @Published var pairingStatus: String = ""
+    @Published var isPairingInProgress = false     // a code typed here is being used
+    @Published var unpairedDeviceNearby = false    // a device on this build that is not paired
+    @Published var legacyDeviceNearby = false      // a device still on a build without pairing
+    @Published var pairingMigrationPending = false // updated from a build without pairing, not yet paired
 
-    private let myPeer: MCPeerID
-    var session:   MCSession?
+    static let serviceType = "amise-medflow"   // ≤15 chars, alphanumeric+hyphen
+    private static let peerIDKey = "com.amise.medflow.mcPeerID"
+
+    let myPeer: MCPeerID
+    /// This install's random id: the only identifier in discovery info.
+    let deviceId: String
+    /// One session per peer, so a peer that fails authentication can be disconnected alone.
+    var sessions: [MCPeerID: MCSession] = [:]
+    /// Handshake state per peer. Data flows only while `phase == .authenticated`.
+    var links: [MCPeerID: PeerLink] = [:]
     var advertiser: MCNearbyServiceAdvertiser?
     var browser:    MCNearbyServiceBrowser?
 
     var modelContext: ModelContext?
-    var emailHash: String = ""
-    private var storedEmail: String = ""
+    private(set) var storedEmail: String = ""
 
-    var foundPeers: Set<MCPeerID> = []
+    var discovered: [MCPeerID: PeerPairingCrypto.Discovered] = [:]   // devices on this build
+    var connectAttempts: [MCPeerID: Int] = [:]
+    var pairingCodeAttemptUsed = false   // one confirmation attempt per displayed code
+    var enteredCode: String?             // code typed on this device (the pairing initiator)
+    var pairingTarget: MCPeerID?         // the device this device is pairing with
+
+    var foundPeers: Set<MCPeerID> = []   // paired devices in range
     var receivedCount: [MCPeerID: Int] = [:]
     var sentCount:     [MCPeerID: Int] = [:]
 
     override init() {
+        // An MCPeerID saved by an earlier launch means this install already used peer sync
+        // under the old (unpaired) scheme: the user is asked to pair once.
+        let existingInstall = UserDefaults.standard.data(forKey: Self.peerIDKey) != nil
         myPeer = Self.loadOrCreatePeerID()
+        deviceId = PeerDeviceIdentity.loadOrCreate(existingInstall: existingInstall)
         super.init()
+        pairingMigrationPending = PeerDeviceIdentity.migrationPending
+        reloadPairedDevices()
     }
 
     // Persist the MCPeerID across launches — MPC uses the archived identity internally
     // to track known peers. Recreating a new ID each launch looks like a different device
     // to the framework and breaks discovery reliability.
     private static func loadOrCreatePeerID() -> MCPeerID {
-        let key = "com.amise.medflow.mcPeerID"
+        let key = peerIDKey
         if let data = UserDefaults.standard.data(forKey: key),
            let peer = try? NSKeyedUnarchiver.unarchivedObject(ofClass: MCPeerID.self, from: data) {
             return peer
@@ -77,64 +110,77 @@ final class PeerSyncService: NSObject, ObservableObject {
     // MARK: - Lifecycle
 
     func start(context: ModelContext, email: String) {
-        guard session == nil else { return }
+        guard !isRunning else { return }
+        teardownTransport()
         modelContext = context
         storedEmail = email
-        emailHash = Self.stableHash(email.lowercased())
+        isRunning = true
+        reloadPairedDevices()
 
-        session = MCSession(peer: myPeer, securityIdentity: nil,
-                            encryptionPreference: .required)
-        session?.delegate = self
-
-        let info = ["h": emailHash]
-        advertiser = MCNearbyServiceAdvertiser(peer: myPeer,
-                                               discoveryInfo: info,
-                                               serviceType: Self.serviceType)
-        advertiser?.delegate = self
-        advertiser?.startAdvertisingPeer()
+        // Discovery info: random device id + pairing flag only (never the email or a hash of it).
+        readvertise()
 
         browser = MCNearbyServiceBrowser(peer: myPeer, serviceType: Self.serviceType)
         browser?.delegate = self
         browser?.startBrowsingForPeers()
 
-        isRunning      = true
-        peerSyncStatus = "Looking for nearby devices…"
+        peerSyncStatus = pairedDevices.isEmpty ? "" : "Looking for nearby devices…"
     }
 
     func stop() {
+        isRunning = false   // first, so clearPairingCode() does not start a new advertiser
+        teardownTransport()
+        if pairingCode != nil || enteredCode != nil {
+            pairingStatus = "Pairing stopped. Start again from Settings → Nearby devices."
+        }
+        clearPairingCode()
+        enteredCode = nil
+        pairingTarget = nil
+        isPairingInProgress = false
+        peerSyncStatus = ""
+    }
+
+    /// Stops advertising and browsing and disconnects every session.
+    private func teardownTransport() {
         advertiser?.stopAdvertisingPeer()
         browser?.stopBrowsingForPeers()
-        session?.disconnect()
-        session    = nil
+        advertiser?.delegate = nil
+        browser?.delegate    = nil
+        for peer in sessions.keys { recordHistory(for: peer) }
+        for sess in sessions.values { sess.disconnect() }
+        sessions.removeAll()
+        links.removeAll()
         advertiser = nil
         browser    = nil
+        discovered.removeAll()
+        connectAttempts.removeAll()
         foundPeers.removeAll()
         receivedCount.removeAll()
         sentCount.removeAll()
+        unpairedDeviceNearby = false
+        legacyDeviceNearby   = false
         nearbyCount    = 0
         connectedCount = 0
-        isRunning      = false
-        peerSyncStatus = ""
     }
 
     func signOut() {
         stop()
         storedEmail = ""
-        emailHash   = ""
     }
 
     // MARK: - Manual controls
 
     func syncNow() {
-        guard let sess = session else {
+        guard isRunning else {
             peerSyncStatus = "Proximity sync not running"
             return
         }
-        guard !sess.connectedPeers.isEmpty else {
-            peerSyncStatus = "No peers connected"
+        let peers = authenticatedPeers
+        guard !peers.isEmpty else {
+            peerSyncStatus = pairingPrompt ?? "No peers connected"
             return
         }
-        for peer in sess.connectedPeers { sendManifest(to: peer) }
+        for peer in peers { sendManifest(to: peer) }
         peerSyncStatus = "Sync triggered…"
     }
 
@@ -147,7 +193,8 @@ final class PeerSyncService: NSObject, ObservableObject {
     // MARK: - Send manifest on connect
 
     func sendManifest(to peer: MCPeerID) {
-        guard let ctx = modelContext, let sess = session else { return }
+        // Only to a peer that has passed the challenge-response and the same-account check.
+        guard let ctx = modelContext, isAuthenticated(peer), let sess = sessions[peer] else { return }
         Task {
             let manifest = await buildManifest(context: ctx)
             guard let data = try? JSONEncoder().encode(PeerMessage.manifest(manifest)) else { return }
@@ -201,7 +248,9 @@ final class PeerSyncService: NSObject, ObservableObject {
                                         key: { Self.syncKey($0.syncCode, $0.id) },
                                         updatedAt: { $0.updatedAt }, syncedAt: { $0.syncedAt })
 
-        return PeerManifest(emailHash: emailHash,
+        // emailHash no longer gates anything (admission is PeerSyncService+Pairing.swift) and is
+        // sent empty; the field stays so the manifest shape is unchanged.
+        return PeerManifest(emailHash: "",
                             patients: patients.synced, notes: notes.synced,
                             prescriptions: rxs.synced, vitals: vitals.synced,
                             billingItems: billing.synced,
@@ -234,8 +283,8 @@ final class PeerSyncService: NSObject, ObservableObject {
     }
 
     func handleManifest(_ manifest: PeerManifest, from peer: MCPeerID) {
-        guard manifest.emailHash == emailHash,
-              let ctx = modelContext, let sess = session else { return }
+        guard isAuthenticated(peer),
+              let ctx = modelContext, let sess = sessions[peer] else { return }
 
         Task {
             let patients = Self.toSend((try? ctx.fetch(FetchDescriptor<Patient>())) ?? [],

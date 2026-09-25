@@ -1,5 +1,6 @@
 // PeerSyncService+MCDelegates.swift
 // MultipeerConnectivity protocol conformances: Advertiser, Browser, Session delegates.
+// Admission decisions live in PeerSyncService+Pairing.swift.
 
 import Foundation
 import MultipeerConnectivity
@@ -11,13 +12,14 @@ extension PeerSyncService: MCNearbyServiceAdvertiserDelegate {
                                  didReceiveInvitationFromPeer peer: MCPeerID,
                                  withContext context: Data?,
                                  invitationHandler: @escaping (Bool, MCSession?) -> Void) {
-        var peerHash: String? = nil
-        if let ctx = context, let str = String(data: ctx, encoding: .utf8) {
-            peerHash = str
-        }
+        // An invitation without a v1 context (including an older build's email hash) is declined.
+        let invitation = PeerInvitation.decode(context)
         Task { @MainActor in
-            let accept = peerHash == nil || peerHash == self.emailHash
-            invitationHandler(accept, self.session)
+            if let sess = self.sessionForInvitation(from: peer, invitation: invitation) {
+                invitationHandler(true, sess)
+            } else {
+                invitationHandler(false, nil)
+            }
         }
     }
 
@@ -36,25 +38,15 @@ extension PeerSyncService: MCNearbyServiceBrowserDelegate {
     nonisolated func browser(_ browser: MCNearbyServiceBrowser,
                               foundPeer peer: MCPeerID,
                               withDiscoveryInfo info: [String: String]?) {
-        let peerHash = info?["h"]
         Task { @MainActor in
-            guard peerHash == nil || peerHash == self.emailHash else { return }
-            guard let sess = self.session else { return }
-            guard !sess.connectedPeers.contains(peer) else { return }
-            self.foundPeers.insert(peer)
-            self.nearbyCount = self.foundPeers.count
-            let ctx = self.emailHash.data(using: .utf8)
-            browser.invitePeer(peer, to: sess, withContext: ctx, timeout: 30)
-            self.peerSyncStatus = "Connecting to \(peer.displayName)…"
+            self.peerFound(peer, info: info)
         }
     }
 
     nonisolated func browser(_ browser: MCNearbyServiceBrowser,
                               lostPeer peer: MCPeerID) {
         Task { @MainActor in
-            self.foundPeers.remove(peer)
-            self.nearbyCount = self.foundPeers.count
-            if self.connectedCount == 0 { self.peerSyncStatus = "Looking for nearby devices…" }
+            self.peerLost(peer)
         }
     }
 
@@ -74,28 +66,7 @@ extension PeerSyncService: MCSessionDelegate {
                               peer peerID: MCPeerID,
                               didChange state: MCSessionState) {
         Task { @MainActor in
-            self.connectedCount = session.connectedPeers.count
-            switch state {
-            case .connected:
-                self.peerSyncStatus = "Syncing with \(peerID.displayName)…"
-                self.sendManifest(to: peerID)
-            case .notConnected:
-                let rcvd = self.receivedCount.removeValue(forKey: peerID) ?? 0
-                let sent  = self.sentCount.removeValue(forKey: peerID) ?? 0
-                for (count, direction) in [(rcvd, PeerSyncEvent.Direction.received), (sent, .sent)] {
-                    guard count > 0 else { continue }
-                    let event = PeerSyncEvent(peerName: peerID.displayName,
-                                              recordCount: count,
-                                              direction: direction,
-                                              at: .now)
-                    self.syncHistory.insert(event, at: 0)
-                    if self.syncHistory.count > 20 {
-                        self.syncHistory = Array(self.syncHistory.prefix(20))
-                    }
-                }
-                if session.connectedPeers.isEmpty { self.peerSyncStatus = "Looking for nearby devices…" }
-            default: break
-            }
+            self.sessionStateChanged(session, peer: peerID, state: state)
         }
     }
 
@@ -103,6 +74,16 @@ extension PeerSyncService: MCSessionDelegate {
                               didReceive data: Data,
                               fromPeer peerID: MCPeerID) {
         Task { @MainActor in
+            guard self.sessions[peerID] === session else { return }   // replaced or dropped
+
+            // Pairing and authentication messages (separate envelope from PeerMessage).
+            if let handshake = try? JSONDecoder().decode(PeerHandshakeMessage.self, from: data) {
+                self.handleHandshake(handshake, from: peerID)
+                return
+            }
+            // Nothing else from a peer is read until it has authenticated.
+            guard self.isAuthenticated(peerID) else { return }
+
             guard let ctx = self.modelContext else { return }
             guard let message = try? JSONDecoder().decode(PeerMessage.self, from: data) else { return }
 

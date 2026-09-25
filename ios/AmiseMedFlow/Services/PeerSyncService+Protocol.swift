@@ -47,6 +47,8 @@ indirect enum PeerMessage: Codable {
 // MARK: - Transfer data structs
 
 struct PeerManifest: Codable {
+    // Unused and sent empty: admission is the pairing handshake (PeerSyncService+Pairing.swift).
+    // Kept so the manifest shape is unchanged.
     let emailHash:     String
     // syncCode → syncedAt epoch seconds (what older builds compare).
     let patients:      [String: Double]
