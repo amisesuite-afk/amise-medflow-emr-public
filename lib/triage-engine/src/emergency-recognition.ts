@@ -108,6 +108,8 @@ export interface TriageLabs {
   alt: number | null;
   ast: number | null;
   inr: number | null;
+  /** mmol/L (a value above 60 is read as mg/dL and converted). */
+  triglycerides: number | null;
   /** Urine dipstick protein grade (0 = negative/trace, 1 = 1+ …), null when not recorded. */
   urineProtein: number | null;
   /** Pregnancy test result text: 'positive' | 'negative' | null. */
@@ -238,6 +240,10 @@ export function extractTriageLabs(results: Record<string, string> | undefined): 
     alt: labBy(r, /\balt\b|alanine/)?.value ?? null,
     ast: labBy(r, /\bast\b|aspartate/)?.value ?? null,
     inr: labBy(r, /\binr\b/)?.value ?? null,
+    triglycerides: (() => {
+      const tg = labBy(r, /triglycerid/)?.value ?? null;
+      return tg !== null && tg > 60 ? Math.round((tg / 88.57) * 10) / 10 : tg;
+    })(),
     urineProtein,
     pregnancyTest,
   };
@@ -457,14 +463,14 @@ const RX = {
   nonBlanching: /\b(non[- ]?blanching|purpur\w*|petechia\w*|does not fade|doesn'?t fade)\b/,
   confusion: /\b(confus\w*|disorientat\w*|drows\w*|obtunded|reduced (level of )?consciousness|altered (mental|consciousness)|not (him|her)self|delirium|delirious|agitat\w*|hallucinat\w*|unresponsive)\b/,
   fever: /\b(fever\w*|febrile|pyrexi\w*|rigors?|chills|high temperature)\b/,
-  infection: /\b(infect\w*|sepsis|septic|pneumonia|cellulitis|abscess|pyelonephritis|urosepsis|uti|urinary tract infection|cholangitis|pus|purulent|productive cough|consolidation|dysuria|wound (discharge|infection)|empyema|peritonitis|meningitis|fever\w*|febrile|pyrexi\w*|rigors?)\b/,
+  infection: /\b(infect\w*|sepsis|septic|pneumonia|cellulitis|abscess|perforat\w*|pyelonephritis|urosepsis|uti|urinary tract infection|cholangitis|pus|purulent|productive cough|consolidation|dysuria|wound (discharge|infection)|empyema|peritonitis|meningitis|fever\w*|febrile|pyrexi\w*|rigors?)\b/,
   saddle: /\b(saddle (anaesthesia|anesthesia|numbness|area)|numb\w*\b[^.;\n]{0,30}\b(bottom|back passage|perine\w*|perianal|genital\w*|buttock\w*|saddle)|(bottom|back passage|perine\w*|perianal|genitals?|buttocks?)\b[^.;\n]{0,15}\b(feels? |is |are )?numb\w*|(perianal|perineal|saddle) (numbness|sensory loss|anaesthesia)|reduced (pinprick )?(perianal|perineal|saddle) sensation|reduced (pinprick )?sensation\b[^.;\n]{0,25}\b(perianal|perine\w*|s3|s4|saddle))\b/,
   analTone: /\b((lax|reduced|poor|decreased|absent) anal tone)\b/,
   retention: /\b(urinary retention|unable to pass urine|can'?t pass urine|cannot pass urine|retention of urine|hesitan\w*|reduced (bladder|urinary) sensation|difficulty (starting|passing) (to pass )?urine|incontinen\w*|bladder \/ bowel dysfunction|bladder dysfunction)\b/,
   backPain: /\b(back pain|backache|sciatica|lumbar|disc (prolapse|herniation)|spinal pain|\bback\b)\b/,
   cancer: /\b(cancer|carcinoma|malignan\w*|metasta\w*|myeloma|lymphoma|sarcoma|oncolog\w*|tumou?r)\b/,
   spinalPain: /\b(back pain|spinal pain|thoracic pain|mid-back pain|neck pain|band-like|pain\b[^.;\n]{0,20}\b(spine|back))\b/,
-  neuroDeficit: /\b((legs?|limbs?) (going |are |is )?(weak\w*|numb\w*)|weakness\b[^.;\n]{0,20}\b(legs?|limbs?)|limb weakness|paraparesis|paraplegi\w*|sensory level|unsteady\w*|gait|numb\w* (below|from)|upgoing plantars|extensor plantars|hesitan\w*|incontinen\w*|retention|power [0-4]\/5)\b/,
+  neuroDeficit: /\b((legs?|limbs?) (going |are |is )?(weak\w*|numb\w*)|weakness\b[^.;\n]{0,20}\b(legs?|limbs?)|limb weakness|paraparesis|paraplegi\w*|sensory level|unsteady\w*|(unsteady|abnormal|ataxic|spastic) gait|difficulty walking|numb\w* (below|from)|upgoing plantars|extensor plantars|hesitan\w*|incontinen\w*|retention|power [0-4]\/5)\b/,
   anaphylaxisSkin: /\b(urticari\w*|hives|angio-?o?edema|(lip|lips|tongue|face|facial|throat)\b[^.;\n]{0,12}\b(swell\w*|swollen)|swollen (lips|tongue|face)|swelling of (the )?(lips|tongue|face)|flush\w*|itchy (blotchy )?rash|blotchy rash)\b/,
   anaphylaxisABC: /\b(wheez\w*|stridor|hoarse\w*|breathless\w*|difficulty (breathing|swallowing)|noisy breathing|throat (tight\w*|closing|swelling)|faint\w*|collaps\w*|dizz\w*|light-?headed)\b/,
   anaphylaxisWord: /\banaphyla\w*\b/,
@@ -472,9 +478,9 @@ const RX = {
   syncope: /\b(syncope|collaps\w*|faint\w*|blackout|passed out)\b/,
   hfSigns: /\b(pulmonary o?edema|orthopn\w*|pnd|paroxysmal nocturnal|bibasal crackles|crackles (to|at|in) (the )?(mid|both)|raised jvp|jvp (raised|elevated)|gallop|s3|heart failure)\b/,
   papilloedema: /\b(papill?o?edema|retinal ha?emorrhag\w*|flame ha?emorrhag\w*|hypertensive retinopathy|cotton wool)\b/,
-  htnOrgan: /\b(papill?o?edema|retinal ha?emorrhag\w*|encephalopath\w*|seizure\w*|fit\b|fitting|visual (disturbance|loss|blurring)|blurred vision|flashing lights|chest pain|pulmonary o?edema|confus\w*|focal (neuro\w*|deficit)|severe headache)\b/,
+  htnOrgan: /\b(papill?o?edema|retinal ha?emorrhag\w*|encephalopath\w*|seizure\w*|had a fit|fitting|visual (disturbance|loss|blurring)|blurred vision|flashing lights|chest pain|pulmonary o?edema|confus\w*|focal (neuro\w*|deficit)|severe headache)\b/,
   preEclampsiaSx: /\b(headache|visual (disturbance|blurring|loss)|blurred vision|flashing lights|spots before|epigastric|right upper quadrant|ruq|under the (right )?ribs|clonus|hyperreflexi\w*|brisk reflexes|(facial|sudden) (o?edema|swelling)|swollen face|vomit\w*)\b/,
-  seizure: /\b(seizure\w*|convuls\w*|fit\b|fitting|tonic[- ]clonic|eclampsi\w*)\b/,
+  seizure: /\b(seizure\w*|convuls\w*|had a fit|a fit\b(?! and)|fitting|tonic[- ]clonic|eclampsi\w*)\b/,
   kussmaul: /\b(kussmaul|deep (sighing|rapid) (respiration|breathing)|ketotic breath|ketones? (high|hi\b))\b/,
   sglt2: /\b(\w*gliflozin|sglt-?2)\b/,
   dkaWords: /\b(diabetic ketoacidosis|\bdka\b|ketoacidosis)\b/,
@@ -499,7 +505,7 @@ const RX = {
   inhalation: /\b(inhalation (injury)?|smoke inhalation|soot|singed (nasal|facial) hair|enclosed[- ]space|carbonaceous sputum|hoarse\w*|stridor)\b/,
   circumferential: /\bcircumferential\b/,
   electrical: /\b(high[- ]voltage|electrical (injury|burn)|electrocut\w*|lightning)\b/,
-  chemical: /\b(chemical (burn|injury)|alkali|acid (burn|injury)|caustic|corrosive|cement burn|bleach)\b/,
+  chemical: /\b(chemical (burn|injury|splash)|alkali\w*|acid (burn|injury|splash)|caustic|corrosive|cement burn|bleach|sodium hydroxide|oven cleaner|hydrofluoric)\b/,
   fullThickness: /\b(full[- ]thickness|deep dermal|deep partial)\b/,
   specialArea: /\b(face|facial|hands?|feet|foot|perine\w*|genital\w*|buttocks?|major joints?)\b/,
   limbIschaemia: /\b(cold|pale|white|mottled|dusky)\b[^.;\n]{0,20}\b(leg|foot|limb|arm|hand|toes|calf)\b|\b(pulseless|absent (foot |pedal |femoral |popliteal |distal |dorsalis pedis |posterior tibial )?pulses?|no (palpable )?(foot |pedal |distal )?pulses?)\b/,
@@ -569,6 +575,12 @@ export function textReportsFever(text: string): boolean {
   return textFever(text);
 }
 
+/** Green / bilious vomit, negation-aware on the colour word, in the same clause as the vomit. */
+function biliousVomit(text: string): boolean {
+  return text.split(/[.;\n()]/).some(c => testAffirmed(/\b(bilious|green|bile[- ]stained|dark green)\b/, c)
+    && /\b(vomit\w*|aspirate|fluid|posset\w*)\b/i.test(c));
+}
+
 function textFever(text: string): boolean {
   if (!a(text, RX.fever)) return false;
   const lower = text.toLowerCase();
@@ -582,7 +594,8 @@ function textFever(text: string): boolean {
 
 /** The leading clause of the working diagnosis (before the first full stop, bracket, colon or dash). */
 export function diagnosisHead(text: string): string {
-  return (text.split(/[.;:(\n]| - | — | – /)[0] ?? '').trim();
+  const noBrackets = text.replace(/\([^)]*\)/g, ' ');
+  return (noBrackets.split(/[.;:\n]| - | — | – /)[0] ?? '').replace(/\s+/g, ' ').trim();
 }
 
 /** Sentences that describe the present, not a dated past event ("in 2015", "aged 19", "years ago"). */
@@ -877,8 +890,13 @@ const RULES: Rule[] = [
   // ── Sepsis, including sepsis WITHOUT fever (NICE NG51, 2016 updated 2024; RCP NEWS2) ──────
   (ctx) => {
     const temp = measuredOrWrittenTemp(ctx);
-    const infection = a(ctx.HERD, RX.infection) || (temp !== null && (temp >= 38 || temp < 36)) || textFever(ctx.H)
-      || (ctx.labs.wbc !== null && (ctx.labs.wbc > 12 || ctx.labs.wbc < 4));
+    // "Bilateral leg cellulitis" without fever is usually venous stasis / heart failure, not
+    // infection (NICE CKS cellulitis): it alone does not make the physiology "sepsis".
+    const bilateralCellulitisOnly = a(ctx.H, /\b(bilateral|both)\b[^.;\n]{0,25}\bcellulitis\b/)
+      && !(temp !== null && temp >= 38) && !textFever(ctx.H)
+      && !a(ctx.HERD.replace(/cellulitis/gi, ''), RX.infection);
+    const infection = !bilateralCellulitisOnly && (a(ctx.HERD, RX.infection) || (temp !== null && (temp >= 38 || temp < 36)) || textFever(ctx.H)
+      || (ctx.labs.wbc !== null && (ctx.labs.wbc > 12 || ctx.labs.wbc < 4)));
     const neutropenic = (a(ctx.PMH + '\n' + ctx.MEDS + '\n' + ctx.H, RX.chemo) || (ctx.labs.neutrophils !== null && ctx.labs.neutrophils <= 0.5))
       && ((temp !== null && temp >= 38) || textFever(ctx.H) || a(ctx.H, /\b(unwell|rigors?|shiver\w*)\b/));
     const asplenic = a(ctx.PSH + '\n' + ctx.PMH + '\n' + ctx.H, RX.asplenia) && ((temp !== null && temp >= 38) || textFever(ctx.H));
@@ -1215,6 +1233,7 @@ const RULES: Rule[] = [
           ...(level === 'emergency' ? [REDIRECT_ACTION] : []),
           ...(severeSx && !ctx.paed ? [ACT.act('Severe symptoms (seizure, reduced consciousness): 150 mL 3% hypertonic saline over 20 minutes, check Na⁺, repeat up to twice aiming for a 5 mmol/L rise; limit the rise to 10 mmol/L in the first 24 h (European guideline 2014)')] : []),
           ACT.act('Assess volume status first: hypovolaemic → isotonic saline; euvolaemic (SIADH) → fluid restriction; stop thiazides and other causative drugs'),
+          ACT.act('Stop hypotonic IV fluids (e.g. 5% glucose, 0.18% saline) — NICE CG174 / NPSA'),
           ACT.inv('Serum and urine osmolality, urine sodium'),
         ],
       };
@@ -1388,10 +1407,11 @@ const RULES: Rule[] = [
     const obstruct = a(ctx.HERD, /\b(hydronephrosis|obstructed (kidney|ureter)|obstructing (stone|calculus)|pyonephrosis|infected obstructed|obstructed infected)\b/) || ctx.icd.some(c => c.startsWith('N13.6'));
     const temp = measuredOrWrittenTemp(ctx);
     const infected = (temp !== null && temp >= 38) || textFever(ctx.H) || a(ctx.HERD, /\b(rigors?|sepsis|septic|pyonephrosis|infected)\b/);
-    if (!(obstruct && infected)) return null;
+    const solitary = a(ctx.HERD + '\n' + ctx.PMH + '\n' + ctx.PSH, /\b(solitary|single|only) (functioning )?kidney\b|\bnephrectomy\b|\banuri\w*\b/);
+    if (!(obstruct && (infected || solitary))) return null;
     return {
-      id: 'infected_obstructed_kidney', title: 'Infected obstructed kidney', level: 'emergency', category: 'urological',
-      reasons: ['urinary obstruction with fever / sepsis'], redirect: true, guideline: 'EAU 2024 urolithiasis guideline',
+      id: 'infected_obstructed_kidney', title: infected ? 'Infected obstructed kidney' : 'Obstructed solitary kidney / anuria', level: 'emergency', category: 'urological',
+      reasons: [infected ? 'urinary obstruction with fever / sepsis' : 'obstruction of a solitary kidney or anuria'], redirect: true, guideline: 'EAU 2024 urolithiasis guideline',
       actions: [
         REDIRECT_ACTION,
         ACT.act('Urgent decompression — percutaneous nephrostomy or retrograde ureteric stent (EAU 2024); definitive stone treatment later'),
@@ -1449,7 +1469,7 @@ const RULES: Rule[] = [
   (ctx) => {
     if (!ctx.paed) return null;
     const dx = ctx.icd.some(c => c.startsWith('Q43.3')) || a(ctx.D, /\b(malrotation|midgut volvulus)\b/);
-    if (!a(ctx.HE, RX.bilious) && !dx) return null;
+    if (!biliousVomit(ctx.HE) && !dx) return null;
     return {
       id: 'bilious_vomiting_child', title: 'Bilious vomiting in a child — malrotation with volvulus until proven otherwise', level: 'emergency', category: 'paediatric',
       reasons: [dx ? 'working diagnosis of malrotation / volvulus' : 'green (bilious) vomiting'], redirect: true,
@@ -1465,7 +1485,11 @@ const RULES: Rule[] = [
   (ctx) => {
     if (!ctx.paed || (ctx.age ?? 10) >= 6) return null;
     const dx = ctx.icd.some(c => c.startsWith('K56.1')) || a(ctx.D, /\bintussuscept\w*/);
-    const signs = a(ctx.HE, RX.intussusception);
+    // Specific signs alone; colicky screaming / drawing up the legs only with vomiting or pallor
+    // ("inconsolable crying" alone is not intussusception).
+    const specific = a(ctx.HE, /\b(red ?currant|jelly[- ]like stool|blood and mucus|sausage[- ]shaped mass|intussuscept\w*|target sign)\b/);
+    const colic = a(ctx.HE, RX.intussusception) && a(ctx.HE, /\b(vomit\w*|pale|pallor|letharg\w*|sleepy between)\b/);
+    const signs = specific || colic;
     const infantLethargy = (ctx.age ?? 10) < 2 && a(ctx.HE, /\b(letharg\w*|floppy|hypotoni\w*|pale)\b/) && a(ctx.H, RX.vomiting);
     if (!(dx || signs || infantLethargy)) return null;
     return {
@@ -1484,7 +1508,7 @@ const RULES: Rule[] = [
     if (!ctx.paed || (ctx.age ?? 10) > 0.35) return null;
     const dx = ctx.icd.some(c => c.startsWith('Q40.0')) || a(ctx.D, /\bpyloric stenosis\b/);
     if (!dx && !a(ctx.HE, RX.projectile)) return null;
-    if (a(ctx.HE, RX.bilious)) return null;
+    if (biliousVomit(ctx.HE)) return null;
     return {
       id: 'pyloric_stenosis', title: 'Suspected pyloric stenosis', level: 'urgent', category: 'paediatric',
       reasons: ['projectile non-bilious vomiting in a young infant'], redirect: false, guideline: 'APSA / BAPS; Pandya 2012',
@@ -1571,6 +1595,7 @@ const RULES: Rule[] = [
         REDIRECT_ACTION,
         ACT.act('Senior anaesthetic and surgical help now; sit upright; high-flow oxygen'),
         ...(neck ? [ACT.act('If the haematoma compromises the airway: open the wound at the bedside — SCOOP (skin exposure, cut sutures, open skin, open muscles, pack) — DAS/BAETS 2014')] : []),
+        ...(a(ctx.H, /\brapid\w*\b[^.;\n]{0,25}\b(enlarg\w*|grow\w*|swelling)\b/) ? [ACT.inv('Urgent core / incisional biopsy once the airway is secure — exclude anaplastic thyroid cancer and lymphoma (BTA 2014)')] : []),
       ],
     };
   },
@@ -1603,7 +1628,9 @@ const RULES: Rule[] = [
     };
   },
   (ctx) => {
-    if (!a(ctx.HE + '\n' + ctx.D, RX.burn) && !ctx.icd.some(c => /^T(2[0-9]|3[01])/.test(c))) return null;
+    if (!a(ctx.HE + '\n' + ctx.D, RX.burn) && !a(ctx.HE + '\n' + ctx.D, RX.chemical) && !ctx.icd.some(c => /^T(2[0-9]|3[01]|54)/.test(c))) return null;
+    // A swallowed caustic is an upper-GI emergency, not a skin burn (no skin irrigation plan).
+    if (a(ctx.H + '\n' + ctx.D, /\b(swallow\w*|ingest\w*|drank|drunk|ingestion)\b/) && !a(ctx.HE + '\n' + ctx.D, /\b(skin|face|arm|hand|leg|eye|splash\w*|spray\w*)\b/)) return null;
     const m = ctx.HE.toLowerCase().match(/\b(\d{1,2}(?:\.\d)?)\s*%\s*(?:tbsa|total body surface|bsa|body surface|burns?\b|scalds?\b|partial|full|deep|superficial)/)
       ?? ctx.D.toLowerCase().match(/\b(\d{1,2}(?:\.\d)?)\s*%\s*(?:tbsa|total body surface|bsa)/);
     const tbsa = m ? parseFloat(m[1]) : null;
@@ -1615,7 +1642,7 @@ const RULES: Rule[] = [
     if (a(ctx.HE, RX.inhalation)) raise('emergency', 'possible inhalation injury');
     if (a(ctx.HE, RX.circumferential)) raise('emergency', 'circumferential burn (compartment / escharotomy risk)');
     if (a(ctx.HE, RX.electrical)) raise('emergency', 'high-voltage electrical injury');
-    if (a(ctx.HE, RX.chemical)) raise('emergency', 'chemical burn');
+    if (a(ctx.HE + '\n' + ctx.D, RX.chemical)) raise('emergency', 'chemical burn');
     if (a(ctx.HE, RX.fullThickness)) raise('urgent', 'deep / full-thickness burn');
     if (a(ctx.HE, RX.specialArea) && a(ctx.HE, RX.burn)) raise('urgent', 'burn to a special area (face, hands, feet, perineum, genitalia)');
     if (ctx.paed) raise('urgent', 'burn in a child');
@@ -1627,12 +1654,185 @@ const RULES: Rule[] = [
       actions: [
         ...(lvl === 'emergency' ? [REDIRECT_ACTION] : []),
         ACT.act('Refer to the burns service / burns unit (National Burn Care referral criteria)'),
-        ...(a(ctx.HE, RX.chemical) ? [ACT.act('Chemical burn: copious irrigation with running water now; remove contaminated clothing')] : []),
+        ...(a(ctx.HE + '\n' + ctx.D, RX.chemical) ? [ACT.act('Chemical burn: copious irrigation with running water now (skin and eyes); remove contaminated clothing; water only; ophthalmology if the eye is involved')] : []),
         ...(a(ctx.HE, RX.inhalation) ? [ACT.act('Inhalation injury: 100% oxygen; early anaesthetic review for intubation before airway oedema')] : []),
         ...(a(ctx.HE, RX.circumferential) ? [ACT.act('Circumferential burn: monitor distal perfusion; escharotomy by the burns team')] : []),
         ...(tbsa !== null && ((!ctx.paed && tbsa >= 15) || (ctx.paed && tbsa >= 10)) ? [ACT.act('Formal IV fluid resuscitation from the time of burn, titrated to urine output (burns unit protocol)')] : []),
         ACT.act('Tetanus status check (UKHSA Green Book ch. 30)'),
       ],
+    };
+  },
+
+
+  // ── Aorto-enteric fistula (ESVS 2020 vascular graft infections) ──────────────────────────
+  (ctx) => {
+    const graft = a(ctx.PSH + '\n' + ctx.PMH + '\n' + ctx.H, RX.aorticGraft);
+    const bleed = a(ctx.H, /\b(ha?ematemesis|mela?ena|vomiting blood|rectal bleed\w*|black stool\w*|gi bleed\w*|bleed\w*)\b/);
+    if (!(graft && bleed)) return null;
+    return {
+      id: 'aortoenteric_fistula', title: 'GI bleeding after aortic graft — aorto-enteric fistula until proven otherwise', level: 'emergency', category: 'vascular',
+      reasons: ['previous aortic graft / repair with GI bleeding (a "herald" bleed)'], redirect: true,
+      guideline: 'ESVS 2020 vascular graft and endograft infections',
+      actions: [REDIRECT_ACTION, ACT.inv('CT angiography of the aorta and graft before endoscopy if stable'), ACT.act('Urgent vascular surgery referral (vascular on-call)')],
+    };
+  },
+
+  // ── Pulsatile groin mass (ESVS 2017 / femoral aneurysm; not a hernia template) ───────────
+  (ctx) => {
+    if (!a(ctx.HE, /\b(pulsatile|expansile)\b[^.;\n]{0,30}\b(groin|femoral|inguinal|mass|lump|swelling)\b|\b(groin|femoral|inguinal)\b[^.;\n]{0,30}\b(pulsatile|expansile)\b|\bbruit\b[^.;\n]{0,20}\b(groin|femoral)\b|\bpseudo-?aneurysm\b/)) return null;
+    return {
+      id: 'pulsatile_groin_mass', title: 'Pulsatile groin mass — possible femoral aneurysm / pseudoaneurysm', level: 'urgent', category: 'vascular',
+      reasons: ['pulsatile / expansile groin swelling'], redirect: false, guideline: 'ESVS 2017 peripheral arterial disease (femoral aneurysm); never needle or explore as a hernia',
+      actions: [ACT.inv('Arterial duplex ultrasound (or CT angiography) of the groin before any hernia surgery or aspiration'), ACT.act('Vascular surgery referral; do not aspirate or incise')],
+    };
+  },
+
+  // ── Umbilical hernia with tense ascites (EASL 2018 decompensated cirrhosis) ──────────────
+  (ctx) => {
+    const hernia = a(ctx.H + '\n' + ctx.E + '\n' + ctx.D, /\bumbilical hernia\b|\bparaumbilical hernia\b/);
+    const ascites = a(ctx.H + '\n' + ctx.E + '\n' + ctx.D + '\n' + ctx.PMH, /\bascites\b/);
+    if (!(hernia && ascites)) return null;
+    const skin = a(ctx.E + '\n' + ctx.H, /\b(thin\w*|shiny|stretched|ulcerat\w*|necrotic|discolou?r\w*|weeping|leak\w*)\b[^.;\n]{0,25}\b(skin|hernia)\b|\bskin\b[^.;\n]{0,25}\b(thin\w*|shiny|ulcerat\w*|necrotic|discolou?r\w*|weeping|leak\w*)\b/);
+    return {
+      id: 'umbilical_hernia_ascites', title: `Umbilical hernia with ascites — rupture risk${skin ? ' (thin / ulcerated skin)' : ''}`, level: skin ? 'urgent' : 'priority', category: 'surgical',
+      reasons: ['umbilical hernia in a patient with ascites', ...(skin ? ['skin changes over the hernia'] : [])], redirect: false,
+      guideline: 'EASL 2018 decompensated cirrhosis (hernia in ascites)',
+      actions: [
+        ACT.act('Risk of rupture and ascitic leak (Flood syndrome): control ascites first (paracentesis / diuretics, TIPS assessment) with hepatology before any repair'),
+        ACT.act(`Safety-net: leak of fluid, ulceration or a tender irreducible hernia — ${EMERGENCY_REDIRECT}`),
+      ],
+    };
+  },
+
+  // ── Compressive / retrosternal goitre (BTA 2014; BAETS) ──────────────────────────────────
+  (ctx) => {
+    if (!a(ctx.H + '\n' + ctx.E + '\n' + ctx.D + '\n' + ctx.R, /\b(goitre|goiter|thyroid (mass|swelling|enlargement))\b/)) return null;
+    const compress = a(ctx.H + '\n' + ctx.E + '\n' + ctx.D + '\n' + ctx.R, /\b(compress\w*|retrosternal|substernal|tracheal (deviation|narrowing)|stridor|pemberton\w*|orthopn\w*|dysphagia|breathless\w* (lying|when lying|on lying))\b/);
+    if (!compress) return null;
+    return {
+      id: 'compressive_goitre', title: 'Compressive / retrosternal goitre — airway assessment', level: 'urgent', category: 'respiratory',
+      reasons: ['goitre with compressive features (tracheal compression, retrosternal extension, stridor or dysphagia)'], redirect: false,
+      guideline: 'British Thyroid Association 2014; BAETS',
+      actions: [ACT.inv('CT neck and thorax (airway calibre, retrosternal extent)'), ACT.act('Anaesthetic airway assessment before surgery; urgent endocrine surgery review (thyroidectomy for compressive goitre)')],
+    };
+  },
+
+  // ── Atrial fibrillation found without instability or rapid rate (ESC 2024 AF-CARE) ───────
+  (ctx) => {
+    const af = a(ctx.H + '\n' + ctx.E + '\n' + ctx.R + '\n' + ctx.D, RX.af) || ctx.icd.some(c => c.startsWith('I48'));
+    if (!af || (ctx.v.heartRate !== null && ctx.v.heartRate > 110)) return null;
+    if (!a(ctx.H + '\n' + ctx.D + '\n' + ctx.E, /\b(new\w*|newly|detected|found|incidental|irregular pulse|irregularly irregular)\b/)) return null;
+    return {
+      id: 'af_new', title: 'Atrial fibrillation — newly detected', level: 'priority', category: 'cardiac',
+      reasons: ['newly detected / irregular pulse'], redirect: false, guideline: 'ESC 2024 AF guideline (AF-CARE)',
+      actions: [
+        ACT.inv('12-lead ECG to confirm atrial fibrillation'),
+        ACT.act('Thromboembolic risk (CHA₂DS₂-VA) and anticoagulation decision, rate control, TFTs (ESC 2024); defer elective surgery until there is a plan with cardiology / GP'),
+      ],
+    };
+  },
+
+  // ── Moderate acute asthma (BTS/SIGN 158, 2019) — severe / life-threatening handled above ─
+  (ctx) => {
+    if (!a(ctx.H + '\n' + ctx.PMH + '\n' + ctx.D, RX.asthma) || !a(ctx.HE, /\b(wheez\w*|breathless\w*|short(ness)? of breath|tight chest|chest tightness|exacerbation|attack)\b/)) return null;
+    if (a(ctx.HE, RX.anaphylaxisSkin)) return null;
+    const dose = ctx.paed ? ` — ${BNFC}` : '';
+    return {
+      id: 'asthma_moderate', title: 'Acute asthma exacerbation', level: 'urgent', category: 'respiratory',
+      reasons: ['asthma with wheeze / breathlessness'], redirect: false, guideline: 'BTS/SIGN 158 (2019) British guideline on the management of asthma',
+      actions: [
+        ACT.act(`Inhaled salbutamol (β2 agonist) via spacer or nebuliser${dose}; oral prednisolone${ctx.paed ? '' : ' 40–50 mg'} (BTS/SIGN 158)${dose}; reassess PEF and SpO₂`),
+        ...(ctx.preg.pregnant ? [ACT.act('Pregnancy: treat acute asthma as in non-pregnant patients (BTS/SIGN 158); inform the obstetric team')] : []),
+      ],
+    };
+  },
+
+  // ── Urinary retention / obstructive AKI (EAU 2024 non-neurogenic male LUTS; NICE NG148) ──
+  (ctx) => {
+    const retention = a(ctx.H + '\n' + ctx.E + '\n' + ctx.D, /\b(urinary retention|retention of urine|unable to pass urine|can'?t pass urine|cannot pass urine|palpable (bladder|urinary bladder)|distended bladder|bladder scan\b[^.;\n]{0,20}\b\d{3,4}\s*ml)\b/)
+      || a(ctx.R, /\b(residual|bladder)\b[^.;\n]{0,25}\b([5-9]\d\d|\d{4})\s*ml\b|\bhydronephrosis\b[^.;\n]{0,30}\bbilateral\b|\bbilateral hydronephrosis\b/);
+    if (!retention) return null;
+    if (a(ctx.HE, RX.saddle) || a(ctx.E, RX.analTone)) return null; // cauda equina rule
+    const aki = ctx.labs.creatinine !== null && ctx.labs.creatinine > 130;
+    return {
+      id: 'urinary_retention', title: `Urinary retention${aki ? ' with acute kidney injury (obstructive uropathy)' : ''}`, level: 'urgent', category: 'urological',
+      reasons: ['urinary retention', ...(aki ? [`creatinine ${ctx.labs.creatinine}`] : [])], redirect: false,
+      guideline: 'EAU 2024 male LUTS / urinary retention; NICE NG148 acute kidney injury',
+      actions: [
+        ACT.act('Urethral catheterisation (suprapubic if urethral fails); record the residual volume'),
+        ...(aki ? [ACT.act('Chronic retention with AKI: hourly urine output — watch for post-obstructive diuresis and replace fluid losses; repeat U&E (NICE NG148)')] : []),
+        ACT.inv('U&E / creatinine; urine culture'),
+      ],
+    };
+  },
+
+  // ── First seizure (NICE NG217, 2022 epilepsies) ──────────────────────────────────────────
+  (ctx) => {
+    if (!a(ctx.H + '\n' + ctx.D, /\b(first|new)[- ]?(onset )?(seizure|fit|convulsion|tonic[- ]clonic)|seizure\w*\b|convuls\w*|tonic[- ]clonic|\bhad a fit\b|\bfitting\b/)) return null;
+    if (ctx.preg.pregnant || (ctx.preg.postpartumWeeks !== null && ctx.preg.postpartumWeeks <= 6)) return null; // eclampsia rule
+    if (a(ctx.H, /\b(epilep\w*|known seizures)\b/) || a(ctx.PMH, /\bepilep\w*/)) return null;
+    const ongoing = a(ctx.H + '\n' + ctx.E, /\b(still fitting|ongoing seizure|status epilepticus|not recovered|not back to normal|prolonged seizure)\b/) || alteredConsciousness(ctx);
+    return {
+      id: 'first_seizure', title: ongoing ? 'Seizure with incomplete recovery' : 'First seizure', level: ongoing ? 'emergency' : 'urgent', category: 'neurological',
+      reasons: [ongoing ? 'seizure with ongoing / reduced consciousness' : 'first seizure, recovered'], redirect: ongoing,
+      guideline: 'NICE NG217 (2022) epilepsies; NICE CG109 transient loss of consciousness',
+      actions: [
+        ...(ongoing ? [REDIRECT_ACTION] : []),
+        ACT.inv('Capillary glucose, U&E, calcium, magnesium'),
+        ACT.act('12-lead ECG (cardiac cause of transient loss of consciousness — NICE CG109 / NG217)'),
+        ACT.act('Urgent referral to a first-seizure clinic / neurologist, seen within 2 weeks (NICE NG217)'),
+        ACT.act('Driving safety advice: stop driving and inform the licensing authority; avoid unsupervised swimming and working at heights until reviewed'),
+      ],
+    };
+  },
+
+  // ── Superficial vein thrombosis near the saphenofemoral junction (ESVS 2021 venous thrombosis) ─
+  (ctx) => {
+    if (!a(ctx.H + '\n' + ctx.E + '\n' + ctx.D + '\n' + ctx.R, /\b(superficial (vein |venous )?thrombo\w*|thrombophlebitis|svt\b)/)) return null;
+    const nearJunction = a(ctx.H + '\n' + ctx.E + '\n' + ctx.D + '\n' + ctx.R, /\b(saphenofemoral|sapheno-femoral|sfj|saphenopopliteal|spj|junction)\b/);
+    return {
+      id: 'superficial_vein_thrombosis', title: `Superficial vein thrombosis${nearJunction ? ' near the saphenofemoral junction' : ''}`, level: nearJunction ? 'urgent' : 'priority', category: 'vascular',
+      reasons: [nearJunction ? 'thrombus extending towards the deep venous junction' : 'superficial vein thrombosis'], redirect: false,
+      guideline: 'ESVS 2021 clinical practice guidelines on the management of venous thrombosis',
+      actions: [
+        ACT.inv('Venous duplex ultrasound of both legs (extent, distance from the junction, concomitant DVT)'),
+        ACT.act(nearJunction
+          ? 'Within 3 cm of the saphenofemoral junction: therapeutic anticoagulation as for DVT (ESVS 2021)'
+          : 'Length ≥ 5 cm above the knee: fondaparinux prophylactic dose for 45 days (ESVS 2021); shorter / below-knee: NSAID or compression and repeat duplex'),
+      ],
+    };
+  },
+
+  // ── Hyperemesis gravidarum (RCOG GTG 69, 2016) ───────────────────────────────────────────
+  (ctx) => {
+    if (!ctx.preg.pregnant || (ctx.preg.weeks !== null && ctx.preg.weeks > 20)) return null;
+    const vomiting = a(ctx.H, /\b(vomit\w*|hyperemesis|unable to keep (anything|fluids|water) down)\b/);
+    const severe = a(ctx.H + '\n' + ctx.E + '\n' + ctx.D, /\b(hyperemesis|weight (loss|down)|dehydrat\w*|ketotic|ketones|unable to keep (anything|fluids|water) down|dry mucous)\b/)
+      || (ctx.labs.potassium !== null && ctx.labs.potassium < 3.5);
+    if (!(vomiting && severe)) return null;
+    return {
+      id: 'hyperemesis', title: 'Hyperemesis gravidarum', level: 'urgent', category: 'obstetric',
+      reasons: ['vomiting in early pregnancy with dehydration, ketonuria or weight loss'], redirect: false,
+      guideline: 'RCOG Green-top Guideline 69 (2016) nausea, vomiting and hyperemesis gravidarum',
+      actions: [
+        ACT.act('IV 0.9% sodium chloride with potassium chloride guided by daily U&E (RCOG GTG 69); antiemetics'),
+        ACT.act('Thiamine supplementation (Wernicke encephalopathy prevention — RCOG GTG 69)'),
+        ACT.act('Thromboprophylaxis with LMWH if admitted (RCOG GTG 69); early pregnancy / obstetric team review'),
+        ACT.inv('Pelvic ultrasound (viability, multiple or molar pregnancy); U&E, LFTs, TFTs; urine ketones'),
+      ],
+    };
+  },
+
+  // ── Severe hypertriglyceridaemia (ACG 2024 acute pancreatitis; ESC/EAS 2019) ──────────────
+  (ctx) => {
+    const tg = ctx.labs.triglycerides;
+    const lipaemic = a(ctx.R + '\n' + ctx.H + '\n' + ctx.D, /\blipa?emi\w*\b/);
+    if (!((tg !== null && tg >= 11.3) || lipaemic)) return null;
+    return {
+      id: 'hypertriglyceridaemia', title: 'Severe hypertriglyceridaemia', level: 'urgent', category: 'laboratory',
+      reasons: [tg !== null ? `triglycerides ${tg} mmol/L` : 'lipaemic sample'], redirect: false,
+      guideline: 'ACG 2024 acute pancreatitis (triglycerides ≥ 11.3 mmol/L / 1000 mg/dL as a cause)',
+      actions: [ACT.act('Triglycerides ≥ 11.3 mmol/L can cause pancreatitis: treat as the cause, not gallstones (insulin-glucose / lipid-lowering per specialist)')],
     };
   },
 

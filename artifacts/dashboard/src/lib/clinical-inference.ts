@@ -205,6 +205,7 @@ function stripAdultDoses(text: string): string {
   return replaced ? out.replace(/(\[weight-based dose — calculate per BNFc\]\s*[+,/]?\s*)+(?=\[weight-based)/g, '') : text;
 }
 
+const PENICILLIN_RE = /\b(co-?amoxiclav|amoxiclav|amoxicillin|ampicillin|piperacillin|pip-?tazo|tazocin|flucloxacillin|benzylpenicillin|phenoxymethylpenicillin|penicillin)\b/gi;
 const NSAID_RE = /\s*\+?\s*\b(ibuprofen|diclofenac|naproxen|ketorolac|parecoxib|celecoxib)\b[^.;\n•]*/gi;
 
 // ── Main engine ────────────────────────────────────────────────────────────────
@@ -229,6 +230,10 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
   const add = (p: ClinicalPrompt) => { if (!prompts.some(x => x.id === p.id)) prompts.push(p); };
 
   const isReproductiveAgeFemale = sex === 'female' && ageNum >= 12 && ageNum <= 55;
+  // Diabetes in THIS patient: not "previous gestational diabetes", "pre-diabetes" or a relative's
+  // diabetes (a risk factor is not a diagnosis — clinical-validation prevobspaed finding).
+  const hasDiabetes = comorbidities.some(c => containsAffirmed(c, 'diabet')
+    && !/\b(gestational|pre-?diabet\w*|borderline|impaired (fasting|glucose)|family history|mother|father|sister|brother|parent|grand\w*)\b/i.test(c));
   const isPreOp = encounterType === 'surgical_consult' || encounterType === 'major_emergency'
     || hasSx(symptoms, 'pre-operative') || hasCc(ccEntries, 'pre-op', 'pre-operative');
   const hasAbdominalCc = hasCc(ccEntries,
@@ -296,6 +301,8 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
   // Working diagnosis (leading clause of the assessment) — operative templates follow it,
   // never the examination signs alone (clinical-validation findings: prevobspaed gap 5, hpb gap 1).
   const dxHead = diagnosisHead(assessment ?? '');
+  const hfOrPeEarly = recognised('acute_heart_failure')
+    || comorbidities.some(c => containsAnyAffirmed(c, ['heart failure', 'cardiac failure', 'reduced ejection', 'lvsd']));
   const dxSupports = (...terms: string[]) => containsAnyAffirmed(dxHead, terms);
 
   // ── EXAMINATION-TRIGGERED SAFETY PROMPTS ──────────────────────────────────
@@ -317,7 +324,7 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
         { step: 3, text: 'Blood cultures × 2 before antibiotics', addToPlan: '• Blood cultures × 2 before first antibiotic dose.' },
         { step: 4, text: 'FBC, CRP, LFTs, amylase, PT/INR, U&E', addToInvestigations: 'Liver Function Tests (LFTs)' },
         { step: 5, text: 'USS RUQ — CBD diameter, stones, abscess', addToPlan: '• Urgent USS RUQ — CBD calibre and biliary anatomy.' },
-        { step: 6, text: 'ERCP for biliary decompression within 24h (Tokyo Grade II/III)', addToPlan: '• Arrange urgent ERCP — biliary decompression (Tokyo Grade II/III cholangitis).' },
+        { step: 6, text: 'ERCP for biliary decompression if obstruction is confirmed (dilated duct / stone): within 24 h, urgent if severe (TG18; ACG 2024)', addToPlan: '• ERCP for biliary decompression if obstruction is confirmed on imaging (dilated duct / stone) — within 24 h, urgently if Tokyo Grade III (TG18; ACG 2024). Exclude hepatitis if the duct is not dilated.' },
         { step: 7, text: 'HDU/ICU admission — monitor for septic shock', addToPlan: '• HDU admission — hourly obs, urine output, early shock recognition.' },
       ],
       followUp: { label: 'Post-ERCP cholangitis review', daysFromNow: 7 },
@@ -433,7 +440,10 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
   }
 
   // Breast lump → Triple assessment
-  if (exam(examBreast, 'lump', 'mass', 'thickening', 'nodule', 'hard', 'irregular')) {
+  if (exam(examBreast, 'lump', 'mass', 'thickening', 'nodule', 'hard', 'irregular')
+    || hasCc(ccEntries, 'breast lump', 'breast mass', 'lump in breast', 'lump in the breast')
+    || hasSx(symptoms, 'breast lump', 'breast mass')
+    || containsAnyAffirmed(input.historyText ?? '', [/\b(breast (lump|mass)|lump in (the |her |my )?(left |right )?breast)\b/])) {
     add({
       id: 'breast_lump',
       type: 'safety',
@@ -444,11 +454,11 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
       text: 'Breast Mass → Triple Assessment',
       rationale: 'Any discrete breast lump requires triple assessment (clinical + imaging + histology) to exclude malignancy. NICE NG12: 2-week wait pathway if suspicious features.',
       actions: [
-        { step: 1, text: 'USS breast (all ages) — cystic vs solid, BI-RADS', addToPlan: '• USS breast — BI-RADS classification, cystic vs solid characterisation.' },
+        { step: 1, text: 'USS breast (all ages) — cystic vs solid, BI-RADS', addToInvestigations: 'USS breast — BI-RADS classification, cystic vs solid' },
         !isNaN(ageNum) && ageNum >= 35
           ? { step: 2, text: 'Mammogram (age ≥ 35) — microcalcifications, spiculation', addToPlan: '• Bilateral mammogram — screen for synchronous disease and microcalcifications.' }
           : { step: 2, text: 'MRI breast if young + dense tissue / high-risk', addToPlan: '• Consider MRI breast if dense glandular tissue or BRCA status.' },
-        { step: 3, text: 'Core needle biopsy (CNB) — histological diagnosis', addToPlan: '• Core needle biopsy — 14G US-guided; send for ER/PR/HER2 if malignant.' },
+        { step: 3, text: 'Core needle biopsy (CNB) — histological diagnosis', addToInvestigations: 'Core needle biopsy (US-guided) — histology, ER/PR/HER2 if malignant' },
         { step: 4, text: 'Breast oncology referral', addToPlan: '• Refer breast oncology — 2-week wait pathway if clinically suspicious.' },
         { step: 5, text: 'Document family history — BRCA1/2 screening if relevant', addToPlan: '• Document family history of breast/ovarian cancer — BRCA risk assessment.' },
       ].filter(Boolean) as ClinicalAction[],
@@ -527,7 +537,9 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
   // ── SAFETY — Symptom / CC driven ──────────────────────────────────────────
 
   // β-HCG: reproductive-age female with abdominal/pelvic complaint
-  if (isReproductiveAgeFemale && (pregnancyPossible || hasAbdominalCc)) {
+  // Not when the pregnancy (or a delivery in the last 6 weeks) is already recorded.
+  const knownPregnancyOrPostpartum = pregnant || (emergencyLayer.pregnancy.postpartumWeeks !== null && emergencyLayer.pregnancy.postpartumWeeks <= 6);
+  if (isReproductiveAgeFemale && (pregnancyPossible || hasAbdominalCc) && !knownPregnancyOrPostpartum) {
     add({
       id: 'bhcg_safety',
       type: 'safety',
@@ -599,7 +611,14 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
         { step: 3, text: 'PT/INR + APTT', addToInvestigations: 'Prothrombin Time (PT/INR)' },
         { step: 4, text: 'U&E + creatinine (BUN:Cr ratio for upper vs lower GI)', addToInvestigations: 'Urea & Electrolytes (U&E)' },
         { step: 5, text: 'Gastroscopy (upper GI) or colonoscopy (lower GI) — timing by stability', addToPlan: '• Urgent OGD / colonoscopy — within 24h of haemodynamic stabilisation.' },
-        { step: 6, text: 'Reverse anticoagulation if applicable (Vitamin K / PCC)', addToPlan: '• Reverse anticoagulation if on warfarin/DOAC — Vitamin K IV + 4-factor PCC if life-threatening.' },
+        ...(hasMed(medications, medicationsText, 'warfarin', 'rivaroxaban', 'apixaban', 'dabigatran', 'edoxaban')
+          ? [{ step: 6, text: 'Anticoagulant recorded: withhold and reverse by drug with haematology (see the anticoagulation prompt)', addToPlan: '• Anticoagulant recorded: withhold and reverse by drug with haematology — warfarin: IV vitamin K + 4-factor PCC; dabigatran: idarucizumab; factor Xa inhibitor: andexanet alfa or PCC (ACC 2020 ECDP).' }]
+          : []),
+        // Unstable lower GI bleeding: CT angiography first (BSG 2019 acute LGIB guideline).
+        ...(((numVital(vitals, 'systolicBp') ?? 999) < 90 || ((numVital(vitals, 'heartRate') ?? 0) / Math.max(numVital(vitals, 'systolicBp') ?? 999, 1)) > 1)
+          && (hasSx(symptoms, 'rectal bleeding') || hasCc(ccEntries, 'rectal bleed', 'haematochezia', 'lower gi bleed') || containsAnyAffirmed(input.historyText ?? '', ['rectal bleeding', 'haematochezia', 'fresh blood per rectum', 'passing blood']))
+          ? [{ step: 7, text: 'Haemodynamically unstable lower GI bleeding (shock index > 1): CT angiography first (BSG 2019)', addToInvestigations: 'CT angiography (mesenteric) — unstable lower GI bleed, before endoscopy (BSG 2019)' }]
+          : []),
       ],
       followUp: { label: 'Post-haemorrhage GI review', daysFromNow: 14 },
     });
@@ -665,7 +684,7 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
         !isNaN(ageNum) && ageNum >= 40
           ? { step: 5, text: '12-lead ECG (age ≥ 40)', addToPlan: '• 12-lead ECG — pre-operative cardiac baseline (age ≥ 40).' }
           : null,
-        hasPmh(comorbidities, 'diabet')
+        hasDiabetes
           ? { step: 6, text: 'HbA1c (diabetic patient — target < 8.5% pre-op)', addToInvestigations: 'HbA1c' }
           : null,
       ].filter(Boolean) as ClinicalAction[],
@@ -679,7 +698,12 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
   const anticoagNames = ['warfarin', 'rivaroxaban', 'apixaban', 'dabigatran', 'enoxaparin', 'heparin', 'fondaparinux', 'edoxaban'];
   const onAnticoag = hasMed(medications, medicationsText, ...anticoagNames);
   const historyAll = [input.historyText ?? '', ...ccEntries.map(e => e.complaint), ...symptoms].join('.\n');
-  const activeBleeding = containsAnyAffirmed(historyAll, ['haematemesis', 'hematemesis', 'melaena', 'melena', 'rectal bleeding', 'vomiting blood', 'haemorrhage', 'hemorrhage', 'bleeding', 'haemoperitoneum', 'black stool', 'fresh blood'])
+  // Active haemorrhage (not the chronic rectal bleeding of a known cancer): acute bleeding words,
+  // bleeding with haemodynamic compromise, or a bleeding working diagnosis.
+  const sbpNow = numVital(vitals, 'systolicBp');
+  const hrNow = numVital(vitals, 'heartRate');
+  const activeBleeding = containsAnyAffirmed(historyAll, ['haematemesis', 'hematemesis', 'melaena', 'melena', 'vomiting blood', 'haemoperitoneum', 'active bleeding', 'heavy bleeding', 'massive bleeding', 'black stool', 'passing clots'])
+    || (containsAnyAffirmed(historyAll, ['bleeding', 'haemorrhage', 'hemorrhage', 'fresh blood']) && ((sbpNow !== null && sbpNow < 100) || (hrNow !== null && hrNow > 100)))
     || containsAnyAffirmed(dxHead, ['bleed', 'haemorrhag', 'hemorrhag', 'haemoperitoneum', 'haematoma'])
     || hasRadResult(radiologyRequests, 'haemoperitoneum', 'active extravasation', 'intracranial haemorrhage', 'subdural');
   if (onAnticoag) {
@@ -700,7 +724,7 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
       actions: activeBleeding
         ? [
             { step: 1, text: 'PT/INR, APTT, FBC, renal function', addToInvestigations: 'Prothrombin Time (PT/INR)' },
-            { step: 2, text: `Withhold the ${drug} now`, addToPlan: `• Withhold the ${drug} now (active bleeding) — no bridging during active bleeding.` },
+            { step: 2, text: `Withhold the ${drug} now`, addToPlan: `• Withhold the ${drug} now (active bleeding).` },
             { step: 3, text: warfarin
                 ? 'Warfarin reversal: IV vitamin K + four-factor prothrombin complex concentrate (PCC) for major bleeding'
                 : drug === 'dabigatran' ? 'Dabigatran reversal: idarucizumab for life-threatening bleeding'
@@ -816,13 +840,32 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
       rationale: `Amylase ${amylase} U/L (> 3× ULN) — acute pancreatitis confirmed biochemically. Severity stratification guides ICU need.`,
       actions: [
         { step: 1, text: 'Glasgow/Ranson/BISAP severity score', addToPlan: '• Calculate Glasgow severity score — document at 48h (score ≥ 3 = severe).' },
-        { step: 2, text: 'NBM + aggressive IV fluid resuscitation (Hartmann\'s 250–500ml/h)', addToPlan: '• NBM, IV Hartmann\'s 250ml/h — adjust to urine output ≥ 0.5ml/kg/h.' },
+        { step: 2, text: 'Moderate, goal-directed IV fluids — not aggressive (WATERFALL 2022; ACG 2024); cautious with heart failure', addToPlan: `• Moderate goal-directed IV fluid with Hartmann's${hfOrPeEarly ? ' — heart failure recorded: small boluses with close review' : ''}: 10 ml/kg bolus only if hypovolaemic, then 1.5 ml/kg/h, reassessed against urine output, HR and BP (WATERFALL 2022; ACG 2024) — avoid aggressive fluid regimens.` },
         { step: 3, text: 'CRP at 48h, calcium, LFTs (biliary aetiology?)', addToInvestigations: 'Calcium (corrected)' },
         { step: 4, text: 'USS abdomen — biliary cause, CBD stones', addToPlan: '• USS abdomen — biliary aetiology (gallstones, CBD diameter).' },
         { step: 5, text: 'CT pancreas (contrast-enhanced) at 48–72h if severe', addToPlan: '• CT pancreas (CECT) at 48–72h if severe — necrosectomy planning.' },
         { step: 6, text: 'HDU/ICU if Glasgow ≥ 3 or organ dysfunction', addToPlan: '• HDU/ICU — monitor renal, respiratory, cardiovascular function.' },
       ],
       followUp: { label: 'Post-pancreatitis 6-week review + cholecystectomy planning', daysFromNow: 42 },
+    });
+  }
+
+  // Pancreatitis: stop a possible causative drug (B16; ACG 2024 — azathioprine, valproate, …)
+  const pancreatitisContext = (amylase !== null && amylase > 300) || dxSupports('pancreatit');
+  const pancreatitisDrug = ['azathioprine', 'mercaptopurine', 'valproate', 'sodium valproate', 'didanosine', 'mesalazine', 'furosemide', 'gliptin', 'exenatide', 'liraglutide', 'semaglutide']
+    .find(d => hasMed(medications, medicationsText, d));
+  if (pancreatitisContext && pancreatitisDrug) {
+    add({
+      id: 'pancreatitis_drug',
+      type: 'safety',
+      urgency: 'priority',
+      icon: '💊',
+      finding: `Pancreatitis on ${pancreatitisDrug}`,
+      text: `Possible drug-induced pancreatitis → stop ${pancreatitisDrug}`,
+      rationale: `${pancreatitisDrug} is a recognised cause of acute pancreatitis (ACG 2024). Stop the drug and discuss the alternative with the prescribing specialist.`,
+      actions: [
+        { step: 1, text: `Stop ${pancreatitisDrug} (possible causative drug)`, addToPlan: `• Stop ${pancreatitisDrug} — possible drug-induced pancreatitis (ACG 2024); inform the prescribing specialist.` },
+      ],
     });
   }
 
@@ -1138,7 +1181,7 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
 
   // ── INVESTIGATION — PMH-driven ─────────────────────────────────────────────
 
-  if (hasPmh(comorbidities, 'diabet')) {
+  if (hasDiabetes) {
     add({
       id: 'diabetes_hba1c',
       type: 'investigation',
@@ -1346,8 +1389,8 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
     });
   }
 
-  // Hypoxia: SpO2 < 94%
-  if (hasHypoxia) {
+  // Hypoxia: SpO2 < 94% (adult protocol; children: the emergency-layer prompts apply)
+  if (hasHypoxia && !paed) {
     const hypoxiaActions: ClinicalAction[] = [
       copd
         ? { step: 1, text: 'COPD / hypercapnic risk: controlled oxygen, target SpO₂ 88–92% (BTS 2017)', addToPlan: '• Controlled oxygen via Venturi mask (24–28%), target SpO₂ 88–92% (BTS 2017 — COPD / hypercapnic risk); arterial blood gas within 1 hour; NIV if pH < 7.35 with raised PaCO₂.' }
@@ -1485,7 +1528,7 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
         { step: 3, text: 'Repeat amylase + CRP at 48h — Glasgow score (≥ 3 = severe)', addToInvestigations: 'CRP' },
         { step: 4, text: 'LFTs — obstructive (ALP/GGT rise) vs alcoholic (AST > ALT × 2)', addToInvestigations: 'Liver Function Tests (LFTs)' },
         { step: 5, text: 'CECT pancreas if no improvement at 48–72h', addToPlan: '• CT pancreas (contrast-enhanced) at 72h if no improvement — necrosis, collections.' },
-        { step: 6, text: 'Interval cholecystectomy if gallstone aetiology — within 2 weeks of discharge', addToPlan: '• Plan interval laparoscopic cholecystectomy — same admission or within 2 weeks (gallstone pancreatitis).' },
+        { step: 6, text: 'Gallstone pancreatitis: cholecystectomy in the same admission if mild; defer until collections resolve if necrosis / peripancreatic collections (IAP/APA 2013; ACG 2024)', addToPlan: '• Gallstone pancreatitis: laparoscopic cholecystectomy in the same admission if mild; defer until peripancreatic collections have resolved (or at least 6 weeks) if collections or necrosis are present (IAP/APA 2013; ACG 2024).' },
       ],
       followUp: { label: 'Post-pancreatitis cholecystectomy planning', daysFromNow: 21 },
     });
@@ -2068,6 +2111,94 @@ POST-OPERATIVE ORDERS:
     });
   }
 
+  // ── PREGNANCY: obstetric handover (owner default 5; C7; RCOG / NICE NG126, NG133) ─────
+  if (pregnant) {
+    const weeks = emergencyLayer.pregnancy.weeks;
+    const viable = weeks === null || weeks >= 22;
+    add({
+      id: 'pregnancy_obstetric',
+      type: 'safety',
+      urgency: 'urgent',
+      icon: '🤰',
+      finding: `Pregnant${weeks !== null ? ` (${weeks} weeks)` : ''}`,
+      text: 'Pregnancy — obstetric team involvement; pregnancy-safe plan',
+      rationale: 'An acute presentation in pregnancy needs obstetric input: fetal assessment when viable, pregnancy-safe drugs and imaging (no NSAIDs from 20 weeks; LMWH rather than DOACs or warfarin; ultrasound / MRI before ionising imaging where they answer the question).',
+      actions: [
+        { step: 1, text: 'Inform the obstetric / maternity team', addToPlan: '• Pregnancy: inform the obstetric / maternity team — joint care.' },
+        ...(viable ? [{ step: 2, text: 'Fetal monitoring (CTG / fetal heart) — viable gestation', addToPlan: '• Fetal monitoring (CTG / fetal heart rate) with the obstetric team.' }] : []),
+        { step: 3, text: 'Pregnancy-safe prescribing and imaging: no NSAIDs from 20 weeks; LMWH not DOAC / warfarin; ultrasound or MRI in preference to CT where it answers the question', addToPlan: '• Pregnancy-safe plan: no NSAIDs from 20 weeks (MHRA 2020); anticoagulation with LMWH, not DOACs or warfarin (RCOG GTG 37a/b); ultrasound or MRI before ionising imaging where it answers the question.' },
+      ],
+    });
+  }
+
+  // Urinary infection / pyelonephritis: urine culture before antibiotics (NICE NG111; EAU 2024)
+  if (containsAnyAffirmed([historyAll, dxHead].join('\n'), ['pyelonephritis', 'urinary tract infection', 'urosepsis', 'dysuria', /\buti\b/, 'loin pain'])
+    && (hasFeverVital || hasFever || containsAnyAffirmed([historyAll, dxHead].join('\n'), ['pyelonephritis', 'urosepsis', 'rigors']))) {
+    add({
+      id: 'urine_culture',
+      type: 'investigation',
+      urgency: 'priority',
+      icon: '🧫',
+      finding: 'Upper urinary tract infection / urosepsis suspected',
+      text: 'Urine culture (MSU) before antibiotics',
+      rationale: 'Send a midstream urine (MSU) for culture before antibiotics in pyelonephritis and urosepsis, and review the choice against the culture result (NICE NG111; EAU 2024).',
+      actions: [
+        { step: 1, text: 'Midstream urine (MSU) for culture and sensitivity', addToInvestigations: 'Urine culture (MSU) — before antibiotics' },
+      ],
+    });
+  }
+
+  // Bloody diarrhoea: stool culture incl. STEC (UKHSA STEC guidance 2023)
+  if (containsAnyAffirmed([historyAll, ...symptoms].join('\n'), ['bloody diarrhoea', 'bloody diarrhea', 'blood in the diarrhoea', /\bdiarrhoea\b[^.;\n]{0,25}\bblood\b/])) {
+    add({
+      id: 'stool_culture',
+      type: 'investigation',
+      urgency: 'priority',
+      icon: '🧫',
+      finding: 'Bloody diarrhoea',
+      text: 'Stool culture including STEC (E. coli O157) — before antibiotics',
+      rationale: 'Bloody diarrhoea needs stool culture including Shiga toxin-producing E. coli; antibiotics are avoided when STEC is suspected (haemolytic uraemic syndrome risk — UKHSA 2023).',
+      actions: [
+        { step: 1, text: 'Stool culture and STEC / Shiga toxin PCR; C. difficile toxin if recent antibiotics', addToInvestigations: 'Stool culture + STEC (Shiga toxin) PCR' },
+      ],
+    });
+  }
+
+  // Diabetic foot infection: plain X-ray for osteomyelitis (IWGDF/IDSA 2023)
+  if (containsAnyAffirmed([historyAll, examExtremities, input.examOther ?? '', dxHead].join('\n'), ['diabetic foot', 'foot ulcer', 'toe ulcer', 'osteomyelitis', 'probe to bone', 'probe-to-bone'])
+    && hasDiabetes) {
+    add({
+      id: 'diabetic_foot_xray',
+      type: 'investigation',
+      urgency: 'priority',
+      icon: '🦶',
+      finding: 'Diabetic foot ulcer / infection',
+      text: 'Plain X-ray of the foot — osteomyelitis, gas, foreign body',
+      rationale: 'Plain radiographs of the foot are the first imaging for suspected diabetic foot osteomyelitis (IWGDF/IDSA 2023).',
+      actions: [
+        { step: 1, text: 'Plain X-ray of the foot', addToInvestigations: 'Plain X-ray of the foot — osteomyelitis (IWGDF/IDSA 2023)' },
+      ],
+    });
+  }
+
+  // Alcohol excess with an acute illness: thiamine before glucose (NICE CG100)
+  if (hasToxic(toxicHabits, 'alcohol excess', 'heavy drink', 'alcohol dependence', 'etoh excess')
+    || containsAnyAffirmed([historyAll, dxHead, ...comorbidities].join('\n'), [/\b(alcohol (excess|dependence|misuse|withdrawal|related)|alcoholic|heavy drink\w*|binge drink\w*|\d{2,3} units (a|per) week)\b/])) {
+    add({
+      id: 'alcohol_thiamine',
+      type: 'safety',
+      urgency: 'priority',
+      icon: '🍺',
+      finding: 'Alcohol excess',
+      text: 'Thiamine (Pabrinex) and alcohol-withdrawal assessment',
+      rationale: 'Harmful drinking with an acute illness: parenteral thiamine to prevent Wernicke encephalopathy and assessment for withdrawal (NICE CG100).',
+      actions: [
+        { step: 1, text: 'Parenteral thiamine (Pabrinex) before glucose (NICE CG100)', addToPlan: '• Thiamine: parenteral (Pabrinex) if Wernicke risk / malnourished, oral otherwise (NICE CG100).' },
+        { step: 2, text: 'Assess for alcohol withdrawal (CIWA-Ar) and treat per protocol', addToPlan: '• Alcohol withdrawal assessment (CIWA-Ar) and symptom-triggered treatment per protocol (NICE CG100).' },
+      ],
+    });
+  }
+
   // ── PERI-OPERATIVE ALERTS (G2.3, G2.5, G2.6) ──────────────────────────────
   const modifier = (id: string) => emergencyLayer.riskModifiers.some(m => m.id === id);
   const hazardActions: ClinicalAction[] = [];
@@ -2153,6 +2284,8 @@ POST-OPERATIVE ORDERS:
     });
   }
 
+  const penicillinAllergy = (input.allergies ?? []).some(a => /penicillin|amoxicillin|co-amoxiclav|flucloxacillin|beta-?lactam/i.test(a));
+
   // ── Post-processing: assumed results, pregnancy, children ─────────────────
   for (const p of prompts) {
     const own = p.id.startsWith('emergency_') || p.id.startsWith('safeguarding_');
@@ -2167,6 +2300,12 @@ POST-OPERATIVE ORDERS:
           out = out.replace(NSAID_RE, ' — no NSAIDs in pregnancy (avoid from 20 weeks; MHRA 2020)');
         }
         NSAID_RE.lastIndex = 0;
+        // Penicillin allergy recorded: never suggest a penicillin without saying so (C5).
+        if (penicillinAllergy && PENICILLIN_RE.test(out)) {
+          PENICILLIN_RE.lastIndex = 0;
+          out = `${out.replace(/\.$/, '')} — PENICILLIN ALLERGY recorded: avoid penicillins; use a non-penicillin alternative per the local antimicrobial guideline.`;
+        }
+        PENICILLIN_RE.lastIndex = 0;
         // Under 16: no adult fixed doses.
         if (paed && !own) out = stripAdultDoses(out);
         return out;

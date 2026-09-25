@@ -52,6 +52,12 @@ export const WEB_LAB_READERS: WebLabReader[] = [
   { id: 'cholesterol', label: 'Total cholesterol', keywords: ['total cholesterol'], analyteKeys: ['cholesterol'] },
   { id: 'hdl', label: 'HDL cholesterol', keywords: ['hdl'], analyteKeys: ['hdl'] },
   { id: 'triglycerides', label: 'Triglycerides', keywords: ['triglyceride'], analyteKeys: ['triglycerides'] },
+  // @workspace/triage-engine readCancerScreenLabs() (NG12 IDA / FIT rules, read by adaptiveTriage
+  // and the preventive-screening prompts). It matches whole words, so these substring keywords
+  // over-report rather than miss a collision.
+  { id: 'ferritin', label: 'Ferritin', keywords: ['ferritin'], analyteKeys: ['ferritin'] },
+  { id: 'mcv', label: 'MCV', keywords: ['mcv', 'mean cell volume', 'mean corpuscular volume'], analyteKeys: ['mcv'] },
+  { id: 'fit', label: 'FIT (faecal immunochemical test)', keywords: ['fit', 'faecal immunochemical', 'fecal immunochemical'], analyteKeys: [] },
 ];
 
 function readersMatching(name: string): WebLabReader[] {

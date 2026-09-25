@@ -1,6 +1,6 @@
 import { scanRedFlags, Severity, AppointmentType, PATHWAY_DEFINITIONS, PathwayPanel } from './rules';
 import { matchSurgicalPathologies, SurgicalPathology } from './surgical-dictionary';
-import { screenForCancer, detectReferrals, CancerScreenResult, ReferralRecommendation, ScreeningInput } from './cancer-screening';
+import { screenForCancer, detectReferrals, readCancerScreenLabs, CancerScreenResult, ReferralRecommendation, ScreeningInput } from './cancer-screening';
 import { joinClauses, testAffirmed } from './negation';
 import {
   assessEmergencies, paediatricVitalLimits, textReportsFever, EMERGENCY_REDIRECT,
@@ -414,6 +414,10 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
     symptoms: data.symptoms,
     familyHistory: data.comorbidities.filter(c => /family|hereditary|brca|lynch/i.test(c)),
     responses: {},
+    // The NG12 rules added in cancer-screening 1.1.0 read the clinician's free text and the lab
+    // values (positive FIT, iron-deficiency anaemia), so a lab-found FIT or IDA raises triage.
+    freeText: joinClauses([data.freeText, input.diagnosis?.text ?? '']),
+    labs: readCancerScreenLabs(input.investigationResults ?? {}),
   };
   const cancerScreen = screenForCancer(screeningInput);
   const referralRecommendations = detectReferrals(screeningInput);
