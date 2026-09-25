@@ -24,6 +24,10 @@ struct WardRoundProgressSheet: View {
     @State var showVitals = false
     @State var signed = false
     @State var showStorageBlocked = false
+    /// Latest vitals and investigation flags as plain values. Every keystroke in the SOAP editors
+    /// re-renders this sheet; body used to re-sort all vitals 3-4 times, re-run the NEWS2 chart
+    /// for each NEWS2 value and decode the investigations JSON three times on each of them.
+    @State private var facts = WardProgressFacts()
 
     enum SOAPField: String, CaseIterable {
         case subjective = "S"
@@ -50,10 +54,6 @@ struct WardRoundProgressSheet: View {
         }
     }
 
-    private var latestVitals: VitalsEntry? {
-        patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
-    }
-
     private var acuityColor: Color {
         switch patient.acuity {
         case .emergency: return AMColor.emergency
@@ -64,8 +64,8 @@ struct WardRoundProgressSheet: View {
     }
 
     private var news2Color: Color {
-        guard let v = latestVitals else { return .secondary }
-        switch v.news2Score {
+        guard let v = facts.latestVitals else { return .secondary }
+        switch v.news2.score {
         case 0...2:  return .green
         case 3...4:  return .orange
         case 5...6:  return Color(hex: "ea580c")
@@ -75,7 +75,43 @@ struct WardRoundProgressSheet: View {
 
     // MARK: - Body
 
+    /// Cheap change signal for `facts`: local edits bump updatedAt, sync stamps syncedAt, a new
+    /// vitals entry changes the count, and any investigation change changes the JSON.
+    private var factsKey: WardProgressFactsKey {
+        WardProgressFactsKey(updatedAt: patient.updatedAt,
+                             syncedAt: patient.syncedAt,
+                             vitalsCount: patient.vitalsEntries.count,
+                             investigationsJson: patient.investigationsJson)
+    }
+
+    private func refreshFacts() {
+        guard patient.isLive else { return }
+        let fresh = WardProgressFacts(patient: patient)
+        if fresh != facts { facts = fresh }
+    }
+
     var body: some View {
+        // Reading a deleted model's attributes crashes SwiftData (removed or merged by sync or
+        // duplicate clean-up while this sheet was open).
+        if patient.isLive {
+            liveBody
+        } else {
+            NavigationStack {
+                ContentUnavailableView(
+                    "Record no longer available",
+                    systemImage: "person.crop.circle.badge.xmark",
+                    description: Text("This patient record was removed or merged.")
+                )
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Close") { dismiss() }
+                    }
+                }
+            }
+        }
+    }
+
+    private var liveBody: some View {
         NavigationStack {
             List {
                 patientHeaderSection
@@ -86,12 +122,17 @@ struct WardRoundProgressSheet: View {
             .listStyle(.insetGrouped)
             .navigationTitle("Progress Note")
             .navigationBarTitleDisplayMode(.inline)
-            .onAppear { prefillSOAP() }
+            .onAppear {
+                CrashReporting.breadcrumb("Opened ward round progress note", category: "ward")
+                refreshFacts()
+                prefillSOAP()
+            }
+            .onChange(of: factsKey) { _, _ in refreshFacts() }
             .toolbar { toolbarContent }
             .patientRecordPresentation(item: Binding(
                 get: { showFullRecord ? patient : nil },
                 set: { if $0 == nil { showFullRecord = false } }))
-            .sheet(isPresented: $showVitals) {
+            .sheet(isPresented: $showVitals, onDismiss: refreshFacts) {
                 VitalsEntryView(patient: patient)
             }
             .storeWriteBlockedAlert(isPresented: $showStorageBlocked)
@@ -172,8 +213,7 @@ struct WardRoundProgressSheet: View {
                 }
 
                 // Critical lab / pending investigation alerts
-                let labs = LabPanel.parse(from: patient.investigations)
-                if labs.hasCriticalValues {
+                if facts.hasCriticalLabs {
                     HStack(spacing: 6) {
                         Image(systemName: "flask.fill")
                             .font(.caption2.weight(.bold))
@@ -182,8 +222,8 @@ struct WardRoundProgressSheet: View {
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundStyle(.red)
                     }
-                } else if patient.investigations.contains(where: { $0.status == .resulted && !$0.result.isEmpty }) {
-                    let count = patient.investigations.filter { $0.status == .resulted && !$0.result.isEmpty }.count
+                } else if facts.resultedCount > 0 {
+                    let count = facts.resultedCount
                     HStack(spacing: 6) {
                         Image(systemName: "flask")
                             .font(.caption2)
@@ -213,11 +253,11 @@ struct WardRoundProgressSheet: View {
 
     @ViewBuilder
     private var vitalsSection: some View {
-        if let v = latestVitals, v.hasAnyValue {
+        if let v = facts.latestVitals {
             Section {
                 VStack(spacing: 8) {
                     HStack {
-                        news2Tile(score: v.news2Score, risk: v.news2RiskDisplay)
+                        news2Tile(score: v.news2.score, risk: v.news2.riskDisplay)
                         Spacer()
                         Button {
                             showVitals = true
@@ -229,18 +269,12 @@ struct WardRoundProgressSheet: View {
                         .buttonStyle(.plain)
                     }
 
-                    let grid: [(String, String)] = [
-                        v.bpString.map  { ("BP",     $0 + " mmHg") },
-                        v.heartRate.map { ("HR",     "\($0) bpm") },
-                        v.respiratoryRate.map { ("RR", "\($0)/min") },
-                        v.temperatureCelsius.map { ("Temp", String(format: "%.1f°C", $0)) },
-                        v.spo2.map { ("SpO₂", "\($0)%") }
-                    ].compactMap { $0 }
+                    let grid = v.chips
 
                     if !grid.isEmpty {
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
-                            ForEach(grid, id: \.0) { label, value in
-                                vitalsChip(label: label, value: value)
+                            ForEach(grid, id: \.label) { chip in
+                                vitalsChip(label: chip.label, value: chip.value)
                             }
                         }
                     }
@@ -255,7 +289,7 @@ struct WardRoundProgressSheet: View {
                 HStack {
                     Text("Observations").amSectionLabel()
                     Spacer()
-                    if v.news2HasRedFlag {
+                    if v.news2.hasRedFlag {
                         Label("RED FLAG", systemImage: "exclamationmark.triangle.fill")
                             .font(.system(size: 9, weight: .heavy))
                             .foregroundStyle(.red)
@@ -379,4 +413,53 @@ struct WardRoundProgressSheet: View {
         }
     }
 
+}
+
+// MARK: - Snapshot of what the sheet shows from vitals and investigations
+
+/// Change signal for `WardProgressFacts` (see `WardRoundProgressSheet.factsKey`).
+struct WardProgressFactsKey: Equatable {
+    let updatedAt: Date
+    let syncedAt: Date?
+    let vitalsCount: Int
+    let investigationsJson: String?
+}
+
+/// Latest vitals and investigation flags for the progress sheet, as plain values.
+struct WardProgressFacts: Equatable {
+    struct Chip: Equatable {
+        let label: String
+        let value: String
+    }
+
+    struct LatestVitals: Equatable {
+        let news2: News2Snapshot
+        let chips: [Chip]
+        let recordedAt: Date
+    }
+
+    /// The most recent vitals entry, when it holds any observation.
+    var latestVitals: LatestVitals? = nil
+    var hasCriticalLabs = false
+    /// Resulted investigations with a result recorded.
+    var resultedCount = 0
+
+    init() {}
+
+    init(patient: Patient) {
+        if let v = ListPerf.newest(patient.vitalsEntries.filter(\.isLive), by: { $0.recordedAt }),
+           v.hasAnyValue {
+            let chips: [Chip] = [
+                v.bpString.map  { Chip(label: "BP",     value: $0 + " mmHg") },
+                v.heartRate.map { Chip(label: "HR",     value: "\($0) bpm") },
+                v.respiratoryRate.map { Chip(label: "RR", value: "\($0)/min") },
+                v.temperatureCelsius.map { Chip(label: "Temp", value: String(format: "%.1f°C", $0)) },
+                v.spo2.map { Chip(label: "SpO₂", value: "\($0)%") }
+            ].compactMap { $0 }
+            latestVitals = LatestVitals(news2: News2Snapshot(v), chips: chips, recordedAt: v.recordedAt)
+        }
+        let investigations = patient.investigations
+        hasCriticalLabs = LabPanel.parse(from: investigations).hasCriticalValues
+        resultedCount = investigations.filter { $0.status == .resulted && !$0.result.isEmpty }.count
+    }
 }

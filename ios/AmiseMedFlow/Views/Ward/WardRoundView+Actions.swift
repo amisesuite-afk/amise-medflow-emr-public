@@ -16,7 +16,8 @@ extension WardRoundView {
         lines.append("\(PracticeProfile.current.practiceName) · \(PracticeProfile.current.clinicianSignature)")
         lines.append(String(repeating: "═", count: 48))
 
-        let locationGroups = grouped
+        let wardList = inpatients
+        let locationGroups = groups(of: wardList)
         for (loc, patients) in locationGroups {
             lines.append("")
             lines.append("  \(loc.rawValue.uppercased())")
@@ -29,19 +30,20 @@ extension WardRoundView {
                 lines.append(header + reviewed)
                 if let dx = patient.workingDiagnosis { lines.append("  Dx: \(dx)") }
                 else if let cc = patient.chiefComplaint { lines.append("  CC: \(cc)") }
-                if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first, v.hasAnyValue {
+                if let v = ListPerf.newest(patient.vitalsEntries.filter(\.isLive), by: { $0.recordedAt }), v.hasAnyValue {
                     var vParts = [v.news2Summary]
                     if let bp = v.bpString { vParts.append("BP \(bp)") }
                     if let hr = v.heartRate { vParts.append("HR \(hr)") }
                     if let spo = v.spo2 { vParts.append("SpO₂ \(spo)%") }
                     lines.append("  Vitals: \(vParts.joined(separator: " · "))")
                 }
-                let resulted = patient.investigations.filter { $0.status == .resulted && !$0.result.isEmpty }
+                let investigations = patient.investigations
+                let resulted = investigations.filter { $0.status == .resulted && !$0.result.isEmpty }
                 if !resulted.isEmpty {
                     let resultSummary = resulted.prefix(4).map { "\($0.name): \($0.result)" }.joined(separator: "; ")
                     lines.append("  Results: \(resultSummary)")
                 }
-                let pending = patient.investigations.filter { $0.status == .ordered || $0.status == .pending }
+                let pending = investigations.filter { $0.status == .ordered || $0.status == .pending }
                 if !pending.isEmpty {
                     lines.append("  Awaiting: \(pending.map { $0.name }.joined(separator: ", "))")
                 }
@@ -54,8 +56,8 @@ extension WardRoundView {
         }
 
         lines.append(String(repeating: "═", count: 48))
-        let total = inpatients.count
-        let done = reviewedIDs.filter { id in inpatients.contains { $0.id == id } }.count
+        let total = wardList.count
+        let done = reviewedCount(in: wardList)
         lines.append("Round progress: \(done)/\(total) reviewed")
         lines.append("This handover is a summary. Verify all details in the full record.")
         return lines.joined(separator: "\n")

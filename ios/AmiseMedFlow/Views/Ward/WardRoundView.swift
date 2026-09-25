@@ -35,7 +35,11 @@ struct WardRoundView: View {
         return results.sorted { $0.acuity < $1.acuity }.deduped()
     }
 
-    var grouped: [(ClinicalLocation, [Patient])] {
+    var grouped: [(ClinicalLocation, [Patient])] { groups(of: inpatients) }
+
+    /// Location groups of an already-built inpatient list (`grouped` used to rebuild the
+    /// inpatient list, with its dedup pass over all patients, once per location).
+    func groups(of inpatients: [Patient]) -> [(ClinicalLocation, [Patient])] {
         let locs: [ClinicalLocation] = locationFilter.map { [$0] } ?? ClinicalLocation.allCases
         return locs.compactMap { loc in
             let pts = inpatients.filter { $0.location == loc }
@@ -43,7 +47,17 @@ struct WardRoundView: View {
         }
     }
 
+    /// How many of `inpatients` were reviewed this session.
+    func reviewedCount(in inpatients: [Patient]) -> Int {
+        let ids = Set(inpatients.map(\.id))
+        return reviewedIDs.filter { ids.contains($0) }.count
+    }
+
     var body: some View {
+        // Built once per render. Before, the inpatient list (filter, sort, dedup over all
+        // patients) was rebuilt ~8 times per render plus once per reviewed patient.
+        let inpatients = self.inpatients
+        let grouped = groups(of: inpatients)
         NavigationStack {
             Group {
                 if inpatients.isEmpty {
@@ -57,7 +71,7 @@ struct WardRoundView: View {
                         if !reviewedIDs.isEmpty {
                             Section {
                                 HStack(spacing: 10) {
-                                    let done = reviewedIDs.filter { id in inpatients.contains { $0.id == id } }.count
+                                    let done = reviewedCount(in: inpatients)
                                     let total = inpatients.count
                                     let complete = done == total
                                     Image(systemName: complete ? "checkmark.circle.fill" : "clock.badge.checkmark")
@@ -165,6 +179,7 @@ struct WardRoundView: View {
                 }
             }
             .navigationTitle("Ward Rounds")
+            .onAppear { CrashReporting.breadcrumb("Opened ward round") }
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     HStack {
