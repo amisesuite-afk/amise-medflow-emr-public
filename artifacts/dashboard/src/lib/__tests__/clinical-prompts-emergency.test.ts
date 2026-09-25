@@ -158,6 +158,23 @@ describe('corrected prompt content', () => {
   });
 });
 
+describe('leucocytosis in acute pancreatitis', () => {
+  const investigationResults = { 'White blood cells': '19', Amylase: '2400' } as never;
+  it('no antibiotics suggested without a documented infection (ACG 2024; IAP/APA 2013)', () => {
+    const over = { investigationResults, assessment: 'Severe acute pancreatitis with organ failure.' };
+    const p = prompts(over).find(x => x.id === 'leucocytosis')!;
+    expect(p.actions.map(a => a.addToPlan ?? '').join('\n')).toMatch(/No prophylactic antibiotics/);
+    expect(planText(over)).not.toMatch(/Sepsis-6/);
+  });
+  it('keeps the sepsis screen when cholangitis is documented', () => {
+    const over = { investigationResults, assessment: 'Gallstone pancreatitis with ascending cholangitis.' };
+    expect(planText(over)).toMatch(/Sepsis-6/);
+  });
+  it('keeps the sepsis screen outside pancreatitis', () => {
+    expect(planText({ investigationResults: { 'White blood cells': '19' } as never })).toMatch(/Sepsis-6/);
+  });
+});
+
 describe('scores', () => {
   const labs = { wbc: 14 } as never;
   it('TG18 cholecystitis Grade II reads > 72 h and gangrenous / marked local inflammation (C8)', () => {

@@ -807,7 +807,34 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
 
   // WBC > 15 → leucocytosis / sepsis
   const wbc = numLab(investigationResults, 'white blood', 'wbc', 'wcc', 'leucocyte');
-  if (wbc !== null && wbc > 15) {
+  // Acute pancreatitis raises the WBC through sterile inflammation. Without a documented infection
+  // (cholangitis, infected necrosis, another source) the leucocytosis prompt must not suggest
+  // antibiotics: prophylactic antibiotics are not recommended, even in predicted severe disease
+  // (ACG 2024; IAP/APA 2013).
+  const amylaseForWbc = numLab(investigationResults, 'amylase', 'lipase');
+  const pancreatitisForWbc = (amylaseForWbc !== null && amylaseForWbc > 300) || dxSupports('pancreatit');
+  const infectionDocumented = (hasJaundice && hasFever && hasRuqPain)
+    || containsAnyAffirmed([assessment ?? '', input.historyText ?? ''].join('.\n'), [
+      'cholangitis', 'infected necrosis', 'gas in the collection', 'gas within the collection',
+      'pneumonia', 'urinary tract infection', 'pyelonephritis', 'positive blood culture', 'bacteraemia',
+    ]);
+  if (wbc !== null && wbc > 15 && pancreatitisForWbc && !infectionDocumented) {
+    add({
+      id: 'leucocytosis',
+      type: 'safety',
+      urgency: 'priority',
+      icon: '🦠',
+      finding: `WBC ${wbc} × 10⁹/L in acute pancreatitis`,
+      diagnosis: 'Inflammatory leucocytosis (acute pancreatitis) — infection not documented',
+      text: `WBC ${wbc} in pancreatitis → no prophylactic antibiotics`,
+      rationale: `Leucocytosis ${wbc} × 10⁹/L is expected in acute pancreatitis (sterile inflammation). Prophylactic antibiotics are not recommended, including in predicted severe disease or sterile necrosis (ACG 2024; IAP/APA 2013). Look for a source if infection is suspected.`,
+      actions: [
+        { step: 1, text: 'No prophylactic antibiotics (ACG 2024; IAP/APA 2013)', addToPlan: '• No prophylactic antibiotics in acute pancreatitis (ACG 2024; IAP/APA 2013) — antibiotics only if infection is suspected or confirmed (cholangitis, infected necrosis, another source).' },
+        { step: 2, text: 'Lactate and severity assessment', addToInvestigations: 'Lactate' },
+        { step: 3, text: 'If infection is suspected: blood cultures and look for the source', addToPlan: '• If infection is suspected: blood cultures ×2 and look for the source (cholangitis, infected necrosis on CECT, chest, urine).' },
+      ],
+    });
+  } else if (wbc !== null && wbc > 15) {
     add({
       id: 'leucocytosis',
       type: 'safety',

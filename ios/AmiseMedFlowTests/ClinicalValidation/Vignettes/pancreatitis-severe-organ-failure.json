@@ -431,14 +431,9 @@
             "aga-2018"
           ],
           "note": "Prophylactic antibiotics are not recommended in acute pancreatitis, including predicted severe disease and sterile necrosis; they are reserved for infected necrosis or a concurrent infection such as cholangitis.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Peritonism prompt (\"no peritonism\") pip-tazo + metronidazole, and the SIRS sepsis bundle \"Sepsis-6 … antibiotics\" — no infection documented.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Pancreatitis context: suppress the peritonism prompt's antibiotics (negated \"no peritonism\" trigger) and the SIRS \"Sepsis-6 … antibiotics\" bundle when the working diagnosis is acute pancreatitis without a documented infection; add an explicit \"No prophylactic antibiotics (ACG 2024; IAP/APA 2013; NICE NG104)\" line to the pancreatitis protocol."
+          ]
         },
         {
           "id": "mgmt-no-routine-ercp",
