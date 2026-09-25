@@ -12,10 +12,11 @@
  *     surgical history, resulted investigations (numeric labs and report text), examination
  *     chips and clinician free text (referral / intake text, HPI, examination notes).
  *
- * Returns Record<featureId, boolean>. Findings are only ever recorded as PRESENT, with two
+ * Returns Record<featureId, boolean>. Findings are only ever recorded as PRESENT, with four
  * documented exceptions ("gates"), set to ABSENT only when a full record is supplied and gives no
- * sign of them: an injury mechanism (`trauma_mechanism`; every trauma diagnosis needs one) and an
- * operation in the last 30 days (`recent_surgery`; every post-operative complication needs one).
+ * sign of them: an injury mechanism (`trauma_mechanism`; every trauma diagnosis needs one), an
+ * operation in the last 30 days (`recent_surgery`; every post-operative complication needs one),
+ * an aortic graft (`aortic_graft`; aorto-enteric fistula) and a stoma (`stoma`; parastomal hernia).
  *
  * Before model 1.0.0 only the CC name and SOCRATES answers were read, bleeding / dysphagia /
  * vomiting / chest-pain / neurological / urinary / pregnancy findings had no rules, "Burning"
@@ -135,7 +136,7 @@ const TEXT_RULES: Rule[] = [
   r(/\bmigrat\w* (to|into) the (right|rif|rlq)|\bmoved to the (right iliac|rif|right lower)/, 'pain_migration'),
   r(/\bworse (on|with) (movement|moving|coughing|walking)|\bpain (on|with) (movement|coughing)|\blying (very )?still\b/, 'pain_worse_movement'),
   r(/\bcolick\w*|\bcomes? and goes in waves|\bwave.like|\bcramp\w*/, 'colicky_pain'),
-  r(/\bepisod(e|es|ic)\b|\bintermittent\b|\bcomes and goes\b|\battacks of\b/, 'episodic_pain'),
+  r(/\bepisodic\b|\bintermittent\b|\bcomes and goes\b|\battacks of\b|\bepisodes of (pain|colic|crying|screaming)\b|\bpain[^.]{0,20}\bepisodes\b/, 'episodic_pain'),
   r(/\bpost.?prandial|\bafter (eating|meals|food|a meal)|\bfear of eating|\bpost-meal/, 'postprandial_pain'),
   r(/\bfatty\b|\bgreasy\b|\bfried\b/, 'fatty_food_trigger'),
   r(/\bnocturnal pain|\bwakes? (him|her|them)? ?(up )?(at night|from sleep)|\bnight pain\b|\bworse at night\b/, 'nocturnal_pain'),
@@ -177,7 +178,8 @@ const TEXT_RULES: Rule[] = [
   r(/\bvaricos\w*/, 'varicosities'),
   r(/\b(tender|palpable|hard|red)\b[^.]{0,12}\b(cord|superficial vein)\b|\bcord.like\b/, 'tender_cord'),
   r(/\b(leg|venous|arterial|non.?healing) ulcer|\bulcer (on|of) the (leg|shin|ankle|gaiter)/, 'skin_ulceration'),
-  r(/\bmottl\w*|\bashen\b|\bcold peripher\w*|\bcold extremit\w*/, 'mottled_skin'),
+  r(/\bmottl\w*|\bashen\b|\bcold peripher\w*|\bcold extremit\w*|\b(crt|capillary refill( time)?)\s*(of\s*)?(>\s*)?[3-9]\s*(s|sec|seconds)\b/, 'mottled_skin'),
+  r(/\bpale\b|\bpallor\b|\bpasty\b|\bwhite as a sheet\b/, 'pallor'),
   r(/\bpapill?o?edema\b|\bretinal ha?emorrhag\w*/, 'papilloedema'),
 
   // Respiratory
@@ -258,7 +260,7 @@ const TEXT_RULES: Rule[] = [
   r(/\bhungry (after|straight after|immediately after)\b|\bwants to feed (again )?after\b/, 'hungry_after_vomiting'),
   r(/\bha?ematemesis\b|\bvomit\w* (fresh )?blood\b|\bblood[^.]{0,10}\bvomit\w*|\bcoffee.?grounds?\b/, 'haematemesis'),
   r(/\bmela?ena\b|\bblack (tarry )?stools?\b|\btarry stools?\b|\bblack,? tarry\b|\btarry\b/, 'melaena'),
-  r(/\b(after|following) (forceful |repeated |violent |heavy |prolonged )?(vomiting|retching)\b|\b(vomit\w*|retch\w*)[^.]{0,30}\b(then|followed by)\b[^.]{0,25}\b(pain|blood)/, 'severe_vomiting_before_pain'),
+  r(/\b(after|following) (he |she |they |the patient )?(forceful(ly)? |repeated(ly)? |violent(ly)? |heavy |prolonged |a bout of |an episode of )?(vomit\w*|retch\w*)|\b(vomit\w*|retch\w*)[^.]{0,30}\b(then|followed by)\b[^.]{0,25}\b(pain|blood)/, 'severe_vomiting_before_pain'),
   r(/\bheartburn\b|\bacid reflux\b|\bindigestion\b|\bdyspepsi\w*|\bacid (brash|taste)\b|\breflux\b/, 'heartburn'),
   r(/\bregurgitat\w*/, 'regurgitation'),
   r(/\bdysphagi\w*|\bdifficulty swallowing\b|\btrouble swallowing\b|\bfood (sticks|sticking|gets stuck|stuck|stuck)\b|\bcan'?t swallow\b|\bunable to swallow\b/, 'dysphagia'),
@@ -270,7 +272,7 @@ const TEXT_RULES: Rule[] = [
   r(/\b(previous|recurrent|prior) (episodes? of )?(food )?(bolus|impaction)|\bfood (has )?(stuck|got stuck) before\b/, 'recurrent_bolus'),
   r(/\bodynophagi\w*|\bpainful swallowing\b|\bpain on swallowing\b/, 'odynophagia'),
   r(/\baspirat\w*|\bnocturnal cough\b|\bchoking\b|\bcoughing on eating\b/, 'aspiration_symptoms'),
-  r(/\bsurgical emphysema\b|\bsubcutaneous emphysema\b|\bcrepitus (in|over) the (neck|chest)|\bcrackling (in|of) the neck/, 'subcutaneous_emphysema'),
+  r(/\bsurgical emphysema\b|\bsubcutaneous emphysema\b|\bcrepitus (in|over|above|at) the (neck|chest|chest wall|left clavicle|right clavicle|clavicle|supraclavicular fossa)|\bsupraclavicular crepitus\b|\bcrackling (in|of) the neck|\bpneumomediastinum\b/, 'subcutaneous_emphysema'),
   r(/\bearly satiety\b|\bfull (quickly|after (a )?(few|small|little))/, 'early_satiety'),
   r(/\bsuccussion splash\b/, 'succussion_splash'),
 
@@ -381,6 +383,8 @@ const TEXT_RULES: Rule[] = [
   r(/\b(easily |manually )?reducib\w*|\breduces (on lying|spontaneously|when lying)\b|\bgoes (back|away) (when|on) lying\b|\bmanual reduction\b/, 'hernia_compressible'),
   rq(GROIN_CTX, /\b(easily |manually )?reducib\w*|\breduces (on lying|spontaneously|when lying)\b/, 'groin_lump_reducible'),
   r(/\birreducib\w*|\bnot reducible\b|\bcannot be reduced\b|\bincarcerat\w*|\bstrangulat\w*/, 'hernia_irreducible'),
+  r(/\bhernia\b|\bbulge\b/, 'hernia_swelling'),
+  r(/\b(dilated|distended) colon\b|\bcolon(ic)? (dilat\w*|diameter)\b[^.]{0,20}\b([6-9]|1\d) ?cm\b|\btransverse colon\b[^.]{0,20}\b([6-9]|1\d) ?cm\b|\bmegacolon\b/, 'dilated_colon'),
   r(/\bumbilical (swelling|lump|hernia|bulge|mass)\b|\bparaumbilical\b|\bswelling (at|near|around) the (umbilicus|navel|belly button)\b/, 'umbilical_swelling'),
   r(/\bincisional\b|\b(swelling|bulge|lump) (at|in|near|beside|along) (the |his |her |a )?(\w+ )?(scar|incision)\b|\bscar (swelling|bulge|hernia)\b/, 'incisional_swelling', 'previous_surgery'),
   r(/\bstoma\b|\bcolostomy\b|\bileostomy\b|\burostomy\b/, 'stoma', 'previous_surgery'),
@@ -394,7 +398,7 @@ const TEXT_RULES: Rule[] = [
   r(/\brebound( tenderness)?\b|\bpercussion tenderness\b|\bperitonism\b|\bperitonitic\b|\bperitonitis\b/, 'rebound_tenderness'),
   r(/\b(abdomen|abdominal)\b[^.]{0,30}\btender\w*|\btender(ness)? (in|over) the (rif|ruq|luq|lif|epigastri\w*|suprapubic|right|left|lower|upper|abdomen)\b|\b(rif|ruq|luq|lif|epigastric|suprapubic|periumbilical) tenderness\b/, 'abdominal_tenderness'),
   r(/\bmurphy'?s?\b/, 'murphy_sign'),
-  r(/\b(abdominal|epigastric|rif|ruq|luq|lif|palpable|sausage.shaped|olive.shaped) (mass|lump)\b|\bmass (in|palpable in) the (abdomen|rif|ruq|luq|lif|epigastrium)\b|\blump in (the )?abdomen\b|\bolive\b/, 'abdominal_mass'),
+  r(/\b(abdominal|epigastric|rif|ruq|luq|lif|palpable|sausage.shaped|olive.shaped) (mass|lump)\b|\bmass (in|palpable in) the (abdomen|rif|ruq|luq|lif|epigastrium)\b|\blump in (the )?abdomen\b|\bolive\b|\bfullness in the (right|left) (upper|lower) quadrant\b|\bsausage\b/, 'abdominal_mass'),
   r(/\bvisible peristalsis\b/, 'visible_peristalsis'),
   r(/\btinkling\b|\bhigh.pitched bowel sounds\b/, 'tinkling_bowel_sounds'),
   r(/\babsent bowel sounds\b|\bbowel sounds (are )?(absent|not heard)\b|\bsilent abdomen\b/, 'absent_bowel_sounds'),
@@ -484,13 +488,16 @@ const HISTORY_RULES: Rule[] = [
   r(/\balcohol\w*|\bbinge\b|\b\d+ units\b|\bheavy drink\w*|\bdrinks (heavily|a lot)\b|\betoh\b/, 'alcohol_use'),
   r(/\binject\w* (drugs|heroin)\b|\bpwid\b|\bivdu\b|\bintravenous drug use\b|\biv drug use\b/, 'injecting_drug_use'),
   r(/\b(known|previous) (abdominal )?(aortic )?aneurysm\b|\baaa (surveillance|under surveillance)\b|\bknown aaa\b/, 'known_aaa'),
-  r(/\b(aortic|aorto.?\w+) (graft|repair|stent)\b|\bevar\b/, 'aortic_graft'),
+  r(/\b(aortic|aorto.?\w+) (graft|repair|stent)\b|\bevar\b|\b(aneurysm|aaa) repair\b|\btube graft\b|\bdacron\b|\bendovascular aneurysm/, 'aortic_graft'),
   r(/\b(femoral|groin) (puncture|access|line|catheter\w*)\b|\bangiogra\w*|\bangioplast\w*|\bcardiac cath\w*/, 'arterial_puncture'),
   r(/\blong.?haul\b|\blong (flight|journey|drive|car journey)\b|\bflew (back )?from\b|\bimmobil\w*|\bbed.?bound\b|\bbed rest\b|\bplaster cast\b|\brecent(ly)? (flight|travel|hospitali[sz]\w*)\b/, 'recent_immobility'),
-  r(/\b(recent|recently|course of|completed|finished|taking|on) (a course of )?(antibiotic\w*|amoxicillin|co-amoxiclav|clindamycin|ciprofloxacin|cefalexin|ceftriaxone|doxycycline|clarithromycin|\w+cillin|\w+floxacin|\w+mycin)\b/, 'recent_antibiotics'),
+  r(/\b(recent|recently|course of|completed|finished|taking|on|took|a week of|days of) (a course of )?(antibiotic\w*|amoxicillin|co-amoxiclav|clindamycin|ciprofloxacin|cefalexin|ceftriaxone|doxycycline|clarithromycin|\w+cillin|\w+floxacin|\w+mycin)\b/, 'recent_antibiotics'),
+  // An antibiotic on the medication list (drug names only; the list holds current / recent medicines)
+  r(/^(co-amoxiclav|amoxicillin|clindamycin|ciprofloxacin|levofloxacin|cefalexin|cefuroxime|ceftriaxone|doxycycline|clarithromycin|erythromycin|flucloxacillin|piperacillin\w*|meropenem|trimethoprim|nitrofurantoin|\w+cillin|\w+floxacin)\b/, 'recent_antibiotics'),
   r(/\b(recent(ly)?|was) (admitted|admission|hospitali[sz]\w*|discharged)\b|\bdischarged from hospital\b|\binpatient\b|\bnursing home\b|\bcare home\b/, 'recent_hospitalisation'),
   r(/\b(family|household|others|friends|colleagues|children) (also |were |are )?(unwell|ill|sick|with (the same|similar))\b|\bsick contacts\b|\bsame symptoms\b|\b(takeaway|street food|seafood|buffet|restaurant|picnic|barbecue|undercooked)\b/, 'sick_contacts'),
   r(/\bknown allerg\w*|\ballergic to\b|\banaphylaxis to\b/, 'known_allergy'),
+  r(/\b(c\.? ?diff(icile)?|clostridi\w* difficile|cdi)\b[^.]{0,30}\b(positive|on the (unit|ward)|outbreak|toxin)\b|\bgdh positive\b|\btoxin positive\b/, 'cdiff_positive'),
   r(/\bgastric bypass\b|\broux.en.y\b|\bbariatric\b|\bsleeve gastrectomy\b/, 'bariatric_surgery'),
   r(/\bprevious (hernia )?repair\b|\brecurrent (inguinal |groin )?hernia\b|\bmesh repair\b/, 'previous_repair'),
 ];
@@ -634,11 +641,12 @@ const DETAIL_RULES: Record<string, Rule[]> = {
   'breast pain': [r(/^cyclical$/, 'cyclical_breast_pain'), r(/^lump$/, 'breast_lump')],
   'nipple discharge': [r(/^(bloody|single duct)$/, 'bloody_nipple_discharge')],
   hernia: [
+    r(/./, 'hernia_swelling'),
     r(/^(right groin|left groin)$/, 'groin_swelling'), r(/^femoral$/, 'groin_swelling', 'below_inguinal_ligament'),
     r(/^umbilical$/, 'umbilical_swelling'), r(/^incisional$/, 'incisional_swelling', 'previous_surgery'),
-    r(/^epigastric$/, 'epigastric_swelling'), r(/^easily reducible$/, 'hernia_compressible', 'groin_lump_reducible'),
+    r(/^epigastric$/, 'epigastric_swelling'), r(/^easily reducible$/, 'hernia_compressible'),
     r(/^reducible with effort$/, 'hernia_compressible'), r(/^can't pass (gas|stool)$/, 'absolute_constipation'),
-    r(/^tenderness$/, 'localised_pain'), r(/^redness$/, 'erythema_surrounding'), r(/^pain$/, 'groin_pain'),
+    r(/^tenderness$/, 'localised_pain'), r(/^redness$/, 'erythema_surrounding'), r(/^pain$/, 'localised_pain'),
   ],
   'wound discharge': [
     r(/^(wound opened|dehiscence)$/, 'wound_dehiscence_sign'), r(/^(redness|induration)$/, 'wound_erythema'),
@@ -944,8 +952,9 @@ function extractFromContext(ctx: PaneFeatureContext, out: FeatureMap, cc: string
     void section;
   }
   // History lists
-  const history = joinClauses([...(ctx.comorbidities ?? []), ...(ctx.medications ?? []), ...(ctx.surgicalHistory ?? [])]);
-  applyRules(history, HISTORY_RULES, out);
+  for (const item of [...(ctx.comorbidities ?? []), ...(ctx.medications ?? []), ...(ctx.surgicalHistory ?? [])]) {
+    applyRules(item, HISTORY_RULES, out);
+  }
   for (const c of ctx.comorbidities ?? []) {
     if (/\b(cancer|carcinoma|malignan\w*|lymphoma|myeloma|leuka?emia|metasta\w*)\b/i.test(c)) out.known_malignancy = true;
     if (/^\s*af\s*$/i.test(c)) out.known_af = true;
@@ -981,6 +990,10 @@ function extractFromContext(ctx: PaneFeatureContext, out: FeatureMap, cc: string
     out.trauma_mechanism = false;
   }
   if (recordGiven && !out.recent_surgery && !ctx.isPostOp) out.recent_surgery = false;
+  // Likewise an aortic graft (aorto-enteric fistula) and a stoma (parastomal hernia) are always
+  // documented when present.
+  if (recordGiven && !out.aortic_graft) out.aortic_graft = false;
+  if (recordGiven && !out.stoma) out.stoma = false;
 }
 
 /**
@@ -1060,7 +1073,7 @@ export function paneContextFromConsultation(s: Partial<ConsultationSnapshot>): P
 
 /** Chip-only vocabulary (SmartSymptomPicker labels that are not phrased as findings). */
 const CHIP_RULES: Rule[] = [
-  r(/^hernia$/, 'groin_swelling'),
+  r(/^hernia$/, 'hernia_swelling'),
   r(/^abscess$/, 'swelling_fluctuant_soft', 'localised_pain'),
   r(/^biliary colic$/, 'ruq_pain', 'episodic_pain'),
   r(/^renal colic$/, 'loin_pain', 'colicky_pain'),

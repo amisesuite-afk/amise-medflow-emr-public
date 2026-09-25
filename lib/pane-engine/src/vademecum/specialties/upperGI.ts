@@ -35,7 +35,7 @@ registerModule({
     },
     {
       id: 'oesophageal_perforation', label: 'Oesophageal Perforation (Boerhaave)', icd10: 'K22.3', prior: T.veryRare, course: 'acute',
-      features: { chest_pain_oesophageal: 0.85, chest_pain: 0.85, severe_vomiting_before_pain: 0.75, nausea_vomiting: 0.80, dyspnoea: 0.50, epigastric_pain: 0.40, fever: 0.40, tachycardia: 0.70, subcutaneous_emphysema: 0.30, sudden_onset: 0.60, alcohol_use: 0.40, hypotension: 0.25, radiation_to_back: 0.30 },
+      features: { chest_pain_oesophageal: 0.85, chest_pain: 0.85, severe_vomiting_before_pain: 0.75, nausea_vomiting: 0.80, dyspnoea: 0.50, epigastric_pain: 0.40, fever: 0.40, tachycardia: 0.70, tachypnoea: 0.50, subcutaneous_emphysema: 0.30, crepitus_soft_tissue: 0.20, odynophagia: 0.35, pleuritic_chest_pain: 0.30, diaphoresis: 0.35, back_pain: 0.30, sudden_onset: 0.60, severe_pain: 0.70, alcohol_use: 0.40, hypotension: 0.25, radiation_to_back: 0.35, elevated_wbc: 0.60 },
     },
     {
       id: 'mallory_weiss', label: 'Mallory-Weiss Tear', icd10: 'K22.6', prior: T.rare, course: 'acute',
@@ -48,11 +48,11 @@ registerModule({
     {
       id: 'upper_gi_bleed', label: 'Upper GI Haemorrhage (Peptic Ulcer / Non-variceal)', icd10: 'K92.2', prior: T.uncommon, course: 'acute',
       // ESGE 2021: haematemesis and/or melaena; NSAID, antiplatelet, anticoagulant use
-      features: { haematemesis: 0.70, melaena: 0.75, epigastric_pain: 0.40, nausea_vomiting: 0.50, nsaid_use: 0.35, anticoagulant_use: 0.25, antiplatelet_use: 0.30, alcohol_use: 0.20, tachycardia: 0.45, hypotension: 0.20, syncope: 0.15, anaemia: 0.60, raised_urea: 0.60, dizziness: 0.30 },
+      features: { pr_bleeding: 0.10, pallor: 0.40, haematemesis: 0.70, melaena: 0.75, epigastric_pain: 0.40, nausea_vomiting: 0.50, nsaid_use: 0.35, anticoagulant_use: 0.25, antiplatelet_use: 0.30, alcohol_use: 0.20, tachycardia: 0.45, hypotension: 0.20, syncope: 0.15, anaemia: 0.60, raised_urea: 0.60, dizziness: 0.30 },
     },
     {
       id: 'variceal_bleed', label: 'Oesophageal Variceal Haemorrhage (Portal Hypertension)', icd10: 'I85.11', prior: T.rare, course: 'acute',
-      features: { haematemesis: 0.90, melaena: 0.55, known_liver_disease: 0.80, alcohol_use: 0.65, jaundice: 0.35, ascites: 0.50, tachycardia: 0.60, hypotension: 0.35, confusion: 0.15, anaemia: 0.60, thrombocytopenia: 0.55, spider_naevi: 0.35 },
+      features: { pallor: 0.40, haematemesis: 0.90, melaena: 0.55, known_liver_disease: 0.80, alcohol_use: 0.65, jaundice: 0.35, ascites: 0.50, tachycardia: 0.60, hypotension: 0.35, confusion: 0.15, anaemia: 0.60, thrombocytopenia: 0.55, spider_naevi: 0.35 },
     },
     {
       id: 'perforated_peptic_ulcer', label: 'Perforated Peptic Ulcer / Perforated Viscus', icd10: 'K27.5', prior: T.rare, course: 'acute',

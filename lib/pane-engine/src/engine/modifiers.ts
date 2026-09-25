@@ -97,6 +97,9 @@ export const PRIOR_MODIFIERS: PriorModifier[] = [
   ...sexRatio('femoral_hernia', 0.25),
   { diseaseId: 'femoral_hernia', multiplier: 2.0, condition: { ageMin: 60 } },
   ...sexRatio('obturator_hernia', 0.15),
+  // Incarcerated hernia: bimodal — infants (inguinal) and older adults
+  { diseaseId: 'incarcerated_hernia', multiplier: 2.0, condition: { ageMax: 1 } },
+  { diseaseId: 'incarcerated_hernia', multiplier: 1.8, condition: { ageMin: 60 } },
   { diseaseId: 'obturator_hernia', multiplier: 3.0, condition: { ageMin: 70 } },
 
   // Diverticulitis — uncommon < 40; sharply higher after 60
@@ -180,7 +183,8 @@ export const PRIOR_MODIFIERS: PriorModifier[] = [
   ...sexRatio('hashimoto_thyroiditis', 0.1),
 
   // Paediatric — intussusception peaks 5–9 months; HSP 90 % under 10 (NICE CKS / BSPGHAN)
-  { diseaseId: 'intussusception', multiplier: 3.0, condition: { ageMin: 0.25, ageMax: 2 } },
+  // Ages are whole years in the record (0 = under 1): the 3-month floor cannot be applied.
+  { diseaseId: 'intussusception', multiplier: 3.0, condition: { ageMax: 2 } },
   { diseaseId: 'malrotation_volvulus', multiplier: 5.0, condition: { ageMax: 1 } },
   ...sexRatio('pyloric_stenosis', 4),
   { diseaseId: 'hsp_iga_vasculitis', multiplier: 3.0, condition: { ageMax: 10 } },

@@ -14,7 +14,8 @@ registerModule({
     },
     {
       id: 'choledocholithiasis', label: 'Choledocholithiasis', icd10: 'K80.50', prior: T.uncommon, course: 'acute',
-      features: { ruq_pain: 0.75, jaundice: 0.70, fever: 0.20, nausea_vomiting: 0.60, us_gallstones: 0.80, elevated_wbc: 0.35, colicky_pain: 0.50, dark_urine: 0.65, dilated_cbd: 0.70 },
+      // Coexists with acute cholecystitis in ≈ 10–20 % (ESGE 2019 / BSG 2017 CBD stones)
+      features: { ruq_pain: 0.75, jaundice: 0.70, fever: 0.25, nausea_vomiting: 0.60, us_gallstones: 0.80, elevated_wbc: 0.35, colicky_pain: 0.50, dark_urine: 0.65, dilated_cbd: 0.70, murphy_sign: 0.20, postprandial_pain: 0.30, fatty_food_trigger: 0.30, shoulder_tip_pain: 0.15, episodic_pain: 0.50 },
     },
     {
       id: 'cholangiocarcinoma', label: 'Cholangiocarcinoma', icd10: 'C22.1', prior: T.rare, course: 'chronic',
@@ -35,7 +36,8 @@ registerModule({
     },
     {
       id: 'liver_abscess', label: 'Liver Abscess', icd10: 'K75.0', prior: T.rare, course: 'acute',
-      features: { ruq_pain: 0.85, fever: 0.95, rigors: 0.65, nausea_vomiting: 0.50, elevated_wbc: 0.90, jaundice: 0.20, weight_loss: 0.35, pleuritic_chest_pain: 0.20, known_diabetes: 0.35 },
+      // Amoebic: often young men, recent dysentery (≈ 20–30 %), travel (WSES 2020 / IDSA amoebiasis)
+      features: { ruq_pain: 0.85, abdominal_tenderness: 0.85, fever: 0.90, rigors: 0.55, nausea_vomiting: 0.45, anorexia: 0.55, elevated_wbc: 0.90, raised_crp: 0.95, jaundice: 0.15, weight_loss: 0.35, pleuritic_chest_pain: 0.25, shoulder_tip_pain: 0.20, pain_worse_movement: 0.40, diarrhoea: 0.20, known_diabetes: 0.30, tachycardia: 0.55 },
     },
     {
       id: 'acute_hepatitis', label: 'Acute Hepatitis', icd10: 'B17.9', prior: T.uncommon, course: 'acute',

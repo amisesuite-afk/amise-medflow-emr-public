@@ -15,7 +15,7 @@ registerModule({
     {
       id: 'ectopic_pregnancy', label: 'Ectopic Pregnancy', icd10: 'O00.90', prior: T.uncommon, course: 'acute',
       applicability: { sex: 'female', pregnancy: 'required' },
-      features: { pelvic_pain: 0.80, lif_pain: 0.35, rlq_pain: 0.35, abdominal_pain: 0.90, missed_period: 0.80, positive_pregnancy_test: 0.97, abnormal_uterine_bleeding: 0.60, adnexal_tenderness: 0.75, shoulder_tip_pain: 0.20, syncope: 0.15, hypotension: 0.15, tachycardia: 0.30, nausea_vomiting: 0.35, fever: 0.05, pelvic_free_fluid: 0.50 },
+      features: { pallor: 0.30, pelvic_pain: 0.80, lif_pain: 0.35, rlq_pain: 0.35, abdominal_pain: 0.90, missed_period: 0.80, positive_pregnancy_test: 0.97, abnormal_uterine_bleeding: 0.60, adnexal_tenderness: 0.75, shoulder_tip_pain: 0.20, syncope: 0.15, hypotension: 0.15, tachycardia: 0.30, nausea_vomiting: 0.35, fever: 0.05, pelvic_free_fluid: 0.50 },
     },
     {
       id: 'ovarian_torsion', label: 'Ovarian Torsion', icd10: 'N83.51', prior: T.rare, course: 'acute', applicability: F,

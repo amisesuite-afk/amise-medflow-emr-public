@@ -26,7 +26,7 @@ registerModule({
     },
     {
       id: 'hypoglycaemia', label: 'Hypoglycaemia', icd10: 'E16.2', prior: T.uncommon, course: 'acute',
-      features: { low_glucose: 0.97, known_diabetes: 0.90, insulin_or_sulfonylurea: 0.85, confusion: 0.60, diaphoresis: 0.50, anxiety_tremor: 0.35, palpitations: 0.25, dizziness: 0.30, focal_weakness: 0.10, speech_disturbance: 0.15, seizure: 0.10, gcs_drop: 0.25, known_ckd: 0.20, sudden_onset: 0.50, syncope: 0.10 },
+      features: { pallor: 0.30, low_glucose: 0.97, known_diabetes: 0.90, insulin_or_sulfonylurea: 0.85, confusion: 0.60, diaphoresis: 0.50, anxiety_tremor: 0.35, palpitations: 0.25, dizziness: 0.30, focal_weakness: 0.10, speech_disturbance: 0.15, seizure: 0.10, gcs_drop: 0.25, known_ckd: 0.20, sudden_onset: 0.50, syncope: 0.10 },
     },
   ],
   features: [

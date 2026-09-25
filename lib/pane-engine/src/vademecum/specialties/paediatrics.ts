@@ -22,15 +22,17 @@ registerModule({
   diseases: [
     {
       id: 'intussusception', label: 'Intussusception', icd10: 'K56.1', prior: T.uncommon, course: 'acute', applicability: { ageMax: 16 },
-      features: { target_sign: 0.90, inconsolable_crying: 0.75, episodic_pain: 0.75, colicky_pain: 0.60, abdominal_pain: 0.90, nausea_vomiting: 0.80, bilious_vomiting: 0.30, lethargy: 0.45, pale_clammy: 0.35, pr_bleeding: 0.35, redcurrant_stool: 0.30, abdominal_mass: 0.45, poor_feeding: 0.40, fever: 0.20 },
+      features: { target_sign: 0.90, pallor: 0.50, inconsolable_crying: 0.75, episodic_pain: 0.75, colicky_pain: 0.60, abdominal_pain: 0.90, nausea_vomiting: 0.80, bilious_vomiting: 0.30, lethargy: 0.45, pale_clammy: 0.35, pr_bleeding: 0.35, redcurrant_stool: 0.30, abdominal_mass: 0.45, poor_feeding: 0.40, fever: 0.20,
+        // Lethargic / encephalopathic presentation without screaming episodes in ≈ 10–20 % (APLS 2016)
+        tachycardia: 0.50, dehydration: 0.30, mottled_skin: 0.15, gcs_drop: 0.10, confusion: 0.10, fatigue: 0.30, elevated_wbc: 0.40 },
     },
     {
-      id: 'pyloric_stenosis', label: 'Infantile Hypertrophic Pyloric Stenosis', icd10: 'Q40.0', prior: T.uncommon, course: 'subacute', applicability: { ageMin: 0.02, ageMax: 0.5 },
+      id: 'pyloric_stenosis', label: 'Infantile Hypertrophic Pyloric Stenosis', icd10: 'Q40.0', prior: T.uncommon, course: 'subacute', applicability: { ageMax: 0.5 }, // 1–16 weeks; the record holds whole years, so age 0 = any infant
       features: { pyloric_thickening: 0.95, projectile_vomiting: 0.90, vomiting_effortless: 0.60, nausea_vomiting: 0.99, hungry_after_vomiting: 0.60, failure_to_thrive: 0.50, weight_loss: 0.40, dehydration: 0.50, abdominal_mass: 0.40, visible_peristalsis: 0.30, bilious_vomiting: 0.02, fever: 0.03, metabolic_alkalosis: 0.70 },
     },
     {
       id: 'malrotation_volvulus', label: 'Malrotation with Midgut Volvulus', icd10: 'Q43.3', prior: T.rare, course: 'acute', applicability: { ageMax: 18 },
-      features: { whirlpool_sign: 0.80, bilious_vomiting: 0.95, nausea_vomiting: 0.99, poor_feeding: 0.60, abdominal_distension: 0.40, inconsolable_crying: 0.45, lethargy: 0.40, pr_bleeding: 0.20, abdominal_tenderness: 0.40, hypotension: 0.15, tachycardia: 0.50, failure_to_thrive: 0.25 },
+      features: { pallor: 0.30, whirlpool_sign: 0.80, bilious_vomiting: 0.95, nausea_vomiting: 0.99, poor_feeding: 0.60, abdominal_distension: 0.40, inconsolable_crying: 0.45, lethargy: 0.40, pr_bleeding: 0.20, abdominal_tenderness: 0.40, hypotension: 0.15, tachycardia: 0.50, failure_to_thrive: 0.25 },
     },
     {
       id: 'hsp_iga_vasculitis', label: 'IgA Vasculitis (Henoch–Schönlein Purpura, HSP)', icd10: 'D69.0', prior: T.rare, course: 'subacute',

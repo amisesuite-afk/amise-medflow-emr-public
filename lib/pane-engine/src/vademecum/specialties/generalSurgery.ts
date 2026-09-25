@@ -105,7 +105,7 @@ registerModule({
     { id: 'nocturnal_pain', label: 'Nocturnal pain', question: 'Does pain wake the patient from sleep at night?', category: 'symptom', baseRate: 0.05 },
     { id: 'antacid_relief', label: 'Antacid relief', question: 'Does the pain improve with antacids?', category: 'history', baseRate: 0.04 },
     { id: 'nsaid_use', label: 'Regular NSAID use', question: 'Is the patient taking regular NSAIDs (ibuprofen, diclofenac, etc.)?', category: 'history', baseRate: 0.08 },
-    { id: 'hernia_irreducible', label: 'Hernia irreducible', question: 'Is the swelling irreducible (cannot be pushed back)?', category: 'sign', baseRate: 0.01 },
+    { id: 'hernia_irreducible', label: 'Irreducible hernia / lump / prolapse', question: 'Is the swelling irreducible (cannot be pushed back)?', category: 'sign', baseRate: 0.01 },
     // ── Bowel obstruction ───────────────────────────────────────────────────
     { id: 'abdominal_distension', label: 'Abdominal distension', question: 'Is the abdomen visibly distended?', category: 'sign', baseRate: 0.05 },
     { id: 'absolute_constipation', label: 'Absolute constipation', question: 'Is there absolute constipation (no flatus or faeces)?', category: 'symptom', baseRate: 0.01 },

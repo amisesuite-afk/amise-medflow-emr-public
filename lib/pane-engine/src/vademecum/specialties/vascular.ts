@@ -29,11 +29,12 @@ registerModule({
     },
     {
       id: 'aortoenteric_fistula', label: 'Aorto-enteric Fistula (after aortic graft)', icd10: 'K63.2', prior: T.veryRare, course: 'acute',
-      features: { aortic_graft: 0.95, haematemesis: 0.45, melaena: 0.60, pr_bleeding: 0.30, hypotension: 0.40, back_pain: 0.25, fever: 0.30, tachycardia: 0.50 },
+      // Herald bleed after aortic graft; graft infection gives fever and back pain (ESVS 2020 vascular graft infection)
+      features: { aortic_graft: 0.95, previous_surgery: 0.95, haematemesis: 0.45, melaena: 0.60, pr_bleeding: 0.30, anaemia: 0.60, raised_urea: 0.50, epigastric_pain: 0.30, hypotension: 0.30, back_pain: 0.35, fever: 0.40, raised_crp: 0.60, tachycardia: 0.50, pallor: 0.40, vascular_risk: 0.90, antiplatelet_use: 0.40, known_aaa: 0.60 },
     },
     {
       id: 'mesenteric_ischaemia', label: 'Acute Mesenteric Ischaemia', icd10: 'K55.0', prior: T.rare, course: 'acute',
-      features: { mesenteric_ct_signs: 0.80, abdominal_pain: 0.95, pain_out_of_proportion: 0.75, periumbilical_pain: 0.45, diffuse_abdominal_pain: 0.45, sudden_onset: 0.55, nausea_vomiting: 0.60, diarrhoea: 0.35, pr_bleeding: 0.20, irregular_pulse: 0.45, known_af: 0.45, vascular_risk: 0.70, raised_lactate: 0.70, elevated_wbc: 0.75, tachycardia: 0.60, hypotension: 0.25, postprandial_pain: 0.25, abdominal_tenderness: 0.50 },
+      features: { pallor: 0.20, mesenteric_ct_signs: 0.80, abdominal_pain: 0.95, pain_out_of_proportion: 0.75, periumbilical_pain: 0.45, diffuse_abdominal_pain: 0.45, sudden_onset: 0.55, nausea_vomiting: 0.60, diarrhoea: 0.35, pr_bleeding: 0.20, irregular_pulse: 0.45, known_af: 0.45, vascular_risk: 0.70, raised_lactate: 0.70, elevated_wbc: 0.75, tachycardia: 0.60, hypotension: 0.25, postprandial_pain: 0.25, abdominal_tenderness: 0.50 },
     },
     {
       id: 'acute_limb_ischaemia', label: 'Acute Limb Ischaemia (Arterial Embolism / Thrombosis)', icd10: 'I74.3', prior: T.rare, course: 'acute',

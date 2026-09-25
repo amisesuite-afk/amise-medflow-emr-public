@@ -29,7 +29,9 @@ registerModule({
   diseases: [
     {
       id: 'sepsis', label: 'Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)', icd10: 'A41.9', prior: T.uncommon, course: 'acute',
-      features: { fever: 0.65, hypothermia: 0.15, rigors: 0.40, tachycardia: 0.85, tachypnoea: 0.65, hypotension: 0.45, confusion: 0.40, gcs_drop: 0.10, raised_lactate: 0.55, elevated_wbc: 0.65, raised_crp: 0.80, neutropenia: 0.08, immunosuppression: 0.30, asplenia: 0.02, mottled_skin: 0.15, oliguria: 0.30, hypoxia: 0.35, dyspnoea: 0.30, fatigue: 0.50, nausea_vomiting: 0.30, dysuria: 0.10, cough: 0.20, abdominal_pain: 0.25, lethargy: 0.35, poor_feeding: 0.15, non_blanching_rash: 0.04 },
+      features: { fever: 0.65, hypothermia: 0.15, rigors: 0.40, tachycardia: 0.85, tachypnoea: 0.65, hypotension: 0.45, confusion: 0.40, gcs_drop: 0.10, raised_lactate: 0.55, elevated_wbc: 0.65, raised_crp: 0.80, neutropenia: 0.08, immunosuppression: 0.30, asplenia: 0.02, mottled_skin: 0.15, oliguria: 0.30, hypoxia: 0.35, dyspnoea: 0.40, fatigue: 0.50, nausea_vomiting: 0.30, lethargy: 0.35, poor_feeding: 0.15, non_blanching_rash: 0.04, pallor: 0.35,
+        // Source mix (SSC 2021 / NICE NG51 cohorts: respiratory ≈ 40 %, urinary ≈ 20 %, abdominal ≈ 20 %, skin ≈ 10 %)
+        cough: 0.40, productive_cough: 0.25, purulent_sputum: 0.15, crackles: 0.30, consolidation: 0.30, dysuria: 0.15, frequency_urgency: 0.15, positive_urinalysis: 0.30, abdominal_pain: 0.30, diarrhoea: 0.10, erythema_surrounding: 0.10 },
     },
     {
       id: 'anaphylaxis', label: 'Anaphylaxis', icd10: 'T78.2XXA', prior: T.rare, course: 'acute',
@@ -41,7 +43,8 @@ registerModule({
     },
     {
       id: 'cdiff_colitis', label: 'Clostridioides difficile Colitis (C. diff infection)', icd10: 'A04.72', prior: T.rare, course: 'acute',
-      features: { diarrhoea: 0.95, recent_antibiotics: 0.85, recent_hospitalisation: 0.55, ppi_use: 0.40, abdominal_pain: 0.50, fever: 0.45, elevated_wbc: 0.65, abdominal_distension: 0.30, bloody_diarrhoea: 0.05, tachycardia: 0.40, dehydration: 0.35, ulcerative_colitis_history: 0.10 },
+      // Severe / fulminant CDI (IDSA/SHEA 2021): WCC > 15, creatinine > 133 µmol/L, hypotension, ileus, megacolon
+      features: { cdiff_positive: 0.90, diarrhoea: 0.95, recent_antibiotics: 0.85, recent_hospitalisation: 0.55, ppi_use: 0.40, abdominal_pain: 0.55, diffuse_abdominal_pain: 0.30, colicky_pain: 0.30, fever: 0.50, elevated_wbc: 0.75, raised_creatinine: 0.35, abdominal_distension: 0.35, tympanic_abdomen: 0.10, bloody_diarrhoea: 0.10, pr_bleeding: 0.10, tachycardia: 0.50, hypotension: 0.12, raised_lactate: 0.15, confusion: 0.12, dehydration: 0.40, immunosuppression: 0.20, ulcerative_colitis_history: 0.08 },
     },
     {
       id: 'aki', label: 'Acute Kidney Injury (AKI)', icd10: 'N17.9', prior: T.uncommon, course: 'acute',
@@ -61,6 +64,8 @@ registerModule({
     },
   ],
   features: [
+    { id: 'cdiff_positive', label: 'C. difficile toxin / GDH positive, or exposure on the unit', question: 'Is a C. difficile test positive, or is there C. difficile on the unit?', category: 'investigation', baseRate: 0.003 },
+    { id: 'pallor', label: 'Pallor', question: 'Is the patient pale?', category: 'sign', baseRate: 0.05 },
     { id: 'confusion', label: 'Confusion / altered mental state', question: 'Is the patient newly confused or drowsy?', category: 'sign', baseRate: 0.03 },
     { id: 'lethargy', label: 'Lethargy / floppy / hard to rouse', question: 'Is the patient lethargic or difficult to rouse?', category: 'sign', baseRate: 0.02 },
     { id: 'hypothermia', label: 'Low temperature (< 36 °C)', question: 'Is the temperature below 36 °C?', category: 'sign', baseRate: 0.01 },

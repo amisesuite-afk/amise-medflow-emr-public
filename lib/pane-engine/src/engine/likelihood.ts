@@ -38,6 +38,10 @@ export const UMBRELLA_FEATURES: Record<string, string[]> = {
   hyperglycaemia: ['very_high_glucose'],
   headache: ['thunderclap_headache'],
   upper_gi_bleeding: ['haematemesis', 'melaena'],
+  change_bowel_habit: ['diarrhoea', 'constipation', 'bloody_diarrhoea'],
+  pallor: ['pale_clammy'],
+  hernia_swelling: ['groin_swelling', 'umbilical_swelling', 'incisional_swelling', 'epigastric_swelling', 'parastomal_bulge'],
+  hernia_compressible: ['groin_lump_reducible'],
   rash: ['non_blanching_rash', 'urticaria_angioedema', 'palpable_purpura'],
 };
 
@@ -85,7 +89,46 @@ function derived(disease: DiseaseNode, featureId: string): number | undefined {
   if (featureId === 'acute_onset' || featureId === 'chronic_course') {
     return COURSE_LIKELIHOOD[featureId][disease.course ?? 'any'];
   }
-  return undefined;
+  return correlated(disease, featureId);
+}
+
+/**
+ * Findings that travel together. A disease that models fever or a raised white count but not the
+ * CRP, or abdominal pain but not abdominal tenderness, would otherwise be scored at the
+ * background rate for a finding it almost always has — penalising the diseases whose node lists
+ * fewer items (clinval: acalculous cholecystitis lost to sepsis on CRP and heart rate alone).
+ * Each value is capped by the finding it is derived from and floored at the background rate.
+ */
+function correlated(disease: DiseaseNode, featureId: string): number | undefined {
+  const f = disease.features;
+  const own = (id: string): number | undefined => (typeof f[id] === 'number' ? f[id] : undefined);
+  const floor = (p: number | undefined) => (p === undefined ? undefined : Math.max(p, baseRate(featureId)));
+  switch (featureId) {
+    case 'raised_crp': {
+      const src = own('elevated_wbc') ?? own('fever');
+      return floor(src === undefined ? undefined : Math.min(0.95, src + 0.1));
+    }
+    case 'elevated_wbc': {
+      const src = own('raised_crp') ?? own('fever');
+      return floor(src === undefined ? undefined : Math.max(0, src - 0.1));
+    }
+    case 'tachycardia': {
+      // Acute febrile illness: tachycardia in roughly half (NEWS2 / Sepsis-3 cohorts)
+      const fever = own('fever');
+      return floor(fever === undefined ? undefined : 0.15 + 0.5 * fever);
+    }
+    case 'abdominal_tenderness': {
+      const parts = UMBRELLA_FEATURES.abdominal_pain.filter(id => id !== 'colicky_pain' && own(id) !== undefined);
+      if (!parts.length && own('abdominal_pain') === undefined) return undefined;
+      return floor(0.8 * featureLikelihood(disease, 'abdominal_pain'));
+    }
+    case 'anorexia': {
+      const parts = UMBRELLA_FEATURES.abdominal_pain.filter(id => own(id) !== undefined);
+      return parts.length && disease.course === 'acute' ? floor(0.35) : undefined;
+    }
+    default:
+      return undefined;
+  }
 }
 
 export function featureLikelihood(disease: DiseaseNode, featureId: string): number {

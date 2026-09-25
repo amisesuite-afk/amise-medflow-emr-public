@@ -19,7 +19,9 @@ registerModule({
     },
     {
       id: 'pyelonephritis', label: 'Acute Pyelonephritis / Upper Urinary Tract Infection', icd10: 'N10', prior: T.uncommon, course: 'acute',
-      features: { loin_pain: 0.80, fever: 0.80, rigors: 0.50, dysuria: 0.60, frequency_urgency: 0.55, nausea_vomiting: 0.50, renal_angle_tenderness: 0.75, haematuria: 0.30, positive_urinalysis: 0.90, elevated_wbc: 0.70, tachycardia: 0.45, suprapubic_pain: 0.25 },
+      features: { loin_pain: 0.80, fever: 0.80, rigors: 0.50, dysuria: 0.60, frequency_urgency: 0.55, nausea_vomiting: 0.50, renal_angle_tenderness: 0.75, haematuria: 0.30, positive_urinalysis: 0.90, elevated_wbc: 0.70, tachycardia: 0.45, suprapubic_pain: 0.25,
+        // Older adults: delirium and tachypnoea are common, fever may be absent (NICE NG112 / NG111)
+        confusion: 0.15, tachypnoea: 0.20 },
     },
     {
       id: 'infected_obstructed_kidney', label: 'Infected Obstructed Kidney (Pyonephrosis / Obstructive Urosepsis)', icd10: 'N13.6', prior: T.rare, course: 'acute',

@@ -29,7 +29,7 @@ registerModule({
   diseases: [
     {
       id: 'acs', label: 'Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina)', icd10: 'I21.9', prior: T.frequent, course: 'acute',
-      features: { chest_pain: 0.80, chest_pain_pressure: 0.60, chest_tightness: 0.35, radiation_arm_jaw: 0.45, diaphoresis: 0.45, nausea_vomiting: 0.35, dyspnoea: 0.45, epigastric_pain: 0.15, fatigue: 0.25, dizziness: 0.15, sudden_onset: 0.40, exertional_symptoms: 0.35, pleuritic_chest_pain: 0.05, chest_wall_tenderness: 0.05, pain_worse_movement: 0.05, vascular_risk: 0.85, smoker: 0.45, known_diabetes: 0.30, known_heart_disease: 0.35, st_elevation: 0.35, raised_troponin: 0.85, bradycardia: 0.08, tachycardia: 0.25, hypotension: 0.08, pale_clammy: 0.40 },
+      features: { chest_pain: 0.80, chest_pain_pressure: 0.60, chest_tightness: 0.35, radiation_arm_jaw: 0.45, diaphoresis: 0.45, nausea_vomiting: 0.35, dyspnoea: 0.45, epigastric_pain: 0.15, fatigue: 0.25, dizziness: 0.15, sudden_onset: 0.40, exertional_symptoms: 0.35, pleuritic_chest_pain: 0.05, chest_wall_tenderness: 0.05, pain_worse_movement: 0.05, vascular_risk: 0.85, smoker: 0.45, known_diabetes: 0.30, known_heart_disease: 0.35, st_elevation: 0.35, raised_troponin: 0.85, bradycardia: 0.08, tachycardia: 0.25, hypotension: 0.08, pale_clammy: 0.40, pallor: 0.35 },
     },
     {
       id: 'aortic_dissection', label: 'Acute Aortic Dissection', icd10: 'I71.00', prior: T.rare, course: 'acute',
