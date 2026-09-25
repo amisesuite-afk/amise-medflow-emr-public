@@ -193,10 +193,6 @@
             "eur-hypona-2014"
           ],
           "note": "Potassium replacement raises sodium too: part of the overcorrection risk.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "Web: Potassium 3.1 is not flagged: there is no hypokalaemia prompt. | iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 13 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.acuity)",
           "proposedFix": "Add a hypokalaemia prompt, and warn that correcting potassium raises sodium."
         }
       ]
