@@ -169,8 +169,8 @@ extension ConsultationView {
 
     // MARK: - Completeness bar
 
-    var completenessBar: some View {
-        let (filled, total, _) = pathwayProgress
+    func completenessBar(_ progress: PathwayProgress) -> some View {
+        let (filled, total, _) = progress
         return HStack(spacing: 10) {
             ProgressView(value: Double(filled), total: Double(total))
                 .tint(filled == total ? .green : AMColor.accent)

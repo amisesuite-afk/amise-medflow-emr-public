@@ -12,7 +12,8 @@ extension ConsultationView {
     var pathwaySteps: [ConsultTab] { pathway.steps }
     var otherTabs: [ConsultTab] { ConsultTab.allCases.filter { !pathwaySteps.contains($0) } }
 
-    var tabBar: some View {
+    /// `filled`: the steps with documentation, from `filledTabs()` (computed once per render).
+    func tabBar(filled: Set<ConsultTab>) -> some View {
         HStack(spacing: 0) {
             Button { showPathwayPicker = true } label: {
                 HStack(spacing: 4) {
@@ -33,11 +34,11 @@ extension ConsultationView {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 0) {
                         ForEach(Array(pathwaySteps.enumerated()), id: \.element) { idx, tab in
-                            stepButton(tab, number: idx + 1).id(tab)
+                            stepButton(tab, number: idx + 1, isFilled: filled.contains(tab)).id(tab)
                         }
                         // A tab opened from "More" shows at the end while it is active.
                         if otherTabs.contains(activeTab) {
-                            stepButton(activeTab, number: nil).id(activeTab)
+                            stepButton(activeTab, number: nil, isFilled: filled.contains(activeTab)).id(activeTab)
                         }
                         Menu {
                             ForEach(otherTabs, id: \.self) { tab in
@@ -62,13 +63,13 @@ extension ConsultationView {
         .frame(height: 44)
     }
 
-    private func stepButton(_ tab: ConsultTab, number: Int?) -> some View {
+    private func stepButton(_ tab: ConsultTab, number: Int?, isFilled: Bool) -> some View {
         Button {
             withAnimation(.easeInOut(duration: 0.15)) { activeTab = tab }
         } label: {
             VStack(spacing: 0) {
                 HStack(spacing: 4) {
-                    if tabFilled(tab) {
+                    if isFilled {
                         Circle()
                             .fill(activeTab == tab ? AMColor.accent : Color.green)
                             .frame(width: 5, height: 5)
@@ -138,12 +139,25 @@ extension ConsultationView {
         }
     }
 
+    typealias PathwayProgress = (filled: Int, total: Int, missing: [String])
+
     /// Completion of the chosen pathway's documentation steps (Risk and Last-visit are
     /// informational and not counted).
-    var pathwayProgress: (filled: Int, total: Int, missing: [String]) {
-        let counted = pathwaySteps.filter { $0 != .risk && $0 != .history }
-        let missing = counted.filter { !tabFilled($0) }.map { pathway.label(for: $0) }
-        return (counted.count - missing.count, counted.count, missing)
+    var pathwayProgress: PathwayProgress { pathwayProgress(filledTabs()) }
+
+    /// Same, from an already-computed filled set (body computes it once per render).
+    func pathwayProgress(_ filled: Set<ConsultTab>) -> PathwayProgress {
+        ListPerf.pathwayProgress(steps: pathwaySteps,
+                                 uncounted: [.risk, .history],
+                                 filled: filled,
+                                 label: { pathway.label(for: $0) })
+    }
+
+    /// The pathway steps (and the active tab, when opened from "More") that have documentation.
+    func filledTabs() -> Set<ConsultTab> {
+        var tabs = pathwaySteps
+        if !tabs.contains(activeTab) { tabs.append(activeTab) }
+        return Set(tabs.filter { tabFilled($0) })
     }
 
     func tabFilled(_ tab: ConsultTab) -> Bool {

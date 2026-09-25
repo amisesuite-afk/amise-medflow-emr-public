@@ -24,6 +24,8 @@ struct ConsultationView: View {
     @State var selectedSpecialtyHint: String? = nil  // set when a CC chip is tapped
     @State var isAssessing = false
     @State private var pathwayTask: Task<Void, Never>?
+    /// Debounced Bayesian refresh for typed text (see scheduleBayesianRefresh).
+    @State private var bayesTask: Task<Void, Never>?
     @State var icdQuery = ""
     @State var icdSuggestions: [ICDCode] = []
     @State var showAIError = false
@@ -124,18 +126,24 @@ struct ConsultationView: View {
     }
 
     var body: some View {
-        withToolbarAndDialogs(withSheetsAndAlerts(withChangeHandlers(baseContent)))
+        // Step completion once per render. Every keystroke re-renders this view, and the step bar,
+        // the completeness bar, the Complete button and both dialog texts each re-ran tabFilled for
+        // every step (decoding the PMH/PSHx/allergy/investigation/pathway JSON each time).
+        let filled = filledTabs()
+        let progress = pathwayProgress(filled)
+        withToolbarAndDialogs(withSheetsAndAlerts(withChangeHandlers(baseContent(filled: filled, progress: progress))),
+                              progress: progress)
     }
 
     // Split out of `body`: one ~30-modifier chain exceeded the type-checker time limit.
-    private var baseContent: some View {
+    private func baseContent(filled: Set<ConsultTab>, progress: PathwayProgress) -> some View {
         VStack(spacing: 0) {
             if !patient.allergies.isEmpty { allergyBanner }
             // Clinical alarm banner — fires from free text parsing
             let activeAlarms = clinicalAlarms.filter { !dismissedAlarmIds.contains($0.id) }
             if !activeAlarms.isEmpty { clinicalAlarmBanner(activeAlarms) }
-            if !embeddedInNav { completenessBar }
-            tabBar
+            if !embeddedInNav { completenessBar(progress) }
+            tabBar(filled: filled)
             Divider()
             lastVisitCard
             tabContent
@@ -195,30 +203,50 @@ struct ConsultationView: View {
     private func withChangeHandlers(_ content: some View) -> some View {
         content
         .onChange(of: activeTab) { _, tab in
-            if tab == .diagnosis { refreshBayesian() }
+            if tab == .diagnosis {
+                bayesTask?.cancel()
+                refreshBayesian()
+            }
         }
         .onChange(of: patient.workingDiagnosis) { _, _ in
             dismissedRadiation = false
         }
         .onChange(of: patient.chiefComplaint) { _, newCC in handleChiefComplaintChange(newCC) }
         .onChange(of: patient.hpi) { _, _ in
-            refreshBayesian()
+            scheduleBayesianRefresh()
             pipeline.schedule(for: patient, socratesSelections: socratesSelections)
         }
         .onChange(of: patient.examGeneral) { _, _ in
-            refreshBayesian()
+            scheduleBayesianRefresh()
             pipeline.schedule(for: patient, socratesSelections: socratesSelections)
         }
         .onChange(of: patient.examAbdo) { _, _ in
-            refreshBayesian()
+            scheduleBayesianRefresh()
             pipeline.schedule(for: patient, socratesSelections: socratesSelections)
         }
         .onChange(of: patient.investigationsJson) { _, _ in
-            refreshBayesian()
+            scheduleBayesianRefresh()
             pipeline.schedule(for: patient, socratesSelections: socratesSelections)
         }
         .onChange(of: socratesSelections) { _, _ in
             pipeline.schedule(for: patient, socratesSelections: socratesSelections)
+        }
+    }
+
+    /// These fields change on every keystroke, and refreshBayesian runs the clinical text parser,
+    /// decodes the investigations twice, sorts the vitals and runs the Bayesian engine (40 pools,
+    /// ~190 candidates) synchronously on the main thread - once per character typed. It now runs
+    /// once typing pauses (0.35 s), like the CC-driven refresh (0.8 s) and the pipeline (1.5 s).
+    /// Opening the Diagnosis tab still refreshes immediately.
+    private func scheduleBayesianRefresh() {
+        bayesTask?.cancel()
+        bayesTask = Task {
+            try? await Task.sleep(nanoseconds: 350_000_000)
+            guard !Task.isCancelled else { return }
+            await MainActor.run {
+                guard patient.isLive else { return }
+                refreshBayesian()
+            }
         }
     }
 
@@ -302,7 +330,7 @@ struct ConsultationView: View {
         }
     }
 
-    private func withToolbarAndDialogs(_ content: some View) -> some View {
+    private func withToolbarAndDialogs(_ content: some View, progress: PathwayProgress) -> some View {
         content
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
@@ -319,7 +347,7 @@ struct ConsultationView: View {
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 if patient.encounterStatus != .complete {
-                    let completeness = pathwayProgress
+                    let completeness = progress
                     Button {
                         showCompleteEncounterConfirm = true
                     } label: {
@@ -340,7 +368,7 @@ struct ConsultationView: View {
                 }
             }
         }
-        .confirmationDialog(completeEncounterDialogTitle,
+        .confirmationDialog(completeEncounterDialogTitle(progress),
                             isPresented: $showCompleteEncounterConfirm,
                             titleVisibility: .visible) {
             Button("Mark as Complete") {
@@ -353,7 +381,7 @@ struct ConsultationView: View {
             }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text(completeEncounterDialogMessage)
+            Text(completeEncounterDialogMessage(progress))
         }
         .confirmationDialog(
             "Save this visit to encounter history?",
@@ -394,16 +422,14 @@ struct ConsultationView: View {
     }
 
     // P5: Complete encounter dialog helpers
-    private var completeEncounterDialogTitle: String {
-        let c = pathwayProgress
+    private func completeEncounterDialogTitle(_ c: PathwayProgress) -> String {
         if c.filled < c.total {
             return "Complete encounter (\(c.filled)/\(c.total) items filled)?"
         }
         return "Mark encounter as complete?"
     }
 
-    private var completeEncounterDialogMessage: String {
-        let c = pathwayProgress
+    private func completeEncounterDialogMessage(_ c: PathwayProgress) -> String {
         if c.filled < c.total {
             return "\(pathway.title) — not yet documented: \(c.missing.joined(separator: ", ")). You can still complete the encounter — record will remain editable."
         }
