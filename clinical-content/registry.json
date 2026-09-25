@@ -691,35 +691,67 @@
       "title": "Management protocols: investigations, phased management steps, medications with doses, red flags",
       "platforms": ["web"],
       "kind": "management-protocol",
-      "contentVersion": "unversioned",
+      "contentVersion": "1.0.0",
+      "versionStamp": { "file": "lib/pane-engine/src/management/index.ts", "type": "regex", "pattern": "MANAGEMENT_PROTOCOLS_VERSION\\s*=\\s*'([^']+)'" },
       "files": [
         "lib/pane-engine/src/management/protocols/*.ts",
         "lib/pane-engine/src/management/index.ts",
         "lib/pane-engine/src/management/types.ts"
       ],
-      "tests": ["lib/pane-engine/src/__tests__/management.test.ts"],
-      "ciChecks": [],
-      "guidelines": [],
-      "citationStatus": "none",
+      "tests": ["lib/pane-engine/src/__tests__/management.test.ts", "lib/pane-engine/src/__tests__/planSafety.test.ts"],
+      "ciChecks": ["pane-engine vitest", "clinval:web (mgmt-*, inv-*, variant-*, flag-* expectations)"],
+      "guidelines": [
+        { "name": "Per protocol (ManagementProtocol.guidelines, guideline and year in the step text)", "version": "per protocol", "section": "e.g. ESGE 2021; HALT-IT 2020; WATERFALL 2022 / ACG 2024; RCOG GTG 37a/37b; NICE NG126; WSES 2017 / 2020; ATLS 10; Baveno VII; ASCRS 2021 / 2022; ESC 2019 PE; ESVS 2024; NICE NG147; ASGE 2019; EAU 2024; ATA 2015 / BTA 2014; NCCN 2024", "citation": "See docs/clinical-validation/changes/fix-web-protocols.md" }
+      ],
+      "citationStatus": "per-rule",
       "lastReviewed": "unknown",
       "reviewer": "unknown",
       "reviewEvidence": "Phase tags audited against dx-variants on 2026-08-15 (engineering; emr-review SKILL.md). Doses not reviewed.",
       "reviewPriority": "P1",
       "nextReviewDue": "2026-10-31",
       "changeAuthority": "Any repository committer. Ships on dashboard deploy.",
-      "notes": "129 protocols, 708 medication entries with dose/frequency/route. Guideline names appear in only a handful of step texts (TG18, EHS, ATLS, BSG); ManagementProtocol has no guideline field."
+      "notes": "196 protocols (incl. medical, obstetric and paediatric emergencies: recognise, first actions, 911 / nearest emergency department — OKEU, St Jude's or Tapion Hospital), 747 medication entries. ManagementProtocol.guidelines names each protocol's sources; doses only where the guideline states them. Conditional branches (onlyIf: pregnant, penicillin allergy, under 16, adult) are resolved by plan-safety-filters; views that read a raw protocol show both branches.",
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-09-25", "change": "First versioned release: SURGEON-DECISIONS A1–A25, B1–B16, G2 content, new medical/obstetric/paediatric emergency protocols, ICD longest-prefix lookup, resolveProtocol, PANE-id aliases, guidelines field. See docs/clinical-validation/changes/fix-web-protocols.md." }
+      ]
+    },
+    {
+      "id": "plan-safety-filters",
+      "title": "Patient-specific plan filters: allergy cross-check, pregnancy, under-16 dosing, VTE, anticoagulation / antiplatelet / SGLT2 / steroid / anaesthetic / frailty lines",
+      "platforms": ["web"],
+      "kind": "decision-support-rules",
+      "contentVersion": "1.0.0",
+      "versionStamp": { "file": "lib/pane-engine/src/management/planSafety.ts", "type": "regex", "pattern": "PLAN_SAFETY_VERSION\\s*=\\s*'([^']+)'" },
+      "files": ["lib/pane-engine/src/management/planSafety.ts", "artifacts/dashboard/src/lib/plan-builder.ts"],
+      "tests": ["lib/pane-engine/src/__tests__/planSafety.test.ts", "artifacts/dashboard/src/lib/__tests__/plan-builder.test.ts"],
+      "ciChecks": ["pane-engine vitest", "dashboard vitest", "clinval:web"],
+      "guidelines": [
+        { "name": "Per rule (guideline and year in the line text)", "version": "per rule", "section": "BNF / BNFc; RCOG GTG 37a/37b 2015; FDA NSAID 2020; ACOG CO 723 / 775; NICE NG89 2018; BRIDGE 2015; PAUSE 2019; ACCP 2022; BSG/ESGE 2021; ESC/ESAIC 2022; CPOC 2021; JBDS 2023; AAGBI/SfE 2020; NAP6 2018; NICE CG103; NELA / RCS 2018; NICE NG45; NICE NG148; ASGE 2012", "citation": "See docs/clinical-validation/changes/fix-web-protocols.md" }
+      ],
+      "citationStatus": "per-rule",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewEvidence": "None. Clinical-validation vignettes (clinval:web) and unit tests exercise the rules; not a clinical review.",
+      "reviewPriority": "P1",
+      "nextReviewDue": "2026-10-31",
+      "changeAuthority": "Any repository committer. Ships on dashboard deploy.",
+      "notes": "Clinician-facing only (PlanTab suggested plan, ManagementPanel, PrescriptionsTab protocol medicines); never patient-facing (hazard H-10). Deterministic, negation-aware whole-word matching. Several choices need surgeon sign-off (SGLT2 CPOC vs FDA interval, P2Y12 intervals, frailty trigger) — see the change log.",
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-09-25", "change": "Created (SURGEON-DECISIONS C5, G2.1–G2.3, G2.5, G2.6, G2.11, G2.12, A3–A5, A22). See docs/clinical-validation/changes/fix-web-protocols.md." }
+      ]
     },
     {
       "id": "dx-variants",
       "title": "Sub-diagnosis variants and the management phases each may show",
       "platforms": ["web"],
       "kind": "decision-support-rules",
-      "contentVersion": "unversioned",
+      "contentVersion": "1.0.0",
+      "versionStamp": { "file": "artifacts/dashboard/src/lib/dx-variants.ts", "type": "regex", "pattern": "DX_VARIANTS_VERSION\\s*=\\s*'([^']+)'" },
       "files": [
         "artifacts/dashboard/src/lib/dx-variants.ts",
         ".claude/skills/emr-review/SKILL.md"
       ],
-      "tests": ["scripts/src/lint-dx-variant-phases.ts"],
+      "tests": ["scripts/src/lint-dx-variant-phases.ts", "artifacts/dashboard/src/lib/__tests__/dx-variants-matching.test.ts", "artifacts/dashboard/src/lib/__tests__/plan-builder.test.ts"],
       "ciChecks": ["lint:dx-phases"],
       "guidelines": [
         { "name": "WSES Jerusalem guidelines, acute appendicitis", "version": "2020", "section": "Uncomplicated / phlegmon / abscess / perforated", "citation": "Di Saverio S, et al. World J Emerg Surg 2020;15:27" },
@@ -737,7 +769,10 @@
       "reviewPriority": "P2",
       "nextReviewDue": "2026-12-31",
       "changeAuthority": "Any repository committer; dx-variants.ts and the SKILL.md table change together (CLAUDE.md).",
-      "notes": "10 groups, 31 variants."
+      "notes": "10 groups, 35 variants.",
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-09-25", "change": "First versioned release: E4 keywords (cholangitis, pancreatitis, diverticulitis, appendicitis abscess, hernia obstruction), 'criterion' rule, whole-word text fallback, E5 thyroid D44.0; safer prefixes (A2, A7, A17, A18, A23, NICE NG147); new variants breast_inflammatory, thyroid_bethesda_nondiagnostic, thyroid_bethesda_benign, sbo_failed_nonoperative. See docs/clinical-validation/changes/fix-web-protocols.md." }
+      ]
     },
     {
       "id": "triage-rules-red-flags",

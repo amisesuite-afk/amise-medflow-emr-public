@@ -115,6 +115,8 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'lib/pane-engine/src/management/protocols/*.ts',
   'lib/pane-engine/src/management/index.ts',
   'lib/pane-engine/src/management/types.ts',
+  'lib/pane-engine/src/management/planSafety.ts',
+  'artifacts/dashboard/src/lib/plan-builder.ts',
   // Dashboard
   'artifacts/dashboard/src/lib/drug-interactions.ts',
   'artifacts/dashboard/src/lib/drug-classes.ts',
