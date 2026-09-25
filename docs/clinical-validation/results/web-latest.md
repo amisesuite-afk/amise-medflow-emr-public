@@ -1,6 +1,6 @@
 # Clinical validation — web engines (latest local run)
 
-Generated 2026-09-25T17:59:54.450Z.
+Generated 2026-09-25T18:48:14.545Z.
 
 - Harness clinval-web/1; 397 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
 
@@ -12,7 +12,7 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
-| web | 397 | 3087 | 2865 | 130 | 92 | 5 | 0 | 126 | 0 | 0 |
+| web | 397 | 3087 | 2871 | 124 | 92 | 5 | 0 | 122 | 0 | 0 |
 
 ## Blocking failures
 
@@ -58,13 +58,14 @@ Guidelines:
 - differential web.passive: 1. Renal colic / urolithiasis; 2. Renal cell carcinoma; 3. Pyelonephritis; 4. Vasovagal / reflex syncope; 5. Symptomatic / ruptured abdominal aortic aneurysm
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=52)
-- alarms: Emergency now [web.triage.emergency]; Symptomatic or ruptured abdominal aortic aneurysm [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Symptomatic or ruptured abdominal aortic aneurysm [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, loin_pain, radiation_to_groin, haematuria, pain_worse_movement, severe_pain, syncope, dizziness, diaphoresis, known_hypertension, vascular_risk, acei_arb_use, luq_pain, renal_angle_tenderness, restless_writhing, abdominal_tenderness, smoker, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: aortic_aneurysm (from the confirmed diagnosis)
 - note: PlanTab protocol: aortic_aneurysm (from the confirmed diagnosis)
+- note: Seeded investigations: aortic_aneurysm (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -104,13 +105,14 @@ Guidelines:
 - differential web.passive: 1. Skin abscess / furuncle; 2. Perianal abscess; 3. Pilonidal sinus / abscess; 4. Inguinal hernia (paediatric); 5. Febrile convulsion
 - differential web.triageSurgical: 1. Skin / soft tissue abscess; 2. Inguinal hernia
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=110)
-- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.4°C + HR 104 bpm [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.4°C + HR 104 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, child-pugh, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, groin_pain, fever, pain_worse_movement, severe_pain, swelling_fluctuant_soft, localised_pain, groin_swelling, known_liver_disease, anticholinergic_or_opioid, previous_surgery, erythema_surrounding, injecting_drug_use, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: skin_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: skin_abscess (from the confirmed diagnosis)
+- note: Seeded investigations: skin_abscess (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -141,13 +143,14 @@ Guidelines:
 - differential web.passive: 1. Skin abscess / furuncle; 2. Hidradenitis suppurativa; 3. Perianal abscess; 4. Pilonidal sinus / abscess; 5. Melanoma / skin malignancy
 - differential web.triageSurgical: 1. Skin / soft tissue abscess
 - emergency level: priority (acuity=review, action=priority_24_48h, score=8)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: soft_tissue_lump, acute_onset, limb_pain, pain_worse_movement, swelling_fluctuant_soft, localised_pain, skin_lesion, erythema_surrounding, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: skin_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: skin_abscess (from the confirmed diagnosis)
+- note: Seeded investigations: skin_abscess (confirmed); 0 stat test(s) held back
 - note: matchPathways: Skin Lesion / Excision (5)
 
 </details>
@@ -182,13 +185,14 @@ Guidelines:
 - differential web.passive: 1. Oesophageal / gastric carcinoma; 2. Occult malignancy / systemic disease; 3. GORD / acid reflux / oesophagitis; 4. Gastric carcinoma; 5. Colorectal carcinoma
 - differential web.triageSurgical: 1. Dysphagia / oesophageal stricture; 2. Unexplained weight loss / GI alarm symptoms — endoscopy workup
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=92)
-- alarms: Emergency now [web.triage.emergency]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, web:gerdq, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dysphagia, chronic_course, epigastric_pain, chest_pain, regurgitation, weight_loss, progressive_course, dysphagia_liquids, dysphagia_progressive, undigested_food_vomit, smoker, vascular_risk, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: gastric_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: gastric_carcinoma (from the confirmed diagnosis)
+- note: Seeded investigations: gastric_carcinoma (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (17), Foreign Body Ingestion / Food Bolus (7)
 
 </details>
@@ -222,13 +226,14 @@ Guidelines:
 - differential web.passive: 1. Oesophageal / gastric carcinoma; 2. GORD / acid reflux / oesophagitis; 3. Occult malignancy / systemic disease; 4. Gastric carcinoma; 5. Colorectal carcinoma
 - differential web.triageSurgical: 1. Dysphagia / oesophageal stricture; 2. Unexplained weight loss / GI alarm symptoms — endoscopy workup
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=105)
-- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, web:gerdq, curb65
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dysphagia, chronic_course, chest_pain, chest_pain_pressure, regurgitation, aspiration_symptoms, weight_loss, progressive_course, dysphagia_liquids, cough, dysphagia_progressive, postprandial_pain, nocturnal_pain, undigested_food_vomit, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: achalasia (from the confirmed diagnosis)
 - note: PlanTab protocol: achalasia (from the confirmed diagnosis)
+- note: Seeded investigations: achalasia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Foreign Body Ingestion / Food Bolus (7), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -262,13 +267,14 @@ Guidelines:
 - differential web.passive: 1. Acute respiratory distress syndrome (ARDS); 2. Cardiac tamponade; 3. Anaemia; 4. ST-elevation myocardial infarction (STEMI); 5. Heart failure
 - differential web.triageSurgical: 1. Diabetic foot ulcer
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=70)
-- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 138 μmol/L — elevated [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 138 μmol/L — elevated [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, qsofa, web:wagner, news2, caprini, asa, curb65, rcri, stop-bang, cfs, web:phq9
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dyspnoea, fatigue, nausea_vomiting, radiation_arm_jaw, exertional_symptoms, diaphoresis, known_diabetes, known_ckd, known_hypertension, vascular_risk, insulin_or_sulfonylurea, acei_arb_use, pale_clammy, foot_problem, foot_ulcer, peripheral_neuropathy, raised_creatinine, hyperglycaemia, acute_onset, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
+- note: Seeded investigations: acute_coronary_syndrome (confirmed); 0 stat test(s) held back
 - note: matchPathways: Chest Pain — Emergency Redirect (10), Diabetic Foot (10), Post-operative Follow-up (General) (5)
 
 </details>
@@ -305,13 +311,14 @@ Guidelines:
 - differential web.passive: 1. Tension pneumothorax; 2. ST-elevation myocardial infarction (STEMI); 3. Acute coronary syndrome (ACS / NSTEMI / STEMI); 4. Cardiac tamponade; 5. Pericarditis / myocarditis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=97)
-- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Pregnant (33 weeks) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Pregnant (33 weeks) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: heart, wells-pe, news2, curb65
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, chest_pain, chest_pain_pressure, radiation_arm_jaw, diaphoresis, dyspnoea, exertional_symptoms, severe_pain, previous_surgery, chest_tightness, pregnant, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
+- note: Seeded investigations: acute_coronary_syndrome (confirmed); 0 stat test(s) held back
 - note: matchPathways: Chest Pain — Emergency Redirect (5), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (5), Varicose Veins (5)
 
 </details>
@@ -346,13 +353,14 @@ Guidelines:
 - differential web.passive: 1. ST-elevation myocardial infarction (STEMI); 2. Acute coronary syndrome (ACS / NSTEMI / STEMI); 3. GORD / acid reflux / oesophagitis; 4. Hypertensive emergency / hypertensive encephalopathy; 5. Acute gastroenteritis
 - differential web.triageSurgical: 1. Umbilical hernia
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=85)
-- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: heart, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, chest_pain, chest_pain_pressure, radiation_arm_jaw, diaphoresis, nausea_vomiting, severe_pain, pallor, known_hypertension, vascular_risk, pale_clammy, hernia_compressible, hernia_swelling, umbilical_swelling, smoker, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
+- note: Seeded investigations: acute_coronary_syndrome (confirmed); 0 stat test(s) held back
 - note: matchPathways: Chest Pain — Emergency Redirect (10), Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Post-operative Follow-up (General) (5)
 
 </details>
@@ -390,13 +398,14 @@ Guidelines:
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Varicocele; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
 - differential web.triageSurgical: 1. Inguinal hernia
 - emergency level: priority (acuity=review, action=priority_24_48h, score=24)
-- alarms: Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; P2Y12 inhibitor (clopidogrel) [web.clinicalPrompts.safety]
+- alarms: Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; P2Y12 inhibitor (clopidogrel) [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (Hernia)
 - note: PANE features applied: groin_swelling, irregular_pulse, known_hypertension, vascular_risk, antiplatelet_use, acei_arb_use, hernia_compressible, groin_lump_reducible, hernia_swelling, previous_surgery, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: atrial_fibrillation (from the confirmed diagnosis)
 - note: PlanTab protocol: atrial_fibrillation (from the confirmed diagnosis)
+- note: Seeded investigations: atrial_fibrillation (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (15), Pre-operative Assessment (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -430,13 +439,14 @@ Guidelines:
 - differential web.passive: 1. Anaemia; 2. Atrial fibrillation / flutter; 3. Cardiac tamponade; 4. Heart failure; 5. Panic disorder
 - differential web.triageSurgical: 1. Inguinal hernia
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=49)
-- alarms: Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Atrial fibrillation with rapid ventricular response [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 138 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Atrial fibrillation with rapid ventricular response [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 138 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: cha2ds2-vasc, web:wagner, news2, caprini, asa, rcri, cfs, web:gad7
 - score values: (none)
 - dx variant: (none) (Hernia)
 - note: PANE features applied: palpitations, exertional_symptoms, dyspnoea, irregular_pulse, known_hypertension, vascular_risk, known_diabetes, acei_arb_use, hernia_compressible, groin_lump_reducible, hernia_swelling, acute_onset, tachycardia, haemodynamic_instability, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: atrial_fibrillation (from the confirmed diagnosis)
 - note: PlanTab protocol: atrial_fibrillation (from the confirmed diagnosis)
+- note: Seeded investigations: atrial_fibrillation (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -470,13 +480,14 @@ Guidelines:
 - differential web.passive: 1. Panic disorder; 2. Generalised anxiety disorder; 3. Atrial fibrillation / flutter; 4. Anaemia; 5. BPPV / labyrinthitis / vestibular neuritis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=271)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Atrial fibrillation with haemodynamic instability [web.clinicalPrompts.safety]; Acute heart failure / pulmonary oedema [web.clinicalPrompts.safety]; Post-operative delirium — find the cause [web.clinicalPrompts.safety]; SBP 78 mmHg — hypotension [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]; HR 168 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Atrial fibrillation with haemodynamic instability [web.clinicalPrompts.safety]; Acute heart failure / pulmonary oedema [web.clinicalPrompts.safety]; Post-operative delirium — find the cause [web.clinicalPrompts.safety]; SBP 78 mmHg — hypotension [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]; HR 168 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: cha2ds2-vasc, qsofa, gcs, news2, caprini, has-bled, asa, curb65, rcri, cfs, web:gad7
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: palpitations, chest_tightness, dizziness, confusion, syncope, irregular_pulse, crackles, known_af, known_hypertension, vascular_risk, anticoagulant_use, previous_surgery, diaphoresis, pale_clammy, pallor, recent_surgery, acute_onset, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: atrial_fibrillation (from the confirmed diagnosis)
 - note: PlanTab protocol: atrial_fibrillation (from the confirmed diagnosis)
+- note: Seeded investigations: atrial_fibrillation (confirmed); 0 stat test(s) held back
 - note: matchPathways: Post-operative Follow-up (General) (5), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -512,13 +523,14 @@ Guidelines:
 - differential web.passive: 1. Heart failure; 2. Nephrotic syndrome; 3. Cardiac tamponade; 4. Cushing's syndrome; 5. Anaemia
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=66)
-- alarms: Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Acute heart failure / pulmonary oedema [web.clinicalPrompts.safety]; Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]
+- alarms: Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Acute heart failure / pulmonary oedema [web.clinicalPrompts.safety]; Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, cha2ds2-vasc, qsofa, news2, caprini, has-bled, asa, curb65, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: leg_swelling, bilateral_leg_oedema, bilateral_leg_symptoms, exertional_symptoms, dyspnoea, orthopnoea, weight_gain, raised_jvp, irregular_pulse, crackles, known_heart_disease, vascular_risk, known_af, known_hypertension, anticoagulant_use, diuretic_use, recent_antibiotics, erythema_surrounding, raised_bp, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_heart_failure (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_heart_failure (from the confirmed diagnosis)
+- note: Seeded investigations: acute_heart_failure (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -560,13 +572,14 @@ Guidelines:
 - differential web.passive: 1. Heart failure; 2. Cardiac tamponade; 3. Community-acquired pneumonia; 4. COPD / chronic bronchitis exacerbation; 5. Acute respiratory distress syndrome (ARDS)
 - differential web.triageSurgical: 1. Incisional / ventral hernia
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=141)
-- alarms: Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Critical hypoxia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Acute heart failure / pulmonary oedema [web.clinicalPrompts.safety]; SpO₂ 88% — hypoxia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Critical hypoxia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Acute heart failure / pulmonary oedema [web.clinicalPrompts.safety]; SpO₂ 88% — hypoxia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, qsofa, news2, caprini, asa, curb65, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dyspnoea, orthopnoea, leg_swelling, bilateral_leg_oedema, cough, productive_cough, crackles, raised_jvp, known_heart_disease, vascular_risk, known_hypertension, diuretic_use, acei_arb_use, antiplatelet_use, previous_surgery, hernia_swelling, incisional_swelling, acute_onset, tachycardia, raised_bp, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_heart_failure (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_heart_failure (from the confirmed diagnosis)
+- note: Seeded investigations: acute_heart_failure (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -601,13 +614,14 @@ Guidelines:
 - differential web.passive: 1. Anaphylaxis; 2. Bronchiolitis (RSV); 3. Asthma / reactive airways disease; 4. Epiglottitis; 5. Croup / laryngotracheobronchitis
 - differential web.triageSurgical: 1. Skin / soft tissue abscess
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=160)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Anaphylaxis [web.clinicalPrompts.safety]; SBP 78 mmHg — hypotension [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SpO₂ 91% — hypoxia [web.clinicalPrompts.safety]; HR 128 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Anaphylaxis [web.clinicalPrompts.safety]; SBP 78 mmHg — hypotension [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SpO₂ 91% — hypoxia [web.clinicalPrompts.safety]; HR 128 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, qsofa, news2, curb65
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: rash, wheeze, hoarseness, dyspnoea, syncope, dizziness, urticaria_angioedema, allergen_exposure, dyspnoea_pe, sudden_onset, recent_antibiotics, previous_surgery, pruritus, swelling_fluctuant_soft, acute_onset, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: anaphylaxis (from the confirmed diagnosis)
 - note: PlanTab protocol: anaphylaxis (from the confirmed diagnosis)
+- note: Seeded investigations: anaphylaxis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Post-operative Follow-up (General) (5), Thyroid / Neck Mass (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -640,13 +654,14 @@ Guidelines:
 - differential web.passive: 1. Anaphylaxis; 2. Bronchiolitis (RSV); 3. Epiglottitis; 4. Asthma / reactive airways disease; 5. Croup / laryngotracheobronchitis
 - differential web.triageSurgical: 1. Umbilical hernia
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=90)
-- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Tachypnoea (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Anaphylaxis [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Tachypnoea (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Anaphylaxis [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, qsofa, news2, caprini, curb65
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: stridor, wheeze, rash, nausea_vomiting, dyspnoea, urticaria_angioedema, dyspnoea_pe, sudden_onset, known_asthma, previous_surgery, postprandial_pain, mottled_skin, allergen_exposure, hernia_swelling, umbilical_swelling, acute_onset, tachycardia, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: anaphylaxis (from the confirmed diagnosis)
 - note: PlanTab protocol: anaphylaxis (from the confirmed diagnosis)
+- note: Seeded investigations: anaphylaxis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Post-operative Follow-up (General) (5)
 
 </details>
@@ -681,13 +696,14 @@ Guidelines:
 - differential web.passive: 1. Asthma / reactive airways disease; 2. Bronchiolitis (RSV); 3. COPD / chronic bronchitis exacerbation; 4. Panic disorder; 5. Tension pneumothorax
 - differential web.triageSurgical: 1. Pilonidal cyst / sinus with abscess
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=105)
-- alarms: Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Acute severe asthma [web.clinicalPrompts.safety]; Acute asthma exacerbation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Acute severe asthma [web.clinicalPrompts.safety]; Acute asthma exacerbation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, qsofa, news2, curb65
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: wheeze, chest_tightness, dyspnoea, known_asthma, relief_sitting_forward, speech_breathless, natal_cleft, acute_onset, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_asthma (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_asthma (from the confirmed diagnosis)
+- note: Seeded investigations: acute_asthma (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -722,13 +738,14 @@ Guidelines:
 - differential web.passive: 1. Bronchiolitis (RSV); 2. Asthma / reactive airways disease; 3. Acute respiratory distress syndrome (ARDS); 4. COPD / chronic bronchitis exacerbation; 5. Hypertensive emergency / hypertensive encephalopathy
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=115)
-- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Life-threatening asthma [web.clinicalPrompts.safety]; Acute asthma exacerbation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SpO₂ 90% — hypoxia [web.clinicalPrompts.safety]; HR 132 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Life-threatening asthma [web.clinicalPrompts.safety]; Acute asthma exacerbation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SpO₂ 90% — hypoxia [web.clinicalPrompts.safety]; HR 132 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, qsofa, gcs, news2, curb65
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dyspnoea, wheeze, confusion, dyspnoea_pe, sudden_onset, reduced_breath_sounds, known_asthma, silent_chest, fatigue, acute_onset, tachycardia, haemodynamic_instability, tachypnoea, hypoxia, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_asthma (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_asthma (from the confirmed diagnosis)
+- note: Seeded investigations: acute_asthma (confirmed); 0 stat test(s) held back
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -761,13 +778,14 @@ Guidelines:
 - differential web.passive: 1. Asthma / reactive airways disease; 2. Bronchiolitis (RSV); 3. Croup / laryngotracheobronchitis; 4. COVID-19 / viral respiratory illness; 5. COPD / chronic bronchitis exacerbation
 - differential web.triageSurgical: 1. Haemorrhoids (internal/external)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=49)
-- alarms: Emergency now [web.triage.emergency]; Acute asthma exacerbation [web.clinicalPrompts.safety]; Pregnant (24 weeks) [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute asthma exacerbation [web.clinicalPrompts.safety]; Pregnant (24 weeks) [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2, curb65
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: wheeze, cough, chest_tightness, known_asthma, anal_pain, pregnant, acute_onset, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: acute_asthma (leading differential); 2 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5)
 
 </details>
@@ -800,13 +818,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute mesenteric ischaemia; 5. Mesenteric adenitis
 - differential web.triageSurgical: 1. Acute appendicitis, uncomplicated
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=108)
-- alarms: Tachypnoea (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Seriously unwell child — NICE NG143 red features [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 17.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]
+- alarms: Tachypnoea (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Seriously unwell child — NICE NG143 red features [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 17.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, curb65
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, fever, nausea_vomiting, pain_worse_movement, pleuritic_chest_pain, cough, crackles, reduced_breath_sounds, elevated_wbc, raised_crp, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pneumonia (from the confirmed diagnosis)
 - note: PlanTab protocol: pneumonia (from the confirmed diagnosis)
+- note: Seeded investigations: pneumonia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (5), Acute Appendicitis (5)
 
 </details>
@@ -855,13 +874,14 @@ Guidelines:
 - differential web.passive: 1. Community-acquired pneumonia; 2. Lung abscess; 3. Sepsis / systemic infection; 4. Meningitis / encephalitis; 5. Empyema thoracis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=179)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Fever 38.6°C + HR 112 bpm + SBP 86 mmHg — septic shock [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 18.6 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 142 μmol/L — elevated [web.clinicalPrompts.safety]; SpO₂ 90% — hypoxia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Fever 38.6°C + HR 112 bpm + SBP 86 mmHg — septic shock [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 18.6 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 142 μmol/L — elevated [web.clinicalPrompts.safety]; SpO₂ 90% — hypoxia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-dvt, qsofa, gcs, curb65, news2, caprini, asa, rcri, must, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: cough, productive_cough, fever, confusion, crackles, bronchial_breathing, known_hypertension, vascular_risk, known_malignancy, previous_surgery, purulent_sputum, dehydration, anorexia, bowel_resection, raised_urea, raised_creatinine, elevated_wbc, raised_crp, acute_onset, tachycardia, hypotension, haemodynamic_instability, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pneumonia (from the confirmed diagnosis)
 - note: PlanTab protocol: pneumonia (from the confirmed diagnosis)
+- note: Seeded investigations: pneumonia (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (10), Diverticular Disease / Diverticulitis (5)
 
@@ -899,13 +919,14 @@ Guidelines:
 - differential web.passive: 1. COVID-19 / viral respiratory illness; 2. Asthma / reactive airways disease; 3. Croup / laryngotracheobronchitis; 4. Acute respiratory distress syndrome (ARDS); 5. Upper respiratory tract infection (URTI)
 - differential web.triageSurgical: 1. Incisional / ventral hernia
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=87)
-- alarms: Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SpO₂ 90% — hypoxia [web.clinicalPrompts.safety]
+- alarms: Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SpO₂ 90% — hypoxia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2, curb65, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: cough, exertional_symptoms, dyspnoea, fatigue, crackles, immunosuppression, steroid_use, previous_repair, previous_surgery, fever, joint_pain, hernia_swelling, incisional_swelling, raised_crp, acute_onset, tachycardia, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pneumonia (from the confirmed diagnosis)
 - note: PlanTab protocol: pneumonia (from the confirmed diagnosis)
+- note: Seeded investigations: pneumonia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Post-operative Follow-up (General) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -945,13 +966,14 @@ Guidelines:
 - differential web.passive: 1. Community-acquired pneumonia; 2. Empyema thoracis; 3. Lung abscess; 4. Pericarditis / myocarditis; 5. Pulmonary tuberculosis
 - differential web.triageSurgical: 1. Sebaceous / epidermoid cyst
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=115)
-- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: heart, wells-pe, qsofa, news2, curb65
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: cough, productive_cough, fever, chest_pain, pleuritic_chest_pain, crackles, bronchial_breathing, previous_surgery, diaphoresis, purulent_sputum, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pneumonia (from the confirmed diagnosis)
 - note: PlanTab protocol: pneumonia (from the confirmed diagnosis)
+- note: Seeded investigations: pneumonia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Soft Tissue Mass / Lipoma (10), Chest Pain — Emergency Redirect (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -988,13 +1010,14 @@ Guidelines:
 - differential web.passive: 1. Cellulitis / soft tissue infection; 2. Necrotising fasciitis; 3. Osteomyelitis (paediatric); 4. Fournier's gangrene; 5. Sickle cell vaso-occlusive crisis
 - differential web.triageSurgical: 1. Sebaceous / epidermoid cyst
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=48)
-- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2, caprini
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: erythema_surrounding, fever, limb_pain, previous_surgery, raised_crp, elevated_wbc, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cellulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cellulitis (from the confirmed diagnosis)
+- note: Seeded investigations: cellulitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Soft Tissue Mass / Lipoma (10)
 
 </details>
@@ -1031,13 +1054,14 @@ Guidelines:
 - differential web.passive: 1. COPD / chronic bronchitis exacerbation; 2. Bronchiolitis (RSV); 3. Asthma / reactive airways disease; 4. Community-acquired pneumonia; 5. Acute respiratory distress syndrome (ARDS)
 - differential web.triageSurgical: 1. Inguinal hernia
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=127)
-- alarms: Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Critical hypoxia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; SpO₂ 85% — hypoxia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Critical hypoxia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; SpO₂ 85% — hypoxia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, qsofa, gcs, news2, curb65, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dyspnoea, cough, productive_cough, wheeze, confusion, crackles, known_copd, purulent_sputum, anxiety_tremor, hernia_swelling, smoker, vascular_risk, hypercapnia, acute_onset, tachycardia, raised_bp, tachypnoea, hypoxia, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: copd_exacerbation (from the confirmed diagnosis)
 - note: PlanTab protocol: copd_exacerbation (from the confirmed diagnosis)
+- note: Seeded investigations: copd_exacerbation (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -1075,13 +1099,14 @@ Guidelines:
 - differential web.passive: 1. COPD / chronic bronchitis exacerbation; 2. Asthma / reactive airways disease; 3. Bronchiolitis (RSV); 4. Community-acquired pneumonia; 5. Lung abscess
 - differential web.triageSurgical: 1. Umbilical hernia
 - emergency level: urgent (acuity=priority, action=same_day_call, score=7)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, curb65, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: cough, productive_cough, wheeze, exertional_symptoms, dyspnoea, known_copd, previous_surgery, hernia_swelling, umbilical_swelling, smoker, vascular_risk, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: copd_exacerbation (from the confirmed diagnosis)
 - note: PlanTab protocol: copd_exacerbation (from the confirmed diagnosis)
+- note: Seeded investigations: copd_exacerbation (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -1114,13 +1139,14 @@ Guidelines:
 - differential web.passive: 1. Cellulitis / soft tissue infection; 2. Deep vein thrombosis (DVT); 3. Necrotising fasciitis; 4. Sciatica / lumbar radiculopathy; 5. Acute compartment syndrome
 - differential web.triageSurgical: 1. Leg swelling — possible DVT
 - emergency level: urgent (acuity=priority, action=same_day_call, score=0)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, news2, caprini, asa, stop-bang
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: leg_swelling, limb_pain, erythema_surrounding, recent_immobility, recent_antibiotics, nsaid_use, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: deep_vein_thrombosis (from the confirmed diagnosis)
 - note: PlanTab protocol: deep_vein_thrombosis (from the confirmed diagnosis)
+- note: Seeded investigations: deep_vein_thrombosis (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Varicose Veins (5)
 
 </details>
@@ -1153,13 +1179,14 @@ Guidelines:
 - differential web.passive: 1. Acute gastroenteritis; 2. Hypertrophic pyloric stenosis; 3. BPPV / labyrinthitis / vestibular neuritis; 4. DKA / hyperglycaemic hyperosmolar state; 5. Addisonian crisis / adrenal insufficiency
 - differential web.triageSurgical: 1. Haemorrhoids (internal/external)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=69)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; SBP 84 mmHg — hypotension [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 212 μmol/L — elevated [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Potassium 5.6 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; SBP 84 mmHg — hypotension [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 212 μmol/L — elevated [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Potassium 5.6 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, web:wagner, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, acute_onset, diffuse_abdominal_pain, colicky_pain, change_bowel_habit, episodic_pain, postprandial_pain, diarrhoea, dizziness, dehydration, known_diabetes, known_heart_disease, vascular_risk, known_hypertension, known_ckd, acei_arb_use, diuretic_use, previous_surgery, fatigue, oliguria, raised_creatinine, raised_urea, tachycardia, hypotension, haemodynamic_instability, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_kidney_injury (from the confirmed diagnosis)
+- note: Seeded investigations: acute_kidney_injury (confirmed); 0 stat test(s) held back
 - note: matchPathways: Post-operative Follow-up (General) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -1201,13 +1228,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute alcoholic pancreatitis; 5. Acute cholecystitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=65)
-- alarms: Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Diabetic ketoacidosis — euglycaemic (glucose < 14 mmol/L) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 116 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Diabetic ketoacidosis — euglycaemic (glucose < 14 mmol/L) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 116 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, wells-pe, ranson, qsofa, web:wagner, news2, caprini, asa, curb65, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, acute_onset, diffuse_abdominal_pain, anorexia, abdominal_pain, dyspnoea, known_diabetes, known_hypertension, vascular_risk, sglt2_inhibitor, acei_arb_use, kussmaul, hyperglycaemia, ketonaemia, metabolic_acidosis, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: PlanTab protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
+- note: Seeded investigations: diabetic_ketoacidosis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -1244,13 +1272,14 @@ Guidelines:
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Stroke / TIA; 3. Meningitis / encephalitis; 4. Migraine; 5. Bacterial meningitis (paediatric)
 - differential web.triageSurgical: 1. Lipoma
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=60)
-- alarms: Emergency now [web.triage.emergency]; Hypertensive emergency (acute organ damage) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 188 μmol/L — elevated [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Hypertensive emergency (acute organ damage) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 188 μmol/L — elevated [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: gcs, news2, caprini, asa, rcri, stop-bang, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: headache, nausea_vomiting, visual_disturbance, confusion, known_hypertension, vascular_risk, papilloedema, gcs_drop, restless_writhing, burn_wound, raised_creatinine, proteinuria, acute_onset, raised_bp, severe_hypertension, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: hypertensive_emergency (from the confirmed diagnosis)
 - note: PlanTab protocol: hypertensive_emergency (from the confirmed diagnosis)
+- note: Seeded investigations: hypertensive_emergency (confirmed); 0 stat test(s) held back
 - note: matchPathways: Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -1287,13 +1316,14 @@ Guidelines:
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Acute alcoholic pancreatitis; 3. Migraine; 4. Perforated peptic ulcer; 5. Bacterial meningitis (paediatric)
 - differential web.triageSurgical: 1. Acute cholecystitis with cholelithiasis
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=47)
-- alarms: Emergency now [web.triage.emergency]; Severe pre-eclampsia / HELLP syndrome [web.clinicalPrompts.safety]; Pregnant [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Severe pre-eclampsia / HELLP syndrome [web.clinicalPrompts.safety]; Pregnant [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, news2, web:gerdq, asge-cbd
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, epigastric_pain, nausea_vomiting, severe_pain, headache, visual_disturbance, urticaria_angioedema, pregnant, raised_liver_enzymes, thrombocytopenia, anaemia, proteinuria, raised_bp, severe_hypertension, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pre_eclampsia (from the confirmed diagnosis)
 - note: PlanTab protocol: pre_eclampsia (from the confirmed diagnosis)
+- note: Seeded investigations: pre_eclampsia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (17), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7)
 
 </details>
@@ -1326,13 +1356,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Acute cholecystitis with cholelithiasis
 - emergency level: priority (acuity=review, action=priority_24_48h, score=7)
-- alarms: Severe hypertension (≥ 180/120) without recorded acute organ damage [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SBP 186 mmHg — hypertensive urgency [web.clinicalPrompts.safety]
+- alarms: Severe hypertension (≥ 180/120) without recorded acute organ damage [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SBP 186 mmHg — hypertensive urgency [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: ruq_pain, episodic_pain, known_hypertension, vascular_risk, leg_swelling, previous_surgery, chronic_course, raised_bp, severe_hypertension, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: biliary_colic (leading differential); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10), Pre-operative Assessment (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -1366,13 +1397,14 @@ Guidelines:
 - differential web.passive: 1. Vasovagal / reflex syncope; 2. Cardiac tamponade; 3. Pulmonary embolism; 4. Tension pneumothorax; 5. Acute respiratory distress syndrome (ARDS)
 - differential web.triageSurgical: 1. Femoral hernia
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=97)
-- alarms: Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Acute heart failure / pulmonary oedema [web.clinicalPrompts.safety]; Pulmonary embolism [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SpO₂ 91% — hypoxia [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Acute heart failure / pulmonary oedema [web.clinicalPrompts.safety]; Pulmonary embolism [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SpO₂ 91% — hypoxia [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, qsofa, news2, caprini, asa, curb65, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: syncope, dyspnoea, pain_on_defaecation, sudden_onset, dyspnoea_pe, raised_jvp, known_hypertension, vascular_risk, pallor, hernia_swelling, acute_onset, tachycardia, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: PlanTab protocol: pulmonary_embolism (from the confirmed diagnosis)
+- note: Seeded investigations: pulmonary_embolism (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -1409,13 +1441,14 @@ Guidelines:
 - differential web.passive: 1. Pulmonary embolism; 2. Heart failure; 3. Vasovagal / reflex syncope; 4. Cardiac tamponade; 5. Tension pneumothorax
 - differential web.triageSurgical: 1. Leg swelling — possible DVT; 2. Pancreatic / ampullary tumour
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=207)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Critical hypoxia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Pulmonary embolism with shock or hypoxia (high risk) [web.clinicalPrompts.safety]; Acute heart failure / pulmonary oedema [web.clinicalPrompts.safety]; Coronary stent / ACS 2 months ago on antiplatelet therapy [web.clinicalPrompts.safety]; SBP 82 mmHg — hypotension [web.clinicalPrompts.safety]; SpO₂ 86% — hypoxia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 128 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Critical hypoxia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Pulmonary embolism with shock or hypoxia (high risk) [web.clinicalPrompts.safety]; Acute heart failure / pulmonary oedema [web.clinicalPrompts.safety]; Coronary stent / ACS 2 months ago on antiplatelet therapy [web.clinicalPrompts.safety]; SBP 82 mmHg — hypotension [web.clinicalPrompts.safety]; SpO₂ 86% — hypoxia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 128 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, qsofa, news2, curb65, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dyspnoea, syncope, leg_swelling, dyspnoea_pe, sudden_onset, diaphoresis, raised_jvp, previous_surgery, unilateral_leg_swelling, acute_onset, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: PlanTab protocol: pulmonary_embolism (from the confirmed diagnosis)
+- note: Seeded investigations: pulmonary_embolism (confirmed); 0 stat test(s) held back
 - note: matchPathways: Chest Pain — Emergency Redirect (5), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (5), Pancreatic Mass / Cyst (5)
 
 </details>
@@ -1453,13 +1486,14 @@ Guidelines:
 - differential web.passive: 1. Pulmonary embolism; 2. Tension pneumothorax; 3. Spontaneous pneumothorax; 4. Heart failure; 5. Pleural effusion
 - differential web.triageSurgical: 1. Leg swelling — possible DVT; 2. Breast lump / mass
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=138)
-- alarms: Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Pulmonary embolism [web.clinicalPrompts.safety]; Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Pulmonary embolism [web.clinicalPrompts.safety]; Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: heart, wells-pe, wells-dvt, qsofa, news2, curb65
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, chest_pain, dyspnoea, pleuritic_chest_pain, leg_swelling, dyspnoea_pe, oestrogen_use, unilateral_leg_swelling, breast_lump, recent_immobility, tachycardia, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: PlanTab protocol: pulmonary_embolism (from the confirmed diagnosis)
+- note: Seeded investigations: pulmonary_embolism (confirmed); 0 stat test(s) held back
 - note: matchPathways: Breast Lump / Breast Disease (5), Chest Pain — Emergency Redirect (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -1484,7 +1518,7 @@ Permutation of `acutemed-pe-ocp-long-haul`.
 Failure details:
 
 - **mnm-postop-collection** (web): not in top 3 of web.pane: 1. Pulmonary Embolism \| 2. Post-operative Pneumonia / Atelectasis \| 3. Community-acquired Pneumonia (Adult / Child) [known gap: Web run 2026-09-25: not in top 3 of web.pane: 1. Surgical Site Infection (SSI) \| 2. Acute Cholecystitis \| 3. Pulmonary Embolism. PANE ranked surgical site infection first because the "Post-op follow-up" CC template hint sets wound_erythema and wound_discharge to present. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Stable Angina \| 2. Pneumothorax \| 3. Surgical Site Infection \| 4. Pulmonary Embolism \| 5. Atrial Fibrillation]
-- **alarm-hypoxia-or-tachycardia** (web): no alarm matched among 5 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web run 2026-09-25: no matching alarm. Alarms raised: Emergency now; Pre-operative assessment. \| iOS CI 2026-09-25 (run 36169134350, database mode): no alarm matched among 1 (ios.acuity)]
+- **alarm-hypoxia-or-tachycardia** (web): no alarm matched among 6 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web run 2026-09-25: no matching alarm. Alarms raised: Emergency now; Pre-operative assessment. \| iOS CI 2026-09-25 (run 36169134350, database mode): no alarm matched among 1 (ios.acuity)]
 
 Guidelines:
 
@@ -1499,13 +1533,14 @@ Guidelines:
 - differential web.passive: 1. Pleural effusion; 2. Tension pneumothorax; 3. Rotator cuff tear / shoulder impingement; 4. Spontaneous pneumothorax; 5. Pulmonary embolism
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=108)
-- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Pulmonary embolism [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Pulmonary embolism [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: heart, wells-pe, wells-dvt, qsofa, news2, asa, clavien-dindo, stop-bang
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: previous_surgery, recent_surgery, acute_onset, chest_pain, dyspnoea, pleuritic_chest_pain, shoulder_tip_pain, exertional_symptoms, ruq_pain, wound_discharge, tachycardia, tachypnoea, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: PlanTab protocol: pulmonary_embolism (from the confirmed diagnosis)
+- note: Seeded investigations: pulmonary_embolism (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (7), Pancreatic Mass / Cyst (7)
 
 </details>
@@ -1541,13 +1576,14 @@ Guidelines:
 - differential web.passive: 1. Tension pneumothorax; 2. Spontaneous pneumothorax; 3. Pulmonary embolism; 4. Pleural effusion; 5. Empyema thoracis
 - differential web.triageSurgical: 1. Pilonidal cyst / sinus with abscess
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=107)
-- alarms: Emergency now [web.triage.emergency]; Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Pulmonary embolism [web.clinicalPrompts.safety]; Pregnant (30 weeks) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 115 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Pulmonary embolism [web.clinicalPrompts.safety]; Pregnant (30 weeks) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 115 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: heart, wells-pe, qsofa, news2, asa, curb65, stop-bang
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dyspnoea, chest_pain, pleuritic_chest_pain, dyspnoea_pe, sudden_onset, natal_cleft, pregnant, acute_onset, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: PlanTab protocol: pulmonary_embolism (from the confirmed diagnosis)
+- note: Seeded investigations: pulmonary_embolism (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -1589,13 +1625,14 @@ Guidelines:
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Sepsis / systemic infection; 3. Hypertensive emergency / hypertensive encephalopathy; 4. Acute gastroenteritis; 5. Meningitis / encephalitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=37)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 168 μmol/L — elevated [web.clinicalPrompts.safety]; HR 114 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 168 μmol/L — elevated [web.clinicalPrompts.safety]; HR 114 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, gcs, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: confusion, fatigue, dehydration, known_hypertension, vascular_risk, previous_surgery, suprapubic_pain, mottled_skin, hernia_compressible, hernia_swelling, stoma, parastomal_bulge, abdominal_tenderness, elevated_wbc, raised_crp, raised_creatinine, raised_lactate, positive_urinalysis, acute_onset, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft
 - note: AssessmentTab ManagementPanel protocol: sepsis (from the confirmed diagnosis)
 - note: PlanTab protocol: sepsis (from the confirmed diagnosis)
+- note: Seeded investigations: sepsis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5)
 
@@ -1632,13 +1669,14 @@ Guidelines:
 - differential web.passive: 1. Dengue fever; 2. Meningitis / encephalitis; 3. Malaria; 4. Leptospirosis; 5. Pyelonephritis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=115)
-- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected bacterial meningitis / meningococcal disease [web.clinicalPrompts.safety]; Suspected sepsis — fever in an asplenic patient [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Fever 39.2°C + HR 124 bpm [web.clinicalPrompts.safety]
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected bacterial meningitis / meningococcal disease [web.clinicalPrompts.safety]; Suspected sepsis — fever in an asplenic patient [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Fever 39.2°C + HR 124 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: fever, rigors, myalgia, nausea_vomiting, rash, non_blanching_rash, asplenia, previous_surgery, mottled_skin, trauma_mechanism, mechanism_blunt, acute_onset, tachycardia, haemodynamic_instability, tachypnoea, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: sepsis (from the confirmed diagnosis)
 - note: PlanTab protocol: sepsis (from the confirmed diagnosis)
+- note: Seeded investigations: sepsis (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -1673,13 +1711,14 @@ Guidelines:
 - differential web.passive: 1. Sepsis / systemic infection; 2. Malaria; 3. Pyelonephritis; 4. Infective endocarditis; 5. Necrotising fasciitis
 - differential web.triageSurgical: 1. Breast cancer
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=127)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis — neutropenic sepsis [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Fever 38.4°C + HR 106 bpm [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis — neutropenic sepsis [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Fever 38.4°C + HR 106 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-dvt, qsofa, news2, caprini, must, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: fever, rigors, immunosuppression, known_malignancy, previous_surgery, neutropenia, raised_crp, acute_onset, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: sepsis (leading differential); 2 stat test(s) held back
 - note: matchPathways: Post-operative Follow-up (General) (5), Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -1714,13 +1753,14 @@ Guidelines:
 - differential web.passive: 1. Anaemia; 2. Vasovagal / reflex syncope; 3. Cardiac tamponade; 4. Heart failure; 5. Acute respiratory distress syndrome (ARDS)
 - differential web.triageSurgical: 1. Femoral hernia
 - emergency level: urgent (acuity=priority, action=same_day_call, score=37)
-- alarms: HR 34 bpm — bradycardia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: HR 34 bpm — bradycardia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri, stop-bang, cfs, web:phq9
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: syncope, fatigue, exertional_symptoms, dyspnoea, sudden_onset, known_hypertension, vascular_risk, previous_surgery, loss_of_consciousness, hernia_swelling, acute_onset, bradycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: syncope (from the confirmed diagnosis)
 - note: PlanTab protocol: syncope (from the confirmed diagnosis)
+- note: Seeded investigations: syncope (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Post-operative Follow-up (General) (5)
 
 </details>
@@ -1751,13 +1791,14 @@ Guidelines:
 - differential web.passive: 1. Vasovagal / reflex syncope; 2. Acute coronary syndrome (ACS / NSTEMI / STEMI); 3. Anaemia; 4. Cardiac tamponade; 5. Heart failure
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=62)
-- alarms: Emergency now [web.triage.emergency]; Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: syncope, chest_tightness, exertional_symptoms, dyspnoea, sudden_onset, chest_pain, heart_murmur, known_hypertension, vascular_risk, acei_arb_use, previous_surgery, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: syncope (from the confirmed diagnosis)
 - note: PlanTab protocol: syncope (from the confirmed diagnosis)
+- note: Seeded investigations: syncope (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (5), Post-operative Follow-up (General) (5), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -1794,13 +1835,14 @@ Guidelines:
 - differential web.passive: 1. Vasovagal / reflex syncope; 2. Pulmonary embolism; 3. Symptomatic / ruptured abdominal aortic aneurysm; 4. Acute coronary syndrome (ACS / NSTEMI / STEMI); 5. Atrial fibrillation / flutter
 - differential web.triageSurgical: 1. Breast lump / mass; 2. Fibroadenoma of breast
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=50)
-- alarms: Emergency now [web.triage.emergency]; Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: syncope, sudden_onset, diaphoresis, nausea_vomiting, loss_of_consciousness, pallor, breast_lump, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: syncope (from the confirmed diagnosis)
 - note: PlanTab protocol: syncope (from the confirmed diagnosis)
+- note: Seeded investigations: syncope (confirmed); 0 stat test(s) held back
 - note: matchPathways: Breast Lump / Breast Disease (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -1833,13 +1875,14 @@ Guidelines:
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Migraine; 3. Meningitis / encephalitis; 4. Dengue fever; 5. Bacterial meningitis (paediatric)
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_mass, headache, known_hypertension, vascular_risk, acei_arb_use, loin_pain, known_stone, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: adrenal_incidentaloma (from the confirmed diagnosis)
 - note: PlanTab protocol: adrenal_incidentaloma (from the confirmed diagnosis)
+- note: Seeded investigations: adrenal_incidentaloma (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -1873,13 +1916,14 @@ Guidelines:
 - differential web.passive: 1. Phaeochromocytoma; 2. Hyperthyroidism / thyrotoxicosis; 3. Generalised anxiety disorder; 4. Panic disorder; 5. Pulmonary tuberculosis
 - differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup
 - emergency level: urgent (acuity=priority, action=same_day_call, score=25)
-- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Severe hypertension (≥ 180/120) without recorded acute organ damage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SBP 182 mmHg — hypertensive urgency [web.clinicalPrompts.safety]
+- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Severe hypertension (≥ 180/120) without recorded acute organ damage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SBP 182 mmHg — hypertensive urgency [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: cha2ds2-vasc, news2, caprini, asa, rcri, web:gad7
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_mass, headache, palpitations, night_sweats, weight_loss, chronic_course, known_hypertension, vascular_risk, diaphoresis, pallor, paroxysmal_episodes, tachycardia, raised_bp, severe_hypertension, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: adrenal_incidentaloma (from the confirmed diagnosis)
 - note: PlanTab protocol: adrenal_incidentaloma (from the confirmed diagnosis)
+- note: Seeded investigations: adrenal_incidentaloma (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -1918,13 +1962,14 @@ Guidelines:
 - differential web.passive: 1. Benign prostatic hyperplasia (BPH); 2. Liver disease / hepatitis / cirrhosis; 3. Hirschsprung's disease; 4. Hypertensive emergency / hypertensive encephalopathy; 5. Sigmoid volvulus
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=37)
-- alarms: Hyperkalaemia [web.clinicalPrompts.safety]; Urinary retention with acute kidney injury (obstructive uropathy) [web.clinicalPrompts.safety]; Creatinine 486 μmol/L — elevated [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Potassium 6.2 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]
+- alarms: Hyperkalaemia [web.clinicalPrompts.safety]; Urinary retention with acute kidney injury (obstructive uropathy) [web.clinicalPrompts.safety]; Creatinine 486 μmol/L — elevated [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Potassium 6.2 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: gcs, news2, caprini, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: urinary_incontinence, prostate_symptoms, confusion, abdominal_distension, urinary_retention_symptoms, anticholinergic_or_opioid, palpable_bladder, overflow_incontinence, peripheral_neuropathy, raised_creatinine, raised_urea, hyperkalaemia_lab, hydronephrosis, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_kidney_injury (from the confirmed diagnosis)
+- note: Seeded investigations: acute_kidney_injury (confirmed); 0 stat test(s) held back
 - note: matchPathways: Bowel Obstruction (Small / Large) (5)
 
 </details>
@@ -1965,13 +2010,14 @@ Guidelines:
 - differential web.passive: 1. Acute gastroenteritis; 2. Hypertrophic pyloric stenosis; 3. BPPV / labyrinthitis / vestibular neuritis; 4. DKA / hyperglycaemic hyperosmolar state; 5. Addisonian crisis / adrenal insufficiency
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=39)
-- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 248 μmol/L — elevated [web.clinicalPrompts.safety]
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 248 μmol/L — elevated [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, web:wagner, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, acute_onset, diffuse_abdominal_pain, colicky_pain, dizziness, diarrhoea, episodic_pain, dehydration, postprandial_pain, known_hypertension, vascular_risk, known_heart_disease, known_diabetes, acei_arb_use, diuretic_use, nsaid_use, previous_surgery, joint_pain, oliguria, raised_creatinine, raised_urea, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_kidney_injury (from the confirmed diagnosis)
+- note: Seeded investigations: acute_kidney_injury (confirmed); 0 stat test(s) held back
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -2007,13 +2053,14 @@ Guidelines:
 - differential web.passive: 1. Acute limb ischaemia; 2. Peripheral arterial disease / limb ischaemia; 3. Stroke / TIA; 4. Sciatica / lumbar radiculopathy; 5. Acute compartment syndrome
 - differential web.triageSurgical: 1. Peripheral arterial / vascular disease
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=84)
-- alarms: Emergency now [web.triage.emergency]; Acute limb ischaemia [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute limb ischaemia [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: cha2ds2-vasc, news2, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, foot_problem, limb_pain, pain_worse_movement, severe_pain, cold_limb, mottled_skin, limb_numbness, limb_weakness, focal_weakness, irregular_pulse, absent_pulses, known_af, known_hypertension, vascular_risk, pallor, anticoagulant_use, raised_lactate, tachycardia, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_limb_ischaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_limb_ischaemia (from the confirmed diagnosis)
+- note: Seeded investigations: acute_limb_ischaemia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Peripheral Vascular Disease (10)
 
 </details>
@@ -2049,13 +2096,14 @@ Guidelines:
 - differential web.passive: 1. Peripheral arterial disease / limb ischaemia; 2. Acute limb ischaemia; 3. Peripheral neuropathy; 4. Acute cholecystitis; 5. CBD stone / obstructive jaundice
 - differential web.triageSurgical: 1. Peripheral arterial / vascular disease
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=39)
-- alarms: Emergency now [web.triage.emergency]; Acute limb ischaemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; P2Y12 inhibitor (clopidogrel) [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute limb ischaemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; P2Y12 inhibitor (clopidogrel) [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: web:wagner, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, foot_problem, nocturnal_pain, worse_lying_flat, severe_pain, rest_pain, cold_limb, limb_numbness, peripheral_neuropathy, claudication, known_diabetes, vascular_risk, known_hypertension, antiplatelet_use, absent_pulses, mottled_skin, pallor, smoker, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_limb_ischaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_limb_ischaemia (from the confirmed diagnosis)
+- note: Seeded investigations: acute_limb_ischaemia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Peripheral Vascular Disease (15)
 
 </details>
@@ -2092,13 +2140,14 @@ Guidelines:
 - differential web.passive: 1. Acute gastroenteritis; 2. Acute mesenteric ischaemia; 3. Acute appendicitis (paediatric); 4. Adhesive small bowel obstruction; 5. Acute alcoholic pancreatitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=99)
-- alarms: Emergency now [web.triage.emergency]; Suspected acute mesenteric ischaemia [web.clinicalPrompts.safety]; Atrial fibrillation with rapid ventricular response [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 18.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected acute mesenteric ischaemia [web.clinicalPrompts.safety]; Atrial fibrillation with rapid ventricular response [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 18.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, cha2ds2-vasc, news2, caprini, has-bled, asa, rcri, cfs, web:gad7
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, periumbilical_pain, sudden_onset, acute_onset, colicky_pain, pain_out_of_proportion, nausea_vomiting, diarrhoea, severe_pain, palpitations, known_af, known_hypertension, vascular_risk, acei_arb_use, irregular_pulse, restless_writhing, anticoagulant_use, elevated_wbc, af_on_ecg, tachycardia, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: mesenteric_ischaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: mesenteric_ischaemia (from the confirmed diagnosis)
+- note: Seeded investigations: mesenteric_ischaemia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -2135,13 +2184,14 @@ Guidelines:
 - differential web.passive: 1. Intussusception; 2. Adhesive small bowel obstruction; 3. Large bowel obstruction; 4. Malrotation / midgut volvulus; 5. Sigmoid volvulus
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=386)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Atrial fibrillation with haemodynamic instability [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Suspected acute mesenteric ischaemia [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Fever 38.4°C + HR 134 bpm + SBP 84 mmHg — septic shock [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 26.3 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 210 μmol/L — elevated [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal — Hb 12.8 g/dL [web.clinicalPrompts.safety]; SpO₂ 91% — hypoxia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Atrial fibrillation with haemodynamic instability [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Suspected acute mesenteric ischaemia [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Fever 38.4°C + HR 134 bpm + SBP 84 mmHg — septic shock [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 26.3 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 210 μmol/L — elevated [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal — Hb 12.8 g/dL [web.clinicalPrompts.safety]; SpO₂ 91% — hypoxia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, cha2ds2-vasc, qsofa, news2, rockall, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, sudden_onset, acute_onset, syncope, fever, nausea_vomiting, pain_worse_movement, severe_pain, pr_bleeding, abdominal_distension, guarding, known_af, vascular_risk, known_hypertension, antiplatelet_use, periumbilical_pain, mottled_skin, confusion, rebound_tenderness, elevated_wbc, raised_lactate, raised_creatinine, raised_crp, pelvic_free_fluid, mesenteric_ct_signs, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: mesenteric_ischaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: mesenteric_ischaemia (from the confirmed diagnosis)
+- note: Seeded investigations: mesenteric_ischaemia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), Bowel Obstruction (Small / Large) (12), Acute Abdomen (7)
 
 </details>
@@ -2175,13 +2225,14 @@ Guidelines:
 - differential web.passive: 1. Acute gastroenteritis; 2. Acute appendicitis (paediatric); 3. Acute mesenteric ischaemia; 4. Chronic pancreatitis; 5. Inflammatory bowel disease (Crohn's / UC)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=8)
-- alarms: Emergency now [web.triage.emergency]; Suspected acute mesenteric ischaemia [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected acute mesenteric ischaemia [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, periumbilical_pain, acute_onset, colicky_pain, nausea_vomiting, diarrhoea, anorexia, postprandial_pain, diffuse_abdominal_pain, oestrogen_use, smoker, vascular_risk, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: mesenteric_ischaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: mesenteric_ischaemia (from the confirmed diagnosis)
+- note: Seeded investigations: mesenteric_ischaemia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -2216,13 +2267,14 @@ Guidelines:
 - differential web.passive: 1. Squamous cell carcinoma of the anus; 2. Lower GI bleed / colorectal; 3. Haemorrhoids / anorectal disease; 4. Colorectal carcinoma; 5. HIV / AIDS presentation
 - differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup; 2. Haemorrhoids (internal/external)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=127)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, rockall, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: pr_bleeding, chronic_course, anal_pain, weight_loss, pruritus_ani, progressive_course, perianal_swelling, previous_surgery, pruritus, inguinal_nodes, smoker, vascular_risk, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: anal_cancer (from the confirmed diagnosis)
 - note: PlanTab protocol: anal_cancer (from the confirmed diagnosis)
+- note: Seeded investigations: anal_cancer (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (15), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -2258,13 +2310,14 @@ Guidelines:
 - differential web.passive: 1. Anal fissure; 2. Haemorrhoids / anorectal disease; 3. Lower GI bleed / colorectal; 4. Large bowel obstruction; 5. Hirschsprung's disease
 - differential web.triageSurgical: 1. Change in bowel habit / lower GI bleed — investigation
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=73)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, rockall
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: chronic_course, anal_pain, posterior_midline, pr_bleeding, pain_on_defaecation, episodic_pain, severe_pain, constipation, tearing_pain, change_bowel_habit, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: anal_fissure (from the confirmed diagnosis)
 - note: PlanTab protocol: anal_fissure (from the confirmed diagnosis)
+- note: Seeded investigations: anal_fissure (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (24), IBD — Surgical Complications (Crohn's / UC) (19), Cancer Screening (Age/Sex Appropriate) (7)
 
 </details>
@@ -2302,13 +2355,14 @@ Guidelines:
 - differential web.passive: 1. Haemorrhoids / anorectal disease; 2. Lower GI bleed / colorectal; 3. Anal fissure; 4. Fistula in ano; 5. Squamous cell carcinoma of the anus
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=65)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, rockall, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: chronic_course, anal_pain, pr_bleeding, mucus_pr, discharge_perianal, immunosuppression, abnormal_uterine_bleeding, inguinal_nodes, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: anal_fissure (from the confirmed diagnosis)
 - note: PlanTab protocol: anal_fissure (from the confirmed diagnosis)
+- note: Seeded investigations: anal_fissure (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (12), Cancer Screening (Age/Sex Appropriate) (7), IBD — Surgical Complications (Crohn's / UC) (7)
 
 </details>
@@ -2338,13 +2392,14 @@ Guidelines:
 - differential web.passive: 1. Haemorrhoids / anorectal disease; 2. Anal fissure; 3. Lower GI bleed / colorectal; 4. Meckel's diverticulum; 5. Intussusception
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=73)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, rockall
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: chronic_course, anal_pain, posterior_midline, pr_bleeding, pain_on_defaecation, episodic_pain, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: anal_fissure (from the confirmed diagnosis)
 - note: PlanTab protocol: anal_fissure (from the confirmed diagnosis)
+- note: Seeded investigations: anal_fissure (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -2381,13 +2436,14 @@ Guidelines:
 - differential web.passive: 1. Perforated peptic ulcer; 2. Acute alcoholic pancreatitis; 3. Symptomatic / ruptured abdominal aortic aneurysm; 4. Chronic pancreatitis; 5. Vasovagal / reflex syncope
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=52)
-- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Suspected acute aortic dissection [web.clinicalPrompts.safety]; Severe hypertension (≥ 180/120) without recorded acute organ damage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SBP 188 mmHg — hypertensive urgency [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Suspected acute aortic dissection [web.clinicalPrompts.safety]; Severe hypertension (≥ 180/120) without recorded acute organ damage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SBP 188 mmHg — hypertensive urgency [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, news2, caprini, web:gerdq, asa, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, epigastric_pain, radiation_to_back, nausea_vomiting, severe_pain, back_pain, syncope, dizziness, known_hypertension, vascular_risk, radiation_arm_jaw, diaphoresis, tearing_pain, heart_murmur, abdominal_tenderness, raised_bp, severe_hypertension, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: aortic_dissection (from the confirmed diagnosis)
 - note: PlanTab protocol: aortic_dissection (from the confirmed diagnosis)
+- note: Seeded investigations: aortic_dissection (confirmed); 0 stat test(s) held back
 - note: matchPathways: Chest Pain — Emergency Redirect (5), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -2421,13 +2477,14 @@ Guidelines:
 - differential web.passive: 1. Portal hypertension / oesophageal varices; 2. Upper GI haemorrhage; 3. Meckel's diverticulum; 4. Febrile convulsion; 5. Sepsis / systemic infection
 - differential web.triageSurgical: 1. Peptic ulcer with haemorrhage
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=114)
-- alarms: Emergency now [web.triage.emergency]; GI bleeding after aortic graft — aorto-enteric fistula until proven otherwise [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI bleeding after aortic graft — aorto-enteric fistula until proven otherwise [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: glasgow-blatchford, cha2ds2-vasc, qsofa, forrest, news2, rockall, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: ugib_nonvariceal_stable (Upper GI Bleed)
 - note: PANE features applied: upper_gi_bleeding, acute_onset, epigastric_pain, radiation_to_back, fever, nausea_vomiting, melaena, episodic_pain, haematemesis, antiplatelet_use, pallor, aortic_graft, known_hypertension, vascular_risk, previous_surgery, abdominal_tenderness, anaemia, raised_urea, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from PANE top)
+- note: AssessmentTab ManagementPanel protocol: aortoenteric_fistula (from PANE top)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: aortoenteric_fistula (leading differential); 2 stat test(s) held back
 - note: matchPathways: GI Bleeding (Upper and Lower) (15)
 
 </details>
@@ -2478,13 +2535,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Acute alcoholic pancreatitis; 5. Adhesive small bowel obstruction
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=63)
-- alarms: Emergency now [web.triage.emergency]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Fever 38.1°C + HR 102 bpm [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Fever 38.1°C + HR 102 bpm [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2
 - score values: alvarado/calculator@web.scaleCalculator.alvarado=9
 - dx variant: appendicitis_uncomplicated (Acute Appendicitis)
 - note: PANE features applied: abdominal_pain, acute_onset, periumbilical_pain, rlq_pain, fever, nausea_vomiting, anorexia, pain_worse_movement, cough, severe_pain, guarding, rebound_tenderness, pain_migration, abdominal_tenderness, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
+- note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'air'
 - note: matchPathways: Acute Appendicitis (12), Acute Abdomen (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
@@ -2526,13 +2584,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute alcoholic pancreatitis; 3. Acute gastroenteritis; 4. Acute mesenteric ischaemia; 5. Adhesive small bowel obstruction
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=8)
-- alarms: Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Appendix > 6mm / inflamed on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Appendix > 6mm / inflamed on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2
 - score values: (none)
 - dx variant: appendicitis_uncomplicated (Acute Appendicitis)
 - note: PANE features applied: abdominal_pain, periumbilical_pain, rlq_pain, acute_onset, nausea_vomiting, anorexia, pain_worse_movement, guarding, oestrogen_use, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
+- note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'air'
 - note: matchPathways: Acute Appendicitis (12), Acute Abdomen (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
@@ -2571,13 +2630,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute alcoholic pancreatitis
 - differential web.triageSurgical: 1. Acute appendicitis, uncomplicated
 - emergency level: urgent (acuity=priority, action=same_day_call, score=23)
-- alarms: Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendix > 6mm / inflamed on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendix > 6mm / inflamed on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2
 - score values: (none)
 - dx variant: appendicitis_uncomplicated (Acute Appendicitis)
 - note: PANE features applied: abdominal_pain, periumbilical_pain, rlq_pain, acute_onset, nausea_vomiting, anorexia, pain_worse_movement, guarding, rebound_tenderness, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
+- note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Appendicitis (10), Acute Abdomen (5)
 
 </details>
@@ -2629,13 +2689,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute alcoholic pancreatitis; 3. Acute gastroenteritis; 4. Acute mesenteric ischaemia; 5. Adhesive small bowel obstruction
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=44)
-- alarms: Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, cha2ds2-vasc, news2, caprini, has-bled, asa, rcri, cfs
 - score values: alvarado/calculator@web.scaleCalculator.alvarado=5
 - dx variant: appendicitis_uncomplicated (Acute Appendicitis)
 - note: PANE features applied: abdominal_pain, acute_onset, rlq_pain, suprapubic_pain, nausea_vomiting, anorexia, pain_worse_movement, guarding, abdominal_distension, known_af, known_hypertension, vascular_risk, anticoagulant_use, irregular_pulse, abdominal_tenderness, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
+- note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'air'
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (21), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (19), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (19)
 
@@ -2675,13 +2736,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Malaria; 3. Acute gastroenteritis; 4. Typhoid fever; 5. Pyelonephritis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=105)
-- alarms: Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Anaphylaxis [web.clinicalPrompts.safety]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Appendix > 6mm / inflamed on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 21.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 39.1°C + HR 126 bpm [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Anaphylaxis [web.clinicalPrompts.safety]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Appendix > 6mm / inflamed on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 21.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 39.1°C + HR 126 bpm [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2
 - score values: (none)
 - dx variant: appendicitis_generalised_peritonitis (Acute Appendicitis)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, rlq_pain, sudden_onset, acute_onset, fever, rigors, nausea_vomiting, anorexia, pain_worse_movement, cough, severe_pain, guarding, rebound_tenderness, absent_bowel_sounds, dehydration, elevated_wbc, raised_crp, raised_lactate, raised_urea, pelvic_free_fluid, tachycardia, haemodynamic_instability, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
+- note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
@@ -2715,13 +2777,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute cholecystitis; 3. Peptic ulcer disease; 4. Typhoid fever; 5. Acute alcoholic pancreatitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=12)
-- alarms: Emergency now [web.triage.emergency]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Appendix > 6mm / inflamed on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 142 μmol/L — elevated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Appendix > 6mm / inflamed on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 142 μmol/L — elevated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, web:wagner, news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: appendicitis_uncomplicated (Acute Appendicitis)
 - note: PANE features applied: abdominal_pain, rlq_pain, loin_pain, acute_onset, anorexia, pain_worse_movement, immunosuppression, known_diabetes, steroid_use, previous_surgery, lif_pain, abdominal_tenderness, raised_crp, raised_creatinine, hyperglycaemia, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
+- note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -2768,13 +2831,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Acute alcoholic pancreatitis; 5. Adhesive small bowel obstruction
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=63)
-- alarms: Emergency now [web.triage.emergency]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.9 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.9 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2
 - score values: alvarado/calculator@web.scaleCalculator.alvarado=10
 - dx variant: appendicitis_uncomplicated (Acute Appendicitis)
 - note: PANE features applied: abdominal_pain, periumbilical_pain, rlq_pain, acute_onset, fever, nausea_vomiting, anorexia, pain_worse_movement, cough, guarding, pain_migration, rebound_tenderness, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
+- note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -2808,13 +2872,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Wilms tumour / nephroblastoma; 3. Typhoid fever; 4. UTI (paediatric); 5. Hepatocellular carcinoma (HCC)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=48)
-- alarms: Emergency now [web.triage.emergency]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendix > 6mm / inflamed on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendix > 6mm / inflamed on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: appendicitis_abscess (Acute Appendicitis)
 - note: PANE features applied: abdominal_pain, periumbilical_pain, rlq_pain, acute_onset, diaphoresis, fever, rigors, anorexia, localised_pain, pain_worse_movement, abdominal_mass, guarding, known_hypertension, vascular_risk, deep_lump, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: appendix_mass (from the confirmed diagnosis)
 - note: PlanTab protocol: appendix_mass (from the confirmed diagnosis)
+- note: Seeded investigations: appendix_mass (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (21), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (19), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (19)
 
 </details>
@@ -2835,7 +2900,7 @@ Permutation of `appendicitis-adult-typical`.
 | mnm-obstetric-cause | mustNotMiss | quality | FAIL (known gap) |  |  |
 | mnm-pyelonephritis | mustNotMiss | quality | FAIL (known gap) |  |  |
 | inv-ultrasound-first | investigationInclude | quality | PASS | WSES Jerusalem guidelines 2020; ACOG Committee Opinion No. 723 2017 |  |
-| inv-no-unqualified-ct | investigationExclude | quality | FAIL (known gap) |  |  |
+| inv-no-unqualified-ct | investigationExclude | quality | PASS |  |  |
 | inv-no-gadolinium | investigationExclude | quality | PASS | ACOG Committee Opinion No. 723 2017 |  |
 | mgmt-lap-appendicectomy | managementInclude | quality | PASS | WSES Jerusalem guidelines 2020; SAGES guidelines for the use of laparoscopy during pregnancy 2017 |  |
 | mgmt-obstetric-involvement | managementInclude | quality | PASS | SAGES guidelines for the use of laparoscopy during pregnancy 2017 |  |
@@ -2847,7 +2912,6 @@ Failure details:
 
 - **mnm-obstetric-cause** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Perforated Peptic Ulcer / Perforated Viscus \| 3. Acute Diverticulitis [known gap: PANE has no obstetric disease nodes in the top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis.]
 - **mnm-pyelonephritis** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Perforated Peptic Ulcer / Perforated Viscus \| 3. Acute Diverticulitis [known gap: Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis.]
-- **inv-no-unqualified-ct** (web): forbidden investigation present in web.pane.seeded: "ct abdomen/pelvis if the erect cxr is non-diagnostic (perforated_peptic_ulcer)" (+1 more) [known gap: CT with IV contrast is suggested without a pregnancy qualifier.]
 
 Guidelines:
 
@@ -2864,13 +2928,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute alcoholic pancreatitis; 4. Adhesive small bowel obstruction; 5. Acute mesenteric ischaemia
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=47)
-- alarms: Emergency now [web.triage.emergency]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Pregnant (22 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Pregnant (22 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2
 - score values: (none)
 - dx variant: appendicitis_uncomplicated (Acute Appendicitis)
 - note: PANE features applied: abdominal_pain, acute_onset, periumbilical_pain, nausea_vomiting, anorexia, pain_worse_movement, guarding, rebound_tenderness, previous_surgery, pregnant, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
+- note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Appendicitis (12), Acute Abdomen (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -2912,13 +2977,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Adhesive small bowel obstruction; 5. Perforated peptic ulcer
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=8)
-- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2
 - score values: alvarado/calculator@web.scaleCalculator.alvarado=6
 - dx variant: appendicitis_uncomplicated (Acute Appendicitis)
 - note: PANE features applied: abdominal_pain, periumbilical_pain, rlq_pain, acute_onset, nausea_vomiting, pain_worse_movement, cough, symptoms_resolved, rebound_tenderness, abdominal_tenderness, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
+- note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'air'
 - note: matchPathways: Acute Appendicitis (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
@@ -2961,13 +3027,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Adhesive small bowel obstruction; 5. Perforated peptic ulcer
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=12)
-- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2
 - score values: alvarado/calculator@web.scaleCalculator.alvarado=3
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, rlq_pain, suprapubic_pain, acute_onset, nausea_vomiting, pain_worse_movement, abdominal_tenderness, elevated_wbc, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: appendicitis (leading differential); 0 stat test(s) held back
 - note: no web calculator for score form 'air'
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
@@ -3009,13 +3076,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=60)
-- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: fever, haematuria, us_gallstones, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: biliary_colic (from the confirmed diagnosis)
 - note: PlanTab protocol: biliary_colic (from the confirmed diagnosis)
+- note: Seeded investigations: biliary_colic (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
 
 </details>
@@ -3058,13 +3126,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Adhesive small bowel obstruction; 5. Perforated peptic ulcer
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, asge-cbd, news2, asa, stop-bang
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, chronic_course, ruq_pain, epigastric_pain, shoulder_tip_pain, nausea_vomiting, episodic_pain, postprandial_pain, fatty_food_trigger, severe_pain, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: biliary_colic (from the confirmed diagnosis)
 - note: PlanTab protocol: biliary_colic (from the confirmed diagnosis)
+- note: Seeded investigations: biliary_colic (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (24), Jaundice Workup (15), Pancreatic Mass / Cyst (14)
 
 </details>
@@ -3096,13 +3165,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Adhesive small bowel obstruction; 5. Perforated peptic ulcer
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, asge-cbd, news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, chronic_course, ruq_pain, shoulder_tip_pain, nausea_vomiting, episodic_pain, postprandial_pain, fatty_food_trigger, known_hypertension, vascular_risk, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: biliary_colic (from the confirmed diagnosis)
 - note: PlanTab protocol: biliary_colic (from the confirmed diagnosis)
+- note: Seeded investigations: biliary_colic (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (29), Pancreatic Mass / Cyst (21), IBD — Surgical Complications (Crohn's / UC) (14)
 
 </details>
@@ -3128,7 +3198,7 @@ Permutation of `biliary-colic-uncomplicated`.
 
 Failure details:
 
-- **alarm-cardiac-or-haemodynamic** (web): no alarm matched among 4 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Only the generic "Emergency now" alarm; no cardiac or haemodynamic alarm (SBP 98 and HR 54 are above the vital red-flag cut-offs).]
+- **alarm-cardiac-or-haemodynamic** (web): no alarm matched among 5 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Only the generic "Emergency now" alarm; no cardiac or haemodynamic alarm (SBP 98 and HR 54 are above the vital red-flag cut-offs).]
 
 Guidelines:
 
@@ -3142,13 +3212,14 @@ Guidelines:
 - differential web.passive: 1. Perforated peptic ulcer; 2. Acute alcoholic pancreatitis; 3. Acute appendicitis (paediatric); 4. Chronic pancreatitis; 5. Acute gastroenteritis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=45)
-- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, qsofa, bisap, web:wagner, news2, caprini, web:gerdq, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, epigastric_pain, nausea_vomiting, severe_pain, sudden_onset, pallor, diaphoresis, abdominal_tenderness, known_diabetes, known_hypertension, vascular_risk, insulin_or_sulfonylurea, acei_arb_use, pale_clammy, dizziness, smoker, hyperglycaemia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
+- note: Seeded investigations: acute_coronary_syndrome (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
 
 </details>
@@ -3185,13 +3256,14 @@ Guidelines:
 - differential web.passive: 1. ST-elevation myocardial infarction (STEMI); 2. Tension pneumothorax; 3. Acute coronary syndrome (ACS / NSTEMI / STEMI); 4. Cardiac tamponade; 5. Epiglottitis
 - differential web.triageSurgical: 1. Thyroid nodule
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=255)
-- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 18.6 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.2°C + HR 124 bpm [web.clinicalPrompts.safety]; SpO₂ 92% — hypoxia [web.clinicalPrompts.safety]
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 18.6 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.2°C + HR 124 bpm [web.clinicalPrompts.safety]; SpO₂ 92% — hypoxia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: heart, wells-pe, qsofa, curb65, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, sudden_onset, acute_onset, epigastric_pain, chest_pain, radiation_to_back, diaphoresis, dyspnoea, pleuritic_chest_pain, severe_pain, odynophagia, neck_lump, back_pain, subcutaneous_emphysema, reduced_breath_sounds, severe_vomiting_before_pain, guarding, abdominal_tenderness, crepitus_soft_tissue, known_copd, alcohol_use, elevated_wbc, raised_crp, raised_lactate, fever, tachycardia, haemodynamic_instability, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: oesophageal_perforation (from the confirmed diagnosis)
 - note: PlanTab protocol: oesophageal_perforation (from the confirmed diagnosis)
+- note: Seeded investigations: oesophageal_perforation (confirmed); 0 stat test(s) held back
 - note: matchPathways: Chest Pain — Emergency Redirect (5), Thyroid / Neck Mass (5), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -3223,13 +3295,14 @@ Guidelines:
 - differential web.passive: 1. ST-elevation myocardial infarction (STEMI); 2. Tension pneumothorax; 3. Acute coronary syndrome (ACS / NSTEMI / STEMI); 4. Cardiac tamponade; 5. Epiglottitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=79)
-- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: heart, wells-pe, qsofa, web:wagner, news2, caprini, asa, curb65, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, chest_pain, chest_pain_pressure, radiation_to_back, diaphoresis, dyspnoea, nausea_vomiting, pleuritic_chest_pain, severe_pain, odynophagia, back_pain, known_diabetes, known_hypertension, vascular_risk, acei_arb_use, epigastric_pain, severe_vomiting_before_pain, subcutaneous_emphysema, abdominal_tenderness, crepitus_soft_tissue, elevated_wbc, raised_crp, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: oesophageal_perforation (from the confirmed diagnosis)
 - note: PlanTab protocol: oesophageal_perforation (from the confirmed diagnosis)
+- note: Seeded investigations: oesophageal_perforation (confirmed); 0 stat test(s) held back
 - note: matchPathways: Chest Pain — Emergency Redirect (5), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -3259,13 +3332,14 @@ Guidelines:
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=110)
-- alarms: Emergency now [web.triage.emergency]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; HR 116 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Alcohol excess [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; HR 116 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Alcohol excess [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, heart, wells-pe, ranson, qsofa, news2, web:gerdq
 - score values: (none)
 - dx variant: (none) (Pancreatitis)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, epigastric_pain, radiation_to_back, chest_pain, nausea_vomiting, pain_worse_movement, pleuritic_chest_pain, severe_pain, back_pain, abdominal_tenderness, guarding, severe_vomiting_before_pain, alcohol_use, elevated_wbc, raised_crp, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: oesophageal_perforation (from the confirmed diagnosis)
 - note: PlanTab protocol: oesophageal_perforation (from the confirmed diagnosis)
+- note: Seeded investigations: oesophageal_perforation (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7)
 
 </details>
@@ -3298,13 +3372,14 @@ Guidelines:
 - differential web.passive: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Febrile convulsion; 4. Sepsis / systemic infection; 5. Infective endocarditis
 - differential web.triageSurgical: 1. Breast lump / mass
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=73)
-- alarms: Emergency now [web.triage.emergency]; Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.6 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.4°C + HR 102 bpm [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.6 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.4°C + HR 102 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2
 - score values: (none)
 - dx variant: (none) (Breast)
 - note: PANE features applied: breast_lump, acute_onset, localised_pain, fever, severe_pain, breast_pain, breast_redness, erythema_surrounding, recent_antibiotics, post_lactation, axillary_nodes, swelling_fluctuant_soft, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: breast_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: breast_abscess (from the confirmed diagnosis)
+- note: Seeded investigations: breast_abscess (confirmed); 0 stat test(s) held back
 - note: matchPathways: Breast Lump / Breast Disease (10), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -3339,13 +3414,14 @@ Guidelines:
 - differential web.passive: 1. Breast carcinoma; 2. Fibroadenoma / benign breast lump; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
 - differential web.triageSurgical: 1. Breast lump / mass; 2. Nipple discharge
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=78)
-- alarms: Emergency now [web.triage.emergency]; Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (Breast)
 - note: PANE features applied: breast_lump, acute_onset, periumbilical_pain, localised_pain, nipple_discharge, breast_pain, breast_redness, erythema_surrounding, previous_surgery, nipple_inversion, swelling_fluctuant_soft, smoker, vascular_risk, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: breast_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: breast_abscess (from the confirmed diagnosis)
+- note: Seeded investigations: breast_abscess (confirmed); 0 stat test(s) held back
 - note: matchPathways: Breast Lump / Breast Disease (15), Post-operative Follow-up (General) (5)
 
 </details>
@@ -3378,13 +3454,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Breast cancer
 - emergency level: urgent (acuity=priority, action=same_day_call, score=37)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-dvt, news2, caprini, must, ecog
 - score values: (none)
 - dx variant: (none) (Breast)
 - note: PANE features applied: known_malignancy, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
 - note: matchPathways: Breast Lump / Breast Disease (5)
 
 </details>
@@ -3424,13 +3501,14 @@ Guidelines:
 - differential web.passive: 1. Testicular germ cell tumour; 2. Acute cholecystitis; 3. CBD stone / obstructive jaundice; 4. Peptic ulcer disease; 5. Reducible groin / abdominal hernia
 - differential web.triageSurgical: (empty)
 - emergency level: priority (acuity=review, action=priority_24_48h, score=0)
-- alarms: Suspected inflammatory breast cancer [web.clinicalPrompts.safety]; Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Suspected inflammatory breast cancer [web.clinicalPrompts.safety]; Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, ecog
 - score values: (none)
 - dx variant: breast_inflammatory (Breast)
 - note: PANE features applied: breast_lump, chronic_course, periumbilical_pain, localised_pain, skin_dimpling, progressive_course, breast_redness, erythema_surrounding, axillary_nodes, recent_antibiotics, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: invasive_ductal_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: invasive_ductal_carcinoma (from the confirmed diagnosis)
+- note: Seeded investigations: invasive_ductal_carcinoma (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -3465,13 +3543,14 @@ Guidelines:
 - differential web.passive: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
 - differential web.triageSurgical: 1. Breast lump / mass; 2. Breast cancer
 - emergency level: urgent (acuity=priority, action=same_day_call, score=55)
-- alarms: Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, ecog
 - score values: (none)
 - dx variant: breast_triple_assessment (Breast)
 - note: PANE features applied: breast_lump, chronic_course, breast_lump_mobile, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: breast_lump (from the confirmed diagnosis)
 - note: PlanTab protocol: breast_lump (from the confirmed diagnosis)
+- note: Seeded investigations: breast_lump (confirmed); 0 stat test(s) held back
 - note: matchPathways: Breast Lump / Breast Disease (15)
 
 </details>
@@ -3512,13 +3591,14 @@ Guidelines:
 - differential web.passive: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
 - differential web.triageSurgical: 1. Breast lump / mass
 - emergency level: urgent (acuity=priority, action=same_day_call, score=55)
-- alarms: Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: breast [web.clinicalPrompts.safety]
+- alarms: Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: breast [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, ecog
 - score values: (none)
 - dx variant: breast_triple_assessment (Breast)
 - note: PANE features applied: breast_lump, chronic_course, skin_dimpling, breast_lump_hard, nipple_inversion, axillary_nodes, oestrogen_use, breast_lump_mobile, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: breast_lump (from the confirmed diagnosis)
 - note: PlanTab protocol: breast_lump (from the confirmed diagnosis)
+- note: Seeded investigations: breast_lump (confirmed); 0 stat test(s) held back
 - note: matchPathways: Breast Lump / Breast Disease (10), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -3554,13 +3634,14 @@ Guidelines:
 - differential web.passive: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
 - differential web.triageSurgical: 1. Breast lump / mass; 2. Breast cancer
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=79)
-- alarms: Emergency now [web.triage.emergency]; Pregnant (22 weeks) [web.clinicalPrompts.safety]; Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pregnant (22 weeks) [web.clinicalPrompts.safety]; Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, ecog
 - score values: (none)
 - dx variant: breast_triple_assessment (Breast)
 - note: PANE features applied: breast_lump, chronic_course, breast_lump_hard, axillary_nodes, pregnant, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: breast_lump (from the confirmed diagnosis)
 - note: PlanTab protocol: breast_lump (from the confirmed diagnosis)
+- note: Seeded investigations: breast_lump (confirmed); 0 stat test(s) held back
 - note: matchPathways: Breast Lump / Breast Disease (10)
 
 </details>
@@ -3576,7 +3657,7 @@ Guidelines:
 | inv-uss | investigationInclude | critical | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010; NCCN Guidelines 2025 |  |
 | dx-fibroadenoma-top3 | mustRankTopK | quality | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
 | level-not-urgent | emergencyLevel | quality | FAIL (known gap) | NICE NG12 2015 |  |
-| inv-no-first-line-mammogram | investigationExclude | quality | FAIL | NCCN Guidelines 2025; Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| inv-no-first-line-mammogram | investigationExclude | quality | PASS | NCCN Guidelines 2025; Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
 | inv-no-unrelated-seeded-orders | investigationExclude | quality | PASS |  |  |
 | mgmt-triple-assessment | managementInclude | quality | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 | Map N63 (unspecified breast lump) to a "breast lump — triple assessment" protocol with age-banded imaging; add exam.breast to the vignette schema and pass it as examBreast in web-runner.ts. |
 | variant-triple-assessment | dxVariant | quality | PASS |  |  |
@@ -3584,7 +3665,6 @@ Guidelines:
 Failure details:
 
 - **level-not-urgent** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: "breast lump" RED_FLAG is priority ("Possible malignancy") regardless of age, and the adaptive action maps priority to a same-day call.]
-- **inv-no-first-line-mammogram** (web): forbidden investigation present in web.pane.seeded: "bilateral mammography + uss (invasive_ductal_carcinoma)"
 
 Guidelines:
 
@@ -3600,13 +3680,14 @@ Guidelines:
 - differential web.passive: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
 - differential web.triageSurgical: 1. Breast lump / mass
 - emergency level: urgent (acuity=priority, action=same_day_call, score=25)
-- alarms: Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: breast_triple_assessment (Breast)
 - note: PANE features applied: breast_lump, chronic_course, breast_lump_mobile, oestrogen_use, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: breast_lump (from the confirmed diagnosis)
 - note: PlanTab protocol: breast_lump (from the confirmed diagnosis)
+- note: Seeded investigations: breast_lump (confirmed); 0 stat test(s) held back
 - note: matchPathways: Breast Lump / Breast Disease (10)
 
 </details>
@@ -3641,13 +3722,14 @@ Guidelines:
 - differential web.passive: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
 - differential web.triageSurgical: 1. Breast lump / mass; 2. Breast cancer
 - emergency level: urgent (acuity=priority, action=same_day_call, score=74)
-- alarms: Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: breast [web.clinicalPrompts.safety]
+- alarms: Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: breast [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-dvt, news2, caprini, must, cfs, ecog
 - score values: (none)
 - dx variant: breast_triple_assessment (Breast)
 - note: PANE features applied: breast_lump, chronic_course, periumbilical_pain, skin_dimpling, breast_lump_hard, nipple_inversion, progressive_course, axillary_nodes, known_malignancy, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: breast_lump (from the confirmed diagnosis)
 - note: PlanTab protocol: breast_lump (from the confirmed diagnosis)
+- note: Seeded investigations: breast_lump (confirmed); 0 stat test(s) held back
 - note: matchPathways: Breast Lump / Breast Disease (15), Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7)
 
 </details>
@@ -3682,13 +3764,14 @@ Guidelines:
 - differential web.passive: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
 - differential web.triageSurgical: 1. Breast lump / mass
 - emergency level: urgent (acuity=priority, action=same_day_call, score=74)
-- alarms: Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Alcohol excess [web.clinicalPrompts.safety]
+- alarms: Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Alcohol excess [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, asa, rcri
 - score values: (none)
 - dx variant: (none) (Breast)
 - note: PANE features applied: breast_lump, chronic_course, localised_pain, breast_lump_mobile, breast_pain, known_heart_disease, vascular_risk, diuretic_use, acei_arb_use, alcohol_use, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: gynaecomastia (from the confirmed diagnosis)
 - note: PlanTab protocol: gynaecomastia (from the confirmed diagnosis)
+- note: Seeded investigations: gynaecomastia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Breast Lump / Breast Disease (15), Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7)
 
 </details>
@@ -3723,13 +3806,14 @@ Guidelines:
 - differential web.passive: 1. Breast carcinoma; 2. Acute cholecystitis; 3. CBD stone / obstructive jaundice; 4. Peptic ulcer disease; 5. Reducible groin / abdominal hernia
 - differential web.triageSurgical: 1. Nipple discharge
 - emergency level: urgent (acuity=priority, action=same_day_call, score=30)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: breast [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: breast [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nipple_discharge, chronic_course, periumbilical_pain, breast_lump, episodic_pain, bloody_nipple_discharge, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: nipple_discharge (from the confirmed diagnosis)
 - note: PlanTab protocol: nipple_discharge (from the confirmed diagnosis)
+- note: Seeded investigations: nipple_discharge (confirmed); 0 stat test(s) held back
 - note: matchPathways: Breast Lump / Breast Disease (5)
 
 </details>
@@ -3761,13 +3845,14 @@ Guidelines:
 - differential web.passive: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
 - differential web.triageSurgical: 1. Breast cancer
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: chronic_course, breast_pain, cyclical_breast_pain, episodic_pain, bilateral_breast, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: mastalgia (from the confirmed diagnosis)
 - note: PlanTab protocol: mastalgia (from the confirmed diagnosis)
+- note: Seeded investigations: mastalgia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Breast Lump / Breast Disease (15)
 
 </details>
@@ -3809,13 +3894,14 @@ Guidelines:
 - differential web.passive: 1. Acute compartment syndrome; 2. Hidradenitis suppurativa; 3. Melanoma / skin malignancy; 4. Eczema / psoriasis / inflammatory dermatosis; 5. Skin abscess / furuncle
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=35)
-- alarms: Emergency now [web.triage.emergency]; Major / complex burn [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Major / complex burn [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, web:wagner, news2, clavien-dindo
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, chest_pain, heartburn, pain_worse_movement, severe_pain, wound_pain, skin_lesion, radiation_arm_jaw, mottled_skin, burn_wound, tbsa_significant, blistering, tachycardia, tachypnoea, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: thermal_burn_major (from the confirmed diagnosis)
 - note: PlanTab protocol: thermal_burn_major (from the confirmed diagnosis)
+- note: Seeded investigations: thermal_burn_major (confirmed); 0 stat test(s) held back
 - note: matchPathways: Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -3851,13 +3937,14 @@ Guidelines:
 - differential web.passive: 1. Acute compartment syndrome; 2. Hidradenitis suppurativa; 3. Melanoma / skin malignancy; 4. Eczema / psoriasis / inflammatory dermatosis; 5. Skin abscess / furuncle
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=23)
-- alarms: Burn meeting specialist referral criteria [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Burn meeting specialist referral criteria [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: web:wagner, news2, clavien-dindo
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, limb_pain, pain_worse_movement, wound_pain, skin_lesion, bilateral_leg_symptoms, burn_wound, blistering, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: thermal_burn_minor (from the confirmed diagnosis)
 - note: PlanTab protocol: thermal_burn_minor (from the confirmed diagnosis)
+- note: Seeded investigations: thermal_burn_minor (confirmed); 0 stat test(s) held back
 - note: matchPathways: Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -3897,13 +3984,14 @@ Guidelines:
 - differential web.passive: 1. Acute / chronic sinusitis; 2. Acute compartment syndrome; 3. Hidradenitis suppurativa; 4. Melanoma / skin malignancy; 5. Eczema / psoriasis / inflammatory dermatosis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=35)
-- alarms: Emergency now [web.triage.emergency]; Major / complex burn [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Major / complex burn [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: web:wagner, news2, clavien-dindo
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, severe_pain, skin_lesion, wound_pain, erythema_surrounding, localised_pain, burn_wound, blistering, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: corrosive_injury (from the confirmed diagnosis)
 - note: PlanTab protocol: corrosive_injury (from the confirmed diagnosis)
+- note: Seeded investigations: corrosive_injury (confirmed); 0 stat test(s) held back
 - note: matchPathways: Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -3942,13 +4030,14 @@ Guidelines:
 - differential web.passive: 1. Acute compartment syndrome; 2. Hidradenitis suppurativa; 3. Melanoma / skin malignancy; 4. Eczema / psoriasis / inflammatory dermatosis; 5. Skin abscess / furuncle
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=23)
-- alarms: Burn meeting specialist referral criteria [web.clinicalPrompts.safety]; Safeguarding concern — possible child maltreatment [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Burn meeting specialist referral criteria [web.clinicalPrompts.safety]; Safeguarding concern — possible child maltreatment [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, web:wagner, news2, clavien-dindo
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: skin_lesion, wound_pain, erythema_surrounding, natal_cleft, burn_wound, blistering, acute_onset, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: child_safeguarding (from the confirmed diagnosis)
 - note: PlanTab protocol: child_safeguarding (from the confirmed diagnosis)
+- note: Seeded investigations: child_safeguarding (confirmed); 0 stat test(s) held back
 - note: matchPathways: Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -3988,13 +4077,14 @@ Guidelines:
 - differential web.passive: 1. Intussusception; 2. Acute compartment syndrome; 3. Hidradenitis suppurativa; 4. Malrotation / midgut volvulus; 5. Melanoma / skin malignancy
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=65)
-- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Seriously unwell child — NICE NG143 red features [web.clinicalPrompts.safety]; Possible intussusception [web.clinicalPrompts.safety]; Major / complex burn [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Seriously unwell child — NICE NG143 red features [web.clinicalPrompts.safety]; Possible intussusception [web.clinicalPrompts.safety]; Major / complex burn [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, web:wagner, news2, clavien-dindo
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: wound_pain, inconsolable_crying, skin_lesion, radiation_arm_jaw, mottled_skin, pallor, burn_wound, blistering, acute_onset, tachycardia, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: thermal_burn_minor (from the confirmed diagnosis)
 - note: PlanTab protocol: thermal_burn_minor (from the confirmed diagnosis)
+- note: Seeded investigations: thermal_burn_minor (confirmed); 0 stat test(s) held back
 - note: matchPathways: Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -4031,13 +4121,14 @@ Guidelines:
 - differential web.passive: 1. Acute compartment syndrome; 2. Sciatica / lumbar radiculopathy; 3. Lumbar disc disease / sciatica; 4. Acute limb ischaemia; 5. Carpal tunnel syndrome
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=35)
-- alarms: Emergency now [web.triage.emergency]; Major / complex burn [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Major / complex burn [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: web:wagner, news2, clavien-dindo
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, pain_worse_movement, severe_pain, wound_pain, limb_numbness, limb_pain, absent_pulses, mottled_skin, pallor, burn_wound, tachycardia, raised_bp, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: thermal_burn_minor (from the confirmed diagnosis)
 - note: PlanTab protocol: thermal_burn_minor (from the confirmed diagnosis)
+- note: Seeded investigations: thermal_burn_minor (confirmed); 0 stat test(s) held back
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -4077,13 +4168,14 @@ Guidelines:
 - differential web.passive: 1. Acute compartment syndrome; 2. CBD stone / obstructive jaundice; 3. Sciatica / lumbar radiculopathy; 4. Osteomyelitis (paediatric); 5. Biliary atresia
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=75)
-- alarms: Emergency now [web.triage.emergency]; Major / complex burn [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Potassium 5.6 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Major / complex burn [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Potassium 5.6 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: web:wagner, news2, clavien-dindo, asge-cbd
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, foot_problem, pain_worse_movement, severe_pain, dark_urine, syncope, loss_of_consciousness, wound_pain, limb_pain, trauma_mechanism, burn_wound, electrical_injury, tachycardia, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: electrical_burn (from the confirmed diagnosis)
 - note: PlanTab protocol: electrical_burn (from the confirmed diagnosis)
+- note: Seeded investigations: electrical_burn (confirmed); 0 stat test(s) held back
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (10), Jaundice Workup (5)
 
 </details>
@@ -4126,13 +4218,14 @@ Guidelines:
 - differential web.passive: 1. Croup / laryngotracheobronchitis; 2. Laryngitis / vocal cord pathology; 3. Epiglottitis; 4. Anaphylaxis; 5. Upper respiratory tract infection (URTI)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=95)
-- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Life-threatening asthma [web.clinicalPrompts.safety]; Airway emergency — stridor [web.clinicalPrompts.safety]; Major / complex burn [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Acute asthma exacerbation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 124 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Life-threatening asthma [web.clinicalPrompts.safety]; Airway emergency — stridor [web.clinicalPrompts.safety]; Major / complex burn [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Acute asthma exacerbation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 124 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, web:wagner, news2, clavien-dindo, curb65
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, chest_pain, neck_pain, heartburn, severe_pain, hoarseness, stridor, cough, headache, wound_pain, wheeze, known_asthma, productive_cough, confusion, gcs_drop, burn_wound, inhalation_injury, singed_eyebrows, raised_lactate, tachycardia, haemodynamic_instability, tachypnoea, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: thermal_burn_major (from the confirmed diagnosis)
 - note: PlanTab protocol: thermal_burn_major (from the confirmed diagnosis)
+- note: Seeded investigations: thermal_burn_major (confirmed); 0 stat test(s) held back
 - note: matchPathways: Thyroid / Neck Mass (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -4166,13 +4259,14 @@ Guidelines:
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=35)
-- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2
 - score values: (none)
 - dx variant: lbo_volvulus (Bowel Obstruction)
 - note: PANE features applied: abdominal_pain, periumbilical_pain, abdominal_distension, acute_onset, colicky_pain, nausea_vomiting, constipation, absolute_constipation, episodic_pain, tympanic_abdomen, abdominal_tenderness, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: bowel_obstruction (from the confirmed diagnosis)
+- note: Seeded investigations: bowel_obstruction (confirmed); 0 stat test(s) held back
 - note: matchPathways: Bowel Obstruction (Small / Large) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -4207,13 +4301,14 @@ Guidelines:
 - differential web.passive: 1. Lumbar disc disease / sciatica; 2. Sciatica / lumbar radiculopathy; 3. Peripheral neuropathy; 4. Hirschsprung's disease; 5. Prostate adenocarcinoma
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=0)
-- alarms: Emergency now [web.triage.emergency]; Suspected cauda equina syndrome [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected cauda equina syndrome [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: urinary_retention_symptoms, back_pain, limb_numbness, constipation, bilateral_leg_symptoms, sciatica, saddle_anaesthesia, worse_straining, reduced_anal_tone, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cauda_equina_syndrome (from the confirmed diagnosis)
 - note: PlanTab protocol: cauda_equina_syndrome (from the confirmed diagnosis)
+- note: Seeded investigations: cauda_equina_syndrome (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -4245,13 +4340,14 @@ Guidelines:
 - differential web.passive: 1. Lumbar disc disease / sciatica; 2. Sciatica / lumbar radiculopathy; 3. Osteoarthritis; 4. Benign prostatic hyperplasia (BPH); 5. Prostate adenocarcinoma
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=20)
-- alarms: Emergency now [web.triage.emergency]; Suspected cauda equina syndrome [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected cauda equina syndrome [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: back_pain, limb_numbness, prostate_symptoms, bilateral_leg_symptoms, sciatica, urinary_retention_symptoms, saddle_anaesthesia, nsaid_use, anticholinergic_or_opioid, reduced_anal_tone, prolapse_pr, palpable_bladder, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cauda_equina_syndrome (from the confirmed diagnosis)
 - note: PlanTab protocol: cauda_equina_syndrome (from the confirmed diagnosis)
+- note: Seeded investigations: cauda_equina_syndrome (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -4286,13 +4382,14 @@ Guidelines:
 - differential web.passive: 1. Epiglottitis; 2. ST-elevation myocardial infarction (STEMI); 3. Oesophageal / gastric carcinoma; 4. Thyroid carcinoma; 5. Acute coronary syndrome (ACS / NSTEMI / STEMI)
 - differential web.triageSurgical: 1. Dysphagia / oesophageal stricture
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=182)
-- alarms: Emergency now [web.triage.emergency]; Complete oesophageal obstruction (unable to swallow saliva) [web.clinicalPrompts.safety]; Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Complete oesophageal obstruction (unable to swallow saliva) [web.clinicalPrompts.safety]; Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: heart, news2, web:phq9, web:gad7
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, chest_pain, heartburn, nausea_vomiting, odynophagia, hoarseness, dysphagia_liquids, severe_pain, dysphagia, hyponatraemia_drug, epigastric_pain, drooling, abdominal_tenderness, burn_wound, tachycardia, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: corrosive_injury (from the confirmed diagnosis)
 - note: PlanTab protocol: corrosive_injury (from the confirmed diagnosis)
+- note: Seeded investigations: corrosive_injury (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10), Chest Pain — Emergency Redirect (5), Foreign Body Ingestion / Food Bolus (5)
 
 </details>
@@ -4328,13 +4425,14 @@ Guidelines:
 - differential web.passive: 1. Acute gastroenteritis; 2. Adhesive small bowel obstruction; 3. Acute appendicitis (paediatric); 4. Sigmoid volvulus; 5. Schistosomiasis (S. mansoni)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=162)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Fever 38.6°C + HR 122 bpm + SBP 84 mmHg — septic shock [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 32.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 210 μmol/L — elevated [web.clinicalPrompts.safety]; Albumin 21 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Fever 38.6°C + HR 122 bpm + SBP 84 mmHg — septic shock [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 32.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 210 μmol/L — elevated [web.clinicalPrompts.safety]; Albumin 21 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, gcs, news2, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, diffuse_abdominal_pain, colicky_pain, fever, change_bowel_habit, severe_pain, diarrhoea, abdominal_distension, confusion, guarding, known_ckd, known_copd, recent_antibiotics, ppi_use, tympanic_abdomen, cdiff_positive, elevated_wbc, raised_creatinine, raised_lactate, raised_crp, tachycardia, haemodynamic_instability, hypotension, tachypnoea, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: clostridioides_difficile (from the confirmed diagnosis)
 - note: PlanTab protocol: clostridioides_difficile (from the confirmed diagnosis)
+- note: Seeded investigations: clostridioides_difficile (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
 - note: matchPathways: Bowel Obstruction (Small / Large) (5)
 
@@ -4377,13 +4475,14 @@ Guidelines:
 - differential web.passive: 1. Cellulitis / soft tissue infection; 2. Necrotising fasciitis; 3. Osteomyelitis (paediatric); 4. Fournier's gangrene; 5. Sickle cell vaso-occlusive crisis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=73)
-- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, qsofa, news2, asa, stop-bang
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, limb_pain, fever, pain_worse_movement, erythema_surrounding, leg_swelling, spreading_redness, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cellulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cellulitis (from the confirmed diagnosis)
+- note: Seeded investigations: cellulitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Diabetic Foot (5)
 
 </details>
@@ -4434,13 +4533,14 @@ Guidelines:
 - differential web.passive: 1. Sepsis / systemic infection; 2. Cellulitis / soft tissue infection; 3. Necrotising fasciitis; 4. Fournier's gangrene; 5. Malaria
 - differential web.triageSurgical: 1. Varicose veins with ulceration
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=78)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.1 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 168 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 39.2°C + HR 118 bpm [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.1 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 168 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 39.2°C + HR 118 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, qsofa, gcs, web:wagner, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, limb_pain, fever, rigors, pain_worse_movement, erythema_surrounding, confusion, skin_ulceration, known_diabetes, known_heart_disease, vascular_risk, insulin_or_sulfonylurea, diuretic_use, unilateral_leg_swelling, leg_swelling, spreading_redness, discharge_pus, elevated_wbc, raised_crp, raised_creatinine, raised_lactate, hyperglycaemia, tachycardia, tachypnoea, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cellulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cellulitis (from the confirmed diagnosis)
+- note: Seeded investigations: cellulitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
 - note: no web calculator for score form 'sirs'
 - note: matchPathways: Varicose Veins (5)
@@ -4476,13 +4576,14 @@ Guidelines:
 - differential web.passive: 1. Cellulitis / soft tissue infection; 2. Peripheral neuropathy; 3. Gout / pseudogout; 4. Rheumatoid arthritis; 5. Septic arthritis
 - differential web.triageSurgical: (empty)
 - emergency level: priority (acuity=review, action=priority_24_48h, score=12)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, web:wagner, news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: foot_problem, known_diabetes, chronic_course, pain_worse_movement, erythema_surrounding, joint_pain, limb_numbness, peripheral_neuropathy, trauma_mechanism, recent_antibiotics, warm_swollen_foot, wound_erythema, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: charcot_foot (from the confirmed diagnosis)
 - note: PlanTab protocol: charcot_foot (from the confirmed diagnosis)
+- note: Seeded investigations: charcot_foot (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -4539,13 +4640,14 @@ Guidelines:
 - differential web.passive: 1. CBD stone / obstructive jaundice; 2. Biliary atresia; 3. Liver disease / hepatitis / cirrhosis; 4. Cholangiocarcinoma; 5. Pancreatic adenocarcinoma
 - differential web.triageSurgical: 1. Acute cholangitis
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=195)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Charcot's triad (RUQ pain + fever + jaundice) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 17.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Fever 39.4°C + HR 112 bpm [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Charcot's triad (RUQ pain + fever + jaundice) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 17.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Fever 39.4°C + HR 112 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: tg18-cholangitis, qsofa, asge-cbd, news2, caprini, asa, rcri, cfs
 - score values: tg18-cholangitis/calculator@web.scaleCalculator.tg18-cholangitis=2; tg18-cholangitis/calculator@web.scoreCalculator.tg18-cholangitis=2; tg18-cholangitis/autofill@web.scoreCalculator.tg18-cholangitis=0
 - dx variant: cholangitis_grade2 (Cholangitis)
 - note: PANE features applied: jaundice, acute_onset, ruq_pain, fever, rigors, nausea_vomiting, pain_worse_movement, dark_urine, pallor, abdominal_pain, us_gallstones, known_hypertension, vascular_risk, previous_surgery, elevated_wbc, raised_crp, raised_liver_enzymes, raised_lactate, dilated_cbd, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cholangitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholangitis (from the confirmed diagnosis)
+- note: Seeded investigations: cholangitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
 - note: matchPathways: Jaundice Workup (30), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (20), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10)
 
@@ -4593,13 +4695,14 @@ Guidelines:
 - differential web.passive: 1. CBD stone / obstructive jaundice; 2. Liver disease / hepatitis / cirrhosis; 3. Cholangiocarcinoma; 4. Biliary atresia; 5. Neonatal jaundice
 - differential web.triageSurgical: 1. Acute cholangitis
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=192)
-- alarms: Emergency now [web.triage.emergency]; Charcot's triad (RUQ pain + fever + jaundice) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Charcot's triad (RUQ pain + fever + jaundice) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: tg18-cholangitis, qsofa, asge-cbd, news2, caprini, asa, rcri, cfs
 - score values: tg18-cholangitis/calculator@web.scaleCalculator.tg18-cholangitis=1; tg18-cholangitis/calculator@web.scoreCalculator.tg18-cholangitis=1; tg18-cholangitis/autofill@web.scoreCalculator.tg18-cholangitis=0
 - dx variant: cholangitis_grade1 (Cholangitis)
 - note: PANE features applied: jaundice, acute_onset, ruq_pain, colicky_pain, fever, episodic_pain, postprandial_pain, dark_urine, abdominal_pain, us_gallstones, known_hypertension, vascular_risk, elevated_wbc, raised_crp, raised_liver_enzymes, dilated_cbd, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cholangitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholangitis (from the confirmed diagnosis)
+- note: Seeded investigations: cholangitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Jaundice Workup (25), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10)
 
 </details>
@@ -4656,13 +4759,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholangitis; 2. Sepsis / systemic infection; 3. Malaria; 4. Leptospirosis; 5. Liver disease / hepatitis / cirrhosis
 - differential web.triageSurgical: 1. Acute cholangitis
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=374)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; High fever [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Atrial fibrillation with haemodynamic instability [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Charcot's triad (RUQ pain + fever + jaundice) [web.clinicalPrompts.safety]; Fever 39.6°C + HR 128 bpm + SBP 78 mmHg — septic shock [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; WBC 24.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; INR 1.8 — coagulopathy [web.clinicalPrompts.safety]; Creatinine 212 μmol/L — elevated [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; SpO₂ 91% — hypoxia [web.clinicalPrompts.safety]; Albumin 24 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; High fever [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Atrial fibrillation with haemodynamic instability [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Charcot's triad (RUQ pain + fever + jaundice) [web.clinicalPrompts.safety]; Fever 39.6°C + HR 128 bpm + SBP 78 mmHg — septic shock [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; WBC 24.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; INR 1.8 — coagulopathy [web.clinicalPrompts.safety]; Creatinine 212 μmol/L — elevated [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; SpO₂ 91% — hypoxia [web.clinicalPrompts.safety]; Albumin 24 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: tg18-cholangitis, cha2ds2-vasc, qsofa, gcs, asge-cbd, web:wagner, news2, caprini, has-bled, asa, rcri, cfs
 - score values: tg18-cholangitis/calculator@web.scaleCalculator.tg18-cholangitis=3; tg18-cholangitis/calculator@web.scoreCalculator.tg18-cholangitis=3; tg18-cholangitis/autofill@web.scoreCalculator.tg18-cholangitis=0
 - dx variant: cholangitis_grade3 (Cholangitis)
 - note: PANE features applied: jaundice, acute_onset, ruq_pain, fever, rigors, severe_pain, confusion, abdominal_pain, us_gallstones, guarding, known_af, known_diabetes, anticoagulant_use, mottled_skin, gcs_drop, elevated_wbc, raised_crp, raised_liver_enzymes, raised_creatinine, raised_urea, thrombocytopenia, raised_lactate, hyperglycaemia, dilated_cbd, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cholangitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholangitis (from the confirmed diagnosis)
+- note: Seeded investigations: cholangitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (22), Jaundice Workup (20), Pancreatic Mass / Cyst (17)
 
@@ -4706,13 +4810,14 @@ Guidelines:
 - differential web.passive: 1. CBD stone / obstructive jaundice; 2. Leptospirosis; 3. Neonatal jaundice; 4. Febrile convulsion; 5. Sickle cell crisis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=180)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis — fever in an asplenic patient [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Courvoisier's sign (palpable non-tender gallbladder + jaundice) [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 22.1 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.9°C + HR 118 bpm [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis — fever in an asplenic patient [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Courvoisier's sign (palpable non-tender gallbladder + jaundice) [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 22.1 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.9°C + HR 118 bpm [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: tg18-cholangitis, qsofa, asge-cbd, news2
 - score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=3; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=0
 - dx variant: cholecystitis_grade3 (Acute Cholecystitis)
 - note: PANE features applied: fever, jaundice, abdominal_distension, ruq_pain, asplenia, previous_surgery, trauma_mechanism, mechanism_blunt, elevated_wbc, raised_crp, raised_lactate, us_gallstones, acute_onset, tachycardia, gcs_drop, confusion, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
+- note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Jaundice Workup (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10)
 
 </details>
@@ -4762,13 +4867,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute alcoholic pancreatitis
 - differential web.triageSurgical: 1. Acute cholangitis
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=133)
-- alarms: Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, asge-cbd, news2, asa, stop-bang
 - score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=1; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=0
 - dx variant: cholecystitis_grade1 (Acute Cholecystitis)
 - note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, shoulder_tip_pain, fever, nausea_vomiting, pain_worse_movement, postprandial_pain, fatty_food_trigger, pleuritic_chest_pain, severe_pain, murphy_sign, guarding, abdominal_tenderness, elevated_wbc, raised_crp, us_gallstones, dilated_cbd, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
+- note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (17), Jaundice Workup (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (7)
 
 </details>
@@ -4815,13 +4921,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute appendicitis (paediatric); 5. Intussusception
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=45)
-- alarms: Emergency now [web.triage.emergency]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; BGL 17.8 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; BGL 17.8 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, asge-cbd, web:wagner, news2, caprini, asa, rcri, cfs
 - score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=2; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=0
 - dx variant: cholecystitis_grade2 (Acute Cholecystitis)
 - note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, epigastric_pain, nausea_vomiting, anorexia, postprandial_pain, known_diabetes, insulin_or_sulfonylurea, known_ckd, known_hypertension, vascular_risk, severe_pain, confusion, dehydration, murphy_sign, elevated_wbc, raised_crp, raised_urea, hyperglycaemia, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
+- note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -4861,13 +4968,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. UTI (paediatric); 4. Typhoid fever; 5. Mesenteric adenitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=114)
-- alarms: Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 160 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.4°C + HR 102 bpm [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 160 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.4°C + HR 102 bpm [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, asge-cbd, news2, asa, rcri, cfs
 - score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=2; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=0
 - dx variant: cholecystitis_grade2 (Acute Cholecystitis)
 - note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, fever, nausea_vomiting, anorexia, pain_worse_movement, pleuritic_chest_pain, murphy_sign, wheeze, known_heart_disease, vascular_risk, known_copd, known_ckd, diuretic_use, antiplatelet_use, recent_antibiotics, previous_surgery, dyspnoea, reduced_breath_sounds, elevated_wbc, raised_crp, raised_creatinine, raised_urea, us_gallstones, tachycardia, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
+- note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7)
 
 </details>
@@ -4907,13 +5015,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Mesenteric adenitis; 4. Acute gastroenteritis; 5. Perforated peptic ulcer
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=72)
-- alarms: Emergency now [web.triage.emergency]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 132 μmol/L — elevated [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 132 μmol/L — elevated [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, asge-cbd, news2, caprini, asa, rcri
 - score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=2; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=0
 - dx variant: cholecystitis_grade2 (Acute Cholecystitis)
 - note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, fever, nausea_vomiting, pain_worse_movement, fatigue, murphy_sign, immunosuppression, known_hypertension, vascular_risk, steroid_use, previous_surgery, rlq_pain, elevated_wbc, raised_crp, raised_creatinine, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
+- note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10)
 
 </details>
@@ -4956,13 +5065,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute mesenteric ischaemia
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=87)
-- alarms: Emergency now [web.triage.emergency]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Pregnant (22 weeks) [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Fever 38.2°C + HR 104 bpm [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Pregnant (22 weeks) [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Fever 38.2°C + HR 104 bpm [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, asge-cbd, news2
 - score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=1; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=0
 - dx variant: cholecystitis_grade1 (Acute Cholecystitis)
 - note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, shoulder_tip_pain, fever, nausea_vomiting, postprandial_pain, fatty_food_trigger, pleuritic_chest_pain, severe_pain, murphy_sign, pregnant, elevated_wbc, raised_crp, us_gallstones, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
+- note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Acute Abdomen (7)
 
 </details>
@@ -5007,13 +5117,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute mesenteric ischaemia
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=157)
-- alarms: Emergency now [web.triage.emergency]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.6 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.6°C + HR 104 bpm [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.6 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.6°C + HR 104 bpm [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, asge-cbd, web:wagner, news2, caprini, asa, rcri
 - score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=2; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=0
 - dx variant: cholecystitis_grade2 (Acute Cholecystitis)
 - note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, shoulder_tip_pain, fever, nausea_vomiting, pain_worse_movement, pleuritic_chest_pain, severe_pain, murphy_sign, guarding, known_diabetes, known_hypertension, vascular_risk, acei_arb_use, abdominal_mass, erythema_surrounding, previous_surgery, elevated_wbc, raised_crp, hyperglycaemia, us_gallstones, tachycardia, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
+- note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (17), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (7), Pancreatic Mass / Cyst (7)
 
 </details>
@@ -5072,13 +5183,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Sepsis / systemic infection; 4. Meningitis / encephalitis; 5. UTI (paediatric)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=274)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Fever 39.1°C + HR 124 bpm + SBP 82 mmHg — septic shock [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 22.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 238 μmol/L — elevated [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]; Albumin 26 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Fever 39.1°C + HR 124 bpm + SBP 82 mmHg — septic shock [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 22.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 238 μmol/L — elevated [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]; Albumin 26 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, gcs, asge-cbd, news2, caprini, asa, rcri, cfs
 - score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=3; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=0
 - dx variant: cholecystitis_grade3 (Acute Cholecystitis)
 - note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, fever, nausea_vomiting, pain_worse_movement, severe_pain, confusion, murphy_sign, guarding, known_hypertension, vascular_risk, known_heart_disease, antiplatelet_use, acei_arb_use, gcs_drop, oliguria, elevated_wbc, raised_crp, raised_creatinine, raised_urea, thrombocytopenia, raised_lactate, us_gallstones, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
+- note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10), Wound Management (Acute / Chronic / SSI) (5)
 
@@ -5116,13 +5228,14 @@ Guidelines:
 - differential web.passive: 1. Community-acquired pneumonia; 2. Empyema thoracis; 3. Sepsis / systemic infection; 4. Infective endocarditis; 5. Malaria
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=183)
-- alarms: Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Anaphylaxis [web.clinicalPrompts.safety]; Penetrating trauma [web.clinicalPrompts.safety]; Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 17.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.9°C + HR 112 bpm [web.clinicalPrompts.safety]; SpO₂ 91% — hypoxia [web.clinicalPrompts.safety]
+- alarms: Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Anaphylaxis [web.clinicalPrompts.safety]; Penetrating trauma [web.clinicalPrompts.safety]; Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 17.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.9°C + HR 112 bpm [web.clinicalPrompts.safety]; SpO₂ 91% — hypoxia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, heart, wells-pe, tg18-cholangitis, ranson, qsofa, asge-cbd, curb65, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, shoulder_tip_pain, fever, rigors, nausea_vomiting, pain_worse_movement, pleuritic_chest_pain, cough, productive_cough, dyspnoea, chest_pain, crackles, bronchial_breathing, purulent_sputum, smoker, vascular_risk, elevated_wbc, raised_crp, raised_urea, tachycardia, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pneumonia (from the confirmed diagnosis)
 - note: PlanTab protocol: pneumonia (from the confirmed diagnosis)
+- note: Seeded investigations: pneumonia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), IBD — Surgical Complications (Crohn's / UC) (12)
 
 </details>
@@ -5163,13 +5276,14 @@ Guidelines:
 - differential web.passive: 1. Liver disease / hepatitis / cirrhosis; 2. Cholangiocarcinoma; 3. CBD stone / obstructive jaundice; 4. Biliary atresia; 5. Pancreatic adenocarcinoma
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=70)
-- alarms: Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: tg18-cholangitis, asge-cbd, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: jaundice, acute_onset, ruq_pain, epigastric_pain, colicky_pain, radiation_to_back, nausea_vomiting, episodic_pain, postprandial_pain, dark_urine, pallor, pruritus, abdominal_pain, raised_liver_enzymes, raised_crp, us_gallstones, dilated_cbd, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: choledocholithiasis (from the confirmed diagnosis)
 - note: PlanTab protocol: choledocholithiasis (from the confirmed diagnosis)
+- note: Seeded investigations: choledocholithiasis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Jaundice Workup (30), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (22), Pancreatic Mass / Cyst (17)
 
 </details>
@@ -5208,13 +5322,14 @@ Guidelines:
 - differential web.passive: 1. CBD stone / obstructive jaundice; 2. Biliary atresia; 3. Liver disease / hepatitis / cirrhosis; 4. Cholangiocarcinoma; 5. Pancreatic adenocarcinoma
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=106)
-- alarms: Emergency now [web.triage.emergency]; Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (warfarin) [web.clinicalPrompts.safety]; INR 2.6 on warfarin [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (warfarin) [web.clinicalPrompts.safety]; INR 2.6 on warfarin [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: tg18-cholangitis, cha2ds2-vasc, asge-cbd, web:wagner, news2, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: jaundice, acute_onset, ruq_pain, anorexia, postprandial_pain, dark_urine, pallor, abdominal_pain, irregular_pulse, known_af, known_hypertension, vascular_risk, known_diabetes, anticoagulant_use, acei_arb_use, raised_liver_enzymes, us_gallstones, dilated_cbd, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: choledocholithiasis (from the confirmed diagnosis)
 - note: PlanTab protocol: choledocholithiasis (from the confirmed diagnosis)
+- note: Seeded investigations: choledocholithiasis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Jaundice Workup (30), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10)
 
 </details>
@@ -5255,13 +5370,14 @@ Guidelines:
 - differential web.passive: 1. Liver disease / hepatitis / cirrhosis; 2. Cholangiocarcinoma; 3. CBD stone / obstructive jaundice; 4. Pancreatic adenocarcinoma; 5. Biliary atresia
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=72)
-- alarms: Emergency now [web.triage.emergency]; Pregnant (26 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pregnant (26 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: tg18-cholangitis, asge-cbd, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: jaundice, acute_onset, ruq_pain, colicky_pain, radiation_to_back, nausea_vomiting, episodic_pain, postprandial_pain, dark_urine, pruritus, abdominal_pain, pregnant, raised_liver_enzymes, us_gallstones, dilated_cbd, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: choledocholithiasis (from the confirmed diagnosis)
 - note: PlanTab protocol: choledocholithiasis (from the confirmed diagnosis)
+- note: Seeded investigations: choledocholithiasis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Jaundice Workup (25), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (22), Pancreatic Mass / Cyst (17)
 
 </details>
@@ -5296,13 +5412,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Liver disease / hepatitis / cirrhosis; 3. CBD stone / obstructive jaundice; 4. Acute gastroenteritis; 5. Acute mesenteric ischaemia
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=47)
-- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, asge-cbd, news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, colicky_pain, shoulder_tip_pain, nausea_vomiting, episodic_pain, postprandial_pain, fatty_food_trigger, severe_pain, dark_urine, known_hypertension, vascular_risk, acei_arb_use, raised_liver_enzymes, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: choledocholithiasis (from the confirmed diagnosis)
 - note: PlanTab protocol: choledocholithiasis (from the confirmed diagnosis)
+- note: Seeded investigations: choledocholithiasis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Jaundice Workup (10)
 
 </details>
@@ -5337,13 +5454,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Adhesive small bowel obstruction; 5. Perforated peptic ulcer
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, asge-cbd, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, chronic_course, ruq_pain, radiation_to_back, nausea_vomiting, episodic_pain, postprandial_pain, fatty_food_trigger, severe_pain, back_pain, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: biliary_colic (from the confirmed diagnosis)
 - note: PlanTab protocol: biliary_colic (from the confirmed diagnosis)
+- note: Seeded investigations: biliary_colic (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Jaundice Workup (15), Pancreatic Mass / Cyst (14)
 
 </details>
@@ -5381,13 +5499,14 @@ Guidelines:
 - differential web.passive: 1. Inflammatory bowel disease (Crohn's / UC); 2. Lower GI bleed / colorectal; 3. Squamous cell carcinoma of the anus; 4. Colorectal carcinoma; 5. Occult malignancy / systemic disease
 - differential web.triageSurgical: 1. Change in bowel habit / lower GI bleed — investigation; 2. Unexplained weight loss / GI alarm symptoms — endoscopy workup
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=164)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal / upper GI — iron-deficiency anaemia, FIT 186 µg Hb/g, Hb 10.2 g/dL, ferritin 9 µg/L [web.clinicalPrompts.safety]; HbA1c 58% — poorly controlled diabetes [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal / upper GI — iron-deficiency anaemia, FIT 186 µg Hb/g, Hb 10.2 g/dL, ferritin 9 µg/L [web.clinicalPrompts.safety]; HbA1c 58% — poorly controlled diabetes [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: web:wagner, news2, rockall, caprini, asa, rcri, stop-bang, cfs, ecog, web:phq9
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: change_bowel_habit, chronic_course, pr_bleeding, weight_loss, progressive_course, fatigue, diarrhoea, pallor, known_diabetes, episodic_pain, dyspnoea, anaemia, positive_fit, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_cancer (from the confirmed diagnosis)
+- note: Seeded investigations: colorectal_cancer (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (27), Diverticular Disease / Diverticulitis (14), IBD — Surgical Complications (Crohn's / UC) (14)
 
 </details>
@@ -5422,13 +5541,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute cholecystitis; 3. Peptic ulcer disease; 4. Acute appendicitis; 5. Adhesive small bowel obstruction
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=30)
-- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal — FIT 42 µg Hb/g [web.clinicalPrompts.safety]
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal — FIT 42 µg Hb/g [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, chronic_course, suprapubic_pain, episodic_pain, colicky_pain, known_hypertension, vascular_risk, previous_surgery, abdominal_tenderness, positive_fit, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: suspected_colorectal_cancer_referral (from the confirmed diagnosis)
 - note: PlanTab protocol: suspected_colorectal_cancer_referral (from the confirmed diagnosis)
+- note: Seeded investigations: suspected_colorectal_cancer_referral (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (19), IBD — Surgical Complications (Crohn's / UC) (14), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12)
 
 </details>
@@ -5464,13 +5584,14 @@ Guidelines:
 - differential web.passive: 1. Anaemia; 2. Heart failure; 3. Acute respiratory distress syndrome (ARDS); 4. Cardiac tamponade; 5. Hypothyroidism
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=37)
-- alarms: Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal / upper GI — iron-deficiency anaemia, FIT 8 µg Hb/g, Hb 9.4 g/dL, ferritin 5 µg/L [web.clinicalPrompts.safety]
+- alarms: Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal / upper GI — iron-deficiency anaemia, FIT 8 µg Hb/g, Hb 9.4 g/dL, ferritin 5 µg/L [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, stop-bang, web:phq9
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: weight_loss, chronic_course, fatigue, exertional_symptoms, dyspnoea, pallor, anaemia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: iron_deficiency_anaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: iron_deficiency_anaemia (from the confirmed diagnosis)
+- note: Seeded investigations: iron_deficiency_anaemia (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (14), Liver Lesion / Hepatic Mass (14), Pancreatic Mass / Cyst (14)
 
 </details>
@@ -5500,13 +5621,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Colon cancer
 - emergency level: routine (acuity=routine, action=routine_booking, score=12)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-dvt, news2, caprini, must, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: known_malignancy, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
 - note: matchPathways: Post-operative Follow-up (General) (10), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5)
 
 </details>
@@ -5541,13 +5663,14 @@ Guidelines:
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Colorectal carcinoma; 3. Inflammatory bowel disease (Crohn's / UC); 4. Occult malignancy / systemic disease; 5. Intussusception
 - differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=120)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal / upper GI — iron-deficiency anaemia, Hb 12.6 g/dL, ferritin 21 µg/L [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal / upper GI — iron-deficiency anaemia, Hb 12.6 g/dL, ferritin 21 µg/L [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, news2, rockall, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: pr_bleeding, chronic_course, lif_pain, colicky_pain, weight_loss, episodic_pain, abdominal_pain, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_cancer (from the confirmed diagnosis)
+- note: Seeded investigations: colorectal_cancer (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (17), IBD — Surgical Complications (Crohn's / UC) (14), Liver Lesion / Hepatic Mass (14)
 
 </details>
@@ -5582,13 +5705,14 @@ Guidelines:
 - differential web.passive: 1. Inflammatory bowel disease (Crohn's / UC); 2. Rectal prolapse; 3. Haemorrhoids / anorectal disease; 4. Anal fissure; 5. Acute cholecystitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=37)
-- alarms: Emergency now [web.triage.emergency]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Rectal mass on PR examination [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; CEA 7.8 ng/mL — elevated [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Rectal mass on PR examination [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; CEA 7.8 ng/mL — elevated [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: change_bowel_habit, chronic_course, anal_pain, tenesmus, mucus_pr, known_hypertension, vascular_risk, acei_arb_use, rectal_mass, urinary_retention_symptoms, guarding, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: rectal_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: rectal_carcinoma (from the confirmed diagnosis)
+- note: Seeded investigations: rectal_carcinoma (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -5624,13 +5748,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Colon cancer
 - emergency level: urgent (acuity=priority, action=same_day_call, score=37)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-dvt, news2, caprini, asa, rcri, must, stop-bang, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: known_hypertension, vascular_risk, known_malignancy, acute_onset, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (10), Cancer Screening (Age/Sex Appropriate) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -5664,13 +5789,14 @@ Guidelines:
 - differential web.passive: 1. Inflammatory bowel disease (Crohn's / UC); 2. Lower GI bleed / colorectal; 3. Squamous cell carcinoma of the anus; 4. Irritable bowel syndrome (IBS); 5. Colorectal carcinoma
 - differential web.triageSurgical: 1. Change in bowel habit / lower GI bleed — investigation; 2. Unexplained weight loss / GI alarm symptoms — endoscopy workup; 3. Haemorrhoids (internal/external)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=115)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal / upper GI — iron-deficiency anaemia, Hb 11.1 g/dL, ferritin 11 µg/L [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal / upper GI — iron-deficiency anaemia, Hb 11.1 g/dL, ferritin 11 µg/L [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, rockall
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: pr_bleeding, chronic_course, weight_loss, change_bowel_habit, progressive_course, diarrhoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: suspected_colorectal_cancer_referral (from the confirmed diagnosis)
 - note: PlanTab protocol: suspected_colorectal_cancer_referral (from the confirmed diagnosis)
+- note: Seeded investigations: suspected_colorectal_cancer_referral (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (10), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (10), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -5706,13 +5832,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Inflammatory bowel disease (Crohn's / UC); 4. HIV / AIDS presentation; 5. Typhoid fever
 - differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=73)
-- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.7°C + HR 108 bpm [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.7°C + HR 108 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, must
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, rlq_pain, fever, anorexia, weight_loss, severe_pain, diarrhoea, guarding, immunosuppression, diaphoresis, deep_lump, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: crohns_disease (from the confirmed diagnosis)
 - note: PlanTab protocol: crohns_disease (from the confirmed diagnosis)
+- note: Seeded investigations: crohns_disease (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (17), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -5749,13 +5876,14 @@ Guidelines:
 - differential web.passive: 1. Perianal abscess; 2. Fistula in ano; 3. Haemorrhoids / anorectal disease; 4. Pilonidal sinus / abscess; 5. Fournier's gangrene
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=45)
-- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2, must
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: chronic_course, anal_pain, posterior_midline, mucus_pr, pain_on_defaecation, severe_pain, discharge_perianal, perianal_swelling, fever, swelling_fluctuant_soft, discharge_pus, localised_pain, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: crohns_disease (from the confirmed diagnosis)
 - note: PlanTab protocol: crohns_disease (from the confirmed diagnosis)
+- note: Seeded investigations: crohns_disease (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (15), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (10)
 
 </details>
@@ -5797,13 +5925,14 @@ Guidelines:
 - differential web.passive: 1. Diabetic foot infection / ischaemia; 2. Peripheral neuropathy; 3. Peripheral arterial disease / limb ischaemia; 4. Acute cholecystitis; 5. CBD stone / obstructive jaundice
 - differential web.triageSurgical: 1. Diabetic foot ulcer; 2. Suspicious skin lesion / possible skin cancer
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=74)
-- alarms: Emergency now [web.triage.emergency]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HbA1c 9.1% — poorly controlled diabetes [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HbA1c 9.1% — poorly controlled diabetes [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, web:wagner, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: foot_problem, known_diabetes, chronic_course, pain_worse_movement, foot_ulcer, limb_numbness, peripheral_neuropathy, probe_to_bone, erythema_surrounding, spreading_redness, discharge_pus, known_hypertension, vascular_risk, sglt2_inhibitor, acei_arb_use, wound_erythema, wound_discharge, elevated_wbc, raised_crp, raised_bp, hyperglycaemia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diabetic_foot (from the confirmed diagnosis)
 - note: PlanTab protocol: diabetic_foot (from the confirmed diagnosis)
+- note: Seeded investigations: diabetic_foot (confirmed); 0 stat test(s) held back
 - note: matchPathways: Diabetic Foot (15), Wound Management (Acute / Chronic / SSI) (10)
 
 </details>
@@ -5844,13 +5973,14 @@ Guidelines:
 - differential web.passive: 1. Sepsis / systemic infection; 2. Malaria; 3. Diabetic foot infection / ischaemia; 4. Pyelonephritis; 5. Infective endocarditis
 - differential web.triageSurgical: 1. Diabetic foot ulcer; 2. Foot gangrene / critical limb ischaemia; 3. Skin / soft tissue abscess; 4. Peripheral arterial / vascular disease
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=230)
-- alarms: Tachycardia [web.triage.vitalRedFlags]; Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; BGL 24 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 23 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 132 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.9°C + HR 122 bpm [web.clinicalPrompts.safety]
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; BGL 24 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 23 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 132 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.9°C + HR 122 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, web:wagner, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: foot_problem, known_diabetes, acute_onset, fever, rigors, pain_worse_movement, foot_ulcer, cold_limb, skin_necrosis, swelling_fluctuant_soft, erythema_surrounding, spreading_redness, absent_pulses, vascular_risk, known_ckd, insulin_or_sulfonylurea, antiplatelet_use, crepitus_soft_tissue, elevated_wbc, raised_crp, raised_creatinine, hyperglycaemia, raised_lactate, tachycardia, haemodynamic_instability, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diabetic_foot (from the confirmed diagnosis)
 - note: PlanTab protocol: diabetic_foot (from the confirmed diagnosis)
+- note: Seeded investigations: diabetic_foot (confirmed); 0 stat test(s) held back
 - note: matchPathways: Diabetic Foot (15), Peripheral Vascular Disease (10)
 
 </details>
@@ -5875,7 +6005,7 @@ Permutation of `dfi-moderate-osteomyelitis`.
 
 Failure details:
 
-- **flag-incompressible** (web): no red flag matched among 20 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: The arterial-ulcer protocol mentions TBI in investigations but no red flag says the ABPI of 1.4 is falsely reassuring. \| iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.acuity)]
+- **flag-incompressible** (web): no red flag matched among 22 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: The arterial-ulcer protocol mentions TBI in investigations but no red flag says the ABPI of 1.4 is falsely reassuring. \| iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.acuity)]
 
 Guidelines:
 
@@ -5891,13 +6021,14 @@ Guidelines:
 - differential web.passive: 1. Acute limb ischaemia; 2. Peripheral arterial disease / limb ischaemia; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
 - differential web.triageSurgical: 1. Diabetic foot ulcer; 2. Peripheral arterial / vascular disease
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=78)
-- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 240 μmol/L — elevated [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 240 μmol/L — elevated [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: web:wagner, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: foot_problem, known_diabetes, chronic_course, nocturnal_pain, worse_lying_flat, foot_ulcer, rest_pain, cold_limb, absent_pulses, known_ckd, known_hypertension, vascular_risk, insulin_or_sulfonylurea, pallor, smoker, raised_creatinine, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: arterial_ulcer (from the confirmed diagnosis)
 - note: PlanTab protocol: arterial_ulcer (from the confirmed diagnosis)
+- note: Seeded investigations: arterial_ulcer (confirmed); 0 stat test(s) held back
 - note: matchPathways: Diabetic Foot (10), Peripheral Vascular Disease (10), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -5938,13 +6069,14 @@ Guidelines:
 - differential web.passive: 1. Peripheral neuropathy; 2. Peripheral arterial disease / limb ischaemia; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
 - differential web.triageSurgical: 1. Diabetic foot ulcer
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=67)
-- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: web:wagner, news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: foot_problem, known_diabetes, chronic_course, pain_worse_movement, foot_ulcer, limb_numbness, peripheral_neuropathy, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diabetic_foot (from the confirmed diagnosis)
 - note: PlanTab protocol: diabetic_foot (from the confirmed diagnosis)
+- note: Seeded investigations: diabetic_foot (confirmed); 0 stat test(s) held back
 - note: matchPathways: Diabetic Foot (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -5979,13 +6111,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Mesenteric adenitis; 5. Perforated peptic ulcer
 - differential web.triageSurgical: 1. Diverticulitis of colon
 - emergency level: urgent (acuity=priority, action=same_day_call, score=33)
-- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: diverticulitis_uncomplicated (Diverticulitis)
 - note: PANE features applied: abdominal_pain, lif_pain, acute_onset, fever, nausea_vomiting, pain_worse_movement, known_hypertension, vascular_risk, acei_arb_use, abdominal_tenderness, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diverticulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: diverticulitis (from the confirmed diagnosis)
+- note: Seeded investigations: diverticulitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Diverticular Disease / Diverticulitis (17), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -6022,13 +6155,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Typhoid fever; 3. UTI (paediatric); 4. Acute alcoholic pancreatitis; 5. Mesenteric adenitis
 - differential web.triageSurgical: 1. Diverticulitis of colon
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=55)
-- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 17.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.3°C + HR 102 bpm [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 17.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.3°C + HR 102 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: diverticulitis_abscess (Diverticulitis)
 - note: PANE features applied: abdominal_pain, lif_pain, acute_onset, fever, rigors, anorexia, pain_worse_movement, guarding, known_hypertension, vascular_risk, diaphoresis, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diverticulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: diverticulitis (from the confirmed diagnosis)
+- note: Seeded investigations: diverticulitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Diverticular Disease / Diverticulitis (12), IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7)
 
 </details>
@@ -6065,13 +6199,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Sepsis / systemic infection; 5. Acute mesenteric ischaemia
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=225)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Pneumoperitoneum — perforated viscus [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Fever 38.9°C + HR 132 bpm + SBP 78 mmHg — septic shock [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 262 μmol/L — elevated [web.clinicalPrompts.safety]; SpO₂ 90% — hypoxia [web.clinicalPrompts.safety]; BGL 16.8 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Pneumoperitoneum — perforated viscus [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Fever 38.9°C + HR 132 bpm + SBP 78 mmHg — septic shock [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 262 μmol/L — elevated [web.clinicalPrompts.safety]; SpO₂ 90% — hypoxia [web.clinicalPrompts.safety]; BGL 16.8 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, gcs, web:wagner, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: diverticulitis_peritonitis (Diverticulitis)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, acute_onset, syncope, confusion, fever, nausea_vomiting, pain_worse_movement, guarding, known_diabetes, known_ckd, insulin_or_sulfonylurea, mottled_skin, rebound_tenderness, raised_lactate, raised_creatinine, thrombocytopenia, raised_crp, free_gas, pelvic_free_fluid, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, hyperglycaemia, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diverticulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: diverticulitis (from the confirmed diagnosis)
+- note: Seeded investigations: diverticulitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -6106,13 +6241,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Inflammatory bowel disease (Crohn's / UC); 3. Acute cholecystitis; 4. Peptic ulcer disease; 5. Sickle cell crisis
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=19)
-- alarms: Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 138 μmol/L — elevated [web.clinicalPrompts.safety]
+- alarms: Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 138 μmol/L — elevated [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, web:wagner, news2, caprini, asa, rcri, stop-bang, cfs, web:phq9
 - score values: (none)
 - dx variant: (none) (Diverticulitis)
 - note: PANE features applied: abdominal_pain, lif_pain, acute_onset, fatigue, pain_worse_movement, immunosuppression, known_diabetes, steroid_use, previous_surgery, rlq_pain, raised_crp, raised_creatinine, hyperglycaemia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diverticulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: diverticulitis (from the confirmed diagnosis)
+- note: Seeded investigations: diverticulitis (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -6151,13 +6287,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute mesenteric ischaemia; 5. Mesenteric adenitis
 - differential web.triageSurgical: 1. Diverticulitis of colon
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=75)
-- alarms: Emergency now [web.triage.emergency]; Pneumoperitoneum — perforated viscus [web.clinicalPrompts.safety]; Suspected sepsis (moderate to high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.6 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.7°C + HR 116 bpm [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pneumoperitoneum — perforated viscus [web.clinicalPrompts.safety]; Suspected sepsis (moderate to high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.6 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.7°C + HR 116 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, asa, stop-bang
 - score values: (none)
 - dx variant: diverticulitis_peritonitis (Diverticulitis)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, lif_pain, sudden_onset, acute_onset, fever, nausea_vomiting, pain_worse_movement, guarding, absent_bowel_sounds, rebound_tenderness, elevated_wbc, raised_crp, raised_lactate, free_gas, pelvic_free_fluid, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diverticulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: diverticulitis (from the confirmed diagnosis)
+- note: Seeded investigations: diverticulitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Diverticular Disease / Diverticulitis (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -6198,13 +6335,14 @@ Guidelines:
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. ST-elevation myocardial infarction (STEMI); 5. Adhesive small bowel obstruction
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=122)
-- alarms: Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Diabetic ketoacidosis — euglycaemic (glucose < 14 mmol/L) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Diabetic ketoacidosis — euglycaemic (glucose < 14 mmol/L) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, qsofa, web:wagner, news2, caprini, asa, clavien-dindo, curb65, rcri, stop-bang, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, acute_onset, epigastric_pain, dyspnoea, anorexia, fatigue, recent_surgery, previous_surgery, known_diabetes, known_hypertension, vascular_risk, sglt2_inhibitor, acei_arb_use, dehydration, kussmaul, abdominal_tenderness, ketonaemia, metabolic_acidosis, elevated_wbc, raised_crp, tachycardia, tachypnoea, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: PlanTab protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
+- note: Seeded investigations: diabetic_ketoacidosis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (5), IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -6246,13 +6384,14 @@ Guidelines:
 - differential web.passive: 1. Acute gastroenteritis; 2. Adhesive small bowel obstruction; 3. Acute appendicitis (paediatric); 4. Acute cholecystitis; 5. Acute appendicitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=95)
-- alarms: Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Diabetic ketoacidosis [web.clinicalPrompts.safety]; Pregnant (28 weeks) [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 116 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Diabetic ketoacidosis [web.clinicalPrompts.safety]; Pregnant (28 weeks) [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 116 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, wells-pe, ranson, qsofa, web:wagner, news2, caprini, asa, curb65, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, diffuse_abdominal_pain, dyspnoea, polyuria_polydipsia, nausea_vomiting, known_diabetes, insulin_or_sulfonylurea, pleuritic_chest_pain, pregnant, abdominal_tenderness, hyperglycaemia, ketonaemia, metabolic_acidosis, elevated_wbc, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: diabetic_ketoacidosis (leading differential); 2 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -6293,13 +6432,14 @@ Guidelines:
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Acute gastroenteritis; 3. Acute respiratory distress syndrome (ARDS); 4. ST-elevation myocardial infarction (STEMI); 5. Cardiac tamponade
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=93)
-- alarms: Tachypnoea [web.triage.vitalRedFlags]; Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Diabetic ketoacidosis [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Tachypnoea [web.triage.vitalRedFlags]; Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Diabetic ketoacidosis [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, qsofa, web:wagner, curb65, news2, caprini, asa, rcri, stop-bang, web:phq9
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, acute_onset, diffuse_abdominal_pain, dyspnoea, polyuria_polydipsia, fatigue, known_diabetes, insulin_or_sulfonylurea, mottled_skin, dehydration, kussmaul, diarrhoea, hyperglycaemia, ketonaemia, metabolic_acidosis, raised_urea, elevated_wbc, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: PlanTab protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
+- note: Seeded investigations: diabetic_ketoacidosis (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Pre-operative Assessment (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -6340,13 +6480,14 @@ Guidelines:
 - differential web.passive: 1. Deep vein thrombosis (DVT); 2. Sciatica / lumbar radiculopathy; 3. Acute compartment syndrome; 4. Osteomyelitis (paediatric); 5. Lumbar disc disease / sciatica
 - differential web.triageSurgical: 1. Leg swelling — possible DVT
 - emergency level: urgent (acuity=priority, action=same_day_call, score=32)
-- alarms: Pregnant (22 weeks) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pregnant (22 weeks) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, limb_pain, pain_worse_movement, leg_swelling, unilateral_leg_swelling, pregnant, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: deep_vein_thrombosis (from the confirmed diagnosis)
 - note: PlanTab protocol: deep_vein_thrombosis (from the confirmed diagnosis)
+- note: Seeded investigations: deep_vein_thrombosis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Chest Pain — Emergency Redirect (5), Varicose Veins (5)
 
 </details>
@@ -6379,13 +6520,14 @@ Guidelines:
 - differential web.passive: 1. Deep vein thrombosis (DVT); 2. Sciatica / lumbar radiculopathy; 3. Acute compartment syndrome; 4. Osteomyelitis (paediatric); 5. Lumbar disc disease / sciatica
 - differential web.triageSurgical: 1. Leg swelling — possible DVT
 - emergency level: urgent (acuity=priority, action=same_day_call, score=8)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, limb_pain, pain_worse_movement, leg_swelling, oestrogen_use, previous_surgery, unilateral_leg_swelling, calf_tenderness, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: deep_vein_thrombosis (from the confirmed diagnosis)
 - note: PlanTab protocol: deep_vein_thrombosis (from the confirmed diagnosis)
+- note: Seeded investigations: deep_vein_thrombosis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Chest Pain — Emergency Redirect (5), Varicose Veins (5)
 
 </details>
@@ -6420,13 +6562,14 @@ Guidelines:
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Irritable bowel syndrome (IBS); 3. Chronic pancreatitis; 4. Perforated peptic ulcer; 5. Acute alcoholic pancreatitis
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, news2, web:gerdq
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: chronic_course, epigastric_pain, heartburn, nausea_vomiting, episodic_pain, postprandial_pain, antacid_relief, abdominal_distension, abdominal_tenderness, abdominal_pain, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: dyspepsia (from the confirmed diagnosis)
 - note: PlanTab protocol: dyspepsia (from the confirmed diagnosis)
+- note: Seeded investigations: dyspepsia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
 
 </details>
@@ -6461,13 +6604,14 @@ Guidelines:
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Oesophageal / gastric carcinoma; 3. Occult malignancy / systemic disease; 4. Gastric carcinoma; 5. Colorectal carcinoma
 - differential web.triageSurgical: 1. Dysphagia / oesophageal stricture; 2. Unexplained weight loss / GI alarm symptoms — endoscopy workup; 3. GORD with oesophagitis
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=87)
-- alarms: Emergency now [web.triage.emergency]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Alcohol excess [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Alcohol excess [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, web:gerdq, asa, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dysphagia, chronic_course, epigastric_pain, chest_pain, chest_pain_pressure, heartburn, regurgitation, weight_loss, progressive_course, dysphagia_solids, dysphagia_progressive, known_copd, ppi_use, smoker, vascular_risk, alcohol_use, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: oesophageal_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: oesophageal_carcinoma (from the confirmed diagnosis)
+- note: Seeded investigations: oesophageal_carcinoma (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (22), Foreign Body Ingestion / Food Bolus (7)
 
 </details>
@@ -6502,13 +6646,14 @@ Guidelines:
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Oesophageal / gastric carcinoma; 3. Epiglottitis; 4. Thyroid carcinoma; 5. Occult malignancy / systemic disease
 - differential web.triageSurgical: 1. Dysphagia / oesophageal stricture; 2. GORD with oesophagitis
 - emergency level: urgent (acuity=priority, action=same_day_call, score=55)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, web:gerdq, asa, stop-bang, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dysphagia, chronic_course, epigastric_pain, chest_pain, chest_pain_pressure, heartburn, progressive_course, dysphagia_solids, dysphagia_progressive, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: oesophageal_stricture (from the confirmed diagnosis)
 - note: PlanTab protocol: oesophageal_stricture (from the confirmed diagnosis)
+- note: Seeded investigations: oesophageal_stricture (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (22), Foreign Body Ingestion / Food Bolus (7)
 
 </details>
@@ -6549,13 +6694,14 @@ Guidelines:
 - differential web.passive: 1. Oesophageal / gastric carcinoma; 2. Epiglottitis; 3. Thyroid carcinoma; 4. Occult malignancy / systemic disease; 5. Gastric carcinoma
 - differential web.triageSurgical: 1. Dysphagia / oesophageal stricture; 2. GORD with oesophagitis
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=80)
-- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dysphagia, chronic_course, epigastric_pain, chest_pain, chest_pain_pressure, episodic_pain, dysphagia_solids, known_asthma, atopy, fever, heartburn, alcohol_use, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: eosinophilic_oesophagitis (from the confirmed diagnosis)
 - note: PlanTab protocol: eosinophilic_oesophagitis (from the confirmed diagnosis)
+- note: Seeded investigations: eosinophilic_oesophagitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (15), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -6600,13 +6746,14 @@ Guidelines:
 - differential web.passive: 1. STI / urethritis / cervicitis; 2. Urinary tract infection (UTI); 3. UTI (paediatric); 4. Pyelonephritis; 5. Testicular torsion / epididymo-orchitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=48)
-- alarms: Emergency now [web.triage.emergency]; Acute scrotal pain — testicular torsion until proven otherwise [web.clinicalPrompts.safety]; Testicular / scrotal signs [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute scrotal pain — testicular torsion until proven otherwise [web.clinicalPrompts.safety]; Testicular / scrotal signs [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: testicular_pain, acute_onset, radiation_to_groin, fever, urethral_discharge, scrotal_swelling, dysuria, localised_pain, positive_urinalysis, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: epididymo_orchitis (from the confirmed diagnosis)
 - note: PlanTab protocol: epididymo_orchitis (from the confirmed diagnosis)
+- note: Seeded investigations: epididymo_orchitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -6638,13 +6785,14 @@ Guidelines:
 - differential web.passive: 1. Haemorrhoids / anorectal disease; 2. Fistula in ano; 3. Perianal abscess; 4. Pilonidal sinus / abscess; 5. Squamous cell carcinoma of the anus
 - differential web.triageSurgical: (empty)
 - emergency level: priority (acuity=review, action=priority_24_48h, score=15)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: chronic_course, anal_pain, faecal_incontinence, episodic_pain, discharge_perianal, tenesmus, previous_surgery, urinary_incontinence, frequency_urgency, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: fistula_in_ano (from the confirmed diagnosis)
 - note: PlanTab protocol: fistula_in_ano (from the confirmed diagnosis)
+- note: Seeded investigations: fistula_in_ano (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -6673,13 +6821,14 @@ Guidelines:
 - differential web.passive: 1. Haemorrhoids / anorectal disease; 2. Fistula in ano; 3. Perianal abscess; 4. Pilonidal sinus / abscess; 5. Squamous cell carcinoma of the anus
 - differential web.triageSurgical: 1. Perianal abscess; 2. Skin / soft tissue abscess
 - emergency level: urgent (acuity=priority, action=same_day_call, score=15)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: chronic_course, anal_pain, faecal_incontinence, episodic_pain, discharge_perianal, previous_surgery, tender_cord, swelling_fluctuant_soft, discharge_pus, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: fistula_in_ano (from the confirmed diagnosis)
 - note: PlanTab protocol: fistula_in_ano (from the confirmed diagnosis)
+- note: Seeded investigations: fistula_in_ano (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (15), IBD — Surgical Complications (Crohn's / UC) (12), Cancer Screening (Age/Sex Appropriate) (7)
 
 </details>
@@ -6713,13 +6862,14 @@ Guidelines:
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Oesophageal / gastric carcinoma; 3. Epiglottitis; 4. Thyroid carcinoma; 5. Occult malignancy / systemic disease
 - differential web.triageSurgical: 1. Dysphagia / oesophageal stricture
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=63)
-- alarms: Emergency now [web.triage.emergency]; Complete oesophageal obstruction (unable to swallow saliva) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Complete oesophageal obstruction (unable to swallow saliva) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, web:gerdq
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dysphagia, sudden_onset, acute_onset, epigastric_pain, chest_pain, chest_pain_pressure, regurgitation, dysphagia_liquids, severe_pain, odynophagia, known_asthma, nausea_vomiting, complete_dysphagia, drooling, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: food_bolus_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: food_bolus_obstruction (from the confirmed diagnosis)
+- note: Seeded investigations: food_bolus_obstruction (confirmed); 0 stat test(s) held back
 - note: matchPathways: Foreign Body Ingestion / Food Bolus (5), IBD — Surgical Complications (Crohn's / UC) (5), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -6757,13 +6907,14 @@ Guidelines:
 - differential web.passive: 1. Fournier's gangrene; 2. Sepsis / systemic infection; 3. Cellulitis / soft tissue infection; 4. Necrotising fasciitis; 5. Malaria
 - differential web.triageSurgical: 1. Skin / soft tissue abscess
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=179)
-- alarms: Tachypnoea [web.triage.vitalRedFlags]; Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Suspected acute mesenteric ischaemia [web.clinicalPrompts.safety]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Testicular / scrotal signs [web.clinicalPrompts.safety]; BGL 24.1 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 24.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 160 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.9°C + HR 118 bpm [web.clinicalPrompts.safety]; Alcohol excess [web.clinicalPrompts.safety]
+- alarms: Tachypnoea [web.triage.vitalRedFlags]; Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Suspected acute mesenteric ischaemia [web.clinicalPrompts.safety]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Testicular / scrotal signs [web.clinicalPrompts.safety]; BGL 24.1 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 24.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 160 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.9°C + HR 118 bpm [web.clinicalPrompts.safety]; Alcohol excess [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, gcs, child-pugh, web:wagner, news2, caprini, asa, web:audit, rcri, stop-bang, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, anal_pain, perineal_pain, fever, rigors, severe_pain, scrotal_swelling, erythema_surrounding, confusion, skin_necrosis, known_diabetes, alcohol_use, pain_out_of_proportion, spreading_redness, swelling_fluctuant_soft, crepitus_soft_tissue, elevated_wbc, raised_crp, raised_creatinine, hyperglycaemia, raised_lactate, thrombocytopenia, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: fournier_gangrene (from the confirmed diagnosis)
 - note: PlanTab protocol: fournier_gangrene (from the confirmed diagnosis)
+- note: Seeded investigations: fournier_gangrene (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5)
 
@@ -6797,13 +6948,14 @@ Guidelines:
 - differential web.passive: 1. Fournier's gangrene; 2. Perianal abscess; 3. Cellulitis / soft tissue infection; 4. Testicular torsion / epididymo-orchitis; 5. Necrotising fasciitis
 - differential web.triageSurgical: 1. Perianal abscess; 2. Skin / soft tissue abscess
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=72)
-- alarms: Emergency now [web.triage.emergency]; Suspected acute mesenteric ischaemia [web.clinicalPrompts.safety]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Suspected sepsis (moderate to high risk) [web.clinicalPrompts.safety]; Testicular / scrotal signs [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 21 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.3°C + HR 114 bpm [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected acute mesenteric ischaemia [web.clinicalPrompts.safety]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Suspected sepsis (moderate to high risk) [web.clinicalPrompts.safety]; Testicular / scrotal signs [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 21 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.3°C + HR 114 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, web:wagner, news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, anal_pain, perineal_pain, fever, severe_pain, perianal_swelling, erythema_surrounding, scrotal_swelling, known_diabetes, known_hypertension, vascular_risk, sglt2_inhibitor, pain_out_of_proportion, spreading_redness, swelling_fluctuant_soft, localised_pain, elevated_wbc, raised_crp, hyperglycaemia, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: perianal_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: perianal_abscess (from the confirmed diagnosis)
+- note: Seeded investigations: perianal_abscess (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (15), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -6837,13 +6989,14 @@ Guidelines:
 - differential web.passive: 1. Gastric carcinoma; 2. Hypertrophic pyloric stenosis; 3. Chronic pancreatitis; 4. Acute alcoholic pancreatitis; 5. Pancreatic adenocarcinoma
 - differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=77)
-- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, news2, caprini, web:gerdq, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, chronic_course, epigastric_pain, abdominal_distension, anorexia, weight_loss, postprandial_pain, progressive_course, early_satiety, projectile_vomiting, succussion_splash, dizziness, dehydration, undigested_food_vomit, heartburn, oliguria, raised_urea, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: gastric_outlet_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: gastric_outlet_obstruction (from the confirmed diagnosis)
+- note: Seeded investigations: gastric_outlet_obstruction (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -6876,13 +7029,14 @@ Guidelines:
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Acute cholecystitis; 3. CBD stone / obstructive jaundice; 4. Peptic ulcer disease; 5. Reducible groin / abdominal hernia
 - differential web.triageSurgical: 1. GORD with oesophagitis
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, web:gerdq, asa, stop-bang
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: heartburn, chronic_course, epigastric_pain, chest_pain, postprandial_pain, nocturnal_pain, worse_lying_flat, antacid_relief, regurgitation, smoker, vascular_risk, alcohol_use, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: gord (from the confirmed diagnosis)
 - note: PlanTab protocol: gord (from the confirmed diagnosis)
+- note: Seeded investigations: gord (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7)
 
 </details>
@@ -6914,13 +7068,14 @@ Guidelines:
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Gastric carcinoma; 3. HIV / AIDS presentation; 4. Occult malignancy / systemic disease; 5. Pancreatic adenocarcinoma
 - differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup; 2. GORD with oesophagitis
 - emergency level: urgent (acuity=priority, action=same_day_call, score=62)
-- alarms: Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, web:gerdq, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: heartburn, chronic_course, epigastric_pain, chest_pain, anorexia, weight_loss, postprandial_pain, progressive_course, worse_lying_flat, antacid_relief, regurgitation, abdominal_tenderness, ppi_use, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: gord (from the confirmed diagnosis)
 - note: PlanTab protocol: gord (from the confirmed diagnosis)
+- note: Seeded investigations: gord (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -6952,13 +7107,14 @@ Guidelines:
 - differential web.passive: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Peripheral arterial disease / limb ischaemia; 3. Inguinal hernia (paediatric); 4. Varicocele; 5. Acute cholecystitis
 - differential web.triageSurgical: 1. Peripheral arterial / vascular disease; 2. Inguinal hernia
 - emergency level: urgent (acuity=priority, action=same_day_call, score=24)
-- alarms: Pulsatile groin mass — possible femoral aneurysm / pseudoaneurysm [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; P2Y12 inhibitor (clopidogrel) [web.clinicalPrompts.safety]
+- alarms: Pulsatile groin mass — possible femoral aneurysm / pseudoaneurysm [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; P2Y12 inhibitor (clopidogrel) [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: groin_swelling, chronic_course, below_inguinal_ligament, pulsatile_mass, claudication, vascular_risk, known_hypertension, known_copd, antiplatelet_use, epigastric_pain, calf_tenderness, limb_pain, hernia_irreducible, abdominal_mass, smoker, known_aaa, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: aortic_aneurysm (from the confirmed diagnosis)
 - note: PlanTab protocol: aortic_aneurysm (from the confirmed diagnosis)
+- note: Seeded investigations: aortic_aneurysm (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Peripheral Vascular Disease (5)
 
 </details>
@@ -6991,13 +7147,14 @@ Guidelines:
 - differential web.passive: 1. Lymphoma (Hodgkin / non-Hodgkin); 2. HIV / AIDS presentation; 3. Pulmonary tuberculosis; 4. Cholangiocarcinoma; 5. Occult malignancy / systemic disease
 - differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup; 2. Inguinal hernia
 - emergency level: urgent (acuity=priority, action=same_day_call, score=25)
-- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: child-pugh, news2, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: groin_swelling, chronic_course, progressive_course, night_sweats, weight_loss, pruritus, cough, hernia_irreducible, hernia_swelling, below_inguinal_ligament, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: neck_lymphadenopathy (from the confirmed diagnosis)
 - note: PlanTab protocol: neck_lymphadenopathy (from the confirmed diagnosis)
+- note: Seeded investigations: neck_lymphadenopathy (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (15), Thyroid / Neck Mass (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -7029,13 +7186,14 @@ Guidelines:
 - differential web.passive: 1. Testicular torsion / epididymo-orchitis; 2. Varicocele; 3. Inguinal hernia (paediatric); 4. Acute gastroenteritis; 5. Hypertrophic pyloric stenosis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=75)
-- alarms: Emergency now [web.triage.emergency]; Acute scrotal pain — testicular torsion until proven otherwise [web.clinicalPrompts.safety]; Testicular / scrotal signs [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute scrotal pain — testicular torsion until proven otherwise [web.clinicalPrompts.safety]; Testicular / scrotal signs [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: groin_swelling, sudden_onset, acute_onset, scrotal_swelling, localised_pain, severe_pain, groin_pain, nausea_vomiting, high_riding_testis, hernia_swelling, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: testicular_torsion (from the confirmed diagnosis)
 - note: PlanTab protocol: testicular_torsion (from the confirmed diagnosis)
+- note: Seeded investigations: testicular_torsion (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5)
 
 </details>
@@ -7068,13 +7226,14 @@ Guidelines:
 - differential web.passive: 1. Ovarian torsion / ovarian cyst; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute appendicitis (paediatric); 5. Acute cholecystitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=35)
-- alarms: Emergency now [web.triage.emergency]; Acute pelvic pain — ovarian torsion must be excluded [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute pelvic pain — ovarian torsion must be excluded [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, rlq_pain, pelvic_pain, sudden_onset, acute_onset, nausea_vomiting, pain_worse_movement, suprapubic_pain, guarding, pallor, adnexal_mass, elevated_wbc, pelvic_free_fluid, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: ovarian_torsion (from the confirmed diagnosis)
 - note: PlanTab protocol: ovarian_torsion (from the confirmed diagnosis)
+- note: Seeded investigations: ovarian_torsion (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -7108,13 +7267,14 @@ Guidelines:
 - differential web.passive: 1. Ovarian torsion / ovarian cyst; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute appendicitis (paediatric); 5. Acute cholecystitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=35)
-- alarms: Emergency now [web.triage.emergency]; Acute pelvic pain — ovarian torsion must be excluded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute pelvic pain — ovarian torsion must be excluded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, qsofa, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, lif_pain, pelvic_pain, sudden_onset, acute_onset, colicky_pain, nausea_vomiting, episodic_pain, pain_worse_movement, suprapubic_pain, guarding, elevated_wbc, whirlpool_sign, pelvic_free_fluid, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: ovarian_torsion (from the confirmed diagnosis)
 - note: PlanTab protocol: ovarian_torsion (from the confirmed diagnosis)
+- note: Seeded investigations: ovarian_torsion (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -7152,13 +7312,14 @@ Guidelines:
 - differential web.passive: 1. Pelvic inflammatory disease (PID); 2. Malaria; 3. Pyelonephritis; 4. Sepsis / systemic infection; 5. Ovarian torsion / ovarian cyst
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=75)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Acute pelvic pain — ovarian torsion must be excluded [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 39.1°C + HR 118 bpm [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Acute pelvic pain — ovarian torsion must be excluded [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 39.1°C + HR 118 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, pelvic_pain, acute_onset, fever, rigors, nausea_vomiting, vaginal_discharge, pain_worse_movement, guarding, rebound_tenderness, cervical_excitation, adnexal_tenderness, adnexal_mass, abdominal_tenderness, elevated_wbc, raised_crp, raised_lactate, pelvic_free_fluid, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pelvic_inflammatory_disease (from the confirmed diagnosis)
 - note: PlanTab protocol: pelvic_inflammatory_disease (from the confirmed diagnosis)
+- note: Seeded investigations: pelvic_inflammatory_disease (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -7194,13 +7355,14 @@ Guidelines:
 - differential web.passive: 1. Pelvic inflammatory disease (PID); 2. Endometriosis; 3. STI / urethritis / cervicitis; 4. Ovarian torsion / ovarian cyst; 5. Febrile convulsion
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=48)
-- alarms: Emergency now [web.triage.emergency]; Acute pelvic pain — ovarian torsion must be excluded [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute pelvic pain — ovarian torsion must be excluded [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, pelvic_pain, acute_onset, fever, vaginal_discharge, dyspareunia, pain_worse_movement, suprapubic_pain, abdominal_tenderness, adnexal_tenderness, cervical_excitation, elevated_wbc, raised_crp, positive_urinalysis, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pelvic_inflammatory_disease (from the confirmed diagnosis)
 - note: PlanTab protocol: pelvic_inflammatory_disease (from the confirmed diagnosis)
+- note: Seeded investigations: pelvic_inflammatory_disease (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -7239,13 +7401,14 @@ Guidelines:
 - differential web.passive: 1. Vasovagal / reflex syncope; 2. Ovarian torsion / ovarian cyst; 3. Acute appendicitis (paediatric); 4. Pelvic inflammatory disease (PID); 5. Acute cholecystitis
 - differential web.triageSurgical: 1. Leg swelling — possible DVT
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=57)
-- alarms: Emergency now [web.triage.emergency]; Acute pelvic pain — ovarian torsion must be excluded [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Bleeding on apixaban [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute pelvic pain — ovarian torsion must be excluded [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Bleeding on apixaban [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, qsofa, ranson, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, rlq_pain, pelvic_pain, sudden_onset, acute_onset, shoulder_tip_pain, dizziness, nausea_vomiting, pain_worse_movement, worse_lying_flat, syncope, suprapubic_pain, guarding, anticoagulant_use, previous_surgery, diaphoresis, pale_clammy, pallor, abdominal_distension, anaemia, pelvic_free_fluid, adnexal_mass, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: ovarian_cyst (from the confirmed diagnosis)
 - note: PlanTab protocol: ovarian_cyst (from the confirmed diagnosis)
+- note: Seeded investigations: ovarian_cyst (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -7276,13 +7439,14 @@ Guidelines:
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Irritable bowel syndrome (IBS); 3. Chronic pancreatitis; 4. Perforated peptic ulcer; 5. Acute alcoholic pancreatitis
 - differential web.triageSurgical: (empty)
 - emergency level: priority (acuity=review, action=priority_24_48h, score=12)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, news2, web:gerdq
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: chronic_course, epigastric_pain, heartburn, nausea_vomiting, episodic_pain, postprandial_pain, antacid_relief, abdominal_distension, abdominal_tenderness, urticaria_angioedema, known_allergy, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: gastritis (from the confirmed diagnosis)
 - note: PlanTab protocol: gastritis (from the confirmed diagnosis)
+- note: Seeded investigations: gastritis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Post-operative Follow-up (General) (10), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
 
 </details>
@@ -7313,13 +7477,14 @@ Guidelines:
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Irritable bowel syndrome (IBS); 3. Chronic pancreatitis; 4. Perforated peptic ulcer; 5. Acute alcoholic pancreatitis
 - differential web.triageSurgical: (empty)
 - emergency level: priority (acuity=review, action=priority_24_48h, score=12)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, news2, web:gerdq
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: chronic_course, epigastric_pain, heartburn, nausea_vomiting, episodic_pain, postprandial_pain, antacid_relief, abdominal_distension, abdominal_tenderness, recent_antibiotics, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: gastritis (from the confirmed diagnosis)
 - note: PlanTab protocol: gastritis (from the confirmed diagnosis)
+- note: Seeded investigations: gastritis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Post-operative Follow-up (General) (10), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
 
 </details>
@@ -7356,13 +7521,14 @@ Guidelines:
 - differential web.passive: 1. Urinary tract infection (UTI); 2. Bladder transitional cell carcinoma; 3. Acute kidney injury; 4. Prostate adenocarcinoma; 5. Renal colic / urolithiasis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=126)
-- alarms: Emergency now [web.triage.emergency]; Urinary retention with acute kidney injury (obstructive uropathy) [web.clinicalPrompts.safety]; Bleeding on apixaban [web.clinicalPrompts.safety]; Visible haematuria at 45 or over — suspected urological cancer pathway [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 132 μmol/L — elevated [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: urological — Hb 10.8 g/dL [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Urinary retention with acute kidney injury (obstructive uropathy) [web.clinicalPrompts.safety]; Bleeding on apixaban [web.clinicalPrompts.safety]; Visible haematuria at 45 or over — suspected urological cancer pathway [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 132 μmol/L — elevated [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: urological — Hb 10.8 g/dL [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: cha2ds2-vasc, news2, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, suprapubic_pain, haematuria, severe_pain, urinary_retention_symptoms, known_af, known_hypertension, vascular_risk, anticoagulant_use, pallor, palpable_bladder, visible_haematuria, anaemia, raised_creatinine, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: urinary_retention (from the confirmed diagnosis)
 - note: PlanTab protocol: urinary_retention (from the confirmed diagnosis)
+- note: Seeded investigations: urinary_retention (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -7395,13 +7561,14 @@ Guidelines:
 - differential web.passive: 1. Renal colic / urolithiasis; 2. Bladder transitional cell carcinoma; 3. Henoch-Schönlein purpura; 4. Urinary tract infection (UTI); 5. Renal cell carcinoma
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=37)
-- alarms: Visible haematuria at 45 or over — suspected urological cancer pathway [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: urological [web.clinicalPrompts.safety]
+- alarms: Visible haematuria at 45 or over — suspected urological cancer pathway [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: urological [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, asa, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: haematuria, known_copd, visible_haematuria, smoker, vascular_risk, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: haematuria_investigation (from the confirmed diagnosis)
 - note: PlanTab protocol: haematuria_investigation (from the confirmed diagnosis)
+- note: Seeded investigations: haematuria_investigation (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -7433,13 +7600,14 @@ Guidelines:
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Haemorrhoids / anorectal disease; 3. Meckel's diverticulum; 4. Intussusception; 5. Colorectal carcinoma
 - differential web.triageSurgical: 1. Change in bowel habit / lower GI bleed — investigation
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=131)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Bleeding on warfarin [web.clinicalPrompts.safety]; INR 3.4 — coagulopathy [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Bleeding on warfarin [web.clinicalPrompts.safety]; INR 3.4 — coagulopathy [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: cha2ds2-vasc, news2, rockall, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: pr_bleeding, chronic_course, anal_pain, episodic_pain, known_af, known_hypertension, vascular_risk, anticoagulant_use, change_bowel_habit, rectal_mass, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: haemorrhoids (from the confirmed diagnosis)
 - note: PlanTab protocol: haemorrhoids (from the confirmed diagnosis)
+- note: Seeded investigations: haemorrhoids (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (29), IBD — Surgical Complications (Crohn's / UC) (14), Cancer Screening (Age/Sex Appropriate) (7)
 
 </details>
@@ -7474,13 +7642,14 @@ Guidelines:
 - differential web.passive: 1. Squamous cell carcinoma of the anus; 2. Haemorrhoids / anorectal disease; 3. Lower GI bleed / colorectal; 4. Fistula in ano; 5. Perianal abscess
 - differential web.triageSurgical: 1. Haemorrhoids (internal/external)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=95)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, rockall, caprini, asa, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: pr_bleeding, chronic_course, anal_pain, mucus_pr, faecal_incontinence, episodic_pain, worse_straining, perianal_swelling, discharge_perianal, prolapse_pr, known_hypertension, vascular_risk, rectal_mass, hernia_compressible, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: haemorrhoids (from the confirmed diagnosis)
 - note: PlanTab protocol: haemorrhoids (from the confirmed diagnosis)
+- note: Seeded investigations: haemorrhoids (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (17), IBD — Surgical Complications (Crohn's / UC) (12), Cancer Screening (Age/Sex Appropriate) (7)
 
 </details>
@@ -7510,13 +7679,14 @@ Guidelines:
 - differential web.passive: 1. Haemorrhoids / anorectal disease; 2. Squamous cell carcinoma of the anus; 3. Perianal abscess; 4. Lower GI bleed / colorectal; 5. Anal fissure
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=85)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, rockall
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, anal_pain, pain_on_defaecation, severe_pain, perianal_swelling, pr_bleeding, worse_straining, abnormal_uterine_bleeding, localised_pain, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: haemorrhoids (from the confirmed diagnosis)
 - note: PlanTab protocol: haemorrhoids (from the confirmed diagnosis)
+- note: Seeded investigations: haemorrhoids (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (10), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -7549,13 +7719,14 @@ Guidelines:
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Reducible groin / abdominal hernia; 3. Obstructed / strangulated hernia; 4. Varicocele; 5. Acute cholecystitis
 - differential web.triageSurgical: 1. Inguinal hernia
 - emergency level: priority (acuity=review, action=priority_24_48h, score=12)
-- alarms: Incarcerated / strangulated hernia [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Incarcerated / strangulated hernia [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: hernia_incarcerated (Hernia)
 - note: PANE features applied: groin_swelling, chronic_course, below_inguinal_ligament, hernia_swelling, hernia_irreducible, known_hypertension, vascular_risk, diuretic_use, hyponatraemia_drug, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: femoral_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: femoral_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: femoral_hernia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -7596,13 +7767,14 @@ Guidelines:
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Malrotation / midgut volvulus; 3. Sigmoid volvulus; 4. Large bowel obstruction; 5. Intussusception
 - differential web.triageSurgical: 1. Inguinal hernia
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=59)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Incarcerated / strangulated hernia [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; Creatinine 131 μmol/L — elevated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Incarcerated / strangulated hernia [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; Creatinine 131 μmol/L — elevated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, cha2ds2-vasc, news2, has-bled, cfs
 - score values: (none)
 - dx variant: hernia_strangulated (Hernia)
 - note: PANE features applied: abdominal_pain, acute_onset, diffuse_abdominal_pain, periumbilical_pain, colicky_pain, nausea_vomiting, anorexia, episodic_pain, postprandial_pain, severe_pain, abdominal_distension, groin_swelling, constipation, bilious_vomiting, hernia_swelling, known_af, anticoagulant_use, dehydration, tympanic_abdomen, hernia_irreducible, tinkling_bowel_sounds, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: femoral_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: femoral_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: femoral_hernia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Bowel Obstruction (Small / Large) (12), Hernia (Inguinal / Umbilical / Incisional / Femoral) (12), Acute Abdomen (7)
 
 </details>
@@ -7638,13 +7810,14 @@ Guidelines:
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Reducible groin / abdominal hernia; 3. Obstructed / strangulated hernia; 4. Varicocele; 5. Testicular torsion / epididymo-orchitis
 - differential web.triageSurgical: 1. Inguinal hernia
 - emergency level: urgent (acuity=priority, action=same_day_call, score=7)
-- alarms: Incarcerated / strangulated hernia [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Incarcerated / strangulated hernia [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: hernia_incarcerated (Hernia)
 - note: PANE features applied: groin_swelling, sudden_onset, acute_onset, localised_pain, worse_straining, hernia_swelling, groin_pain, hernia_irreducible, known_hypertension, vascular_risk, acei_arb_use, hernia_compressible, groin_lump_reducible, abdominal_tenderness, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (20), IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
 
@@ -7685,13 +7858,14 @@ Guidelines:
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Adhesive small bowel obstruction; 3. Obstructed / strangulated hernia; 4. Reducible groin / abdominal hernia; 5. Sigmoid volvulus
 - differential web.triageSurgical: 1. Inguinal hernia
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=99)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Incarcerated / strangulated hernia [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 17.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 142 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.3°C + HR 118 bpm [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Incarcerated / strangulated hernia [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 17.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 142 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.3°C + HR 118 bpm [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, web:wagner, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: hernia_strangulated (Hernia)
 - note: PANE features applied: groin_swelling, sudden_onset, acute_onset, localised_pain, severe_pain, hernia_swelling, groin_pain, nausea_vomiting, abdominal_distension, fever, hernia_irreducible, absolute_constipation, erythema_surrounding, bilious_vomiting, diffuse_abdominal_pain, known_diabetes, known_ckd, tympanic_abdomen, tinkling_bowel_sounds, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, raised_urea, pelvic_free_fluid, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (15), Bowel Obstruction (Small / Large) (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
@@ -7727,13 +7901,14 @@ Guidelines:
 - differential web.passive: 1. Reducible groin / abdominal hernia; 2. Obstructed / strangulated hernia; 3. Inguinal hernia (paediatric); 4. Acute cholecystitis; 5. CBD stone / obstructive jaundice
 - differential web.triageSurgical: 1. Incisional / ventral hernia
 - emergency level: urgent (acuity=priority, action=same_day_call, score=34)
-- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HbA1c 64% — poorly controlled diabetes [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HbA1c 64% — poorly controlled diabetes [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: web:wagner, news2, caprini, asa, rcri, stop-bang, cfs
 - score values: (none)
 - dx variant: (none) (Hernia)
 - note: PANE features applied: incisional_swelling, previous_surgery, chronic_course, episodic_pain, progressive_course, worse_straining, hernia_swelling, hernia_compressible, localised_pain, known_diabetes, known_copd, cough, cough_impulse, bowel_resection, smoker, vascular_risk, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: incisional_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: incisional_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: incisional_hernia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5)
 
 </details>
@@ -7767,13 +7942,14 @@ Guidelines:
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Reducible groin / abdominal hernia; 3. Obstructed / strangulated hernia; 4. Varicocele; 5. Acute cholecystitis
 - differential web.triageSurgical: 1. Inguinal hernia
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: hernia_reducible (Hernia)
 - note: PANE features applied: groin_swelling, chronic_course, episodic_pain, worse_straining, hernia_compressible, hernia_swelling, groin_lump_reducible, known_hypertension, vascular_risk, cough, cough_impulse, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (15), IBD — Surgical Complications (Crohn's / UC) (12), Cancer Screening (Age/Sex Appropriate) (7)
 
 </details>
@@ -7806,13 +7982,14 @@ Guidelines:
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Reducible groin / abdominal hernia; 3. Obstructed / strangulated hernia; 4. Varicocele; 5. Testicular torsion / epididymo-orchitis
 - differential web.triageSurgical: 1. Change in bowel habit / lower GI bleed — investigation; 2. Inguinal hernia
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (Hernia)
 - note: PANE features applied: groin_swelling, chronic_course, localised_pain, episodic_pain, worse_straining, hernia_swelling, groin_pain, hernia_compressible, groin_lump_reducible, previous_surgery, cough, change_bowel_habit, cough_impulse, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (15), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (12), Diverticular Disease / Diverticulitis (7)
 
 </details>
@@ -7848,13 +8025,14 @@ Guidelines:
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=47)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2, cfs
 - score values: (none)
 - dx variant: hernia_incarcerated (Hernia)
 - note: PANE features applied: abdominal_pain, acute_onset, diffuse_abdominal_pain, periumbilical_pain, colicky_pain, nausea_vomiting, anorexia, episodic_pain, pain_worse_movement, postprandial_pain, severe_pain, abdominal_distension, constipation, bilious_vomiting, known_ckd, dehydration, tympanic_abdomen, howship_romberg, medial_thigh_pain, tinkling_bowel_sounds, elevated_wbc, raised_crp, raised_lactate, raised_urea, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: obturator_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: obturator_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: obturator_hernia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Bowel Obstruction (Small / Large) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -7888,13 +8066,14 @@ Guidelines:
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Intussusception; 3. Malrotation / midgut volvulus; 4. Obstructed / strangulated hernia; 5. Hypertrophic pyloric stenosis
 - differential web.triageSurgical: 1. Inguinal hernia
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=45)
-- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Possible intussusception [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia in a child [web.clinicalPrompts.safety]
+- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Possible intussusception [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia in a child [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2
 - score values: (none)
 - dx variant: hernia_incarcerated (Hernia)
 - note: PANE features applied: groin_swelling, hernia_irreducible, sudden_onset, acute_onset, localised_pain, nausea_vomiting, severe_pain, hernia_swelling, inconsolable_crying, poor_feeding, abdominal_distension, soft_tissue_lump, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10)
 
 </details>
@@ -7925,13 +8104,14 @@ Guidelines:
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Reducible groin / abdominal hernia; 3. Testicular torsion / epididymo-orchitis; 4. Varicocele; 5. Obstructed / strangulated hernia
 - differential web.triageSurgical: 1. Inguinal hernia
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Testicular / scrotal signs [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia in a child [web.clinicalPrompts.safety]
+- alarms: Testicular / scrotal signs [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia in a child [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2
 - score values: (none)
 - dx variant: (none) (Hernia)
 - note: PANE features applied: groin_swelling, chronic_course, scrotal_swelling, episodic_pain, worse_straining, hernia_swelling, hernia_compressible, groin_lump_reducible, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10)
 
 </details>
@@ -7966,13 +8146,14 @@ Guidelines:
 - differential web.passive: 1. Reducible groin / abdominal hernia; 2. Wilms tumour / nephroblastoma; 3. Obstructed / strangulated hernia; 4. Inguinal hernia (paediatric); 5. Gastrointestinal stromal tumour (GIST)
 - differential web.triageSurgical: 1. Rectal cancer
 - emergency level: urgent (acuity=priority, action=same_day_call, score=44)
-- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-dvt, news2, caprini, must, cfs, ecog
 - score values: (none)
 - dx variant: (none) (Hernia)
 - note: PANE features applied: incisional_swelling, previous_surgery, chronic_course, episodic_pain, worse_straining, hernia_swelling, abdominal_mass, hernia_compressible, localised_pain, known_malignancy, lif_pain, colicky_pain, cough, cough_impulse, stoma, parastomal_bulge, trauma_mechanism, recent_surgery, aortic_graft
 - note: AssessmentTab ManagementPanel protocol: parastomal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: parastomal_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: parastomal_hernia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5)
 
 </details>
@@ -8014,13 +8195,14 @@ Guidelines:
 - differential web.passive: 1. Obstructed / strangulated hernia; 2. Reducible groin / abdominal hernia; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=53)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Incarcerated / strangulated hernia [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Incarcerated / strangulated hernia [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, web:wagner, news2, caprini, asa, rcri, stop-bang, cfs
 - score values: (none)
 - dx variant: hernia_strangulated (Hernia)
 - note: PANE features applied: umbilical_swelling, sudden_onset, acute_onset, localised_pain, severe_pain, hernia_swelling, abdominal_pain, nausea_vomiting, hernia_irreducible, erythema_surrounding, guarding, known_diabetes, insulin_or_sulfonylurea, skin_necrosis, elevated_wbc, raised_crp, raised_lactate, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: umbilical_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: umbilical_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: umbilical_hernia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -8055,13 +8237,14 @@ Guidelines:
 - differential web.passive: 1. Reducible groin / abdominal hernia; 2. Obstructed / strangulated hernia; 3. Inguinal hernia (paediatric); 4. Acute cholecystitis; 5. CBD stone / obstructive jaundice
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: hernia_reducible (Hernia)
 - note: PANE features applied: umbilical_swelling, chronic_course, localised_pain, episodic_pain, worse_straining, hernia_compressible, hernia_swelling, cough, cough_impulse, smoker, vascular_risk, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: umbilical_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: umbilical_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: umbilical_hernia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -8101,13 +8284,14 @@ Guidelines:
 - differential web.passive: 1. Reducible groin / abdominal hernia; 2. Obstructed / strangulated hernia; 3. Inguinal hernia (paediatric); 4. Liver disease / hepatitis / cirrhosis; 5. Hirschsprung's disease
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=12)
-- alarms: Umbilical hernia with ascites — rupture risk (thin / ulcerated skin) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Albumin 29 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Umbilical hernia with ascites — rupture risk (thin / ulcerated skin) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Albumin 29 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: child-pugh, meld, gcs, news2, caprini, asa, web:audit, rcri, cfs
 - score values: (none)
 - dx variant: (none) (Hernia)
 - note: PANE features applied: umbilical_swelling, chronic_course, progressive_course, hernia_swelling, abdominal_distension, hernia_compressible, jaundice, known_liver_disease, alcohol_use, known_hypertension, vascular_risk, diuretic_use, ascites, spider_naevi, erythema_surrounding, thrombocytopenia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: umbilical_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: umbilical_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: umbilical_hernia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Bowel Obstruction (Small / Large) (5), Hernia (Inguinal / Umbilical / Incisional / Femoral) (5)
 
 </details>
@@ -8145,13 +8329,14 @@ Guidelines:
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Primary hyperparathyroidism / hypercalcaemia; 3. Addisonian crisis / adrenal insufficiency; 4. Urinary tract infection (UTI); 5. Cushing's syndrome
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=85)
-- alarms: Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Hyperosmolar hyperglycaemic state [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 186 μmol/L — elevated [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Hyperosmolar hyperglycaemic state [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 186 μmol/L — elevated [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, gcs, web:wagner, news2, caprini, asa, rcri, stop-bang, cfs, web:phq9
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: confusion, dehydration, polyuria_polydipsia, fatigue, frequency_urgency, known_diabetes, known_hypertension, vascular_risk, known_ckd, insulin_or_sulfonylurea, previous_surgery, gcs_drop, hyperglycaemia, very_high_glucose, raised_urea, raised_creatinine, elevated_wbc, raised_crp, positive_urinalysis, acute_onset, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: hyperosmolar_hyperglycaemic_state (from the confirmed diagnosis)
 - note: PlanTab protocol: hyperosmolar_hyperglycaemic_state (from the confirmed diagnosis)
+- note: Seeded investigations: hyperosmolar_hyperglycaemic_state (confirmed); 0 stat test(s) held back
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -8188,13 +8373,14 @@ Guidelines:
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Primary hyperparathyroidism / hypercalcaemia; 3. Hirschsprung's disease; 4. Adhesive small bowel obstruction; 5. Hypertrophic pyloric stenosis
 - differential web.triageSurgical: 1. Breast cancer
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=84)
-- alarms: Emergency now [web.triage.emergency]; Hypercalcaemia — severe [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 156 μmol/L — elevated [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Hypercalcaemia — severe [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 156 μmol/L — elevated [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-dvt, gcs, news2, caprini, must, ecog
 - score values: (none)
 - dx variant: (none) (Breast)
 - note: PANE features applied: nausea_vomiting, diffuse_abdominal_pain, confusion, polyuria_polydipsia, constipation, bone_pain, known_malignancy, anticholinergic_or_opioid, previous_surgery, lif_pain, dehydration, hypercalcaemia_lab, raised_creatinine, raised_urea, acute_onset, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: hypercalcaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: hypercalcaemia (from the confirmed diagnosis)
+- note: Seeded investigations: hypercalcaemia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Breast Lump / Breast Disease (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -8230,13 +8416,14 @@ Guidelines:
 - differential web.passive: 1. Primary hyperparathyroidism / hypercalcaemia; 2. Sickle cell vaso-occlusive crisis; 3. Sickle cell crisis; 4. Leukaemia / haematological malignancy; 5. Dengue fever
 - differential web.triageSurgical: 1. Colon cancer; 2. Unexplained weight loss / GI alarm symptoms — endoscopy workup
 - emergency level: urgent (acuity=priority, action=same_day_call, score=67)
-- alarms: Hypercalcaemia [web.clinicalPrompts.safety]; Spinal pain suggestive of metastases (no neurological deficit) [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 298 μmol/L — elevated [web.clinicalPrompts.safety]
+- alarms: Hypercalcaemia [web.clinicalPrompts.safety]; Spinal pain suggestive of metastases (no neurological deficit) [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 298 μmol/L — elevated [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, news2, caprini, asa, rcri, stop-bang, cfs, web:phq9
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: back_pain, fatigue, constipation, polyuria_polydipsia, bone_pain, weight_loss, nocturnal_pain, known_hypertension, vascular_risk, nsaid_use, acei_arb_use, pallor, hypercalcaemia_lab, raised_creatinine, raised_urea, anaemia, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: hypercalcaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: hypercalcaemia (from the confirmed diagnosis)
+- note: Seeded investigations: hypercalcaemia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (17), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), GI Bleeding (Upper and Lower) (12)
 
 </details>
@@ -8276,13 +8463,14 @@ Guidelines:
 - differential web.passive: 1. Anaemia; 2. Addisonian crisis / adrenal insufficiency; 3. Cushing's syndrome; 4. Primary hyperaldosteronism (Conn's syndrome); 5. Sickle cell vaso-occlusive crisis
 - differential web.triageSurgical: 1. Diverticulitis of colon
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=44)
-- alarms: Emergency now [web.triage.emergency]; Hyperkalaemia — severe with ECG changes [web.clinicalPrompts.safety]; Potassium 6.7 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; Creatinine 268 μmol/L — elevated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Hyperkalaemia — severe with ECG changes [web.clinicalPrompts.safety]; Potassium 6.7 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; Creatinine 268 μmol/L — elevated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, news2, caprini, asa, clavien-dindo, rcri, stop-bang, cfs, web:phq9
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: fatigue, known_hypertension, vascular_risk, acei_arb_use, nsaid_use, anticoagulant_use, previous_surgery, leg_swelling, oliguria, stoma, abdominal_tenderness, recent_surgery, bowel_resection, hyperkalaemia_lab, raised_creatinine, raised_urea, elevated_wbc, raised_crp, acute_onset, tachycardia, trauma_mechanism, aortic_graft
 - note: AssessmentTab ManagementPanel protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_kidney_injury (from the confirmed diagnosis)
+- note: Seeded investigations: acute_kidney_injury (confirmed); 0 stat test(s) held back
 - note: matchPathways: Diverticular Disease / Diverticulitis (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -8319,13 +8507,14 @@ Guidelines:
 - differential web.passive: 1. Anaemia; 2. Atrial fibrillation / flutter; 3. Addisonian crisis / adrenal insufficiency; 4. Panic disorder; 5. Primary hyperaldosteronism (Conn's syndrome)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=30)
-- alarms: Emergency now [web.triage.emergency]; Hyperkalaemia — severe with ECG changes [web.clinicalPrompts.safety]; Creatinine 312 μmol/L — elevated [web.clinicalPrompts.safety]; Potassium 7.2 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 46 bpm — bradycardia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Hyperkalaemia — severe with ECG changes [web.clinicalPrompts.safety]; Creatinine 312 μmol/L — elevated [web.clinicalPrompts.safety]; Potassium 7.2 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 46 bpm — bradycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: cha2ds2-vasc, web:wagner, news2, caprini, asa, rcri, stop-bang, cfs, web:phq9, web:gad7
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: fatigue, dizziness, palpitations, known_diabetes, known_ckd, known_heart_disease, vascular_risk, acei_arb_use, diuretic_use, recent_antibiotics, insulin_or_sulfonylurea, leg_swelling, bilateral_leg_oedema, pallor, hyperkalaemia_lab, raised_creatinine, raised_urea, anaemia, acute_onset, bradycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: hyperkalaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: hyperkalaemia (from the confirmed diagnosis)
+- note: Seeded investigations: hyperkalaemia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -8359,13 +8548,14 @@ Guidelines:
 - differential web.passive: 1. Stroke / TIA; 2. Hypoglycaemia; 3. Hypertensive emergency / hypertensive encephalopathy; 4. Sepsis / systemic infection; 5. Meningitis / encephalitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=80)
-- alarms: Hypoglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute stroke (FAST positive) [web.clinicalPrompts.safety]; Hypoglycaemia [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Hypoglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute stroke (FAST positive) [web.clinicalPrompts.safety]; Hypoglycaemia [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: gcs, web:wagner, news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: limb_weakness, focal_weakness, facial_weakness, speech_disturbance, confusion, low_glucose, known_diabetes, insulin_or_sulfonylurea, sudden_onset, radiation_arm_jaw, diaphoresis, gcs_drop, acute_onset, tachycardia, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: hypoglycaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: hypoglycaemia (from the confirmed diagnosis)
+- note: Seeded investigations: hypoglycaemia (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Pre-operative Assessment (5)
 
 </details>
@@ -8398,13 +8588,14 @@ Guidelines:
 - differential web.passive: 1. Hypoglycaemia; 2. Stroke / TIA; 3. Sepsis / systemic infection; 4. Malaria; 5. Hypertensive emergency / hypertensive encephalopathy
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=85)
-- alarms: Hypoglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute stroke (FAST positive) [web.clinicalPrompts.safety]; Hypoglycaemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 245 μmol/L — elevated [web.clinicalPrompts.safety]
+- alarms: Hypoglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute stroke (FAST positive) [web.clinicalPrompts.safety]; Hypoglycaemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 245 μmol/L — elevated [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: gcs, web:wagner, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: confusion, night_sweats, speech_disturbance, low_glucose, known_diabetes, known_ckd, known_hypertension, vascular_risk, insulin_or_sulfonylurea, diaphoresis, pallor, gcs_drop, raised_creatinine, acute_onset, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: hypoglycaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: hypoglycaemia (from the confirmed diagnosis)
+- note: Seeded investigations: hypoglycaemia (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -8422,14 +8613,10 @@ Permutation of `hyponatraemia-severe-postop-seizure`.
 | alarm-hyponatraemia | mustAlarm | critical | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
 | mgmt-stop-thiazide | managementInclude | critical | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
 | mgmt-correction-limit | managementInclude | critical | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
-| flag-hypokalaemia | redFlags | quality | FAIL (known gap) | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 | Add a hypokalaemia prompt, and warn that correcting potassium raises sodium. |
+| flag-hypokalaemia | redFlags | quality | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 | Add a hypokalaemia prompt, and warn that correcting potassium raises sodium. |
 | mgmt-osmolality-urine-sodium | managementInclude | quality | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
 | mgmt-stop-ssri | managementInclude | quality | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
 | mgmt-single-hypertonic-150 | managementInclude | quality | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
-
-Failure details:
-
-- **flag-hypokalaemia** (web): no red flag matched among 15 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.triage.emergency) [known gap: Web: Potassium 3.1 is not flagged: there is no hypokalaemia prompt. \| iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 13 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.acuity)]
 
 Guidelines:
 
@@ -8443,13 +8630,14 @@ Guidelines:
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Acute appendicitis (paediatric); 3. BPPV / labyrinthitis / vestibular neuritis; 4. Acute kidney injury; 5. Acute alcoholic pancreatitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=37)
-- alarms: Emergency now [web.triage.emergency]; Hyponatraemia — profound with severe symptoms [web.clinicalPrompts.safety]; Sodium 119 mmol/L — hyponatraemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Hyponatraemia — profound with severe symptoms [web.clinicalPrompts.safety]; Sodium 119 mmol/L — hyponatraemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: gcs, news2, caprini, asa, rcri, cfs, web:phq9, web:gad7
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, confusion, gait_disturbance, anorexia, dizziness, known_hypertension, vascular_risk, diuretic_use, hyponatraemia_drug, low_mood, trauma_mechanism, mechanism_blunt, hyponatraemia_lab, acute_onset, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: hyponatraemia (from the confirmed diagnosis)
 - note: PlanTab protocol: hyponatraemia (from the confirmed diagnosis)
+- note: Seeded investigations: hyponatraemia (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -8482,13 +8670,14 @@ Guidelines:
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Acute gastroenteritis; 3. Anaemia; 4. Inflammatory bowel disease (Crohn's / UC); 5. Addisonian crisis / adrenal insufficiency
 - differential web.triageSurgical: 1. Rectal cancer
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=52)
-- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 142 μmol/L — elevated [web.clinicalPrompts.safety]; Sodium 126 mmol/L — hyponatraemia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 142 μmol/L — elevated [web.clinicalPrompts.safety]; Sodium 126 mmol/L — hyponatraemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, news2, caprini, clavien-dindo, must, stop-bang, ecog, web:phq9
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dizziness, polyuria_polydipsia, dehydration, fatigue, diarrhoea, ppi_use, known_malignancy, previous_surgery, colicky_pain, oliguria, stoma, bowel_resection, hyponatraemia_lab, raised_urea, raised_creatinine, acute_onset, recent_surgery, tachycardia, trauma_mechanism, aortic_graft
 - note: AssessmentTab ManagementPanel protocol: hyponatraemia (from the confirmed diagnosis)
 - note: PlanTab protocol: hyponatraemia (from the confirmed diagnosis)
+- note: Seeded investigations: hyponatraemia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -8522,13 +8711,14 @@ Guidelines:
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Epilepsy / seizure disorder; 3. Bacterial meningitis (paediatric); 4. Meningitis / encephalitis; 5. Migraine
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=65)
-- alarms: Emergency now [web.triage.emergency]; Hyponatraemia — profound with severe symptoms [web.clinicalPrompts.safety]; Seizure with incomplete recovery [web.clinicalPrompts.safety]; Post-operative delirium — find the cause [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Sodium 116 mmol/L — hyponatraemia [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Hyponatraemia — profound with severe symptoms [web.clinicalPrompts.safety]; Seizure with incomplete recovery [web.clinicalPrompts.safety]; Post-operative delirium — find the cause [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Sodium 116 mmol/L — hyponatraemia [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, gcs, news2, clavien-dindo
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: seizure, headache, nausea_vomiting, confusion, anticholinergic_or_opioid, previous_surgery, gcs_drop, abdominal_tenderness, recent_surgery, hyponatraemia_lab, acute_onset, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: hyponatraemia (from the confirmed diagnosis)
 - note: PlanTab protocol: hyponatraemia (from the confirmed diagnosis)
+- note: Seeded investigations: hyponatraemia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (5), IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -8564,13 +8754,14 @@ Guidelines:
 - differential web.passive: 1. Acute gastroenteritis; 2. Acute mesenteric ischaemia; 3. Acute appendicitis (paediatric); 4. Inflammatory bowel disease (Crohn's / UC); 5. Mesenteric adenitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=113)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Fever 38.4°C + HR 102 bpm [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Fever 38.4°C + HR 102 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, rockall
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: change_bowel_habit, acute_onset, diffuse_abdominal_pain, colicky_pain, fever, nausea_vomiting, pr_bleeding, episodic_pain, diarrhoea, abdominal_pain, dehydration, bloody_diarrhoea, abdominal_tenderness, sick_contacts, elevated_wbc, raised_crp, raised_urea, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: infective_colitis (from the confirmed diagnosis)
 - note: PlanTab protocol: infective_colitis (from the confirmed diagnosis)
+- note: Seeded investigations: infective_colitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -8605,13 +8796,14 @@ Guidelines:
 - differential web.passive: 1. Anaemia; 2. Heart failure; 3. Acute respiratory distress syndrome (ARDS); 4. Cardiac tamponade; 5. Hypothyroidism
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=42)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal / upper GI — iron-deficiency anaemia, Hb 9.1 g/dL, ferritin 6 µg/L [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal / upper GI — iron-deficiency anaemia, Hb 9.1 g/dL, ferritin 6 µg/L [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri, stop-bang, cfs, ecog, web:phq9
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: chronic_course, diffuse_abdominal_pain, progressive_course, pain_worse_movement, fatigue, exertional_symptoms, dyspnoea, pallor, known_hypertension, vascular_risk, acei_arb_use, anaemia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: iron_deficiency_anaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: iron_deficiency_anaemia (from the confirmed diagnosis)
+- note: Seeded investigations: iron_deficiency_anaemia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5)
 
 </details>
@@ -8644,13 +8836,14 @@ Guidelines:
 - differential web.passive: 1. Inflammatory bowel disease (Crohn's / UC); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Lower GI bleed / colorectal; 5. Intussusception
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=154)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; P2Y12 inhibitor (clopidogrel) [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; P2Y12 inhibitor (clopidogrel) [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, web:wagner, news2, rockall, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, lif_pain, colicky_pain, pr_bleeding, change_bowel_habit, diarrhoea, luq_pain, vascular_risk, known_diabetes, known_hypertension, antiplatelet_use, dehydration, bloody_diarrhoea, abdominal_tenderness, elevated_wbc, raised_crp, raised_urea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: ischaemic_colitis (from the confirmed diagnosis)
 - note: PlanTab protocol: ischaemic_colitis (from the confirmed diagnosis)
+- note: Seeded investigations: ischaemic_colitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -8683,13 +8876,14 @@ Guidelines:
 - differential web.passive: 1. Intussusception; 2. Acute mesenteric ischaemia; 3. Meckel's diverticulum; 4. Lower GI bleed / colorectal; 5. Acute gastroenteritis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=154)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Suspected acute mesenteric ischaemia [web.clinicalPrompts.safety]; Atrial fibrillation with rapid ventricular response [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.6 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 132 μmol/L — elevated [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Suspected acute mesenteric ischaemia [web.clinicalPrompts.safety]; Atrial fibrillation with rapid ventricular response [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.6 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 132 μmol/L — elevated [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, cha2ds2-vasc, qsofa, news2, rockall, has-bled, rcri, cfs, web:gad7
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, periumbilical_pain, nausea_vomiting, pr_bleeding, severe_pain, palpitations, rlq_pain, irregular_pulse, known_af, known_heart_disease, vascular_risk, pain_out_of_proportion, anticoagulant_use, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, raised_urea, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: mesenteric_ischaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: mesenteric_ischaemia (from the confirmed diagnosis)
+- note: Seeded investigations: mesenteric_ischaemia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7)
 
 </details>
@@ -8727,13 +8921,14 @@ Guidelines:
 - differential web.passive: 1. Liver disease / hepatitis / cirrhosis; 2. CBD stone / obstructive jaundice; 3. Cholangiocarcinoma; 4. Leptospirosis; 5. Biliary atresia
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=150)
-- alarms: Emergency now [web.triage.emergency]; Charcot's triad (RUQ pain + fever + jaundice) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Charcot's triad (RUQ pain + fever + jaundice) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: tg18-cholangitis, child-pugh, qsofa, asge-cbd, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: jaundice, acute_onset, ruq_pain, fever, nausea_vomiting, anorexia, pain_worse_movement, dark_urine, fatigue, abdominal_pain, raised_liver_enzymes, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_hepatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_hepatitis (from the confirmed diagnosis)
+- note: Seeded investigations: acute_hepatitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Jaundice Workup (25), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10)
 
 </details>
@@ -8769,13 +8964,14 @@ Guidelines:
 - differential web.passive: 1. Large bowel obstruction; 2. Adhesive small bowel obstruction; 3. Sigmoid volvulus; 4. Intussusception; 5. Inflammatory bowel disease (Crohn's / UC)
 - differential web.triageSurgical: 1. Change in bowel habit / lower GI bleed — investigation; 2. Unexplained weight loss / GI alarm symptoms — endoscopy workup
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=192)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hepatic lesion on imaging [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hepatic lesion on imaging [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, web:wagner, news2, rockall, caprini, asa, rcri, cfs, ecog
 - score values: (none)
 - dx variant: lbo_malignant (Bowel Obstruction)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, lif_pain, acute_onset, colicky_pain, abdominal_distension, nausea_vomiting, pr_bleeding, constipation, absolute_constipation, weight_loss, change_bowel_habit, known_hypertension, vascular_risk, known_diabetes, pallor, tympanic_abdomen, abdominal_tenderness, anaemia, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_cancer (from the confirmed diagnosis)
+- note: Seeded investigations: colorectal_cancer (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (17), Cancer Screening (Age/Sex Appropriate) (7), IBD — Surgical Complications (Crohn's / UC) (7)
 
 </details>
@@ -8811,13 +9007,14 @@ Guidelines:
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Malaria; 5. Hirschsprung's disease
 - differential web.triageSurgical: 1. Change in bowel habit / lower GI bleed — investigation
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=194)
-- alarms: Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 18.6 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 156 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.2°C + HR 122 bpm [web.clinicalPrompts.safety]
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 18.6 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 156 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.2°C + HR 122 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, caprini, asa, rcri, cfs, ecog
 - score values: (none)
 - dx variant: lbo_malignant (Bowel Obstruction)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, rlq_pain, acute_onset, abdominal_distension, fever, rigors, nausea_vomiting, constipation, absolute_constipation, pain_worse_movement, guarding, rebound_tenderness, absent_bowel_sounds, known_hypertension, vascular_risk, known_heart_disease, diuretic_use, tympanic_abdomen, change_bowel_habit, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, mesenteric_ct_signs, tachycardia, haemodynamic_instability, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_cancer (from the confirmed diagnosis)
+- note: Seeded investigations: colorectal_cancer (confirmed); 0 stat test(s) held back
 - note: matchPathways: Diverticular Disease / Diverticulitis (14), IBD — Surgical Complications (Crohn's / UC) (14), Bowel Obstruction (Small / Large) (12)
 
 </details>
@@ -8851,13 +9048,14 @@ Guidelines:
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=30)
-- alarms: Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2, stop-bang, cfs, ecog, web:phq9
 - score values: (none)
 - dx variant: lbo_malignant (Bowel Obstruction)
 - note: PANE features applied: abdominal_pain, periumbilical_pain, acute_onset, colicky_pain, nausea_vomiting, constipation, absolute_constipation, abdominal_distension, episodic_pain, postprandial_pain, fatigue, pallor, anaemia, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_cancer (from the confirmed diagnosis)
+- note: Seeded investigations: colorectal_cancer (confirmed); 0 stat test(s) held back
 - note: matchPathways: Bowel Obstruction (Small / Large) (12), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (10), Acute Abdomen (7)
 
 </details>
@@ -8896,13 +9094,14 @@ Guidelines:
 - differential web.passive: 1. Anaemia; 2. Lower GI bleed / colorectal; 3. Meckel's diverticulum; 4. Heart failure; 5. Haemorrhoids / anorectal disease
 - differential web.triageSurgical: 1. Change in bowel habit / lower GI bleed — investigation
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=131)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 132 μmol/L — elevated [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal / upper GI — iron-deficiency anaemia, Hb 8.6 g/dL, ferritin 8 µg/L [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 132 μmol/L — elevated [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal / upper GI — iron-deficiency anaemia, Hb 8.6 g/dL, ferritin 8 µg/L [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, rockall, rcri, stop-bang, cfs, ecog, web:phq9
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: pr_bleeding, chronic_course, episodic_pain, fatigue, exertional_symptoms, dyspnoea, pallor, heart_murmur, known_heart_disease, vascular_risk, known_ckd, antiplatelet_use, previous_surgery, change_bowel_habit, anaemia, raised_urea, raised_creatinine, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: angiodysplasia (from the confirmed diagnosis)
 - note: PlanTab protocol: angiodysplasia (from the confirmed diagnosis)
+- note: Seeded investigations: angiodysplasia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (29), IBD — Surgical Complications (Crohn's / UC) (14), Cancer Screening (Age/Sex Appropriate) (7)
 
 </details>
@@ -8943,13 +9142,14 @@ Guidelines:
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Haemorrhoids / anorectal disease; 3. Meckel's diverticulum; 4. Intussusception; 5. Colorectal carcinoma
 - differential web.triageSurgical: 1. Diverticulitis of colon
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=131)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Bleeding on apixaban [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal — Hb 10.9 g/dL [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Bleeding on apixaban [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal — Hb 10.9 g/dL [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: cha2ds2-vasc, news2, rockall, has-bled, cfs
 - score values: (none)
 - dx variant: (none) (Diverticulitis)
 - note: PANE features applied: pr_bleeding, acute_onset, episodic_pain, known_af, known_ckd, anticoagulant_use, pallor, anaemia, raised_urea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: lower_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: lower_gi_bleed (from the confirmed diagnosis)
+- note: Seeded investigations: lower_gi_bleed (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), Diverticular Disease / Diverticulitis (12), Acute Abdomen (7)
 
 </details>
@@ -8988,13 +9188,14 @@ Guidelines:
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Anal fissure; 3. Haemorrhoids / anorectal disease; 4. Large bowel obstruction; 5. Hirschsprung's disease
 - differential web.triageSurgical: 1. Change in bowel habit / lower GI bleed — investigation
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=65)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, rockall
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: pr_bleeding, acute_onset, anal_pain, episodic_pain, worse_straining, constipation, change_bowel_habit, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: haemorrhoids (from the confirmed diagnosis)
 - note: PlanTab protocol: haemorrhoids (from the confirmed diagnosis)
+- note: Seeded investigations: haemorrhoids (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (29), IBD — Surgical Complications (Crohn's / UC) (21), Diverticular Disease / Diverticulitis (14)
 
 </details>
@@ -9028,13 +9229,14 @@ Guidelines:
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Haemorrhoids / anorectal disease; 3. Meckel's diverticulum; 4. Intussusception; 5. Colorectal carcinoma
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=191)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; P2Y12 inhibitor (clopidogrel) [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal — Hb 11.2 g/dL [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; P2Y12 inhibitor (clopidogrel) [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal — Hb 11.2 g/dL [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, web:wagner, news2, rockall, caprini, asa, clavien-dindo, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: pr_bleeding, acute_onset, episodic_pain, recent_surgery, previous_surgery, known_heart_disease, vascular_risk, known_diabetes, antiplatelet_use, dizziness, pallor, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: lower_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: lower_gi_bleed (from the confirmed diagnosis)
+- note: Seeded investigations: lower_gi_bleed (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), IBD — Surgical Complications (Crohn's / UC) (12), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (10)
 
 </details>
@@ -9076,13 +9278,14 @@ Guidelines:
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Haemorrhoids / anorectal disease; 3. Vasovagal / reflex syncope; 4. Meckel's diverticulum; 5. Intussusception
 - differential web.triageSurgical: 1. Diverticulitis of colon
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=222)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Raised lactate [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; SBP 88 mmHg — hypotension [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal — Hb 8.4 g/dL [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Raised lactate [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; SBP 88 mmHg — hypotension [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal — Hb 8.4 g/dL [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2, rockall, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (Upper GI Bleed)
 - note: PANE features applied: pr_bleeding, sudden_onset, acute_onset, episodic_pain, syncope, dizziness, haemodynamic_instability, known_hypertension, vascular_risk, diaphoresis, pale_clammy, mottled_skin, pallor, alcohol_use, anaemia, raised_lactate, tachycardia, hypotension, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: lower_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: lower_gi_bleed (from the confirmed diagnosis)
+- note: Seeded investigations: lower_gi_bleed (confirmed); 0 stat test(s) held back
 - note: matchPathways: Diverticular Disease / Diverticulitis (17), GI Bleeding (Upper and Lower) (15), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12)
 
 </details>
@@ -9115,13 +9318,14 @@ Guidelines:
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Haemorrhoids / anorectal disease; 3. BPPV / labyrinthitis / vestibular neuritis; 4. Meckel's diverticulum; 5. Intussusception
 - differential web.triageSurgical: 1. Diverticulitis of colon
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=221)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Atrial fibrillation with haemodynamic instability [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Bleeding on warfarin [web.clinicalPrompts.safety]; INR 4.6 — coagulopathy [web.clinicalPrompts.safety]; SBP 86 mmHg — hypotension [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Haemoglobin 7.9 g/dL — severe anaemia [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal — Hb 7.9 g/dL [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Atrial fibrillation with haemodynamic instability [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Bleeding on warfarin [web.clinicalPrompts.safety]; INR 4.6 — coagulopathy [web.clinicalPrompts.safety]; SBP 86 mmHg — hypotension [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Haemoglobin 7.9 g/dL — severe anaemia [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal — Hb 7.9 g/dL [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: cha2ds2-vasc, qsofa, news2, rockall, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (Upper GI Bleed)
 - note: PANE features applied: pr_bleeding, acute_onset, episodic_pain, dizziness, haemodynamic_instability, irregular_pulse, known_af, known_hypertension, vascular_risk, anticoagulant_use, pallor, confusion, recent_antibiotics, anaemia, raised_urea, raised_lactate, tachycardia, hypotension, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: lower_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: lower_gi_bleed (from the confirmed diagnosis)
+- note: Seeded investigations: lower_gi_bleed (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), Diverticular Disease / Diverticulitis (12), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (10)
 
 </details>
@@ -9157,13 +9361,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. UTI (paediatric); 3. Typhoid fever; 4. Mesenteric adenitis; 5. Infective endocarditis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=48)
-- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.6°C + HR 104 bpm [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.6°C + HR 104 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, child-pugh, qsofa, asge-cbd, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: chronic_course, ruq_pain, shoulder_tip_pain, fever, anorexia, pain_worse_movement, pleuritic_chest_pain, abdominal_pain, bloody_diarrhoea, diarrhoea, abdominal_tenderness, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: amoebic_liver_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: amoebic_liver_abscess (from the confirmed diagnosis)
+- note: Seeded investigations: amoebic_liver_abscess (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Acute Abdomen (7)
 
 </details>
@@ -9204,13 +9409,14 @@ Guidelines:
 - differential web.passive: 1. Sepsis / systemic infection; 2. Malaria; 3. Leptospirosis; 4. Meningitis / encephalitis; 5. Pyelonephritis
 - differential web.triageSurgical: 1. Choledocholithiasis with cholangitis
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=324)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Coronary stent / ACS 5 months ago on antiplatelet therapy [web.clinicalPrompts.safety]; Fever 39.4°C + HR 124 bpm + SBP 84 mmHg — septic shock [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 23 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 190 μmol/L — elevated [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]; Albumin 25 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Coronary stent / ACS 5 months ago on antiplatelet therapy [web.clinicalPrompts.safety]; Fever 39.4°C + HR 124 bpm + SBP 84 mmHg — septic shock [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 23 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 190 μmol/L — elevated [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]; Albumin 25 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: tg18-cholangitis, child-pugh, qsofa, gcs, asge-cbd, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: fever, rigors, confusion, jaundice, previous_surgery, ruq_pain, known_hypertension, vascular_risk, known_ckd, gcs_drop, oliguria, elevated_wbc, raised_crp, raised_creatinine, thrombocytopenia, raised_lactate, acute_onset, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: liver_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: liver_abscess (from the confirmed diagnosis)
+- note: Seeded investigations: liver_abscess (confirmed); 0 stat test(s) held back
 - note: matchPathways: ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (20), Jaundice Workup (15), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10)
 
 </details>
@@ -9254,13 +9460,14 @@ Guidelines:
 - differential web.passive: 1. Sepsis / systemic infection; 2. Malaria; 3. Infective endocarditis; 4. Typhoid fever; 5. Fournier's gangrene
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=66)
-- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 21.3 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 39.1°C + HR 112 bpm [web.clinicalPrompts.safety]; BGL 18.4 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Albumin 26 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 21.3 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 39.1°C + HR 112 bpm [web.clinicalPrompts.safety]; BGL 18.4 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Albumin 26 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, child-pugh, qsofa, asge-cbd, web:wagner, news2, caprini, asa, curb65, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: chronic_course, ruq_pain, shoulder_tip_pain, fever, rigors, anorexia, pain_worse_movement, pleuritic_chest_pain, abdominal_pain, fatigue, diaphoresis, bronchial_breathing, known_diabetes, known_hypertension, vascular_risk, insulin_or_sulfonylurea, abdominal_tenderness, elevated_wbc, raised_crp, hyperglycaemia, raised_lactate, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: liver_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: liver_abscess (from the confirmed diagnosis)
+- note: Seeded investigations: liver_abscess (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -9298,13 +9505,14 @@ Guidelines:
 - differential web.passive: 1. Acute gastroenteritis; 2. Adhesive small bowel obstruction; 3. Acute appendicitis (paediatric); 4. Acute alcoholic pancreatitis; 5. Migraine
 - differential web.triageSurgical: 1. Peptic ulcer with haemorrhage
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=80)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Alcohol excess [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Alcohol excess [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: glasgow-blatchford, forrest, news2, rockall
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: upper_gi_bleeding, acute_onset, epigastric_pain, nausea_vomiting, episodic_pain, haematemesis, abdominal_tenderness, severe_vomiting_before_pain, pr_bleeding, alcohol_use, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: mallory_weiss (from the confirmed diagnosis)
 - note: PlanTab protocol: mallory_weiss (from the confirmed diagnosis)
+- note: Seeded investigations: mallory_weiss (confirmed); 0 stat test(s) held back
 - note: matchPathways: Chest Pain — Emergency Redirect (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -9341,13 +9549,14 @@ Guidelines:
 - differential web.passive: 1. Meningitis / encephalitis; 2. Bacterial meningitis (paediatric); 3. Hypertensive emergency / hypertensive encephalopathy; 4. Sepsis / systemic infection; 5. Dengue fever
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=64)
-- alarms: Emergency now [web.triage.emergency]; Suspected bacterial meningitis / meningococcal disease [web.clinicalPrompts.safety]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.6°C + HR 112 bpm [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected bacterial meningitis / meningococcal disease [web.clinicalPrompts.safety]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.6°C + HR 112 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, gcs, news2, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, fever, headache, confusion, neck_stiffness, immunosuppression, steroid_use, gcs_drop, joint_pain, elevated_wbc, raised_crp, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: bacterial_meningitis (from the confirmed diagnosis)
 - note: PlanTab protocol: bacterial_meningitis (from the confirmed diagnosis)
+- note: Seeded investigations: bacterial_meningitis (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -9382,13 +9591,14 @@ Guidelines:
 - differential web.passive: 1. Meningitis / encephalitis; 2. Bacterial meningitis (paediatric); 3. Migraine; 4. Hypertensive emergency / hypertensive encephalopathy; 5. Dengue fever
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=85)
-- alarms: Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected bacterial meningitis / meningococcal disease [web.clinicalPrompts.safety]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 22.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 39.4°C + HR 128 bpm [web.clinicalPrompts.safety]
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected bacterial meningitis / meningococcal disease [web.clinicalPrompts.safety]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 22.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 39.4°C + HR 128 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, gcs, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, fever, headache, neck_stiffness, photophobia, non_blanching_rash, rash, nausea_vomiting, confusion, mottled_skin, gcs_drop, bilateral_leg_symptoms, elevated_wbc, raised_crp, raised_lactate, thrombocytopenia, tachycardia, haemodynamic_instability, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: bacterial_meningitis (from the confirmed diagnosis)
 - note: PlanTab protocol: bacterial_meningitis (from the confirmed diagnosis)
+- note: Seeded investigations: bacterial_meningitis (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -9424,13 +9634,14 @@ Guidelines:
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Acute alcoholic pancreatitis; 3. Perforated peptic ulcer; 4. Chronic pancreatitis; 5. Acute gastroenteritis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=33)
-- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: web:wagner, news2, caprini, web:gerdq, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, epigastric_pain, nausea_vomiting, pain_worse_movement, heartburn, fatigue, pallor, diaphoresis, known_diabetes, known_hypertension, vascular_risk, insulin_or_sulfonylurea, acei_arb_use, pale_clammy, abdominal_tenderness, smoker, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
+- note: Seeded investigations: acute_coronary_syndrome (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
 
 </details>
@@ -9463,13 +9674,14 @@ Guidelines:
 - differential web.passive: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Renal colic / urolithiasis; 3. Renal cell carcinoma; 4. Pyelonephritis; 5. Acute kidney injury
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=27)
-- alarms: Emergency now [web.triage.emergency]; Symptomatic or ruptured abdominal aortic aneurysm [web.clinicalPrompts.safety]; Pulsatile groin mass — possible femoral aneurysm / pseudoaneurysm [web.clinicalPrompts.safety]; Visible haematuria at 45 or over — suspected urological cancer pathway [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Symptomatic or ruptured abdominal aortic aneurysm [web.clinicalPrompts.safety]; Pulsatile groin mass — possible femoral aneurysm / pseudoaneurysm [web.clinicalPrompts.safety]; Visible haematuria at 45 or over — suspected urological cancer pathway [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, loin_pain, back_pain, acute_onset, radiation_to_groin, haematuria, visible_haematuria, pulsatile_mass, diffuse_abdominal_pain, radiation_to_back, known_hypertension, vascular_risk, acei_arb_use, antiplatelet_use, epigastric_pain, renal_angle_tenderness, abdominal_mass, smoker, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: aortic_aneurysm (from the confirmed diagnosis)
 - note: PlanTab protocol: aortic_aneurysm (from the confirmed diagnosis)
+- note: Seeded investigations: aortic_aneurysm (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -9503,13 +9715,14 @@ Guidelines:
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute appendicitis (paediatric); 5. Acute cholecystitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=156)
-- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Diabetic ketoacidosis [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 148 μmol/L — elevated [web.clinicalPrompts.safety]; HR 124 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Potassium 5.6 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Diabetic ketoacidosis [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 148 μmol/L — elevated [web.clinicalPrompts.safety]; HR 124 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Potassium 5.6 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, qsofa, gcs, web:wagner, news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, epigastric_pain, acute_onset, colicky_pain, polyuria_polydipsia, nausea_vomiting, confusion, guarding, known_diabetes, insulin_or_sulfonylurea, kussmaul, anorexia, hyperglycaemia, ketonaemia, metabolic_acidosis, raised_creatinine, elevated_wbc, tachycardia, haemodynamic_instability, tachypnoea, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: PlanTab protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
+- note: Seeded investigations: diabetic_ketoacidosis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -9543,13 +9756,14 @@ Guidelines:
 - differential web.passive: 1. Ectopic pregnancy; 2. Vasovagal / reflex syncope; 3. Acute appendicitis (paediatric); 4. Acute cholecystitis; 5. Peptic ulcer disease
 - differential web.triageSurgical: 1. Acute appendicitis, uncomplicated
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=85)
-- alarms: Emergency now [web.triage.emergency]; Suspected ectopic pregnancy [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected ectopic pregnancy [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, rlq_pain, suprapubic_pain, acute_onset, shoulder_tip_pain, dizziness, nausea_vomiting, abnormal_uterine_bleeding, pain_worse_movement, worse_lying_flat, missed_period, syncope, guarding, pallor, abdominal_tenderness, anaemia, elevated_wbc, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: ectopic_pregnancy (from the confirmed diagnosis)
 - note: PlanTab protocol: ectopic_pregnancy (from the confirmed diagnosis)
+- note: Seeded investigations: ectopic_pregnancy (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (12), Acute Appendicitis (12), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -9582,13 +9796,14 @@ Guidelines:
 - differential web.passive: 1. Vasovagal / reflex syncope; 2. Symptomatic / ruptured abdominal aortic aneurysm; 3. Acute appendicitis (paediatric); 4. Acute cholecystitis; 5. Peptic ulcer disease
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=199)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected ectopic pregnancy [web.clinicalPrompts.safety]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Pelvic free fluid on imaging — female patient [web.clinicalPrompts.safety]; SBP 78 mmHg — hypotension [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 134 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected ectopic pregnancy [web.clinicalPrompts.safety]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Pelvic free fluid on imaging — female patient [web.clinicalPrompts.safety]; SBP 78 mmHg — hypotension [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 134 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, qsofa, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, sudden_onset, acute_onset, shoulder_tip_pain, syncope, abnormal_uterine_bleeding, pain_worse_movement, severe_pain, pregnant, missed_period, suprapubic_pain, abdominal_distension, guarding, rebound_tenderness, previous_surgery, diaphoresis, pale_clammy, pallor, confusion, positive_pregnancy_test, anaemia, pelvic_free_fluid, tachycardia, haemodynamic_instability, hypotension, tachypnoea, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: ectopic_pregnancy (from the confirmed diagnosis)
 - note: PlanTab protocol: ectopic_pregnancy (from the confirmed diagnosis)
+- note: Seeded investigations: ectopic_pregnancy (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -9625,13 +9840,14 @@ Guidelines:
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Malaria; 5. Chronic pancreatitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=48)
-- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, ranson, web:wagner, news2, caprini, web:gerdq, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, epigastric_pain, acute_onset, diaphoresis, nausea_vomiting, night_sweats, known_diabetes, known_hypertension, vascular_risk, insulin_or_sulfonylurea, acei_arb_use, pale_clammy, heartburn, smoker, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
+- note: Seeded investigations: acute_coronary_syndrome (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -9662,13 +9878,14 @@ Guidelines:
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Chronic pancreatitis; 4. GORD / acid reflux / oesophagitis; 5. Gastric carcinoma
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=30)
-- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 168 μmol/L — elevated [web.clinicalPrompts.safety]; HR 48 bpm — bradycardia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 168 μmol/L — elevated [web.clinicalPrompts.safety]; HR 48 bpm — bradycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, web:wagner, news2, caprini, web:gerdq, asa, rcri, stop-bang, cfs, web:phq9
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, epigastric_pain, acute_onset, fatigue, nausea_vomiting, known_diabetes, known_ckd, insulin_or_sulfonylurea, diaphoresis, pale_clammy, pallor, raised_troponin, raised_creatinine, st_elevation, bradycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
+- note: Seeded investigations: acute_coronary_syndrome (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -9705,13 +9922,14 @@ Guidelines:
 - differential web.passive: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Vasovagal / reflex syncope; 3. Aortic dissection; 4. Renal colic / urolithiasis; 5. Pyelonephritis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=117)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Symptomatic or ruptured abdominal aortic aneurysm [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Pulsatile groin mass — possible femoral aneurysm / pseudoaneurysm [web.clinicalPrompts.safety]; SBP 84 mmHg — hypotension [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 132 μmol/L — elevated [web.clinicalPrompts.safety]; HR 122 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Symptomatic or ruptured abdominal aortic aneurysm [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Pulsatile groin mass — possible femoral aneurysm / pseudoaneurysm [web.clinicalPrompts.safety]; SBP 84 mmHg — hypotension [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 132 μmol/L — elevated [web.clinicalPrompts.safety]; HR 122 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, ranson, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, loin_pain, back_pain, sudden_onset, acute_onset, tearing_pain, radiation_to_back, radiation_to_groin, syncope, nausea_vomiting, severe_pain, pulsatile_mass, diffuse_abdominal_pain, known_hypertension, vascular_risk, known_copd, renal_angle_tenderness, diaphoresis, pale_clammy, pallor, smoker, anaemia, raised_lactate, raised_creatinine, tachycardia, haemodynamic_instability, hypotension, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: aortic_aneurysm (from the confirmed diagnosis)
 - note: PlanTab protocol: aortic_aneurysm (from the confirmed diagnosis)
+- note: Seeded investigations: aortic_aneurysm (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -9741,13 +9959,14 @@ Guidelines:
 - differential web.passive: 1. Testicular torsion / epididymo-orchitis; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute appendicitis (paediatric); 5. Acute cholecystitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=35)
-- alarms: Emergency now [web.triage.emergency]; Acute scrotal pain — testicular torsion until proven otherwise [web.clinicalPrompts.safety]; Testicular / scrotal signs [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute scrotal pain — testicular torsion until proven otherwise [web.clinicalPrompts.safety]; Testicular / scrotal signs [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, rlq_pain, testicular_pain, sudden_onset, acute_onset, radiation_to_groin, nausea_vomiting, pain_worse_movement, scrotal_swelling, groin_pain, high_riding_testis, localised_pain, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: testicular_torsion (from the confirmed diagnosis)
 - note: PlanTab protocol: testicular_torsion (from the confirmed diagnosis)
+- note: Seeded investigations: testicular_torsion (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -9780,13 +9999,14 @@ Guidelines:
 - differential web.passive: 1. Sickle cell vaso-occlusive crisis; 2. Sickle cell crisis; 3. Osteomyelitis (paediatric); 4. Dengue fever; 5. Osteomyelitis (adult)
 - differential web.triageSurgical: 1. Breast cancer
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=45)
-- alarms: Emergency now [web.triage.emergency]; Spinal pain suggestive of metastases (no neurological deficit) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Spinal pain suggestive of metastases (no neurological deficit) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-dvt, ranson, news2, caprini, must, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: back_pain, bone_pain, nocturnal_pain, known_malignancy, previous_surgery, cough, gait_disturbance, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: metastatic_spinal_cord_compression (from the confirmed diagnosis)
 - note: PlanTab protocol: metastatic_spinal_cord_compression (from the confirmed diagnosis)
+- note: Seeded investigations: metastatic_spinal_cord_compression (confirmed); 0 stat test(s) held back
 - note: matchPathways: Breast Lump / Breast Disease (5), Post-operative Follow-up (General) (5), Skin Lesion / Excision (5)
 
 </details>
@@ -9818,13 +10038,14 @@ Guidelines:
 - differential web.passive: 1. Stroke / TIA; 2. Sciatica / lumbar radiculopathy; 3. Peripheral neuropathy; 4. Lumbar disc disease / sciatica; 5. Benign prostatic hyperplasia (BPH)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=57)
-- alarms: Emergency now [web.triage.emergency]; Suspected metastatic spinal cord compression [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; PSA 48 ng/mL — elevated [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected metastatic spinal cord compression [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; PSA 48 ng/mL — elevated [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-dvt, ranson, news2, caprini, must, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: back_pain, limb_weakness, focal_weakness, limb_numbness, gait_disturbance, prostate_symptoms, bilateral_leg_symptoms, sciatica, nocturnal_pain, known_malignancy, worse_lying_flat, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: metastatic_spinal_cord_compression (from the confirmed diagnosis)
 - note: PlanTab protocol: metastatic_spinal_cord_compression (from the confirmed diagnosis)
+- note: Seeded investigations: metastatic_spinal_cord_compression (confirmed); 0 stat test(s) held back
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -9859,13 +10080,14 @@ Guidelines:
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Perforated peptic ulcer; 3. Acute alcoholic pancreatitis; 4. Chronic pancreatitis; 5. Pancreatic adenocarcinoma
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=12)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, news2, caprini, web:gerdq, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (Upper GI Bleed)
 - note: PANE features applied: chronic_course, epigastric_pain, nausea_vomiting, postprandial_pain, antacid_relief, heartburn, abdominal_tenderness, vascular_risk, known_hypertension, nsaid_use, antiplatelet_use, abdominal_pain, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: peptic_ulcer (from the confirmed diagnosis)
 - note: PlanTab protocol: peptic_ulcer (from the confirmed diagnosis)
+- note: Seeded investigations: peptic_ulcer (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (27), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -9916,13 +10138,14 @@ Guidelines:
 - differential web.passive: 1. Necrotising fasciitis; 2. Cellulitis / soft tissue infection; 3. Fournier's gangrene; 4. Sepsis / systemic infection; 5. Malaria
 - differential web.triageSurgical: 1. Leg swelling — possible DVT
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=118)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Suspected acute mesenteric ischaemia [web.clinicalPrompts.safety]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 22.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 160 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.9°C + HR 118 bpm [web.clinicalPrompts.safety]; BGL 16.2 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Suspected acute mesenteric ischaemia [web.clinicalPrompts.safety]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 22.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 160 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.9°C + HR 118 bpm [web.clinicalPrompts.safety]; BGL 16.2 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, qsofa, web:wagner, news2, caprini, asa, rcri, stop-bang
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, limb_pain, fever, rigors, pain_worse_movement, severe_pain, leg_swelling, erythema_surrounding, diaphoresis, skin_necrosis, known_diabetes, insulin_or_sulfonylurea, pain_out_of_proportion, unilateral_leg_swelling, spreading_redness, crepitus_soft_tissue, elevated_wbc, raised_crp, raised_creatinine, hyperglycaemia, raised_lactate, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: necrotising_fasciitis (from the confirmed diagnosis)
 - note: PlanTab protocol: necrotising_fasciitis (from the confirmed diagnosis)
+- note: Seeded investigations: necrotising_fasciitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
 - note: matchPathways: Varicose Veins (5)
 
@@ -9962,13 +10185,14 @@ Guidelines:
 - differential web.passive: 1. Cellulitis / soft tissue infection; 2. Necrotising fasciitis; 3. Osteomyelitis (paediatric); 4. Fournier's gangrene; 5. Sickle cell vaso-occlusive crisis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=100)
-- alarms: Emergency now [web.triage.emergency]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Fever 38.2°C + HR 112 bpm [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Fever 38.2°C + HR 112 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, fever, pain_worse_movement, severe_pain, limb_pain, erythema_surrounding, pain_out_of_proportion, anticholinergic_or_opioid, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: necrotising_fasciitis (from the confirmed diagnosis)
 - note: PlanTab protocol: necrotising_fasciitis (from the confirmed diagnosis)
+- note: Seeded investigations: necrotising_fasciitis (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -10009,13 +10233,14 @@ Guidelines:
 - differential web.passive: 1. Fournier's gangrene; 2. Sepsis / systemic infection; 3. Malaria; 4. Perianal abscess; 5. Meningitis / encephalitis
 - differential web.triageSurgical: 1. Perianal abscess; 2. Skin / soft tissue abscess
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=255)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Hyponatraemia with severe symptoms [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Acute scrotal pain — testicular torsion until proven otherwise [web.clinicalPrompts.safety]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Testicular / scrotal signs [web.clinicalPrompts.safety]; Fever 38.7°C + HR 124 bpm + SBP 86 mmHg — septic shock [web.clinicalPrompts.safety]; BGL 24.1 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 27.5 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 210 μmol/L — elevated [web.clinicalPrompts.safety]; Sodium 129 mmol/L — hyponatraemia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Hyponatraemia with severe symptoms [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Acute scrotal pain — testicular torsion until proven otherwise [web.clinicalPrompts.safety]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Testicular / scrotal signs [web.clinicalPrompts.safety]; Fever 38.7°C + HR 124 bpm + SBP 86 mmHg — septic shock [web.clinicalPrompts.safety]; BGL 24.1 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 27.5 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 210 μmol/L — elevated [web.clinicalPrompts.safety]; Sodium 129 mmol/L — hyponatraemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, gcs, web:wagner, news2, caprini, asa, rcri, stop-bang, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, perineal_pain, groin_pain, radiation_to_groin, fever, rigors, pain_worse_movement, severe_pain, scrotal_swelling, anal_pain, confusion, diaphoresis, erythema_surrounding, known_diabetes, known_hypertension, vascular_risk, insulin_or_sulfonylurea, acei_arb_use, previous_surgery, testicular_pain, swelling_fluctuant_soft, crepitus_soft_tissue, skin_necrosis, elevated_wbc, anaemia, raised_crp, hyponatraemia_lab, raised_creatinine, hyperglycaemia, raised_lactate, tachycardia, haemodynamic_instability, hypotension, tachypnoea, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: fournier_gangrene (from the confirmed diagnosis)
 - note: PlanTab protocol: fournier_gangrene (from the confirmed diagnosis)
+- note: Seeded investigations: fournier_gangrene (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (15), Post-operative Follow-up (General) (5)
 
 </details>
@@ -10055,13 +10280,14 @@ Guidelines:
 - differential web.passive: 1. Post-operative complication; 2. Diabetic foot infection / ischaemia; 3. Acute cholangitis; 4. Malaria; 5. Osteomyelitis (adult)
 - differential web.triageSurgical: 1. Diverticulitis of colon; 2. Wound concern (post-traumatic or surgical)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=214)
-- alarms: Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; WBC 24.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 150 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.4°C + HR 126 bpm [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; WBC 24.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 150 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.4°C + HR 126 bpm [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, qsofa, web:wagner, news2, caprini, asa, clavien-dindo, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: previous_surgery, recent_surgery, acute_onset, diffuse_abdominal_pain, fever, rigors, pain_worse_movement, severe_pain, wound_pain, wound_discharge, erythema_surrounding, wound_erythema, wound_dehiscence_sign, tachycardia, skin_necrosis, known_hypertension, vascular_risk, anticoagulant_use, stoma, crepitus_soft_tissue, bowel_resection, elevated_wbc, raised_crp, raised_creatinine, raised_lactate, postop_fever, haemodynamic_instability, tachypnoea, trauma_mechanism, aortic_graft
 - note: AssessmentTab ManagementPanel protocol: necrotising_fasciitis (from the confirmed diagnosis)
 - note: PlanTab protocol: necrotising_fasciitis (from the confirmed diagnosis)
+- note: Seeded investigations: necrotising_fasciitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Post-operative Follow-up (General) (10), Wound Management (Acute / Chronic / SSI) (10), Diverticular Disease / Diverticulitis (5)
 
 </details>
@@ -10103,13 +10329,14 @@ Guidelines:
 - differential web.passive: 1. Ovarian torsion / ovarian cyst; 2. Acute appendicitis (paediatric); 3. Pelvic inflammatory disease (PID); 4. Acute cholecystitis; 5. Peptic ulcer disease
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=84)
-- alarms: Emergency now [web.triage.emergency]; Trauma in pregnancy — possible placental abruption [web.clinicalPrompts.safety]; Domestic abuse disclosed in pregnancy [web.clinicalPrompts.safety]; Pregnant (33 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Trauma in pregnancy — possible placental abruption [web.clinicalPrompts.safety]; Domestic abuse disclosed in pregnancy [web.clinicalPrompts.safety]; Pregnant (33 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, diffuse_abdominal_pain, suprapubic_pain, radiation_to_back, pain_worse_movement, severe_pain, pelvic_pain, back_pain, pallor, pregnant, uterine_tenderness, trauma_mechanism, mechanism_blunt, anaemia, thrombocytopenia, tachycardia, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: placental_abruption (from the confirmed diagnosis)
 - note: PlanTab protocol: placental_abruption (from the confirmed diagnosis)
+- note: Seeded investigations: placental_abruption (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (12), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -10149,13 +10376,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute alcoholic pancreatitis; 3. Acute gastroenteritis; 4. Acute mesenteric ischaemia; 5. Adhesive small bowel obstruction
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=57)
-- alarms: Emergency now [web.triage.emergency]; Infected obstructed kidney [web.clinicalPrompts.safety]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Pregnant (32 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Infected obstructed kidney [web.clinicalPrompts.safety]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Pregnant (32 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2
 - score values: alvarado/calculator@web.scaleCalculator.alvarado=6
 - dx variant: appendicitis_uncomplicated (Acute Appendicitis)
 - note: PANE features applied: abdominal_pain, ruq_pain, loin_pain, acute_onset, fever, nausea_vomiting, anorexia, pain_worse_movement, guarding, previous_surgery, pregnant, elevated_wbc, raised_crp, hydronephrosis, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
+- note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -10191,13 +10419,14 @@ Guidelines:
 - differential web.passive: 1. Ectopic pregnancy; 2. Ovarian torsion / ovarian cyst; 3. Acute appendicitis (paediatric); 4. Pelvic inflammatory disease (PID); 5. Acute cholecystitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=72)
-- alarms: Emergency now [web.triage.emergency]; Acute pelvic pain — ovarian torsion must be excluded [web.clinicalPrompts.safety]; Suspected placental abruption [web.clinicalPrompts.safety]; Pregnant [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute pelvic pain — ovarian torsion must be excluded [web.clinicalPrompts.safety]; Suspected placental abruption [web.clinicalPrompts.safety]; Pregnant [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, lif_pain, acute_onset, nausea_vomiting, abnormal_uterine_bleeding, pain_worse_movement, pelvic_pain, pregnant, adnexal_tenderness, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: ectopic_pregnancy (leading differential); 3 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -10236,13 +10465,14 @@ Guidelines:
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Hypertensive emergency / hypertensive encephalopathy; 3. Migraine; 4. Perforated peptic ulcer; 5. Bacterial meningitis (paediatric)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=71)
-- alarms: Emergency now [web.triage.emergency]; Severe pre-eclampsia / HELLP syndrome [web.clinicalPrompts.safety]; Pregnant (34 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Severe pre-eclampsia / HELLP syndrome [web.clinicalPrompts.safety]; Pregnant (34 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, asge-cbd, news2, web:gerdq
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, ruq_pain, epigastric_pain, acute_onset, headache, visual_disturbance, nausea_vomiting, pain_worse_movement, abdominal_tenderness, antiplatelet_use, urticaria_angioedema, pregnant, thrombocytopenia, raised_liver_enzymes, anaemia, proteinuria, raised_bp, severe_hypertension, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pre_eclampsia (from the confirmed diagnosis)
 - note: PlanTab protocol: pre_eclampsia (from the confirmed diagnosis)
+- note: Seeded investigations: pre_eclampsia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (17), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7)
 
 </details>
@@ -10284,13 +10514,14 @@ Guidelines:
 - differential web.passive: 1. Acute gastroenteritis; 2. Hypertrophic pyloric stenosis; 3. Gastric carcinoma; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
 - differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=64)
-- alarms: Emergency now [web.triage.emergency]; Hyperemesis gravidarum [web.clinicalPrompts.safety]; Pregnant (10 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Hyperemesis gravidarum [web.clinicalPrompts.safety]; Pregnant (10 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, epigastric_pain, dizziness, weight_loss, postprandial_pain, dehydration, pregnant, kussmaul, abdominal_tenderness, ketonaemia, positive_pregnancy_test, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: hyperemesis_gravidarum (from the confirmed diagnosis)
 - note: PlanTab protocol: hyperemesis_gravidarum (from the confirmed diagnosis)
+- note: Seeded investigations: hyperemesis_gravidarum (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -10325,13 +10556,14 @@ Guidelines:
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Migraine; 3. Acute alcoholic pancreatitis; 4. Perforated peptic ulcer; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=20)
-- alarms: Emergency now [web.triage.emergency]; Severe hypertension in pregnancy / postpartum — suspected pre-eclampsia [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Severe hypertension in pregnancy / postpartum — suspected pre-eclampsia [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, news2, web:gerdq
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, epigastric_pain, acute_onset, heartburn, headache, visual_disturbance, nausea_vomiting, abdominal_tenderness, pregnant, post_lactation, thrombocytopenia, proteinuria, raised_bp, severe_hypertension, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pre_eclampsia (from the confirmed diagnosis)
 - note: PlanTab protocol: pre_eclampsia (from the confirmed diagnosis)
+- note: Seeded investigations: pre_eclampsia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -10373,13 +10605,14 @@ Guidelines:
 - differential web.passive: 1. Acute gastroenteritis; 2. Acute appendicitis (paediatric); 3. Acute mesenteric ischaemia; 4. Adhesive small bowel obstruction; 5. Mesenteric adenitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=105)
-- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Appendix > 6mm / inflamed on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 21 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]
+- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Appendix > 6mm / inflamed on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 21 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2
 - score values: alvarado/calculator@web.scaleCalculator.alvarado=9
 - dx variant: appendicitis_abscess (Acute Appendicitis)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, rlq_pain, acute_onset, fever, nausea_vomiting, diarrhoea, anorexia, pain_worse_movement, guarding, rebound_tenderness, mottled_skin, elevated_wbc, raised_crp, pelvic_free_fluid, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
+- note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -10419,13 +10652,14 @@ Guidelines:
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Primary hyperparathyroidism / hypercalcaemia; 5. Acute appendicitis (paediatric)
 - differential web.triageSurgical: 1. Acute appendicitis, uncomplicated; 2. Unexplained weight loss / GI alarm symptoms — endoscopy workup
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=163)
-- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Tachypnoea (for age) [web.triage.vitalRedFlags]; Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Diabetic ketoacidosis [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]
+- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Tachypnoea (for age) [web.triage.vitalRedFlags]; Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Diabetic ketoacidosis [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, qsofa, gcs, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, periumbilical_pain, acute_onset, confusion, polyuria_polydipsia, nausea_vomiting, weight_loss, guarding, mottled_skin, gcs_drop, kussmaul, hyperglycaemia, ketonaemia, metabolic_acidosis, elevated_wbc, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: PlanTab protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
+- note: Seeded investigations: diabetic_ketoacidosis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (12), Acute Appendicitis (12), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -10460,13 +10694,14 @@ Guidelines:
 - differential web.passive: 1. Infective endocarditis; 2. Dengue fever; 3. Bronchiolitis (RSV); 4. UTI (paediatric); 5. Malaria
 - differential web.triageSurgical: 1. Umbilical hernia
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=70)
-- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Febrile infant under 3 months — NICE NG143 red [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Febrile infant under 3 months — NICE NG143 red [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2, stop-bang, web:phq9
 - score values: (none)
 - dx variant: (none) (Hernia)
 - note: PANE features applied: umbilical_swelling, fever, poor_feeding, fatigue, hernia_swelling, mottled_skin, hernia_compressible, acute_onset, tachycardia, tachypnoea, gcs_drop, confusion, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: sepsis (leading differential); 2 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Post-operative Follow-up (General) (5)
 
 </details>
@@ -10500,13 +10735,14 @@ Guidelines:
 - differential web.passive: 1. Henoch-Schönlein purpura; 2. Lower GI bleed / colorectal; 3. Intussusception; 4. Meckel's diverticulum; 5. Inflammatory bowel disease (Crohn's / UC)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=73)
-- alarms: Emergency now [web.triage.emergency]; Seriously unwell child — NICE NG143 red features [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Seriously unwell child — NICE NG143 red features [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2, rockall
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, periumbilical_pain, acute_onset, colicky_pain, rash, joint_pain, nausea_vomiting, pr_bleeding, episodic_pain, non_blanching_rash, haematuria, leg_swelling, bilateral_leg_oedema, sore_throat, abdominal_tenderness, proteinuria, elevated_wbc, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: hsp_iga_vasculitis (from the confirmed diagnosis)
+- note: PlanTab protocol: hsp_iga_vasculitis (from the confirmed diagnosis)
+- note: Seeded investigations: hsp_iga_vasculitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -10542,13 +10778,14 @@ Guidelines:
 - differential web.passive: 1. Malrotation / midgut volvulus; 2. Intussusception; 3. Hypertrophic pyloric stenosis; 4. Lower GI bleed / colorectal; 5. Hirschsprung's disease
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=80)
-- alarms: Emergency now [web.triage.emergency]; Bilious vomiting in a child — malrotation with volvulus until proven otherwise [web.clinicalPrompts.safety]; Possible intussusception [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Bilious vomiting in a child — malrotation with volvulus until proven otherwise [web.clinicalPrompts.safety]; Possible intussusception [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2, rockall
 - score values: (none)
 - dx variant: (none) (Bowel Obstruction)
 - note: PANE features applied: abdominal_pain, acute_onset, colicky_pain, episodic_pain, pallor, nausea_vomiting, bilious_vomiting, pr_bleeding, inconsolable_crying, poor_feeding, abdominal_mass, rlq_pain, ruq_pain, lethargy, redcurrant_stool, elevated_wbc, target_sign, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: intussusception (from the confirmed diagnosis)
 - note: PlanTab protocol: intussusception (from the confirmed diagnosis)
+- note: Seeded investigations: intussusception (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -10583,13 +10820,14 @@ Guidelines:
 - differential web.passive: 1. Hypertrophic pyloric stenosis; 2. Addisonian crisis / adrenal insufficiency; 3. Intussusception; 4. Malrotation / midgut volvulus; 5. Acute gastroenteritis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=45)
-- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Seriously unwell child — NICE NG143 red features [web.clinicalPrompts.safety]; Possible intussusception [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Seriously unwell child — NICE NG143 red features [web.clinicalPrompts.safety]; Possible intussusception [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2, stop-bang, web:phq9
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, acute_onset, pallor, lethargy, fatigue, poor_feeding, ruq_pain, mottled_skin, abdominal_mass, elevated_wbc, tachycardia, gcs_drop, confusion, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: intussusception (leading differential); 1 stat test(s) held back
 
 </details>
 
@@ -10624,13 +10862,14 @@ Guidelines:
 - differential web.passive: 1. Malrotation / midgut volvulus; 2. Intussusception; 3. Hypertrophic pyloric stenosis; 4. Hirschsprung's disease; 5. Bacterial meningitis (paediatric)
 - differential web.triageSurgical: 1. GORD with oesophagitis
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=45)
-- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Bilious vomiting in a child — malrotation with volvulus until proven otherwise [web.clinicalPrompts.safety]; Possible intussusception [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Bilious vomiting in a child — malrotation with volvulus until proven otherwise [web.clinicalPrompts.safety]; Possible intussusception [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2, web:gerdq
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, acute_onset, bilious_vomiting, inconsolable_crying, poor_feeding, postprandial_pain, heartburn, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: malrotation_volvulus (from the confirmed diagnosis)
 - note: PlanTab protocol: malrotation_volvulus (from the confirmed diagnosis)
+- note: Seeded investigations: malrotation_volvulus (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -10666,13 +10905,14 @@ Guidelines:
 - differential web.passive: 1. Malrotation / midgut volvulus; 2. Intussusception; 3. Hypertrophic pyloric stenosis; 4. Hirschsprung's disease; 5. Bacterial meningitis (paediatric)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=57)
-- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Febrile infant under 3 months — NICE NG143 red [web.clinicalPrompts.safety]; Bilious vomiting in a child — malrotation with volvulus until proven otherwise [web.clinicalPrompts.safety]; Possible intussusception [web.clinicalPrompts.safety]; Hypoglycaemia [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Febrile infant under 3 months — NICE NG143 red [web.clinicalPrompts.safety]; Bilious vomiting in a child — malrotation with volvulus until proven otherwise [web.clinicalPrompts.safety]; Possible intussusception [web.clinicalPrompts.safety]; Hypoglycaemia [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, sudden_onset, acute_onset, bilious_vomiting, poor_feeding, inconsolable_crying, abdominal_distension, mottled_skin, pregnant, post_lactation, low_glucose, raised_lactate, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: malrotation_volvulus (from the confirmed diagnosis)
 - note: PlanTab protocol: malrotation_volvulus (from the confirmed diagnosis)
+- note: Seeded investigations: malrotation_volvulus (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -10715,13 +10955,14 @@ Guidelines:
 - differential web.passive: 1. Malrotation / midgut volvulus; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute appendicitis (paediatric); 5. Acute cholecystitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=53)
-- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Bilious vomiting in a child — malrotation with volvulus until proven otherwise [web.clinicalPrompts.safety]; Safeguarding concern — possible child maltreatment [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Amylase/lipase 480 U/L — 3–10× upper limit [web.clinicalPrompts.safety]
+- alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Bilious vomiting in a child — malrotation with volvulus until proven otherwise [web.clinicalPrompts.safety]; Safeguarding concern — possible child maltreatment [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Amylase/lipase 480 U/L — 3–10× upper limit [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, qsofa, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, epigastric_pain, acute_onset, radiation_to_back, nausea_vomiting, bilious_vomiting, abdominal_tenderness, trauma_mechanism, mechanism_blunt, elevated_amylase, raised_liver_enzymes, tachycardia, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: child_safeguarding (from the confirmed diagnosis)
 - note: PlanTab protocol: child_safeguarding (from the confirmed diagnosis)
+- note: Seeded investigations: child_safeguarding (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -10758,13 +10999,14 @@ Guidelines:
 - differential web.passive: 1. Hypertrophic pyloric stenosis; 2. Acute gastroenteritis; 3. Hirschsprung's disease; 4. DKA / hyperglycaemic hyperosmolar state; 5. Neonatal jaundice
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=15)
-- alarms: Suspected pyloric stenosis [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Suspected pyloric stenosis [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, acute_onset, projectile_vomiting, hungry_after_vomiting, poor_feeding, dehydration, failure_to_thrive, postprandial_pain, abdominal_mass, ruq_pain, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pyloric_stenosis (from the confirmed diagnosis)
 - note: PlanTab protocol: pyloric_stenosis (from the confirmed diagnosis)
+- note: Seeded investigations: pyloric_stenosis (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -10805,13 +11047,14 @@ Guidelines:
 - differential web.passive: 1. CBD stone / obstructive jaundice; 2. Cholangiocarcinoma; 3. Pancreatic adenocarcinoma; 4. Biliary atresia; 5. Liver disease / hepatitis / cirrhosis
 - differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=114)
-- alarms: Emergency now [web.triage.emergency]; Courvoisier's sign (palpable non-tender gallbladder + jaundice) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Courvoisier's sign (palpable non-tender gallbladder + jaundice) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: asge-cbd, web:wagner, news2, caprini, asa, rcri, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: jaundice, chronic_course, epigastric_pain, radiation_to_back, anorexia, weight_loss, nocturnal_pain, progressive_course, pruritus, dark_urine, pallor, known_diabetes, ruq_pain, painless_jaundice, raised_liver_enzymes, hyperglycaemia, dilated_cbd, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pancreatic_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatic_carcinoma (from the confirmed diagnosis)
+- note: Seeded investigations: pancreatic_carcinoma (confirmed); 0 stat test(s) held back
 - note: matchPathways: Jaundice Workup (30), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10)
 
 </details>
@@ -10846,13 +11089,14 @@ Guidelines:
 - differential web.passive: 1. Cholangiocarcinoma; 2. Pancreatic adenocarcinoma; 3. Liver disease / hepatitis / cirrhosis; 4. Occult malignancy / systemic disease; 5. CBD stone / obstructive jaundice
 - differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=107)
-- alarms: Emergency now [web.triage.emergency]; Courvoisier's sign (palpable non-tender gallbladder + jaundice) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; CA 19-9 2400 U/mL — elevated [web.clinicalPrompts.safety]; Albumin 26 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Courvoisier's sign (palpable non-tender gallbladder + jaundice) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; CA 19-9 2400 U/mL — elevated [web.clinicalPrompts.safety]; Albumin 26 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: child-pugh, asge-cbd, news2, caprini, asa, rcri, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: jaundice, chronic_course, epigastric_pain, radiation_to_back, anorexia, weight_loss, progressive_course, pruritus, known_hypertension, vascular_risk, painless_jaundice, raised_liver_enzymes, hypercalcaemia_lab, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pancreatic_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatic_carcinoma (from the confirmed diagnosis)
+- note: Seeded investigations: pancreatic_carcinoma (confirmed); 0 stat test(s) held back
 - note: matchPathways: Pancreatic Mass / Cyst (17), Jaundice Workup (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10)
 
 </details>
@@ -10886,13 +11130,14 @@ Guidelines:
 - differential web.passive: 1. Pancreatic adenocarcinoma; 2. Gastric carcinoma; 3. Chronic pancreatitis; 4. Occult malignancy / systemic disease; 5. Major depressive disorder
 - differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup
 - emergency level: urgent (acuity=priority, action=same_day_call, score=74)
-- alarms: Spinal pain suggestive of metastases (no neurological deficit) [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Spinal pain suggestive of metastases (no neurological deficit) [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, web:wagner, news2, caprini, web:gerdq, asa, rcri, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: weight_loss, chronic_course, epigastric_pain, radiation_to_back, anorexia, nocturnal_pain, worse_lying_flat, relief_sitting_forward, back_pain, abdominal_tenderness, known_diabetes, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pancreatic_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatic_carcinoma (from the confirmed diagnosis)
+- note: Seeded investigations: pancreatic_carcinoma (confirmed); 0 stat test(s) held back
 - note: matchPathways: Pancreatic Mass / Cyst (14), Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7)
 
 </details>
@@ -10940,13 +11185,14 @@ Guidelines:
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=35)
-- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Amylase/lipase 980 U/L — 3–10× upper limit [web.clinicalPrompts.safety]; Alcohol excess [web.clinicalPrompts.safety]
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Amylase/lipase 980 U/L — 3–10× upper limit [web.clinicalPrompts.safety]; Alcohol excess [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, child-pugh, meld, bisap, news2, caprini, web:gerdq, web:audit
 - score values: (none)
 - dx variant: pancreatitis_mild (Pancreatitis)
 - note: PANE features applied: abdominal_pain, acute_onset, epigastric_pain, radiation_to_back, nausea_vomiting, anorexia, postprandial_pain, relief_sitting_forward, severe_pain, back_pain, anxiety_tremor, sudden_onset, abdominal_tenderness, guarding, diaphoresis, alcohol_use, smoker, vascular_risk, elevated_amylase, raised_liver_enzymes, elevated_wbc, raised_crp, tachycardia, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
+- note: Seeded investigations: pancreatitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (14), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
 
 </details>
@@ -10990,13 +11236,14 @@ Guidelines:
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=23)
-- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Amylase 1100 U/L — severe elevation [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Pancreatitis on azathioprine [web.clinicalPrompts.safety]
+- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Amylase 1100 U/L — severe elevation [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Pancreatitis on azathioprine [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2, web:gerdq, must
 - score values: (none)
 - dx variant: pancreatitis_mild (Pancreatitis)
 - note: PANE features applied: abdominal_pain, acute_onset, epigastric_pain, radiation_to_back, nausea_vomiting, postprandial_pain, relief_sitting_forward, severe_pain, back_pain, sudden_onset, abdominal_tenderness, ulcerative_colitis_history, immunosuppression, steroid_use, alcohol_use, elevated_amylase, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
+- note: Seeded investigations: pancreatitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (17), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
 
 </details>
@@ -11050,13 +11297,14 @@ Guidelines:
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=35)
-- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Amylase 2450 U/L — severe elevation [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Amylase 2450 U/L — severe elevation [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2, web:gerdq, asa, stop-bang
 - score values: (none)
 - dx variant: pancreatitis_mild (Pancreatitis)
 - note: PANE features applied: abdominal_pain, acute_onset, epigastric_pain, radiation_to_back, nausea_vomiting, postprandial_pain, worse_lying_flat, relief_sitting_forward, severe_pain, back_pain, sudden_onset, abdominal_tenderness, guarding, alcohol_use, elevated_amylase, elevated_wbc, raised_crp, raised_liver_enzymes, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
+- note: Seeded investigations: pancreatitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (14), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
 
 </details>
@@ -11103,13 +11351,14 @@ Guidelines:
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
 - differential web.triageSurgical: 1. Acute biliary pancreatitis
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=71)
-- alarms: Emergency now [web.triage.emergency]; Atrial fibrillation with haemodynamic instability [web.clinicalPrompts.safety]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Amylase 1850 U/L — severe elevation [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; Pancreatitis on furosemide [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Atrial fibrillation with haemodynamic instability [web.clinicalPrompts.safety]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Amylase 1850 U/L — severe elevation [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; Pancreatitis on furosemide [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, cha2ds2-vasc, qsofa, bisap, curb65, news2, web:gerdq, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (Pancreatitis)
 - note: PANE features applied: abdominal_pain, acute_onset, epigastric_pain, radiation_to_back, nausea_vomiting, pain_worse_movement, severe_pain, back_pain, sudden_onset, relief_sitting_forward, abdominal_tenderness, guarding, irregular_pulse, leg_swelling, reduced_breath_sounds, known_heart_disease, vascular_risk, known_af, known_ckd, anticoagulant_use, acei_arb_use, diuretic_use, bilateral_leg_oedema, elevated_amylase, raised_urea, elevated_wbc, raised_crp, raised_liver_enzymes, us_gallstones, pulmonary_oedema_cxr, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
+- note: Seeded investigations: pancreatitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (14), Pancreatic Mass / Cyst (14), IBD — Surgical Complications (Crohn's / UC) (12)
 
 </details>
@@ -11149,13 +11398,14 @@ Guidelines:
 - differential web.passive: 1. Perforated peptic ulcer; 2. Acute alcoholic pancreatitis; 3. Acute appendicitis (paediatric); 4. Symptomatic / ruptured abdominal aortic aneurysm; 5. Sickle cell vaso-occlusive crisis
 - differential web.triageSurgical: 1. Acute biliary pancreatitis; 2. Acute cholecystitis with cholelithiasis
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=118)
-- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Amylase/lipase 420 U/L — 3–10× upper limit [web.clinicalPrompts.safety]; Albumin 29 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Amylase/lipase 420 U/L — 3–10× upper limit [web.clinicalPrompts.safety]; Albumin 29 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, caprini, web:gerdq, asa, rcri
 - score values: (none)
 - dx variant: pancreatitis_moderate (Pancreatitis)
 - note: PANE features applied: abdominal_pain, acute_onset, epigastric_pain, radiation_to_back, fever, nausea_vomiting, postprandial_pain, back_pain, abdominal_tenderness, known_hypertension, vascular_risk, skin_necrosis, elevated_wbc, raised_crp, elevated_amylase, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
+- note: Seeded investigations: pancreatitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
 
 </details>
@@ -11204,13 +11454,14 @@ Guidelines:
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=59)
-- alarms: Emergency now [web.triage.emergency]; Amylase 1900 U/L — severe elevation [web.clinicalPrompts.safety]; Pregnant (21 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Amylase 1900 U/L — severe elevation [web.clinicalPrompts.safety]; Pregnant (21 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2, web:gerdq
 - score values: (none)
 - dx variant: pancreatitis_mild (Pancreatitis)
 - note: PANE features applied: abdominal_pain, acute_onset, epigastric_pain, radiation_to_back, nausea_vomiting, postprandial_pain, relief_sitting_forward, severe_pain, back_pain, sudden_onset, abdominal_tenderness, pregnant, elevated_amylase, raised_liver_enzymes, elevated_wbc, raised_crp, us_gallstones, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
+- note: Seeded investigations: pancreatitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (14), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
 
 </details>
@@ -11262,13 +11513,14 @@ Guidelines:
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
 - differential web.triageSurgical: 1. Acute biliary pancreatitis; 2. Acute cholecystitis with cholelithiasis
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=132)
-- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Acute hypocalcaemia [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 18.6 × 10⁹/L in acute pancreatitis [web.clinicalPrompts.safety]; Creatinine 260 μmol/L — elevated [web.clinicalPrompts.safety]; SpO₂ 90% — hypoxia [web.clinicalPrompts.safety]; HR 122 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Albumin 24 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Acute hypocalcaemia [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 18.6 × 10⁹/L in acute pancreatitis [web.clinicalPrompts.safety]; Creatinine 260 μmol/L — elevated [web.clinicalPrompts.safety]; SpO₂ 90% — hypoxia [web.clinicalPrompts.safety]; HR 122 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Albumin 24 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, wells-pe, ranson, qsofa, web:wagner, curb65, news2, caprini, web:gerdq, asa, rcri, stop-bang
 - score values: (none)
 - dx variant: pancreatitis_severe (Pancreatitis)
 - note: PANE features applied: abdominal_pain, acute_onset, diffuse_abdominal_pain, epigastric_pain, radiation_to_back, nausea_vomiting, pain_worse_movement, severe_pain, dyspnoea, back_pain, abdominal_distension, reduced_breath_sounds, known_diabetes, oliguria, skin_necrosis, raised_creatinine, raised_urea, elevated_wbc, raised_crp, thrombocytopenia, raised_lactate, hyperglycaemia, us_gallstones, tachycardia, haemodynamic_instability, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
+- note: Seeded investigations: pancreatitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (7), Pancreatic Mass / Cyst (7)
 
 </details>
@@ -11315,13 +11567,14 @@ Guidelines:
 - differential web.passive: 1. Perforated peptic ulcer; 2. Acute alcoholic pancreatitis; 3. Malaria; 4. Acute appendicitis (paediatric); 5. Acute gastroenteritis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=227)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Amylase 3100 U/L — severe elevation [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Fever 39.2°C + HR 118 bpm [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Amylase 3100 U/L — severe elevation [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Fever 39.2°C + HR 118 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, bisap, asge-cbd, news2, caprini, web:gerdq, asa, rcri, cfs
 - score values: tg18-cholangitis/calculator@web.scaleCalculator.tg18-cholangitis=2; tg18-cholangitis/calculator@web.scoreCalculator.tg18-cholangitis=2; tg18-cholangitis/autofill@web.scoreCalculator.tg18-cholangitis=0
 - dx variant: (none) (Pancreatitis)
 - note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, epigastric_pain, radiation_to_back, fever, rigors, nausea_vomiting, jaundice, pain_worse_movement, severe_pain, back_pain, dark_urine, us_gallstones, abdominal_tenderness, guarding, known_hypertension, vascular_risk, elevated_amylase, raised_liver_enzymes, elevated_wbc, raised_crp, raised_urea, raised_lactate, dilated_cbd, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
+- note: Seeded investigations: pancreatitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (27), Jaundice Workup (25), Pancreatic Mass / Cyst (17)
 
 </details>
@@ -11367,13 +11620,14 @@ Guidelines:
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. DKA / hyperglycaemic hyperosmolar state; 4. Acute gastroenteritis; 5. Adhesive small bowel obstruction
 - differential web.triageSurgical: 1. Acute biliary pancreatitis
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=77)
-- alarms: Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Severe hypertriglyceridaemia [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; BGL 22.6 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HbA1c 11.2% — poorly controlled diabetes [web.clinicalPrompts.safety]
+- alarms: Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Severe hypertriglyceridaemia [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; BGL 22.6 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HbA1c 11.2% — poorly controlled diabetes [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, bisap, web:wagner, news2, caprini, web:gerdq, asa, rcri, stop-bang, cfs
 - score values: (none)
 - dx variant: pancreatitis_mild (Pancreatitis)
 - note: PANE features applied: abdominal_pain, acute_onset, epigastric_pain, radiation_to_back, nausea_vomiting, postprandial_pain, relief_sitting_forward, severe_pain, back_pain, polyuria_polydipsia, sudden_onset, abdominal_tenderness, guarding, known_diabetes, vascular_risk, alcohol_use, elevated_amylase, hyperglycaemia, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
+- note: Seeded investigations: pancreatitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -11409,13 +11663,14 @@ Guidelines:
 - differential web.passive: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Perforated peptic ulcer; 3. Acute alcoholic pancreatitis; 4. Vasovagal / reflex syncope; 5. Chronic pancreatitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=99)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Symptomatic or ruptured abdominal aortic aneurysm [web.clinicalPrompts.safety]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; SBP 86 mmHg — hypotension [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Symptomatic or ruptured abdominal aortic aneurysm [web.clinicalPrompts.safety]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; SBP 86 mmHg — hypotension [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, qsofa, news2, caprini, web:gerdq, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, periumbilical_pain, epigastric_pain, radiation_to_back, nausea_vomiting, pain_worse_movement, severe_pain, back_pain, syncope, pallor, diaphoresis, abdominal_tenderness, known_hypertension, vascular_risk, known_heart_disease, antiplatelet_use, pale_clammy, pulsatile_mass, gcs_drop, confusion, smoker, anaemia, raised_lactate, elevated_wbc, tachycardia, hypotension, haemodynamic_instability, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: aortic_aneurysm (from the confirmed diagnosis)
 - note: PlanTab protocol: aortic_aneurysm (from the confirmed diagnosis)
+- note: Seeded investigations: aortic_aneurysm (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7)
 
 </details>
@@ -11452,13 +11707,14 @@ Guidelines:
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Adhesive small bowel obstruction; 3. Primary hyperparathyroidism / hypercalcaemia; 4. Large bowel obstruction; 5. Sigmoid volvulus
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=52)
-- alarms: Emergency now [web.triage.emergency]; Hypercalcaemia — severe [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 196 μmol/L — elevated [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Hypercalcaemia — severe [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 196 μmol/L — elevated [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, gcs, ranson, news2, caprini, asa, rcri, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, confusion, abdominal_pain, constipation, polyuria_polydipsia, diffuse_abdominal_pain, known_hypertension, vascular_risk, diuretic_use, hyponatraemia_drug, gcs_drop, dehydration, hypercalcaemia_lab, raised_creatinine, raised_urea, acute_onset, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: primary_hyperparathyroidism (from the confirmed diagnosis)
 - note: PlanTab protocol: primary_hyperparathyroidism (from the confirmed diagnosis)
+- note: Seeded investigations: primary_hyperparathyroidism (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -11492,13 +11748,14 @@ Guidelines:
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Major depressive disorder; 3. Primary hyperparathyroidism / hypercalcaemia; 4. Hypothyroidism; 5. Addisonian crisis / adrenal insufficiency
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri, stop-bang, cfs, web:phq9
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: fatigue, polyuria_polydipsia, low_mood, known_hypertension, vascular_risk, renal_stones_history, diuretic_use, hyponatraemia_drug, known_stone, hypercalcaemia_lab, chronic_course, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: primary_hyperparathyroidism (from the confirmed diagnosis)
 - note: PlanTab protocol: primary_hyperparathyroidism (from the confirmed diagnosis)
+- note: Seeded investigations: primary_hyperparathyroidism (confirmed); 0 stat test(s) held back
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -11529,13 +11786,14 @@ Guidelines:
 - differential web.passive: 1. Croup / laryngotracheobronchitis; 2. Spontaneous pneumothorax; 3. Pulmonary embolism; 4. Pleural effusion; 5. Bronchiolitis (RSV)
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=25)
-- alarms: Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: heart, wells-pe, news2, curb65
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, chest_pain, cough, episodic_pain, pain_worse_movement, pleuritic_chest_pain, abdominal_tenderness, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: pneumonia (leading differential); 0 stat test(s) held back
 - note: matchPathways: Chest Pain — Emergency Redirect (5), Varicose Veins (5)
 
 </details>
@@ -11578,13 +11836,14 @@ Guidelines:
 - differential web.passive: 1. Tension pneumothorax; 2. Spontaneous pneumothorax; 3. Pulmonary embolism; 4. Pleural effusion; 5. Empyema thoracis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=212)
-- alarms: Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Pulmonary embolism [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; SpO₂ 91% — hypoxia [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Pulmonary embolism [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; SpO₂ 91% — hypoxia [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: heart, wells-pe, wells-dvt, qsofa, news2, clavien-dindo, curb65, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, chest_pain, dyspnoea, pleuritic_chest_pain, dyspnoea_pe, anticoagulant_use, previous_surgery, abdominal_tenderness, recent_surgery, bowel_resection, tachycardia, tachypnoea, hypoxia, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: PlanTab protocol: pulmonary_embolism (from the confirmed diagnosis)
+- note: Seeded investigations: pulmonary_embolism (confirmed); 0 stat test(s) held back
 - note: matchPathways: Chest Pain — Emergency Redirect (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -11624,13 +11883,14 @@ Guidelines:
 - differential web.passive: 1. Perianal abscess; 2. Fournier's gangrene; 3. Cellulitis / soft tissue infection; 4. Necrotising fasciitis; 5. Pilonidal sinus / abscess
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=158)
-- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 17.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.4°C + HR 104 bpm [web.clinicalPrompts.safety]; BGL 19.2 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; HbA1c 86% — poorly controlled diabetes [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 17.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.4°C + HR 104 bpm [web.clinicalPrompts.safety]; BGL 19.2 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; HbA1c 86% — poorly controlled diabetes [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, web:wagner, news2, caprini, asa, rcri, stop-bang, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, anal_pain, severe_pain, perianal_swelling, fever, erythema_surrounding, swelling_fluctuant_soft, known_diabetes, known_hypertension, vascular_risk, insulin_or_sulfonylurea, acei_arb_use, diaphoresis, spreading_redness, localised_pain, elevated_wbc, raised_crp, hyperglycaemia, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: perianal_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: perianal_abscess (from the confirmed diagnosis)
+- note: Seeded investigations: perianal_abscess (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Diabetic Foot (5)
 
 </details>
@@ -11670,13 +11930,14 @@ Guidelines:
 - differential web.passive: 1. Perianal abscess; 2. Squamous cell carcinoma of the anus; 3. Haemorrhoids / anorectal disease; 4. Fistula in ano; 5. Pilonidal sinus / abscess
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=8)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, anal_pain, pain_on_defaecation, perianal_swelling, erythema_surrounding, swelling_fluctuant_soft, immunosuppression, localised_pain, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: perianal_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: perianal_abscess (from the confirmed diagnosis)
+- note: Seeded investigations: perianal_abscess (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5)
 
 </details>
@@ -11706,13 +11967,14 @@ Guidelines:
 - differential web.passive: 1. Perianal abscess; 2. Squamous cell carcinoma of the anus; 3. Haemorrhoids / anorectal disease; 4. Fistula in ano; 5. Pilonidal sinus / abscess
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=20)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, anal_pain, pain_on_defaecation, severe_pain, perianal_swelling, erythema_surrounding, swelling_fluctuant_soft, rectal_mass, localised_pain, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: perianal_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: perianal_abscess (from the confirmed diagnosis)
+- note: Seeded investigations: perianal_abscess (confirmed); 0 stat test(s) held back
 - note: matchPathways: Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7), IBD — Surgical Complications (Crohn's / UC) (7)
 
 </details>
@@ -11753,13 +12015,14 @@ Guidelines:
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Varicocele; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
 - differential web.triageSurgical: 1. Inguinal hernia
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (Hernia)
 - note: PANE features applied: groin_swelling, worse_straining, cough, cough_impulse, hernia_compressible, groin_lump_reducible, hernia_swelling, previous_surgery, previous_repair, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (15), IBD — Surgical Complications (Crohn's / UC) (5), Pre-operative Assessment (5)
 
 </details>
@@ -11799,13 +12062,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Diverticulitis of colon; 2. Skin / soft tissue abscess
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=47)
-- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: (none) (Diverticulitis)
 - note: PANE features applied: lif_pain, known_hypertension, vascular_risk, previous_surgery, syncope, urticaria_angioedema, swelling_fluctuant_soft, bowel_resection, known_allergy, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diverticulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: diverticulitis (from the confirmed diagnosis)
+- note: Seeded investigations: diverticulitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Diverticular Disease / Diverticulitis (15), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -11846,13 +12110,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Umbilical hernia
 - emergency level: urgent (acuity=priority, action=same_day_call, score=36)
-- alarms: Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; Creatinine 138 μmol/L — elevated [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; Creatinine 138 μmol/L — elevated [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: cha2ds2-vasc, news2, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (Hernia)
 - note: PANE features applied: umbilical_swelling, known_af, known_ckd, known_hypertension, vascular_risk, anticoagulant_use, irregular_pulse, hernia_compressible, hernia_irreducible, hernia_swelling, previous_surgery, raised_creatinine, chronic_course, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: umbilical_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: umbilical_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: umbilical_hernia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), IBD — Surgical Complications (Crohn's / UC) (5), Pre-operative Assessment (5)
 
 </details>
@@ -11887,13 +12152,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Acute cholecystitis with cholelithiasis
 - emergency level: urgent (acuity=priority, action=same_day_call, score=36)
-- alarms: Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (warfarin) [web.clinicalPrompts.safety]; INR 2.4 on warfarin [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (warfarin) [web.clinicalPrompts.safety]; INR 2.4 on warfarin [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: cha2ds2-vasc, asge-cbd, news2, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: ruq_pain, episodic_pain, known_af, known_hypertension, vascular_risk, anticoagulant_use, irregular_pulse, previous_surgery, us_gallstones, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
+- note: Seeded investigations: preoperative_assessment (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10), Pre-operative Assessment (10), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -11929,13 +12195,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Incisional / ventral hernia
 - emergency level: priority (acuity=review, action=priority_24_48h, score=27)
-- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (warfarin) [web.clinicalPrompts.safety]; INR 3.1 on warfarin [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (warfarin) [web.clinicalPrompts.safety]; INR 3.1 on warfarin [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (Hernia)
 - note: PANE features applied: incisional_swelling, previous_surgery, known_heart_disease, vascular_risk, anticoagulant_use, hernia_compressible, hernia_swelling, previous_repair, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: incisional_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: incisional_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: incisional_hernia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Pre-operative Assessment (5)
 
 </details>
@@ -11973,13 +12240,14 @@ Guidelines:
 - differential web.passive: 1. Acute gastroenteritis; 2. Adhesive small bowel obstruction; 3. Acute appendicitis (paediatric); 4. Acute alcoholic pancreatitis; 5. Mesenteric adenitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=101)
-- alarms: Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Diabetic ketoacidosis — euglycaemic (glucose < 14 mmol/L) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Diabetic ketoacidosis — euglycaemic (glucose < 14 mmol/L) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, wells-pe, wells-dvt, ranson, qsofa, web:wagner, news2, caprini, asa, clavien-dindo, curb65, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, acute_onset, diffuse_abdominal_pain, anorexia, postprandial_pain, abdominal_pain, dyspnoea, fatigue, known_diabetes, known_hypertension, vascular_risk, sglt2_inhibitor, acei_arb_use, anticoagulant_use, previous_surgery, dehydration, kussmaul, recent_surgery, metabolic_acidosis, ketonaemia, elevated_wbc, raised_crp, tachycardia, tachypnoea, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: PlanTab protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
+- note: Seeded investigations: diabetic_ketoacidosis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (5), IBD — Surgical Complications (Crohn's / UC) (5), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -12013,13 +12281,14 @@ Guidelines:
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Varicocele; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
 - differential web.triageSurgical: 1. Inguinal hernia
 - emergency level: priority (acuity=review, action=priority_24_48h, score=18)
-- alarms: Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Haemoglobin 7.5 g/dL — severe anaemia [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Haemoglobin 7.5 g/dL — severe anaemia [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: web:wagner, news2, caprini, asa, rcri, stop-bang, cfs
 - score values: (none)
 - dx variant: (none) (Hernia)
 - note: PANE features applied: groin_swelling, known_diabetes, sglt2_inhibitor, insulin_or_sulfonylurea, vascular_risk, cough, cough_impulse, hernia_compressible, groin_lump_reducible, hernia_swelling, previous_surgery, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (20), Chest Pain — Emergency Redirect (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -12053,13 +12322,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis; 2. Acute appendicitis (paediatric); 3. Acute alcoholic pancreatitis; 4. Acute gastroenteritis; 5. Acute mesenteric ischaemia
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=26)
-- alarms: Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, web:wagner, news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: appendicitis_uncomplicated (Acute Appendicitis)
 - note: PANE features applied: abdominal_pain, acute_onset, rlq_pain, nausea_vomiting, anorexia, pain_worse_movement, known_diabetes, insulin_or_sulfonylurea, periumbilical_pain, guarding, alcohol_use, elevated_wbc, raised_crp, hyperglycaemia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
+- note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Appendicitis (17), IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7)
 
 </details>
@@ -12094,13 +12364,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Colonic polyp
 - emergency level: urgent (acuity=priority, action=same_day_call, score=24)
-- alarms: Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Coronary stent / ACS 2 months ago on antiplatelet therapy [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Coronary stent / ACS 2 months ago on antiplatelet therapy [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, web:wagner, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: known_heart_disease, vascular_risk, known_hypertension, known_diabetes, antiplatelet_use, previous_surgery, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_polyp (from the confirmed diagnosis)
+- note: Seeded investigations: colorectal_polyp (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), Diverticular Disease / Diverticulitis (5)
 
 </details>
@@ -12135,13 +12406,14 @@ Guidelines:
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Perforated peptic ulcer; 3. Acute alcoholic pancreatitis; 4. Chronic pancreatitis; 5. Pancreatic adenocarcinoma
 - differential web.triageSurgical: 1. GORD with oesophagitis
 - emergency level: urgent (acuity=priority, action=same_day_call, score=36)
-- alarms: Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (warfarin) [web.clinicalPrompts.safety]; INR 2.3 on warfarin [web.clinicalPrompts.safety]
+- alarms: Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (warfarin) [web.clinicalPrompts.safety]; INR 2.3 on warfarin [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: cha2ds2-vasc, news2, caprini, web:gerdq, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: epigastric_pain, heartburn, known_af, known_hypertension, vascular_risk, anticoagulant_use, ppi_use, abdominal_pain, irregular_pulse, abdominal_tenderness, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: dyspepsia (from the confirmed diagnosis)
 - note: PlanTab protocol: dyspepsia (from the confirmed diagnosis)
+- note: Seeded investigations: dyspepsia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (25), Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7)
 
 </details>
@@ -12177,13 +12449,14 @@ Guidelines:
 - differential web.passive: 1. Liver disease / hepatitis / cirrhosis; 2. Cholangiocarcinoma; 3. CBD stone / obstructive jaundice; 4. Hepatocellular carcinoma (HCC); 5. Neonatal jaundice
 - differential web.triageSurgical: 1. Acute cholecystitis with cholelithiasis
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=106)
-- alarms: Emergency now [web.triage.emergency]; Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: tg18-cholangitis, cha2ds2-vasc, asge-cbd, news2, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: jaundice, ruq_pain, known_af, known_hypertension, vascular_risk, anticoagulant_use, irregular_pulse, abdominal_tenderness, raised_liver_enzymes, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: choledocholithiasis (from the confirmed diagnosis)
 - note: PlanTab protocol: choledocholithiasis (from the confirmed diagnosis)
+- note: Seeded investigations: choledocholithiasis (confirmed); 0 stat test(s) held back
 - note: matchPathways: ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (30), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (20), Jaundice Workup (15)
 
 </details>
@@ -12219,13 +12492,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Colonic polyp
 - emergency level: urgent (acuity=priority, action=same_day_call, score=31)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; P2Y12 inhibitor (clopidogrel) [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; P2Y12 inhibitor (clopidogrel) [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: known_hypertension, vascular_risk, antiplatelet_use, acei_arb_use, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_polyp (from the confirmed diagnosis)
+- note: Seeded investigations: colorectal_polyp (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -12262,13 +12536,14 @@ Guidelines:
 - differential web.passive: 1. Anaemia; 2. Hypothyroidism; 3. Major depressive disorder; 4. COVID-19 / viral respiratory illness; 5. Addisonian crisis / adrenal insufficiency
 - differential web.triageSurgical: 1. Colon cancer
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=62)
-- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri, stop-bang, cfs, ecog, web:phq9
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: change_bowel_habit, fatigue, known_hypertension, vascular_risk, previous_surgery, pallor, gait_disturbance, confusion, hernia_swelling, anaemia, chronic_course, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_cancer (from the confirmed diagnosis)
+- note: Seeded investigations: colorectal_cancer (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (15), Hernia (Inguinal / Umbilical / Incisional / Femoral) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -12317,13 +12592,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute mesenteric ischaemia; 5. Mesenteric adenitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=151)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Atrial fibrillation with haemodynamic instability [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Pneumoperitoneum — perforated viscus [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; WBC 21.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 162 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.4°C + HR 118 bpm [web.clinicalPrompts.safety]; Albumin 28 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Atrial fibrillation with haemodynamic instability [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Pneumoperitoneum — perforated viscus [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; WBC 21.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 162 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.4°C + HR 118 bpm [web.clinicalPrompts.safety]; Albumin 28 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, cha2ds2-vasc, qsofa, news2, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: diverticulitis_peritonitis (Diverticulitis)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, diffuse_abdominal_pain, lif_pain, fever, nausea_vomiting, anorexia, pain_worse_movement, cough, severe_pain, known_af, known_hypertension, vascular_risk, anticoagulant_use, confusion, abdominal_distension, urinary_retention_symptoms, guarding, rebound_tenderness, absent_bowel_sounds, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, raised_urea, free_gas, pelvic_free_fluid, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diverticulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: diverticulitis (from the confirmed diagnosis)
+- note: Seeded investigations: diverticulitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (12), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -12365,13 +12641,14 @@ Guidelines:
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Acute gastroenteritis; 3. Hypertrophic pyloric stenosis; 4. Addisonian crisis / adrenal insufficiency; 5. Primary hyperparathyroidism / hypercalcaemia
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=86)
-- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; Creatinine 246 μmol/L — elevated [web.clinicalPrompts.safety]; Potassium 5.8 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; Creatinine 246 μmol/L — elevated [web.clinicalPrompts.safety]; Potassium 5.8 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, news2, caprini, asa, clavien-dindo, rcri, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dehydration, polyuria_polydipsia, known_ckd, known_hypertension, vascular_risk, nsaid_use, acei_arb_use, anticholinergic_or_opioid, anticoagulant_use, previous_surgery, oliguria, recent_surgery, bowel_resection, raised_creatinine, raised_urea, raised_crp, acute_onset, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_kidney_injury (from the confirmed diagnosis)
+- note: Seeded investigations: acute_kidney_injury (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -12410,13 +12687,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Typhoid fever; 3. Sepsis / systemic infection; 4. Malaria; 5. Pyelonephritis
 - differential web.triageSurgical: 1. Rectal cancer
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=157)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; WBC 17.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.7°C + HR 118 bpm [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; WBC 17.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.7°C + HR 118 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, wells-pe, wells-dvt, tg18-cholangitis, qsofa, news2, caprini, clavien-dindo, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, diffuse_abdominal_pain, suprapubic_pain, fever, rigors, nausea_vomiting, anorexia, pain_worse_movement, cough, severe_pain, anticoagulant_use, previous_surgery, abdominal_distension, guarding, recent_surgery, bowel_resection, elevated_wbc, raised_crp, raised_lactate, postop_fever, tachycardia, tachypnoea, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: anastomotic_leak (from the confirmed diagnosis)
 - note: PlanTab protocol: anastomotic_leak (from the confirmed diagnosis)
+- note: Seeded investigations: anastomotic_leak (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -12453,13 +12731,14 @@ Guidelines:
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Malrotation / midgut volvulus; 3. Hirschsprung's disease; 4. Large bowel obstruction; 5. Hypertensive emergency / hypertensive encephalopathy
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=114)
-- alarms: Emergency now [web.triage.emergency]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Post-operative delirium — find the cause [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Post-operative delirium — find the cause [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, cha2ds2-vasc, qsofa, gcs, news2, caprini, asa, clavien-dindo, rcri, cfs, ecog, web:gad7
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, diffuse_abdominal_pain, nausea_vomiting, anorexia, pain_worse_movement, confusion, abdominal_distension, palpitations, known_hypertension, vascular_risk, steroid_use, anticoagulant_use, previous_surgery, irregular_pulse, absolute_constipation, recent_surgery, bowel_resection, raised_crp, elevated_wbc, raised_lactate, tachycardia, tachypnoea, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: anastomotic_leak (from the confirmed diagnosis)
 - note: PlanTab protocol: anastomotic_leak (from the confirmed diagnosis)
+- note: Seeded investigations: anastomotic_leak (confirmed); 0 stat test(s) held back
 - note: matchPathways: Bowel Obstruction (Small / Large) (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -12496,13 +12775,14 @@ Guidelines:
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Sepsis / systemic infection; 3. Meningitis / encephalitis; 4. Hypoglycaemia; 5. DKA / hyperglycaemic hyperosmolar state
 - differential web.triageSurgical: 1. Intestinal obstruction
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=144)
-- alarms: Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Urinary retention [web.clinicalPrompts.safety]; Post-operative delirium — find the cause [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]
+- alarms: Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Urinary retention [web.clinicalPrompts.safety]; Post-operative delirium — find the cause [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, gcs, news2, caprini, asa, clavien-dindo, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: confusion, known_hypertension, vascular_risk, anticholinergic_or_opioid, anticoagulant_use, previous_surgery, reduced_breath_sounds, urinary_retention_symptoms, palpable_bladder, recent_surgery, raised_crp, acute_onset, hypoxia, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: delirium (from the confirmed diagnosis)
 - note: PlanTab protocol: delirium (from the confirmed diagnosis)
+- note: Seeded investigations: delirium (confirmed); 0 stat test(s) held back
 - note: matchPathways: Bowel Obstruction (Small / Large) (5), IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -12543,13 +12823,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=152)
-- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, qsofa, news2, clavien-dindo
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, ruq_pain, shoulder_tip_pain, fever, pain_worse_movement, pleuritic_chest_pain, recent_surgery, previous_surgery, anticoagulant_use, reduced_breath_sounds, nausea_vomiting, elevated_wbc, raised_crp, postop_fever, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: postoperative_fever (from the confirmed diagnosis)
 - note: PlanTab protocol: postoperative_fever (from the confirmed diagnosis)
+- note: Seeded investigations: postoperative_fever (confirmed); 0 stat test(s) held back
 - note: matchPathways: Post-operative Follow-up (General) (10), Soft Tissue Mass / Lipoma (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -12585,13 +12866,14 @@ Guidelines:
 - differential web.passive: 1. Hirschsprung's disease; 2. Adhesive small bowel obstruction; 3. Large bowel obstruction; 4. Sigmoid volvulus; 5. Malrotation / midgut volvulus
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=84)
-- alarms: Emergency now [web.triage.emergency]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, news2, caprini, asa, clavien-dindo, rcri, cfs, ecog
 - score values: (none)
 - dx variant: (none) (Bowel Obstruction)
 - note: PANE features applied: nausea_vomiting, acute_onset, diffuse_abdominal_pain, abdominal_distension, postprandial_pain, constipation, known_hypertension, vascular_risk, anticholinergic_or_opioid, anticoagulant_use, previous_surgery, absolute_constipation, tympanic_abdomen, recent_surgery, bowel_resection, wound_pain, raised_crp, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: ileus_postop (from the confirmed diagnosis)
 - note: PlanTab protocol: ileus_postop (from the confirmed diagnosis)
+- note: Seeded investigations: ileus_postop (confirmed); 0 stat test(s) held back
 - note: matchPathways: Bowel Obstruction (Small / Large) (5), IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -12628,13 +12910,14 @@ Guidelines:
 - differential web.passive: 1. ST-elevation myocardial infarction (STEMI); 2. Acute coronary syndrome (ACS / NSTEMI / STEMI); 3. Cardiac tamponade; 4. Tension pneumothorax; 5. Vasovagal / reflex syncope
 - differential web.triageSurgical: 1. Diverticulitis of colon
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=302)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Critical hypoxia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Pulmonary embolism with shock or hypoxia (high risk) [web.clinicalPrompts.safety]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Acute heart failure / pulmonary oedema [web.clinicalPrompts.safety]; SBP 78 mmHg — hypotension [web.clinicalPrompts.safety]; SpO₂ 86% — hypoxia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; HR 132 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Critical hypoxia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Pulmonary embolism with shock or hypoxia (high risk) [web.clinicalPrompts.safety]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Acute heart failure / pulmonary oedema [web.clinicalPrompts.safety]; SBP 78 mmHg — hypotension [web.clinicalPrompts.safety]; SpO₂ 86% — hypoxia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; HR 132 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: heart, wells-pe, wells-dvt, qsofa, news2, caprini, asa, clavien-dindo, curb65, rcri, stop-bang, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, chest_pain, chest_pain_pressure, diaphoresis, syncope, dizziness, dyspnoea, pleuritic_chest_pain, severe_pain, known_hypertension, vascular_risk, anticoagulant_use, previous_surgery, pale_clammy, raised_jvp, unilateral_leg_swelling, leg_swelling, dyspnoea_pe, confusion, stoma, recent_surgery, bowel_resection, raised_lactate, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, trauma_mechanism, aortic_graft
 - note: AssessmentTab ManagementPanel protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: PlanTab protocol: pulmonary_embolism (from the confirmed diagnosis)
+- note: Seeded investigations: pulmonary_embolism (confirmed); 0 stat test(s) held back
 - note: matchPathways: Diverticular Disease / Diverticulitis (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -12676,13 +12959,14 @@ Guidelines:
 - differential web.passive: 1. Community-acquired pneumonia; 2. Sepsis / systemic infection; 3. Acute respiratory distress syndrome (ARDS); 4. Empyema thoracis; 5. Epiglottitis
 - differential web.triageSurgical: 1. Peptic ulcer with haemorrhage
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=209)
-- alarms: Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Critical hypoxia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Pulmonary embolism with shock or hypoxia (high risk) [web.clinicalPrompts.safety]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Post-operative delirium — find the cause [web.clinicalPrompts.safety]; SpO₂ 89% — hypoxia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; WBC 16.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.4°C + HR 112 bpm [web.clinicalPrompts.safety]
+- alarms: Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Critical hypoxia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Pulmonary embolism with shock or hypoxia (high risk) [web.clinicalPrompts.safety]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Post-operative delirium — find the cause [web.clinicalPrompts.safety]; SpO₂ 89% — hypoxia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; WBC 16.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.4°C + HR 112 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, qsofa, forrest, gcs, curb65, news2, caprini, asa, clavien-dindo, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, chest_pain, dyspnoea, cough, pleuritic_chest_pain, fever, pain_worse_movement, productive_cough, confusion, known_copd, ppi_use, anticoagulant_use, previous_surgery, purulent_sputum, crackles, bronchial_breathing, recent_surgery, wound_pain, smoker, vascular_risk, elevated_wbc, raised_crp, raised_lactate, raised_urea, consolidation, postop_fever, tachycardia, tachypnoea, hypoxia, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pneumonia (from the confirmed diagnosis)
 - note: PlanTab protocol: pneumonia (from the confirmed diagnosis)
+- note: Seeded investigations: pneumonia (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -12722,13 +13006,14 @@ Guidelines:
 - differential web.passive: 1. Sepsis / systemic infection; 2. Malaria; 3. Acute appendicitis (paediatric); 4. Typhoid fever; 5. Pyelonephritis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=210)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; WBC 19 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.9°C + HR 114 bpm [web.clinicalPrompts.safety]; BGL 17.8 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; WBC 19 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.9°C + HR 114 bpm [web.clinicalPrompts.safety]; BGL 17.8 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, wells-pe, wells-dvt, tg18-cholangitis, qsofa, web:wagner, news2, caprini, asa, clavien-dindo, rcri, stop-bang, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: previous_surgery, recent_surgery, acute_onset, ruq_pain, fever, rigors, anorexia, pain_worse_movement, wound_discharge, abdominal_pain, known_diabetes, insulin_or_sulfonylurea, anticoagulant_use, erythema_surrounding, discharge_pus, bowel_resection, wound_erythema, elevated_wbc, raised_crp, raised_lactate, hyperglycaemia, postop_fever, tachycardia, tachypnoea, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: surgical_site_infection (from the confirmed diagnosis)
 - note: PlanTab protocol: surgical_site_infection (from the confirmed diagnosis)
+- note: Seeded investigations: surgical_site_infection (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (17), Wound Management (Acute / Chronic / SSI) (15), Acute Abdomen (7)
 
 </details>
@@ -12767,13 +13052,14 @@ Guidelines:
 - differential web.passive: 1. Post-operative complication; 2. Osteomyelitis (adult); 3. Fistula in ano; 4. Diabetic foot infection / ischaemia; 5. Pilonidal sinus / abscess
 - differential web.triageSurgical: 1. Acute appendicitis, uncomplicated; 2. Wound concern (post-traumatic or surgical)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=73)
-- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, web:wagner, news2, clavien-dindo
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: previous_surgery, recent_surgery, acute_onset, rlq_pain, pain_worse_movement, wound_discharge, erythema_surrounding, wound_erythema, wound_pain, abdominal_tenderness, swelling_fluctuant_soft, discharge_pus, elevated_wbc, raised_crp, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: surgical_site_infection (from the confirmed diagnosis)
 - note: PlanTab protocol: surgical_site_infection (from the confirmed diagnosis)
+- note: Seeded investigations: surgical_site_infection (confirmed); 0 stat test(s) held back
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (15), Acute Abdomen (12), Acute Appendicitis (12)
 
 </details>
@@ -12811,13 +13097,14 @@ Guidelines:
 - differential web.passive: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Urinary tract infection (UTI); 4. UTI (paediatric); 5. Acute kidney injury
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=45)
-- alarms: Emergency now [web.triage.emergency]; Urinary retention [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Urinary retention [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, news2, caprini, asa, clavien-dindo, rcri, cfs
 - score values: (none)
 - dx variant: (none) (Hernia)
 - note: PANE features applied: acute_onset, suprapubic_pain, pain_worse_movement, urinary_retention_symptoms, prostate_symptoms, known_hypertension, vascular_risk, anticholinergic_or_opioid, previous_surgery, abdominal_pain, nocturia, hernia_swelling, previous_repair, recent_surgery, raised_bp, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: urinary_retention (from the confirmed diagnosis)
 - note: PlanTab protocol: urinary_retention (from the confirmed diagnosis)
+- note: Seeded investigations: urinary_retention (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5)
 
 </details>
@@ -12838,14 +13125,10 @@ Permutation of `periop-nela-frail-emergency-laparotomy`.
 | mgmt-obstetric-involvement | managementInclude | critical | PASS | ACOG Committee Opinion 775 2019; SAGES guidelines 2017 |  |
 | mgmt-no-nsaid | managementExclude | critical | PASS | FDA drug safety communication 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
-| inv-no-unqualified-ct | investigationExclude | quality | FAIL (known gap) | ACOG Committee Opinion 775 2019 | When pregnant: prefer MRI/US, qualify CT, and suppress the ectopic pathway beyond the first trimester (see findings/hpb.md gap 6). |
+| inv-no-unqualified-ct | investigationExclude | quality | PASS | ACOG Committee Opinion 775 2019 | When pregnant: prefer MRI/US, qualify CT, and suppress the ectopic pathway beyond the first trimester (see findings/hpb.md gap 6). |
 | mgmt-vte-prophylaxis | managementInclude | quality | PASS | RCOG Green-top Guideline 37a 2015; SAGES guidelines 2017 |  |
 | mgmt-left-uterine-displacement | managementInclude | quality | PASS | SAGES guidelines 2017 | See mgmt-obstetric-involvement. |
 | mgmt-antenatal-steroids | managementInclude | quality | PASS | NICE NG25 2022 | See mgmt-obstetric-involvement. |
-
-Failure details:
-
-- **inv-no-unqualified-ct** (web): forbidden investigation present in web.pane.seeded: "ct abdomen/pelvis with iv contrast (transition point, ischaemia, closed loop) (adhesion_obstruct..." (+1 more) [known gap: 'CT abdomen/pelvis with IV contrast' from the bowel_obstruction protocol investigations and PANE seeding, unqualified at 29 weeks although MRI has been done. The pelvic-free-fluid prompt also fires 'Ruptured ectopic protocol' at 29 weeks. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.pipeline.decisions: "ct abdomen/pelvis with contrast (defines level, cause, strangulation - sensitivity 94%)"]
 
 Guidelines:
 
@@ -12863,13 +13146,14 @@ Guidelines:
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
 - differential web.triageSurgical: 1. Acute appendicitis, uncomplicated
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=59)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Pelvic free fluid on imaging — female patient [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Pregnant (29 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Pelvic free fluid on imaging — female patient [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Pregnant (29 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2
 - score values: (none)
 - dx variant: (none) (Bowel Obstruction)
 - note: PANE features applied: abdominal_pain, acute_onset, diffuse_abdominal_pain, periumbilical_pain, colicky_pain, nausea_vomiting, anorexia, postprandial_pain, severe_pain, abdominal_distension, constipation, previous_surgery, rlq_pain, bilious_vomiting, absolute_constipation, pregnant, tinkling_bowel_sounds, elevated_wbc, raised_crp, raised_lactate, pelvic_free_fluid, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: adhesion_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: adhesion_obstruction (from the confirmed diagnosis)
+- note: Seeded investigations: adhesion_obstruction (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (12), Acute Appendicitis (12), Bowel Obstruction (Small / Large) (12)
 
 </details>
@@ -12913,13 +13197,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Acute cholecystitis with cholelithiasis
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: asge-cbd, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: ruq_pain, episodic_pain, previous_surgery, us_gallstones, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
+- note: Seeded investigations: preoperative_assessment (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), Pre-operative Assessment (10), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -12961,13 +13246,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Acute cholecystitis with cholelithiasis
 - emergency level: urgent (acuity=priority, action=same_day_call, score=12)
-- alarms: Hyperkalaemia [web.clinicalPrompts.safety]; Creatinine 720 μmol/L — elevated [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Potassium 6.2 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Hyperkalaemia [web.clinicalPrompts.safety]; Creatinine 720 μmol/L — elevated [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Potassium 6.2 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: asge-cbd, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: ruq_pain, episodic_pain, known_ckd, known_hypertension, vascular_risk, previous_surgery, anaemia, raised_creatinine, raised_urea, hyperkalaemia_lab, us_gallstones, chronic_course, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
+- note: Seeded investigations: preoperative_assessment (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), Pre-operative Assessment (10), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -13000,13 +13286,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Acute cholecystitis with cholelithiasis
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: asge-cbd, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: ruq_pain, episodic_pain, wheeze, urticaria_angioedema, pruritus, previous_surgery, us_gallstones, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
+- note: Seeded investigations: preoperative_assessment (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), Pre-operative Assessment (10), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -13038,13 +13325,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Acute cholecystitis with cholelithiasis
 - emergency level: routine (acuity=routine, action=routine_booking, score=12)
-- alarms: Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: asge-cbd, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: ruq_pain, episodic_pain, steroid_use, immunosuppression, joint_pain, previous_surgery, us_gallstones, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
+- note: Seeded investigations: preoperative_assessment (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), Pre-operative Assessment (10), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -13077,13 +13365,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Acute cholecystitis with cholelithiasis
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: asge-cbd, news2, caprini, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: ruq_pain, episodic_pain, known_malignancy, previous_surgery, us_gallstones, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
+- note: Seeded investigations: preoperative_assessment (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), Pre-operative Assessment (10), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -13119,13 +13408,14 @@ Guidelines:
 - differential web.passive: 1. Anaemia; 2. Hypothyroidism; 3. Major depressive disorder; 4. COVID-19 / viral respiratory illness; 5. Addisonian crisis / adrenal insufficiency
 - differential web.triageSurgical: 1. Acute cholecystitis with cholelithiasis
 - emergency level: urgent (acuity=priority, action=same_day_call, score=0)
-- alarms: Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: asge-cbd, news2, caprini, asa, rcri, stop-bang, cfs, web:phq9
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: ruq_pain, episodic_pain, fatigue, known_hypertension, vascular_risk, dyspnoea, previous_surgery, us_gallstones, chronic_course, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
+- note: Seeded investigations: preoperative_assessment (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10), Pre-operative Assessment (10), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -13164,13 +13454,14 @@ Guidelines:
 - differential web.passive: 1. Heart failure; 2. Cardiac tamponade; 3. Anaemia; 4. COPD / chronic bronchitis exacerbation; 5. Acute respiratory distress syndrome (ARDS)
 - differential web.triageSurgical: 1. Colon cancer
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=67)
-- alarms: Emergency now [web.triage.emergency]; Acute heart failure / pulmonary oedema [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 190 μmol/L — elevated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute heart failure / pulmonary oedema [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 190 μmol/L — elevated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: web:wagner, news2, caprini, asa, rcri, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: exertional_symptoms, dyspnoea, orthopnoea, known_heart_disease, vascular_risk, known_diabetes, insulin_or_sulfonylurea, known_ckd, known_hypertension, antiplatelet_use, acei_arb_use, diuretic_use, previous_surgery, leg_swelling, bilateral_leg_oedema, pallor, crackles, bowel_resection, anaemia, raised_creatinine, raised_urea, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_cancer (from the confirmed diagnosis)
+- note: Seeded investigations: colorectal_cancer (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (10), Pre-operative Assessment (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -13206,13 +13497,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Acute cholecystitis with cholelithiasis
 - emergency level: priority (acuity=review, action=priority_24_48h, score=19)
-- alarms: Coronary stent / ACS 3 months ago on antiplatelet therapy [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Coronary stent / ACS 3 months ago on antiplatelet therapy [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, asge-cbd, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: ruq_pain, episodic_pain, known_hypertension, vascular_risk, antiplatelet_use, acei_arb_use, known_heart_disease, previous_surgery, us_gallstones, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
+- note: Seeded investigations: preoperative_assessment (confirmed); 0 stat test(s) held back
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (22), Pre-operative Assessment (10), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (7)
 
 </details>
@@ -13245,13 +13537,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute alcoholic pancreatitis
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=23)
-- alarms: Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, cha2ds2-vasc, news2, has-bled
 - score values: (none)
 - dx variant: appendicitis_uncomplicated (Acute Appendicitis)
 - note: PANE features applied: abdominal_pain, acute_onset, rlq_pain, nausea_vomiting, anorexia, pain_worse_movement, cough, previous_surgery, periumbilical_pain, guarding, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
+- note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Appendicitis (12), Acute Abdomen (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -13282,13 +13575,14 @@ Guidelines:
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Inflammatory bowel disease (Crohn's / UC); 3. Haemorrhoids / anorectal disease; 4. Squamous cell carcinoma of the anus; 5. Meckel's diverticulum
 - differential web.triageSurgical: 1. Leg swelling — possible DVT; 2. Rectal cancer; 3. Change in bowel habit / lower GI bleed — investigation; 4. Varicose veins with ulceration
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=152)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, rockall, caprini, asa, rcri, stop-bang, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: change_bowel_habit, pr_bleeding, known_hypertension, vascular_risk, previous_surgery, varicosities, bowel_resection, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: rectal_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: rectal_carcinoma (from the confirmed diagnosis)
+- note: Seeded investigations: rectal_carcinoma (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (10), Varicose Veins (10), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5)
 
 </details>
@@ -13321,13 +13615,14 @@ Guidelines:
 - differential web.passive: 1. Meckel's diverticulum; 2. Acute appendicitis (paediatric); 3. Gastrointestinal stromal tumour (GIST); 4. Acute cholecystitis; 5. Peptic ulcer disease
 - differential web.triageSurgical: 1. Peptic ulcer with haemorrhage
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=97)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, glasgow-blatchford, forrest, news2, rockall, caprini, clavien-dindo
 - score values: (none)
 - dx variant: ugib_nonvariceal_stable (Upper GI Bleed)
 - note: PANE features applied: upper_gi_bleeding, melaena, abdominal_pain, nsaid_use, ppi_use, previous_surgery, pallor, recent_surgery, wound_erythema, alcohol_use, anaemia, thrombocytopenia, raised_urea, acute_onset, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
+- note: Seeded investigations: upper_gi_bleed (confirmed); 0 stat test(s) held back
 - note: matchPathways: GI Bleeding (Upper and Lower) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -13364,13 +13659,14 @@ Guidelines:
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Oesophageal / gastric carcinoma; 3. Upper respiratory tract infection (URTI); 4. Epiglottitis; 5. Thyroid carcinoma
 - differential web.triageSurgical: 1. Dysphagia / oesophageal stricture
 - emergency level: urgent (acuity=priority, action=same_day_call, score=67)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, web:gerdq, asa, curb65, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dysphagia, chronic_course, neck_pain, regurgitation, aspiration_symptoms, weight_loss, progressive_course, dysphagia_solids, cough, dysphagia_progressive, known_hypertension, vascular_risk, postprandial_pain, crackles, undigested_food_vomit, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pharyngeal_pouch (from the confirmed diagnosis)
 - note: PlanTab protocol: pharyngeal_pouch (from the confirmed diagnosis)
+- note: Seeded investigations: pharyngeal_pouch (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
 
 </details>
@@ -13400,13 +13696,14 @@ Guidelines:
 - differential web.passive: 1. Perianal abscess; 2. Skin abscess / furuncle; 3. Pilonidal sinus / abscess; 4. Hidradenitis suppurativa; 5. Haemorrhoids / anorectal disease
 - differential web.triageSurgical: 1. Skin / soft tissue abscess
 - emergency level: priority (acuity=review, action=priority_24_48h, score=8)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, asa, stop-bang
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, posterior_midline, severe_pain, swelling_fluctuant_soft, localised_pain, anal_pain, natal_cleft, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pilonidal_disease (from the confirmed diagnosis)
 - note: PlanTab protocol: pilonidal_disease (from the confirmed diagnosis)
+- note: Seeded investigations: pilonidal_disease (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5)
 
 </details>
@@ -13436,13 +13733,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=7)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: previous_surgery, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_polyp (from the confirmed diagnosis)
+- note: Seeded investigations: colorectal_polyp (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), Diverticular Disease / Diverticulitis (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -13487,13 +13785,14 @@ Guidelines:
 - differential web.passive: 1. Perforated peptic ulcer; 2. Acute alcoholic pancreatitis; 3. Acute gastroenteritis; 4. Acute appendicitis (paediatric); 5. Adhesive small bowel obstruction
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=35)
-- alarms: Emergency now [web.triage.emergency]; Pneumoperitoneum — perforated viscus [web.clinicalPrompts.safety]; Penetrating trauma [web.clinicalPrompts.safety]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pneumoperitoneum — perforated viscus [web.clinicalPrompts.safety]; Penetrating trauma [web.clinicalPrompts.safety]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, qsofa, news2, web:gerdq
 - score values: (none)
 - dx variant: (none) (Upper GI Bleed)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, epigastric_pain, sudden_onset, acute_onset, shoulder_tip_pain, nausea_vomiting, pain_worse_movement, pleuritic_chest_pain, severe_pain, guarding, rebound_tenderness, abdominal_tenderness, absent_bowel_sounds, nsaid_use, diaphoresis, pallor, heartburn, smoker, vascular_risk, alcohol_use, elevated_wbc, raised_lactate, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: peptic_ulcer (from the confirmed diagnosis)
 - note: PlanTab protocol: peptic_ulcer (from the confirmed diagnosis)
+- note: Seeded investigations: peptic_ulcer (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (17), Acute Abdomen (7), Acute Appendicitis (7)
 
@@ -13536,13 +13835,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. DKA / hyperglycaemic hyperosmolar state; 3. Acute cholecystitis; 4. Peptic ulcer disease; 5. Typhoid fever
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=79)
-- alarms: Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Pneumoperitoneum — perforated viscus [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 186 μmol/L — elevated [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]
+- alarms: Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Pneumoperitoneum — perforated viscus [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 186 μmol/L — elevated [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, qsofa, gcs, news2, asa, cfs
 - score values: (none)
 - dx variant: (none) (Upper GI Bleed)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, epigastric_pain, acute_onset, confusion, anorexia, abdominal_distension, steroid_use, known_ckd, known_copd, nsaid_use, heartburn, raised_crp, raised_lactate, raised_creatinine, raised_urea, hyperglycaemia, free_gas, pelvic_free_fluid, tachycardia, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: peptic_ulcer (from the confirmed diagnosis)
 - note: PlanTab protocol: peptic_ulcer (from the confirmed diagnosis)
+- note: Seeded investigations: peptic_ulcer (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
@@ -13581,13 +13881,14 @@ Guidelines:
 - differential web.passive: 1. Perforated peptic ulcer; 2. Acute alcoholic pancreatitis; 3. Acute appendicitis (paediatric); 4. Acute gastroenteritis; 5. Adhesive small bowel obstruction
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=235)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Pneumoperitoneum — perforated viscus [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Fever 38.8°C + HR 128 bpm + SBP 82 mmHg — septic shock [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 23.1 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 244 μmol/L — elevated [web.clinicalPrompts.safety]; SpO₂ 92% — hypoxia [web.clinicalPrompts.safety]; Alcohol excess [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Pneumoperitoneum — perforated viscus [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Fever 38.8°C + HR 128 bpm + SBP 82 mmHg — septic shock [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 23.1 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 244 μmol/L — elevated [web.clinicalPrompts.safety]; SpO₂ 92% — hypoxia [web.clinicalPrompts.safety]; Alcohol excess [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, child-pugh, qsofa, bisap, gcs, news2, web:gerdq, web:audit
 - score values: (none)
 - dx variant: (none) (Upper GI Bleed)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, epigastric_pain, sudden_onset, acute_onset, confusion, fever, nausea_vomiting, pain_worse_movement, severe_pain, abdominal_distension, guarding, absent_bowel_sounds, alcohol_use, mottled_skin, urinary_retention_symptoms, rebound_tenderness, smoker, vascular_risk, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, thrombocytopenia, free_gas, pelvic_free_fluid, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: peptic_ulcer (from the confirmed diagnosis)
 - note: PlanTab protocol: peptic_ulcer (from the confirmed diagnosis)
+- note: Seeded investigations: peptic_ulcer (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (12), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Appendicitis (7)
 
 </details>
@@ -13623,13 +13924,14 @@ Guidelines:
 - differential web.passive: 1. Pyelonephritis; 2. Urinary tract infection (UTI); 3. UTI (paediatric); 4. Malaria; 5. Sepsis / systemic infection
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=63)
-- alarms: Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16.1 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.9°C + HR 106 bpm [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16.1 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.9°C + HR 106 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, loin_pain, fever, rigors, nausea_vomiting, dysuria, frequency_urgency, pain_worse_movement, oestrogen_use, renal_angle_tenderness, abdominal_tenderness, positive_urinalysis, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pyelonephritis (from the confirmed diagnosis)
 - note: PlanTab protocol: pyelonephritis (from the confirmed diagnosis)
+- note: Seeded investigations: pyelonephritis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -13670,13 +13972,14 @@ Guidelines:
 - differential web.passive: 1. Pyelonephritis; 2. Urinary tract infection (UTI); 3. Sepsis / systemic infection; 4. Malaria; 5. UTI (paediatric)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=72)
-- alarms: Emergency now [web.triage.emergency]; Pregnant (24 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Fever 38.6°C + HR 110 bpm [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pregnant (24 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Fever 38.6°C + HR 110 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, loin_pain, fever, rigors, nausea_vomiting, dysuria, pain_worse_movement, renal_angle_tenderness, pregnant, positive_urinalysis, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pyelonephritis (from the confirmed diagnosis)
 - note: PlanTab protocol: pyelonephritis (from the confirmed diagnosis)
+- note: Seeded investigations: pyelonephritis (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -13713,13 +14016,14 @@ Guidelines:
 - differential web.passive: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Vasovagal / reflex syncope; 3. Aortic dissection; 4. Acute appendicitis (paediatric); 5. Sickle cell vaso-occlusive crisis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=147)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Suspected acute aortic dissection [web.clinicalPrompts.safety]; Symptomatic or ruptured abdominal aortic aneurysm [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Pulsatile groin mass — possible femoral aneurysm / pseudoaneurysm [web.clinicalPrompts.safety]; SBP 76 mmHg — hypotension [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 128 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Suspected acute aortic dissection [web.clinicalPrompts.safety]; Symptomatic or ruptured abdominal aortic aneurysm [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Pulsatile groin mass — possible femoral aneurysm / pseudoaneurysm [web.clinicalPrompts.safety]; SBP 76 mmHg — hypotension [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 128 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, ranson, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, epigastric_pain, loin_pain, radiation_to_back, radiation_to_groin, nausea_vomiting, pain_worse_movement, severe_pain, back_pain, pulsatile_mass, syncope, diffuse_abdominal_pain, pallor, diaphoresis, known_hypertension, vascular_risk, known_copd, tearing_pain, gcs_drop, confusion, abdominal_distension, abdominal_mass, smoker, anaemia, raised_lactate, known_aaa, tachycardia, haemodynamic_instability, hypotension, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: aortic_aneurysm (from the confirmed diagnosis)
 - note: PlanTab protocol: aortic_aneurysm (from the confirmed diagnosis)
+- note: Seeded investigations: aortic_aneurysm (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -13759,13 +14063,14 @@ Guidelines:
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Anal fissure; 3. Haemorrhoids / anorectal disease; 4. Large bowel obstruction; 5. Hirschsprung's disease
 - differential web.triageSurgical: 1. Change in bowel habit / lower GI bleed — investigation
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=65)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, rockall
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: pr_bleeding, chronic_course, anal_pain, episodic_pain, worse_straining, constipation, change_bowel_habit, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: haemorrhoids (from the confirmed diagnosis)
 - note: PlanTab protocol: haemorrhoids (from the confirmed diagnosis)
+- note: Seeded investigations: haemorrhoids (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (31), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (29), Diverticular Disease / Diverticulitis (14)
 
 </details>
@@ -13795,13 +14100,14 @@ Guidelines:
 - differential web.passive: 1. Haemorrhoids / anorectal disease; 2. Anal fissure; 3. Lower GI bleed / colorectal; 4. Rectal prolapse; 5. Meckel's diverticulum
 - differential web.triageSurgical: 1. Rectal prolapse
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=139)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal — Hb 11.4 g/dL [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal — Hb 11.4 g/dL [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, rockall, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, anal_pain, pr_bleeding, severe_pain, prolapse_pr, known_heart_disease, vascular_risk, diuretic_use, constipation, abdominal_distension, hernia_irreducible, localised_pain, skin_necrosis, recent_hospitalisation, elevated_wbc, raised_crp, raised_lactate, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: rectal_prolapse (from the confirmed diagnosis)
 - note: PlanTab protocol: rectal_prolapse (from the confirmed diagnosis)
+- note: Seeded investigations: rectal_prolapse (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (10), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -13841,13 +14147,14 @@ Guidelines:
 - differential web.passive: 1. Renal colic / urolithiasis; 2. Pyelonephritis; 3. Malaria; 4. Sepsis / systemic infection; 5. Infective endocarditis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=117)
-- alarms: Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Infected obstructed kidney [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 162 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 39.2°C + HR 122 bpm [web.clinicalPrompts.safety]
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Infected obstructed kidney [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 162 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 39.2°C + HR 122 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, web:wagner, news2, caprini, asa, rcri, stop-bang
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, loin_pain, colicky_pain, radiation_to_groin, fever, rigors, nausea_vomiting, pain_worse_movement, ruq_pain, known_diabetes, renal_angle_tenderness, diaphoresis, pale_clammy, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, positive_urinalysis, hyperglycaemia, hydronephrosis, tachycardia, haemodynamic_instability, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: obstructed_infected_kidney (from the confirmed diagnosis)
 - note: PlanTab protocol: obstructed_infected_kidney (from the confirmed diagnosis)
+- note: Seeded investigations: obstructed_infected_kidney (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -13867,13 +14174,12 @@ Permutation of `renal-colic-typical`.
 | mgmt-obstetric | managementInclude | critical | PASS | EAU Guidelines on Urolithiasis 2024 |  |
 | mgmt-no-nsaid-pregnancy | managementExclude | critical | PASS | FDA Drug Safety Communication 2020; EAU Guidelines on Urolithiasis 2024 |  |
 | mgmt-no-ercp | managementExclude | critical | PASS | EAU Guidelines on Urolithiasis 2024 |  |
-| inv-no-ct-first | investigationExclude | quality | FAIL (known gap) | EAU Guidelines on Urolithiasis 2024 | Do not seed ionising imaging when pregnant (HpiTab.seedInvestigationsFromPane); prefer the USS KUB line. |
+| inv-no-ct-first | investigationExclude | quality | PASS | EAU Guidelines on Urolithiasis 2024 | Do not seed ionising imaging when pregnant (HpiTab.seedInvestigationsFromPane); prefer the USS KUB line. |
 | mgmt-paracetamol-opioid | managementInclude | quality | FAIL (known gap) | EAU Guidelines on Urolithiasis 2024 | Map pregnancy-coded ureteric colic (O26.8 with N20) to the renal colic protocol with a pregnancy branch: paracetamol/opioid, no NSAID, ultrasound first. |
 
 Failure details:
 
-- **inv-no-ct-first** (web): forbidden investigation present in web.pane.seeded: "ct kub (or ultrasound) to confirm obstruction (infected_obstructed_kidney)" [known gap: Web: PANE seeds "CT KUB (non-contrast)" (renal_colic) and "CT abdomen/pelvis with IV contrast" (appendicitis) as urgent orders in a 26-week pregnancy.]
-- **mgmt-paracetamol-opioid** (web): no management item matched among 4 (web.clinicalPrompts) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the renal colic plan is no longer shown. Before the fix the only analgesia was diclofenac first-line. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-paracetamol-opioid** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the renal colic plan is no longer shown. Before the fix the only analgesia was diclofenac first-line. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -13888,13 +14194,14 @@ Guidelines:
 - differential web.passive: 1. Renal colic / urolithiasis; 2. Pyelonephritis; 3. Renal cell carcinoma; 4. Acute kidney injury; 5. Acute gastroenteritis
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=44)
-- alarms: Pregnant (26 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pregnant (26 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, loin_pain, colicky_pain, radiation_to_groin, nausea_vomiting, haematuria, visible_haematuria, episodic_pain, renal_angle_tenderness, pregnant, elevated_wbc, hydronephrosis, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: renal_colic (leading differential); 0 stat test(s) held back
 
 </details>
 
@@ -13929,13 +14236,14 @@ Guidelines:
 - differential web.passive: 1. Renal colic / urolithiasis; 2. Pyelonephritis; 3. Acute gastroenteritis; 4. Acute kidney injury; 5. Adhesive small bowel obstruction
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=91)
-- alarms: Emergency now [web.triage.emergency]; Obstructed solitary kidney / anuria [web.clinicalPrompts.safety]; Creatinine 420 μmol/L — elevated [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; Potassium 5.9 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Obstructed solitary kidney / anuria [web.clinicalPrompts.safety]; Creatinine 420 μmol/L — elevated [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; Potassium 5.9 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: cha2ds2-vasc, news2, has-bled, rcri, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, loin_pain, colicky_pain, radiation_to_groin, nausea_vomiting, episodic_pain, known_ckd, known_af, anticoagulant_use, known_malignancy, previous_surgery, renal_angle_tenderness, urinary_retention_symptoms, raised_creatinine, raised_urea, hydronephrosis, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: renal_colic (from the confirmed diagnosis)
 - note: PlanTab protocol: renal_colic (from the confirmed diagnosis)
+- note: Seeded investigations: renal_colic (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -13969,13 +14277,14 @@ Guidelines:
 - differential web.passive: 1. Renal colic / urolithiasis; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute appendicitis (paediatric); 5. Pyelonephritis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=47)
-- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, loin_pain, colicky_pain, radiation_to_groin, nausea_vomiting, haematuria, visible_haematuria, episodic_pain, severe_pain, lif_pain, renal_angle_tenderness, restless_writhing, hydronephrosis, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: renal_colic (from the confirmed diagnosis)
 - note: PlanTab protocol: renal_colic (from the confirmed diagnosis)
+- note: Seeded investigations: renal_colic (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -14007,13 +14316,14 @@ Guidelines:
 - differential web.passive: 1. Subarachnoid haemorrhage; 2. Hypertensive emergency / hypertensive encephalopathy; 3. Migraine; 4. Meningitis / encephalitis; 5. Dengue fever
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=15)
-- alarms: Emergency now [web.triage.emergency]; Thunderclap headache — suspected subarachnoid haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Thunderclap headache — suspected subarachnoid haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, headache, neck_pain, thunderclap_headache, severe_pain, known_hypertension, vascular_risk, previous_surgery, worse_straining, neck_stiffness, hernia_swelling, recent_surgery, raised_bp, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: subarachnoid_haemorrhage (from the confirmed diagnosis)
 - note: PlanTab protocol: subarachnoid_haemorrhage (from the confirmed diagnosis)
+- note: Seeded investigations: subarachnoid_haemorrhage (confirmed); 0 stat test(s) held back
 - note: matchPathways: Post-operative Follow-up (General) (10), Hernia (Inguinal / Umbilical / Incisional / Femoral) (5)
 
 </details>
@@ -14048,13 +14358,14 @@ Guidelines:
 - differential web.passive: 1. Bacterial meningitis (paediatric); 2. Meningitis / encephalitis; 3. Subarachnoid haemorrhage; 4. Migraine; 5. Hypertensive emergency / hypertensive encephalopathy
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=35)
-- alarms: Emergency now [web.triage.emergency]; Thunderclap headache — suspected subarachnoid haemorrhage [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Thunderclap headache — suspected subarachnoid haemorrhage [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, headache, thunderclap_headache, neck_stiffness, nausea_vomiting, photophobia, severe_pain, known_hypertension, vascular_risk, acei_arb_use, smoker, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: subarachnoid_haemorrhage (from the confirmed diagnosis)
 - note: PlanTab protocol: subarachnoid_haemorrhage (from the confirmed diagnosis)
+- note: Seeded investigations: subarachnoid_haemorrhage (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -14093,13 +14404,14 @@ Guidelines:
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Acute gastroenteritis
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=23)
-- alarms: Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: sbo_adhesional (Bowel Obstruction)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, periumbilical_pain, acute_onset, colicky_pain, nausea_vomiting, bilious_vomiting, constipation, absolute_constipation, abdominal_distension, episodic_pain, postprandial_pain, known_hypertension, vascular_risk, acei_arb_use, previous_surgery, dehydration, tympanic_abdomen, tinkling_bowel_sounds, elevated_wbc, raised_crp, raised_urea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: adhesion_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: adhesion_obstruction (from the confirmed diagnosis)
+- note: Seeded investigations: adhesion_obstruction (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (21), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (19), Diverticular Disease / Diverticulitis (14)
 
 </details>
@@ -14131,13 +14443,14 @@ Guidelines:
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
 - differential web.triageSurgical: 1. Intestinal obstruction
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=53)
-- alarms: Emergency now [web.triage.emergency]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, web:wagner, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: sbo_failed_nonoperative (Bowel Obstruction)
 - note: PANE features applied: abdominal_pain, periumbilical_pain, acute_onset, colicky_pain, nausea_vomiting, constipation, absolute_constipation, abdominal_distension, episodic_pain, diffuse_abdominal_pain, known_diabetes, known_hypertension, vascular_risk, insulin_or_sulfonylurea, acei_arb_use, previous_surgery, bilious_vomiting, tympanic_abdomen, bowel_resection, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: adhesion_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: adhesion_obstruction (from the confirmed diagnosis)
+- note: Seeded investigations: adhesion_obstruction (confirmed); 0 stat test(s) held back
 - note: matchPathways: Bowel Obstruction (Small / Large) (15), IBD — Surgical Complications (Crohn's / UC) (10), Acute Abdomen (5)
 
 </details>
@@ -14169,13 +14482,14 @@ Guidelines:
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Malrotation / midgut volvulus; 3. Sigmoid volvulus; 4. Large bowel obstruction; 5. Wilms tumour / nephroblastoma
 - differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=97)
-- alarms: Emergency now [web.triage.emergency]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal [web.clinicalPrompts.safety]; Albumin 24 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal [web.clinicalPrompts.safety]; Albumin 24 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, wells-dvt, ranson, news2, caprini, must, ecog
 - score values: (none)
 - dx variant: sbo_adhesional (Bowel Obstruction)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, acute_onset, colicky_pain, abdominal_distension, postprandial_pain, nausea_vomiting, weight_loss, episodic_pain, anticholinergic_or_opioid, known_malignancy, previous_surgery, ascites, immunosuppression, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: bowel_obstruction (from the confirmed diagnosis)
+- note: Seeded investigations: bowel_obstruction (confirmed); 0 stat test(s) held back
 - note: matchPathways: Bowel Obstruction (Small / Large) (5)
 
 </details>
@@ -14208,13 +14522,14 @@ Guidelines:
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
 - differential web.triageSurgical: 1. Inguinal hernia
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=71)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Incarcerated / strangulated hernia [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; WBC 15.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 131 μmol/L — elevated [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Incarcerated / strangulated hernia [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; WBC 15.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 131 μmol/L — elevated [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, cha2ds2-vasc, news2, has-bled, cfs
 - score values: (none)
 - dx variant: hernia_strangulated (Hernia)
 - note: PANE features applied: abdominal_pain, periumbilical_pain, groin_swelling, acute_onset, colicky_pain, nausea_vomiting, constipation, absolute_constipation, abdominal_distension, pain_worse_movement, hernia_swelling, below_inguinal_ligament, hernia_irreducible, localised_pain, erythema_surrounding, known_af, known_ckd, anticoagulant_use, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: femoral_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: femoral_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: femoral_hernia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Bowel Obstruction (Small / Large) (12), Hernia (Inguinal / Umbilical / Incisional / Femoral) (12), Acute Abdomen (7)
 
 </details>
@@ -14252,13 +14567,14 @@ Guidelines:
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Malaria; 5. Hirschsprung's disease
 - differential web.triageSurgical: 1. Intestinal obstruction
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=132)
-- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Penetrating trauma [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 142 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.4°C + HR 118 bpm [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Penetrating trauma [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 142 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.4°C + HR 118 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: sbo_strangulation (Bowel Obstruction)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, rlq_pain, acute_onset, colicky_pain, fever, rigors, nausea_vomiting, constipation, absolute_constipation, pain_worse_movement, abdominal_distension, guarding, rebound_tenderness, known_hypertension, vascular_risk, previous_surgery, diaphoresis, anxiety_tremor, abdominal_tenderness, trauma_mechanism, mechanism_penetrating, wound_erythema, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, pelvic_free_fluid, tachycardia, tachypnoea, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: adhesion_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: adhesion_obstruction (from the confirmed diagnosis)
+- note: Seeded investigations: adhesion_obstruction (confirmed); 0 stat test(s) held back
 - note: matchPathways: Bowel Obstruction (Small / Large) (22), Acute Abdomen (12), IBD — Surgical Complications (Crohn's / UC) (12)
 
 </details>
@@ -14295,13 +14611,14 @@ Guidelines:
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
 - differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=90)
-- alarms: Emergency now [web.triage.emergency]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal — Hb 10.9 g/dL [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal — Hb 10.9 g/dL [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2, cfs
 - score values: (none)
 - dx variant: sbo_adhesional (Bowel Obstruction)
 - note: PANE features applied: abdominal_pain, periumbilical_pain, acute_onset, colicky_pain, nausea_vomiting, constipation, absolute_constipation, abdominal_distension, weight_loss, episodic_pain, postprandial_pain, anaemia, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: bowel_obstruction (from the confirmed diagnosis)
+- note: Seeded investigations: bowel_obstruction (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (14), Liver Lesion / Hepatic Mass (14), Pancreatic Mass / Cyst (14)
 
 </details>
@@ -14334,13 +14651,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=7)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: known_hypertension, vascular_risk, previous_surgery, smoker, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
 - note: matchPathways: Annual Health Check (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -14374,13 +14692,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
 - note: matchPathways: Breast Lump / Breast Disease (10), Cancer Screening (Age/Sex Appropriate) (10), Annual Health Check (5)
 
 </details>
@@ -14413,13 +14732,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Breast cancer
 - emergency level: routine (acuity=routine, action=routine_booking, score=12)
-- alarms: Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-dvt, news2, caprini, must, ecog
 - score values: (none)
 - dx variant: breast_mastectomy (Breast)
 - note: PANE features applied: breast_lump, oestrogen_use, known_malignancy, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: breast_abscess (leading differential); 0 stat test(s) held back
 - note: matchPathways: Breast Lump / Breast Disease (5)
 
 </details>
@@ -14452,13 +14772,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: immunosuppression, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
 - note: matchPathways: Annual Health Check (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -14490,13 +14811,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Colon cancer; 2. Change in bowel habit / lower GI bleed — investigation
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: change_bowel_habit, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: infective_colitis (leading differential); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (41), IBD — Surgical Complications (Crohn's / UC) (28), Diverticular Disease / Diverticulitis (21)
 
 </details>
@@ -14535,13 +14857,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Colon cancer
 - emergency level: urgent (acuity=priority, action=same_day_call, score=37)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-dvt, news2, caprini, must, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: known_malignancy, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (15)
 
 </details>
@@ -14576,13 +14899,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: smoker, vascular_risk, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
 - note: matchPathways: Chest Pain — Emergency Redirect (10), Annual Health Check (5), Peripheral Vascular Disease (5)
 
 </details>
@@ -14613,13 +14937,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: (empty)
 - emergency level: priority (acuity=review, action=priority_24_48h, score=24)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: web:wagner, news2, caprini, asa, rcri, stop-bang, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: known_diabetes, previous_surgery, pregnant, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
 - note: matchPathways: Annual Health Check (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -14653,13 +14978,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: immunosuppression, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
 - note: matchPathways: ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (7), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (7), Pancreatic Mass / Cyst (7)
 
 </details>
@@ -14690,13 +15016,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Gastric cancer
 - emergency level: routine (acuity=routine, action=routine_booking, score=12)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-dvt, news2, caprini, must, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: known_malignancy, smoker, vascular_risk, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10), Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7)
 
 </details>
@@ -14730,13 +15057,14 @@ Guidelines:
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Migraine; 3. Stroke / TIA; 4. Meningitis / encephalitis; 5. Dengue fever
 - differential web.triageSurgical: 1. Umbilical hernia
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=0)
-- alarms: Emergency now [web.triage.emergency]; Hypertensive emergency (acute organ damage) [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Hypertensive emergency (acute organ damage) [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri, ecog
 - score values: (none)
 - dx variant: (none) (Hernia)
 - note: PANE features applied: umbilical_swelling, headache, visual_disturbance, known_hypertension, vascular_risk, leg_swelling, papilloedema, hernia_compressible, hernia_swelling, burn_wound, proteinuria, acute_onset, raised_bp, severe_hypertension, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: hypertensive_emergency (from the confirmed diagnosis)
 - note: PlanTab protocol: hypertensive_emergency (from the confirmed diagnosis)
+- note: Seeded investigations: hypertensive_emergency (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (15), Chest Pain — Emergency Redirect (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -14771,13 +15099,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: radiation_arm_jaw, acute_onset, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: acute_coronary_syndrome (leading differential); 2 stat test(s) held back
 - note: matchPathways: Annual Health Check (5), Chest Pain — Emergency Redirect (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -14813,13 +15142,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=12)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: previous_surgery, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (12), Cancer Screening (Age/Sex Appropriate) (7), IBD — Surgical Complications (Crohn's / UC) (7)
 
 </details>
@@ -14850,13 +15180,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: previous_surgery, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_polyp (from the confirmed diagnosis)
+- note: Seeded investigations: colorectal_polyp (confirmed); 0 stat test(s) held back
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -14887,13 +15218,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Colonic polyp
 - emergency level: routine (acuity=routine, action=routine_booking, score=7)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: known_hypertension, vascular_risk, previous_surgery, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_polyp (from the confirmed diagnosis)
+- note: Seeded investigations: colorectal_polyp (confirmed); 0 stat test(s) held back
 - note: matchPathways: Post-operative Follow-up (General) (10), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -14928,13 +15260,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: previous_surgery, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
 - note: matchPathways: Annual Health Check (5), Cancer Screening (Age/Sex Appropriate) (5), Colonoscopy Screening (5)
 
 </details>
@@ -14959,7 +15292,7 @@ Permutation of `trauma-splenic-injury-unstable`.
 
 Failure details:
 
-- **mgmt-meningococcal** (web): no management item matched among 6 (web.clinicalPrompts) [known gap: See mgmt-pneumococcal. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-meningococcal** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: See mgmt-pneumococcal. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -14973,13 +15306,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=65)
-- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, news2, clavien-dindo
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: previous_surgery, recent_surgery, asplenia, trauma_mechanism, mechanism_blunt, wound_discharge, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: surgical_site_infection (leading differential); 0 stat test(s) held back
 - note: matchPathways: Post-operative Follow-up (General) (10), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -15011,13 +15345,14 @@ Guidelines:
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: (empty)
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nocturia, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
 - note: matchPathways: Cancer Screening (Age/Sex Appropriate) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -15049,13 +15384,14 @@ Guidelines:
 - differential web.passive: 1. Acute compartment syndrome; 2. Acute cholecystitis; 3. CBD stone / obstructive jaundice; 4. Peptic ulcer disease; 5. Reducible groin / abdominal hernia
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=35)
-- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Tetanus-prone wound [web.clinicalPrompts.safety]
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Tetanus-prone wound [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: web:wagner, news2, caprini, asa, clavien-dindo, rcri
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: wound_pain, known_diabetes, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -15088,13 +15424,14 @@ Guidelines:
 - differential web.passive: 1. Epilepsy / seizure disorder; 2. Febrile convulsion; 3. Hypertensive emergency / hypertensive encephalopathy; 4. Sepsis / systemic infection; 5. Meningitis / encephalitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=25)
-- alarms: Emergency now [web.triage.emergency]; Seizure with incomplete recovery [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Seizure with incomplete recovery [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: gcs, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: seizure, syncope, loss_of_consciousness, confusion, symptoms_resolved, tongue_bite, urinary_incontinence, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: first_seizure (from the confirmed diagnosis)
 - note: PlanTab protocol: first_seizure (from the confirmed diagnosis)
+- note: Seeded investigations: first_seizure (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -15128,13 +15465,14 @@ Guidelines:
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Epilepsy / seizure disorder; 3. Migraine; 4. Meningitis / encephalitis; 5. Bacterial meningitis (paediatric)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=49)
-- alarms: Emergency now [web.triage.emergency]; Eclampsia / severe pre-eclampsia [web.clinicalPrompts.safety]; Pregnant (34 weeks) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Eclampsia / severe pre-eclampsia [web.clinicalPrompts.safety]; Pregnant (34 weeks) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: gcs, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: seizure, headache, visual_disturbance, confusion, ruq_pain, gcs_drop, urticaria_angioedema, pregnant, proteinuria, thrombocytopenia, raised_liver_enzymes, acute_onset, tachycardia, raised_bp, severe_hypertension, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pre_eclampsia (from the confirmed diagnosis)
 - note: PlanTab protocol: pre_eclampsia (from the confirmed diagnosis)
+- note: Seeded investigations: pre_eclampsia (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -15168,13 +15506,14 @@ Guidelines:
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=27)
-- alarms: Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2, cfs
 - score values: (none)
 - dx variant: lbo_volvulus (Bowel Obstruction)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, lif_pain, acute_onset, colicky_pain, abdominal_distension, nausea_vomiting, constipation, absolute_constipation, tympanic_abdomen, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: bowel_obstruction (from the confirmed diagnosis)
+- note: Seeded investigations: bowel_obstruction (confirmed); 0 stat test(s) held back
 - note: matchPathways: Bowel Obstruction (Small / Large) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -15211,13 +15550,14 @@ Guidelines:
 - differential web.passive: 1. Sepsis / systemic infection; 2. Sigmoid volvulus; 3. Adhesive small bowel obstruction; 4. Large bowel obstruction; 5. Typhoid fever
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=192)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Pneumoperitoneum — perforated viscus [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Fever 38.6°C + HR 124 bpm + SBP 88 mmHg — septic shock [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 22.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 188 μmol/L — elevated [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Pneumoperitoneum — perforated viscus [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Fever 38.6°C + HR 124 bpm + SBP 88 mmHg — septic shock [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 22.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 188 μmol/L — elevated [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, gcs, news2, cfs
 - score values: (none)
 - dx variant: lbo_volvulus (Bowel Obstruction)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, acute_onset, fever, rigors, constipation, absolute_constipation, abdominal_distension, pain_worse_movement, severe_pain, confusion, lif_pain, guarding, rebound_tenderness, absent_bowel_sounds, previous_surgery, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, free_gas, pelvic_free_fluid, mesenteric_ct_signs, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: bowel_obstruction (from the confirmed diagnosis)
+- note: Seeded investigations: bowel_obstruction (confirmed); 0 stat test(s) held back
 - note: matchPathways: Bowel Obstruction (Small / Large) (17), Diverticular Disease / Diverticulitis (12), Acute Abdomen (7)
 
 </details>
@@ -15252,13 +15592,14 @@ Guidelines:
 - differential web.passive: 1. Stroke / TIA; 2. Acute limb ischaemia; 3. Hypertensive emergency / hypertensive encephalopathy; 4. Acute cholecystitis; 5. CBD stone / obstructive jaundice
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=19)
-- alarms: Emergency now [web.triage.emergency]; Suspected acute stroke (FAST positive) [web.clinicalPrompts.safety]; Hypertensive emergency (acute organ damage) [web.clinicalPrompts.safety]; Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected acute stroke (FAST positive) [web.clinicalPrompts.safety]; Hypertensive emergency (acute organ damage) [web.clinicalPrompts.safety]; Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: cha2ds2-vasc, news2, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, facial_weakness, focal_weakness, limb_weakness, speech_disturbance, known_af, known_hypertension, vascular_risk, radiation_arm_jaw, irregular_pulse, anticoagulant_use, raised_bp, severe_hypertension, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_stroke (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_stroke (from the confirmed diagnosis)
+- note: Seeded investigations: acute_stroke (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -15292,13 +15633,14 @@ Guidelines:
 - differential web.passive: 1. Stroke / TIA; 2. Acute limb ischaemia; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=36)
-- alarms: Emergency now [web.triage.emergency]; Suspected acute stroke (FAST positive) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Suspected acute stroke (FAST positive) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: cha2ds2-vasc, news2, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, limb_weakness, focal_weakness, facial_weakness, speech_disturbance, known_af, known_hypertension, vascular_risk, anticoagulant_use, acei_arb_use, previous_surgery, radiation_arm_jaw, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_stroke (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_stroke (from the confirmed diagnosis)
+- note: Seeded investigations: acute_stroke (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -15329,13 +15671,14 @@ Guidelines:
 - differential web.passive: 1. Scarlet fever; 2. Urticaria / allergic reaction; 3. Sciatica / lumbar radiculopathy; 4. Cellulitis / soft tissue infection; 5. Acute compartment syndrome
 - differential web.triageSurgical: 1. Varicose veins with ulceration
 - emergency level: urgent (acuity=priority, action=same_day_call, score=8)
-- alarms: Superficial vein thrombosis near the saphenofemoral junction [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Superficial vein thrombosis near the saphenofemoral junction [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: varicosities, acute_onset, limb_pain, radiation_to_groin, pain_worse_movement, rash, tender_cord, erythema_surrounding, localised_pain, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: superficial_vein_thrombosis (from the confirmed diagnosis)
 - note: PlanTab protocol: superficial_vein_thrombosis (from the confirmed diagnosis)
+- note: Seeded investigations: superficial_vein_thrombosis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Varicose Veins (15)
 
 </details>
@@ -15368,13 +15711,14 @@ Guidelines:
 - differential web.passive: 1. Lymphoma (Hodgkin / non-Hodgkin); 2. Thyroid carcinoma; 3. Kawasaki disease; 4. Pharyngitis / tonsillitis; 5. Acute cholecystitis
 - differential web.triageSurgical: 1. Thyroid nodule
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: thyroid_bethesda_nondiagnostic (Thyroid)
 - note: PANE features applied: neck_lump, chronic_course, thyroid_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_nodule_benign (from the confirmed diagnosis)
+- note: Seeded investigations: thyroid_nodule_benign (confirmed); 0 stat test(s) held back
 - note: matchPathways: Thyroid / Neck Mass (15), Foreign Body Ingestion / Food Bolus (7), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (7)
 
 </details>
@@ -15407,13 +15751,14 @@ Guidelines:
 - differential web.passive: 1. Lymphoma (Hodgkin / non-Hodgkin); 2. Thyroid carcinoma; 3. Kawasaki disease; 4. Pharyngitis / tonsillitis; 5. Acute cholecystitis
 - differential web.triageSurgical: 1. Thyroid nodule
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: thyroid_bethesda_benign (Thyroid)
 - note: PANE features applied: neck_lump, chronic_course, thyroid_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_nodule_benign (from the confirmed diagnosis)
+- note: Seeded investigations: thyroid_nodule_benign (confirmed); 0 stat test(s) held back
 - note: matchPathways: Thyroid / Neck Mass (15), Foreign Body Ingestion / Food Bolus (7), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (7)
 
 </details>
@@ -15446,13 +15791,14 @@ Guidelines:
 - differential web.passive: 1. Lymphoma (Hodgkin / non-Hodgkin); 2. Thyroid carcinoma; 3. Kawasaki disease; 4. Pharyngitis / tonsillitis; 5. Acute cholecystitis
 - differential web.triageSurgical: 1. Thyroid nodule
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: thyroid_hemithyroidectomy (Thyroid)
 - note: PANE features applied: neck_lump, chronic_course, thyroid_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_nodule_benign (from the confirmed diagnosis)
+- note: Seeded investigations: thyroid_nodule_benign (confirmed); 0 stat test(s) held back
 - note: matchPathways: Thyroid / Neck Mass (15), Foreign Body Ingestion / Food Bolus (7), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (7)
 
 </details>
@@ -15485,13 +15831,14 @@ Guidelines:
 - differential web.passive: 1. Lymphoma (Hodgkin / non-Hodgkin); 2. Thyroid carcinoma; 3. Kawasaki disease; 4. Pharyngitis / tonsillitis; 5. Acute cholecystitis
 - differential web.triageSurgical: 1. Thyroid nodule
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: thyroid_hemithyroidectomy (Thyroid)
 - note: PANE features applied: neck_lump, chronic_course, thyroid_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_nodule_benign (from the confirmed diagnosis)
+- note: Seeded investigations: thyroid_nodule_benign (confirmed); 0 stat test(s) held back
 - note: matchPathways: Thyroid / Neck Mass (15), Foreign Body Ingestion / Food Bolus (7), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (7)
 
 </details>
@@ -15523,13 +15870,14 @@ Guidelines:
 - differential web.passive: 1. Lymphoma (Hodgkin / non-Hodgkin); 2. Thyroid carcinoma; 3. Kawasaki disease; 4. Pharyngitis / tonsillitis; 5. Acute cholecystitis
 - differential web.triageSurgical: 1. Thyroid nodule
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Thyroid malignancy / Bethesda suspicious cytology [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Thyroid malignancy / Bethesda suspicious cytology [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, ecog
 - score values: (none)
 - dx variant: thyroid_total (Thyroid)
 - note: PANE features applied: neck_lump, chronic_course, thyroid_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_nodule_benign (from the confirmed diagnosis)
+- note: Seeded investigations: thyroid_nodule_benign (confirmed); 0 stat test(s) held back
 - note: matchPathways: Thyroid / Neck Mass (15), Foreign Body Ingestion / Food Bolus (7), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (7)
 
 </details>
@@ -15563,13 +15911,14 @@ Guidelines:
 - differential web.passive: 1. Lymphoma (Hodgkin / non-Hodgkin); 2. Thyroid carcinoma; 3. Kawasaki disease; 4. Pharyngitis / tonsillitis; 5. Acute cholecystitis
 - differential web.triageSurgical: 1. Thyroid nodule
 - emergency level: priority (acuity=review, action=priority_24_48h, score=0)
-- alarms: Sodium 1.8 mmol/L — hyponatraemia [web.clinicalPrompts.safety]; Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Thyroid malignancy / Bethesda suspicious cytology [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Sodium 1.8 mmol/L — hyponatraemia [web.clinicalPrompts.safety]; Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Thyroid malignancy / Bethesda suspicious cytology [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, ecog
 - score values: (none)
 - dx variant: thyroid_total (Thyroid)
 - note: PANE features applied: neck_lump, chronic_course, thyroid_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: thyroid_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_carcinoma (from the confirmed diagnosis)
+- note: Seeded investigations: thyroid_carcinoma (confirmed); 0 stat test(s) held back
 - note: matchPathways: Thyroid / Neck Mass (15), Foreign Body Ingestion / Food Bolus (7), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (7)
 
 </details>
@@ -15605,13 +15954,14 @@ Guidelines:
 - differential web.passive: 1. Lymphoma (Hodgkin / non-Hodgkin); 2. Thyroid carcinoma; 3. Kawasaki disease; 4. Pharyngitis / tonsillitis; 5. Acute cholecystitis
 - differential web.triageSurgical: 1. Thyroid nodule
 - emergency level: routine (acuity=routine, action=routine_booking, score=0)
-- alarms: Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (Thyroid)
 - note: PANE features applied: neck_lump, chronic_course, thyroid_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_nodule_benign (from the confirmed diagnosis)
+- note: Seeded investigations: thyroid_nodule_benign (confirmed); 0 stat test(s) held back
 - note: matchPathways: Thyroid / Neck Mass (15), Foreign Body Ingestion / Food Bolus (7), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (7)
 
 </details>
@@ -15645,13 +15995,14 @@ Guidelines:
 - differential web.passive: 1. Hyperthyroidism / thyrotoxicosis; 2. Lymphoma (Hodgkin / non-Hodgkin); 3. Phaeochromocytoma; 4. Pulmonary tuberculosis; 5. Atrial fibrillation / flutter
 - differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup; 2. Thyroid nodule
 - emergency level: urgent (acuity=priority, action=same_day_call, score=25)
-- alarms: Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, web:gad7
 - score values: (none)
 - dx variant: thyroid_hemithyroidectomy (Thyroid)
 - note: PANE features applied: neck_lump, chronic_course, thyroid_swelling, palpitations, anxiety_tremor, weight_loss, night_sweats, diaphoresis, heat_intolerance, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: hyperthyroidism (from the confirmed diagnosis)
 - note: PlanTab protocol: hyperthyroidism (from the confirmed diagnosis)
+- note: Seeded investigations: hyperthyroidism (confirmed); 0 stat test(s) held back
 - note: matchPathways: Thyroid / Neck Mass (10), Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7)
 
 </details>
@@ -15683,13 +16034,14 @@ Guidelines:
 - differential web.passive: 1. Peripheral neuropathy; 2. Acute compartment syndrome; 3. Carpal tunnel syndrome; 4. Sciatica / lumbar radiculopathy; 5. Lumbar disc disease / sciatica
 - differential web.triageSurgical: 1. Thyroid carcinoma
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=25)
-- alarms: Emergency now [web.triage.emergency]; Acute hypocalcaemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute hypocalcaemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, news2, clavien-dindo, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: previous_surgery, recent_surgery, limb_numbness, myalgia, known_malignancy, colicky_pain, neck_surgery, acute_onset, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: post_thyroidectomy_hypocalcaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: post_thyroidectomy_hypocalcaemia (from the confirmed diagnosis)
+- note: Seeded investigations: post_thyroidectomy_hypocalcaemia (confirmed); 0 stat test(s) held back
 - note: matchPathways: Thyroid / Neck Mass (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -15724,13 +16076,14 @@ Guidelines:
 - differential web.passive: 1. Epiglottitis; 2. Croup / laryngotracheobronchitis; 3. Thyroid carcinoma; 4. Tension pneumothorax; 5. Acute respiratory distress syndrome (ARDS)
 - differential web.triageSurgical: 1. Thyroid nodule
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=135)
-- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Airway emergency — neck haematoma after thyroid/parathyroid surgery [web.clinicalPrompts.safety]; Bleeding on enoxaparin [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SpO₂ 90% — hypoxia [web.clinicalPrompts.safety]; HR 122 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Airway emergency — neck haematoma after thyroid/parathyroid surgery [web.clinicalPrompts.safety]; Bleeding on enoxaparin [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SpO₂ 90% — hypoxia [web.clinicalPrompts.safety]; HR 122 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, qsofa, web:wagner, news2, clavien-dindo, curb65
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: previous_surgery, recent_surgery, sudden_onset, acute_onset, anterior_triangle_lump, neck_lump, localised_pain, dyspnoea, stridor, dysphagia, severe_pain, wound_swelling, anticoagulant_use, drooling, rapid_growth, neck_surgery, tachycardia, haemodynamic_instability, raised_bp, tachypnoea, hypoxia, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: postop_haematoma (from the confirmed diagnosis)
 - note: PlanTab protocol: postop_haematoma (from the confirmed diagnosis)
+- note: Seeded investigations: postop_haematoma (confirmed); 0 stat test(s) held back
 - note: matchPathways: Thyroid / Neck Mass (10), Post-operative Follow-up (General) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -15766,13 +16119,14 @@ Guidelines:
 - differential web.passive: 1. Epiglottitis; 2. Thyroid carcinoma; 3. Croup / laryngotracheobronchitis; 4. Oesophageal / gastric carcinoma; 5. Lung carcinoma
 - differential web.triageSurgical: 1. Dysphagia / oesophageal stricture; 2. Unexplained weight loss / GI alarm symptoms — endoscopy workup; 3. Thyroid nodule
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=152)
-- alarms: Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Airway emergency — stridor [web.clinicalPrompts.safety]; Compressive / retrosternal goitre — airway assessment [web.clinicalPrompts.safety]; Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]
+- alarms: Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Airway emergency — stridor [web.clinicalPrompts.safety]; Compressive / retrosternal goitre — airway assessment [web.clinicalPrompts.safety]; Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, qsofa, news2, caprini, asa, curb65, rcri, cfs, ecog
 - score values: (none)
 - dx variant: (none) (Thyroid)
 - note: PANE features applied: neck_lump, chronic_course, thyroid_swelling, dyspnoea, stridor, dysphagia, weight_loss, hoarseness, progressive_course, dysphagia_solids, dysphagia_progressive, known_hypertension, vascular_risk, tracheal_deviation, rapid_growth, cervical_nodes, tachycardia, raised_bp, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: thyroid_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_carcinoma (from the confirmed diagnosis)
+- note: Seeded investigations: thyroid_carcinoma (confirmed); 0 stat test(s) held back
 - note: matchPathways: Thyroid / Neck Mass (15), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
 
 </details>
@@ -15804,13 +16158,14 @@ Guidelines:
 - differential web.passive: 1. Heart failure; 2. Epiglottitis; 3. Cardiac tamponade; 4. Thyroid carcinoma; 5. Tension pneumothorax
 - differential web.triageSurgical: 1. Dysphagia / oesophageal stricture; 2. Thyroid nodule; 3. Multinodular goitre
 - emergency level: urgent (acuity=priority, action=same_day_call, score=62)
-- alarms: Acute heart failure / pulmonary oedema [web.clinicalPrompts.safety]; Compressive / retrosternal goitre — airway assessment [web.clinicalPrompts.safety]; Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Thyroid malignancy / Bethesda suspicious cytology [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
+- alarms: Acute heart failure / pulmonary oedema [web.clinicalPrompts.safety]; Compressive / retrosternal goitre — airway assessment [web.clinicalPrompts.safety]; Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Thyroid malignancy / Bethesda suspicious cytology [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, news2, caprini, asa, curb65, rcri, cfs
 - score values: (none)
 - dx variant: thyroid_total (Thyroid)
 - note: PANE features applied: neck_lump, thyroid_swelling, chronic_course, diffuse_abdominal_pain, dyspnoea, dysphagia, progressive_course, orthopnoea, dysphagia_solids, episodic_pain, known_hypertension, vascular_risk, acei_arb_use, worse_lying_flat, tracheal_deviation, aspiration_symptoms, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_nodule_benign (from the confirmed diagnosis)
+- note: Seeded investigations: thyroid_nodule_benign (confirmed); 0 stat test(s) held back
 - note: matchPathways: Thyroid / Neck Mass (10), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
 
 </details>
@@ -15844,13 +16199,14 @@ Guidelines:
 - differential web.passive: 1. Stroke / TIA; 2. Acute limb ischaemia; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
 - differential web.triageSurgical: 1. Inguinal hernia
 - emergency level: urgent (acuity=priority, action=same_day_call, score=19)
-- alarms: Suspected transient ischaemic attack [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Suspected transient ischaemic attack [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: web:wagner, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (Hernia)
 - note: PANE features applied: sudden_onset, acute_onset, limb_weakness, focal_weakness, speech_disturbance, known_hypertension, vascular_risk, known_diabetes, radiation_arm_jaw, symptoms_resolved, hernia_swelling, smoker, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: transient_ischaemic_attack (from the confirmed diagnosis)
 - note: PlanTab protocol: transient_ischaemic_attack (from the confirmed diagnosis)
+- note: Seeded investigations: transient_ischaemic_attack (confirmed); 0 stat test(s) held back
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5), Pre-operative Assessment (5)
 
 </details>
@@ -15887,13 +16243,14 @@ Guidelines:
 - differential web.passive: 1. Testicular torsion / epididymo-orchitis; 2. Acute gastroenteritis; 3. Varicocele; 4. Inguinal hernia (paediatric); 5. Adhesive small bowel obstruction
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=35)
-- alarms: Emergency now [web.triage.emergency]; Acute scrotal pain — testicular torsion until proven otherwise [web.clinicalPrompts.safety]; Testicular / scrotal signs [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Acute scrotal pain — testicular torsion until proven otherwise [web.clinicalPrompts.safety]; Testicular / scrotal signs [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: testicular_pain, sudden_onset, acute_onset, radiation_to_groin, nausea_vomiting, severe_pain, scrotal_swelling, groin_pain, high_riding_testis, localised_pain, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: testicular_torsion (from the confirmed diagnosis)
 - note: PlanTab protocol: testicular_torsion (from the confirmed diagnosis)
+- note: Seeded investigations: testicular_torsion (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -15936,13 +16293,14 @@ Guidelines:
 - differential web.passive: 1. ST-elevation myocardial infarction (STEMI); 2. Hypertensive emergency / hypertensive encephalopathy; 3. Acute coronary syndrome (ACS / NSTEMI / STEMI); 4. Epilepsy / seizure disorder; 5. Sickle cell vaso-occlusive crisis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=240)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; SBP 88 mmHg — hypotension [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SpO₂ 92% — hypoxia [web.clinicalPrompts.safety]; HR 132 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Suspected sepsis without fever (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; SBP 88 mmHg — hypotension [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SpO₂ 92% — hypoxia [web.clinicalPrompts.safety]; HR 132 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: heart, ranson, qsofa, gcs, news2, curb65
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, diffuse_abdominal_pain, luq_pain, shoulder_tip_pain, kehr_sign, pain_worse_movement, pleuritic_chest_pain, severe_pain, abdominal_pain, chest_pain, confusion, syncope, loss_of_consciousness, pallor, abdominal_distension, guarding, reduced_breath_sounds, pelvic_pain, diaphoresis, pale_clammy, mottled_skin, gcs_drop, trauma_mechanism, mechanism_blunt, chest_wall_tenderness, anaemia, raised_lactate, pelvic_free_fluid, hypothermia, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: blunt_abdominal_trauma (from the confirmed diagnosis)
 - note: PlanTab protocol: blunt_abdominal_trauma (from the confirmed diagnosis)
+- note: Seeded investigations: blunt_abdominal_trauma (confirmed); 0 stat test(s) held back
 - note: matchPathways: Chest Pain — Emergency Redirect (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -15982,13 +16340,14 @@ Guidelines:
 - differential web.passive: 1. Tension pneumothorax; 2. Pericarditis / myocarditis; 3. Empyema thoracis; 4. Spontaneous pneumothorax; 5. Acute coronary syndrome (ACS / NSTEMI / STEMI)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=161)
-- alarms: Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (warfarin) [web.clinicalPrompts.safety]; INR 3.4 on warfarin [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]
+- alarms: Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Suspected necrotising soft-tissue infection [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (warfarin) [web.clinicalPrompts.safety]; INR 3.4 on warfarin [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: heart, wells-pe, cha2ds2-vasc, qsofa, curb65, news2, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, chest_pain, dyspnoea, pain_worse_movement, pleuritic_chest_pain, cough, severe_pain, pallor, reduced_breath_sounds, bronchial_breathing, known_af, known_hypertension, vascular_risk, known_heart_disease, anticoagulant_use, luq_pain, crepitus_soft_tissue, trauma_mechanism, mechanism_blunt, anaemia, raised_lactate, tachypnoea, hypoxia, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: rib_fractures (from the confirmed diagnosis)
 - note: PlanTab protocol: rib_fractures (from the confirmed diagnosis)
+- note: Seeded investigations: rib_fractures (confirmed); 0 stat test(s) held back
 - note: matchPathways: Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -16030,13 +16389,14 @@ Guidelines:
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Migraine; 3. Meningitis / encephalitis; 4. Dengue fever; 5. Bacterial meningitis (paediatric)
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=36)
-- alarms: Head injury on anticoagulant / antiplatelet [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]
+- alarms: Head injury on anticoagulant / antiplatelet [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: cha2ds2-vasc, news2, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, headache, irregular_pulse, known_af, known_hypertension, vascular_risk, anticoagulant_use, trauma_mechanism, mechanism_blunt, raised_bp, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: traumatic_brain_injury (from the confirmed diagnosis)
 - note: PlanTab protocol: traumatic_brain_injury (from the confirmed diagnosis)
+- note: Seeded investigations: traumatic_brain_injury (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -16071,13 +16431,14 @@ Guidelines:
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Meningitis / encephalitis; 3. Migraine; 4. Bacterial meningitis (paediatric); 5. Malaria
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=48)
-- alarms: Emergency now [web.triage.emergency]; Head injury with GCS 12 [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Head injury with GCS 12 [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: gcs, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, nausea_vomiting, headache, syncope, loss_of_consciousness, confusion, gcs_drop, trauma_mechanism, mechanism_blunt, head_injury, alcohol_use, raised_bp, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: traumatic_brain_injury (from the confirmed diagnosis)
 - note: PlanTab protocol: traumatic_brain_injury (from the confirmed diagnosis)
+- note: Seeded investigations: traumatic_brain_injury (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -16116,13 +16477,14 @@ Guidelines:
 - differential web.passive: 1. Intussusception; 2. Leukaemia / haematological malignancy; 3. Malrotation / midgut volvulus; 4. Inguinal hernia (paediatric); 5. Bacterial meningitis (paediatric)
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=0)
-- alarms: Safeguarding concern — possible child maltreatment [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Safeguarding concern — possible child maltreatment [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: inconsolable_crying, non_blanching_rash, trauma_mechanism, mechanism_blunt, acute_onset, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: child_safeguarding (from the confirmed diagnosis)
 - note: PlanTab protocol: child_safeguarding (from the confirmed diagnosis)
+- note: Seeded investigations: child_safeguarding (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -16142,13 +16504,9 @@ Guidelines:
 | mgmt-obstetric-team | managementInclude | critical | PASS | ATLS 10th edition 2018 |  |
 | mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | ATLS 10th edition 2018 |  |
 | inv-kleihauer | investigationInclude | quality | PASS | ATLS 10th edition 2018; BSH guideline 2014 |  |
-| inv-no-pregnancy-test | investigationExclude | quality | FAIL |  |  |
+| inv-no-pregnancy-test | investigationExclude | quality | PASS |  |  |
 | mgmt-anti-d | managementInclude | quality | PASS | ATLS 10th edition 2018; BSH guideline 2014 | Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes. |
 | pathway-trauma | pathway | quality | n/a |  |  |
-
-Failure details:
-
-- **inv-no-pregnancy-test** (web): forbidden investigation present in web.pane.seeded: "β-hcg (exclude ectopic pregnancy) (pelvic_inflammatory_disease)" (+2 more)
 
 Guidelines:
 
@@ -16164,13 +16522,14 @@ Guidelines:
 - differential web.passive: 1. Ectopic pregnancy; 2. Ovarian torsion / ovarian cyst; 3. Acute appendicitis (paediatric); 4. Pelvic inflammatory disease (PID); 5. Acute cholecystitis
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=84)
-- alarms: Emergency now [web.triage.emergency]; Trauma in pregnancy — possible placental abruption [web.clinicalPrompts.safety]; Pregnant (30 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Trauma in pregnancy — possible placental abruption [web.clinicalPrompts.safety]; Pregnant (30 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, diffuse_abdominal_pain, suprapubic_pain, colicky_pain, radiation_to_back, pain_worse_movement, severe_pain, abnormal_uterine_bleeding, pelvic_pain, pregnant, uterine_tenderness, trauma_mechanism, mechanism_blunt, anaemia, tachycardia, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: trauma_in_pregnancy (from the confirmed diagnosis)
 - note: PlanTab protocol: trauma_in_pregnancy (from the confirmed diagnosis)
+- note: Seeded investigations: trauma_in_pregnancy (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -16204,13 +16563,14 @@ Guidelines:
 - differential web.passive: 1. Rotator cuff tear / shoulder impingement; 2. Acute appendicitis (paediatric); 3. Acute cholecystitis; 4. Peptic ulcer disease; 5. Acute appendicitis
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=8)
-- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, luq_pain, shoulder_tip_pain, kehr_sign, nausea_vomiting, pain_worse_movement, pleuritic_chest_pain, guarding, dizziness, trauma_mechanism, mechanism_blunt, pelvic_free_fluid, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: splenic_laceration (from the confirmed diagnosis)
 - note: PlanTab protocol: splenic_laceration (from the confirmed diagnosis)
+- note: Seeded investigations: splenic_laceration (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -16250,13 +16610,14 @@ Guidelines:
 - differential web.passive: 1. Rotator cuff tear / shoulder impingement; 2. Acute appendicitis (paediatric); 3. BPPV / labyrinthitis / vestibular neuritis; 4. Acute cholecystitis; 5. Peptic ulcer disease
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=135)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Critical laboratory result [web.clinicalPrompts.safety]; SBP 78 mmHg — hypotension [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 138 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Critical laboratory result [web.clinicalPrompts.safety]; SBP 78 mmHg — hypotension [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 138 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, qsofa, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, diffuse_abdominal_pain, luq_pain, shoulder_tip_pain, kehr_sign, nausea_vomiting, pain_worse_movement, severe_pain, dizziness, pallor, diaphoresis, abdominal_distension, guarding, syncope, gcs_drop, confusion, trauma_mechanism, mechanism_blunt, anaemia, raised_lactate, pelvic_free_fluid, tachycardia, haemodynamic_instability, hypotension, tachypnoea, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: splenic_laceration (from the confirmed diagnosis)
 - note: PlanTab protocol: splenic_laceration (from the confirmed diagnosis)
+- note: Seeded investigations: splenic_laceration (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -16292,13 +16653,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute cholecystitis; 3. Peptic ulcer disease; 4. Acute appendicitis; 5. Adhesive small bowel obstruction
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=35)
-- alarms: Emergency now [web.triage.emergency]; Penetrating trauma [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Penetrating trauma [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, ranson, news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, luq_pain, pain_worse_movement, severe_pain, guarding, trauma_mechanism, mechanism_penetrating, evisceration, tachycardia, tachypnoea, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: penetrating_abdominal_trauma (from the confirmed diagnosis)
 - note: PlanTab protocol: penetrating_abdominal_trauma (from the confirmed diagnosis)
+- note: Seeded investigations: penetrating_abdominal_trauma (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -16333,13 +16695,14 @@ Guidelines:
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute cholecystitis; 3. Peptic ulcer disease; 4. Acute appendicitis; 5. Adhesive small bowel obstruction
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=15)
-- alarms: Emergency now [web.triage.emergency]; Penetrating trauma [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Penetrating trauma [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, ruq_pain, pain_worse_movement, trauma_mechanism, mechanism_penetrating, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: penetrating_abdominal_trauma (from the confirmed diagnosis)
 - note: PlanTab protocol: penetrating_abdominal_trauma (from the confirmed diagnosis)
+- note: Seeded investigations: penetrating_abdominal_trauma (confirmed); 0 stat test(s) held back
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -16374,13 +16737,14 @@ Guidelines:
 - differential web.passive: 1. Spontaneous pneumothorax; 2. Tension pneumothorax; 3. ST-elevation myocardial infarction (STEMI); 4. Acute coronary syndrome (ACS / NSTEMI / STEMI); 5. Cardiac tamponade
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=245)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Critical hypoxia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; SBP 80 mmHg — hypotension [web.clinicalPrompts.safety]; SpO₂ 84% — hypoxia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 138 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Critical hypoxia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; SBP 80 mmHg — hypotension [web.clinicalPrompts.safety]; SpO₂ 84% — hypoxia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 138 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: heart, wells-pe, qsofa, news2, curb65
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, chest_pain, dyspnoea, pleuritic_chest_pain, severe_pain, dyspnoea_pe, reduced_breath_sounds, tracheal_deviation, raised_jvp, confusion, subcutaneous_emphysema, abdominal_distension, trauma_mechanism, mechanism_blunt, known_copd, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pneumothorax_traumatic (from the confirmed diagnosis)
 - note: PlanTab protocol: pneumothorax_traumatic (from the confirmed diagnosis)
+- note: Seeded investigations: pneumothorax_traumatic (confirmed); 0 stat test(s) held back
 - note: matchPathways: Chest Pain — Emergency Redirect (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -16427,13 +16791,14 @@ Guidelines:
 - differential web.passive: 1. Inflammatory bowel disease (Crohn's / UC); 2. Acute gastroenteritis; 3. Irritable bowel syndrome (IBS); 4. Acute mesenteric ischaemia; 5. Acute appendicitis (paediatric)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=98)
-- alarms: Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Albumin 29 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Albumin 29 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, rockall
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: change_bowel_habit, acute_onset, diffuse_abdominal_pain, colicky_pain, fever, pr_bleeding, nocturnal_pain, diarrhoea, abdominal_pain, tenesmus, lif_pain, abdominal_distension, ulcerative_colitis_history, pallor, bloody_diarrhoea, frequency_urgency, abdominal_tenderness, anaemia, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: ulcerative_colitis (from the confirmed diagnosis)
 - note: PlanTab protocol: ulcerative_colitis (from the confirmed diagnosis)
+- note: Seeded investigations: ulcerative_colitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7)
 
 </details>
@@ -16470,13 +16835,14 @@ Guidelines:
 - differential web.passive: 1. Inflammatory bowel disease (Crohn's / UC); 2. Acute gastroenteritis; 3. Irritable bowel syndrome (IBS); 4. Acute mesenteric ischaemia; 5. Acute appendicitis (paediatric)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=110)
-- alarms: Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; Albumin 26 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; Albumin 26 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, rockall
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: change_bowel_habit, acute_onset, diffuse_abdominal_pain, colicky_pain, fever, pr_bleeding, nocturnal_pain, diarrhoea, abdominal_pain, tenesmus, lif_pain, abdominal_distension, ulcerative_colitis_history, steroid_use, anticoagulant_use, pallor, bloody_diarrhoea, abdominal_tenderness, anaemia, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: ulcerative_colitis (from the confirmed diagnosis)
 - note: PlanTab protocol: ulcerative_colitis (from the confirmed diagnosis)
+- note: Seeded investigations: ulcerative_colitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), Diverticular Disease / Diverticulitis (5)
 
 </details>
@@ -16508,13 +16874,14 @@ Guidelines:
 - differential web.passive: 1. Inflammatory bowel disease (Crohn's / UC); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Acute appendicitis (paediatric); 5. Schistosomiasis (S. mansoni)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=120)
-- alarms: Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.9 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal — Hb 11.8 g/dL [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.9 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Suspected cancer referral criteria met: colorectal — Hb 11.8 g/dL [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, rockall
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: change_bowel_habit, acute_onset, diffuse_abdominal_pain, colicky_pain, fever, pr_bleeding, diarrhoea, abdominal_pain, ulcerative_colitis_history, immunosuppression, recent_antibiotics, bloody_diarrhoea, cdiff_positive, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: clostridioides_difficile (from the confirmed diagnosis)
 - note: PlanTab protocol: clostridioides_difficile (from the confirmed diagnosis)
+- note: Seeded investigations: clostridioides_difficile (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -16546,13 +16913,14 @@ Guidelines:
 - differential web.passive: 1. Inflammatory bowel disease (Crohn's / UC); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Acute appendicitis (paediatric); 5. Schistosomiasis (S. mansoni)
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=105)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Albumin 25 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Albumin 25 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, qsofa, news2, rockall
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: change_bowel_habit, chronic_course, diffuse_abdominal_pain, fever, pr_bleeding, diarrhoea, abdominal_pain, ulcerative_colitis_history, immunosuppression, steroid_use, fatigue, bloody_diarrhoea, anaemia, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: ulcerative_colitis (from the confirmed diagnosis)
 - note: PlanTab protocol: ulcerative_colitis (from the confirmed diagnosis)
+- note: Seeded investigations: ulcerative_colitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), Diverticular Disease / Diverticulitis (5)
 
 </details>
@@ -16589,13 +16957,14 @@ Guidelines:
 - differential web.passive: 1. Inflammatory bowel disease (Crohn's / UC); 2. Schistosomiasis (S. mansoni); 3. Acute gastroenteritis; 4. Acute mesenteric ischaemia; 5. Intussusception
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=215)
-- alarms: Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 18.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.9°C + HR 126 bpm [web.clinicalPrompts.safety]; Albumin 22 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 18.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.9°C + HR 126 bpm [web.clinicalPrompts.safety]; Albumin 22 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, rockall
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, diffuse_abdominal_pain, fever, rigors, pr_bleeding, severe_pain, diarrhoea, abdominal_distension, guarding, ulcerative_colitis_history, bloody_diarrhoea, tympanic_abdomen, anaemia, elevated_wbc, raised_crp, raised_lactate, tachycardia, haemodynamic_instability, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: ulcerative_colitis (from the confirmed diagnosis)
 - note: PlanTab protocol: ulcerative_colitis (from the confirmed diagnosis)
+- note: Seeded investigations: ulcerative_colitis (confirmed); 0 stat test(s) held back
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Bowel Obstruction (Small / Large) (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5)
 
 </details>
@@ -16643,13 +17012,14 @@ Guidelines:
 - differential web.passive: 1. Portal hypertension / oesophageal varices; 2. Upper GI haemorrhage; 3. Meckel's diverticulum; 4. Gastric carcinoma; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Peptic ulcer with haemorrhage
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=87)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Alcohol excess [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Alcohol excess [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: glasgow-blatchford, ranson, forrest, news2, rockall, caprini, web:gerdq, asa, rcri
 - score values: (none)
 - dx variant: ugib_nonvariceal_stable (Upper GI Bleed)
 - note: PANE features applied: upper_gi_bleeding, acute_onset, epigastric_pain, heartburn, nausea_vomiting, melaena, haematemesis, abdominal_tenderness, pallor, known_hypertension, vascular_risk, nsaid_use, acei_arb_use, dizziness, mottled_skin, back_pain, alcohol_use, anaemia, raised_urea, elevated_wbc, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
+- note: Seeded investigations: upper_gi_bleed (confirmed); 0 stat test(s) held back
 - note: matchPathways: GI Bleeding (Upper and Lower) (10), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -16689,13 +17059,14 @@ Guidelines:
 - differential web.passive: 1. Meckel's diverticulum; 2. Acute respiratory distress syndrome (ARDS); 3. Portal hypertension / oesophageal varices; 4. Cardiac tamponade; 5. Upper GI haemorrhage
 - differential web.triageSurgical: 1. Peptic ulcer with haemorrhage
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=84)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Coronary stent / ACS 2 months ago on antiplatelet therapy [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Haemoglobin 7.6 g/dL — severe anaemia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Coronary stent / ACS 2 months ago on antiplatelet therapy [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Haemoglobin 7.6 g/dL — severe anaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, glasgow-blatchford, qsofa, forrest, curb65, news2, rockall, caprini, asa, rcri, stop-bang, cfs, web:phq9
 - score values: (none)
 - dx variant: ugib_nonvariceal_stable (Upper GI Bleed)
 - note: PANE features applied: upper_gi_bleeding, acute_onset, epigastric_pain, melaena, dyspnoea, fatigue, antiplatelet_use, pallor, known_heart_disease, vascular_risk, known_hypertension, anaemia, raised_urea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
+- note: Seeded investigations: upper_gi_bleed (confirmed); 0 stat test(s) held back
 - note: matchPathways: GI Bleeding (Upper and Lower) (15), Chest Pain — Emergency Redirect (10)
 
 </details>
@@ -16737,13 +17108,14 @@ Guidelines:
 - differential web.passive: 1. Meckel's diverticulum; 2. Portal hypertension / oesophageal varices; 3. Upper GI haemorrhage; 4. Anaemia; 5. Gastrointestinal stromal tumour (GIST)
 - differential web.triageSurgical: 1. Peptic ulcer with haemorrhage
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=101)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Bleeding on rivaroxaban [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Bleeding on rivaroxaban [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: glasgow-blatchford, cha2ds2-vasc, forrest, news2, rockall, has-bled, asa, rcri, stop-bang, cfs, web:phq9
 - score values: (none)
 - dx variant: ugib_nonvariceal_stable (Upper GI Bleed)
 - note: PANE features applied: upper_gi_bleeding, acute_onset, epigastric_pain, melaena, anorexia, fatigue, anticoagulant_use, pallor, known_heart_disease, vascular_risk, known_af, known_ckd, diuretic_use, irregular_pulse, leg_swelling, bilateral_leg_oedema, anaemia, raised_urea, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
+- note: Seeded investigations: upper_gi_bleed (confirmed); 0 stat test(s) held back
 - note: matchPathways: GI Bleeding (Upper and Lower) (15)
 
 </details>
@@ -16779,13 +17151,14 @@ Guidelines:
 - differential web.passive: 1. Upper GI haemorrhage; 2. Meckel's diverticulum; 3. Portal hypertension / oesophageal varices; 4. BPPV / labyrinthitis / vestibular neuritis; 5. Gastric carcinoma
 - differential web.triageSurgical: 1. Peptic ulcer with haemorrhage
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=65)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: glasgow-blatchford, forrest, news2, rockall, web:gerdq
 - score values: (none)
 - dx variant: ugib_nonvariceal_stable (Upper GI Bleed)
 - note: PANE features applied: upper_gi_bleeding, acute_onset, epigastric_pain, melaena, nocturnal_pain, dizziness, pallor, fatigue, abdominal_tenderness, anaemia, raised_urea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
+- note: Seeded investigations: upper_gi_bleed (confirmed); 0 stat test(s) held back
 - note: matchPathways: GI Bleeding (Upper and Lower) (10), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -16826,13 +17199,14 @@ Guidelines:
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Perforated peptic ulcer; 3. Acute alcoholic pancreatitis; 4. Chronic pancreatitis; 5. Pancreatic adenocarcinoma
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=15)
-- alarms: GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: GI haemorrhage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: glasgow-blatchford, forrest, ranson, news2, rockall, web:gerdq
 - score values: (none)
 - dx variant: ugib_nonvariceal_stable (Upper GI Bleed)
 - note: PANE features applied: upper_gi_bleeding, acute_onset, epigastric_pain, heartburn, nausea_vomiting, episodic_pain, antacid_relief, haematemesis, abdominal_tenderness, alcohol_use, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
+- note: Seeded investigations: upper_gi_bleed (confirmed); 0 stat test(s) held back
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -16875,13 +17249,14 @@ Guidelines:
 - differential web.passive: 1. Portal hypertension / oesophageal varices; 2. Upper GI haemorrhage; 3. Vasovagal / reflex syncope; 4. Meckel's diverticulum; 5. Gastrointestinal stromal tumour (GIST)
 - differential web.triageSurgical: 1. Peptic ulcer with haemorrhage
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=267)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; SBP 82 mmHg — hypotension [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Haemoglobin 7.2 g/dL — severe anaemia [web.clinicalPrompts.safety]; Creatinine 132 μmol/L — elevated [web.clinicalPrompts.safety]; HR 128 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; SBP 82 mmHg — hypotension [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Haemoglobin 7.2 g/dL — severe anaemia [web.clinicalPrompts.safety]; Creatinine 132 μmol/L — elevated [web.clinicalPrompts.safety]; HR 128 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: glasgow-blatchford, qsofa, forrest, news2, rockall, cfs
 - score values: (none)
 - dx variant: ugib_nonvariceal_stable (Upper GI Bleed)
 - note: PANE features applied: upper_gi_bleeding, sudden_onset, acute_onset, epigastric_pain, nausea_vomiting, melaena, haematemesis, syncope, pallor, diaphoresis, pale_clammy, nsaid_use, mottled_skin, confusion, pr_bleeding, abdominal_tenderness, anaemia, raised_urea, raised_creatinine, raised_lactate, tachycardia, haemodynamic_instability, hypotension, tachypnoea, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
+- note: Seeded investigations: upper_gi_bleed (confirmed); 0 stat test(s) held back
 - note: matchPathways: GI Bleeding (Upper and Lower) (20)
 
 </details>
@@ -16922,13 +17297,14 @@ Guidelines:
 - differential web.passive: 1. Upper GI haemorrhage; 2. Meckel's diverticulum; 3. Portal hypertension / oesophageal varices; 4. BPPV / labyrinthitis / vestibular neuritis; 5. Anaemia
 - differential web.triageSurgical: 1. Peptic ulcer with haemorrhage
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=101)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Bleeding on warfarin [web.clinicalPrompts.safety]; INR 4.8 — coagulopathy [web.clinicalPrompts.safety]; Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Bleeding on warfarin [web.clinicalPrompts.safety]; INR 4.8 — coagulopathy [web.clinicalPrompts.safety]; Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: glasgow-blatchford, cha2ds2-vasc, forrest, news2, rockall, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: ugib_nonvariceal_stable (Upper GI Bleed)
 - note: PANE features applied: upper_gi_bleeding, acute_onset, epigastric_pain, nausea_vomiting, melaena, dizziness, anticoagulant_use, pallor, known_af, known_hypertension, vascular_risk, irregular_pulse, recent_antibiotics, anaemia, raised_urea, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
+- note: Seeded investigations: upper_gi_bleed (confirmed); 0 stat test(s) held back
 - note: matchPathways: GI Bleeding (Upper and Lower) (15)
 
 </details>
@@ -16967,13 +17343,14 @@ Guidelines:
 - differential web.passive: 1. Upper GI haemorrhage; 2. Meckel's diverticulum; 3. Portal hypertension / oesophageal varices; 4. Peptic ulcer disease; 5. Gastric carcinoma
 - differential web.triageSurgical: 1. Peptic ulcer with haemorrhage
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=72)
-- alarms: Emergency now [web.triage.emergency]; Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: glasgow-blatchford, forrest, news2, rockall, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: ugib_nonvariceal_stable (Upper GI Bleed)
 - note: PANE features applied: upper_gi_bleeding, acute_onset, epigastric_pain, melaena, episodic_pain, known_heart_disease, vascular_risk, known_hypertension, anaemia, raised_urea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: peptic_ulcer (from the confirmed diagnosis)
 - note: PlanTab protocol: peptic_ulcer (from the confirmed diagnosis)
+- note: Seeded investigations: peptic_ulcer (confirmed); 0 stat test(s) held back
 - note: matchPathways: GI Bleeding (Upper and Lower) (10), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10), Post-operative Follow-up (General) (5)
 
 </details>
@@ -17006,13 +17383,14 @@ Guidelines:
 - differential web.passive: 1. Gastric carcinoma; 2. Pancreatic adenocarcinoma; 3. Chronic pancreatitis; 4. Acute alcoholic pancreatitis; 5. HIV / AIDS presentation
 - differential web.triageSurgical: 1. Gastric cancer; 2. Unexplained weight loss / GI alarm symptoms — endoscopy workup
 - emergency level: urgent (acuity=priority, action=same_day_call, score=62)
-- alarms: Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: ranson, news2, caprini, web:gerdq, asa, rcri, ecog
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: weight_loss, chronic_course, epigastric_pain, nausea_vomiting, anorexia, postprandial_pain, progressive_course, early_satiety, abdominal_tenderness, known_hypertension, vascular_risk, abdominal_pain, pallor, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: gastric_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: gastric_carcinoma (from the confirmed diagnosis)
+- note: Seeded investigations: gastric_carcinoma (confirmed); 0 stat test(s) held back
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (14), Liver Lesion / Hepatic Mass (14), Pancreatic Mass / Cyst (14)
 
 </details>
@@ -17048,13 +17426,14 @@ Guidelines:
 - differential web.passive: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Urinary tract infection (UTI); 4. UTI (paediatric); 5. Acute kidney injury
 - differential web.triageSurgical: (empty)
 - emergency level: urgent (acuity=priority, action=same_day_call, score=32)
-- alarms: Urinary retention [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- alarms: Urinary retention [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: news2, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, suprapubic_pain, urinary_retention_symptoms, prostate_symptoms, nocturia, palpable_bladder, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: urinary_retention (from the confirmed diagnosis)
 - note: PlanTab protocol: urinary_retention (from the confirmed diagnosis)
+- note: Seeded investigations: urinary_retention (confirmed); 0 stat test(s) held back
 
 </details>
 
@@ -17095,13 +17474,14 @@ Guidelines:
 - differential web.passive: 1. Sepsis / systemic infection; 2. Malaria; 3. Infective endocarditis; 4. Fournier's gangrene; 5. Community-acquired pneumonia
 - differential web.triageSurgical: (empty)
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=204)
-- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Fever 38.4°C + HR 124 bpm + SBP 86 mmHg — septic shock [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 21 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 190 μmol/L — elevated [web.clinicalPrompts.safety]
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Fever 38.4°C + HR 124 bpm + SBP 86 mmHg — septic shock [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 21 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 190 μmol/L — elevated [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: qsofa, gcs, news2, cfs
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: confusion, rigors, fever, fatigue, immunosuppression, steroid_use, suprapubic_pain, mottled_skin, joint_pain, abdominal_tenderness, raised_lactate, elevated_wbc, raised_crp, raised_creatinine, positive_urinalysis, acute_onset, tachycardia, haemodynamic_instability, hypotension, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: uti (from the confirmed diagnosis)
 - note: PlanTab protocol: uti (from the confirmed diagnosis)
+- note: Seeded investigations: uti (confirmed); 0 stat test(s) held back
 - note: matchPathways: Post-operative Follow-up (General) (5)
 
 </details>
@@ -17148,13 +17528,14 @@ Guidelines:
 - differential web.passive: 1. Portal hypertension / oesophageal varices; 2. Liver disease / hepatitis / cirrhosis; 3. Biliary atresia; 4. Upper GI haemorrhage; 5. CBD stone / obstructive jaundice
 - differential web.triageSurgical: 1. Peptic ulcer with haemorrhage
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=162)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; INR 1.7 — coagulopathy [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Albumin 26 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; INR 1.7 — coagulopathy [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Albumin 26 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: glasgow-blatchford, child-pugh, meld, qsofa, forrest, gcs, asge-cbd, news2, rockall, caprini, asa, web:audit, rcri, cfs
 - score values: (none)
 - dx variant: ugib_variceal (Upper GI Bleed)
 - note: PANE features applied: upper_gi_bleeding, sudden_onset, acute_onset, diffuse_abdominal_pain, abdominal_distension, nausea_vomiting, melaena, jaundice, haematemesis, alcohol_use, ascites, pallor, known_liver_disease, known_hypertension, vascular_risk, diuretic_use, pr_bleeding, spider_naevi, erythema_surrounding, anaemia, raised_urea, thrombocytopenia, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: variceal_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: variceal_bleed (from the confirmed diagnosis)
+- note: Seeded investigations: variceal_bleed (confirmed); 0 stat test(s) held back
 - note: matchPathways: GI Bleeding (Upper and Lower) (20), Jaundice Workup (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10)
 
 </details>
@@ -17193,13 +17574,14 @@ Guidelines:
 - differential web.passive: 1. Portal hypertension / oesophageal varices; 2. Heart failure; 3. Nephrotic syndrome; 4. Liver disease / hepatitis / cirrhosis; 5. Hirschsprung's disease
 - differential web.triageSurgical: 1. Peptic ulcer with haemorrhage
 - emergency level: emergency (acuity=urgent, action=emergency_now, score=80)
-- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Albumin 29 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- alarms: Emergency now [web.triage.emergency]; GI haemorrhage [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Albumin 29 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
 - recommended scores: wells-dvt, glasgow-blatchford, child-pugh, forrest, news2, rockall
 - score values: (none)
 - dx variant: ugib_variceal (Upper GI Bleed)
 - note: PANE features applied: upper_gi_bleeding, sudden_onset, acute_onset, diffuse_abdominal_pain, abdominal_distension, nausea_vomiting, haematemesis, leg_swelling, bilateral_leg_oedema, ascites, pallor, pr_bleeding, spider_naevi, erythema_surrounding, alcohol_use, anaemia, raised_urea, thrombocytopenia, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: variceal_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: variceal_bleed (from the confirmed diagnosis)
+- note: Seeded investigations: variceal_bleed (confirmed); 0 stat test(s) held back
 - note: matchPathways: GI Bleeding (Upper and Lower) (10), Bowel Obstruction (Small / Large) (5)
 
 </details>
@@ -17218,7 +17600,7 @@ Guidelines:
 | `acutemed-gastroenteritis-mimic-euglycaemic-dka` | mnm-dka-symptom-inference | web | quality | known gap | not in top 5 of web.symptomInference: 1. Acute appendicitis \| 2. Gallstone pancreatitis \| 3. Acute cholecystitis \| 4. Perforated peptic ulcer \| 5. Acute alcoholic pancreatitis; also in web.pane#1 [known gap: Web run 2026-09-25: not in t |
 | `acutemed-pe-ocp-long-haul` | mgmt-no-ddimer-gate | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• ctpa if wells score ≥ 2 and d-dimer positive - exclude pulmonary embolism." (+1 more) [known gap: Web run 2026-09-25: forbidden management item present in web.clinicalPrompts: "•  |
 | `acutemed-pe-post-lap-chole-pleuritic` | mnm-postop-collection | web | quality | known gap | not in top 3 of web.pane: 1. Pulmonary Embolism \| 2. Post-operative Pneumonia / Atelectasis \| 3. Community-acquired Pneumonia (Adult / Child) [known gap: Web run 2026-09-25: not in top 3 of web.pane: 1. Surgical Site Infection (SSI) \| 2. |
-| `acutemed-pe-post-lap-chole-pleuritic` | alarm-hypoxia-or-tachycardia | web | quality | known gap | no alarm matched among 5 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web run 2026-09-25: no matching alarm. Alarms raised: Emergency now; Pre-operative assessment. \| iOS CI 2026-09-25 (run 36169134350, database mode): no |
+| `acutemed-pe-post-lap-chole-pleuritic` | alarm-hypoxia-or-tachycardia | web | quality | known gap | no alarm matched among 6 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web run 2026-09-25: no matching alarm. Alarms raised: Emergency now; Pre-operative assessment. \| iOS CI 2026-09-25 (run 36169134350, database mode): no |
 | `acutemed-syncope-vasovagal-low-risk` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=50); expected ≤ priority [known gap: Web run 2026-09-25: web.triage: emergency (acuity=urgent, action=emergency_now, score=90); expected ≤ priority. Triage reasons: Possible  |
 | `aki-prerenal-diarrhoea-acei-nsaid` | mnm-aki-symptom-engine | web | quality | known gap | not in top 5 of web.symptomInference: 1. Acute gastroenteritis \| 2. Acute cholecystitis \| 3. BPPV / labyrinthitis / vestibular neuritis \| 4. DKA / hyperglycaemic hyperosmolar state \| 5. Acute mesenteric ischaemia; also in web.pane#1 [kn |
 | `anal-fissure-acute-posterior` | level-routine | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=73); expected ≤ priority [known gap: Web adaptiveTriage has no negation handling and treats any "bleed/bleeding" as an urgent red flag (RED_FLAGS "GI or other bleeding" → eme |
@@ -17236,7 +17618,6 @@ Guidelines:
 | `appendicitis-paediatric-9y` | mgmt-no-routine-postop-antibiotics | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...l: [x] ml. swab count correct × 2. post-operative orders: • simple appendicitis: iv amoxiclav [weight-based dose - calculate per bnfc] tds × 24h → oral co-amoxiclav × 5 days. • p |
 | `appendicitis-pregnant-t2` | mnm-obstetric-cause | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Perforated Peptic Ulcer / Perforated Viscus \| 3. Acute Diverticulitis [known gap: PANE has no obstetric disease nodes in the top 3. iOS: fallback mode: the built-in abdominalPain list ( |
 | `appendicitis-pregnant-t2` | mnm-pyelonephritis | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Perforated Peptic Ulcer / Perforated Viscus \| 3. Acute Diverticulitis [known gap: Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain |
-| `appendicitis-pregnant-t2` | inv-no-unqualified-ct | web | quality | known gap | forbidden investigation present in web.pane.seeded: "ct abdomen/pelvis if the erect cxr is non-diagnostic (perforated_peptic_ulcer)" (+1 more) [known gap: CT with IV contrast is suggested without a pregnancy qualifier.] |
 | `appendicitis-score-intermediate-band` | score-rec-air | web | quality | known gap | air not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Web CDS has no AIR rule.] |
 | `appendicitis-score-intermediate-band` | score-rec-aas | web | quality | known gap | aas not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Neither platform implements the Adult Appendicitis Score. \| iOS CI 2026-09-25 (run 36169134350, database mode): aas not recommended; recommended: alvarado, air, rip |
 | `appendicitis-score-low-band` | mnm-gynaecological | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Pyelonephritis / Upper Urinary Tract Infection [known gap: Web: PANE top 3: appendicitis, cholecystitis, peptic ulcer; no gynaecological node reaches the  |
@@ -17245,7 +17626,7 @@ Guidelines:
 | `biliary-colic-asymptomatic-incidental-gallstones` | no-alarm | web | quality | known gap | forbidden alarm present in web.triage.emergency: "emergency now - do not auto-book. call 911 or go to the nearest emergency department now ..." [known gap: "Emergency now" and "Dilated CBD" alarms fire on negated history and "CBD 4 mm".] |
 | `biliary-colic-asymptomatic-incidental-gallstones` | mgmt-no-cholecystectomy | web | quality | known gap | forbidden management item present in web.plan: "[surgical] gallbladder polyp ≥ 10 mm: laparoscopic cholecystectomy; 6-9 mm with risk factors: cholecystectomy or ultrasound surveillance (2022 joi..." (+4 more) [known gap: With no features ap |
 | `biliary-colic-asymptomatic-incidental-gallstones` | mgmt-no-antibiotics | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...post-op; light diet same evening if tolerating fluids. • iv antibiotics: co-amoxiclav 1.2g tds × 24h (complicated cholecystitis only). • remove iv can..." [known gap: Assessment  |
-| `biliary-colic-mimic-inferior-mi` | alarm-cardiac-or-haemodynamic | web | quality | known gap | no alarm matched among 4 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Only the generic "Emergency now" alarm; no cardiac or haemodynamic alarm (SBP 98 and HR 54 are above the vital red-flag cut-offs).] |
+| `biliary-colic-mimic-inferior-mi` | alarm-cardiac-or-haemodynamic | web | quality | known gap | no alarm matched among 5 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Only the generic "Emergency now" alarm; no cardiac or haemodynamic alarm (SBP 98 and HR 54 are above the vital red-flag cut-offs).] |
 | `biliary-colic-uncomplicated` | mgmt-no-antibiotics | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...post-op; light diet same evening if tolerating fluids. • iv antibiotics: co-amoxiclav 1.2g tds × 24h (complicated cholecystitis only). • remove iv can..." [known gap: Assessment  |
 | `breast-family-history-brca` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Triage same_day_call: the word "cancer" in the complaint ("Worried about breast cancer") matches the "Possible malignancy" red flag.] |
 | `breast-inflammatory-cancer` | mgmt-no-bcs-or-slnb | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "..., staging ct; neoadjuvant systemic therapy first (nccn). no wide local excision or slnb for inflammatory breast cancer." [known gap: The C50 plan comes from the generic invasive_ |
@@ -17268,7 +17649,7 @@ Guidelines:
 | `choledocholithiasis-asge-high-risk` | mnm-malignant-obstruction | web | quality | known gap | not in top 3 of web.pane: 1. Choledocholithiasis \| 2. Biliary Colic / Symptomatic Cholelithiasis \| 3. Acute Cholecystitis; also in web.symptomInference#4, web.passive#2 [known gap: PANE top 3: cholecystitis, choledocholithiasis, pancreati |
 | `choledocholithiasis-elderly-warfarin` | mnm-malignant-obstruction | web | quality | known gap | not in top 3 of web.pane: 1. Choledocholithiasis \| 2. Acute Cholangitis \| 3. Acute Cholecystitis; also in web.symptomInference#3, web.passive#4 [known gap: PANE top 3: choledocholithiasis, inguinal hernia, cholecystitis — no malignant cau |
 | `crc-screening-african-caribbean-fhx` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Over-triage: the words "colorectal cancer" in the family-history comorbidity trigger "Possible malignancy" (priority) → same_day_call for  |
-| `dfu-ischaemic-calcified-abpi` | flag-incompressible | web | quality | known gap | no red flag matched among 20 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: The arterial-ul |
+| `dfu-ischaemic-calcified-abpi` | flag-incompressible | web | quality | known gap | no red flag matched among 22 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: The arterial-ul |
 | `dfu-neuropathic-uninfected` | level-priority-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=67); expected ≥ priority, ≤ urgent [known gap: Over-triage: 'foot ulcer' matches the diabetic-foot red flag (urgent) → emergency_now for a clean, uninfected, perfused ulcer;  |
 | `dvt-pregnancy-22wk` | mgmt-no-warfarin-in-pregnancy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "... weeks (mhra 2020); anticoagulation with lmwh, not doacs or warfarin (rcog gtg 37a/b); ultrasound or mri before ionising imaging where it answers th..." [known gap: The DVT plan  |
 | `eoe-young-atopic-recurrent-bolus` | mnm-eoe | web | quality | known gap | not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Oesophageal Stricture (Benign) \| 3. Hiatus Hernia [known gap: No eosinophilic oesophagitis disease in PANE or symptom inference (only a key point in the oesophageal_stricture pr |
@@ -17284,7 +17665,6 @@ Guidelines:
 | `hernia-paraumbilical-incarcerated-obese` | variant-incarcerated-or-worse | web | quality | known gap | detected hernia_strangulated in group Hernia; expected hernia_incarcerated [known gap: Web, since the engine-matching fixes (2026-09): "strangulation not excluded" is a hedge, not a negation, so the strangulated variant is now detected (the |
 | `hernia-umbilical-adult-elective` | mgmt-no-inguinal-template | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic inguinal hernia repair (tapp) - operative plan ───────────────────────────────────────────────────────────── ..." [known gap: computeClinicalPrompts fires the hernia pa |
 | `hernia-umbilical-cirrhosis-ascites` | mgmt-no-standard-day-case-plan | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "... male (reduces haematoma). • ice pack to groin prn × 24h. • day-case discharge: pain controlled on oral analgesia, tolerating oral fluids, voiding. ..." [known gap: computeClinic |
-| `hyponatraemia-elderly-thiazide-ssri` | flag-hypokalaemia | web | quality | known gap | no red flag matched among 15 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.triage.emergency) [known gap: Web: Potassium 3.1 is not flagged: there is no hypokalaemia prompt. \| |
 | `infective-colitis-bloody-diarrhoea` | mnm-ibd | web | quality | known gap | not in top 3 of web.pane: 1. Acute Gastroenteritis / Infective Colitis \| 2. Toxic Megacolon (Acute Severe Colitis) / Colonic Perforation Risk \| 3. Clostridioides difficile Colitis (C. diff infection); also in web.symptomInference#4, web.p |
 | `lbo-cancer-impending-caecal-perforation` | mgmt-no-stent-with-impending-perforation | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• if lbo due to colonic malignancy: colonic stent as bridge to elective resection (vs emergency hartmann's)." [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to colonic  |
 | `lbo-right-colon-cancer` | mgmt-no-left-sided-plan-for-right-lesion | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...lignancy: colonic stent as bridge to elective resection (vs emergency hartmann's)." [known gap: Web: lbo_malignant plan prefix ('SEMS bridge … emergency Hartmann's … defunctionin |
@@ -17314,7 +17694,6 @@ Guidelines:
 | `periop-postop-fever-day1-early` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=152); expected ≤ urgent [known gap: Triage emergency_now (score 152) for T 38.2, HR 94 on day 1: 'Post-operative concern' (urgent) for any 'post-op' word, 'Post-op fever — so |
 | `periop-postop-ssi-superficial` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=73); expected ≤ urgent [known gap: Triage emergency_now (score 88): 'Post-operative concern' (urgent) for 'wound … pus' wording, plus 'Vomiting or possible dehydration' from  |
 | `periop-postop-urinary-retention` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=45); expected ≤ urgent [known gap: Triage emergency_now (score 45 = age + pain + 'Post-operative or recent-procedure concern' 25): uncomfortable but stable retention.] |
-| `periop-pregnancy-emergency-laparotomy-sbo` | inv-no-unqualified-ct | web | quality | known gap | forbidden investigation present in web.pane.seeded: "ct abdomen/pelvis with iv contrast (transition point, ischaemia, closed loop) (adhesion_obstruct..." (+1 more) [known gap: 'CT abdomen/pelvis with IV contrast' from the bowel_obstruction  |
 | `periop-preop-asa1-lap-chole` | score-rec-asa | web | quality | known gap | asa not recommended; recommended: asge-cbd, news2 [known gap: getCdsSuggestions suggests only asge-cbd and news2. The ASA rule fires on pre-op symptom words or comorbidities, none present in a fit patient; the procedureData.preop trigger (P |
 | `periop-preop-asa1-lap-chole` | inv-no-routine-coag | web | quality | known gap | forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" [known gap: The preop_haem prompt adds 'Prothrombin Time (PT/INR)' (+ APTT, Group & Screen) for every surgical consultation, regardless of ASA grade.] |
 | `periop-preop-asa1-lap-chole` | mgmt-no-fasting-from-midnight | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...────────────────────────────────────────── pre-operative: • nbm from midnight (or ≥ 6h solids / 2h clear fluids). • iv co-amoxiclav 1.2g at induction (single..." [known gap: The  |
@@ -17324,11 +17703,10 @@ Guidelines:
 | `ppu-perforated-peptic-ulcer` | score-rec-boey | web | quality | known gap | boey not recommended; recommended: alvarado, ranson, qsofa, news2, web:gerdq [known gap: Web: No Boey or PULP score on either platform. \| iOS CI 2026-09-25 (run 36169134350, database mode): boey not recommended; recommended: glasgow-blatch |
 | `rectal-bleeding-young-haemorrhoidal` | level-routine-or-priority | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=65); expected ≤ priority [known gap: Web adaptiveTriage has no negation handling and treats any "bleed/bleeding" as an urgent red flag (RED_FLAGS "GI or other bleeding" → eme |
 | `rectal-bleeding-young-haemorrhoidal` | mgmt-no-resuscitation | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: Web computeClinicalPrompts fires the "GI haemorrhage" resuscitation prompt (2 large-bore  |
-| `renal-colic-pregnant` | inv-no-ct-first | web | quality | known gap | forbidden investigation present in web.pane.seeded: "ct kub (or ultrasound) to confirm obstruction (infected_obstructed_kidney)" [known gap: Web: PANE seeds "CT KUB (non-contrast)" (renal_colic) and "CT abdomen/pelvis with IV contrast" (app |
-| `renal-colic-pregnant` | mgmt-paracetamol-opioid | web | quality | known gap | no management item matched among 4 (web.clinicalPrompts) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the renal colic pla |
+| `renal-colic-pregnant` | mgmt-paracetamol-opioid | web | quality | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the renal colic pla |
 | `sbo-virgin-abdomen` | mnm-neoplasm | web | quality | known gap | not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Obturator Hernia \| 3. Small Bowel Obstruction — Adhesions [known gap: Web: PANE top 3: bowel obstruction, cholecystitis, appendicitis, although weight_loss was extracted; PANE has no sma |
 | `screen-crc-fhx-sister-48-lynch-features` | level-not-urgent | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Over-triage: the family-history comorbidity text contains 'cancer', which scanRedFlags reads as 'Possible malignancy' (priority), and 'can |
-| `screen-post-splenectomy-vaccination` | mgmt-meningococcal | web | quality | known gap | no management item matched among 6 (web.clinicalPrompts) [known gap: See mgmt-pneumococcal. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
+| `screen-post-splenectomy-vaccination` | mgmt-meningococcal | web | quality | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: See mgmt-pneumococcal. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `trauma-elderly-occult-shock-warfarin` | mgmt-no-bridging-advice | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• no routine lmwh bridging for atrial fibrillation (bridge trial; accp 2022); bridging only for high throm..." [known gap: The 'anticoag_check' prompt proposes elective bridging for |
 | `trauma-head-injury-elderly-apixaban` | mgmt-no-elective-bridging-advice | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...l bleeding is confirmed (haematology); do not simply hold / bridge" (+2 more) [known gap: The 'anticoag_check' clinical prompt (clinical-inference.ts) always proposes 'hold DOAC  |
 | `trauma-paediatric-nai-bruising` | mnm-nai | web | quality | known gap | not in top 3 of web.pane: 1. Rib Fractures \| 2. Traumatic Brain Injury \| 3. Intussusception [known gap: No engine has non-accidental injury / child maltreatment as a diagnosis. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in |
