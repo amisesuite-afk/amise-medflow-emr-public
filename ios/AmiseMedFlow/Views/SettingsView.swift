@@ -209,7 +209,7 @@ struct SettingsView: View {
                 Section {
                     TextField("WebDAV URL",
                               text: $nasBackup.serverURL,
-                              prompt: Text("http://your-nas:5005"))
+                              prompt: Text("http://amise-storage:5005"))
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                         .keyboardType(.URL)
@@ -337,7 +337,7 @@ struct SettingsView: View {
                 } header: {
                     Text("NAS Backup")
                 } footer: {
-                    Text("Backs up all patient records, documents and photos to a Synology, QNAP, or any WebDAV server. Unchanged documents are not uploaded again: later backups point to the copy in an earlier backup folder, so keep the older folders.\n\nSynology DSM: Control Panel → File Services → WebDAV → Enable. Port 5005 (HTTP) or 5006 (HTTPS).\n\nExample — over Tailscale: http://your-nas:5005 (Tailscale machine name) or http://100.x.y.z:5005 (its Tailscale IP). If this device is on the same Tailnet as the NAS, backup works from any network automatically.")
+                    Text("Backs up all patient records, documents and photos to a Synology, QNAP, or any WebDAV server. Unchanged documents are not uploaded again: later backups point to the copy in an earlier backup folder, so keep the older folders.\n\nSynology DSM: Control Panel → File Services → WebDAV → Enable. Port 5005 (HTTP) or 5006 (HTTPS).\n\nOver Tailscale use the NAS's short machine name, e.g. http://amise-storage:5005 (MagicDNS on; Tailscale encrypts the connection). A plain http:// address by IP or by full domain name is blocked by iOS; use https:// (port 5006) with a trusted certificate for those. With the Tailscale app on this device and the NAS on the same Tailnet, backup works from any network.")
                 }
 
                 // MARK: Practice

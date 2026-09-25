@@ -46,6 +46,11 @@ targets:
           UIApplicationSupportsMultipleScenes: false
         UIRequiredDeviceCapabilities:
           - arm64
+        # NAS backup over Tailscale uses the NAS's short MagicDNS name over HTTP (e.g.
+        # http://amise-storage:5005). Tailscale encrypts that traffic end to end (WireGuard), so
+        # plain HTTP is allowed for local names only; every other connection stays HTTPS-only.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationLandscapeLeft
