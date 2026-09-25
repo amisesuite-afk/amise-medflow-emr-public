@@ -261,6 +261,68 @@ extension ConsultationView {
 
     var diagnosisTab: some View {
         List {
+            // Working diagnosis + ICD-10 search first (UX review M11): it sat below the
+            // differentials, clinical actions, trajectories and EVPI and needed several scrolls.
+            // The suggestions below still only apply on the clinician's tap.
+            Section {
+                HStack {
+                    Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+                    TextField("Search ICD-10 codes or diagnosis", text: $icdQuery)
+                        .autocorrectionDisabled()
+                        .accessibilityIdentifier("consult.dx.search")
+                        .onChange(of: icdQuery) { _, q in
+                            icdSuggestions = q.count >= 2 ? ClinicalSearchService.searchICD(q) : []
+                        }
+                    if !icdQuery.isEmpty {
+                        Button { icdQuery = ""; icdSuggestions = [] } label: {
+                            Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
+                        }
+                    }
+                }
+
+                ForEach(icdSuggestions.prefix(6)) { icd in
+                    Button {
+                        patient.workingDiagnosis = icd.description
+                        patient.workingDiagnosisICD = icd.code
+                        touch()
+                        icdQuery = "\(icd.code) \(icd.description)"
+                        icdSuggestions = []
+                    } label: {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(icd.description).font(.subheadline).foregroundStyle(.primary)
+                                Text(icd.code).font(.caption.monospaced()).foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Text(icd.category).font(.caption2).foregroundStyle(.tertiary)
+                        }
+                    }
+                    .accessibilityIdentifier("consult.dx.suggestion")
+                }
+
+                if let dx = patient.workingDiagnosis {
+                    HStack {
+                        Image(systemName: "stethoscope").foregroundStyle(AMColor.accent)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(dx).font(.subheadline.weight(.medium))
+                            if let icd = patient.workingDiagnosisICD {
+                                Text(icd).font(.caption.monospaced()).foregroundStyle(.secondary)
+                            }
+                        }
+                        Spacer()
+                        Button("Clear") {
+                            patient.workingDiagnosis = nil; patient.workingDiagnosisICD = nil
+                            touch(); icdQuery = ""
+                        }.font(.caption).foregroundStyle(.red)
+                    }
+                    Label("Radiates to: Notes · Prescriptions · Billing",
+                          systemImage: "arrow.triangle.branch")
+                        .font(.caption).foregroundStyle(AMColor.accent)
+                }
+            } header: {
+                sectionHeader("Working Diagnosis", icon: "stethoscope",
+                              filled: patient.workingDiagnosis != nil)
+            }
             // NICE NG12 suspected-cancer criteria (FIT, IDA, rectal bleeding, nipple, haematuria …):
             // dismissible prompt, nothing added until tapped.
             SuspectedCancerSection(patient: patient)
@@ -357,65 +419,6 @@ extension ConsultationView {
                 }
             }
 
-            Section {
-                HStack {
-                    Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
-                    TextField("Search ICD-10 codes or diagnosis", text: $icdQuery)
-                        .autocorrectionDisabled()
-                        .accessibilityIdentifier("consult.dx.search")
-                        .onChange(of: icdQuery) { _, q in
-                            icdSuggestions = q.count >= 2 ? ClinicalSearchService.searchICD(q) : []
-                        }
-                    if !icdQuery.isEmpty {
-                        Button { icdQuery = ""; icdSuggestions = [] } label: {
-                            Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
-                        }
-                    }
-                }
-
-                ForEach(icdSuggestions.prefix(6)) { icd in
-                    Button {
-                        patient.workingDiagnosis = icd.description
-                        patient.workingDiagnosisICD = icd.code
-                        touch()
-                        icdQuery = "\(icd.code) \(icd.description)"
-                        icdSuggestions = []
-                    } label: {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(icd.description).font(.subheadline).foregroundStyle(.primary)
-                                Text(icd.code).font(.caption.monospaced()).foregroundStyle(.secondary)
-                            }
-                            Spacer()
-                            Text(icd.category).font(.caption2).foregroundStyle(.tertiary)
-                        }
-                    }
-                    .accessibilityIdentifier("consult.dx.suggestion")
-                }
-
-                if let dx = patient.workingDiagnosis {
-                    HStack {
-                        Image(systemName: "stethoscope").foregroundStyle(AMColor.accent)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(dx).font(.subheadline.weight(.medium))
-                            if let icd = patient.workingDiagnosisICD {
-                                Text(icd).font(.caption.monospaced()).foregroundStyle(.secondary)
-                            }
-                        }
-                        Spacer()
-                        Button("Clear") {
-                            patient.workingDiagnosis = nil; patient.workingDiagnosisICD = nil
-                            touch(); icdQuery = ""
-                        }.font(.caption).foregroundStyle(.red)
-                    }
-                    Label("Radiates to: Notes · Prescriptions · Billing",
-                          systemImage: "arrow.triangle.branch")
-                        .font(.caption).foregroundStyle(AMColor.accent)
-                }
-            } header: {
-                sectionHeader("Working Diagnosis", icon: "stethoscope",
-                              filled: patient.workingDiagnosis != nil)
-            }
         }
     }
 

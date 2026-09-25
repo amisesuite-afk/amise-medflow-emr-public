@@ -127,10 +127,12 @@ extension ConsultationView {
 
 
     func markAllNormal() {
-        if (patient.examGeneral ?? "").isEmpty { patient.examGeneral = "Alert and oriented. No acute distress." }
-        if (patient.examCVS ?? "").isEmpty    { patient.examCVS = "Regular rate and rhythm. No murmurs." }
-        if (patient.examResp ?? "").isEmpty   { patient.examResp = "Clear to auscultation bilaterally." }
-        if (patient.examAbdo ?? "").isEmpty   { patient.examAbdo = "Soft, non-tender, non-distended. No organomegaly." }
+        // Same text as before, now named constants so the completion review can tell text that
+        // was inserted and never edited (ConsultTemplateText, UX review M8).
+        if (patient.examGeneral ?? "").isEmpty { patient.examGeneral = ConsultTemplateText.allNormalGeneral }
+        if (patient.examCVS ?? "").isEmpty    { patient.examCVS = ConsultTemplateText.allNormalCVS }
+        if (patient.examResp ?? "").isEmpty   { patient.examResp = ConsultTemplateText.allNormalResp }
+        if (patient.examAbdo ?? "").isEmpty   { patient.examAbdo = ConsultTemplateText.allNormalAbdo }
         touch()
     }
 
@@ -149,22 +151,25 @@ extension ConsultationView {
         let draft = SOAPDraftEngine.draft(patient: patient)
         guard !draft.s.isEmpty else { showAIError = true; return }
         patient.hpi = draft.s
+        templateDrafts["HPI"] = draft.s   // flagged in the completion review until edited
         touch()
     }
 
     func draftExam() async {
-        // Fill only blank fields with standard findings; preserve any existing documentation
+        // Fill only blank fields with standard findings; preserve any existing documentation.
+        // No "Afebrile": the template must not assert a temperature nobody recorded (UX review).
+        // The completion review flags any field still holding this text unedited.
         if (patient.examGeneral ?? "").isEmpty {
-            patient.examGeneral = "Alert and oriented. No acute distress. Afebrile."
+            patient.examGeneral = ConsultTemplateText.draftGeneral
         }
         if (patient.examCVS ?? "").isEmpty {
-            patient.examCVS = "Regular rate and rhythm. No murmurs. Peripheral pulses present and equal."
+            patient.examCVS = ConsultTemplateText.draftCVS
         }
         if (patient.examResp ?? "").isEmpty {
-            patient.examResp = "Clear to auscultation bilaterally. No wheeze or crackles."
+            patient.examResp = ConsultTemplateText.draftResp
         }
         if (patient.examAbdo ?? "").isEmpty {
-            patient.examAbdo = "Soft, non-distended. Bowel sounds present. No guarding or rigidity."
+            patient.examAbdo = ConsultTemplateText.draftAbdo
         }
         touch()
     }
@@ -177,6 +182,7 @@ extension ConsultationView {
                      soap.p.isEmpty ? nil : "Plan: \(soap.p)"]
             .compactMap { $0 }
         patient.managementPlan = parts.joined(separator: "\n\n")
+        templateDrafts["Plan"] = patient.managementPlan   // flagged in the completion review until edited
         touch()
     }
 

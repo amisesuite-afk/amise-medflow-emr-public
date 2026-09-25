@@ -84,13 +84,15 @@ extension ConsultationView {
                     Task { await draftPlan() }
                 } label: {
                     HStack {
-                        Label("AI Draft Plan", systemImage: "sparkles")
+                        Label(DraftButtonText.title(section: "Plan"), systemImage: DraftButtonText.systemImage())
                         Spacer()
                         if ai.isGenerating { ProgressView() }
                     }
                 }
                 .disabled(ai.isGenerating)
-                .foregroundStyle(.purple)
+                .foregroundStyle(AMColor.accent)
+                .accessibilityLabel(DraftButtonText.accessibilityLabel(section: "Plan"))
+                .accessibilityIdentifier("consult.plan.draft")
 
                 Button {
                     Task { await generateLetter() }

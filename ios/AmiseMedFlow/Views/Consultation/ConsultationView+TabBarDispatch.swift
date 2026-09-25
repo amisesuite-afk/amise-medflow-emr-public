@@ -50,6 +50,15 @@ extension ConsultationView {
                             ForEach(otherTabs, id: \.self) { tab in
                                 Button(tab.rawValue) { withAnimation(.easeInOut(duration: 0.15)) { activeTab = tab } }
                             }
+                            // Same tools as the toolbar's Tools menu, opened over this step.
+                            Section("Tools") {
+                                ForEach(ConsultTool.allCases) { tool in
+                                    Button { activeTool = tool } label: {
+                                        Label(tool.title, systemImage: tool.systemImage)
+                                    }
+                                    .accessibilityIdentifier("consult.more.\(tool.rawValue)")
+                                }
+                            }
                         } label: {
                             Text("More")
                                 .scaledFont(size: 13, weight: .semibold)
@@ -187,11 +196,48 @@ extension ConsultationView {
             }
             .accessibilityLabel("Next: \(pathway.label(for: next))")
             .accessibilityIdentifier("consult.next")
+        } else if patient.encounterStatus != .complete {
+            // Last step: the next thing to do is review and complete (UX review M8).
+            Button {
+                requestComplete()
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "checkmark.seal")
+                    Text("Review & complete")
+                }
+                .scaledFont(size: 13, weight: .bold)
+                .foregroundStyle(.white)
+                .padding(.horizontal, 12).padding(.vertical, 7)
+                .background(AMColor.accent, in: Capsule())
+                .minimumTouchTarget()
+            }
+            .accessibilityLabel("Last step. Review and complete the visit")
+            .accessibilityIdentifier("consult.footer.complete")
         } else {
-            Label("Last step", systemImage: "flag.checkered")
+            Label("Visit complete", systemImage: "checkmark.seal.fill")
                 .scaledFont(size: 13, weight: .semibold)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.green)
                 .frame(minHeight: 44)
+        }
+    }
+
+    /// The pathway step after the active one (nil on the last step or a "More" tab).
+    var nextPathwayStep: ConsultTab? {
+        guard let idx = pathwaySteps.firstIndex(of: activeTab), idx + 1 < pathwaySteps.count else { return nil }
+        return pathwaySteps[idx + 1]
+    }
+
+    /// On the last step: what "Save snapshot" and "Complete" each do (UX review M4/M8).
+    @ViewBuilder
+    var visitActionsExplanation: some View {
+        if pathwaySteps.last == activeTab, patient.encounterStatus != .complete {
+            Label(EncounterCompletionReview.actionsExplanation, systemImage: "info.circle")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 14).padding(.vertical, 6)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(.bar)
+                .accessibilityIdentifier("consult.actionsExplanation")
         }
     }
 

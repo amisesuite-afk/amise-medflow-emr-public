@@ -6,7 +6,9 @@ import UIKit
 
 struct ConsultationView: View {
     @Bindable var patient: Patient
-    var startingTab: ConsultTab = .hpi
+    /// Step to open at. nil = the pathway's first step. The iPad record passes a step when the
+    /// clinician jumps to one from the Overview; its single "Consultation" section passes nil.
+    var startingTab: ConsultTab? = nil
     var embeddedInNav: Bool = false
     @Environment(\.modelContext) var context
     @StateObject var ai = AIService()
@@ -58,8 +60,13 @@ struct ConsultationView: View {
     @State var clinicalAlarms: [ClinicalTextParser.ClinicalAlarm] = []
     @State var dismissedAlarmIds: Set<UUID> = []
     @State var surgicalRiskAlerts: [SurgicalRiskAlert] = []
-    @State private var showCompleteEncounterConfirm = false
+    @State private var showCompleteSheet = false        // "Review and complete" (UX review M8)
     @State private var showSaveEncounterConfirm = false
+    /// Scores / Vitals / Prescriptions opened over the current step (Tools menu).
+    @State var activeTool: ConsultTool? = nil
+    /// Template drafts inserted this session ("HPI", "Plan" → inserted text): the completion
+    /// review flags a field that still holds exactly its draft.
+    @State var templateDrafts: [String: String] = [:]
     @State private var encounterSavedFeedback = false
     @State var selectedEncounter: Encounter? = nil
     // Visit pathway ("first door") — orders the steps in the tab bar
@@ -158,7 +165,10 @@ struct ConsultationView: View {
             lastVisitCard
             tabContent
                 .frame(maxHeight: .infinity)
-            if !keyboardVisible { stepFooter }
+            if !keyboardVisible {
+                visitActionsExplanation
+                stepFooter
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
             keyboardVisible = true
@@ -185,8 +195,8 @@ struct ConsultationView: View {
         let returning = encounterStarting && VisitContinuity.lastVisit(for: patient) != nil
             && (booked == nil || booked == .firstVisit || booked == .followUp)
         pathway = returning ? recommendation.pathway : (booked ?? recommendation.pathway)
-        // Explicit starting tab (iPad sidebar) wins; otherwise open at the pathway's first step.
-        activeTab = (embeddedInNav || startingTab != .hpi) ? startingTab : (pathway.steps.first ?? .hpi)
+        // An explicit starting step (iPad Overview jump) wins; otherwise the pathway's first step.
+        activeTab = startingTab ?? (pathway.steps.first ?? .hpi)
         if returning {
             // Flagged automatically (no picker); the first step shows the choice and its reasons,
             // and the clinician can change it there.
@@ -225,6 +235,10 @@ struct ConsultationView: View {
 
     private func withChangeHandlers(_ content: some View) -> some View {
         content
+        // The iPad record can ask the (already open) consultation for another step.
+        .onChange(of: startingTab) { _, tab in
+            if let tab { withAnimation(.easeInOut(duration: 0.15)) { activeTab = tab } }
+        }
         .onChange(of: activeTab) { _, tab in
             if tab == .diagnosis {
                 bayesTask?.cancel()
@@ -350,52 +364,79 @@ struct ConsultationView: View {
         } message: {
             Text((criticalLabAlert ?? "") + "\n\nNotify the doctor immediately.")
         }
-        .alert("AI Error", isPresented: $showAIError) {
+        .alert("Draft not available", isPresented: $showAIError) {
             Button("OK", role: .cancel) {}
-        } message: { Text(ai.error ?? "Unknown error") }
+        } message: { Text(ai.error ?? "Not enough is documented yet to draft from the template. Type or dictate instead.") }
         .sheet(item: $consultationPDFWrapper) { wrapper in
             ShareSheet(items: [wrapper.data as Any]).ignoresSafeArea()
         }
         .sheet(isPresented: $showLetterSheet) {
             ConsultationLetterSheet(letterText: generatedLetterText, patient: patient)
         }
+        // Tools: over the current step, which is kept (no leaving the consultation).
+        .sheet(item: $activeTool) { tool in
+            ConsultationToolSheet(patient: patient, tool: tool)
+        }
     }
 
     private func withToolbarAndDialogs(_ content: some View, progress: PathwayProgress) -> some View {
         content
         .toolbar {
+            // Two actions, labelled for what they do (UX review M4/M8): "Save snapshot" copies the
+            // visit into Visit History and leaves it open; "Complete" opens the review sheet, which
+            // saves the snapshot too. The explanation is on screen on the last step and in both
+            // the save dialog and the review sheet.
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
                     showSaveEncounterConfirm = true
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: encounterSavedFeedback ? "archivebox.fill" : "archivebox")
-                        Text("Save Visit")
-                            .font(.system(size: 13, weight: .semibold))
+                        Text(encounterSavedFeedback ? "Saved" : "Save snapshot")
+                            .scaledFont(size: 13, weight: .semibold, relativeTo: .footnote)
                     }
                     .foregroundStyle(encounterSavedFeedback ? Color.green : AMColor.accent)
                 }
-                .accessibilityLabel("Save visit")
+                .accessibilityLabel("Save snapshot")
+                .accessibilityHint("Copies the visit into Visit History. The visit stays open.")
                 .accessibilityValue(encounterSavedFeedback ? "Saved" : "")
                 .accessibilityIdentifier("consult.saveVisit")
+            }
+            // Scores / Vitals / Prescriptions over the current step (UX review: reachable from
+            // inside the consultation on every pathway).
+            ToolbarItem(placement: .navigationBarTrailing) {
+                ConsultationToolsMenu { tool in activeTool = tool }
+            }
+            // The step footer hides while typing; keep "Next" one tap away (UX review M11).
+            ToolbarItemGroup(placement: .keyboard) {
+                if let next = nextPathwayStep {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.15)) { activeTab = next }
+                    } label: {
+                        Label("Next: \(pathway.label(for: next))", systemImage: "chevron.right")
+                            .labelStyle(.titleAndIcon)
+                    }
+                    .accessibilityIdentifier("consult.keyboard.next")
+                }
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 if patient.encounterStatus != .complete {
                     let completeness = progress
                     Button {
-                        showCompleteEncounterConfirm = true
+                        showCompleteSheet = true
                     } label: {
                         HStack(spacing: 4) {
                             Image(systemName: completeness.filled == completeness.total
                                 ? "checkmark.circle.fill" : "checkmark.circle")
                             Text("Complete")
-                                .font(.system(size: 13, weight: .semibold))
+                                .scaledFont(size: 13, weight: .semibold, relativeTo: .footnote)
                         }
                         .foregroundStyle(completeness.total > 0 && Double(completeness.filled) / Double(completeness.total) >= 0.75
                                          ? Color.green : Color(.tertiaryLabel))
                     }
                     // The green / grey tint is the only on-screen sign of how much is documented.
                     .accessibilityLabel("Complete encounter")
+                    .accessibilityHint("Opens the review: what is missing, then attest and complete")
                     .accessibilityValue("\(completeness.filled) of \(completeness.total) steps documented")
                     .accessibilityIdentifier("consult.complete")
                 } else {
@@ -406,36 +447,25 @@ struct ConsultationView: View {
                 }
             }
         }
-        .confirmationDialog(completeEncounterDialogTitle(progress),
-                            isPresented: $showCompleteEncounterConfirm,
-                            titleVisibility: .visible) {
-            Button("Mark as Complete") {
-                // Completing also saves the visit to history (once a day), so the next visit
-                // knows this one happened and continues from it.
-                if !patient.encounters.contains(where: { $0.isLive && $0.isComplete
-                                                         && Calendar.current.isDateInToday($0.encounterDate) }) {
-                    saveEncounter()
-                }
-                AuditLog.record("state_transition", "encounter", patient: patient,
-                                details: ["to": "complete"])
-                patient.encounterStatus = .complete
-                patient.updatedAt = .now
-                patient.pendingSync = true
-                try? context.save()
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text(completeEncounterDialogMessage(progress))
+        // Review and complete (UX review M8): missing steps, allergy status, unedited template or
+        // questionnaire content, diagnosis and orders, then an attestation.
+        .sheet(isPresented: $showCompleteSheet) {
+            CompleteEncounterSheet(patient: patient,
+                                   pathwayTitle: pathway.title,
+                                   review: completionReview(progress),
+                                   onComplete: { completeEncounter() })
         }
         .confirmationDialog(
-            "Save this visit to encounter history?",
+            "Save a snapshot of this visit?",
             isPresented: $showSaveEncounterConfirm,
             titleVisibility: .visible
         ) {
+            // Label kept: the UI walkthrough taps "Save Visit".
             Button("Save Visit") { saveEncounter() }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("A snapshot of the current clinical data will be saved to the patient's encounter history. The working record stays editable.")
+            Text("Copies the current clinical data into Visit History. The visit stays open and editable. "
+                 + "Use Complete when the visit is finished (that saves a snapshot too).")
         }
     }
 
@@ -465,18 +495,56 @@ struct ConsultationView: View {
         }
     }
 
-    // P5: Complete encounter dialog helpers
-    private func completeEncounterDialogTitle(_ c: PathwayProgress) -> String {
-        if c.filled < c.total {
-            return "Complete encounter (\(c.filled)/\(c.total) items filled)?"
+    // MARK: - Complete (after the review sheet's attestation)
+
+    private func completeEncounter() {
+        // Completing also saves the visit to history (once a day), so the next visit knows this
+        // one happened and continues from it.
+        if !patient.encounters.contains(where: { $0.isLive && $0.isComplete
+                                                 && Calendar.current.isDateInToday($0.encounterDate) }) {
+            saveEncounter()
         }
-        return "Mark encounter as complete?"
+        AuditLog.record("state_transition", "encounter", patient: patient,
+                        details: ["to": "complete", "attested": "true"])
+        patient.encounterStatus = .complete
+        patient.updatedAt = .now
+        patient.pendingSync = true
+        try? context.save()
     }
 
-    private func completeEncounterDialogMessage(_ c: PathwayProgress) -> String {
-        if c.filled < c.total {
-            return "\(pathway.title) — not yet documented: \(c.missing.joined(separator: ", ")). You can still complete the encounter — record will remain editable."
+    /// Opens the review sheet (toolbar Complete and the last step's footer button).
+    func requestComplete() { showCompleteSheet = true }
+
+    /// What the review sheet lists (pure builder: EncounterCompletionReview).
+    func completionReview(_ c: PathwayProgress) -> EncounterCompletionReview {
+        var drafts: [String] = []
+        for key in templateDrafts.keys.sorted() {
+            let current: String?
+            switch key {
+            case "HPI":  current = patient.hpi
+            case "Plan": current = patient.managementPlan
+            default:     current = nil
+            }
+            if let current, current == templateDrafts[key] { drafts.append(key) }
         }
-        return "The encounter will be marked complete. The record remains editable."
+        let exam: [(label: String, text: String?)] = [
+            ("General", patient.examGeneral), ("CVS", patient.examCVS), ("Resp", patient.examResp),
+            ("Abdomen", patient.examAbdo), ("Neuro", patient.examNeuro), ("MSK", patient.examMSK),
+            ("Skin", patient.examSkin), ("Other", patient.examOther),
+        ]
+        let rx: [String] = patient.prescriptions.map { p in
+            [p.drug, p.dose].filter { !$0.isEmpty }.joined(separator: " ")
+        }
+        return EncounterCompletionReview.build(
+            missingSteps: c.missing,
+            allergyState: patient.safetyAllergyState,
+            allergyConflict: patient.allergyRecordConflicts,
+            hpi: patient.hpi,
+            examFields: exam,
+            uneditedDrafts: drafts,
+            diagnosis: patient.workingDiagnosis,
+            icd: patient.workingDiagnosisICD,
+            investigations: patient.investigations.map(\.name),
+            prescriptions: rx)
     }
 }

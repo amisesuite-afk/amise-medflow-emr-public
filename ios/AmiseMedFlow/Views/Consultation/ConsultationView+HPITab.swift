@@ -133,13 +133,15 @@ extension ConsultationView {
                     Task { await draftHPI() }
                 } label: {
                     HStack {
-                        Label("AI Draft HPI", systemImage: "sparkles")
+                        Label(DraftButtonText.title(section: "HPI"), systemImage: DraftButtonText.systemImage())
                         Spacer()
                         if ai.isGenerating { ProgressView() }
                     }
                 }
                 .disabled(ai.isGenerating || (patient.chiefComplaint ?? "").isEmpty)
-                .foregroundStyle(.purple)
+                .foregroundStyle(AMColor.accent)
+                .accessibilityLabel(DraftButtonText.accessibilityLabel(section: "HPI"))
+                .accessibilityIdentifier("consult.hpi.draft")
             } header: {
                 sectionHeader("HPI Text", icon: "text.bubble",
                               filled: !(patient.hpi ?? "").isEmpty)

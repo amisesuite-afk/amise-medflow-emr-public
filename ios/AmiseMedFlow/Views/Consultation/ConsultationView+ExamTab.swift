@@ -59,13 +59,16 @@ extension ConsultationView {
                     Task { await draftExam() }
                 } label: {
                     HStack {
-                        Label("AI Draft Examination", systemImage: "sparkles")
+                        Label(DraftButtonText.title(section: "Examination"), systemImage: DraftButtonText.systemImage())
                         Spacer()
                         if ai.isGenerating { ProgressView() }
                     }
                 }
                 .disabled(ai.isGenerating)
-                .foregroundStyle(.purple)
+                .foregroundStyle(AMColor.accent)
+                .accessibilityLabel(DraftButtonText.accessibilityLabel(section: "Examination"))
+                .accessibilityHint("Fills only empty systems with normal template text. Edit it to what you found.")
+                .accessibilityIdentifier("consult.exam.draft")
             } header: {
                 sectionHeader("Physical Examination", icon: "stethoscope",
                               filled: !(patient.examGeneral ?? "").isEmpty || !(patient.examAbdo ?? "").isEmpty)
