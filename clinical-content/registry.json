@@ -153,7 +153,8 @@
       "notes": "Uses the Bayesian output and the scores to suggest the next question or investigation. Inline guideline names in a few rules; no years recorded.",
       "changelog": [
         { "version": "unversioned", "date": "2026-09-25", "change": "ClinicalPathwayEngine: PMH perforation/peritonitis no longer escalates the current visit; \"ischaemia\" spelling added; the keyword level is now one input of ClinicalAcuityEngine. Pipeline: critical alerts are never hidden by the visit-type filter." },
-        { "version": "unversioned", "date": "2026-09-25", "change": "ClinicalPipelineOrchestrator filters decisions and auto-actions through PlanSafetyFilter (allergy, pregnancy, renal, under-16 doses and fluids)." }
+        { "version": "unversioned", "date": "2026-09-25", "change": "ClinicalPipelineOrchestrator filters decisions and auto-actions through PlanSafetyFilter (allergy, pregnancy, renal, under-16 doses and fluids)." },
+        { "version": "unversioned", "date": "2026-09-25", "change": "Pipeline PMH flags (PatientStateVector PMHFlags) ignore history clauses that name a relative ('Family history of colorectal cancer (father, 58)'), as the web adaptive triage no longer counts family-history entries as the patient's comorbidity. Pipeline decisions pass through PlanSafetyFilter 1.1.0. docs/clinical-validation/changes/ios-parity-web-last-gaps.md." }
       ]
     },
     {
@@ -209,7 +210,8 @@
       "notes": "Recommendations text includes directive actions (e.g. cross-match units, ITU admission): see medical-device-positioning.md §4 item 5.",
       "changelog": [
         { "version": "unversioned", "date": "2026-09-25", "change": "LRINEC <6 no longer suggests cellulitis: a low score does not exclude NSTI (WSES 2018); Parkland rate accounts for time since burn and fluid given, one threshold (>=15% adult, >=10% child), electrical injury fluids regardless of TBSA, ATLS 10 rates as a note; TG18 cholangitis Grade II needs two criteria; TG18 cholecystitis palpable tender RUQ mass; ABCD2 NICE NG128 note; sPESI oxygen target BTS 2017." },
-        { "version": "unversioned", "date": "2026-09-25", "change": "Tokyo cholecystitis / cholangitis antibiotic recommendations name a non-penicillin regimen for penicillin allergy; pancreatitis score recommendations use goal-directed fluids (WATERFALL 2022; ACG 2024)." }
+        { "version": "unversioned", "date": "2026-09-25", "change": "Tokyo cholecystitis / cholangitis antibiotic recommendations name a non-penicillin regimen for penicillin allergy; pancreatitis score recommendations use goal-directed fluids (WATERFALL 2022; ACG 2024)." },
+        { "version": "unversioned", "date": "2026-09-25", "change": "Wells PE: two-level wording (NICE NG158; ESC 2019) — <= 4 PE unlikely: D-dimer, CTPA only if positive; > 4 PE likely: CTPA directly with interim anticoagulation if delayed; D-dimer unhelpful after recent surgery and in pregnancy. TG18 cholangitis item label 'Age >=75'. docs/clinical-validation/changes/ios-parity-web-last-gaps.md." }
       ]
     },
     {
@@ -232,7 +234,8 @@
       "notes": "Keyword lists are copied into LabAnalyteCatalog's LabScoreKeywords (kept in step by hand).",
       "changelog": [
         { "version": "unversioned", "date": "2026-09-25", "change": "All keyword checks read the record through NegationMatcher (ScoreText): \"no rebound\", \"no vomiting\" no longer tick criteria. Parkland auto-fill: child, electrical injury, time of burn pending." },
-        { "version": "unversioned", "date": "2026-09-25", "change": "TG18 cholecystitis / cholangitis auto-fill ticks Grade III organ dysfunction from the record (SBP < 90 or a vasopressor, ACVPU not Alert, creatinine > 2.0 mg/dL (177 µmol/L) or oliguria, INR > 1.5, platelets < 100) — PatientScoreAutoPopulator+TG18Organ.swift." }
+        { "version": "unversioned", "date": "2026-09-25", "change": "TG18 cholecystitis / cholangitis auto-fill ticks Grade III organ dysfunction from the record (SBP < 90 or a vasopressor, ACVPU not Alert, creatinine > 2.0 mg/dL (177 µmol/L) or oliguria, INR > 1.5, platelets < 100) — PatientScoreAutoPopulator+TG18Organ.swift." },
+        { "version": "unversioned", "date": "2026-09-25", "change": "TG18 cholangitis auto-fill: age criterion is >= 75 (TG18 / Kiriyama 2018; the web value) instead of > 75; metaraminol and vasopressin count as vasopressors for the cardiovascular organ criterion (web tg18-autofill.ts). docs/clinical-validation/changes/ios-parity-web-last-gaps.md." }
       ]
     },
     {
@@ -302,7 +305,8 @@
       "changeAuthority": "Any repository committer. Ships with an iOS app release.",
       "notes": "Thresholds (e.g. BMI, age) are inline constants without sources.",
       "changelog": [
-        { "version": "unversioned", "date": "2026-09-25", "change": "Procedure-specific antithrombotic wording (no blanket hold/bridge), coronary stent windows (ESC/ESAIC 2022), SGLT2 inhibitor rule (CPOC 2021), steroid cover, MH / suxamethonium / latex hazards (AAGBI), pregnancy from the record, under-16 flag." }
+        { "version": "unversioned", "date": "2026-09-25", "change": "Procedure-specific antithrombotic wording (no blanket hold/bridge), coronary stent windows (ESC/ESAIC 2022), SGLT2 inhibitor rule (CPOC 2021), steroid cover, MH / suxamethonium / latex hazards (AAGBI), pregnancy from the record, under-16 flag." },
+        { "version": "unversioned", "date": "2026-09-25", "change": "Pregnancy flag wording: anticoagulation with LMWH — DOACs and warfarin are contraindicated in pregnancy (warfarin is teratogenic) (web-last-gaps parity). docs/clinical-validation/changes/ios-parity-web-last-gaps.md." }
       ]
     },
     {
@@ -1251,10 +1255,10 @@
       "title": "Diagnosis radiation: suggested investigations, plan templates, billing codes, consent category, score criteria",
       "platforms": ["ios"],
       "kind": "decision-support-rules",
-      "contentVersion": "1.2.0",
+      "contentVersion": "1.3.0",
       "versionStamp": { "file": "ios/AmiseMedFlow/Services/DiagnosisRadiationEngine.swift", "type": "regex", "pattern": "contentVersion\\s*=\\s*\"([^\"]+)\"" },
       "files": ["ios/AmiseMedFlow/Services/DiagnosisRadiationEngine*.swift"],
-      "tests": ["ios/AmiseMedFlowTests/DiagnosisRadiationKeywordTests.swift", "ios/AmiseMedFlowTests/RadiationSafetyAndScoresTests.swift", "ios/AmiseMedFlowTests/PlanSafetyFilterTests.swift"],
+      "tests": ["ios/AmiseMedFlowTests/DiagnosisRadiationKeywordTests.swift", "ios/AmiseMedFlowTests/RadiationSafetyAndScoresTests.swift", "ios/AmiseMedFlowTests/PlanSafetyFilterTests.swift", "ios/AmiseMedFlowTests/WebLastGapsParityTests.swift"],
       "ciChecks": ["ios-build-check.yml unit tests", "clinval iOS (CI)"],
       "guidelines": [],
       "citationStatus": "partial",
@@ -1267,7 +1271,8 @@
       "notes": "Suggestions are presented, never auto-applied. Guideline names appear in many rationale strings without years.",
       "changelog": [
         { "version": "1.1.0", "date": "2026-09-25", "change": "Clinical validation fixes (SURGEON-DECISIONS A, C5, C7, E6, G2): hyperkalaemia calcium gluconate 10% 30 mL (UKKA 2023); SAH nimodipine oral 60 mg 4-hourly (NICE NG228); ABCD2 removed (NICE NG128); LMWH bridging lines removed; COPD oxygen 88-92% (BTS 2017); pancreatitis moderate goal-directed fluids, no prophylactic antibiotics, ERCP within 24 h only with cholangitis (WATERFALL 2022, ACG 2024); cholangitis drainage within 24 h (TG18); PE thrombolysis contraindicated after recent surgery (ESC 2019); pregnancy VTE = LMWH (RCOG GTG 37b); penicillin-free H. pylori regimen (Maastricht VI). New patient safety filter: under-16 dose suppression (BNFc), pregnancy filtering, class-aware allergy cross-check, procedure-specific antithrombotic plan (PAUSE, BSG/ESGE 2021, ESC/ESAIC 2022). VTE line on operative cards (NICE NG89). E6 explicit mappings (parathyroid, cellulitis with diabetes, large bowel obstruction). About 45 new cards (non-surgical emergencies with the 911 / OKEU, St Jude's or Tapion redirect). Versioned from unversioned." },
-        { "version": "1.2.0", "date": "2026-09-25", "change": "iOS plan-safety programme (docs/clinical-validation/changes/ios-plan-safety.md). 39 cards checked first in lookupOrder (+PlanSafetyCards, +PlanSafetyCards2), each citing guideline and year: pre-operative assessment (NICE NG45), anastomotic leak, femoral / incisional hernia (HerniaSurge 2018; EHS/AHS 2020), perforated peptic ulcer (WSES 2020), post-operative retention, non-specific abdominal pain, achalasia (ESGE/ESNM 2020), EoE (BSG 2022), food bolus (ESGE 2016), pharyngeal pouch, gastric outlet obstruction, dysphagia / gastric / pancreatic cancer (NICE NG12, NG85), ASUC / toxic megacolon (BSG 2019; ECCO), C. difficile (NICE NG199), infective colitis (IDSA 2017), Lynch (BSG/ACPGBI/UKCGG 2019), fistula-in-ano / perianal abscess (ASCRS 2022), anal cancer, rectal prolapse, neck haematoma (DAS/BAETS/ENT UK 2022), thyroid nodule by Bethesda (BTA 2014; ATA 2015), adrenal incidentaloma / phaeochromocytoma (ESE/ENSAT 2023), breast abscess and triple assessment (ABS 2019), Charcot / diabetic foot (IWGDF 2023), mesenteric venous thrombosis (ESVS 2017), visible haematuria, groin lymphadenopathy, hypertensive emergency and febrile infant (recognise and redirect), asplenia (Green Book ch. 7), acute viral hepatitis. Content fixes mirroring the web protocols: no antifibrinolytic in UGIB (HALT-IT), ASGE 2019 choledocholithiasis, atypical fissure (no LIS), inflammatory breast cancer (no WLE/SLNB), nitrofurantoin for lower UTI only, water-soluble contrast only for adhesive SBO without strangulation, renal colic decompression before definitive treatment, AKI drug holds, LBO stent contraindications, gangrenous volvulus resection. applySafety now calls PlanSafetyFilter (web planSafety twin); pregnancy header no longer reads as a recommendation; under-16 fixed fluid volumes replaced (APLS/BNFc); referral reasons and notes pass through the same line filter. Acute pancreatitis adds thiamine (alcohol, NICE CG100) and stop-the-causative-drug (ACG 2024) lines; the renal colic urology referral decompresses first (EAU 2024)." }
+        { "version": "1.2.0", "date": "2026-09-25", "change": "iOS plan-safety programme (docs/clinical-validation/changes/ios-plan-safety.md). 39 cards checked first in lookupOrder (+PlanSafetyCards, +PlanSafetyCards2), each citing guideline and year: pre-operative assessment (NICE NG45), anastomotic leak, femoral / incisional hernia (HerniaSurge 2018; EHS/AHS 2020), perforated peptic ulcer (WSES 2020), post-operative retention, non-specific abdominal pain, achalasia (ESGE/ESNM 2020), EoE (BSG 2022), food bolus (ESGE 2016), pharyngeal pouch, gastric outlet obstruction, dysphagia / gastric / pancreatic cancer (NICE NG12, NG85), ASUC / toxic megacolon (BSG 2019; ECCO), C. difficile (NICE NG199), infective colitis (IDSA 2017), Lynch (BSG/ACPGBI/UKCGG 2019), fistula-in-ano / perianal abscess (ASCRS 2022), anal cancer, rectal prolapse, neck haematoma (DAS/BAETS/ENT UK 2022), thyroid nodule by Bethesda (BTA 2014; ATA 2015), adrenal incidentaloma / phaeochromocytoma (ESE/ENSAT 2023), breast abscess and triple assessment (ABS 2019), Charcot / diabetic foot (IWGDF 2023), mesenteric venous thrombosis (ESVS 2017), visible haematuria, groin lymphadenopathy, hypertensive emergency and febrile infant (recognise and redirect), asplenia (Green Book ch. 7), acute viral hepatitis. Content fixes mirroring the web protocols: no antifibrinolytic in UGIB (HALT-IT), ASGE 2019 choledocholithiasis, atypical fissure (no LIS), inflammatory breast cancer (no WLE/SLNB), nitrofurantoin for lower UTI only, water-soluble contrast only for adhesive SBO without strangulation, renal colic decompression before definitive treatment, AKI drug holds, LBO stent contraindications, gangrenous volvulus resection. applySafety now calls PlanSafetyFilter (web planSafety twin); pregnancy header no longer reads as a recommendation; under-16 fixed fluid volumes replaced (APLS/BNFc); referral reasons and notes pass through the same line filter. Acute pancreatitis adds thiamine (alcohol, NICE CG100) and stop-the-causative-drug (ACG 2024) lines; the renal colic urology referral decompresses first (EAU 2024)." },
+        { "version": "1.3.0", "date": "2026-09-25", "change": "iOS parity with web-last-gaps (docs/clinical-validation/changes/ios-parity-web-last-gaps.md). New DiagnosisRadiationEngine+PromptParity.swift (card-level): operative-template lines on cholecystectomy / appendicectomy / hernia cards for adults — fasting 6 h food / 2 h clear fluids (AAGBI 2010; ESA 2011), SIGN 104 lap chole prophylaxis by risk, HerniaSurge 2018 mesh prophylaxis, NSAID exclusions (NICE NG148; BNF), no post-operative antibiotics after TG18 Grade I-II cholecystectomy, cirrhosis / ascites inpatient repair (EHS/AHS 2020); stable GI bleeding (recorded SBP / HR, no web instability criterion) gets Glasgow-Blatchford / Oakland stratification instead of large-bore cannulae and cross-match (BSG 2019; NICE CG141); D-dimer and occult-malignancy CT annotated in pregnancy, CT abdomen / pelvis ultrasound-first in children. Card wording: inflammatory breast cancer BCS / SLNB 'not recommended' (NCCN); pregnancy 'DOACs and warfarin are contraindicated in pregnancy (warfarin is teratogenic)' (RCOG GTG 37a/b); LBO left-sided stent line in the web wording; uncomplicated appendicitis no post-operative antibiotics, complicated pip-tazo 3-5 days after source control (WSES 2020; STOP-IT); PE two-level Wells (NICE NG158); umbilical hernia mesh for defects >= 1 cm and smoking / weight optimisation (EHS/AHS 2020); no routine clotting in the umbilical pre-op bloods (NICE NG45); penicillin lines withheld with the non-penicillin alternative." }
       ]
     },
     {
@@ -1275,10 +1280,10 @@
       "title": "iOS patient-specific plan filters (Swift twin of plan-safety-filters): allergy cross-check, pregnancy, under-16 doses and fluids, VTE, anticoagulation / antiplatelet / SGLT2 / steroid / anaesthetic / frailty lines",
       "platforms": ["ios"],
       "kind": "decision-support-rules",
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.1.0",
       "versionStamp": { "file": "ios/AmiseMedFlow/Services/PlanSafetyFilter.swift", "type": "regex", "pattern": "static let version\\s*=\\s*\"([^\"]+)\"" },
       "files": ["ios/AmiseMedFlow/Services/PlanSafetyFilter*.swift"],
-      "tests": ["ios/AmiseMedFlowTests/PlanSafetyFilterTests.swift", "ios/AmiseMedFlowTests/RadiationSafetyAndScoresTests.swift"],
+      "tests": ["ios/AmiseMedFlowTests/PlanSafetyFilterTests.swift", "ios/AmiseMedFlowTests/RadiationSafetyAndScoresTests.swift", "ios/AmiseMedFlowTests/WebLastGapsParityTests.swift"],
       "ciChecks": ["ios-build-check.yml unit tests", "clinval iOS (CI)"],
       "guidelines": [
         { "name": "Per rule (guideline and year in the line text)", "version": "per rule", "section": "As plan-safety-filters: BNF / BNFc; RCOG GTG 37a/37b 2015; NICE NG89 2018; BRIDGE 2015; PAUSE 2019; ACCP 2022; BSG/ESGE 2021; ESC/ESAIC 2022; CPOC 2021; AAGBI/SfE 2020; NAP6 2018; NICE CG103; NELA / RCS 2018. iOS additions: NICE NG128 / ESO 2021 (thrombolysis on an oral anticoagulant); APLS / BNFc (fluids by weight)", "citation": "See docs/clinical-validation/changes/ios-plan-safety.md" }
@@ -1292,7 +1297,8 @@
       "changeAuthority": "Any repository committer. Ships with an iOS app release. Change together with plan-safety-filters (DRIFT NOTE in both files).",
       "notes": "Applied at the plan choke points: DiagnosisRadiationEngine.applySafety (every radiate(for:) screen), DiagnosisRadiationEngine.draftPlanSafety (SOAP draft plan) and ClinicalPipelineOrchestrator (decisions and auto-actions). Clinician-facing only (hazard H-10). Deliberate differences from the web are listed in the change log for sign-off.",
       "changelog": [
-        { "version": "1.0.0", "date": "2026-09-25", "change": "Created as the Swift twin of lib/pane-engine planSafety.ts (PLAN_SAFETY_VERSION 1.0.0). See docs/clinical-validation/changes/ios-plan-safety.md." }
+        { "version": "1.0.0", "date": "2026-09-25", "change": "Created as the Swift twin of lib/pane-engine planSafety.ts (PLAN_SAFETY_VERSION 1.0.0). See docs/clinical-validation/changes/ios-plan-safety.md." },
+        { "version": "1.1.0", "date": "2026-09-25", "change": "Web prompt-parity rules (PlanSafetyFilter+PromptParity.swift, twin of the web-last-gaps changes to artifacts/dashboard/src/lib/clinical-inference.ts; docs/clinical-validation/changes/ios-parity-web-last-gaps.md), applied by adaptLine at every choke point: D-dimer withheld in pregnancy (RCOG GTG 37a/b); CT occult-malignancy screen withheld in pregnancy (ACOG CO 723); CT abdomen / pelvis ultrasound-first note for children and pregnancy (WSES 2020; RCR iRefer; ACR 2018); colonic stent withheld with perforation / peritonism / ischaemia / closed loop / caecum >= 12 cm or a right-sided tumour (WSES 2018; ESGE 2020); UKKA 2023 potassium bands (no shift therapy below 6.0, salbutamol only >= 6.5, unless ECG changes are written); NSAID lines withheld with renal impairment, age >= 75, heart failure, peptic ulcer / GI bleed history or an anticoagulant (NICE NG148; BNF). Notes: injury on an anticoagulant (CT head within 8 h, withhold, drug-specific reversal if bleeding — NICE NG232 2023; ACC 2020 ECDP), head injury no longer counts as active bleeding by itself; clotting screen before surgery only with liver disease, heparin, a bleeding disorder, jaundice or emergency surgery (NICE NG45); VTE line: dialysis first, no enoxaparin 40 mg example with dialysis or eGFR < 30; pregnancy wording 'DOACs and warfarin are contraindicated in pregnancy (warfarin is teratogenic)'; penicillin alternative in the web wording; 'avoided' / 'withheld' after a drug name read as not given. Relatives' history entries are not the patient's (web FAMILY_ENTRY)." }
       ]
     },
     {
@@ -1300,7 +1306,7 @@
       "title": "iOS triage level (max of CC keywords, vitals/NEWS2, BP, critical labs, ECG, text alarms, recognition rules, confirmed diagnosis), recognise-and-redirect alerts, pregnancy context",
       "platforms": ["ios"],
       "kind": "triage-rules",
-      "contentVersion": "1.1.0",
+      "contentVersion": "1.2.0",
       "versionStamp": { "file": "ios/AmiseMedFlow/Services/ClinicalAcuityEngine.swift", "type": "regex", "pattern": "rulesVersion\\s*=\\s*\"([^\"]+)\"" },
       "files": ["ios/AmiseMedFlow/Services/ClinicalAcuityEngine*.swift", "ios/AmiseMedFlow/Services/PregnancyContext.swift"],
       "tests": ["ios/AmiseMedFlowTests/ClinicalAcuityEngineTests.swift", "ios/AmiseMedFlowTests/TriageInputFixesTests.swift"],
@@ -1325,7 +1331,8 @@
       "notes": "The confirmed-diagnosis severity table and the recognition thresholds are a practice triage mapping pending surgeon sign-off (docs/clinical-validation/changes/fix-ios-triage-cards.md, Needs sign-off).",
       "changelog": [
         { "version": "1.0.0", "date": "2026-09-25", "change": "New (SURGEON-DECISIONS C2, G1.3, G3): iOS triage level from all components instead of chief-complaint keywords only; recognise-and-redirect alerts for non-surgical emergencies; paediatric thresholds; pregnancy context." },
-        { "version": "1.1.0", "date": "2026-09-25", "change": "NICE NG12 suspected-cancer card (SuspectedCancerScreening) raises the level to priority; a non-acute word in the confirmed diagnosis (history of, elective, screening ...) removes only its own clause, so an acute / emergency clause still sets the level; domestic abuse recognised with the web RX.partnerViolence pattern and wording (NICE PH50, CG110) and listed as a triage red flag (no level change). docs/clinical-validation/changes/ios-last-criticals.md." }
+        { "version": "1.1.0", "date": "2026-09-25", "change": "NICE NG12 suspected-cancer card (SuspectedCancerScreening) raises the level to priority; a non-acute word in the confirmed diagnosis (history of, elective, screening ...) removes only its own clause, so an acute / emergency clause still sets the level; domestic abuse recognised with the web RX.partnerViolence pattern and wording (NICE PH50, CG110) and listed as a triage red flag (no level change). docs/clinical-validation/changes/ios-last-criticals.md." },
+        { "version": "1.2.0", "date": "2026-09-25", "change": "Diabetic foot per NICE NG19 (web rules 1.4.0): 'infected diabetic foot' and 'exposed bone' in a confirmed diagnosis are urgent; 'diabetic foot' / 'foot wound' are priority (foot protection / MDT within 1 working day). Gangrene stays an emergency term (it also covers gangrenous bowel, gallbladder and Fournier's) — listed for sign-off. Pregnancy recognition action says DOACs and warfarin are contraindicated in pregnancy. docs/clinical-validation/changes/ios-parity-web-last-gaps.md." }
       ]
     },
     {
