@@ -439,3 +439,60 @@ or an M&M case to the exact content that was on screen.
 3. **Who signs.** Who signs content off until a CSO is appointed? Is there a pharmacist for the medicines rule sets (hazard H-08)?
 4. **Delivery.** Confirm bundled-only delivery for iOS content (§2.4).
 5. **Local adaptations.** Confirm, with rationale, the local changes to screening (diabetes from 35; PSA from 45 for African-Caribbean men), so they can be recorded as practice decisions in the registry.
+
+## 9. The public health-information library
+
+The website's patient-education articles (`/health-information`) are clinical content that the
+public reads, so they follow the same change control as the rule sets above, with one extra
+rule: **nothing is public until the surgeon approves it.**
+
+| | |
+|---|---|
+| Content | `artifacts/front-desk/content/health-info.ts` (`HEALTH_ARTICLES`, `HEALTH_INFO_LIBRARY_VERSION`) |
+| Registry entry | `front-desk-health-information` in `clinical-content/registry.json` (version stamp = `HEALTH_INFO_LIBRARY_VERSION`) |
+| Public pages | `/health-information` and `/health-information/[slug]`: approved articles only; drafts are a 404 and are not in the sitemap; the site links to the library only once one article is approved |
+| Staff preview | `/staff/health-information`: every article, with status and review dates (staff sign-in, verified server-side) |
+| Text checks (CI) | `lint:patient-instructions`: no medicine word with an instruction verb (bar the approved "If you take … please call the clinic" line, hazard H-10), no doses, no fees, no "midnight" |
+| Review checks (CI) | `lint:guideline-registry` and `artifacts/front-desk/test/health-info.test.ts`, both through `content/health-info-governance.ts`: an approved article without `lastReviewed`, `reviewedBy`, `reviewDue` or sources **fails**; one past `reviewDue` (or due within 30 days) **warns** |
+
+### 9.1 Per-article fields
+
+Each article carries its own `status` (`draft` / `approved`), `version`, `lastReviewed`,
+`reviewedBy`, `reviewDue` and `sources` (guideline or organisation, edition year, and a URL only
+where it is well known). A draft has `lastReviewed` and `reviewedBy` set to `null`; a date goes
+in only after a real review by a named reviewer.
+
+### 9.2 First approval
+
+1. The surgeon reads the draft at `/staff/health-information` and marks any changes.
+2. The developer makes the changes (the CI text checks must still pass).
+3. On the surgeon's approval, the developer sets, in the content file:
+   `status: 'approved'`, `lastReviewed` (the review date), `reviewedBy` (name and role),
+   `reviewDue` (normally `lastReviewed` + 12 months, sooner if a guideline edition is expected)
+   and `version: '1.0.0'`.
+4. Bump `HEALTH_INFO_LIBRARY_VERSION` (minor) and the registry entry's `contentVersion` together,
+   and add a `changelog` line naming the article(s) and the approver.
+5. Merge and deploy. The article appears publicly, and the site links to the library.
+
+### 9.3 When a guideline changes (or a review falls due)
+
+1. **Impact.** The registry's `guidelines` list and each article's `sources` show which articles
+   cite the changed guideline. The quarterly guideline watch (§3.3) covers these sources too.
+2. **Revise on a branch.** Edit the wording and update `sources` (new edition and year).
+3. **Version.** Bump the article's `version`: patch for wording that does not change meaning
+   (typos, clarity), minor for a change in content, major for a change in advice or urgent-care
+   signs. Bump `HEALTH_INFO_LIBRARY_VERSION` and the registry together, with a changelog line.
+4. **Re-approval.** A revised article is not approved until the surgeon has reviewed the new
+   wording. Either:
+   - set it back to `status: 'draft'` with `lastReviewed`/`reviewedBy` cleared (it leaves the
+     public site until re-approved), or
+   - if the surgeon reviews it in the same change, keep it `approved` and set the new
+     `lastReviewed`, `reviewedBy` and `reviewDue`.
+
+   An approved article must never carry wording that its `lastReviewed` date does not cover.
+5. **Overdue reviews.** CI warns when an approved article passes `reviewDue`. Re-review it
+   (step 4, second option, even if nothing changes), or set it back to draft. Leaving an overdue
+   article public is a decision for the surgeon, not a default.
+6. **Safety-critical corrections** (for example a wrong urgent-care sign) follow the expedited
+   path (§3.2): the surgeon's same-day sign-off, all CI checks, and a changelog line saying it
+   was expedited. If the surgeon cannot be reached, set the article back to draft first.

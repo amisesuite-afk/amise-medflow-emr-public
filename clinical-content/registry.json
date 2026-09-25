@@ -490,6 +490,47 @@
       "notes": "Emailed automatically on booking."
     },
     {
+      "id": "front-desk-health-information",
+      "title": "Public health-information library (patient-education articles on the website)",
+      "platforms": ["front-desk"],
+      "kind": "patient-text",
+      "contentVersion": "0.1.0",
+      "versionStamp": { "file": "artifacts/front-desk/content/health-info.ts", "type": "regex", "pattern": "HEALTH_INFO_LIBRARY_VERSION\\s*=\\s*'([^']+)'" },
+      "files": [
+        "artifacts/front-desk/content/health-info.ts",
+        "artifacts/front-desk/content/health-info-governance.ts",
+        "artifacts/front-desk/app/health-information/page.tsx",
+        "artifacts/front-desk/app/health-information/[slug]/page.tsx",
+        "artifacts/front-desk/app/health-information/ArticleView.tsx",
+        "artifacts/front-desk/app/staff/health-information/page.tsx"
+      ],
+      "tests": ["artifacts/front-desk/test/health-info.test.ts", "scripts/src/lint-patient-instructions.ts"],
+      "ciChecks": ["lint:patient-instructions (H-10, doses, fees, midnight)", "lint:guideline-registry (per-article review governance)", "front-desk vitest"],
+      "guidelines": [
+        { "name": "NICE CG188 Gallstone disease", "version": "2014", "section": "gallstones", "citation": "https://www.nice.org.uk/guidance/cg188" },
+        { "name": "HerniaSurge international guidelines for groin hernia management", "version": "2018", "section": "hernias", "citation": "Hernia 2018" },
+        { "name": "USPSTF colorectal cancer screening", "version": "2021", "section": "colonoscopy-screening", "citation": "https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/colorectal-cancer-screening" },
+        { "name": "ASCRS hemorrhoids / anal fissures clinical practice guidelines", "version": "2018 / 2023", "section": "haemorrhoids-fissure", "citation": "Diseases of the Colon & Rectum" },
+        { "name": "NICE CG184 GORD and dyspepsia; Maastricht VI/Florence H. pylori consensus", "version": "2014 / 2022", "section": "reflux-h-pylori", "citation": "https://www.nice.org.uk/guidance/cg184; Gut 2022" },
+        { "name": "IWGDF guidelines on diabetes-related foot disease", "version": "2023", "section": "diabetic-foot", "citation": "https://iwgdfguidelines.org" },
+        { "name": "USPSTF breast cancer screening; ACR higher-than-average risk screening", "version": "2024 / 2023", "section": "breast-lumps-screening", "citation": "https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/breast-cancer-screening; JACR 2023" },
+        { "name": "ATA thyroid nodule and DTC guidelines; BTA thyroid cancer guidelines", "version": "2015 / 2014", "section": "thyroid-nodules", "citation": "Thyroid 2016; Clinical Endocrinology 2014" },
+        { "name": "BSG common bile duct stones; ESGE ERCP-related adverse events", "version": "2017 / 2020", "section": "ercp", "citation": "Gut 2017; Endoscopy 2020" },
+        { "name": "NICE NG45 preoperative tests; NICE NG180 perioperative care", "version": "2016 / 2020", "section": "preparing-for-surgery", "citation": "https://www.nice.org.uk/guidance/ng45; https://www.nice.org.uk/guidance/ng180" }
+      ],
+      "citationStatus": "per-rule",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewEvidence": "None. Ten articles drafted 2026-09-25; every article ships as status 'draft' (not public) until the surgeon approves it. Per-article review dates live in the content file, not here.",
+      "reviewPriority": "P2",
+      "nextReviewDue": "2026-12-31",
+      "changeAuthority": "Any repository committer drafts; an article is published only when the surgeon approves it (status, lastReviewed, reviewedBy, reviewDue set in the content file). Workflow: docs/CLINICAL-CONTENT-UPGRADES.md §9.",
+      "notes": "Only approved articles are rendered at /health-information (drafts 404 and are excluded from the sitemap); staff preview every article at /staff/health-information. Each article carries its own version, sources and review dates; lint:guideline-registry fails an approved article without them and warns when one is past reviewDue.",
+      "changelog": [
+        { "version": "0.1.0", "date": "2026-09-25", "change": "Library created with ten draft articles (gallstones, hernias, colonoscopy and bowel screening, haemorrhoids and fissure, reflux and H. pylori, diabetic foot care, breast lumps and screening, thyroid nodules, ERCP, preparing for surgery). None approved." }
+      ]
+    },
+    {
       "id": "outbound-content-safety-filter",
       "title": "FORBIDDEN_PATTERNS screen for automated patient-facing text",
       "platforms": ["api"],

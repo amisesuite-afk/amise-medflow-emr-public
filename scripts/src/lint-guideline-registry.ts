@@ -24,6 +24,12 @@
  *     uses its built-in fallback lists. This is a warning until the surgeon signs off the fix
  *     (a clinical content change); then make it a failure.
  *
+ * Health-information library (artifacts/front-desk/content/health-info.ts, per-article review
+ * metadata; checks in content/health-info-governance.ts, also run by the front-desk vitest):
+ *   FAILS when an APPROVED article lacks lastReviewed, reviewedBy, reviewDue or sources (or has
+ *     a malformed field, a duplicate slug, or urgent-care text without 911 and the emergency
+ *     departments); WARNS when an approved article is past (or within 30 days of) reviewDue.
+ *
  * Adding a rule set: add it to the inventory, to KNOWN_RULE_SET_FILES and to the registry in
  * the same PR.
  */
@@ -31,6 +37,8 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { HEALTH_ARTICLES } from '../../artifacts/front-desk/content/health-info';
+import { auditHealthLibrary } from '../../artifacts/front-desk/content/health-info-governance';
 
 const REPO_ROOT = join(fileURLToPath(import.meta.url), '..', '..', '..');
 const REGISTRY_FILE = 'clinical-content/registry.json';
@@ -118,6 +126,7 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'artifacts/api-server/src/lib/sms.ts',
   'artifacts/api-server/src/lib/outbound.ts',
   'artifacts/front-desk/lib/instructions.ts',
+  'artifacts/front-desk/content/health-info.ts',
   // Database-seeded guideline summaries
   'supabase-clinical-guidelines-migration.sql',
 ];
@@ -442,6 +451,13 @@ function main(): void {
   }
 
   checkDiagnosticDatabaseDecodes();
+
+  // Health-information library: per-article review governance.
+  const library = auditHealthLibrary(HEALTH_ARTICLES, today);
+  library.failures.forEach(fail);
+  library.warnings.forEach(warn);
+  const approved = HEALTH_ARTICLES.filter(a => a.status === 'approved').length;
+  console.log(`Health-information library: ${HEALTH_ARTICLES.length} articles, ${approved} approved and public, ${HEALTH_ARTICLES.length - approved} draft.`);
 
   // ── Report ──
   const total = reg?.ruleSets.length ?? 0;
