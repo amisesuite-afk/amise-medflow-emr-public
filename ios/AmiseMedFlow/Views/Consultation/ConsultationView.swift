@@ -76,7 +76,8 @@ struct ConsultationView: View {
     enum ExamMode { case short, full }
 
     var interactions: [DrugInteractionAlert] {
-        DrugInteractionService.check(drugs: patient.prescriptions.map { $0.drug })
+        // Recorded herbs / supplements are screened like drugs (SupplementHistory.swift).
+        DrugInteractionService.check(drugs: patient.prescriptions.map { $0.drug } + patient.supplementInteractionEntries)
     }
 
     // Recompute surgical risk alerts from current state. Call whenever PMH,

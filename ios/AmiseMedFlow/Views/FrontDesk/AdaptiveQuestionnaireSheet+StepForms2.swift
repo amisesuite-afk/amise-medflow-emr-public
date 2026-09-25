@@ -73,6 +73,22 @@ extension AdaptiveQuestionnaireSheet {
                     }
                 }
             }
+            // Mandatory question (owner's briefing §7): worded to include local bush teas, which
+            // patients often do not count as medicine. Asks only; never instructs (hazard H-10).
+            VStack(alignment: .leading, spacing: 8) {
+                Text(SupplementCatalogue.patientQuestion)
+                    .font(.callout)
+                Picker("Herbs, bush teas or supplements", selection: $answers.supplementAnswer) {
+                    ForEach([SupplementAnswer.yes, .no, .unsure], id: \.self) { a in
+                        Text(a.rawValue).tag(a)
+                    }
+                }
+                .pickerStyle(.segmented)
+                if answers.supplementAnswer == .yes || answers.supplementAnswer == .unsure {
+                    TextField("Which ones? (e.g. garlic tablets, cerasee tea, turmeric)", text: $answers.supplements, axis: .vertical)
+                        .lineLimit(2...)
+                }
+            }
             TextField("Known allergies (drug, food, latex, other)", text: $answers.allergies, axis: .vertical)
                 .lineLimit(2...)
             TextField("Previous operations / procedures", text: $answers.surgicalHistory, axis: .vertical)

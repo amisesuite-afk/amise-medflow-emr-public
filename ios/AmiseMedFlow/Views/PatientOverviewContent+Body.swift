@@ -338,6 +338,14 @@ extension PatientOverviewContent {
                 }
             }
 
+            // Herbs, teas, bush remedies & supplements — shown even when not asked, so the gap is seen.
+            overviewCard(title: SupplementCatalogue.sectionTitle) {
+                let supplements = patient.supplementHistory
+                Text(supplements.noteLine)
+                    .font(.system(size: 13))
+                    .foregroundStyle(supplements.isAnswered ? Color.primary : Color.orange)
+            }
+
             // Social history snapshot
             if let social = patient.socialHistory, !social.isEmpty {
                 overviewCard(title: "Social History") {

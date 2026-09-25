@@ -172,4 +172,14 @@ extension Patient {
 extension SupplementHistory {
     /// Line prefix written by the pre-visit questionnaire (EncounterAnswers.pmhxText).
     static let questionnairePrefix = "SUPPLEMENTS (PATIENT-REPORTED):"
+    static let questionnaireNone = "none"
+    static let questionnaireUnsure = "not sure"
+    static let questionnaireYesUnnamed = "yes (not named)"
+
+    /// True when the questionnaire value names something to record (not "none" / "not sure" /
+    /// "yes (not named)").
+    static func questionnaireValueNamesProducts(_ value: String) -> Bool {
+        let v = value.lowercased()
+        return v != questionnaireNone && v != questionnaireUnsure && v != questionnaireYesUnnamed
+    }
 }

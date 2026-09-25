@@ -193,6 +193,15 @@ enum AlcoholUse: String, CaseIterable, Codable {
     case heavy   = "Heavy (daily / harmful)"
 }
 
+/// Answer to the mandatory "herbs, bush teas, vitamins or supplements" question
+/// (SupplementCatalogue.patientQuestion).
+enum SupplementAnswer: String, CaseIterable, Codable {
+    case notAnswered = "Not answered"
+    case yes         = "Yes"
+    case no          = "No"
+    case unsure      = "Not sure"
+}
+
 // MARK: — Canonical encounter answer store
 // One instance per encounter session. Every field has exactly one
 // authoritative value — reading from two sources and merging is
@@ -234,6 +243,9 @@ struct EncounterAnswers {
     var medications: String = ""
     var allergies: String = ""
     var surgicalHistory: String = ""
+    /// Herbs, bush teas, bush medicines, vitamins or supplements (patient's own words).
+    var supplementAnswer: SupplementAnswer = .notAnswered
+    var supplements: String = ""
 
     // ── Phase 6: Social history / Last meal ──────────────────────────────────
     var smokingStatus: SmokingStatus = .never
@@ -315,6 +327,20 @@ struct EncounterAnswers {
         return lines.joined(separator: "\n")
     }
 
+    /// "SUPPLEMENTS (PATIENT-REPORTED): …" — read back by Patient.patientReportedSupplements for the
+    /// clinician to confirm in the Meds step. Nil when the question was not answered.
+    var supplementsLine: String? {
+        let named = supplements.trimmingCharacters(in: .whitespacesAndNewlines)
+        let value: String
+        switch supplementAnswer {
+        case .notAnswered: return nil
+        case .yes:    value = named.isEmpty ? SupplementHistory.questionnaireYesUnnamed : named
+        case .no:     value = SupplementHistory.questionnaireNone
+        case .unsure: value = named.isEmpty ? SupplementHistory.questionnaireUnsure : "\(SupplementHistory.questionnaireUnsure) — \(named)"
+        }
+        return "\(SupplementHistory.questionnairePrefix) \(value)"
+    }
+
     // Structured PMHx text for PatientStateVector parser
     var pmhxText: String {
         var lines: [String] = []
@@ -324,6 +350,7 @@ struct EncounterAnswers {
         if !medications.isEmpty     { lines.append("MEDICATIONS: \(medications)") }
         if !allergies.isEmpty       { lines.append("ALLERGIES: \(allergies)") }
         if !surgicalHistory.isEmpty { lines.append("SURGICAL HISTORY: \(surgicalHistory)") }
+        if let line = supplementsLine { lines.append(line) }
         if !occupation.isEmpty      { lines.append("OCCUPATION: \(occupation)") }
         lines.append("SMOKING: \(smokingStatus.rawValue)")
         lines.append("ALCOHOL: \(alcoholUse.rawValue)")

@@ -111,6 +111,9 @@ struct SOAPDraftEngine {
             parts.append("Medications: " + rxList.joined(separator: "; ") + ".")
         }
 
+        // Herbs, teas, bush remedies & supplements — always stated, "not asked" included.
+        parts.append(p.supplementHistory.noteLine)
+
         // Allergies — an empty list is "not recorded"; NKDA only when the chart explicitly says so.
         let allergyList = p.recordedAllergies
         if allergyList.isEmpty {

@@ -92,6 +92,8 @@ struct PreOpChecklistView: View {
     var body: some View {
         Form {
             preOpSafetySection
+            // Mandatory pre-op question (owner's briefing §7): same record as the Meds step.
+            SupplementHistorySection(patient: patient, showPerioperativeAlerts: true)
             teamSection
             signInSection
             timeOutSection

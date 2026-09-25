@@ -27,14 +27,16 @@ struct AddPrescriptionSheet: View {
 
     private var liveInteractions: [DrugInteractionAlert] {
         guard !drugQuery.isEmpty else { return [] }
-        let existingDrugs = patient.prescriptions.map { $0.drug }
+        // Existing prescriptions plus recorded herbs / supplements (screened like drugs).
+        let existingDrugs = patient.prescriptions.map { $0.drug } + patient.supplementInteractionEntries
         return DrugInteractionService.check(drugs: existingDrugs + [drugQuery])
             .filter { $0.drugA == drugQuery || $0.drugB == drugQuery }
     }
 
     /// True once the typed drug has been screened against at least one existing prescription.
     private var liveInteractionCheckRan: Bool {
-        drugQuery.trimmingCharacters(in: .whitespaces).count >= 3 && !patient.prescriptions.isEmpty
+        drugQuery.trimmingCharacters(in: .whitespaces).count >= 3
+            && !(patient.prescriptions.isEmpty && patient.supplementInteractionEntries.isEmpty)
     }
 
     private var allergyMatches: [AllergyEntry] {

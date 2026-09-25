@@ -11,7 +11,8 @@ struct PrescriptionView: View {
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var interactions: [DrugInteractionAlert] {
-        let names = patient.prescriptions.map { $0.drug }
+        // Recorded herbs / supplements are screened like drugs (SupplementHistory.swift).
+        let names = patient.prescriptions.map { $0.drug } + patient.supplementInteractionEntries
         return DrugInteractionService.check(drugs: names)
     }
 
@@ -25,7 +26,7 @@ struct PrescriptionView: View {
                 // Shown whenever two or more drugs were screened, so an empty result carries the
                 // "absence of an alert does not mean there is no interaction" note (H-07).
                 let alerts = interactions
-                if !alerts.isEmpty || patient.prescriptions.count >= 2 {
+                if !alerts.isEmpty || patient.prescriptions.count + patient.supplementInteractionEntries.count >= 2 {
                     interactionsSection(alerts)
                 }
 

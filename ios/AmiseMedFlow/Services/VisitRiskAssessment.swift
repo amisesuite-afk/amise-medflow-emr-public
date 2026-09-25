@@ -212,6 +212,11 @@ enum VisitRiskAssessment {
                                detail: "Watch for leak, bleeding, SSI, VTE.", icon: "bandage"))
         }
 
+        // Herbs, teas, bush remedies & supplements: the mandatory pre-procedure question, the
+        // perioperative alert for each recorded product and the "ask about" prompts
+        // (SupplementAlerts.swift; decision support only).
+        flags += SupplementAlerts.riskFlags(p, pathway: pathway)
+
         flags += scoreFlags(p, pathway: pathway)
 
         return flags.sorted { $0.level > $1.level }

@@ -250,7 +250,11 @@ extension ConsultationView {
         case .hpi:       hpiTab
         case .pmh:       pmhTab
         case .pshx:      pshxTab
-        case .meds:      List { medicationsSection }
+        case .meds:
+            List {
+                medicationsSection
+                SupplementHistorySection(patient: patient)
+            }
         case .allergies: allergiesTab
         case .social:    socialTab
         case .exam:           examTab
