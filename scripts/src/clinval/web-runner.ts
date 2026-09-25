@@ -1,0 +1,418 @@
+/**
+ * Clinical validation — web runner.
+ *
+ * Runs one vignette through the web consultation engines, calling the same pure functions the
+ * dashboard calls, with the arguments the dashboard builds (file references in each block):
+ *
+ *   PANE differential   ChiefComplaintStrip / HpiTab.reseedPane: applyModifiers → initPaneState →
+ *                       extractFeaturesFromSocrates → updatePosterior → topDiagnoses(3)
+ *   Symptom inference   HpiTab / ExaminationTab: computeRankedDifferentials({symptoms, symptomDetails, age, sex})
+ *   Passive ranking     AssessmentTab: computeRankedDifferentials({symptoms, symptomDetails: {}, examText})
+ *   Triage / acuity     AppContext: adaptiveTriage(triageInput); matchPathways (usePathway)
+ *   Scale suggestions   AssessmentTab / ScalesTab: getCdsSuggestions(ctx)
+ *   Clinical prompts    ClinicalPromptsStrip: computeClinicalPrompts(input)
+ *   Management          AssessmentTab ManagementPanel (all phases) and PlanTab buildPlanText
+ *                       (phases filtered by the detected dx variant); HpiTab seeded investigations
+ *   Calculators         ScalesTab (clinical-scales.ts) and ClinicalScoresPanel (clinical-scores.ts)
+ *
+ * The dashboard code itself is not modified or wrapped; if a call site changes, update the
+ * mirror here (the vitest suite checks the signatures still line up).
+ */
+
+import {
+  DISEASES, FEATURES, applyModifiers, getProtocol, getProtocolByIcd, initPaneState, topDiagnoses, updatePosterior,
+} from '../../../lib/pane-engine/src/index';
+import type { ManagementProtocol, PaneState } from '../../../lib/pane-engine/src/index';
+import { RULES_VERSION, adaptiveTriage, matchPathways } from '../../../lib/triage-engine/src/index';
+import type { AdaptiveTriageInput } from '../../../lib/triage-engine/src/index';
+import { extractFeaturesFromSocrates } from '../../../artifacts/dashboard/src/lib/socrates-to-features';
+import { computeRankedDifferentials } from '../../../artifacts/dashboard/src/lib/symptom-inference';
+import { getCdsSuggestions } from '../../../artifacts/dashboard/src/lib/clinical-cds';
+import type { CdsContext } from '../../../artifacts/dashboard/src/lib/clinical-cds';
+import { detectDxVariants } from '../../../artifacts/dashboard/src/lib/dx-variants';
+import { computeClinicalPrompts } from '../../../artifacts/dashboard/src/lib/clinical-inference';
+import type { InferenceInput as PromptInput } from '../../../artifacts/dashboard/src/lib/clinical-inference';
+import {
+  scoreTokyoCholangitis, scoreTokyoCholecystitis,
+} from '../../../artifacts/dashboard/src/lib/clinical-scores';
+import type { ExtractedLabs, ScoringVitals } from '../../../artifacts/dashboard/src/lib/clinical-scores';
+import {
+  alvaradoScore, interpretAlvarado, interpretTg18Cholangitis, tg18CholangitisGrade,
+} from '../../../artifacts/dashboard/src/lib/clinical-scales';
+import type { DxItem, EngineOutputs, Level, ScoreForm, SourcedText, Vignette } from './types';
+
+/** CDS scaleKey → canonical score key. Unlisted keys are reported as 'web:<key>'. */
+export const WEB_SCALE_TO_CANONICAL: Record<string, string> = {
+  alvarado: 'alvarado', tg18Cholangitis: 'tg18-cholangitis', asgeCbd: 'asge-cbd', glasgowBlatchford: 'glasgow-blatchford',
+  preRockall: 'rockall', qsofa: 'qsofa', news2: 'news2', bisap: 'bisap', ranson: 'ranson', asa: 'asa', rcri: 'rcri',
+  caprini: 'caprini', cfs: 'cfs', childPugh: 'child-pugh', meld: 'meld', wellsPe: 'wells-pe', wellsDvt: 'wells-dvt',
+  curb65: 'curb65', must: 'must', ppossuml: 'p-possum', forrest: 'forrest', clavienDindo: 'clavien-dindo', gcs: 'gcs',
+  heart: 'heart', abcd2: 'abcd2', stopBang: 'stop-bang', ecog: 'ecog', chads2Vasc: 'cha2ds2-vasc', hasBled: 'has-bled',
+};
+
+const ORGANS = ['cardiovascular', 'neurological', 'respiratory', 'renal', 'hepatic', 'haematological'] as const;
+type Organ = typeof ORGANS[number];
+
+function bool(form: ScoreForm | undefined, key: string): boolean {
+  return form?.[key] === true;
+}
+function num(form: ScoreForm | undefined, key: string): number {
+  const v = form?.[key];
+  return typeof v === 'number' ? v : 0;
+}
+function organs(form: ScoreForm | undefined): Organ[] {
+  const v = form?.organDysfunction;
+  return Array.isArray(v) ? v.filter((o): o is Organ => (ORGANS as readonly string[]).includes(o)) : [];
+}
+
+function latestVitals(v: Vignette) {
+  const list = [...(v.inputs.vitals ?? [])].sort((a, b) => (a.minutesAgo ?? 0) - (b.minutesAgo ?? 0));
+  return list[0];
+}
+
+function labValue(v: Vignette, analyte: string): number | null {
+  const lab = (v.inputs.labs ?? []).find(l => l.analyte === analyte && typeof l.value === 'number');
+  return lab?.value ?? null;
+}
+
+/** AppContext `extractedLabs` (clinical-scores.ts units). */
+function extractedLabs(v: Vignette): ExtractedLabs {
+  return {
+    wbc: labValue(v, 'wbc'), haemoglobin: labValue(v, 'haemoglobin') !== null ? labValue(v, 'haemoglobin')! * 10 : null,
+    platelets: labValue(v, 'platelets'), inr: labValue(v, 'inr'), crp: labValue(v, 'crp'),
+    bilirubin_total: labValue(v, 'bilirubin'), alp: labValue(v, 'alp'), ggt: labValue(v, 'ggt'),
+    ast: labValue(v, 'ast'), alt: labValue(v, 'alt'), albumin: labValue(v, 'albumin'),
+    urea: labValue(v, 'urea'), creatinine: labValue(v, 'creatinine'), glucose: labValue(v, 'glucose'),
+    amylase: labValue(v, 'amylase'), lipase: labValue(v, 'lipase'), source: 'manual',
+  };
+}
+
+function scoringVitals(v: Vignette): ScoringVitals {
+  const lv = latestVitals(v);
+  return {
+    temperatureC: lv?.temperatureC ?? null, heartRate: lv?.heartRate ?? null,
+    respiratoryRate: lv?.respiratoryRate ?? null, systolicBp: lv?.systolicBp ?? null, spo2: lv?.spo2 ?? null,
+  };
+}
+
+/** AppContext `vitals` (string fields). */
+function vitalStrings(v: Vignette): Record<string, string> {
+  const lv = latestVitals(v);
+  const s = (x: number | undefined) => (x === undefined ? '' : String(x));
+  return {
+    systolicBp: s(lv?.systolicBp), diastolicBp: s(lv?.diastolicBp), heartRate: s(lv?.heartRate),
+    temperatureC: s(lv?.temperatureC), respiratoryRate: s(lv?.respiratoryRate), spo2: s(lv?.spo2),
+    glucoseMmol: s(lv?.glucoseMmol),
+  };
+}
+
+/** ConsultationViewData-style "name → result" map used by CDS and clinical prompts. */
+function investigationResults(v: Vignette): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const l of v.inputs.labs ?? []) {
+    out[l.name] = l.resultText ?? `${l.value ?? ''} ${l.unit ?? ''}`.trim();
+  }
+  for (const i of v.inputs.imaging ?? []) out[i.name] = i.result;
+  return out;
+}
+
+/** ChiefComplaintStrip SOCRATES answers. Explicit platform.web.socratesAnswers win. */
+function socratesAnswers(v: Vignette): Record<string, string> {
+  const explicit = v.inputs.platform?.web?.socratesAnswers;
+  if (explicit) return explicit;
+  const s = v.inputs.socrates ?? {};
+  const j = (a?: string[]) => (a ?? []).join(', ');
+  return {
+    onset: j(s.onset), site: j(s.site), character: j(s.character), radiation: j(s.radiation),
+    associated: j(s.associations), timing: j(s.timing), triggers: j(s.exacerbating), relief: j(s.relieving),
+    severity: j(s.severity),
+  };
+}
+
+function webSex(v: Vignette): 'male' | 'female' | 'unknown' {
+  return v.inputs.patient.sex === 'unspecified' ? 'unknown' : v.inputs.patient.sex;
+}
+
+function pregnancyPossible(v: Vignette): boolean {
+  const p = v.inputs.patient;
+  const st = p.pregnancy?.status;
+  return p.sex === 'female' && (st === 'pregnant' || st === 'unknown');
+}
+
+function dxList(items: { name: string; id?: string; icd10?: string; score?: number }[]): DxItem[] {
+  return items.map((d, i) => ({ rank: i + 1, ...d }));
+}
+
+const LEVEL_FROM_ACTION: Record<string, Level> = {
+  emergency_now: 'emergency', same_day_call: 'urgent', priority_24_48h: 'priority', routine_booking: 'routine', admin_review: 'routine',
+};
+
+/** PlanTab.buildPlanText, reduced to the plan lines (surgeon/admission header omitted). */
+function planLines(protocol: ManagementProtocol, allowedPhases?: string[], planPrefix?: string): string[] {
+  const lines: string[] = [];
+  if (planPrefix) lines.push(...planPrefix.split('\n').filter(l => l.trim()));
+  for (const step of protocol.management) {
+    if (allowedPhases && !allowedPhases.includes(step.phase)) continue;
+    lines.push(`[${step.phase}] ${step.step}`);
+  }
+  for (const inv of protocol.investigations) lines.push(`Investigation: ${inv.label} (${inv.urgency})`);
+  if (protocol.referral) lines.push(`Referral: ${protocol.referral}`);
+  return lines;
+}
+
+export function runWeb(v: Vignette): EngineOutputs {
+  const inp = v.inputs;
+  const web = inp.platform?.web ?? {};
+  const notes: string[] = [];
+  const age = inp.patient.ageYears;
+  const sex = webSex(v);
+  const cc = web.ccTemplate ?? inp.chiefComplaint;
+  if (!web.ccTemplate) notes.push('platform.web.ccTemplate not set: chief complaint text used as the CC template name');
+  const symptoms = web.symptoms ?? [];
+  if (!web.symptoms) notes.push('platform.web.symptoms not set: web symptom chips empty');
+  const symptomDetails = web.symptomDetails ?? {};
+  const examText = [inp.exam?.abdomen, inp.exam?.general, inp.exam?.cardiovascular, inp.exam?.respiratory,
+    inp.exam?.other, inp.exam?.skin, inp.hpi].filter(Boolean).join(' ');
+  const differentials: Record<string, DxItem[]> = {};
+
+  // ── PANE (ChiefComplaintStrip / HpiTab.reseedPane) ─────────────────────────
+  const diseases = applyModifiers(DISEASES, age, sex);
+  let pane: PaneState = initPaneState(diseases);
+  const features = extractFeaturesFromSocrates(cc, socratesAnswers(v));
+  const featureIds = new Set(FEATURES.map(f => f.id));
+  const unknownFeatures: string[] = [];
+  for (const [featureId, present] of Object.entries(features)) {
+    if (featureIds.has(featureId)) pane = updatePosterior(pane, diseases, featureId, present);
+    else unknownFeatures.push(featureId);
+  }
+  for (const [featureId, present] of Object.entries(web.paneAnswers ?? {})) {
+    if (featureIds.has(featureId)) pane = updatePosterior(pane, diseases, featureId, present);
+    else notes.push(`paneAnswers: unknown feature '${featureId}'`);
+  }
+  if (unknownFeatures.length) notes.push(`PANE: extracted features not in FEATURES (ignored, as HpiTab does): ${unknownFeatures.join(', ')}`);
+  notes.push(`PANE features applied: ${Object.keys(features).filter(f => featureIds.has(f)).join(', ') || '(none)'}`);
+  const paneTop = topDiagnoses(pane, diseases, 3);
+  differentials['web.pane'] = dxList(paneTop.map(r => ({
+    name: r.disease.label, id: r.disease.id, icd10: r.disease.icd10, score: Math.round(r.probability * 1000) / 1000,
+  })));
+
+  // ── Symptom inference (HpiTab / ExaminationTab) and passive ranking (AssessmentTab) ─
+  const ranked = computeRankedDifferentials({ symptoms, symptomDetails, age, sex });
+  differentials['web.symptomInference'] = dxList(ranked.slice(0, 5).map(r => ({ name: r.name, id: r.id, score: r.confidence })));
+  const passive = computeRankedDifferentials({ symptoms, symptomDetails: {}, examText });
+  differentials['web.passive'] = dxList(passive.slice(0, 5).map(r => ({ name: r.name, id: r.id, score: r.confidence })));
+
+  // ── Triage (AppContext) ────────────────────────────────────────────────────
+  const lv = latestVitals(v);
+  const triageInput: AdaptiveTriageInput = {
+    age, sex, symptoms, symptomDetails,
+    freeText: [inp.chiefComplaint, inp.hpi].filter(Boolean).join('. '),
+    comorbidities: inp.comorbidities ?? [],
+    surgicalHistory: inp.surgicalHistory ?? [],
+    medications: (inp.medications ?? []).map(m => m.drug),
+    allergies: (inp.allergies ?? []).map(a => a.name),
+    toxicHabits: web.toxicHabits ?? [],
+    vitalSigns: {
+      systolicBp: lv?.systolicBp ?? null, diastolicBp: lv?.diastolicBp ?? null, heartRate: lv?.heartRate ?? null,
+      temperatureC: lv?.temperatureC ?? null, respiratoryRate: lv?.respiratoryRate ?? null, spo2: lv?.spo2 ?? null,
+      glucoseMmol: lv?.glucoseMmol ?? null,
+    },
+    durationDays: web.durationDays ?? null,
+    painScore: web.painScore ?? null,
+    isPostOp: inp.encounter.isPostOp ?? false,
+    postOpDays: inp.encounter.postOpDays ?? null,
+    pregnancyPossible: pregnancyPossible(v),
+  };
+  const triage = adaptiveTriage(triageInput);
+  differentials['web.triageSurgical'] = dxList(triage.surgicalMatches.slice(0, 5).map(m => ({
+    name: m.label, id: m.id, icd10: m.icd10[0]?.code,
+  })));
+  const emergencyLevel = {
+    level: LEVEL_FROM_ACTION[triage.recommendedAction] ?? null,
+    raw: `acuity=${triage.acuity}, action=${triage.recommendedAction}, score=${triage.score}`,
+    source: 'web.triage',
+  };
+  const alarms: EngineOutputs['alarms'] = [];
+  const redFlags: SourcedText[] = [];
+  for (const f of triage.vitalRedFlags) {
+    if (f.severity === 'urgent') alarms.push({ source: 'web.triage.vitalRedFlags', title: f.label, detail: f.value, severity: f.severity });
+  }
+  if (triage.recommendedAction === 'emergency_now') {
+    alarms.push({ source: 'web.triage.emergency', title: 'Emergency now', detail: triage.safetyMessage, severity: 'urgent' });
+  }
+  for (const r of triage.reasons) redFlags.push({ source: 'web.triage.reasons', text: r });
+  // AppHeader: first recorded allergy with a "+N" count, always visible during the consultation.
+  const allergyNames = (inp.allergies ?? []).map(a => a.name);
+  if (allergyNames.length) {
+    redFlags.push({
+      source: 'web.header.allergies',
+      text: `Allergy: ${allergyNames[0]}${allergyNames.length > 1 ? ` +${allergyNames.length - 1}` : ''}`,
+    });
+  }
+  for (const p of triage.activePathways) redFlags.push({ source: 'web.triage.pathways', text: `${p.title} (${p.severity})` });
+
+  // ── Confirmed diagnosis → protocol, dx variant, CDS ────────────────────────
+  const dx = inp.confirmedDiagnosis;
+  const icd = dx?.icd10 ?? null;
+  const assessment = dx?.assessmentText ?? dx?.name ?? '';
+  // AssessmentTab: activeDiseaseId when PANE top ≥ 0.20, else the ICD code.
+  const assessDiseaseId = (paneTop[0]?.probability ?? 0) >= 0.20 ? paneTop[0].disease.id : null;
+  const panelProtocol = (assessDiseaseId ? getProtocol(assessDiseaseId) : null) ?? (icd ? getProtocolByIcd(icd) : null);
+  // PlanTab: PANE converged (≥0.85) disease, else ICD (icdCodes[0] ?? workingDiagnosis.icdCode).
+  const planDiseaseId = (paneTop[0]?.probability ?? 0) >= 0.85 ? paneTop[0].disease.id : null;
+  const planProtocol = planDiseaseId ? getProtocol(planDiseaseId) : (icd ? getProtocolByIcd(icd) : null);
+  notes.push(`AssessmentTab ManagementPanel protocol: ${panelProtocol?.diseaseId ?? '(none)'}${assessDiseaseId ? ' (from PANE top)' : ' (from ICD)'}`);
+  notes.push(`PlanTab protocol: ${planProtocol?.diseaseId ?? '(none)'}${planDiseaseId ? ' (PANE converged)' : ' (from ICD)'}`);
+  const variant = detectDxVariants(assessment, icd ?? undefined, planDiseaseId ?? dx?.paneDiseaseId ?? undefined);
+  const dxVariant = { value: variant?.detectedVariant?.id ?? null, group: variant?.group.baseDiagnosis ?? null };
+
+  const investigations: SourcedText[] = [];
+  const management: SourcedText[] = [];
+  if (planProtocol) {
+    const sv = variant?.detectedVariant;
+    for (const l of planLines(planProtocol, sv?.allowedPhases, sv?.planPrefix)) management.push({ source: 'web.plan', text: l });
+    for (const inv of planProtocol.investigations) {
+      investigations.push({ source: 'web.plan.investigations', text: `${inv.label}${inv.conditional ? ` — ${inv.conditional}` : ''}` });
+    }
+    for (const m of planProtocol.medications ?? []) {
+      management.push({ source: 'web.protocol.medications', text: `${m.drugName} ${m.dose} ${m.route} ${m.frequency} — ${m.indication}` });
+    }
+    for (const f of planProtocol.redFlags) redFlags.push({ source: 'web.protocol.redFlags', text: f });
+    if (sv?.urgencyNote) redFlags.push({ source: 'web.dxVariant.urgencyNote', text: sv.urgencyNote });
+  }
+  if (panelProtocol) {
+    for (const s of panelProtocol.management) management.push({ source: 'web.managementPanel', text: `[${s.phase}] ${s.step}` });
+    for (const p of panelProtocol.keyPoints) management.push({ source: 'web.managementPanel.keyPoints', text: p });
+  }
+
+  // HpiTab.seedInvestigationsFromPane: stat/urgent investigations of the top-3 PANE protocols.
+  for (const { disease } of paneTop) {
+    const p = getProtocol(disease.id);
+    for (const inv of p?.investigations ?? []) {
+      if (inv.urgency !== 'routine') investigations.push({ source: 'web.pane.seeded', text: `${inv.label} (${disease.id})` });
+    }
+  }
+
+  const cdsCtx: CdsContext = {
+    symptoms, examFindings: web.examFindings ?? {}, vitals: vitalStrings(v), investigationResults: investigationResults(v),
+    comorbidities: inp.comorbidities ?? [], assessment, rosFindings: {}, age: String(age), sex,
+    isPostOp: inp.encounter.isPostOp ?? false, procedureData: {},
+    workingDiagnosis: dx?.paneDiseaseId ? { diseaseId: dx.paneDiseaseId, source: 'clinician', locked: true } : undefined,
+  };
+  const cds = getCdsSuggestions(cdsCtx);
+  const recommendedScores = cds.map(s => ({
+    source: 'web.cds', score: WEB_SCALE_TO_CANONICAL[s.scaleKey] ?? `web:${s.scaleKey}`, raw: `${s.title} — ${s.triggerReason}`,
+  }));
+
+  // ── Clinical prompts (ClinicalPromptsStrip) ────────────────────────────────
+  const promptInput: PromptInput = {
+    age: String(age), sex, symptoms, comorbidities: inp.comorbidities ?? [], familyHistory: [],
+    toxicHabits: web.toxicHabits ?? [], medications: (inp.medications ?? []).map(m => m.drug), medicationsText: '',
+    pregnancyPossible: pregnancyPossible(v), ccEntries: [{ complaint: cc, answers: socratesAnswers(v) }],
+    encounterType: inp.encounter.setting === 'emergency' ? 'major_emergency' : 'surgical_consult',
+    examGeneral: inp.exam?.general ?? '', examAbdomen: inp.exam?.abdomen ?? '', examBreast: '',
+    examCardio: inp.exam?.cardiovascular ?? '', examResp: inp.exam?.respiratory ?? '', examNeuro: inp.exam?.neuro ?? '',
+    examExtremities: inp.exam?.msk ?? '', investigationResults: investigationResults(v),
+    radiologyRequests: (inp.imaging ?? []).map(i => ({
+      modality: i.modality, anatomicalRegion: i.region ?? '', resultReceived: true, resultNotes: i.result, indication: i.name,
+    })),
+    vitals: vitalStrings(v), assessment,
+  };
+  for (const p of computeClinicalPrompts(promptInput)) {
+    const text = `${p.finding}${p.diagnosis ? ` (${p.diagnosis})` : ''}: ${p.text}`;
+    if (p.type === 'safety') {
+      alarms.push({ source: 'web.clinicalPrompts.safety', title: p.finding, detail: p.text, severity: p.urgency });
+    }
+    redFlags.push({ source: `web.clinicalPrompts.${p.type}`, text });
+    for (const a of p.actions) {
+      if (a.addToInvestigations) investigations.push({ source: 'web.clinicalPrompts', text: a.addToInvestigations });
+      if (a.addToPlan) management.push({ source: 'web.clinicalPrompts', text: a.addToPlan });
+      if (!a.addToInvestigations && !a.addToPlan) management.push({ source: 'web.clinicalPrompts', text: a.text });
+    }
+  }
+
+  // ── Calculators (ScalesTab: clinical-scales.ts; ClinicalScoresPanel: clinical-scores.ts) ─
+  const scoreValues: EngineOutputs['scoreValues'] = [];
+  const forms = inp.scoreForms ?? {};
+  const labs = extractedLabs(v);
+  const sv = scoringVitals(v);
+  const tempAtLeast38 = (sv.temperatureC ?? 0) >= 38;
+
+  const alv = forms['alvarado'];
+  if (alv) {
+    const score = alvaradoScore({
+      migratoryPain: bool(alv, 'migration'), anorexia: bool(alv, 'anorexia'), nausea: bool(alv, 'nauseaVomiting'),
+      rifTenderness: bool(alv, 'rifTenderness'), rebound: bool(alv, 'rebound'), fever: bool(alv, 'temperatureRaised'),
+      wbcAbove10: bool(alv, 'wbcAbove10'), leftShift: bool(alv, 'neutrophilia'),
+    });
+    const r = interpretAlvarado(score);
+    scoreValues.push({ score: 'alvarado', mode: 'calculator', source: 'web.scaleCalculator.alvarado', value: score, label: r.band });
+    management.push({ source: 'web.scaleCalculator.alvarado', text: `${r.band}: ${r.action}` });
+  }
+
+  const tgc = forms['tg18-cholangitis'];
+  if (tgc) {
+    const org = organs(tgc);
+    const g = tg18CholangitisGrade({
+      // ScalesTab label: "Fever / rigors (temp ≥ 38°C)" — the clinician ticks it for any temperature ≥ 38.
+      fever: tempAtLeast38 || bool(tgc, 'feverAtLeast39'),
+      wbcAbnormal: bool(tgc, 'wbcAbnormal'), age, bilirubinHighGrade2: bool(tgc, 'bilirubinAtLeast5mgdl'),
+      albuminLow: bool(tgc, 'albuminBelow07LLN'),
+      organDysfunctionCv: org.includes('cardiovascular'), organDysfunctionCns: org.includes('neurological'),
+      organDysfunctionResp: org.includes('respiratory'), organDysfunctionRenal: org.includes('renal'),
+      organDysfunctionHepatic: org.includes('hepatic'), organDysfunctionHaem: org.includes('haematological'),
+    });
+    const gi = g === 'III' ? 3 : g === 'II' ? 2 : 1;
+    const r = interpretTg18Cholangitis(g);
+    scoreValues.push({ score: 'tg18-cholangitis', mode: 'calculator', source: 'web.scaleCalculator.tg18-cholangitis', value: gi, label: r.band });
+    management.push({ source: 'web.scaleCalculator.tg18-cholangitis', text: `${r.band}: ${r.action}` });
+
+    const full = scoreTokyoCholangitis({
+      fever_or_chills: tempAtLeast38 || bool(tgc, 'systemicInflammation'),
+      biliary_dilatation: bool(tgc, 'imaging'), biliary_cause_on_imaging: bool(tgc, 'imaging'),
+      high_fever: bool(tgc, 'feverAtLeast39'), age_over_75: bool(tgc, 'ageAtLeast75'),
+      bilirubin_high: bool(tgc, 'bilirubinAtLeast5mgdl'), albumin_low: bool(tgc, 'albuminBelow07LLN'),
+      organ_dysfunction: org,
+    }, labs, sv);
+    scoreValues.push({ score: 'tg18-cholangitis', mode: 'calculator', source: 'web.scoreCalculator.tg18-cholangitis', value: full.score, label: full.label });
+    management.push({ source: 'web.scoreCalculator.tg18-cholangitis', text: full.label });
+  }
+  if (tgc || (dx?.paneDiseaseId === 'cholangitis')) {
+    const auto = scoreTokyoCholangitis({}, labs, sv);
+    scoreValues.push({ score: 'tg18-cholangitis', mode: 'autofill', source: 'web.scoreCalculator.tg18-cholangitis', value: auto.score, label: auto.label, pending: auto.missing_inputs });
+  }
+
+  const tgk = forms['tg18-cholecystitis'];
+  if (tgk) {
+    const full = scoreTokyoCholecystitis({
+      murphy_sign: bool(tgk, 'localSigns'),
+      ruq_pain_mass_tenderness: bool(tgk, 'localSigns') || bool(tgk, 'palpableTenderRUQMass'),
+      fever: bool(tgk, 'systemicSigns') && tempAtLeast38,
+      us_wall_thickening: bool(tgk, 'imagingCharacteristic'),
+      organ_dysfunction: organs(tgk),
+    }, labs, sv);
+    scoreValues.push({ score: 'tg18-cholecystitis', mode: 'calculator', source: 'web.scoreCalculator.tg18-cholecystitis', value: full.score, label: full.label });
+    management.push({ source: 'web.scoreCalculator.tg18-cholecystitis', text: full.label });
+  }
+  if (tgk || (dx?.paneDiseaseId === 'cholecystitis')) {
+    const auto = scoreTokyoCholecystitis({}, labs, sv);
+    scoreValues.push({ score: 'tg18-cholecystitis', mode: 'autofill', source: 'web.scoreCalculator.tg18-cholecystitis', value: auto.score, label: auto.label, pending: auto.missing_inputs });
+  }
+  for (const key of Object.keys(forms)) {
+    if (!['alvarado', 'tg18-cholangitis', 'tg18-cholecystitis'].includes(key)) notes.push(`no web calculator for score form '${key}'`);
+  }
+
+  // ── Pathway registry (usePathway / matchPathways) — recorded for information ─
+  const pathways = matchPathways({ symptoms, freeText: [inp.chiefComplaint, inp.hpi].join('. ') });
+  if (pathways.length) notes.push(`matchPathways: ${pathways.slice(0, 3).map(p => `${p.pathway.name} (${p.score})`).join(', ')}`);
+
+  return {
+    differentials, alarms, redFlags, emergencyLevel, recommendedScores, scoreValues,
+    investigations, management, pathway: null, dxVariant,
+    engineInfo: {
+      paneEngine: `pane-engine (${DISEASES.length} diseases, ${FEATURES.length} features)`,
+      triageRulesVersion: RULES_VERSION,
+    },
+    notes,
+  };
+}

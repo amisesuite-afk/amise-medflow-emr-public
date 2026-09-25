@@ -15,11 +15,15 @@
     "lint:interaction-parity": "tsx ./src/lint-interaction-parity.ts",
     "lint:report-import-parity": "tsx ./src/lint-report-import-parity.ts",
     "lint:guideline-registry": "tsx ./src/lint-guideline-registry.ts",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clinval:web": "tsx ./src/clinval/run-web.ts",
+    "clinval:report": "tsx ./src/clinval/report.ts",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.8",
     "@types/node": "catalog:",
-    "tsx": "catalog:"
+    "tsx": "catalog:",
+    "vitest": "^5.0.1"
   }
 }
