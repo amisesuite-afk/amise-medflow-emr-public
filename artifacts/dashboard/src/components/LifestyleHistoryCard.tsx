@@ -5,8 +5,11 @@
  *
  * Stored in patients.pathway_data_json → lifestyle (lib/lifestyle-history-db.ts), shared with
  * the iOS app. Rules: @workspace/triage-engine/lifestyle-practices.
+ * Read-only for front desk: pathway_data_json is clinician-only under Migration 89 (roles.ts).
  */
 import { useAppContext } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
+import { PATHWAY_DATA_READ_ONLY_NOTE, canRecordPathwayData } from '@/lib/roles';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { LifestyleSafetyPrompts } from '@/components/LifestylePracticesPanel';
 import {
@@ -15,10 +18,20 @@ import {
 } from '@workspace/triage-engine/lifestyle-practices';
 
 export default function LifestyleHistoryCard() {
-  const { lifestyleHistory: h, setLifestyleHistory, lifestyleStorageAvailable, patientId } = useAppContext();
+  const { lifestyleHistory: h, setLifestyleHistory: setRecord, lifestyleStorageAvailable, patientId } = useAppContext();
+  const { profile } = useAuth();
+  const readOnly = !canRecordPathwayData(profile?.role);
+  const setLifestyleHistory: typeof setRecord = v => { if (!readOnly) setRecord(v); };
 
   return (
     <CollapsibleCard title="Fasting, complementary therapies and sleep" badge={isLifestyleRecorded(h) ? '✓' : undefined}>
+      {readOnly && (
+        <div data-testid="lifestyle-read-only" style={{ fontSize: 11, fontWeight: 600, color: '#475569', marginBottom: 8 }}>
+          {PATHWAY_DATA_READ_ONLY_NOTE}
+        </div>
+      )}
+      {/* A disabled fieldset disables every chip and input inside it (read-only for front desk). */}
+      <fieldset disabled={readOnly} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
       <div className="fld">
         <label>Religious or ritual fasting</label>
         <div className="chips">
@@ -84,6 +97,7 @@ export default function LifestyleHistoryCard() {
             onChange={e => setLifestyleHistory({ ...h, sleepHours: normaliseSleepHours(e.target.value) })} />
         </div>
       </div>
+      </fieldset>
 
       {patientId && lifestyleStorageAvailable === false && (
         <p style={{ marginTop: 8, fontSize: 11, color: '#92400e' }}>

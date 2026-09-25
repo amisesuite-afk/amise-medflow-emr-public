@@ -15,7 +15,7 @@
  * Imported once for its module-level registerExecutor() side effects (see
  * the import in AppContext.tsx) — nothing here needs to be called directly.
  */
-import { registerExecutor, type OutboxEntry } from './sync-outbox';
+import { OutboxRefusalError, registerExecutor, type OutboxEntry } from './sync-outbox';
 import {
   saveAssessment, savePlan, syncMedicationList, syncAllergyList,
   saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings,
@@ -59,7 +59,10 @@ registerExecutor('medications', async (entry) => {
 
 registerExecutor('supplements', async (entry) => {
   const p = payloadOf<{ patientId: string; history: unknown }>(entry);
-  const { error } = await saveSupplementHistory(p.patientId, normaliseSupplementHistory(p.history));
+  const { error, refused } = await saveSupplementHistory(p.patientId, normaliseSupplementHistory(p.history));
+  // Migration 89: pathway_data_json is clinician-only. A role refusal (42501) never succeeds on
+  // retry, so the outbox drops the entry and shows a notice instead of retrying forever.
+  if (refused) throw new OutboxRefusalError(error ?? 'permission denied');
   if (error) throw new Error(error);
 });
 
@@ -160,9 +163,11 @@ registerExecutor('clinical_scores', async (entry) => {
 
 // Lifestyle history (patients.pathway_data_json → lifestyle). A missing column resolves with
 // available: false and no error, so the entry drains instead of retrying forever; the edit is
-// still in the encounter cache (lifestyle-history-db.ts).
+// still in the encounter cache (lifestyle-history-db.ts). A role refusal (Migration 89, 42501)
+// is permanent: dropped with a notice, like the supplements entry above.
 registerExecutor('lifestyle_history', async (entry) => {
   const p = payloadOf<{ patientId: string; lifestyle: unknown }>(entry);
-  const { error } = await saveLifestyleHistory(p.patientId, parseLifestyleHistory(p.lifestyle));
+  const { error, refused } = await saveLifestyleHistory(p.patientId, parseLifestyleHistory(p.lifestyle));
+  if (refused) throw new OutboxRefusalError(error ?? 'permission denied');
   if (error) throw new Error(error);
 });

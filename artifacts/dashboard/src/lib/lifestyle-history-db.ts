@@ -13,7 +13,8 @@
  *   error: `available: false` comes back, the edit stays in this browser's encounter cache, and
  *   the Social History card says so. It is not queued in the outbox (it would never drain).
  * - `pathway_data_json` is clinician-only under Migration 89 (front desk gets 42501); that is a
- *   real error and is reported.
+ *   real error, reported with `refused: true`: permanent for this role, so the outbox never
+ *   retries it (sync-outbox.ts), and the card is read-only for front desk anyway.
  *
  * Record shape and rules: @workspace/triage-engine/lifestyle-practices.
  */
@@ -21,6 +22,7 @@ import { withPathwayDataLock } from './pathway-data-lock';
 import { supabase } from './supabase';
 import { logClinicalSave } from './db';
 import { isMissingColumnError } from './vitals-news2-fields';
+import { isPermissionRefusal } from './sync-outbox';
 import { mergeLifestyleIntoBlob, parsePathwayBlob } from './lifestyle-history-blob';
 import {
   isLifestyleRecorded, parseLifestyleHistory, type LifestyleHistory,
@@ -39,6 +41,8 @@ export interface LifestyleLoadResult {
 export interface LifestyleSaveResult {
   available: boolean;
   error: string | null;
+  /** The server refused the write for this user's role (42501) — retrying cannot succeed. */
+  refused?: boolean;
 }
 
 export async function loadLifestyleHistory(patientId: string): Promise<LifestyleLoadResult> {
@@ -69,7 +73,7 @@ export function saveLifestyleHistory(patientId: string, lifestyle: LifestyleHist
       .maybeSingle();
     if (error) {
       if (isMissingColumnError(error, [PATHWAY_DATA_COLUMN])) return { available: false, error: null };
-      return { available: true, error: error.message };
+      return { available: true, error: error.message, refused: isPermissionRefusal(error) };
     }
     const text = (data as Record<string, unknown> | null)?.[PATHWAY_DATA_COLUMN];
     const blob = parsePathwayBlob(typeof text === 'string' ? text : null);
@@ -81,7 +85,7 @@ export function saveLifestyleHistory(patientId: string, lifestyle: LifestyleHist
     if (updateError) {
       if (isMissingColumnError(updateError, [PATHWAY_DATA_COLUMN])) return { available: false, error: null };
       console.error('[lifestyle] save:', updateError.message);
-      return { available: true, error: updateError.message };
+      return { available: true, error: updateError.message, refused: isPermissionRefusal(updateError) };
     }
     // Fixed labels only (no free text): which parts are recorded.
     logClinicalSave('autosave_lifestyle_history', 'patients', patientId, { recorded: isLifestyleRecorded(lifestyle) });

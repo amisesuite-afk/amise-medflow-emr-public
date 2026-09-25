@@ -4,10 +4,13 @@
  * drug-interaction alerts like drugs and feed the perioperative alerts and "ask about" prompts.
  * Patient-level: shared with iOS through patients.pathway_data_json (lib/supplement-store.ts).
  * Nothing here stops or prescribes anything — stop times are shown to the clinician, who decides.
+ * Read-only for front desk: pathway_data_json is clinician-only under Migration 89 (roles.ts).
  */
 import { useId, useMemo, useState, type CSSProperties } from 'react';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { useAppContext } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
+import { PATHWAY_DATA_READ_ONLY_NOTE, canRecordPathwayData } from '@/lib/roles';
 import {
   SUPPLEMENT_DISCLOSURE_RATIONALE, SUPPLEMENT_SECTION_TITLE, isoSeconds, matchSupplements,
   perioperativeAlertText, recordedSupplementItems, searchSupplements, supplementById,
@@ -24,6 +27,8 @@ function newId(): string {
 
 export default function SupplementHistoryCard({ showPerioperativeAlerts = false }: { showPerioperativeAlerts?: boolean }) {
   const { supplementHistory: h, setSupplementHistory } = useAppContext();
+  const { profile } = useAuth();
+  const readOnly = !canRecordPathwayData(profile?.role);
   const uid = useId();
   const [query, setQuery] = useState('');
   const [details, setDetails] = useState('');
@@ -31,7 +36,7 @@ export default function SupplementHistoryCard({ showPerioperativeAlerts = false 
   const recorded = useMemo(() => recordedSupplementItems(h), [h]);
   const status: SupplementStatus = h.entries.length > 0 ? 'taking' : h.status;
 
-  function save(next: SupplementHistory) { setSupplementHistory(next); }
+  function save(next: SupplementHistory) { if (!readOnly) setSupplementHistory(next); }
 
   function setStatus(s: SupplementStatus) {
     if (s !== 'taking' && h.entries.length > 0) return;   // "None" never discards recorded entries
@@ -63,10 +68,15 @@ export default function SupplementHistoryCard({ showPerioperativeAlerts = false 
     <CollapsibleCard title={SUPPLEMENT_SECTION_TITLE} badge={h.entries.length || undefined}
       badgeVariant={status === 'not_asked' ? 'warn' : 'default'}>
       <div style={{ fontSize: 11, color: '#64748b', marginBottom: 8 }}>{SUPPLEMENT_DISCLOSURE_RATIONALE}</div>
+      {readOnly && (
+        <div data-testid="supplements-read-only" style={{ fontSize: 11, fontWeight: 600, color: '#475569', marginBottom: 8 }}>
+          {PATHWAY_DATA_READ_ONLY_NOTE}
+        </div>
+      )}
       <div role="radiogroup" aria-label="Asked about herbs, teas, bush remedies and supplements" style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
         {(['not_asked', 'none', 'taking'] as SupplementStatus[]).map(s => (
           <button key={s} type="button" role="radio" aria-checked={status === s} style={pill(status === s)}
-            onClick={() => setStatus(s)} disabled={s !== 'taking' && h.entries.length > 0 && s !== status}>
+            onClick={() => setStatus(s)} disabled={readOnly || (s !== 'taking' && h.entries.length > 0 && s !== status)}>
             {STATUS_LABEL[s]}
           </button>
         ))}
@@ -87,12 +97,15 @@ export default function SupplementHistoryCard({ showPerioperativeAlerts = false 
                 {item ? item.concern : 'Not in the catalogue — identify the plant or product.'}
               </div>
             </div>
-            <button type="button" onClick={() => remove(e.id)} aria-label={`Remove ${e.name}`}
-              style={{ border: 'none', background: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 14 }}>✕</button>
+            {!readOnly && (
+              <button type="button" onClick={() => remove(e.id)} aria-label={`Remove ${e.name}`}
+                style={{ border: 'none', background: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 14 }}>✕</button>
+            )}
           </div>
         );
       })}
 
+      {!readOnly && <>
       <div className="fld" style={{ marginTop: 8 }}>
         <label htmlFor={`${uid}-search`}>Search or type (garlic, turmeric, cerasee tea…)</label>
         <input id={`${uid}-search`} type="text" value={query} onChange={e => setQuery(e.target.value)}
@@ -117,6 +130,7 @@ export default function SupplementHistoryCard({ showPerioperativeAlerts = false 
           </button>
         </div>
       )}
+      </>}
 
       {showPerioperativeAlerts && recorded.length > 0 && (
         <div style={{ marginTop: 8 }}>

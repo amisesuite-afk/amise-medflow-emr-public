@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState, useCallback } from 'react';
-import { enqueue, flush, type SyncStatus } from '@/lib/sync-outbox';
+import {
+  OutboxRefusalError, enqueue, flush, isPermanentRefusal, reportRefusal, type SyncStatus,
+} from '@/lib/sync-outbox';
 import '@/lib/sync-executors'; // registers outbox executors — side-effect import, must run before any save can fail
 import { registerBeforeSignOut } from '@/lib/secure-sign-out';
 import { loadLifestyleHistory, saveLifestyleHistory } from '@/lib/lifestyle-history-db';
@@ -897,6 +899,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // throwing — without this check a failed write (bad grant, missing
       // table, RLS denial) would still report "saved" here.
       if (result && typeof result === 'object' && 'error' in result && (result as { error: unknown }).error) {
+        // A role refusal (42501, e.g. Migration 89 on pathway_data_json) is flagged `refused`.
+        if ((result as { refused?: unknown }).refused === true) {
+          throw new OutboxRefusalError(String((result as { error: unknown }).error));
+        }
         throw new Error(String((result as { error: unknown }).error));
       }
       pendingSaves.current--;
@@ -922,7 +928,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // not whether the backend is actually reachable (e.g. a captive
       // portal or DNS failure still reports online), so gating on it missed
       // the most common real-world offline failure mode.
-      if (descriptor) {
+      if (descriptor && isPermanentRefusal(descriptor.entityType, err)) {
+        // Retrying can never succeed for this role: do not queue it (it would retry forever);
+        // show the one-line notice instead (SyncStatusIndicator).
+        console.warn(`[autosave] ${descriptor.entityType} refused by the server (permission) — not queued`);
+        reportRefusal(descriptor.entityType, msg);
+      } else if (descriptor) {
         setSyncStatus('pending');
         void enqueue(descriptor.entityType, descriptor.entityId, descriptor.payload)
           .catch(e => console.error('[autosave] enqueue failed:', e));
