@@ -312,7 +312,11 @@
     "dxVariant": {
       "id": "variant-incarcerated-or-worse",
       "severity": "quality",
-      "equals": "hernia_incarcerated"
+      "equals": "hernia_incarcerated",
+      "knownGap": [
+        "web"
+      ],
+      "knownGapNote": "Web, since the engine-matching fixes (2026-09): \"strangulation not excluded\" is a hedge, not a negation, so the strangulated variant is now detected (the tie between \"incarcerated\" and \"strangulation\" goes to the more severe variant). The expectation id says \"incarcerated or worse\" but checks equals hernia_incarcerated: surgeon to decide whether hernia_strangulated should be accepted."
     }
   },
   "guideline": [

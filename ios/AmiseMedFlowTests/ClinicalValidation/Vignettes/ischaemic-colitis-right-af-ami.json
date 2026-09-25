@@ -277,7 +277,11 @@
           ],
           "unverified": [
             "ios"
-          ]
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web, since the engine-matching fixes (2026-09): this passed only on the \"Emergency laparotomy consent\" line of the peritonism prompt, which fired on negated peritonism. No vascular/revascularisation output exists for right-sided ischaemia with AMI not excluded."
         }
       ]
     }

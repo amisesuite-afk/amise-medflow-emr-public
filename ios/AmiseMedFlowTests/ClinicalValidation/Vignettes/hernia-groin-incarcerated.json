@@ -212,7 +212,11 @@
         "note": "An irreducible hernia needs same-day surgical assessment: strangulation cannot be excluded without it.",
         "unverified": [
           "ios"
-        ]
+        ],
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Systemic red flag symptom, Vomiting or possible dehydration). With negation-aware matching web triage gives acuity=routine, action=routine_booking, score=7: no triage rule covers this presentation."
       },
       "redFlags": [
         {

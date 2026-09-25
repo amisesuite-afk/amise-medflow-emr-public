@@ -265,7 +265,11 @@
           "note": "Reassurance without imaging is inappropriate for spontaneous bloody single-duct discharge.",
           "unverified": [
             "ios"
-          ]
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web, since the engine-matching fixes (2026-09): the Assessment management panel now follows the confirmed diagnosis (paneDiseaseId duct_ectasia) instead of the PANE leader; the duct ectasia protocol offers \"reassurance; evening primrose oil\". There is no nipple-discharge / single-duct bloody discharge protocol."
         }
       ]
     }

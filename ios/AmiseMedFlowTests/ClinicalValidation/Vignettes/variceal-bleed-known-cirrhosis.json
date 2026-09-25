@@ -528,7 +528,11 @@
           "note": "Over-transfusion raises portal pressure and increases rebleeding and mortality in variceal bleeding (Villanueva 2013). Web passes today only because no protocol loads for I85 (see mgmt-vasoactive); the upper_gi_bleed protocol, if it loaded, says \"transfuse to Hb 70–90 g/L (80–100 in varices)\" and would fail this.",
           "unverified": [
             "ios"
-          ]
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web, since the engine-matching fixes (2026-09): this passed only because no protocol loaded. The Assessment management panel now follows the confirmed diagnosis (upper_gi_bleed), whose step says \"transfuse to Hb 70-90 g/L (80-100 in varices)\" (Baveno VII: 70-80)."
         },
         {
           "id": "mgmt-no-tranexamic-acid",

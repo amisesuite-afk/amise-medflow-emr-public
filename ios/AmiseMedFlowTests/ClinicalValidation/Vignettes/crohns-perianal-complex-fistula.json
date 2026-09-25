@@ -242,7 +242,11 @@
           "note": "Complex Crohn’s fistula: drain sepsis and place a loose (non-cutting) seton before biologic therapy.",
           "unverified": [
             "ios"
-          ]
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web, since the engine-matching fixes (2026-09): this passed only because the Assessment panel showed the PANE leader's perianal_abscess protocol; the panel now follows the confirmed diagnosis (crohns_disease), whose protocol has no EUA/seton step."
         },
         {
           "id": "mgmt-drainage",
@@ -257,7 +261,11 @@
           ],
           "unverified": [
             "ios"
-          ]
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web, since the engine-matching fixes (2026-09): this passed only because the Assessment panel showed the PANE leader's perianal_abscess protocol; the panel now follows the confirmed diagnosis (crohns_disease), whose protocol has no drainage step."
         },
         {
           "id": "mgmt-biologic",

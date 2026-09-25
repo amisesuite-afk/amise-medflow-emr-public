@@ -295,7 +295,11 @@
           "note": "Definitive surgery is planned after histology and MDT, not at the first visit.",
           "unverified": [
             "ios"
-          ]
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web, since the engine-matching fixes (2026-09): the Assessment management panel now follows the confirmed diagnosis (invasive_ductal_carcinoma) instead of the PANE leader; that protocol lists wide local excision + SLNB with no \"after histology\" condition."
         }
       ]
     },

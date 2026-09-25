@@ -315,7 +315,11 @@
           "note": "Uncomplicated amoebic abscess responds to metronidazole; aspiration is for non-response at 3–5 days, left-lobe abscess or imminent rupture.",
           "unverified": [
             "ios"
-          ]
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web, since the engine-matching fixes (2026-09): the Assessment management panel now follows the confirmed diagnosis (liver_abscess) instead of the PANE leader (appendicitis); the liver_abscess protocol lists USS-guided aspiration/drainage and has no amoebic branch."
         },
         {
           "id": "mgmt-no-appendicectomy",

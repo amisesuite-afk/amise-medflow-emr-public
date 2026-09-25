@@ -288,7 +288,11 @@
           ],
           "unverified": [
             "ios"
-          ]
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web, since the engine-matching fixes (2026-09): this passed only on the appendicectomy operative template, which fired on \"no guarding\"/\"no rebound\". No output now names a joint medical-surgical review."
         }
       ]
     }

@@ -173,7 +173,11 @@
         "note": "ASCRS 2022: prompt drainage. A routine booking for an undrained abscess risks spread (ischiorectal/horseshoe, necrotising infection).",
         "unverified": [
           "ios"
-        ]
+        ],
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Possible malignancy). With negation-aware matching web triage gives acuity=review, action=priority_24_48h, score=20: no triage rule covers this presentation."
       }
     },
     "management": {
