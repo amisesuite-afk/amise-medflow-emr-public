@@ -34,7 +34,7 @@ const { chromium } = useSandboxBrowser
   : await import('playwright');
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const BASE = 'http://localhost:3000';
+const BASE = (process.env.E2E_BASE_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 const OUT  = join(__dirname, 'shots');
 mkdirSync(OUT, { recursive: true });
 
@@ -118,7 +118,7 @@ const MOCK_ENCOUNTER = {
   });
 
   // Local API server
-  await ctx.route('http://localhost:3000/api/**', async route => {
+  await ctx.route(`${BASE}/api/**`, async route => {
     const url  = route.request().url();
     const meth = route.request().method();
     const j    = (data) =>
@@ -301,7 +301,9 @@ const MOCK_ENCOUNTER = {
   await page.waitForTimeout(400);
   await shot(page, '04-assessment-typed');
 
-  // ── Pathognomonic detection ───────────────────────────────────────────────────
+  // ── Pathognomonic detection → SUGGESTION, confirmed by the clinician ──────────
+  // A sign only suggests the working diagnosis (UX review C4); nothing is recorded until
+  // "Confirm diagnosis" is tapped.
   await page.waitForTimeout(2000);
   const variantText = await page.locator('body').textContent() ?? '';
   if (/rovsing|appendicitis|K35/i.test(variantText)) {
@@ -309,7 +311,23 @@ const MOCK_ENCOUNTER = {
   } else {
     fail('Dx variant banner', `No appendicitis/Rovsing keywords. Body: "${variantText.slice(0,200)}"`);
   }
-  await shot(page, '05-variant-chips');
+  const dxSuggestion = page.locator('[data-testid="dx-suggestion"]');
+  if (await dxSuggestion.count()) {
+    const sugText = (await dxSuggestion.first().textContent()) ?? '';
+    if (/Suggested:.*appendicitis/i.test(sugText)) pass('Diagnosis shown as a suggestion (not auto-set)');
+    else fail('Diagnosis suggestion', `Unexpected text: "${sugText.slice(0, 120)}"`);
+    if (await page.locator('[data-testid="dx-confirmed"]').count()) {
+      fail('Diagnosis suggestion', 'Working diagnosis already confirmed before the clinician confirmed it');
+    }
+    await shot(page, '05-variant-chips');
+    await dxSuggestion.locator('button', { hasText: /Confirm diagnosis/ }).click();
+    await page.waitForTimeout(800);
+    if (await page.locator('[data-testid="dx-confirmed"]').count()) pass('Working diagnosis set only after "Confirm diagnosis"');
+    else fail('Confirm diagnosis', 'Confirmed working diagnosis not shown after Confirm');
+  } else {
+    fail('Diagnosis suggestion', 'No "Suggested: …" card for the Rovsing sign');
+    await shot(page, '05-variant-chips');
+  }
 
   // ── Navigate to Plan tab ──────────────────────────────────────────────────────
   // Phase-nav "Plan" is disabled; tab-bar "📌Plan" is always enabled.
@@ -330,21 +348,33 @@ const MOCK_ENCOUNTER = {
       if (val.length > planContent.length) planContent = val;
     }
 
-    if (planContent.length > 20) {
-      pass(`Plan auto-populated (${planContent.length} chars)`);
-      console.log(`   Plan preview: "${planContent.slice(0, 120)}..."`);
-      if (!/emergency.*append|immediate.*append/i.test(planContent)) {
-        pass('Plan filtered: no immediate surgical steps for phlegmon variant');
+    // The plan is never written by itself (UX review C4): it stays empty until the clinician
+    // taps "Insert suggested plan" under the "Suggested for <diagnosis>" badge.
+    if (planContent.trim().length === 0) pass('Plan not auto-populated after confirming the diagnosis');
+    else fail('Plan auto-populate', `Plan was written without a clinician action (got: "${planContent.slice(0, 60)}")`);
+    const suggestedFor = page.locator('[data-testid="plan-suggested-for"]');
+    if (await suggestedFor.count()) {
+      pass(`Plan suggestion badge: "${((await suggestedFor.first().textContent()) ?? '').trim()}"`);
+      await page.locator('button', { hasText: /Insert suggested plan/ }).first().click();
+      await page.waitForTimeout(800);
+      planContent = '';
+      for (const ta of await page.locator('textarea').all()) {
+        const val = await ta.inputValue();
+        if (val.length > planContent.length) planContent = val;
+      }
+      if (planContent.length > 20) {
+        pass(`Suggested plan inserted on tap (${planContent.length} chars)`);
+        console.log(`   Plan preview: "${planContent.slice(0, 120)}..."`);
+        if (!/emergency.*append|immediate.*append/i.test(planContent)) {
+          pass('Plan filtered: no immediate surgical steps for phlegmon variant');
+        } else {
+          fail('Plan filter', 'Emergency/immediate appendicectomy present — should be conservative only');
+        }
       } else {
-        fail('Plan filter', 'Emergency/immediate appendicectomy present — should be conservative only');
+        fail('Insert suggested plan', `Plan still empty after the tap (got: "${planContent.slice(0, 60)}")`);
       }
     } else {
-      const planPageText = await page.locator('body').textContent() ?? '';
-      if (/appendicitis|conservative|phlegmon|protocol/i.test(planPageText)) {
-        pass('Plan protocol/variant banner visible on Plan tab');
-      } else {
-        fail('Plan auto-populate', `Empty or short (got: "${planContent.slice(0,60)}")`);
-      }
+      fail('Plan suggestion', 'No "Suggested for …" plan panel for the confirmed diagnosis');
     }
   } else {
     fail('Plan tab', 'Button not found');

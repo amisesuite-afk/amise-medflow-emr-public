@@ -6,6 +6,7 @@
  */
 
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import { insertSuggestedPlan } from '@/lib/diagnosis-suggestion';
 import { useAppContext, type Section, type PriorEncounterSummary } from '@/context/AppContext';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { getAIProviderConfig, segmentSoapWithOllama, type SegmentedSoap } from '@/lib/ai-provider';
@@ -1004,8 +1005,9 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   }
 
   function enterAssessment() {
-    // Working Dx from confirmed selection or top PANE suggestion
-    const dxForAssess = workingDxId ?? (suggestedDx.length > 0 ? suggestedDx[0].disease.id : null);
+    // Working Dx only from the clinician's confirmed selection — an unconfirmed top suggestion
+    // is never written into the assessment (UX review C4). Suggestions stay listed on screen.
+    const dxForAssess = workingDxId;
     const dxLabelForAssess = dxForAssess ? (DISEASES.find(d => d.id === dxForAssess)?.label ?? dxForAssess) : null;
     const protoForAssess = dxForAssess ? getProtocol(dxForAssess) : null;
     const rfForAssess = protoForAssess?.redFlags.map(r => `  ⚠ ${r}`).join('\n') ?? '';
@@ -1025,7 +1027,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     if (!assessment.trim()) {
       const parts: string[] = [];
       if (dxLabelForAssess) {
-        parts.push(`Working Diagnosis: ${dxLabelForAssess}${workingDxId ? '' : '  ⚠ AI suggestion — please confirm'}`);
+        parts.push(`Working Diagnosis: ${dxLabelForAssess}`);
       } else {
         parts.push('Working Diagnosis:');
       }
@@ -1150,30 +1152,33 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   }
 
   function enterPlan() {
-    // Confirmed working Dx: ALWAYS seed from protocol — surgeon has committed to a diagnosis.
-    // No working Dx: use top suggestion if plan is still empty, otherwise preserve user edits.
-    if (workingDxId) {
-      const built = buildProtocolPlan(workingDxId, false);
-      if (built) ctx.setPlan(built);
-    } else if (!plan.trim()) {
-      const topId = suggestedDx.length > 0 ? suggestedDx[0].disease.id : null;
-      const built = topId ? buildProtocolPlan(topId, true) : '';
-      if (built) {
-        ctx.setPlan(built);
-        setWorkingDxId(topId!);
-      } else {
-        ctx.setPlan(
-          'Management Plan\n\n' +
-          '1. Investigations (Labs):\n   \n\n' +
-          '2. Imaging:\n   \n\n' +
-          '3. Procedures / Referrals:\n   \n\n' +
-          '4. Medications:\n   \n\n' +
-          '5. Follow-up:\n   \n\n' +
-          '6. Safety-net / Patient instructions:\n   \n',
-        );
-      }
-    }
+    // Navigation only. The plan is never written on entering the Plan phase: for a confirmed
+    // working diagnosis the protocol plan is offered as "Insert suggested plan" (UX review C4);
+    // an unconfirmed top suggestion is never used, nor set as the working diagnosis.
     changePhase('plan');
+  }
+
+  // Explicit clinician tap: insert the protocol plan for the CONFIRMED working diagnosis
+  // (appended below anything already written).
+  const lastInsertedPlanRef = useRef('');
+  function insertSuggestedPlanForDx() {
+    if (!workingDxId) return;
+    const built = buildProtocolPlan(workingDxId, false);
+    if (!built) return;
+    ctx.setPlan(insertSuggestedPlan(plan, built, lastInsertedPlanRef.current));
+    lastInsertedPlanRef.current = built;
+  }
+
+  function insertBlankPlanTemplate() {
+    const blank =
+      'Management Plan\n\n' +
+      '1. Investigations (Labs):\n   \n\n' +
+      '2. Imaging:\n   \n\n' +
+      '3. Procedures / Referrals:\n   \n\n' +
+      '4. Medications:\n   \n\n' +
+      '5. Follow-up:\n   \n\n' +
+      '6. Safety-net / Patient instructions:\n   \n';
+    ctx.setPlan(insertSuggestedPlan(plan, blank, ''));
   }
 
   // ── AI Consult for complex / unclear presentations ─────────────────────────
@@ -1243,14 +1248,8 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     }
   }
 
-  // Auto-populate plan from protocol the moment working Dx is confirmed or changed.
-  // Fires regardless of phase so when the surgeon arrives at Plan it's already there.
-  useEffect(() => {
-    if (!workingDxId) return;
-    const built = buildProtocolPlan(workingDxId, false);
-    if (built) ctx.setPlan(built);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [workingDxId]);
+  // (No effect writes the plan when the working Dx changes — it used to overwrite the plan,
+  //  even an edited one. The protocol plan is inserted only by the clinician's tap.)
 
   const fullTranscript = transcript + (interim ? interim : '');
 
@@ -2086,6 +2085,29 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                 {assessment || 'No assessment entered.'}
               </div>
             )}
+          </div>
+
+          {/* Suggested plan — only for a confirmed working diagnosis, inserted on tap */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', padding: '8px 12px', borderRadius: 9, border: '1px dashed var(--line)', background: 'var(--card)' }}>
+            {workingDxId ? (
+              <>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#0f766e', background: '#ccfbf1', border: '1px solid #99f6e4', borderRadius: 999, padding: '1px 8px' }}>
+                  Suggested for {DISEASES.find(d => d.id === workingDxId)?.label ?? workingDxId}
+                </span>
+                <button type="button" onClick={insertSuggestedPlanForDx}
+                  style={{ fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 6, border: 'none', background: '#0d9488', color: '#fff', cursor: 'pointer' }}>
+                  Insert suggested plan
+                </button>
+              </>
+            ) : (
+              <span style={{ fontSize: 12, color: 'var(--muted)' }}>
+                Select a working diagnosis in Assessment to see a suggested plan.
+              </span>
+            )}
+            <button type="button" onClick={insertBlankPlanTemplate}
+              style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: '1px solid var(--line)', background: 'transparent', color: 'var(--muted)', cursor: 'pointer', marginLeft: 'auto' }}>
+              Blank template
+            </button>
           </div>
 
           <div style={{ borderRadius: 10, border: '1px solid var(--line)', background: 'var(--card)', overflow: 'hidden' }}>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { confirmedPlanSource } from '@/lib/diagnosis-suggestion';
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ToastProvider';
@@ -264,16 +265,12 @@ export default function PrescriptionsTab() {
   // Matched protocol for the working diagnosis (mirrors InvestigationsTab/PlanTab)
   // — gives the doctor a route to protocol medications without needing Ambient
   // Consultation, which was previously the only path in.
-  const activeDiseaseId = (ctx.paneConverged && ctx.paneTop[0]?.probability >= 0.85)
-    ? ctx.paneTop[0].disease.id
-    : ctx.workingDiagnosis?.diseaseId ?? null;
-  const activeIcdCode = ctx.icdCodes[0]?.split(' — ')[0]?.trim() ?? ctx.workingDiagnosis?.icdCode ?? null;
+  // Only a CONFIRMED diagnosis (locked working diagnosis or a recorded ICD-10 code) suggests
+  // protocol medications — never an unconfirmed PANE convergence (UX review C4).
+  const { diseaseId: activeDiseaseId, icdCode: activeIcdCode } = confirmedPlanSource(ctx.workingDiagnosis, ctx.icdCodes);
   const protocol = useMemo(
-    () => activeDiseaseId
-      ? getProtocol(activeDiseaseId)
-      : activeIcdCode
-        ? getProtocolByIcd(activeIcdCode)
-        : null,
+    () => (activeDiseaseId ? getProtocol(activeDiseaseId) : null)
+      ?? (activeIcdCode ? getProtocolByIcd(activeIcdCode) : null),
     [activeDiseaseId, activeIcdCode],
   );
   // Discharge-phase drugs belong on the discharge summary, not the active Rx queue.

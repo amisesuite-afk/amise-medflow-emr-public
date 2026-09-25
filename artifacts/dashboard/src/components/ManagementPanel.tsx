@@ -56,7 +56,7 @@ export function ManagementPanel({ diseaseId, icdCode }: Props) {
         }}
       >
         <span style={{ fontWeight: 600, color: GOLD, fontSize: 14 }}>
-          Management — {protocol.label}
+          Suggested management (reference) — {protocol.label}
         </span>
         <svg
           width={16} height={16} viewBox="0 0 24 24" fill="none"

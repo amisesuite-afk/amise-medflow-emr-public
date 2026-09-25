@@ -65,9 +65,9 @@ export default function PaneDifferential({ onAddDifferential, onExportDifferenti
             background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.3)',
             fontSize: 11, color: '#34d399', marginBottom: 2,
           }}>
-            🎯 Diagnosis locked — <strong>{workingDiagnosis.diseaseLabel ?? workingDiagnosis.diseaseId}</strong>
+            🎯 Working diagnosis confirmed — <strong>{workingDiagnosis.diseaseLabel ?? workingDiagnosis.diseaseId ?? workingDiagnosis.icdCode}</strong>
             {workingDiagnosis.source === 'pathognomonic' && workingDiagnosis.signText && (
-              <> via <em>{workingDiagnosis.signText}</em></>
+              <> (suggested by <em>{workingDiagnosis.signText}</em>)</>
             )}
             {' '}· PANE shows supporting evidence only
           </div>
@@ -116,7 +116,7 @@ export default function PaneDifferential({ onAddDifferential, onExportDifferenti
             background: 'rgba(52,211,153,0.04)', borderRadius: '0 6px 6px 0', padding: '8px 12px',
             marginTop: 4, fontSize: 11, color: '#6b7280',
           }}>
-            Q&amp;A paused — pathognomonic diagnosis locked. Clear the assessment text to resume.
+            Q&amp;A paused — working diagnosis confirmed. Remove it (Assessment → Working diagnosis) to resume.
           </div>
         ) : !converged && nextQuestion ? (
           <div style={{

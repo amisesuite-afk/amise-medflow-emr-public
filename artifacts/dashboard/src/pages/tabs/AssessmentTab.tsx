@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useAppContext, type ActiveDiagnosis, type WorkingDiagnosis } from '@/context/AppContext';
 import { detectPathognomonic } from '@/lib/transcript-dx-mapper';
+import { diagnosisSuggestion, confirmDiagnosisSuggestion, isConfirmedDiagnosis } from '@/lib/diagnosis-suggestion';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PaneDifferential from '@/components/PaneDifferential';
 import { ManagementPanel } from '@/components/ManagementPanel';
@@ -653,35 +654,24 @@ export default function AssessmentTab() {
   }, [assessment, hpiNotes, examAbdomen, examGeneral, examCardio, examResp]);
   const primaryTextMatch = pathognomicMatchesFromText[0] ?? null;
 
-  // Write to the central WorkingDiagnosis signal bus whenever a pathognomonic sign
-  // is found in free text. This propagates to PANE display, CDS filtering, and Plan tab.
-  useEffect(() => {
-    if (!primaryTextMatch) {
-      // Only clear if it was set by pathognomonic detection (not manual ICD)
-      if (workingDiagnosis?.source === 'pathognomonic') setWorkingDiagnosis(null);
-      return;
-    }
-    // Don't downgrade a manual ICD selection
-    if (workingDiagnosis?.source === 'manual_icd') return;
-    setWorkingDiagnosis({
-      diseaseId: primaryTextMatch.diseaseId,
-      icdCode: primaryTextMatch.icd10,
-      confidence: primaryTextMatch.specificity === 'definitive' ? 0.97 : 0.88,
-      source: 'pathognomonic',
-      locked: true,
-      signText: primaryTextMatch.finding,
-      diseaseLabel: primaryTextMatch.diseaseLabel,
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [primaryTextMatch?.diseaseId, primaryTextMatch?.finding]);
+  // A pathognomonic-sign match is a SUGGESTION only (UX review C4, CLAUDE.md "never
+  // independently diagnose"). workingDiagnosis and the ICD-10 code are set — and locked — only
+  // when the clinician taps Confirm. Dismissed suggestions stay dismissed for this visit to the
+  // step. Encounters saved earlier with an auto-set diagnosis keep it as saved.
+  const [dismissedDxSuggestions, setDismissedDxSuggestions] = useState<Set<string>>(new Set());
+  const dxSuggestion = diagnosisSuggestion(primaryTextMatch, workingDiagnosis, dismissedDxSuggestions);
 
-  // Auto-populate ICD code from pathognomonic match when no code is selected yet
-  useEffect(() => {
-    if (primaryTextMatch?.icd10 && icdCodes.length === 0) {
-      setIcdCodes([`${primaryTextMatch.icd10} — ${primaryTextMatch.diseaseLabel}`]);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [primaryTextMatch?.icd10, icdCodes.length]);
+  function confirmDxSuggestion() {
+    if (!dxSuggestion) return;
+    const next = confirmDiagnosisSuggestion(dxSuggestion, icdCodes);
+    setWorkingDiagnosis(next.workingDiagnosis);
+    if (next.icdCodes.length !== icdCodes.length) setIcdCodes(next.icdCodes);
+  }
+
+  function dismissDxSuggestion() {
+    if (!dxSuggestion) return;
+    setDismissedDxSuggestions(prev => new Set([...prev, dxSuggestion.key]));
+  }
 
   // Passive inference: rank diseases from current exam + symptoms (no Q&A required)
   const passiveRanked = useMemo(() => computeRankedDifferentials({
@@ -748,6 +738,56 @@ export default function AssessmentTab() {
 
   return (
     <div className="gap-y">
+
+      {/* ── Suggested working diagnosis (from a sign) — confirm or dismiss ── */}
+      {dxSuggestion && (
+        <div
+          data-testid="dx-suggestion"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap',
+            padding: '10px 14px', borderRadius: 10,
+            background: '#f0f9ff', border: '1px dashed #0284c7',
+          }}
+        >
+          <div style={{ flex: 1, minWidth: 220 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#075985' }}>
+              Suggested: {dxSuggestion.diseaseLabel} <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>({dxSuggestion.icd10})</span> — tap to confirm
+            </div>
+            <div style={{ fontSize: 11.5, color: '#475569', marginTop: 2 }}>
+              From <em>{dxSuggestion.signText}</em>. A suggestion only — not recorded as the working diagnosis until you confirm it.
+            </div>
+          </div>
+          <button type="button" onClick={confirmDxSuggestion}
+            style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: '#0369a1', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+            Confirm diagnosis
+          </button>
+          <button type="button" onClick={dismissDxSuggestion}
+            style={{ padding: '6px 12px', borderRadius: 6, border: '1px solid #94a3b8', background: 'transparent', color: '#475569', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* ── Confirmed working diagnosis — the clinician can always remove it ── */}
+      {isConfirmedDiagnosis(workingDiagnosis) && (
+        <div
+          data-testid="dx-confirmed"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap',
+            padding: '8px 14px', borderRadius: 10,
+            background: 'rgba(13,148,136,0.06)', border: '1px solid rgba(13,148,136,0.35)',
+          }}
+        >
+          <span style={{ fontSize: 12.5, color: '#0f766e', flex: 1, minWidth: 200 }}>
+            🎯 Working diagnosis (confirmed): <strong>{workingDiagnosis.diseaseLabel || workingDiagnosis.icdCode || 'Working diagnosis'}</strong>
+          </span>
+          <button type="button" onClick={() => setWorkingDiagnosis(null)}
+            title="Remove the working diagnosis (ICD-10 codes stay until you remove them below)"
+            style={{ padding: '4px 10px', borderRadius: 6, border: '1px solid #94a3b8', background: 'transparent', color: '#475569', fontSize: 11.5, fontWeight: 600, cursor: 'pointer' }}>
+            Remove
+          </button>
+        </div>
+      )}
 
       {/* ── Active Diagnoses ─────────────────────────────────────────────────── */}
       {confirmedDiagnoses.length > 0 && (
