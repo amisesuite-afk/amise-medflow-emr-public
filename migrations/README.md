@@ -442,3 +442,15 @@ are overridden here, so this step must stay after every step that creates those 
   and the NEWS2 panels read them. Until this migration is applied, a write or read that
   names a missing column (`42703` / `PGRST204`) is retried without the new fields, so saves
   keep working and the NEWS2 panel keeps its manual pickers.
+
+### Migration 92 — `supabase-patients-visit-type-migration.sql` (patients.visit_type)
+
+- Adds nullable `visit_type text` to `patients`. The iOS app has selected and pushed this column
+  (`VisitType` raw values such as "New Consult", "ERCP", "Burns") for a long time, but no wired
+  migration created it — the only `visit_type` columns were on `patient_intake` and
+  `consultation_requests`. On the live database every iOS patient pull and push therefore failed
+  with `column patients.visit_type does not exist` (seen on the surgeon's iPhone, 2026-09-25).
+- Guarded with `to_regclass('public.patients')` and `ADD COLUMN IF NOT EXISTS`; re-running is a
+  no-op. No CHECK — values are the app's labels, an append-only list. Migration 89's front-desk
+  column guard already allows `visit_type`.
+- Independent of 87–91: safe to apply on its own first, which unblocks iOS cloud sync.
