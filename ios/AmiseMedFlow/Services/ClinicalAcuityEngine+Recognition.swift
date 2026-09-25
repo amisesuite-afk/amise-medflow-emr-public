@@ -286,7 +286,7 @@ extension ClinicalAcuityEngine {
                             "assaulted by partner"])
             || partnerViolencePattern.map({ all.matches($0) }) == true {
             b.alert(nil, .safeguarding, "Domestic abuse disclosed\(preg.isPregnant ? " in pregnancy" : "")",
-                    "Injury attributed to a partner / domestic abuse (NICE PH50 (2014) domestic violence and abuse; NICE CG110 pregnancy and complex social factors).",
+                    "Injury attributed to a partner / domestic abuse (NICE PH50 2014 domestic violence and abuse; NICE CG110 pregnancy and complex social factors)",
                     "Domestic abuse (safeguarding): follow the practice's safeguarding procedure — speak with the patient alone, assess immediate safety, document, and offer referral to specialist domestic-abuse support (NICE PH50); inform the safeguarding lead (local contacts to be supplied by the practice).")
         }
 
