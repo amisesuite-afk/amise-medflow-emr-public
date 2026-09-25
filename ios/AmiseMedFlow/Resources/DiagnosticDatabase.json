@@ -132419,7 +132419,7 @@
             },
             {
               "key": "finding",
-              "value": "irreducible|incarcerat|strangulat|cannot push back|won't go back|tender lump|tense lump|stuck|hard and red|red and hard",
+              "value": "irreducible|incarcerat|strangulat|cannot push back|won't go back|became stuck|hernia&stuck|lump&stuck|hernia&tender|hernia&tense|groin&tender|groin&tense|hernia&hard",
               "logLR": 8,
               "likelihoodRatio": 5,
               "evidenceLabel": "Irreducible tender hernia",

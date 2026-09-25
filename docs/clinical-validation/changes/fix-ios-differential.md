@@ -16,7 +16,7 @@ clinician.
 Swift cannot be compiled in this environment, so the iOS effect was measured with a TypeScript
 port of the engine (routing switch translated from the Swift source, scoring, feature network,
 top results, chips, applicability) run over the same 397 vignettes and graded like the iOS
-runner. Baseline: `docs/clinical-validation/results/ios-latest.jsonl` (run 36164058813, fallback
+runner. Baseline: `docs/clinical-validation/results/ios-latest.jsonl` (run 36166676035, fallback
 mode: the 1.0.0 database never decoded). The real numbers come from the next iOS CI run.
 
 | iOS differential expectations | Critical fail | Critical pass | Quality fail | Quality pass | Empty differential |
@@ -30,8 +30,8 @@ sepsis leads) and `cholangitis-tg18-charcot-sepsis/dx-cholangitis-top1` (choledo
 cholangitis 17). No critical expectation regresses.
 
 Web (`pnpm --filter @workspace/scripts run clinval:web`): unchanged, as expected for an iOS-only
-branch — 397 vignettes, 3087 expectations, 1938 pass, 1057 fail, 92 n/a, **0 blocking** before and
-after. Results files were restored, not committed.
+branch — 397 vignettes, 3087 expectations, 2625 pass, 370 fail, 92 n/a, **0 blocking** before and
+after (base `0a8d1ca`). Results files were restored, not committed.
 
 Remaining simulated critical failures (for the next round):
 
@@ -342,7 +342,9 @@ vignettes (each is in "Needs sign-off"):
   "doubled"); stridor / hoarseness / dysphagia LR 3 and hard fixed mass LR 3 split from one LR 2
   feature (ATA 2021).
 - Incarcerated / strangulated hernia: hernia at the painful site LR 2 → 3; fever, tachycardia,
-  leucocytosis or raised lactate LR 2 (WSES 2017).
+  leucocytosis or raised lactate LR 2 (WSES 2017); "tender lump" or "stuck" alone no longer count
+  as an irreducible hernia (a perianal abscess scored as one) — the hernia or groin must be in the
+  same sentence.
 - Choledocholithiasis imaging wording widened ("bile duct … stone", "CBD … dilated"); renal colic
   imaging no longer matches any "stone in the …" (it caught "stone in the common bile duct").
 - Placental abruption: "uterus … tender / firm", "moving less", "seat-belt".
