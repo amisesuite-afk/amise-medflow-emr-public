@@ -1,0 +1,217 @@
+/**
+ * Zebra check — rare but real conditions that explain an unusual combination of findings.
+ * Clinical rule set `diagnostic-reasoning-zebras` (clinical-content/registry.json), version
+ * ZEBRA_RULES_VERSION. UNREVIEWED: every rule, term and citation needs the surgeon's sign-off
+ * (docs/clinical-validation/changes/diagnostic-reasoning.md, "Needs sign-off").
+ *
+ * iOS twin: ios/AmiseMedFlow/Resources/ZebraRules.json holds the same rules as JSON;
+ * scripts/src/diagnostic-reasoning-parity.test.ts fails when the two differ. Change both together.
+ *
+ * Matching (zebras.ts / ZebraCheck.swift): negation-aware at word starts (negation.ts /
+ * NegationMatcher.swift). A rule matches when every `all` group has an affirmed term, at least
+ * `atLeast.count` of the `atLeast.groups` have one, and no `none` term is affirmed. A term matches
+ * at a word start and may run on ("headache" finds "headaches").
+ */
+
+export const ZEBRA_RULES_VERSION = '1.0.0';
+
+export interface ZebraRule {
+  id: string;
+  condition: string;
+  icd10: string;
+  /** pane-engine disease id when the web model has a node for it (to flag "already in the differential"). */
+  paneId: string | null;
+  /** The combination that suggests it. */
+  explains: string;
+  all: string[][];
+  atLeast: { count: number; groups: string[][] } | null;
+  none: string[];
+  /** Consultation module to open for it ('supplements'), or null. */
+  link: string | null;
+  citation: string;
+}
+
+const RECURRENT_PANCREATITIS = [
+  'recurrent pancreatitis', 'recurrent acute pancreatitis', 'previous pancreatitis', 'previous episode of pancreatitis',
+  'previous episodes of pancreatitis', 'history of pancreatitis', 'prior pancreatitis', 'second episode of pancreatitis',
+  'third episode of pancreatitis', 'further episode of pancreatitis',
+];
+const GALLSTONES_OR_ALCOHOL = [
+  'gallstone', 'cholelithiasis', 'choledocholithiasis', 'biliary sludge', 'microlithiasis', 'alcohol excess', 'excess alcohol',
+  'heavy alcohol', 'heavy drink', 'alcohol misuse', 'alcohol abuse', 'alcohol use disorder', 'alcohol dependence', 'alcoholic',
+  'binge drinking',
+];
+const HYPERTENSION = ['hypertension', 'high blood pressure', 'raised blood pressure', 'hypertensive'];
+const ABDOMINAL_PAIN = ['abdominal pain', 'abdominal colic', 'colicky abdominal', 'abdominal cramp'];
+
+export const ZEBRA_RULES: ZebraRule[] = [
+  {
+    id: 'eosinophilic-oesophagitis', condition: 'Eosinophilic oesophagitis', icd10: 'K20.0', paneId: null,
+    explains: 'Dysphagia or food bolus impaction with eosinophilia or atopy',
+    all: [
+      ['dysphagia', 'food bolus', 'food impaction', 'food stuck', 'bolus obstruction', 'difficulty swallowing'],
+      ['eosinophilia', 'atopy', 'atopic', 'asthma', 'eczema', 'hay fever', 'allergic rhinitis', 'food allerg'],
+    ],
+    atLeast: null, none: [], link: null,
+    citation: 'Dellon ES et al. Updated international consensus diagnostic criteria for eosinophilic esophagitis (AGREE). Gastroenterology 2018;155:1022-1033; Lucendo AJ et al. UEG Journal 2017;5:335-358.',
+  },
+  {
+    id: 'lead-poisoning', condition: 'Lead poisoning', icd10: 'T56.0', paneId: null,
+    explains: 'Anaemia, peripheral (motor) neuropathy and colicky abdominal pain',
+    all: [
+      ['anaemia', 'anemia', 'basophilic stippling'],
+      ['neuropathy', 'wrist drop', 'foot drop', 'motor weakness', 'paraesthesia', 'paresthesia'],
+      [...ABDOMINAL_PAIN, 'colicky pain'],
+    ],
+    atLeast: null, none: [], link: null,
+    citation: 'Kosnett MJ et al. Recommendations for medical management of adult lead exposure. Environ Health Perspect 2007;115:463-471; ATSDR Toxicological Profile for Lead, 2020.',
+  },
+  {
+    id: 'primary-hyperparathyroidism', condition: 'Primary hyperparathyroidism', icd10: 'E21.0', paneId: 'primary_hyperparathyroidism',
+    explains: 'Hypercalcaemia with stones, bones, abdominal groans or psychiatric moans',
+    all: [['hypercalcaemia', 'hypercalcemia', 'raised calcium', 'high calcium']],
+    atLeast: {
+      count: 2,
+      groups: [
+        ['renal stone', 'kidney stone', 'nephrolithiasis', 'ureteric stone', 'renal colic', 'renal calculus', 'ureteric calculus'],
+        ['bone pain', 'osteoporosis', 'fragility fracture', 'pathological fracture', 'osteopenia'],
+        ['constipation', 'abdominal pain', 'pancreatitis', 'peptic ulcer', 'nausea'],
+        ['depression', 'confusion', 'psychiatric', 'anxiety', 'low mood', 'lethargy', 'psychosis', 'memory'],
+      ],
+    },
+    none: [], link: null,
+    citation: 'Bilezikian JP et al. Evaluation and management of primary hyperparathyroidism: summary statement and guidelines from the Fifth International Workshop. J Bone Miner Res 2022;37:2293-2314; NICE NG132 (2019).',
+  },
+  {
+    id: 'primary-aldosteronism', condition: "Primary aldosteronism (Conn's syndrome)", icd10: 'E26.0', paneId: null,
+    explains: 'Hypertension with hypokalaemia (spontaneous or on a diuretic)',
+    all: [HYPERTENSION, ['hypokalaemia', 'hypokalemia', 'low potassium']],
+    atLeast: null, none: [], link: null,
+    citation: 'Funder JW et al. The management of primary aldosteronism: case detection, diagnosis, and treatment. Endocrine Society clinical practice guideline. J Clin Endocrinol Metab 2016;101:1889-1916.',
+  },
+  {
+    id: 'phaeochromocytoma', condition: 'Phaeochromocytoma / paraganglioma', icd10: 'D35.0', paneId: 'phaeochromocytoma',
+    explains: 'Episodic headache, sweating and palpitations, with hypertension',
+    all: [],
+    atLeast: {
+      count: 3,
+      groups: [
+        ['headache'],
+        ['sweat', 'diaphoresis', 'diaphoretic'],
+        ['palpitation', 'pounding heart', 'tachycardia'],
+        [...HYPERTENSION, 'labile blood pressure'],
+      ],
+    },
+    none: [], link: null,
+    citation: 'Lenders JWM et al. Pheochromocytoma and paraganglioma: an Endocrine Society clinical practice guideline. J Clin Endocrinol Metab 2014;99:1915-1942.',
+  },
+  {
+    id: 'hypertriglyceridaemia-pancreatitis', condition: 'Hypertriglyceridaemia-induced pancreatitis', icd10: 'E78.1', paneId: null,
+    explains: 'Recurrent acute pancreatitis without gallstones or alcohol excess (fasting triglycerides > 11.3 mmol/L)',
+    all: [RECURRENT_PANCREATITIS], atLeast: null, none: GALLSTONES_OR_ALCOHOL, link: null,
+    citation: 'Tenner S et al. American College of Gastroenterology guidelines: management of acute pancreatitis. Am J Gastroenterol 2024;119:419-437.',
+  },
+  {
+    id: 'autoimmune-pancreatitis', condition: 'Autoimmune (IgG4-related) pancreatitis', icd10: 'K86.1', paneId: null,
+    explains: 'Recurrent acute pancreatitis without gallstones or alcohol excess (IgG4, pancreatic imaging)',
+    all: [RECURRENT_PANCREATITIS], atLeast: null, none: GALLSTONES_OR_ALCOHOL, link: null,
+    citation: 'Shimosegawa T et al. International consensus diagnostic criteria for autoimmune pancreatitis. Pancreas 2011;40:352-358.',
+  },
+  {
+    id: 'ipmn', condition: 'Intraductal papillary mucinous neoplasm (IPMN)', icd10: 'D13.6', paneId: null,
+    explains: 'Recurrent acute pancreatitis without gallstones or alcohol excess (pancreatic MRI / MRCP)',
+    all: [RECURRENT_PANCREATITIS], atLeast: null, none: GALLSTONES_OR_ALCOHOL, link: null,
+    citation: 'European Study Group on Cystic Tumours of the Pancreas. European evidence-based guidelines on pancreatic cystic neoplasms. Gut 2018;67:789-804.',
+  },
+  {
+    id: 'aorto-enteric-fistula', condition: 'Aorto-enteric fistula', icd10: 'K63.2', paneId: 'aortoenteric_fistula',
+    explains: 'Gastrointestinal bleeding after aortic graft or aneurysm repair (a herald bleed)',
+    all: [
+      ['haematemesis', 'hematemesis', 'melaena', 'melena', 'rectal bleeding', 'bleeding per rectum', 'haematochezia',
+        'gi bleed', 'gastrointestinal bleed', 'upper gi bleed', 'coffee ground'],
+      ['aortic graft', 'aortic repair', 'aneurysm repair', 'aaa repair', 'evar', 'endovascular aneurysm repair',
+        'aortobifemoral', 'aorto-bifemoral', 'aortic stent graft', 'open aortic'],
+    ],
+    atLeast: null, none: [], link: null,
+    citation: 'Chakfé N et al. European Society for Vascular Surgery (ESVS) 2020 clinical practice guidelines on the management of vascular graft and endograft infections. Eur J Vasc Endovasc Surg 2020;59:339-384.',
+  },
+  {
+    id: 'herb-induced-liver-injury', condition: 'Herb- or supplement-induced liver injury', icd10: 'K71.9', paneId: null,
+    explains: 'Unexplained raised liver tests or jaundice with herbal products, bush teas or supplements',
+    all: [
+      ['raised transaminases', 'raised alt', 'raised ast', 'deranged lft', 'abnormal lft', 'raised liver enzymes',
+        'elevated liver enzymes', 'transaminitis', 'hepatitis', 'jaundice', 'raised bilirubin'],
+      ['herb', 'bush tea', 'bush medicine', 'supplements', 'dietary supplement', 'traditional remed', 'home remed', 'cerasee',
+        'moringa', 'kombucha', 'green tea extract', 'turmeric'],
+    ],
+    atLeast: null, none: [], link: 'supplements',
+    citation: 'EASL Clinical Practice Guidelines: drug-induced liver injury. J Hepatol 2019;70:1222-1261; LiverTox (NIDDK): herbal and dietary supplements.',
+  },
+  {
+    id: 'acute-intermittent-porphyria', condition: 'Acute intermittent porphyria', icd10: 'E80.2', paneId: null,
+    explains: 'Recurrent abdominal pain with neuropathy or weakness, psychiatric features, hyponatraemia or dark urine',
+    all: [ABDOMINAL_PAIN],
+    atLeast: {
+      count: 2,
+      groups: [
+        ['neuropathy', 'weakness', 'paraesthesia', 'paresthesia', 'wrist drop', 'foot drop'],
+        ['confusion', 'psychiatric', 'anxiety', 'hallucination', 'psychosis', 'agitation', 'seizure'],
+        ['hyponatraemia', 'hyponatremia', 'low sodium'],
+        ['dark urine', 'red urine', 'port wine', 'reddish urine'],
+      ],
+    },
+    none: [], link: null,
+    citation: 'Stein PE, Badminton MN, Rees DC. Update review of the acute porphyrias. Br J Haematol 2017;176:527-538; Balwani M et al. Acute hepatic porphyrias: recommendations for evaluation and long-term management. Hepatology 2017;66:1314-1322.',
+  },
+  {
+    id: 'primary-adrenal-insufficiency', condition: "Primary adrenal insufficiency (Addison's disease)", icd10: 'E27.1', paneId: null,
+    explains: 'Hyponatraemia with hypotension, hyperkalaemia or pigmentation, and abdominal pain, vomiting or weight loss',
+    all: [
+      ['hyponatraemia', 'hyponatremia', 'low sodium'],
+      ['hypotension', 'postural hypotension', 'hyperkalaemia', 'hyperkalemia', 'hyperpigmentation', 'pigmentation', 'salt craving'],
+      ['abdominal pain', 'vomiting', 'weight loss', 'fatigue', 'nausea'],
+    ],
+    atLeast: null, none: [], link: null,
+    citation: 'Bornstein SR et al. Diagnosis and treatment of primary adrenal insufficiency: an Endocrine Society clinical practice guideline. J Clin Endocrinol Metab 2016;101:364-389.',
+  },
+  {
+    id: 'hereditary-angioedema', condition: 'Hereditary angioedema', icd10: 'D84.1', paneId: null,
+    explains: 'Attacks of abdominal pain with angioedema but no urticaria',
+    all: [
+      ['abdominal pain', 'abdominal attack', 'abdominal colic'],
+      ['angioedema', 'lip swelling', 'facial swelling', 'swollen lips', 'swelling of the lips', 'swelling of the face', 'tongue swelling'],
+    ],
+    atLeast: null, none: ['urticaria', 'hives', 'wheals'], link: null,
+    citation: 'Maurer M et al. The international WAO/EAACI guideline for the management of hereditary angioedema - the 2021 revision and update. Allergy 2022;77:1961-1990.',
+  },
+  {
+    id: 'carcinoid-syndrome', condition: 'Carcinoid syndrome (neuroendocrine tumour)', icd10: 'E34.0', paneId: null,
+    explains: 'Flushing with diarrhoea (with or without wheeze or a right-heart murmur)',
+    all: [['flush'], ['diarrhoea', 'diarrhea', 'loose stool']],
+    atLeast: null, none: [], link: null,
+    citation: 'Pavel M et al. ENETS consensus guidelines update for the management of distant metastatic disease of intestinal, pancreatic, bronchial neuroendocrine neoplasms. Neuroendocrinology 2016;103:172-185.',
+  },
+  {
+    id: 'zollinger-ellison', condition: 'Zollinger-Ellison syndrome (gastrinoma)', icd10: 'E16.4', paneId: null,
+    explains: 'Recurrent, multiple or post-bulbar peptic ulcers with diarrhoea or hypercalcaemia',
+    all: [
+      ['recurrent peptic ulcer', 'recurrent ulcer', 'recurrent duodenal ulcer', 'multiple ulcers', 'multiple duodenal ulcers',
+        'jejunal ulcer', 'post-bulbar ulcer', 'postbulbar ulcer', 'refractory ulcer', 'refractory peptic ulcer'],
+      ['diarrhoea', 'diarrhea', 'steatorrhoea', 'hypercalcaemia', 'hypercalcemia', 'men1', 'multiple endocrine neoplasia'],
+    ],
+    atLeast: null, none: [], link: null,
+    citation: 'Jensen RT et al. ENETS consensus guidelines for the management of patients with digestive neuroendocrine neoplasms: functional pancreatic endocrine tumor syndromes. Neuroendocrinology 2012;95:98-119.',
+  },
+  {
+    id: 'budd-chiari', condition: 'Budd-Chiari syndrome', icd10: 'I82.0', paneId: null,
+    explains: 'Ascites with hepatomegaly or right upper quadrant pain in a prothrombotic state',
+    all: [
+      ['ascites'],
+      ['hepatomegaly', 'enlarged liver', 'right upper quadrant pain', 'ruq pain', 'abdominal pain'],
+      ['oral contraceptive', 'combined pill', 'ocp', 'polycythaemia', 'polycythemia', 'thrombophilia', 'myeloproliferative',
+        'antiphospholipid', 'pregnan', 'postpartum', 'paroxysmal nocturnal'],
+    ],
+    atLeast: null, none: [], link: null,
+    citation: 'EASL Clinical Practice Guidelines: vascular diseases of the liver. J Hepatol 2016;64:179-202.',
+  },
+];

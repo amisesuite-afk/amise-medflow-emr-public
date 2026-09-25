@@ -10,6 +10,7 @@
     "./apcq": "./src/apcq.ts",
     "./report-import": "./src/report-import/index.ts",
     "./visit-continuity": "./src/visit-continuity.ts",
+    "./diagnostic-reasoning": "./src/diagnostic-reasoning/index.ts",
     "./lifestyle-practices": "./src/lifestyle-practices.ts",
     "./lifestyle-questions": "./src/lifestyle-questions.ts"
   },

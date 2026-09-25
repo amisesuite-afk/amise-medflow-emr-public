@@ -1,0 +1,2455 @@
+{
+ "$comment": "Shared diagnostic-reasoning test vectors (web: artifacts/dashboard/src/lib/__tests__/diagnostic-reasoning-core.test.ts; iOS: ios/AmiseMedFlowTests/DiagnosticReasoningTests.swift). Change the implementations and this file together.",
+ "version": 1,
+ "explain": [
+  {
+   "name": "pancreatitis",
+   "input": {
+    "hypotheses": [
+     {
+      "id": "panc",
+      "label": "Acute pancreatitis",
+      "probability": 0.45,
+      "cantMiss": false
+     },
+     {
+      "id": "pud",
+      "label": "Peptic ulcer",
+      "probability": 0.3,
+      "cantMiss": false
+     },
+     {
+      "id": "aaa",
+      "label": "Ruptured AAA",
+      "probability": 0.05,
+      "cantMiss": true
+     }
+    ],
+    "findings": [
+     {
+      "id": "back",
+      "label": "Radiation to back",
+      "status": "present"
+     },
+     {
+      "id": "antacid",
+      "label": "Relief with antacids",
+      "status": "present"
+     },
+     {
+      "id": "lipase",
+      "label": "Raised lipase",
+      "status": "absent"
+     },
+     {
+      "id": "pulsatile",
+      "label": "Pulsatile mass",
+      "status": "unknown"
+     },
+     {
+      "id": "rash",
+      "label": "Rash",
+      "status": "present"
+     },
+     {
+      "id": "fever",
+      "label": "Fever",
+      "status": "absent"
+     },
+     {
+      "id": "hypotension",
+      "label": "Hypotension",
+      "status": "present"
+     }
+    ],
+    "weights": {
+     "panc": {
+      "back": {
+       "lrPresent": 16.25,
+       "lrAbsent": 0.37,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "antacid": {
+       "lrPresent": 0.3,
+       "lrAbsent": 1.2,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      },
+      "lipase": {
+       "lrPresent": 18,
+       "lrAbsent": 0.1,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "fever": {
+       "lrPresent": 2.2,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 1.2,
+       "lrAbsent": 0.98,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      }
+     },
+     "pud": {
+      "back": {
+       "lrPresent": 1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      },
+      "antacid": {
+       "lrPresent": 6,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "lipase": {
+       "lrPresent": 1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 1.1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      }
+     },
+     "aaa": {
+      "back": {
+       "lrPresent": 8,
+       "lrAbsent": 0.4,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "pulsatile": {
+       "lrPresent": 9,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 6,
+       "lrAbsent": 0.6,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      }
+     }
+    }
+   },
+   "hypothesisId": "panc",
+   "expected": {
+    "forFindings": [
+     {
+      "id": "back",
+      "lr": 16.25,
+      "documented": true,
+      "favours": "Ruptured AAA"
+     }
+    ],
+    "against": [
+     {
+      "id": "antacid",
+      "lr": 0.3,
+      "documented": true,
+      "favours": "Peptic ulcer"
+     },
+     {
+      "id": "fever",
+      "lr": 0.5,
+      "documented": true,
+      "favours": null
+     }
+    ],
+    "missing": [
+     {
+      "id": "lipase",
+      "lr": 0.1,
+      "documented": true,
+      "favours": null
+     }
+    ],
+    "doesntFit": [
+     {
+      "id": "hypotension",
+      "lr": 1.2,
+      "documented": true,
+      "favours": "Ruptured AAA"
+     },
+     {
+      "id": "rash",
+      "lr": 1,
+      "documented": true,
+      "favours": null
+     }
+    ],
+    "lowEvidence": false,
+    "unexplained": [
+     "Rash"
+    ]
+   }
+  },
+  {
+   "name": "peptic-ulcer",
+   "input": {
+    "hypotheses": [
+     {
+      "id": "panc",
+      "label": "Acute pancreatitis",
+      "probability": 0.45,
+      "cantMiss": false
+     },
+     {
+      "id": "pud",
+      "label": "Peptic ulcer",
+      "probability": 0.3,
+      "cantMiss": false
+     },
+     {
+      "id": "aaa",
+      "label": "Ruptured AAA",
+      "probability": 0.05,
+      "cantMiss": true
+     }
+    ],
+    "findings": [
+     {
+      "id": "back",
+      "label": "Radiation to back",
+      "status": "present"
+     },
+     {
+      "id": "antacid",
+      "label": "Relief with antacids",
+      "status": "present"
+     },
+     {
+      "id": "lipase",
+      "label": "Raised lipase",
+      "status": "absent"
+     },
+     {
+      "id": "pulsatile",
+      "label": "Pulsatile mass",
+      "status": "unknown"
+     },
+     {
+      "id": "rash",
+      "label": "Rash",
+      "status": "present"
+     },
+     {
+      "id": "fever",
+      "label": "Fever",
+      "status": "absent"
+     },
+     {
+      "id": "hypotension",
+      "label": "Hypotension",
+      "status": "present"
+     }
+    ],
+    "weights": {
+     "panc": {
+      "back": {
+       "lrPresent": 16.25,
+       "lrAbsent": 0.37,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "antacid": {
+       "lrPresent": 0.3,
+       "lrAbsent": 1.2,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      },
+      "lipase": {
+       "lrPresent": 18,
+       "lrAbsent": 0.1,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "fever": {
+       "lrPresent": 2.2,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 1.2,
+       "lrAbsent": 0.98,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      }
+     },
+     "pud": {
+      "back": {
+       "lrPresent": 1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      },
+      "antacid": {
+       "lrPresent": 6,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "lipase": {
+       "lrPresent": 1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 1.1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      }
+     },
+     "aaa": {
+      "back": {
+       "lrPresent": 8,
+       "lrAbsent": 0.4,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "pulsatile": {
+       "lrPresent": 9,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 6,
+       "lrAbsent": 0.6,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      }
+     }
+    }
+   },
+   "hypothesisId": "pud",
+   "expected": {
+    "forFindings": [
+     {
+      "id": "antacid",
+      "lr": 6,
+      "documented": true,
+      "favours": null
+     }
+    ],
+    "against": [],
+    "missing": [],
+    "doesntFit": [
+     {
+      "id": "back",
+      "lr": 1,
+      "documented": true,
+      "favours": "Acute pancreatitis"
+     },
+     {
+      "id": "hypotension",
+      "lr": 1.1,
+      "documented": true,
+      "favours": "Ruptured AAA"
+     },
+     {
+      "id": "rash",
+      "lr": 1,
+      "documented": true,
+      "favours": null
+     }
+    ],
+    "lowEvidence": false,
+    "unexplained": [
+     "Rash"
+    ]
+   }
+  },
+  {
+   "name": "aaa",
+   "input": {
+    "hypotheses": [
+     {
+      "id": "panc",
+      "label": "Acute pancreatitis",
+      "probability": 0.45,
+      "cantMiss": false
+     },
+     {
+      "id": "pud",
+      "label": "Peptic ulcer",
+      "probability": 0.3,
+      "cantMiss": false
+     },
+     {
+      "id": "aaa",
+      "label": "Ruptured AAA",
+      "probability": 0.05,
+      "cantMiss": true
+     }
+    ],
+    "findings": [
+     {
+      "id": "back",
+      "label": "Radiation to back",
+      "status": "present"
+     },
+     {
+      "id": "antacid",
+      "label": "Relief with antacids",
+      "status": "present"
+     },
+     {
+      "id": "lipase",
+      "label": "Raised lipase",
+      "status": "absent"
+     },
+     {
+      "id": "pulsatile",
+      "label": "Pulsatile mass",
+      "status": "unknown"
+     },
+     {
+      "id": "rash",
+      "label": "Rash",
+      "status": "present"
+     },
+     {
+      "id": "fever",
+      "label": "Fever",
+      "status": "absent"
+     },
+     {
+      "id": "hypotension",
+      "label": "Hypotension",
+      "status": "present"
+     }
+    ],
+    "weights": {
+     "panc": {
+      "back": {
+       "lrPresent": 16.25,
+       "lrAbsent": 0.37,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "antacid": {
+       "lrPresent": 0.3,
+       "lrAbsent": 1.2,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      },
+      "lipase": {
+       "lrPresent": 18,
+       "lrAbsent": 0.1,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "fever": {
+       "lrPresent": 2.2,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 1.2,
+       "lrAbsent": 0.98,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      }
+     },
+     "pud": {
+      "back": {
+       "lrPresent": 1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      },
+      "antacid": {
+       "lrPresent": 6,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "lipase": {
+       "lrPresent": 1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 1.1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      }
+     },
+     "aaa": {
+      "back": {
+       "lrPresent": 8,
+       "lrAbsent": 0.4,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "pulsatile": {
+       "lrPresent": 9,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 6,
+       "lrAbsent": 0.6,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      }
+     }
+    }
+   },
+   "hypothesisId": "aaa",
+   "expected": {
+    "forFindings": [
+     {
+      "id": "back",
+      "lr": 8,
+      "documented": true,
+      "favours": "Acute pancreatitis"
+     },
+     {
+      "id": "hypotension",
+      "lr": 6,
+      "documented": true,
+      "favours": null
+     }
+    ],
+    "against": [],
+    "missing": [
+     {
+      "id": "pulsatile",
+      "lr": 0.5,
+      "documented": false,
+      "favours": null
+     }
+    ],
+    "doesntFit": [
+     {
+      "id": "antacid",
+      "lr": 1,
+      "documented": true,
+      "favours": "Peptic ulcer"
+     },
+     {
+      "id": "rash",
+      "lr": 1,
+      "documented": true,
+      "favours": null
+     }
+    ],
+    "lowEvidence": false,
+    "unexplained": [
+     "Rash"
+    ]
+   }
+  },
+  {
+   "name": "low-evidence",
+   "input": {
+    "hypotheses": [
+     {
+      "id": "x",
+      "label": "X",
+      "probability": 0.2,
+      "cantMiss": false
+     },
+     {
+      "id": "y",
+      "label": "Y",
+      "probability": 0.1,
+      "cantMiss": false
+     }
+    ],
+    "findings": [
+     {
+      "id": "a",
+      "label": "A",
+      "status": "present"
+     },
+     {
+      "id": "b",
+      "label": "B",
+      "status": "present"
+     }
+    ],
+    "weights": {
+     "x": {
+      "a": {
+       "lrPresent": 1.6,
+       "lrAbsent": 0.8,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      }
+     },
+     "y": {
+      "b": {
+       "lrPresent": 1.3,
+       "lrAbsent": 0.9,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      }
+     }
+    }
+   },
+   "hypothesisId": "x",
+   "expected": {
+    "forFindings": [
+     {
+      "id": "a",
+      "lr": 1.6,
+      "documented": true,
+      "favours": null
+     }
+    ],
+    "against": [],
+    "missing": [],
+    "doesntFit": [
+     {
+      "id": "b",
+      "lr": 1,
+      "documented": true,
+      "favours": null
+     }
+    ],
+    "lowEvidence": true,
+    "unexplained": [
+     "B"
+    ]
+   }
+  }
+ ],
+ "informationGain": [
+  {
+   "priors": [
+    0.5,
+    0.5
+   ],
+   "pPositive": [
+    0.9,
+    0.1
+   ],
+   "expected": 0.3680642071684971
+  },
+  {
+   "priors": [
+    0.73,
+    0.07,
+    0.0132
+   ],
+   "pPositive": [
+    0.9,
+    0.05,
+    0.05
+   ],
+   "expected": 0.16965865259325258
+  },
+  {
+   "priors": [
+    0.2,
+    0.3,
+    0.5
+   ],
+   "pPositive": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "expected": 0
+  },
+  {
+   "priors": [
+    1,
+    2,
+    1
+   ],
+   "pPositive": [
+    0.995,
+    0.005,
+    0.3
+   ],
+   "expected": 0.4551657039048631
+  }
+ ],
+ "postTest": [
+  {
+   "priors": [
+    0.3,
+    0.25
+   ],
+   "pPositive": [
+    0.9,
+    0.05
+   ],
+   "residualPPositive": 0.05,
+   "expected": {
+    "ifPositive": [
+     0.8852459016393441,
+     0.040983606557377046
+    ],
+    "ifNegative": [
+     0.04316546762589927,
+     0.34172661870503596
+    ]
+   }
+  },
+  {
+   "priors": [
+    0.6,
+    0.2,
+    0.1
+   ],
+   "pPositive": [
+    0.2,
+    0.8,
+    0.5
+   ],
+   "residualPPositive": 0.1,
+   "expected": {
+    "ifPositive": [
+     0.3529411764705882,
+     0.4705882352941177,
+     0.14705882352941177
+    ],
+    "ifNegative": [
+     0.7272727272727273,
+     0.0606060606060606,
+     0.07575757575757577
+    ]
+   }
+  }
+ ],
+ "probeCost": [
+  {
+   "kind": "history",
+   "text": "Alcohol use",
+   "expected": "ask"
+  },
+  {
+   "kind": "symptom",
+   "text": "CT abdomen",
+   "expected": "ask"
+  },
+  {
+   "kind": "sign",
+   "text": "Murphy's sign",
+   "expected": "bedside"
+  },
+  {
+   "kind": "investigation",
+   "text": "Elevated amylase / lipase",
+   "expected": "lab"
+  },
+  {
+   "kind": "investigation",
+   "text": "CT shows free gas",
+   "expected": "advanced"
+  },
+  {
+   "kind": "investigation",
+   "text": "Ultrasound: gallstones",
+   "expected": "imaging"
+  },
+  {
+   "kind": "investigation",
+   "text": "us gallstones Gallstones on ultrasound",
+   "expected": "imaging"
+  },
+  {
+   "kind": "investigation",
+   "text": "ST elevation on ECG",
+   "expected": "bedside"
+  },
+  {
+   "kind": "investigation",
+   "text": "Positive urine pregnancy test",
+   "expected": "bedside"
+  },
+  {
+   "kind": "investigation",
+   "text": "OGD findings",
+   "expected": "advanced"
+  },
+  {
+   "kind": "investigation",
+   "text": "Colonoscopy",
+   "expected": "advanced"
+  },
+  {
+   "kind": "investigation",
+   "text": "Blood cultures",
+   "expected": "lab"
+  },
+  {
+   "kind": "investigation",
+   "text": "Erect chest x-ray",
+   "expected": "imaging"
+  },
+  {
+   "kind": "investigation",
+   "text": "Fasting status",
+   "expected": "lab"
+  },
+  {
+   "kind": "investigation",
+   "text": "Ultrasound-guided biopsy",
+   "expected": "advanced"
+  },
+  {
+   "kind": "investigation",
+   "text": "Rectal examination",
+   "expected": "lab"
+  },
+  {
+   "kind": "investigation",
+   "text": "CTPA",
+   "expected": "advanced"
+  },
+  {
+   "kind": "investigation",
+   "text": "Capillary ketones",
+   "expected": "bedside"
+  }
+ ],
+ "rankDiscriminators": [
+  {
+   "candidates": [
+    {
+     "id": "lipase",
+     "label": "Lipase",
+     "kind": "investigation",
+     "cost": "lab",
+     "gain": 0.19
+    },
+    {
+     "id": "ct",
+     "label": "CT abdomen",
+     "kind": "investigation",
+     "cost": "advanced",
+     "gain": 0.4
+    },
+    {
+     "id": "back",
+     "label": "Radiation to back",
+     "kind": "symptom",
+     "cost": "ask",
+     "gain": 0.15
+    },
+    {
+     "id": "us",
+     "label": "Ultrasound",
+     "kind": "investigation",
+     "cost": "imaging",
+     "gain": 0.25
+    },
+    {
+     "id": "tiny",
+     "label": "Tiny",
+     "kind": "symptom",
+     "cost": "ask",
+     "gain": 0.005
+    },
+    {
+     "id": "murphy",
+     "label": "Murphy's sign",
+     "kind": "sign",
+     "cost": "bedside",
+     "gain": 0.15
+    }
+   ],
+   "cantMissInTop": false,
+   "limit": 3,
+   "expected": [
+    "lipase",
+    "us",
+    "back"
+   ]
+  },
+  {
+   "candidates": [
+    {
+     "id": "lipase",
+     "label": "Lipase",
+     "kind": "investigation",
+     "cost": "lab",
+     "gain": 0.19
+    },
+    {
+     "id": "ct",
+     "label": "CT abdomen",
+     "kind": "investigation",
+     "cost": "advanced",
+     "gain": 0.4
+    },
+    {
+     "id": "back",
+     "label": "Radiation to back",
+     "kind": "symptom",
+     "cost": "ask",
+     "gain": 0.15
+    },
+    {
+     "id": "us",
+     "label": "Ultrasound",
+     "kind": "investigation",
+     "cost": "imaging",
+     "gain": 0.25
+    },
+    {
+     "id": "tiny",
+     "label": "Tiny",
+     "kind": "symptom",
+     "cost": "ask",
+     "gain": 0.005
+    },
+    {
+     "id": "murphy",
+     "label": "Murphy's sign",
+     "kind": "sign",
+     "cost": "bedside",
+     "gain": 0.15
+    }
+   ],
+   "cantMissInTop": true,
+   "limit": 3,
+   "expected": [
+    "lipase",
+    "us",
+    "back"
+   ]
+  },
+  {
+   "candidates": [
+    {
+     "id": "lipase",
+     "label": "Lipase",
+     "kind": "investigation",
+     "cost": "lab",
+     "gain": 0.19
+    },
+    {
+     "id": "ct",
+     "label": "CT abdomen",
+     "kind": "investigation",
+     "cost": "advanced",
+     "gain": 0.4
+    },
+    {
+     "id": "back",
+     "label": "Radiation to back",
+     "kind": "symptom",
+     "cost": "ask",
+     "gain": 0.15
+    },
+    {
+     "id": "us",
+     "label": "Ultrasound",
+     "kind": "investigation",
+     "cost": "imaging",
+     "gain": 0.25
+    },
+    {
+     "id": "tiny",
+     "label": "Tiny",
+     "kind": "symptom",
+     "cost": "ask",
+     "gain": 0.005
+    },
+    {
+     "id": "murphy",
+     "label": "Murphy's sign",
+     "kind": "sign",
+     "cost": "bedside",
+     "gain": 0.15
+    }
+   ],
+   "cantMissInTop": true,
+   "limit": 10,
+   "expected": [
+    "lipase",
+    "us",
+    "back",
+    "murphy",
+    "ct"
+   ]
+  }
+ ],
+ "discriminatorWhy": [
+  {
+   "kind": "investigation",
+   "lines": [
+    {
+     "label": "Acute pancreatitis",
+     "before": 0.3,
+     "ifPositive": 0.8,
+     "ifNegative": 0.05
+    },
+    {
+     "label": "Peptic ulcer",
+     "before": 0.25,
+     "ifPositive": 0.06,
+     "ifNegative": 0.35
+    },
+    {
+     "label": "Gastritis",
+     "before": 0.1,
+     "ifPositive": 0.02,
+     "ifNegative": 0.14
+    }
+   ],
+   "expected": "If positive: Acute pancreatitis 30% → 80%, Peptic ulcer 25% → 6%. If negative: Acute pancreatitis → 5%."
+  },
+  {
+   "kind": "symptom",
+   "lines": [
+    {
+     "label": "A",
+     "before": 0.5,
+     "ifPositive": 0.9996,
+     "ifNegative": 0.001
+    },
+    {
+     "label": "B",
+     "before": 0.004,
+     "ifPositive": 0.004,
+     "ifNegative": 0.004
+    }
+   ],
+   "expected": "If present: A 50% → >99%. If absent: A → <1%."
+  },
+  {
+   "kind": "sign",
+   "lines": [
+    {
+     "label": "Only",
+     "before": 0.4,
+     "ifPositive": 0.6,
+     "ifNegative": 0.2
+    }
+   ],
+   "expected": "If present: Only 40% → 60%. If absent: Only → 20%."
+  }
+ ],
+ "formatLr": [
+  {
+   "lr": 0.125,
+   "expected": "0.13"
+  },
+  {
+   "lr": 0.5,
+   "expected": "0.50"
+  },
+  {
+   "lr": 0.666,
+   "expected": "0.67"
+  },
+  {
+   "lr": 1,
+   "expected": "1.0"
+  },
+  {
+   "lr": 1.25,
+   "expected": "1.3"
+  },
+  {
+   "lr": 3.45,
+   "expected": "3.5"
+  },
+  {
+   "lr": 9.96,
+   "expected": "10.0"
+  },
+  {
+   "lr": 10,
+   "expected": "10"
+  },
+  {
+   "lr": 16.25,
+   "expected": "16"
+  },
+  {
+   "lr": 120.5,
+   "expected": "121"
+  }
+ ],
+ "fmtPct": [
+  {
+   "p": 0,
+   "expected": "<1%"
+  },
+  {
+   "p": 0.004,
+   "expected": "<1%"
+  },
+  {
+   "p": 0.005,
+   "expected": "1%"
+  },
+  {
+   "p": 0.125,
+   "expected": "13%"
+  },
+  {
+   "p": 0.5,
+   "expected": "50%"
+  },
+  {
+   "p": 0.994,
+   "expected": "99%"
+  },
+  {
+   "p": 0.995,
+   "expected": ">99%"
+  },
+  {
+   "p": 1,
+   "expected": ">99%"
+  }
+ ],
+ "closure": [
+  {
+   "name": "pud-working",
+   "input": {
+    "hypotheses": [
+     {
+      "id": "panc",
+      "label": "Acute pancreatitis",
+      "probability": 0.62,
+      "cantMiss": false
+     },
+     {
+      "id": "aaa",
+      "label": "Ruptured AAA",
+      "probability": 0.1,
+      "cantMiss": true
+     },
+     {
+      "id": "pud",
+      "label": "Peptic ulcer",
+      "probability": 0.08,
+      "cantMiss": false
+     }
+    ],
+    "findings": [
+     {
+      "id": "back",
+      "label": "Radiation to back",
+      "status": "present"
+     },
+     {
+      "id": "antacid",
+      "label": "Relief with antacids",
+      "status": "present"
+     },
+     {
+      "id": "lipase",
+      "label": "Raised lipase",
+      "status": "absent"
+     },
+     {
+      "id": "pulsatile",
+      "label": "Pulsatile mass",
+      "status": "unknown"
+     },
+     {
+      "id": "rash",
+      "label": "Rash",
+      "status": "present"
+     },
+     {
+      "id": "fever",
+      "label": "Fever",
+      "status": "absent"
+     },
+     {
+      "id": "hypotension",
+      "label": "Hypotension",
+      "status": "present"
+     }
+    ],
+    "weights": {
+     "panc": {
+      "back": {
+       "lrPresent": 16.25,
+       "lrAbsent": 0.37,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "antacid": {
+       "lrPresent": 0.3,
+       "lrAbsent": 1.2,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      },
+      "lipase": {
+       "lrPresent": 18,
+       "lrAbsent": 0.1,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "fever": {
+       "lrPresent": 2.2,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 1.2,
+       "lrAbsent": 0.98,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      }
+     },
+     "pud": {
+      "back": {
+       "lrPresent": 1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      },
+      "antacid": {
+       "lrPresent": 6,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "lipase": {
+       "lrPresent": 1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 1.1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      }
+     },
+     "aaa": {
+      "back": {
+       "lrPresent": 8,
+       "lrAbsent": 0.4,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "pulsatile": {
+       "lrPresent": 9,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 6,
+       "lrAbsent": 0.6,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      }
+     }
+    }
+   },
+   "workingId": "pud",
+   "workingLabel": "Peptic ulcer",
+   "news2Series": [
+    1,
+    2,
+    5
+   ],
+   "expected": [
+    {
+     "key": "unexplained-finding:back",
+     "kind": "unexplained-finding",
+     "text": "Doesn't fit the working diagnosis: Radiation to back is not explained by Peptic ulcer — favours Acute pancreatitis (LR 16)."
+    },
+    {
+     "key": "unexplained-finding:hypotension",
+     "kind": "unexplained-finding",
+     "text": "Doesn't fit the working diagnosis: Hypotension is not explained by Peptic ulcer — favours Ruptured AAA (LR 6.0)."
+    },
+    {
+     "key": "less-likely:panc",
+     "kind": "less-likely",
+     "text": "The record now favours Acute pancreatitis (62%) over Peptic ulcer (8%)."
+    },
+    {
+     "key": "news2-rising:1-5",
+     "kind": "news2-rising",
+     "text": "NEWS2 rising (1 → 5): is Peptic ulcer still the whole story? Consider Ruptured AAA."
+    }
+   ]
+  },
+  {
+   "name": "panc-working",
+   "input": {
+    "hypotheses": [
+     {
+      "id": "panc",
+      "label": "Acute pancreatitis",
+      "probability": 0.62,
+      "cantMiss": false
+     },
+     {
+      "id": "aaa",
+      "label": "Ruptured AAA",
+      "probability": 0.1,
+      "cantMiss": true
+     },
+     {
+      "id": "pud",
+      "label": "Peptic ulcer",
+      "probability": 0.08,
+      "cantMiss": false
+     }
+    ],
+    "findings": [
+     {
+      "id": "back",
+      "label": "Radiation to back",
+      "status": "present"
+     },
+     {
+      "id": "antacid",
+      "label": "Relief with antacids",
+      "status": "present"
+     },
+     {
+      "id": "lipase",
+      "label": "Raised lipase",
+      "status": "absent"
+     },
+     {
+      "id": "pulsatile",
+      "label": "Pulsatile mass",
+      "status": "unknown"
+     },
+     {
+      "id": "rash",
+      "label": "Rash",
+      "status": "present"
+     },
+     {
+      "id": "fever",
+      "label": "Fever",
+      "status": "absent"
+     },
+     {
+      "id": "hypotension",
+      "label": "Hypotension",
+      "status": "present"
+     }
+    ],
+    "weights": {
+     "panc": {
+      "back": {
+       "lrPresent": 16.25,
+       "lrAbsent": 0.37,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "antacid": {
+       "lrPresent": 0.3,
+       "lrAbsent": 1.2,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      },
+      "lipase": {
+       "lrPresent": 18,
+       "lrAbsent": 0.1,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "fever": {
+       "lrPresent": 2.2,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 1.2,
+       "lrAbsent": 0.98,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      }
+     },
+     "pud": {
+      "back": {
+       "lrPresent": 1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      },
+      "antacid": {
+       "lrPresent": 6,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "lipase": {
+       "lrPresent": 1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 1.1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      }
+     },
+     "aaa": {
+      "back": {
+       "lrPresent": 8,
+       "lrAbsent": 0.4,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "pulsatile": {
+       "lrPresent": 9,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 6,
+       "lrAbsent": 0.6,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      }
+     }
+    }
+   },
+   "workingId": "panc",
+   "workingLabel": "Acute pancreatitis",
+   "news2Series": [
+    3,
+    4
+   ],
+   "expected": [
+    {
+     "key": "contradicting-finding:antacid",
+     "kind": "contradicting-finding",
+     "text": "Doesn't fit the working diagnosis: Relief with antacids argues against Acute pancreatitis (LR 0.30) — favours Peptic ulcer."
+    },
+    {
+     "key": "contradicting-finding:fever",
+     "kind": "contradicting-finding",
+     "text": "Doesn't fit the working diagnosis: no fever argues against Acute pancreatitis (LR 0.50)."
+    },
+    {
+     "key": "contradicting-finding:lipase",
+     "kind": "contradicting-finding",
+     "text": "Doesn't fit the working diagnosis: no raised lipase, expected in Acute pancreatitis (LR 0.10)."
+    },
+    {
+     "key": "unexplained-finding:hypotension",
+     "kind": "unexplained-finding",
+     "text": "Doesn't fit the working diagnosis: Hypotension is not explained by Acute pancreatitis — favours Ruptured AAA (LR 6.0)."
+    }
+   ]
+  },
+  {
+   "name": "unmodelled-working",
+   "input": {
+    "hypotheses": [
+     {
+      "id": "panc",
+      "label": "Acute pancreatitis",
+      "probability": 0.62,
+      "cantMiss": false
+     },
+     {
+      "id": "aaa",
+      "label": "Ruptured AAA",
+      "probability": 0.1,
+      "cantMiss": true
+     },
+     {
+      "id": "pud",
+      "label": "Peptic ulcer",
+      "probability": 0.08,
+      "cantMiss": false
+     }
+    ],
+    "findings": [
+     {
+      "id": "back",
+      "label": "Radiation to back",
+      "status": "present"
+     },
+     {
+      "id": "antacid",
+      "label": "Relief with antacids",
+      "status": "present"
+     },
+     {
+      "id": "lipase",
+      "label": "Raised lipase",
+      "status": "absent"
+     },
+     {
+      "id": "pulsatile",
+      "label": "Pulsatile mass",
+      "status": "unknown"
+     },
+     {
+      "id": "rash",
+      "label": "Rash",
+      "status": "present"
+     },
+     {
+      "id": "fever",
+      "label": "Fever",
+      "status": "absent"
+     },
+     {
+      "id": "hypotension",
+      "label": "Hypotension",
+      "status": "present"
+     }
+    ],
+    "weights": {
+     "panc": {
+      "back": {
+       "lrPresent": 16.25,
+       "lrAbsent": 0.37,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "antacid": {
+       "lrPresent": 0.3,
+       "lrAbsent": 1.2,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      },
+      "lipase": {
+       "lrPresent": 18,
+       "lrAbsent": 0.1,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "fever": {
+       "lrPresent": 2.2,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 1.2,
+       "lrAbsent": 0.98,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      }
+     },
+     "pud": {
+      "back": {
+       "lrPresent": 1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      },
+      "antacid": {
+       "lrPresent": 6,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "lipase": {
+       "lrPresent": 1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 1.1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      }
+     },
+     "aaa": {
+      "back": {
+       "lrPresent": 8,
+       "lrAbsent": 0.4,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "pulsatile": {
+       "lrPresent": 9,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 6,
+       "lrAbsent": 0.6,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      }
+     }
+    }
+   },
+   "workingId": null,
+   "workingLabel": "Irritable bowel syndrome",
+   "news2Series": [
+    0,
+    3
+   ],
+   "expected": [
+    {
+     "key": "news2-rising:0-3",
+     "kind": "news2-rising",
+     "text": "NEWS2 rising (0 → 3): is Irritable bowel syndrome still the whole story? Consider Ruptured AAA."
+    }
+   ]
+  },
+  {
+   "name": "no-working",
+   "input": {
+    "hypotheses": [
+     {
+      "id": "panc",
+      "label": "Acute pancreatitis",
+      "probability": 0.62,
+      "cantMiss": false
+     },
+     {
+      "id": "aaa",
+      "label": "Ruptured AAA",
+      "probability": 0.1,
+      "cantMiss": true
+     },
+     {
+      "id": "pud",
+      "label": "Peptic ulcer",
+      "probability": 0.08,
+      "cantMiss": false
+     }
+    ],
+    "findings": [
+     {
+      "id": "back",
+      "label": "Radiation to back",
+      "status": "present"
+     },
+     {
+      "id": "antacid",
+      "label": "Relief with antacids",
+      "status": "present"
+     },
+     {
+      "id": "lipase",
+      "label": "Raised lipase",
+      "status": "absent"
+     },
+     {
+      "id": "pulsatile",
+      "label": "Pulsatile mass",
+      "status": "unknown"
+     },
+     {
+      "id": "rash",
+      "label": "Rash",
+      "status": "present"
+     },
+     {
+      "id": "fever",
+      "label": "Fever",
+      "status": "absent"
+     },
+     {
+      "id": "hypotension",
+      "label": "Hypotension",
+      "status": "present"
+     }
+    ],
+    "weights": {
+     "panc": {
+      "back": {
+       "lrPresent": 16.25,
+       "lrAbsent": 0.37,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "antacid": {
+       "lrPresent": 0.3,
+       "lrAbsent": 1.2,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      },
+      "lipase": {
+       "lrPresent": 18,
+       "lrAbsent": 0.1,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "fever": {
+       "lrPresent": 2.2,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 1.2,
+       "lrAbsent": 0.98,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      }
+     },
+     "pud": {
+      "back": {
+       "lrPresent": 1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      },
+      "antacid": {
+       "lrPresent": 6,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "lipase": {
+       "lrPresent": 1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 1.1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      }
+     },
+     "aaa": {
+      "back": {
+       "lrPresent": 8,
+       "lrAbsent": 0.4,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "pulsatile": {
+       "lrPresent": 9,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 6,
+       "lrAbsent": 0.6,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      }
+     }
+    }
+   },
+   "workingId": null,
+   "workingLabel": " ",
+   "news2Series": [
+    0,
+    6
+   ],
+   "expected": []
+  }
+ ],
+ "timeOut": [
+  {
+   "input": {
+    "unexplainedFindings": [
+     "Rash",
+     "Hypotension",
+     "Haematuria",
+     "Weight loss"
+    ],
+    "priorVisitsSameComplaint": 0,
+    "priorDiagnosesSameComplaint": []
+   },
+   "expected": {
+    "suggested": true,
+    "reasons": [
+     "4 recorded findings are not explained by the leading diagnoses (Rash, Hypotension, Haematuria)."
+    ],
+    "checklist": [
+     "What is the worst thing this could be, and has it been excluded?",
+     "Does every recorded finding fit the working diagnosis? Name the ones that don't.",
+     "What was assumed rather than confirmed (referral label, earlier diagnosis, first impression)?",
+     "Could there be two conditions rather than one?",
+     "What result would change my mind, and has it been looked for?",
+     "Would a colleague seeing this afresh agree?"
+    ]
+   }
+  },
+  {
+   "input": {
+    "unexplainedFindings": [
+     "Rash"
+    ],
+    "priorVisitsSameComplaint": 1,
+    "priorDiagnosesSameComplaint": [
+     ""
+    ]
+   },
+   "expected": {
+    "suggested": true,
+    "reasons": [
+     "Visit 2 for the same complaint without a diagnosis recorded before."
+    ],
+    "checklist": [
+     "What is the worst thing this could be, and has it been excluded?",
+     "Does every recorded finding fit the working diagnosis? Name the ones that don't.",
+     "What was assumed rather than confirmed (referral label, earlier diagnosis, first impression)?",
+     "Could there be two conditions rather than one?",
+     "What result would change my mind, and has it been looked for?",
+     "Would a colleague seeing this afresh agree?"
+    ]
+   }
+  },
+  {
+   "input": {
+    "unexplainedFindings": [],
+    "priorVisitsSameComplaint": 2,
+    "priorDiagnosesSameComplaint": [
+     "Gastritis",
+     "gastritis",
+     "Biliary colic"
+    ]
+   },
+   "expected": {
+    "suggested": true,
+    "reasons": [
+     "Visit 3 for the same complaint with changing diagnoses (Gastritis, Biliary colic)."
+    ],
+    "checklist": [
+     "What is the worst thing this could be, and has it been excluded?",
+     "Does every recorded finding fit the working diagnosis? Name the ones that don't.",
+     "What was assumed rather than confirmed (referral label, earlier diagnosis, first impression)?",
+     "Could there be two conditions rather than one?",
+     "What result would change my mind, and has it been looked for?",
+     "Would a colleague seeing this afresh agree?"
+    ]
+   }
+  },
+  {
+   "input": {
+    "unexplainedFindings": [],
+    "priorVisitsSameComplaint": 1,
+    "priorDiagnosesSameComplaint": [
+     "Inguinal hernia"
+    ]
+   },
+   "expected": {
+    "suggested": false,
+    "reasons": [],
+    "checklist": []
+   }
+  }
+ ],
+ "zebras": [
+  {
+   "text": "Food stuck on swallowing, dysphagia for years. Asthma and eczema.",
+   "expected": [
+    {
+     "id": "eosinophilic-oesophagitis",
+     "matched": [
+      "dysphagia",
+      "asthma"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Dysphagia. No asthma, no eczema, no atopy.",
+   "expected": []
+  },
+  {
+   "text": "Anaemia. Wrist drop and peripheral neuropathy. Colicky abdominal pain.",
+   "expected": [
+    {
+     "id": "lead-poisoning",
+     "matched": [
+      "anaemia",
+      "neuropathy",
+      "abdominal pain"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Hypercalcaemia. Renal colic last year, bone pain and low mood.",
+   "expected": [
+    {
+     "id": "primary-hyperparathyroidism",
+     "matched": [
+      "hypercalcaemia",
+      "renal colic",
+      "bone pain",
+      "low mood"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Hypercalcaemia with bone pain only.",
+   "expected": []
+  },
+  {
+   "text": "Hypertension on amlodipine. Hypokalaemia 2.9.",
+   "expected": [
+    {
+     "id": "primary-aldosteronism",
+     "matched": [
+      "hypertension",
+      "hypokalaemia"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Episodic headaches with sweating and palpitations. BP 210/120, hypertensive.",
+   "expected": [
+    {
+     "id": "phaeochromocytoma",
+     "matched": [
+      "headache",
+      "sweat",
+      "palpitation",
+      "hypertensive"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Episodic headache and sweating.",
+   "expected": []
+  },
+  {
+   "text": "Recurrent acute pancreatitis. No gallstones on ultrasound. Denies alcohol excess.",
+   "expected": [
+    {
+     "id": "hypertriglyceridaemia-pancreatitis",
+     "matched": [
+      "recurrent acute pancreatitis"
+     ]
+    },
+    {
+     "id": "autoimmune-pancreatitis",
+     "matched": [
+      "recurrent acute pancreatitis"
+     ]
+    },
+    {
+     "id": "ipmn",
+     "matched": [
+      "recurrent acute pancreatitis"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Recurrent pancreatitis. Gallstones on ultrasound.",
+   "expected": []
+  },
+  {
+   "text": "Melaena. Open AAA repair 2019 with aortic graft.",
+   "expected": [
+    {
+     "id": "aorto-enteric-fistula",
+     "matched": [
+      "melaena",
+      "aortic graft"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Jaundice and raised ALT. Takes bush tea and moringa daily.",
+   "expected": [
+    {
+     "id": "herb-induced-liver-injury",
+     "matched": [
+      "raised alt",
+      "bush tea"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Raised ALT. On supplemental oxygen.",
+   "expected": []
+  },
+  {
+   "text": "Recurrent abdominal pain, weakness of the legs, confusion. Dark urine.",
+   "expected": [
+    {
+     "id": "acute-intermittent-porphyria",
+     "matched": [
+      "abdominal pain",
+      "weakness",
+      "confusion",
+      "dark urine"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Low sodium, postural hypotension, vomiting and weight loss.",
+   "expected": [
+    {
+     "id": "primary-adrenal-insufficiency",
+     "matched": [
+      "low sodium",
+      "hypotension",
+      "vomiting"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Abdominal pain attacks with lip swelling. No urticaria.",
+   "expected": [
+    {
+     "id": "hereditary-angioedema",
+     "matched": [
+      "abdominal pain",
+      "lip swelling"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Abdominal pain with lip swelling and hives.",
+   "expected": []
+  },
+  {
+   "text": "Flushing and diarrhoea for months, wheeze.",
+   "expected": [
+    {
+     "id": "carcinoid-syndrome",
+     "matched": [
+      "flush",
+      "diarrhoea"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Recurrent duodenal ulcer despite PPI, diarrhoea.",
+   "expected": [
+    {
+     "id": "zollinger-ellison",
+     "matched": [
+      "recurrent duodenal ulcer",
+      "diarrhoea"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Ascites, hepatomegaly, on the oral contraceptive pill.",
+   "expected": [
+    {
+     "id": "budd-chiari",
+     "matched": [
+      "ascites",
+      "hepatomegaly",
+      "oral contraceptive"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "",
+   "expected": []
+  }
+ ],
+ "derivedLabTerms": [
+  {
+   "labs": [
+    {
+     "name": "Haemoglobin",
+     "value": 8.2
+    },
+    {
+     "name": "Calcium (adjusted)",
+     "value": 2.9
+    },
+    {
+     "name": "Potassium",
+     "value": 3.1
+    }
+   ],
+   "expected": [
+    "anaemia",
+    "hypercalcaemia",
+    "hypokalaemia"
+   ]
+  },
+  {
+   "labs": [
+    {
+     "name": "Hb",
+     "value": 95
+    },
+    {
+     "name": "HbA1c",
+     "value": 60
+    },
+    {
+     "name": "Sodium",
+     "value": 126
+    },
+    {
+     "name": "Urine Na",
+     "value": 10
+    }
+   ],
+   "expected": [
+    "anaemia",
+    "hyponatraemia"
+   ]
+  },
+  {
+   "labs": [
+    {
+     "name": "Eosinophils",
+     "value": 0.9
+    },
+    {
+     "name": "ALT",
+     "value": 250
+    },
+    {
+     "name": "Bilirubin",
+     "value": 45
+    },
+    {
+     "name": "Vitamin K",
+     "value": 0.1
+    }
+   ],
+   "expected": [
+    "eosinophilia",
+    "raised transaminases",
+    "raised bilirubin"
+   ]
+  },
+  {
+   "labs": [
+    {
+     "name": "Triglycerides",
+     "value": 1400
+    },
+    {
+     "name": "K",
+     "value": 6.4
+    },
+    {
+     "name": "Calcium",
+     "value": 11.2
+    },
+    {
+     "name": "Eos",
+     "value": 700
+    }
+   ],
+   "expected": [
+    "hypercalcaemia",
+    "hyperkalaemia",
+    "eosinophilia",
+    "hypertriglyceridaemia"
+   ]
+  },
+  {
+   "labs": [
+    {
+     "name": "Haemoglobin",
+     "value": 13.5
+    },
+    {
+     "name": "Albumin/creatinine ratio",
+     "value": 3
+    },
+    {
+     "name": "Bilirubin",
+     "value": 1.8
+    }
+   ],
+   "expected": [
+    "raised bilirubin"
+   ]
+  }
+ ],
+ "longitudinal": [
+  {
+   "input": {
+    "visits": [
+     {
+      "date": "2026-01-10",
+      "complaint": "Epigastric pain",
+      "diagnosis": "Gastritis"
+     },
+     {
+      "date": "2026-03-02",
+      "complaint": "Upper abdominal pain again",
+      "diagnosis": "Biliary colic"
+     },
+     {
+      "date": "2026-06-20T10:00:00Z",
+      "complaint": "Abdominal pain after meals",
+      "diagnosis": "Acute cholecystitis"
+     },
+     {
+      "date": "2026-05-01",
+      "complaint": "Groin lump",
+      "diagnosis": "Inguinal hernia"
+     }
+    ],
+    "creatinine": [
+     {
+      "date": "2026-01-10",
+      "value": 80
+     },
+     {
+      "date": "2026-03-02",
+      "value": 95
+     },
+     {
+      "date": "2026-06-20",
+      "value": 130
+     }
+    ],
+    "haemoglobin": [
+     {
+      "date": "2026-01-10",
+      "value": 13.1
+     },
+     {
+      "date": "2026-06-20",
+      "value": 10.4
+     }
+    ],
+    "weight": [
+     {
+      "date": "2025-10-01",
+      "value": 90
+     },
+     {
+      "date": "2026-01-10",
+      "value": 80
+     },
+     {
+      "date": "2026-06-20",
+      "value": 75.5
+     }
+    ]
+   },
+   "expected": {
+    "recurring": [
+     {
+      "problem": "Epigastric pain",
+      "count": 3,
+      "dates": [
+       "2026-01-10",
+       "2026-03-02",
+       "2026-06-20"
+      ]
+     }
+    ],
+    "trends": [
+     {
+      "analyte": "creatinine",
+      "from": 80,
+      "to": 130,
+      "fromDate": "2026-01-10",
+      "toDate": "2026-06-20",
+      "text": "Creatinine rising: 80 → 130 µmol/L (2026-01-10 → 2026-06-20)."
+     },
+     {
+      "analyte": "haemoglobin",
+      "from": 131,
+      "to": 104,
+      "fromDate": "2026-01-10",
+      "toDate": "2026-06-20",
+      "text": "Haemoglobin falling: 13.1 → 10.4 g/dL (2026-01-10 → 2026-06-20)."
+     },
+     {
+      "analyte": "weight",
+      "from": 80,
+      "to": 75.5,
+      "fromDate": "2026-01-10",
+      "toDate": "2026-06-20",
+      "text": "Weight loss 6%: 80 → 75.5 kg over 161 days."
+     }
+    ],
+    "unheld": [
+     {
+      "diagnosis": "Gastritis",
+      "date": "2026-01-10",
+      "replacedBy": "Biliary colic",
+      "replacedOn": "2026-03-02"
+     },
+     {
+      "diagnosis": "Biliary colic",
+      "date": "2026-03-02",
+      "replacedBy": "Acute cholecystitis",
+      "replacedOn": "2026-06-20"
+     }
+    ]
+   }
+  },
+  {
+   "input": {
+    "visits": [
+     {
+      "date": "2026-02-01",
+      "complaint": "Groin lump",
+      "diagnosis": null
+     }
+    ],
+    "creatinine": [
+     {
+      "date": "2026-01-01",
+      "value": 1
+     },
+     {
+      "date": "2026-02-01",
+      "value": 1.6
+     }
+    ],
+    "haemoglobin": [
+     {
+      "date": "2026-01-01",
+      "value": 120
+     },
+     {
+      "date": "2026-02-01",
+      "value": 110
+     }
+    ],
+    "weight": [
+     {
+      "date": "2026-01-01",
+      "value": 70
+     }
+    ]
+   },
+   "expected": {
+    "recurring": [],
+    "trends": [
+     {
+      "analyte": "creatinine",
+      "from": 88.4,
+      "to": 141.44000000000003,
+      "fromDate": "2026-01-01",
+      "toDate": "2026-02-01",
+      "text": "Creatinine rising: 88 → 141 µmol/L (2026-01-01 → 2026-02-01)."
+     }
+    ],
+    "unheld": []
+   }
+  }
+ ]
+}

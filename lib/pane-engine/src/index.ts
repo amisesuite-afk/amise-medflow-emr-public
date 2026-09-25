@@ -7,7 +7,7 @@ export {
 export { initPaneState, updatePosterior } from './engine/bayes.js';
 export { featureLikelihood, baseRate, UMBRELLA_FEATURES } from './engine/likelihood.js';
 export {
-  nextBestQuestion, isConverged, topDiagnoses, exportSummary,
+  nextBestQuestion, informationGain, isConverged, topDiagnoses, exportSummary,
   applyModifiers, PRIOR_MODIFIERS, SURGICAL_OPD_MODIFIERS, PREGNANCY_POSSIBLE_MULTIPLIER, isApplicable,
 } from './engine/infoGain.js';
 export type { PriorModifier } from './engine/infoGain.js';

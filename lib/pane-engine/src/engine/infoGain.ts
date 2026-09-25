@@ -19,7 +19,12 @@ function marginalPresent(state: PaneState, diseases: DiseaseNode[], featureId: s
   }, 0);
 }
 
-function informationGain(
+/**
+ * Expected entropy reduction (nats) from observing `featureId`, over the diseases in `state`.
+ * Exported for the diagnostic-reasoning layer (best next discriminator between the leading
+ * diagnoses: call it with a state that holds only those diagnoses).
+ */
+export function informationGain(
   state: PaneState,
   diseases: DiseaseNode[],
   featureId: string,
