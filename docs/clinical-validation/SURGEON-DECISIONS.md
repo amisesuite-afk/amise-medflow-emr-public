@@ -163,6 +163,8 @@ approved. Reply with the file and item numbers you approve (for example "fix-web
 | [fix-ios-differential](changes/fix-ios-differential.md#needs-sign-off) | iOS differential (DiagnosticDatabase 2.0.0) | Using the database at all; priors, weight caps, 121 curated candidates, every citation |
 | [fix-web-protocols](changes/fix-web-protocols.md#needs-sign-off) | Web plans and protocols, patient filter | SGLT2 withholding period, P2Y12 stop times and stent windows, burns fluids, `resolveProtocol`, protocols with uncertain sources, frailty trigger |
 | [ios-screening-parity](changes/ios-screening-parity.md#needs-sign-off) | iOS screening, NG12 suspected-cancer card, TIA scores | Web rule sets applied to iOS, PSA from 45 for African-Caribbean ancestry, BRCA surveillance ages, NG12 thresholds, removing ABCD² for TIA (13 items) |
+| [supplements-interactions](changes/supplements-interactions.md#needs-sign-off) | Herbs, bush teas and supplements (web + iOS) | Grades of 41 herb–drug rules, lab thresholds for the "ask about" prompts, candidate Caribbean bush teas, emergency-surgery wording, vitamin E / fish oil, local brand names |
+| [lifestyle-practices](changes/lifestyle-practices.md#needs-sign-off) | Fasting, complementary therapies, sleep (web + iOS) | Evidence grade labels (IV vitamin drips: Mixed or No benefit?), trigger conditions, age ≥ 65 / sleep < 6 h / BMI ≥ 30, fasting-prompt scope, three draft health-library articles, IDF-DAR citation |
 
 Decided so far:
 
