@@ -12,17 +12,18 @@
  *   - a known rule-set file (KNOWN_RULE_SET_FILES below, taken from the inventory) is not
  *     covered by any registry entry, or a known pattern no longer matches any file;
  *   - an entry's versionStamp does not read the entry's contentVersion from its file (for
- *     example DiagnosticDatabase.json "version" or RULES_VERSION in rules.ts).
+ *     example DiagnosticDatabase.json "version" or RULES_VERSION in rules.ts);
+ *   - DiagnosticDatabase.json would not decode with the iOS engine's Codable structs (the iOS
+ *     differential would then silently use its built-in fallback lists), or breaks a 2.0.0
+ *     content rule (presentations / supersedes naming unknown candidates, a curated feature
+ *     without a citation or whose logLR disagrees with its likelihood ratio). Checks:
+ *     diagnostic-database-schema.ts.
  *
  * WARNS (never fails) with a review-due list when:
  *   - lastReviewed is "unknown" (no documented clinical review), or nextReviewDue is "unknown"
  *     or has passed (today in America/St_Lucia; override with REGISTRY_TODAY=YYYY-MM-DD);
  *   - a file that looks like clinical content (ADVISORY_SCAN below) is neither registered nor
- *     listed under "excluded" with a reason;
- *   - DiagnosticDatabase.json would not decode with the iOS engine's Codable structs
- *     (BayesianDiagnosisEngine+Database.swift). When that happens the iOS differential silently
- *     uses its built-in fallback lists. This is a warning until the surgeon signs off the fix
- *     (a clinical content change); then make it a failure.
+ *     listed under "excluded" with a reason.
  *
  * Health-information library (artifacts/front-desk/content/health-info.ts, per-article review
  * metadata; checks in content/health-info-governance.ts, also run by the front-desk vitest):
@@ -39,6 +40,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { HEALTH_ARTICLES } from '../../artifacts/front-desk/content/health-info';
 import { auditHealthLibrary } from '../../artifacts/front-desk/content/health-info-governance';
+import { contentProblems, decodeProblems } from './diagnostic-database-schema';
 
 const REPO_ROOT = join(fileURLToPath(import.meta.url), '..', '..', '..');
 const REGISTRY_FILE = 'clinical-content/registry.json';
@@ -324,70 +326,29 @@ function readStamp(stamp: VersionStamp): string | null {
 }
 
 // ── 3. DiagnosticDatabase.json vs the iOS Codable structs ─────────────────────────────────
-// Mirrors BayesianDiagnosisEngine.CandidateDatabase / PoolSpec / CandidateSpec / FeatureSpec /
-// MatrixSpec (BayesianDiagnosisEngine+Database.swift). Swift's JSONDecoder rejects the whole
-// file on the first mismatch, and the engine's `try?` turns that into "no database".
+// Swift's JSONDecoder rejects the whole file on the first mismatch, and the engine's `try?`
+// turns that into "no database" (fallback lists). The mirror of the structs and the 2.0.0
+// content rules live in diagnostic-database-schema.ts (unit-tested there).
 
 const DIAGNOSTIC_DB = 'ios/AmiseMedFlow/Resources/DiagnosticDatabase.json';
 
 function checkDiagnosticDatabaseDecodes(): void {
   const abs = join(REPO_ROOT, DIAGNOSTIC_DB);
   if (!existsSync(abs)) return; // the registry file check reports it
+  const raw = readFileSync(abs, 'utf8');
   let db: Record<string, unknown>;
-  try { db = JSON.parse(readFileSync(abs, 'utf8')) as Record<string, unknown>; } catch (e) {
-    warn(`${DIAGNOSTIC_DB} is not valid JSON: ${(e as Error).message}`);
+  try { db = JSON.parse(raw) as Record<string, unknown>; } catch (e) {
+    fail(`${DIAGNOSTIC_DB} is not valid JSON: ${(e as Error).message}`);
     return;
   }
-  const problems = new Map<string, { count: number; example: string }>();
-  const note = (kind: string, example: string) => {
-    const p = problems.get(kind);
-    if (p) p.count++; else problems.set(kind, { count: 1, example });
-  };
-  const isInt = (v: unknown) => typeof v === 'number' && Number.isInteger(v);
-  const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
-
-  if (!isStr(db.version)) note('top-level "version" is not a string', 'version');
-  if (!isObj(db.pools)) { note('top-level "pools" is not an object', 'pools'); }
-  else {
-    for (const [pool, spec] of Object.entries(db.pools)) {
-      const cands = isObj(spec) ? spec.candidates : undefined;
-      if (!Array.isArray(cands)) { note('pool without a "candidates" array', pool); continue; }
-      cands.forEach((c: unknown, ci: number) => {
-        const at = `pools.${pool}.candidates[${ci}]`;
-        if (!isObj(c)) { note('candidate is not an object', at); return; }
-        if (!isStr(c.name)) note('candidate "name" missing or not a string', at);
-        if (!isStr(c.icd)) note('candidate "icd" missing or not a string', at);
-        if (!isInt(c.logPrior)) note('candidate "logPrior" missing or not an integer', `${at}.logPrior`);
-        if (c.urgency !== undefined && c.urgency !== null && !isInt(c.urgency)) note('candidate "urgency" not an integer', `${at}.urgency`);
-        if (!Array.isArray(c.features)) { note('candidate "features" missing or not an array', at); return; }
-        c.features.forEach((f: unknown, fi: number) => {
-          const fat = `${at}.features[${fi}]`;
-          if (!isObj(f)) { note('feature is not an object', fat); return; }
-          if (!isStr(f.key)) note('feature "key" missing or not a string', fat);
-          if (!isStr(f.value)) note('feature "value" missing or not a string', `${fat}.value`);
-          if (!isInt(f.logLR)) note('feature "logLR" missing or not an integer', `${fat}.logLR`);
-          if (!isStr(f.evidenceLabel)) note('feature "evidenceLabel" missing or not a string', fat);
-          if (f.citation !== undefined && f.citation !== null && !isStr(f.citation)) note('feature "citation" not a string', `${fat}.citation`);
-        });
-      });
-    }
+  const problems = decodeProblems(db, raw);
+  if (problems.length > 0) {
+    const lines = problems.map(p => `      ${p.count} × ${p.kind} (e.g. ${p.example})`);
+    fail(`${DIAGNOSTIC_DB} would NOT decode with the iOS engine's Codable structs, so the iOS `
+      + `differential would use its built-in fallback lists (Settings → Diagnostics):\n${lines.join('\n')}`);
+    return;
   }
-  if (db.matrix !== undefined && db.matrix !== null) {
-    const mx = db.matrix;
-    if (!isObj(mx)) note('"matrix" is not an object', 'matrix');
-    else {
-      if (!isStr(mx.version) || !isStr(mx.authority)) note('matrix "version"/"authority" missing', 'matrix');
-      for (const k of ['systemIndex', 'specialtyIndex', 'ccToSystems', 'urgencyIndex']) {
-        const v = mx[k];
-        if (!isObj(v) || !Object.values(v).every(isStrArray)) note(`matrix "${k}" is not { string: [string] }`, `matrix.${k}`);
-      }
-    }
-  }
-  if (problems.size > 0) {
-    const lines = [...problems.entries()].map(([k, p]) => `      ${p.count} × ${k} (e.g. ${p.example})`);
-    warn(`${DIAGNOSTIC_DB} would NOT decode with the iOS engine's Codable structs, so the iOS `
-      + `differential uses its built-in fallback lists (see Settings → Diagnostics):\n${lines.join('\n')}`);
-  }
+  for (const p of contentProblems(db)) fail(`${DIAGNOSTIC_DB}: ${p}`);
 }
 
 // ── Main ────────────────────────────────────────────────────────────────────────────────────
