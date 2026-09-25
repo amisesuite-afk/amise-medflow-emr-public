@@ -42,6 +42,7 @@ export interface DrugTermDef {
 }
 
 const BNF = 'BNF (drug monographs and Interactions appendix); Stockley\'s Drug Interactions';
+const HERBAL = 'Ang-Lee MK et al. Herbal medicines and perioperative care. JAMA 2001;286:208-16; OpenAnesthesia: Herbal supplements and anesthesia (SPAQI), 2025';
 
 // ── Reusable member lists ───────────────────────────────────────────────────────
 
@@ -442,6 +443,118 @@ export const DRUG_TERMS: Record<string, DrugTermDef> = {
     members: ['gabapentin|neurontin', 'pregabalin|lyrica'],
   },
 
+  // ── Classes first named by the herbal / supplement rules (supplement-catalogue.ts) ──
+  doac: {
+    kind: 'class', label: 'DOAC',
+    source: `${BNF} — direct oral anticoagulants; SmPCs: avoid strong CYP3A4 / P-glycoprotein inducers (St John's wort).`,
+    members: [
+      'rivaroxaban|xarelto',
+      'apixaban|eliquis',
+      'dabigatran|pradaxa',
+      'edoxaban|lixiana|savaysa',
+    ],
+  },
+
+  'calcineurin inhibitor': {
+    kind: 'class', label: 'calcineurin inhibitor',
+    source: `${BNF} — ciclosporin and tacrolimus (CYP3A4 / P-glycoprotein substrates; St John's wort lowers their levels). Topical tacrolimus is not listed.`,
+    members: [
+      'ciclosporin|cyclosporine|cyclosporin|neoral|sandimmun|sandimmune',
+      'tacrolimus|prograf|advagraf|adoport|envarsus',
+    ],
+  },
+
+  immunosuppressant: {
+    kind: 'class', label: 'immunosuppressant',
+    source: `${BNF} — transplant-type immunosuppressants (calcineurin inhibitors, mTOR inhibitors, antiproliferatives). Corticosteroids and methotrexate are deliberately not listed.`,
+    members: [
+      'ciclosporin|cyclosporine|cyclosporin|neoral|sandimmun|sandimmune',
+      'tacrolimus|prograf|advagraf|adoport|envarsus',
+      'sirolimus|rapamune',
+      'everolimus|certican|afinitor|zortress',
+      'mycophenolate|mycophenolate mofetil|mycophenolic acid|cellcept|myfortic',
+      'azathioprine|imuran',
+    ],
+  },
+
+  triptan: {
+    kind: 'class', label: 'triptan',
+    source: `${BNF} — 5HT1-receptor agonists (serotonin syndrome with St John's wort).`,
+    members: [
+      'sumatriptan|imigran|imitrex',
+      'zolmitriptan|zomig',
+      'rizatriptan|maxalt',
+      'naratriptan|naramig|amerge',
+      'eletriptan|relpax',
+      'almotriptan|almogran|axert',
+      'frovatriptan|migard|frova',
+    ],
+  },
+
+  'combined oral contraceptive': {
+    kind: 'class', label: 'combined oral contraceptive',
+    source: `${BNF} — combined hormonal contraceptives (St John's wort induces their metabolism: reduced contraceptive efficacy).`,
+    members: [
+      'ethinylestradiol|ethinyl estradiol|ethinyloestradiol|combined oral contraceptive|combined pill|ocp|microgynon|rigevidon|yasmin|marvelon|femodene|cilest|loestrin',
+      'estradiol valerate with dienogest|qlaira',
+      'nomegestrol with estradiol|zoely',
+    ],
+  },
+
+  sulfonylurea: {
+    kind: 'class', label: 'sulfonylurea',
+    source: `${BNF} — sulfonylureas (hypoglycaemia; additive with ginseng).`,
+    members: [
+      'gliclazide|diamicron',
+      'glibenclamide|glyburide|daonil|euglucon',
+      'glimepiride|amaryl',
+      'glipizide|glucotrol|minodiab',
+      'tolbutamide',
+    ],
+  },
+
+  'sedative hypnotic': {
+    kind: 'class', label: 'Z-drug hypnotic / barbiturate',
+    source: `${BNF} — hypnotics (Z-drugs) and barbiturates (additive CNS depression with sedating herbal products).`,
+    members: [
+      'zopiclone|zimovane',
+      'zolpidem|stilnoct|ambien',
+      'zaleplon|sonata',
+      'eszopiclone|lunesta',
+      'phenobarbital|phenobarbitone',
+    ],
+  },
+
+  'general anaesthetic': {
+    kind: 'class', label: 'general anaesthetic',
+    source: `${BNF} — general anaesthetics (intravenous and volatile). Only screened against herbal products here (Ang-Lee JAMA 2001): these agents are given under anaesthetic monitoring.`,
+    members: [
+      'general anaesthetic|general anesthetic',
+      'propofol|diprivan',
+      'sevoflurane|sevorane|ultane',
+      'desflurane|suprane',
+      'isoflurane|forane',
+      'ketamine|ketalar',
+      'thiopental|thiopentone|pentothal',
+      'etomidate|hypnomidate',
+    ],
+  },
+
+  sympathomimetic: {
+    kind: 'class', label: 'sympathomimetic',
+    source: `${BNF} — sympathomimetics (hypertension and arrhythmia with ephedra).`,
+    members: [
+      'pseudoephedrine|sudafed',
+      'phenylephrine',
+      'ephedrine',
+      'adrenaline|epinephrine|epipen',
+      'noradrenaline|norepinephrine',
+      'metaraminol',
+      'dobutamine',
+      'dopamine',
+    ],
+  },
+
   // ═════════════════════════════ SPECIFIC DRUGS ═════════════════════════════
   // members = the drug's own synonyms and brands (and, where the legacy substring already
   // matched a close relative, that relative — e.g. "omeprazole" ⊂ "esomeprazole").
@@ -504,6 +617,57 @@ export const DRUG_TERMS: Record<string, DrugTermDef> = {
   'co-amoxiclav':{ kind: 'drug', label: 'co-amoxiclav',  source: BNF, members: ['co-amoxiclav|augmentin|amoxicillin-clavulanate'] },
   lansoprazole:  { kind: 'drug', label: 'lansoprazole',  source: BNF, members: ['lansoprazole|zoton|prevacid'] },
   ondansetron:   { kind: 'drug', label: 'ondansetron',   source: BNF, members: ['ondansetron|zofran'] },
+  levothyroxine: { kind: 'drug', label: 'levothyroxine', source: BNF, members: ['levothyroxine|thyroxine|eltroxin|synthroid|euthyrox|levoxyl|tirosint'] },
+
+  // ═════════════════════════ HERBAL PRODUCTS AND SUPPLEMENTS ═════════════════════════
+  // Same matching as a drug (kind 'drug': the product's own names). Perioperative concern, stop
+  // time and harms live in `supplement-catalogue.ts`, which points at these keys. Names are the
+  // common, botanical and brand names only where certain (no Caribbean local names: see
+  // docs/clinical-validation/changes/supplements-interactions.md, "Needs sign-off").
+  garlic: {
+    kind: 'drug', label: 'garlic (supplement)', source: HERBAL,
+    members: ['garlic|allium sativum|kyolic|kwai'],
+  },
+  ginkgo: {
+    kind: 'drug', label: 'ginkgo', source: HERBAL,
+    members: ['ginkgo|ginkgo biloba|gingko|ginko|egb 761|tebonin|tanakan'],
+  },
+  ginger: {
+    kind: 'drug', label: 'ginger (supplement)', source: HERBAL,
+    members: ['ginger|ginger root|zingiber officinale'],
+  },
+  turmeric: {
+    kind: 'drug', label: 'turmeric / curcumin', source: HERBAL,
+    members: ['turmeric|curcumin|curcuma longa'],
+  },
+  ginseng: {
+    kind: 'drug', label: 'ginseng', source: HERBAL,
+    members: ['ginseng|panax ginseng|panax quinquefolius|korean ginseng|american ginseng|ginsana'],
+  },
+  'st johns wort': {
+    kind: 'drug', label: "St John's wort", source: `${HERBAL}; BNF interactions (St John's wort).`,
+    members: ["st johns wort|st john's wort|st. john's wort|saint john's wort|st john wort|hypericum|hypericum perforatum"],
+  },
+  kava: {
+    kind: 'drug', label: 'kava', source: HERBAL,
+    members: ['kava|kava kava|kava-kava|piper methysticum'],
+  },
+  valerian: {
+    kind: 'drug', label: 'valerian', source: HERBAL,
+    members: ['valerian|valerian root|valeriana officinalis'],
+  },
+  echinacea: {
+    kind: 'drug', label: 'echinacea', source: HERBAL,
+    members: ['echinacea|echinacea purpurea|echinaforce'],
+  },
+  ashwagandha: {
+    kind: 'drug', label: 'ashwagandha', source: `${HERBAL}; NIDDK LiverTox: Ashwagandha (Dec 2024).`,
+    members: ['ashwagandha|withania somnifera|ksm-66'],
+  },
+  ephedra: {
+    kind: 'drug', label: 'ephedra (ma huang)', source: HERBAL,
+    members: ['ephedra|ma huang|ephedra sinica'],
+  },
 };
 
 // ── Parsing / matching ──────────────────────────────────────────────────────────

@@ -684,5 +684,260 @@ enum DrugInteractionService {
               mechanism: "Diuretics (especially thiazides) reduce renal lithium excretion (BNF)",
               clinicalEffect: "Lithium toxicity",
               management: "Monitor lithium levels closely; maintain adequate fluid intake"),
+
+        // ── Herbal products and supplements (SupplementCatalogue.swift) ────────────────────
+        // A supplement recorded under "Herbs, teas, bush remedies & supplements" is screened like
+        // a drug. Sources: Ang-Lee MK et al. JAMA 2001;286:208-16; OpenAnesthesia / SPAQI 2025;
+        // Proc (Bayl Univ Med Cent) 2022 (supplements and bleeding); BNF interactions (St John's
+        // wort); NIDDK LiverTox. Grades are conservative (major for bleeding, serotonin toxicity and
+        // transplant-drug levels) and await the surgeon's review. Same terms, grade, effect and
+        // action as the web `drug-interactions.ts`; `lint:interaction-parity` compares the wording
+        // of every supplement rule. Stop times are for the clinician only.
+
+        .init(drug1Pattern: "garlic", drug2Pattern: "anticoagulant",
+              severity: .major,
+              mechanism: "Garlic inhibits platelet aggregation; additive with anticoagulant, antiplatelet and NSAID effects (Ang-Lee JAMA 2001; Proc Bayl Univ Med Cent 2022)",
+              clinicalEffect: "Increased bleeding risk (garlic inhibits platelet aggregation)",
+              management: "Review before any procedure; commonly cited stop time before elective surgery at least 7 days (many advise 2 weeks) — clinician to confirm; monitor for bleeding"),
+
+        .init(drug1Pattern: "garlic", drug2Pattern: "antiplatelet",
+              severity: .major,
+              mechanism: "Garlic inhibits platelet aggregation; additive with anticoagulant, antiplatelet and NSAID effects (Ang-Lee JAMA 2001; Proc Bayl Univ Med Cent 2022)",
+              clinicalEffect: "Increased bleeding risk (garlic inhibits platelet aggregation)",
+              management: "Review before any procedure; commonly cited stop time before elective surgery at least 7 days (many advise 2 weeks) — clinician to confirm; monitor for bleeding"),
+
+        .init(drug1Pattern: "garlic", drug2Pattern: "nsaid",
+              severity: .major,
+              mechanism: "Garlic inhibits platelet aggregation; additive with anticoagulant, antiplatelet and NSAID effects (Ang-Lee JAMA 2001; Proc Bayl Univ Med Cent 2022)",
+              clinicalEffect: "Increased bleeding risk (garlic inhibits platelet aggregation)",
+              management: "Review before any procedure; commonly cited stop time before elective surgery at least 7 days (many advise 2 weeks) — clinician to confirm; monitor for bleeding"),
+
+        .init(drug1Pattern: "ginkgo", drug2Pattern: "anticoagulant",
+              severity: .major,
+              mechanism: "Ginkgolides inhibit platelet-activating factor; additive with anticoagulant, antiplatelet and NSAID effects (Ang-Lee JAMA 2001; SPAQI 2025)",
+              clinicalEffect: "Increased bleeding risk (ginkgo inhibits platelet-activating factor)",
+              management: "Review before any procedure; commonly cited stop time before elective surgery at least 36 hours (SPAQI advises 2 weeks) — clinician to confirm; monitor for bleeding"),
+
+        .init(drug1Pattern: "ginkgo", drug2Pattern: "antiplatelet",
+              severity: .major,
+              mechanism: "Ginkgolides inhibit platelet-activating factor; additive with anticoagulant, antiplatelet and NSAID effects (Ang-Lee JAMA 2001; SPAQI 2025)",
+              clinicalEffect: "Increased bleeding risk (ginkgo inhibits platelet-activating factor)",
+              management: "Review before any procedure; commonly cited stop time before elective surgery at least 36 hours (SPAQI advises 2 weeks) — clinician to confirm; monitor for bleeding"),
+
+        .init(drug1Pattern: "ginkgo", drug2Pattern: "nsaid",
+              severity: .major,
+              mechanism: "Ginkgolides inhibit platelet-activating factor; additive with anticoagulant, antiplatelet and NSAID effects (Ang-Lee JAMA 2001; SPAQI 2025)",
+              clinicalEffect: "Increased bleeding risk (ginkgo inhibits platelet-activating factor)",
+              management: "Review before any procedure; commonly cited stop time before elective surgery at least 36 hours (SPAQI advises 2 weeks) — clinician to confirm; monitor for bleeding"),
+
+        .init(drug1Pattern: "ginger", drug2Pattern: "anticoagulant",
+              severity: .major,
+              mechanism: "Ginger inhibits thromboxane synthetase (platelet function); additive with anticoagulant, antiplatelet and NSAID effects (SPAQI 2025)",
+              clinicalEffect: "Increased bleeding risk (ginger inhibits thromboxane synthetase)",
+              management: "Review before any procedure; commonly cited stop time before elective surgery 2 weeks (SPAQI) — clinician to confirm; monitor for bleeding"),
+
+        .init(drug1Pattern: "ginger", drug2Pattern: "antiplatelet",
+              severity: .major,
+              mechanism: "Ginger inhibits thromboxane synthetase (platelet function); additive with anticoagulant, antiplatelet and NSAID effects (SPAQI 2025)",
+              clinicalEffect: "Increased bleeding risk (ginger inhibits thromboxane synthetase)",
+              management: "Review before any procedure; commonly cited stop time before elective surgery 2 weeks (SPAQI) — clinician to confirm; monitor for bleeding"),
+
+        .init(drug1Pattern: "ginger", drug2Pattern: "nsaid",
+              severity: .major,
+              mechanism: "Ginger inhibits thromboxane synthetase (platelet function); additive with anticoagulant, antiplatelet and NSAID effects (SPAQI 2025)",
+              clinicalEffect: "Increased bleeding risk (ginger inhibits thromboxane synthetase)",
+              management: "Review before any procedure; commonly cited stop time before elective surgery 2 weeks (SPAQI) — clinician to confirm; monitor for bleeding"),
+
+        .init(drug1Pattern: "turmeric", drug2Pattern: "anticoagulant",
+              severity: .major,
+              mechanism: "Curcumin has antiplatelet effects; additive with anticoagulant, antiplatelet and NSAID effects (J Clin Anesth 2024 review)",
+              clinicalEffect: "Increased bleeding risk (curcumin has antiplatelet effects)",
+              management: "Review before any procedure; commonly cited stop time before elective surgery 2 weeks — clinician to confirm; monitor for bleeding"),
+
+        .init(drug1Pattern: "turmeric", drug2Pattern: "antiplatelet",
+              severity: .major,
+              mechanism: "Curcumin has antiplatelet effects; additive with anticoagulant, antiplatelet and NSAID effects (J Clin Anesth 2024 review)",
+              clinicalEffect: "Increased bleeding risk (curcumin has antiplatelet effects)",
+              management: "Review before any procedure; commonly cited stop time before elective surgery 2 weeks — clinician to confirm; monitor for bleeding"),
+
+        .init(drug1Pattern: "turmeric", drug2Pattern: "nsaid",
+              severity: .major,
+              mechanism: "Curcumin has antiplatelet effects; additive with anticoagulant, antiplatelet and NSAID effects (J Clin Anesth 2024 review)",
+              clinicalEffect: "Increased bleeding risk (curcumin has antiplatelet effects)",
+              management: "Review before any procedure; commonly cited stop time before elective surgery 2 weeks — clinician to confirm; monitor for bleeding"),
+
+        .init(drug1Pattern: "ginseng", drug2Pattern: "anticoagulant",
+              severity: .major,
+              mechanism: "Ginsenosides may inhibit platelet function and lower blood glucose; American ginseng reduced the INR with warfarin (Ang-Lee JAMA 2001; SPAQI 2025)",
+              clinicalEffect: "Possible increased bleeding risk (ginseng may inhibit platelet function)",
+              management: "Review before any procedure; commonly cited stop time before elective surgery at least 7 days (SPAQI advises 2 weeks) — clinician to confirm; monitor for bleeding"),
+
+        .init(drug1Pattern: "ginseng", drug2Pattern: "antiplatelet",
+              severity: .major,
+              mechanism: "Ginsenosides may inhibit platelet function and lower blood glucose; American ginseng reduced the INR with warfarin (Ang-Lee JAMA 2001; SPAQI 2025)",
+              clinicalEffect: "Possible increased bleeding risk (ginseng may inhibit platelet function)",
+              management: "Review before any procedure; commonly cited stop time before elective surgery at least 7 days (SPAQI advises 2 weeks) — clinician to confirm; monitor for bleeding"),
+
+        .init(drug1Pattern: "ginseng", drug2Pattern: "nsaid",
+              severity: .major,
+              mechanism: "Ginsenosides may inhibit platelet function and lower blood glucose; American ginseng reduced the INR with warfarin (Ang-Lee JAMA 2001; SPAQI 2025)",
+              clinicalEffect: "Possible increased bleeding risk (ginseng may inhibit platelet function)",
+              management: "Review before any procedure; commonly cited stop time before elective surgery at least 7 days (SPAQI advises 2 weeks) — clinician to confirm; monitor for bleeding"),
+
+        .init(drug1Pattern: "st johns wort", drug2Pattern: "warfarin",
+              severity: .major,
+              mechanism: "St John's wort induces CYP3A4 and P-glycoprotein and is serotonergic (Ang-Lee JAMA 2001; BNF interactions)",
+              clinicalEffect: "Reduced warfarin effect — INR falls (St John's wort induces warfarin metabolism)",
+              management: "Avoid combination; if St John's wort is stopped, check INR closely (it may rise)"),
+
+        .init(drug1Pattern: "st johns wort", drug2Pattern: "doac",
+              severity: .major,
+              mechanism: "St John's wort induces CYP3A4 and P-glycoprotein and is serotonergic (Ang-Lee JAMA 2001; BNF interactions)",
+              clinicalEffect: "Reduced DOAC levels (CYP3A4 / P-glycoprotein induction) — risk of thrombosis",
+              management: "Avoid combination"),
+
+        .init(drug1Pattern: "st johns wort", drug2Pattern: "calcineurin inhibitor",
+              severity: .major,
+              mechanism: "St John's wort induces CYP3A4 and P-glycoprotein and is serotonergic (Ang-Lee JAMA 2001; BNF interactions)",
+              clinicalEffect: "Reduced ciclosporin / tacrolimus levels (CYP3A4 / P-glycoprotein induction) — risk of transplant rejection",
+              management: "Avoid combination; check drug levels if it has been taken"),
+
+        .init(drug1Pattern: "st johns wort", drug2Pattern: "ssri",
+              severity: .major,
+              mechanism: "St John's wort induces CYP3A4 and P-glycoprotein and is serotonergic (Ang-Lee JAMA 2001; BNF interactions)",
+              clinicalEffect: "Serotonin syndrome risk",
+              management: "Avoid combination"),
+
+        .init(drug1Pattern: "st johns wort", drug2Pattern: "snri",
+              severity: .major,
+              mechanism: "St John's wort induces CYP3A4 and P-glycoprotein and is serotonergic (Ang-Lee JAMA 2001; BNF interactions)",
+              clinicalEffect: "Serotonin syndrome risk",
+              management: "Avoid combination"),
+
+        .init(drug1Pattern: "st johns wort", drug2Pattern: "triptan",
+              severity: .major,
+              mechanism: "St John's wort induces CYP3A4 and P-glycoprotein and is serotonergic (Ang-Lee JAMA 2001; BNF interactions)",
+              clinicalEffect: "Serotonin syndrome risk",
+              management: "Avoid combination"),
+
+        .init(drug1Pattern: "st johns wort", drug2Pattern: "combined oral contraceptive",
+              severity: .major,
+              mechanism: "St John's wort induces CYP3A4 and P-glycoprotein and is serotonergic (Ang-Lee JAMA 2001; BNF interactions)",
+              clinicalEffect: "Reduced contraceptive efficacy (enzyme induction) — breakthrough bleeding and unplanned pregnancy",
+              management: "Avoid combination; advise additional or alternative contraception"),
+
+        .init(drug1Pattern: "ginseng", drug2Pattern: "insulin",
+              severity: .moderate,
+              mechanism: "Ginsenosides may inhibit platelet function and lower blood glucose; American ginseng reduced the INR with warfarin (Ang-Lee JAMA 2001; SPAQI 2025)",
+              clinicalEffect: "Hypoglycaemia risk, especially in fasting patients (pre-op fast or religious fast)",
+              management: "Monitor blood glucose, especially while fasting; commonly cited stop time before elective surgery at least 7 days (SPAQI advises 2 weeks) — clinician to confirm"),
+
+        .init(drug1Pattern: "ginseng", drug2Pattern: "sulfonylurea",
+              severity: .moderate,
+              mechanism: "Ginsenosides may inhibit platelet function and lower blood glucose; American ginseng reduced the INR with warfarin (Ang-Lee JAMA 2001; SPAQI 2025)",
+              clinicalEffect: "Hypoglycaemia risk, especially in fasting patients (pre-op fast or religious fast)",
+              management: "Monitor blood glucose, especially while fasting; commonly cited stop time before elective surgery at least 7 days (SPAQI advises 2 weeks) — clinician to confirm"),
+
+        .init(drug1Pattern: "ginseng", drug2Pattern: "warfarin",
+              severity: .moderate,
+              mechanism: "Ginsenosides may inhibit platelet function and lower blood glucose; American ginseng reduced the INR with warfarin (Ang-Lee JAMA 2001; SPAQI 2025)",
+              clinicalEffect: "Reduced INR reported (American ginseng)",
+              management: "Check INR when ginseng is started or stopped"),
+
+        .init(drug1Pattern: "kava", drug2Pattern: "benzodiazepine",
+              severity: .moderate,
+              mechanism: "Kava potentiates GABA-mediated CNS depression and anaesthetic sedation (Ang-Lee JAMA 2001)",
+              clinicalEffect: "Additive sedation / CNS depression",
+              management: "Avoid combining; commonly cited stop time before surgery 24 hours — clinician to confirm; tell the anaesthetist"),
+
+        .init(drug1Pattern: "kava", drug2Pattern: "opioid",
+              severity: .moderate,
+              mechanism: "Kava potentiates GABA-mediated CNS depression and anaesthetic sedation (Ang-Lee JAMA 2001)",
+              clinicalEffect: "Additive sedation / CNS depression",
+              management: "Avoid combining; commonly cited stop time before surgery 24 hours — clinician to confirm; tell the anaesthetist"),
+
+        .init(drug1Pattern: "kava", drug2Pattern: "sedative hypnotic",
+              severity: .moderate,
+              mechanism: "Kava potentiates GABA-mediated CNS depression and anaesthetic sedation (Ang-Lee JAMA 2001)",
+              clinicalEffect: "Additive sedation / CNS depression",
+              management: "Avoid combining; commonly cited stop time before surgery 24 hours — clinician to confirm; tell the anaesthetist"),
+
+        .init(drug1Pattern: "kava", drug2Pattern: "general anaesthetic",
+              severity: .moderate,
+              mechanism: "Kava potentiates GABA-mediated CNS depression and anaesthetic sedation (Ang-Lee JAMA 2001)",
+              clinicalEffect: "Potentiates anaesthetic sedation",
+              management: "Commonly cited stop time before surgery 24 hours — clinician to confirm; tell the anaesthetist"),
+
+        .init(drug1Pattern: "valerian", drug2Pattern: "benzodiazepine",
+              severity: .moderate,
+              mechanism: "Valerian potentiates GABA-mediated CNS depression; abrupt withdrawal resembles benzodiazepine withdrawal (Ang-Lee JAMA 2001)",
+              clinicalEffect: "Additive sedation / CNS depression",
+              management: "Avoid combining; valerian is tapered over 1–2 weeks rather than stopped suddenly — clinician to confirm; tell the anaesthetist"),
+
+        .init(drug1Pattern: "valerian", drug2Pattern: "opioid",
+              severity: .moderate,
+              mechanism: "Valerian potentiates GABA-mediated CNS depression; abrupt withdrawal resembles benzodiazepine withdrawal (Ang-Lee JAMA 2001)",
+              clinicalEffect: "Additive sedation / CNS depression",
+              management: "Avoid combining; valerian is tapered over 1–2 weeks rather than stopped suddenly — clinician to confirm; tell the anaesthetist"),
+
+        .init(drug1Pattern: "valerian", drug2Pattern: "sedative hypnotic",
+              severity: .moderate,
+              mechanism: "Valerian potentiates GABA-mediated CNS depression; abrupt withdrawal resembles benzodiazepine withdrawal (Ang-Lee JAMA 2001)",
+              clinicalEffect: "Additive sedation / CNS depression",
+              management: "Avoid combining; valerian is tapered over 1–2 weeks rather than stopped suddenly — clinician to confirm; tell the anaesthetist"),
+
+        .init(drug1Pattern: "valerian", drug2Pattern: "general anaesthetic",
+              severity: .moderate,
+              mechanism: "Valerian potentiates GABA-mediated CNS depression; abrupt withdrawal resembles benzodiazepine withdrawal (Ang-Lee JAMA 2001)",
+              clinicalEffect: "Potentiates anaesthetic sedation; abrupt withdrawal can cause a benzodiazepine-like withdrawal",
+              management: "Taper valerian over 1–2 weeks before elective surgery rather than stopping suddenly — clinician to confirm; tell the anaesthetist"),
+
+        .init(drug1Pattern: "ephedra", drug2Pattern: "maoi",
+              severity: .contraindicated,
+              mechanism: "Ephedra (ephedrine alkaloids) is a direct and indirect sympathomimetic (Ang-Lee JAMA 2001; BNF)",
+              clinicalEffect: "Hypertensive crisis",
+              management: "Contraindicated; do not co-administer"),
+
+        .init(drug1Pattern: "ephedra", drug2Pattern: "sympathomimetic",
+              severity: .major,
+              mechanism: "Ephedra (ephedrine alkaloids) is a direct and indirect sympathomimetic (Ang-Lee JAMA 2001; BNF)",
+              clinicalEffect: "Hypertension, tachycardia and arrhythmia (additive sympathomimetic effect)",
+              management: "Avoid combination"),
+
+        .init(drug1Pattern: "ephedra", drug2Pattern: "general anaesthetic",
+              severity: .major,
+              mechanism: "Ephedra (ephedrine alkaloids) is a direct and indirect sympathomimetic (Ang-Lee JAMA 2001; BNF)",
+              clinicalEffect: "Intra-operative haemodynamic instability — hypertension and arrhythmia",
+              management: "Commonly cited stop time before surgery at least 24 hours (ideally avoid entirely) — clinician to confirm; tell the anaesthetist"),
+
+        .init(drug1Pattern: "ashwagandha", drug2Pattern: "levothyroxine",
+              severity: .moderate,
+              mechanism: "Withania somnifera may raise thyroid hormone levels, is sedating and may stimulate immune function (NIDDK LiverTox; Danish ban 2023)",
+              clinicalEffect: "May raise thyroid hormone levels (additive with levothyroxine)",
+              management: "Check thyroid function; ashwagandha is best avoided in thyroid disease"),
+
+        .init(drug1Pattern: "ashwagandha", drug2Pattern: "benzodiazepine",
+              severity: .moderate,
+              mechanism: "Withania somnifera may raise thyroid hormone levels, is sedating and may stimulate immune function (NIDDK LiverTox; Danish ban 2023)",
+              clinicalEffect: "Additive sedation",
+              management: "Avoid combining; tell the anaesthetist"),
+
+        .init(drug1Pattern: "ashwagandha", drug2Pattern: "sedative hypnotic",
+              severity: .moderate,
+              mechanism: "Withania somnifera may raise thyroid hormone levels, is sedating and may stimulate immune function (NIDDK LiverTox; Danish ban 2023)",
+              clinicalEffect: "Additive sedation",
+              management: "Avoid combining; tell the anaesthetist"),
+
+        .init(drug1Pattern: "ashwagandha", drug2Pattern: "immunosuppressant",
+              severity: .moderate,
+              mechanism: "Withania somnifera may raise thyroid hormone levels, is sedating and may stimulate immune function (NIDDK LiverTox; Danish ban 2023)",
+              clinicalEffect: "May stimulate immune function and oppose immunosuppression",
+              management: "Avoid in transplant recipients and before planned immunosuppression"),
+
+        .init(drug1Pattern: "echinacea", drug2Pattern: "immunosuppressant",
+              severity: .moderate,
+              mechanism: "Echinacea has immune-stimulating effects that may oppose immunosuppression (Ang-Lee JAMA 2001)",
+              clinicalEffect: "May oppose immunosuppression (immune-stimulating effects)",
+              management: "Avoid in transplant recipients; stop early before planned immunosuppression or transplant-type surgery"),
     ]
 }

@@ -123,6 +123,62 @@ export const INTERACTIONS: DrugInteraction[] = [
   { drugs: ['methotrexate', 'co-amoxiclav'], severity: 'moderate',      effect: 'Risk of methotrexate accumulation and toxicity', action: 'Use alternative antibiotic where possible; monitor FBC' },
   // Clopidogrel + PPI — CYP2C19 inhibition (see also clopidogrel + omeprazole above).
   { drugs: ['clopidogrel', 'lansoprazole'], severity: 'moderate',       effect: 'Reduced antiplatelet effect', action: 'Prefer pantoprazole; cardiologist input for dual antiplatelet patients' },
+
+  // ── Herbal products and supplements (supplement-catalogue.ts) ─────────────────────────
+  // A supplement recorded in "Herbs, teas, bush remedies & supplements" is screened like a drug.
+  // Sources: Ang-Lee MK et al. JAMA 2001;286:208-16; OpenAnesthesia / SPAQI 2025; Proc (Bayl Univ
+  // Med Cent) 2022 (supplements and bleeding); BNF interactions (St John's wort); NIDDK LiverTox.
+  // Grades are conservative (major for bleeding, serotonin toxicity and transplant-drug levels)
+  // and await the surgeon's review. Same terms, grade and wording as iOS (`lint:interaction-parity`
+  // compares the wording of every supplement rule). Stop times are for the clinician only.
+  // Bleeding — antiplatelet effects added to anticoagulants, antiplatelets and NSAIDs.
+  { drugs: ['garlic', 'anticoagulant'],    severity: 'major', effect: 'Increased bleeding risk (garlic inhibits platelet aggregation)', action: 'Review before any procedure; commonly cited stop time before elective surgery at least 7 days (many advise 2 weeks) — clinician to confirm; monitor for bleeding' },
+  { drugs: ['garlic', 'antiplatelet'],     severity: 'major', effect: 'Increased bleeding risk (garlic inhibits platelet aggregation)', action: 'Review before any procedure; commonly cited stop time before elective surgery at least 7 days (many advise 2 weeks) — clinician to confirm; monitor for bleeding' },
+  { drugs: ['garlic', 'nsaid'],            severity: 'major', effect: 'Increased bleeding risk (garlic inhibits platelet aggregation)', action: 'Review before any procedure; commonly cited stop time before elective surgery at least 7 days (many advise 2 weeks) — clinician to confirm; monitor for bleeding' },
+  { drugs: ['ginkgo', 'anticoagulant'],    severity: 'major', effect: 'Increased bleeding risk (ginkgo inhibits platelet-activating factor)', action: 'Review before any procedure; commonly cited stop time before elective surgery at least 36 hours (SPAQI advises 2 weeks) — clinician to confirm; monitor for bleeding' },
+  { drugs: ['ginkgo', 'antiplatelet'],     severity: 'major', effect: 'Increased bleeding risk (ginkgo inhibits platelet-activating factor)', action: 'Review before any procedure; commonly cited stop time before elective surgery at least 36 hours (SPAQI advises 2 weeks) — clinician to confirm; monitor for bleeding' },
+  { drugs: ['ginkgo', 'nsaid'],            severity: 'major', effect: 'Increased bleeding risk (ginkgo inhibits platelet-activating factor)', action: 'Review before any procedure; commonly cited stop time before elective surgery at least 36 hours (SPAQI advises 2 weeks) — clinician to confirm; monitor for bleeding' },
+  { drugs: ['ginger', 'anticoagulant'],    severity: 'major', effect: 'Increased bleeding risk (ginger inhibits thromboxane synthetase)', action: 'Review before any procedure; commonly cited stop time before elective surgery 2 weeks (SPAQI) — clinician to confirm; monitor for bleeding' },
+  { drugs: ['ginger', 'antiplatelet'],     severity: 'major', effect: 'Increased bleeding risk (ginger inhibits thromboxane synthetase)', action: 'Review before any procedure; commonly cited stop time before elective surgery 2 weeks (SPAQI) — clinician to confirm; monitor for bleeding' },
+  { drugs: ['ginger', 'nsaid'],            severity: 'major', effect: 'Increased bleeding risk (ginger inhibits thromboxane synthetase)', action: 'Review before any procedure; commonly cited stop time before elective surgery 2 weeks (SPAQI) — clinician to confirm; monitor for bleeding' },
+  { drugs: ['turmeric', 'anticoagulant'],  severity: 'major', effect: 'Increased bleeding risk (curcumin has antiplatelet effects)', action: 'Review before any procedure; commonly cited stop time before elective surgery 2 weeks — clinician to confirm; monitor for bleeding' },
+  { drugs: ['turmeric', 'antiplatelet'],   severity: 'major', effect: 'Increased bleeding risk (curcumin has antiplatelet effects)', action: 'Review before any procedure; commonly cited stop time before elective surgery 2 weeks — clinician to confirm; monitor for bleeding' },
+  { drugs: ['turmeric', 'nsaid'],          severity: 'major', effect: 'Increased bleeding risk (curcumin has antiplatelet effects)', action: 'Review before any procedure; commonly cited stop time before elective surgery 2 weeks — clinician to confirm; monitor for bleeding' },
+  { drugs: ['ginseng', 'anticoagulant'],   severity: 'major', effect: 'Possible increased bleeding risk (ginseng may inhibit platelet function)', action: 'Review before any procedure; commonly cited stop time before elective surgery at least 7 days (SPAQI advises 2 weeks) — clinician to confirm; monitor for bleeding' },
+  { drugs: ['ginseng', 'antiplatelet'],    severity: 'major', effect: 'Possible increased bleeding risk (ginseng may inhibit platelet function)', action: 'Review before any procedure; commonly cited stop time before elective surgery at least 7 days (SPAQI advises 2 weeks) — clinician to confirm; monitor for bleeding' },
+  { drugs: ['ginseng', 'nsaid'],           severity: 'major', effect: 'Possible increased bleeding risk (ginseng may inhibit platelet function)', action: 'Review before any procedure; commonly cited stop time before elective surgery at least 7 days (SPAQI advises 2 weeks) — clinician to confirm; monitor for bleeding' },
+  // St John's wort — CYP3A4 / P-glycoprotein induction; serotonergic (BNF: avoid with each of these).
+  { drugs: ['st johns wort', 'warfarin'],  severity: 'major', effect: "Reduced warfarin effect — INR falls (St John's wort induces warfarin metabolism)", action: "Avoid combination; if St John's wort is stopped, check INR closely (it may rise)" },
+  { drugs: ['st johns wort', 'doac'],      severity: 'major', effect: 'Reduced DOAC levels (CYP3A4 / P-glycoprotein induction) — risk of thrombosis', action: 'Avoid combination' },
+  { drugs: ['st johns wort', 'calcineurin inhibitor'], severity: 'major', effect: 'Reduced ciclosporin / tacrolimus levels (CYP3A4 / P-glycoprotein induction) — risk of transplant rejection', action: 'Avoid combination; check drug levels if it has been taken' },
+  { drugs: ['st johns wort', 'ssri'],      severity: 'major', effect: 'Serotonin syndrome risk', action: 'Avoid combination' },
+  { drugs: ['st johns wort', 'snri'],      severity: 'major', effect: 'Serotonin syndrome risk', action: 'Avoid combination' },
+  { drugs: ['st johns wort', 'triptan'],   severity: 'major', effect: 'Serotonin syndrome risk', action: 'Avoid combination' },
+  { drugs: ['st johns wort', 'combined oral contraceptive'], severity: 'major', effect: 'Reduced contraceptive efficacy (enzyme induction) — breakthrough bleeding and unplanned pregnancy', action: 'Avoid combination; advise additional or alternative contraception' },
+  // Ginseng — hypoglycaemia (especially while fasting); reduced INR reported with warfarin.
+  { drugs: ['ginseng', 'insulin'],         severity: 'moderate', effect: 'Hypoglycaemia risk, especially in fasting patients (pre-op fast or religious fast)', action: 'Monitor blood glucose, especially while fasting; commonly cited stop time before elective surgery at least 7 days (SPAQI advises 2 weeks) — clinician to confirm' },
+  { drugs: ['ginseng', 'sulfonylurea'],    severity: 'moderate', effect: 'Hypoglycaemia risk, especially in fasting patients (pre-op fast or religious fast)', action: 'Monitor blood glucose, especially while fasting; commonly cited stop time before elective surgery at least 7 days (SPAQI advises 2 weeks) — clinician to confirm' },
+  { drugs: ['ginseng', 'warfarin'],        severity: 'moderate', effect: 'Reduced INR reported (American ginseng)', action: 'Check INR when ginseng is started or stopped' },
+  // Kava and valerian — potentiate sedation and anaesthesia.
+  { drugs: ['kava', 'benzodiazepine'],     severity: 'moderate', effect: 'Additive sedation / CNS depression', action: 'Avoid combining; commonly cited stop time before surgery 24 hours — clinician to confirm; tell the anaesthetist' },
+  { drugs: ['kava', 'opioid'],             severity: 'moderate', effect: 'Additive sedation / CNS depression', action: 'Avoid combining; commonly cited stop time before surgery 24 hours — clinician to confirm; tell the anaesthetist' },
+  { drugs: ['kava', 'sedative hypnotic'],  severity: 'moderate', effect: 'Additive sedation / CNS depression', action: 'Avoid combining; commonly cited stop time before surgery 24 hours — clinician to confirm; tell the anaesthetist' },
+  { drugs: ['kava', 'general anaesthetic'], severity: 'moderate', effect: 'Potentiates anaesthetic sedation', action: 'Commonly cited stop time before surgery 24 hours — clinician to confirm; tell the anaesthetist' },
+  { drugs: ['valerian', 'benzodiazepine'], severity: 'moderate', effect: 'Additive sedation / CNS depression', action: 'Avoid combining; valerian is tapered over 1–2 weeks rather than stopped suddenly — clinician to confirm; tell the anaesthetist' },
+  { drugs: ['valerian', 'opioid'],         severity: 'moderate', effect: 'Additive sedation / CNS depression', action: 'Avoid combining; valerian is tapered over 1–2 weeks rather than stopped suddenly — clinician to confirm; tell the anaesthetist' },
+  { drugs: ['valerian', 'sedative hypnotic'], severity: 'moderate', effect: 'Additive sedation / CNS depression', action: 'Avoid combining; valerian is tapered over 1–2 weeks rather than stopped suddenly — clinician to confirm; tell the anaesthetist' },
+  { drugs: ['valerian', 'general anaesthetic'], severity: 'moderate', effect: 'Potentiates anaesthetic sedation; abrupt withdrawal can cause a benzodiazepine-like withdrawal', action: 'Taper valerian over 1–2 weeks before elective surgery rather than stopping suddenly — clinician to confirm; tell the anaesthetist' },
+  // Ephedra (ma huang) — sympathomimetic.
+  { drugs: ['ephedra', 'maoi'],            severity: 'contraindicated', effect: 'Hypertensive crisis', action: 'Contraindicated; do not co-administer' },
+  { drugs: ['ephedra', 'sympathomimetic'], severity: 'major', effect: 'Hypertension, tachycardia and arrhythmia (additive sympathomimetic effect)', action: 'Avoid combination' },
+  { drugs: ['ephedra', 'general anaesthetic'], severity: 'major', effect: 'Intra-operative haemodynamic instability — hypertension and arrhythmia', action: 'Commonly cited stop time before surgery at least 24 hours (ideally avoid entirely) — clinician to confirm; tell the anaesthetist' },
+  // Ashwagandha — thyroid, sedation, immune effects.
+  { drugs: ['ashwagandha', 'levothyroxine'], severity: 'moderate', effect: 'May raise thyroid hormone levels (additive with levothyroxine)', action: 'Check thyroid function; ashwagandha is best avoided in thyroid disease' },
+  { drugs: ['ashwagandha', 'benzodiazepine'], severity: 'moderate', effect: 'Additive sedation', action: 'Avoid combining; tell the anaesthetist' },
+  { drugs: ['ashwagandha', 'sedative hypnotic'], severity: 'moderate', effect: 'Additive sedation', action: 'Avoid combining; tell the anaesthetist' },
+  { drugs: ['ashwagandha', 'immunosuppressant'], severity: 'moderate', effect: 'May stimulate immune function and oppose immunosuppression', action: 'Avoid in transplant recipients and before planned immunosuppression' },
+  // Echinacea — immune-stimulating.
+  { drugs: ['echinacea', 'immunosuppressant'], severity: 'moderate', effect: 'May oppose immunosuppression (immune-stimulating effects)', action: 'Avoid in transplant recipients; stop early before planned immunosuppression or transplant-type surgery' },
 ];
 
 export interface FoundInteraction {
