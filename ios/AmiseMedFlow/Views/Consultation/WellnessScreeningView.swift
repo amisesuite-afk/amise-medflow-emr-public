@@ -16,7 +16,8 @@ struct WellnessScreeningView: View {
 
     private var age: Int? { patient.dateOfBirth == nil ? nil : patient.ageYears }
     private var items: [ScreeningItem] {
-        ScreeningEngine.items(age: age, sex: patient.sex, bmi: patient.latestBMI(), w: data)
+        ScreeningEngine.items(age: age, sex: patient.sex, bmi: patient.latestBMI(), w: data,
+                              clinicBP: ScreeningEngine.latestBP(patient))
     }
 
     var body: some View {
@@ -70,10 +71,26 @@ struct WellnessScreeningView: View {
             }
             Toggle("Hypertension", isOn: binding(\.hypertension))
             Toggle("Family history: diabetes", isOn: binding(\.familyHxDiabetes))
+            Toggle("Previous gestational diabetes", isOn: binding(\.priorGestationalDiabetes))
             Toggle("Family history: bowel cancer (1st degree)", isOn: binding(\.familyHxColorectal))
+            if data.familyHxColorectal {
+                Toggle("Relative under 60, or 2 or more relatives", isOn: binding(\.familyHxColorectalHighRisk))
+            }
+            Toggle("Family history suggesting Lynch syndrome", isOn: binding(\.familyHxLynchFeatures))
+            Toggle("Lynch syndrome carrier", isOn: binding(\.lynchCarrier))
             Toggle("Previous colon polyps", isOn: binding(\.priorPolyps))
+            if data.priorPolyps {
+                Toggle("Villous / high-grade dysplasia / TSA", isOn: binding(\.polypAdvancedHistology))
+                Toggle("Piecemeal EMR of a lesion ≥20 mm", isOn: binding(\.piecemealEMR20mm))
+            }
+            Toggle("Family history: gastric cancer", isOn: binding(\.familyHxGastricCancer))
             if patient.sex == .female {
                 Toggle("Family history: breast / ovarian cancer", isOn: binding(\.familyHxBreastOvarian))
+                Toggle("BRCA carrier", isOn: binding(\.brcaCarrier))
+                Toggle("Total hysterectomy (benign)", isOn: binding(\.totalHysterectomy))
+                if data.totalHysterectomy {
+                    Toggle("History of CIN2+ / cervical cancer", isOn: binding(\.cervicalHighGradeHistory))
+                }
             }
             if patient.sex == .male {
                 Toggle("Family history: prostate cancer", isOn: binding(\.familyHxProstate))

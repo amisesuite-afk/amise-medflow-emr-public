@@ -68,7 +68,7 @@ extension Patient {
 
         let s = data.wellness
         if !s.statuses.isEmpty {
-            let items = ScreeningEngine.items(age: age, sex: sex, bmi: latestBMI(), w: s)
+            let items = ScreeningEngine.items(age: age, sex: sex, bmi: latestBMI(), w: s, clinicBP: ScreeningEngine.latestBP(self))
             let lines = items.compactMap { item -> String? in
                 s.statuses[item.id].map { "\(item.title): \($0.rawValue)" }
             }
@@ -219,6 +219,25 @@ struct WellnessScreening: Codable {
     var africanCaribbean = false
     var familyHxDiabetes = false
     var hypertension = false
+    // Parity with the web preventive-screening module (lib/triage-engine/src/screening/preventive.ts,
+    // docs/clinical-validation/changes/fix-web-screening.md) — added 2026-09.
+    /// First-degree relative with colorectal cancer / advanced adenoma under 60, or ≥2 FDRs (ACG 2021).
+    var familyHxColorectalHighRisk = false
+    var lynchCarrier = false
+    var familyHxLynchFeatures = false
+    var brcaCarrier = false
+    var totalHysterectomy = false
+    var cervicalHighGradeHistory = false
+    var priorGestationalDiabetes = false
+    var familyHxGastricCancer = false
+    var lastNormalColonoscopyYearsAgo: Int? = nil
+    // Polyp findings for the US MSTF 2020 interval (nil / false = not recorded).
+    var polypCount: Int? = nil
+    var largestPolypMm: Int? = nil
+    /// Villous histology, high-grade dysplasia or traditional serrated adenoma.
+    var polypAdvancedHistology = false
+    /// Piecemeal EMR of a lesion ≥20 mm.
+    var piecemealEMR20mm = false
     var statuses: [String: Status] = [:]
 
     init() {}
@@ -235,6 +254,19 @@ struct WellnessScreening: Codable {
         africanCaribbean      = (try? c.decodeIfPresent(Bool.self, forKey: .africanCaribbean)) ?? false
         familyHxDiabetes      = (try? c.decodeIfPresent(Bool.self, forKey: .familyHxDiabetes)) ?? false
         hypertension          = (try? c.decodeIfPresent(Bool.self, forKey: .hypertension)) ?? false
+        familyHxColorectalHighRisk = (try? c.decodeIfPresent(Bool.self, forKey: .familyHxColorectalHighRisk)) ?? false
+        lynchCarrier          = (try? c.decodeIfPresent(Bool.self, forKey: .lynchCarrier)) ?? false
+        familyHxLynchFeatures = (try? c.decodeIfPresent(Bool.self, forKey: .familyHxLynchFeatures)) ?? false
+        brcaCarrier           = (try? c.decodeIfPresent(Bool.self, forKey: .brcaCarrier)) ?? false
+        totalHysterectomy     = (try? c.decodeIfPresent(Bool.self, forKey: .totalHysterectomy)) ?? false
+        cervicalHighGradeHistory = (try? c.decodeIfPresent(Bool.self, forKey: .cervicalHighGradeHistory)) ?? false
+        priorGestationalDiabetes = (try? c.decodeIfPresent(Bool.self, forKey: .priorGestationalDiabetes)) ?? false
+        familyHxGastricCancer = (try? c.decodeIfPresent(Bool.self, forKey: .familyHxGastricCancer)) ?? false
+        lastNormalColonoscopyYearsAgo = (try? c.decodeIfPresent(Int.self, forKey: .lastNormalColonoscopyYearsAgo)) ?? nil
+        polypCount            = (try? c.decodeIfPresent(Int.self, forKey: .polypCount)) ?? nil
+        largestPolypMm        = (try? c.decodeIfPresent(Int.self, forKey: .largestPolypMm)) ?? nil
+        polypAdvancedHistology = (try? c.decodeIfPresent(Bool.self, forKey: .polypAdvancedHistology)) ?? false
+        piecemealEMR20mm      = (try? c.decodeIfPresent(Bool.self, forKey: .piecemealEMR20mm)) ?? false
         statuses              = (try? c.decodeIfPresent([String: Status].self, forKey: .statuses)) ?? [:]
     }
 }
@@ -252,7 +284,8 @@ struct ScreeningItem: Identifiable {
 enum ScreeningEngine {
     /// Screening due for this patient's age, sex and risk parameters.
     /// Based on USPSTF recommendations adapted to common Caribbean practice. Suggestions only.
-    static func items(age: Int?, sex: Sex, bmi: Double?, w: WellnessScreening) -> [ScreeningItem] {
+    static func items(age: Int?, sex: Sex, bmi: Double?, w: WellnessScreening,
+                      clinicBP: (systolic: Int, diastolic: Int)? = nil) -> [ScreeningItem] {
         guard let age else {
             return [ScreeningItem(id: "dob", title: "Record date of birth",
                                   detail: "Screening recommendations depend on age.",
@@ -266,40 +299,79 @@ enum ScreeningEngine {
         }
 
         if age >= 18 {
-            add("bp", "Blood pressure", "Check at every visit; yearly if normal.")
+            // NICE NG136: clinic BP 140–179 / 90–119 without known hypertension → confirm out of clinic.
+            let raised = clinicBP.map { ($0.systolic >= 140 && $0.systolic < 180) || ($0.diastolic >= 90 && $0.diastolic < 120) } ?? false
+            add("bp", "Blood pressure", raised && !w.hypertension
+                ? "Clinic BP raised: confirm with ABPM (or HBPM); urine ACR, U&E, HbA1c, lipids, ECG, fundi (NICE NG136)."
+                : "Check at every visit; yearly if normal.", high: raised && !w.hypertension)
             add("bmi", "Weight, BMI and waist", bmi.map { String(format: "Current BMI %.1f.", $0) } ?? "Record height and weight.")
         }
 
-        // Diabetes: high prevalence in the Caribbean — screen from 35, earlier with risk factors.
-        let dmRisk = (bmi ?? 0) >= 25 || w.familyHxDiabetes || w.hypertension
+        // Diabetes: high prevalence in the Caribbean — screen from 35; earlier when overweight AND
+        // a risk factor is present, or after gestational diabetes (ADA 2024; USPSTF 2021).
+        let dmRisk = ((bmi ?? 0) >= 25 && (w.familyHxDiabetes || w.hypertension)) || w.priorGestationalDiabetes
         if age >= 35 || (age >= 18 && dmRisk) {
             add("dm", "Diabetes screen", "HbA1c or fasting glucose; repeat every 3 years if normal"
                 + (dmRisk ? " (risk factors present)." : "."), ix: "HbA1c", high: dmRisk && age < 35)
         }
         if (40...75).contains(age) || (age >= 20 && w.hypertension) {
-            add("lipids", "Lipid profile", "Cardiovascular risk assessment.", ix: "Lipid profile")
+            add("lipids", "Lipid profile", "Lipid profile and 10-year cardiovascular risk (Pooled Cohort Equations); statin "
+                + "discussion if ≥10% with a risk factor (USPSTF 2022).", ix: "Lipid profile")
         }
 
-        // Colorectal cancer
-        if w.priorPolyps {
-            add("crc-polyps", "Surveillance colonoscopy", "Previous polyps: interval per last colonoscopy/histology report.",
+        // Colorectal cancer (USPSTF 2021; ACG 2021; US MSTF 2017/2020; BSG/ACPGBI/UKCGG 2019)
+        if w.lynchCarrier {
+            add("crc-lynch", "Lynch syndrome — colonoscopy every 2 years",
+                "Colonoscopy every 2 years from 25 (MLH1/MSH2/EPCAM) or 35 (MSH6/PMS2); discuss aspirin; gynaecology "
+                + "review (women); genetics / cascade testing (BSG/ACPGBI/UKCGG 2019; NCCN 2024).",
+                ix: "Colonoscopy", .endoscopy, high: true)
+        } else if w.priorPolyps {
+            let plan = polypSurveillanceInterval(w)
+            add("crc-polyps", "Surveillance colonoscopy", "Previous polyps: \(plan) (US MSTF 2020).",
                 ix: "Colonoscopy", .endoscopy, high: true)
         } else if w.familyHxColorectal && age >= 40 {
-            add("crc-fh", "Colonoscopy (family history)", "First-degree relative with colorectal cancer: colonoscopy from 40 "
-                + "(or 10 years before the youngest case), then every 5 years.", ix: "Colonoscopy", .endoscopy, high: true)
+            if w.familyHxColorectalHighRisk {
+                add("crc-fh", "Colonoscopy (family history)", "First-degree relative with colorectal cancer or advanced adenoma "
+                    + "under 60, or ≥2 first-degree relatives: colonoscopy from 40 (or 10 years before the youngest case), "
+                    + "then every 5 years (ACG 2021; US MSTF 2017).", ix: "Colonoscopy", .endoscopy, high: true)
+            } else {
+                add("crc-fh", "Colorectal screening (family history)", "One first-degree relative diagnosed at 60 or over: start "
+                    + "at 40 with average-risk options — FIT every year or colonoscopy every 10 years (ACG 2021).",
+                    ix: "FIT (faecal immunochemical test)", .pathology)
+            }
         } else if (45...75).contains(age) {
-            add("crc", "Colorectal cancer screening", "FIT every year, or colonoscopy every 10 years.",
-                ix: "FIT (faecal immunochemical test)", .pathology)
+            if let years = w.lastNormalColonoscopyYearsAgo, years < 10 {
+                add("crc", "Colorectal cancer screening", "Up to date — next colonoscopy 10 years after the last normal one "
+                    + "(\(10 - years) years from now).")
+            } else {
+                add("crc", "Colorectal cancer screening", "FIT every year, or colonoscopy every 10 years (USPSTF 2021).",
+                    ix: "FIT (faecal immunochemical test)", .pathology)
+            }
+        } else if (76...85).contains(age) {
+            add("crc-76-85", "Colorectal screening 76–85 — individualised",
+                "Individualised decision (health, life expectancy, prior screening) — USPSTF 2021 grade C.")
+        }
+        if w.familyHxLynchFeatures && !w.lynchCarrier {
+            add("crc-lynch-fh", "Possible Lynch syndrome in the family",
+                "Request the relative's tumour MMR/MSI result; clinical genetics referral (NCCN 2024; revised Bethesda).", high: true)
         }
 
         if female {
-            if w.familyHxBreastOvarian && age >= 30 {
-                add("breast-fh", "Breast imaging (family history)", "Earlier / more frequent imaging; consider genetics referral.",
-                    ix: "Mammogram", .imaging, high: true)
-            } else if (40...74).contains(age) {
-                add("breast", "Mammogram", "Every 2 years.", ix: "Mammogram", .imaging)
+            if w.brcaCarrier && age >= 25 {
+                add("breast-brca", "BRCA carrier — high-risk breast surveillance",
+                    "Annual breast MRI from 25, annual mammography from 30; discuss risk-reducing mastectomy and RRSO; "
+                    + "high-risk / genetics service (NCCN 2024; ACR 2023).", ix: "MRI breast", .imaging, high: true)
+            } else {
+                if w.familyHxBreastOvarian && age >= 30 {
+                    add("breast-fh", "Breast cancer family history",
+                        "Familial risk tool; genetic counselling if positive; MRI + mammography from 30 only if lifetime "
+                        + "risk ≥20% (USPSTF 2019; ACR 2023).", high: true)
+                }
+                if (40...74).contains(age) {
+                    add("breast", "Mammogram", "Every 2 years, 40–74 (USPSTF 2024).", ix: "Mammogram", .imaging)
+                }
             }
-            if (21...65).contains(age) {
+            if (21...65).contains(age) && !(w.totalHysterectomy && !w.cervicalHighGradeHistory) {
                 add("cervix", "Cervical screening", age >= 30 ? "HPV test every 5 years (or cytology every 3)." : "Cytology every 3 years.",
                     ix: age >= 30 ? "HPV test" : "Cervical cytology", .pathology)
             }
@@ -309,8 +381,10 @@ enum ScreeningEngine {
         }
 
         if male {
+            // USPSTF 2018: shared decision 55–69; earlier (45) with a family history — whether
+            // African-Caribbean ancestry alone keeps the start at 45 is listed for sign-off.
             let early = w.africanCaribbean || w.familyHxProstate
-            if (early ? 45 : 50)...69 ~= age {
+            if (early ? 45 : 55)...69 ~= age {
                 add("psa", "Prostate (PSA) — shared decision", "Discuss benefits and harms before testing"
                     + (early ? "; higher risk (African-Caribbean descent or family history)." : "."),
                     ix: "PSA", high: early)
@@ -327,6 +401,15 @@ enum ScreeningEngine {
                 ix: "Low-dose CT chest", .imaging, high: true)
         }
         if (18...79).contains(age) { add("hcv", "Hepatitis C", "Once in adulthood.", ix: "Hepatitis C antibody") }
+        if age >= 18 {
+            add("hbv", "Hepatitis B", "Hepatitis B triple panel (HBsAg, anti-HBs, anti-HBc) once — CDC 2023.",
+                ix: "Hepatitis B surface antigen")
+        }
+        if w.familyHxGastricCancer && age >= 18 {
+            add("hpylori", "H. pylori test-and-treat (family history of gastric cancer)",
+                "Stool antigen or urea breath test off PPI for 2 weeks; eradicate and confirm (Maastricht VI 2022).",
+                ix: "H. pylori stool antigen", .pathology)
+        }
         if (15...65).contains(age) { add("hiv", "HIV", "At least once; more often if at risk.", ix: "HIV 1/2 Ag/Ab") }
 
         if age >= 18 {
@@ -338,6 +421,30 @@ enum ScreeningEngine {
         add("tetanus", "Tetanus booster", "If last dose over 10 years ago.")
         if age >= 65 { add("pneumo", "Pneumococcal vaccine", "Adults 65 and over.") }
         return out
+    }
+
+    /// The latest recorded systolic/diastolic pair (for the NICE NG136 confirmation prompt).
+    static func latestBP(_ p: Patient) -> (systolic: Int, diastolic: Int)? {
+        guard let v = p.vitalsEntries.filter({ $0.bpSystolic != nil && $0.bpDiastolic != nil })
+                .sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+              let s = v.bpSystolic, let d = v.bpDiastolic else { return nil }
+        return (s, d)
+    }
+
+    /// US MSTF 2020 (Gupta et al.) post-polypectomy interval from the recorded findings; mirrors
+    /// `polypSurveillanceInterval` in lib/triage-engine/src/screening/preventive.ts.
+    static func polypSurveillanceInterval(_ w: WellnessScreening) -> String {
+        if w.piecemealEMR20mm {
+            return "site-check colonoscopy at 6 months, then 1 year after that, then 3 years later"
+        }
+        let n = w.polypCount
+        let size = w.largestPolypMm
+        if w.polypAdvancedHistology || (size ?? 0) >= 10 { return "next colonoscopy in 3 years" }
+        if let n, n > 10 { return "next colonoscopy in 1 year; genetics referral" }
+        if let n, n >= 5 { return "next colonoscopy in 3 years" }
+        if let n, n >= 3 { return "next colonoscopy in 3–5 years" }
+        if let n, n >= 1, size != nil { return "next colonoscopy in 7–10 years" }
+        return "interval per the colonoscopy / histology report (US MSTF 2020 table)"
     }
 }
 

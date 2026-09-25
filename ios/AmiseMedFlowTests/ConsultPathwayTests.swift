@@ -252,8 +252,11 @@ final class ScreeningEngineTests: XCTestCase {
     }
 
     func testFiftyYearOldMaleAverageRisk() {
+        // USPSTF 2018: PSA shared decision from 55 (45 with higher risk).
         let s = ids(age: 50, sex: .male)
-        XCTAssertTrue(s.isSuperset(of: ["crc", "psa", "dm", "lipids", "bp"]))
+        XCTAssertTrue(s.isSuperset(of: ["crc", "dm", "lipids", "bp"]))
+        XCTAssertFalse(s.contains("psa"))
+        XCTAssertTrue(ids(age: 55, sex: .male).contains("psa"))
         XCTAssertFalse(s.contains("breast"))
         XCTAssertFalse(s.contains("aaa"))
     }
@@ -284,6 +287,24 @@ final class ScreeningEngineTests: XCTestCase {
     func testEarlierPSAForHigherRisk() {
         XCTAssertFalse(ids(age: 46, sex: .male).contains("psa"))
         XCTAssertTrue(ids(age: 46, sex: .male) { $0.africanCaribbean = true }.contains("psa"))
+    }
+
+    func testWebParityRules() {
+        XCTAssertTrue(ids(age: 30, sex: .female) { $0.lynchCarrier = true }.contains("crc-lynch"))
+        XCTAssertTrue(ids(age: 80, sex: .male).contains("crc-76-85"))
+        XCTAssertFalse(ids(age: 86, sex: .male).contains("crc-76-85"))
+        XCTAssertTrue(ids(age: 33, sex: .female) { $0.brcaCarrier = true }.contains("breast-brca"))
+        XCTAssertFalse(ids(age: 52, sex: .female) { $0.totalHysterectomy = true }.contains("cervix"))
+        XCTAssertTrue(ids(age: 52, sex: .female) { $0.totalHysterectomy = true; $0.cervicalHighGradeHistory = true }.contains("cervix"))
+        XCTAssertTrue(ids(age: 30, sex: .male).contains("hbv"))
+        XCTAssertTrue(ids(age: 38, sex: .female) { $0.priorGestationalDiabetes = true }.contains("dm"))
+        XCTAssertFalse(ids(age: 30, sex: .female, bmi: 27).contains("dm"))       // overweight alone
+        XCTAssertTrue(ids(age: 30, sex: .female, bmi: 27) { $0.familyHxDiabetes = true }.contains("dm"))
+        var w = WellnessScreening()
+        w.priorPolyps = true; w.polypCount = 2; w.largestPolypMm = 6
+        XCTAssertEqual(ScreeningEngine.polypSurveillanceInterval(w), "next colonoscopy in 7–10 years")
+        w.largestPolypMm = 12
+        XCTAssertEqual(ScreeningEngine.polypSurveillanceInterval(w), "next colonoscopy in 3 years")
     }
 
     func testAAAOnlyForMenWhoEverSmoked() {
