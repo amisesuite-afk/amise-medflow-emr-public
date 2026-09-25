@@ -4,8 +4,9 @@
  * Runs one vignette through the web consultation engines, calling the same pure functions the
  * dashboard calls, with the arguments the dashboard builds (file references in each block):
  *
- *   PANE differential   ChiefComplaintStrip / HpiTab.reseedPane: applyModifiers → initPaneState →
- *                       extractFeaturesFromSocrates → updatePosterior → topDiagnoses(3)
+ *   PANE differential   ChiefComplaintStrip / HpiTab.reseedPane: applyModifiers (with pregnancy
+ *                       context) → initPaneState → extractFeaturesFromSocrates(cc, answers,
+ *                       paneContextFromConsultation(AppContext)) → updatePosterior → topDiagnoses(3)
  *   Symptom inference   HpiTab / ExaminationTab: computeRankedDifferentials({symptoms, symptomDetails, age, sex})
  *   Passive ranking     AssessmentTab: computeRankedDifferentials({symptoms, symptomDetails: {}, examText})
  *   Triage / acuity     AppContext: adaptiveTriage(triageInput); matchPathways (usePathway)
@@ -25,7 +26,8 @@ import {
 import type { ManagementProtocol, PaneState } from '../../../lib/pane-engine/src/index';
 import { RULES_VERSION, adaptiveTriage, matchPathways } from '../../../lib/triage-engine/src/index';
 import type { AdaptiveTriageInput } from '../../../lib/triage-engine/src/index';
-import { extractFeaturesFromSocrates } from '../../../artifacts/dashboard/src/lib/socrates-to-features';
+import { extractFeaturesFromSocrates, paneContextFromConsultation } from '../../../artifacts/dashboard/src/lib/socrates-to-features';
+import type { ConsultationSnapshot } from '../../../artifacts/dashboard/src/lib/socrates-to-features';
 import { computeRankedDifferentials } from '../../../artifacts/dashboard/src/lib/symptom-inference';
 import { getCdsSuggestions } from '../../../artifacts/dashboard/src/lib/clinical-cds';
 import type { CdsContext } from '../../../artifacts/dashboard/src/lib/clinical-cds';
@@ -143,6 +145,28 @@ function socratesAnswers(v: Vignette): Record<string, string> {
   };
 }
 
+/** The AppContext fields paneContextFromConsultation reads, filled from the vignette record. */
+function consultationSnapshot(v: Vignette): Partial<ConsultationSnapshot> {
+  const inp = v.inputs;
+  const web = inp.platform?.web ?? {};
+  const lv = latestVitals(v);
+  return {
+    age: String(inp.patient.ageYears), sex: webSex(v), pregnancyPossible: pregnancyPossible(v),
+    symptoms: web.symptoms ?? [], symptomDetails: web.symptomDetails ?? {},
+    vitals: { ...vitalStrings(v), avpu: lv?.avpu ?? '' },
+    durationDays: web.durationDays === undefined || web.durationDays === null ? '' : String(web.durationDays),
+    isPostOp: inp.encounter.isPostOp ?? false,
+    postOpDays: inp.encounter.postOpDays === undefined || inp.encounter.postOpDays === null ? '' : String(inp.encounter.postOpDays),
+    comorbidities: inp.comorbidities ?? [], medications: (inp.medications ?? []).map(m => m.drug),
+    surgicalHistory: inp.surgicalHistory ?? [], toxicHabits: web.toxicHabits ?? [],
+    investigationResults: investigationResults(v), examFindings: web.examFindings ?? {},
+    freeText: inp.chiefComplaint, hpiNotes: inp.hpi ?? '',
+    examGeneral: inp.exam?.general ?? '', examCardio: inp.exam?.cardiovascular ?? '', examResp: inp.exam?.respiratory ?? '',
+    examAbdomen: inp.exam?.abdomen ?? '', examNeuro: inp.exam?.neuro ?? '', examExtremities: inp.exam?.msk ?? '',
+    examNotes: { other: inp.exam?.other ?? '', skin: inp.exam?.skin ?? '' },
+  };
+}
+
 function webSex(v: Vignette): 'male' | 'female' | 'unknown' {
   return v.inputs.patient.sex === 'unspecified' ? 'unknown' : v.inputs.patient.sex;
 }
@@ -190,9 +214,9 @@ export function runWeb(v: Vignette): EngineOutputs {
   const differentials: Record<string, DxItem[]> = {};
 
   // ── PANE (ChiefComplaintStrip / HpiTab.reseedPane) ─────────────────────────
-  const diseases = applyModifiers(DISEASES, age, sex);
+  const diseases = applyModifiers(DISEASES, age, sex, undefined, { pregnancyPossible: pregnancyPossible(v) });
   let pane: PaneState = initPaneState(diseases);
-  const features = extractFeaturesFromSocrates(cc, socratesAnswers(v));
+  const features = extractFeaturesFromSocrates(cc, socratesAnswers(v), paneContextFromConsultation(consultationSnapshot(v)));
   const featureIds = new Set(FEATURES.map(f => f.id));
   const unknownFeatures: string[] = [];
   for (const [featureId, present] of Object.entries(features)) {

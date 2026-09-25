@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { CC_TEMPLATES, CC_BY_CATEGORY, getMatrixByName, type CCCategory, type CCTemplate } from '@/lib/cc-matrices';
 import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
-import { extractFeaturesFromSocrates } from '@/lib/socrates-to-features';
+import { extractFeaturesFromSocrates, paneContextFromConsultation } from '@/lib/socrates-to-features';
 import { DISEASES, FEATURES, applyModifiers, initPaneState, updatePosterior, isConverged } from '@workspace/pane-engine';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -160,11 +160,12 @@ function PromptField({
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export default function ChiefComplaintStrip() {
+  const app = useAppContext();
   const {
     symptoms, symptomDetails, procedureData, setProcedureData,
     setEncounterType, activeCcKey, setActiveCcKey, setActiveSection, freeText,
-    age, sex, setPaneState,
-  } = useAppContext();
+    age, sex, setPaneState, pregnancyPossible,
+  } = app;
 
   const [expanded, setExpanded]       = useState<number | null>(null);
   const [openFieldIdx, setOpenFieldIdx] = useState(0);
@@ -181,9 +182,10 @@ export default function ChiefComplaintStrip() {
   // (SuggestedInvestigationsPanel), ordered only when the clinician ticks them (UX review C3).
   function seedPane(complaint: string, answers: Record<string, string>) {
     const parsedAge = parseInt(age, 10) || null;
-    const diseases  = applyModifiers(DISEASES, parsedAge, sex);
+    // Pane model 1.0.0: reads the rest of the record too (same call as HpiTab.reseedPane).
+    const diseases  = applyModifiers(DISEASES, parsedAge, sex, undefined, { pregnancyPossible });
     let   state     = initPaneState(diseases);
-    const features  = extractFeaturesFromSocrates(complaint, answers);
+    const features  = extractFeaturesFromSocrates(complaint, answers, paneContextFromConsultation(app));
     for (const [featureId, present] of Object.entries(features)) {
       if (FEATURES.some(f => f.id === featureId)) {
         state = updatePosterior(state, diseases, featureId, present);

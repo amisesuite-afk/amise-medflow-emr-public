@@ -20,7 +20,7 @@ import {
   nextBestQuestion,
 } from '@workspace/pane-engine';
 import type { Feature } from '@workspace/pane-engine';
-import { extractFeaturesFromSocrates } from '@/lib/socrates-to-features';
+import { extractFeaturesFromSocrates, paneContextFromConsultation } from '@/lib/socrates-to-features';
 
 interface CCEntry { complaint: string; answers: Record<string, string> }
 
@@ -848,6 +848,7 @@ function ContinuityBanner({
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function HpiTab() {
+  const app = useAppContext();
   const {
     hpiNotes, setHpiNotes,
     freeText, setFreeText,
@@ -863,7 +864,7 @@ export default function HpiTab() {
     recentEncounters,
     comorbidities, allergies, medications, surgicalHistory,
     paneState, setPaneState,
-  } = useAppContext();
+  } = app;
 
   const entries = useMemo(
     () => (procedureData['cc'] as CCEntry[] | undefined) ?? [],
@@ -950,12 +951,15 @@ export default function HpiTab() {
 
   // Re-seed PANE from scratch using all current CC entries' SOCRATES answers.
   // Called on every chip tap so the differential updates in real-time.
+  // Pane model 1.0.0: the rest of the record (chips, vitals, history, results, free text) is read
+  // too, and "pregnancy possible" adjusts the pregnancy-only diagnoses.
   function reseedPane(updatedEntries: CCEntry[]) {
     const parsedAge = parseInt(age, 10) || null;
-    const diseases  = applyModifiers(DISEASES, parsedAge, sex);
+    const diseases  = applyModifiers(DISEASES, parsedAge, sex, undefined, { pregnancyPossible });
     let   state     = initPaneState(diseases);
+    const paneCtx   = paneContextFromConsultation(app);
     for (const entry of updatedEntries) {
-      const features = extractFeaturesFromSocrates(entry.complaint, entry.answers);
+      const features = extractFeaturesFromSocrates(entry.complaint, entry.answers, paneCtx);
       for (const [featureId, present] of Object.entries(features)) {
         if (FEATURES.some(f => f.id === featureId)) {
           state = updatePosterior(state, diseases, featureId, present as boolean);
@@ -1019,9 +1023,9 @@ export default function HpiTab() {
   const paneNextQuestion = useMemo<Feature | null>(() => {
     if (!paneState) return null;
     const parsedAge = parseInt(age, 10) || null;
-    const diseases = applyModifiers(DISEASES, parsedAge, sex);
+    const diseases = applyModifiers(DISEASES, parsedAge, sex, undefined, { pregnancyPossible });
     return nextBestQuestion(paneState, diseases, FEATURES);
-  }, [paneState, age, sex]);
+  }, [paneState, age, sex, pregnancyPossible]);
 
   const hasSourceData = entries.length > 0 || symptoms.length > 0 || freeText.trim().length > 0;
   const narrativeEdited = hpiNotes !== liveProse && hpiNotes.trim().length > 0;
