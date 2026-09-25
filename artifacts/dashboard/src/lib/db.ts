@@ -11,6 +11,7 @@ import {
   news2FieldsToRow, news2FieldsFromRow, writeVitalsWithNews2Fallback,
   selectVitalsWithNews2Fallback, isMissingColumnError, PATIENT_NEWS2_SCALE2_COLUMN,
 } from './vitals-news2-fields';
+import { buildDocumentInsert, describeDocumentSaveError } from './document-types';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -1295,19 +1296,18 @@ export async function uploadReportPdf(input: {
     .from('patient-documents')
     .upload(path, input.file, { contentType: 'application/pdf', upsert: false });
   if (uploadErr) { console.error('[db] uploadReportPdf (storage):', uploadErr.message); return { id: null, error: uploadErr.message }; }
-  const { data, error } = await supabase.from('documents').insert({
-    patient_id:      input.patientId,
-    encounter_id:    input.encounterId,
-    document_type:   input.documentType,
-    title:           input.title,
-    file_name:       input.fileName,
-    storage_path:    path,
-    mime_type:       'application/pdf',
-    file_size_bytes: input.file.size,
-    source:          'uploaded',
-    notes:           input.notes,
-    created_by:      input.userId,
-  }).select('id').single();
+  const { data, error } = await supabase.from('documents').insert(buildDocumentInsert({
+    patientId:     input.patientId,
+    encounterId:   input.encounterId,
+    type:          input.documentType,
+    title:         input.title,
+    fileName:      input.fileName,
+    storagePath:   path,
+    mimeType:      'application/pdf',
+    fileSizeBytes: input.file.size,
+    notes:         input.notes,
+    userId:        input.userId,
+  })).select('id').single();
   if (error) {
     console.error('[db] uploadReportPdf (documents):', error.message);
     // Do not leave an orphan file behind the failed metadata insert.
@@ -1315,6 +1315,102 @@ export async function uploadReportPdf(input: {
     return { id: null, error: error.message };
   }
   return { id: (data as { id: string }).id, error: null };
+}
+
+// ─── Patient documents (Documents tab uploads, clinical attachments) ──────────
+// Every dashboard insert into `documents` goes through buildDocumentInsert (lib/document-types.ts),
+// which maps display types to the CHECK values and always sets the NOT NULL title.
+
+/** Storage buckets that hold files recorded in `documents`. */
+export type DocumentBucket = 'patient-documents' | 'clinical-attachments';
+
+/**
+ * Uploads a file for a patient and records it in `documents`. On a failed record the uploaded file
+ * is removed again, and `error` is a message the user can act on (describeDocumentSaveError).
+ */
+export async function uploadPatientDocument(input: {
+  bucket: DocumentBucket;
+  patientId: string;
+  encounterId: string | null;
+  file: File;
+  /** A display label ("Lab Report") or a stored value ("clinical_photo"). */
+  type: string;
+  notes: string | null;
+  userId: string | null;
+}): Promise<{ id: string | null; storagePath: string | null; error: string | null }> {
+  if (!supabase) return { id: null, storagePath: null, error: notConfigured('uploadPatientDocument') };
+  const safeName = input.file.name.replace(/[^a-zA-Z0-9._ -]/g, '_');
+  const path = `${input.patientId}/${Date.now()}-${crypto.randomUUID().slice(0, 8)}-${safeName}`;
+  const { error: uploadErr } = await supabase.storage
+    .from(input.bucket)
+    .upload(path, input.file, { contentType: input.file.type || undefined, upsert: false });
+  if (uploadErr) {
+    console.error('[db] uploadPatientDocument (storage):', uploadErr.message);
+    return { id: null, storagePath: null, error: `The file could not be uploaded (${uploadErr.message}).` };
+  }
+  const { data, error } = await supabase.from('documents').insert(buildDocumentInsert({
+    patientId:     input.patientId,
+    encounterId:   input.encounterId,
+    type:          input.type,
+    fileName:      input.file.name,
+    storagePath:   path,
+    mimeType:      input.file.type || 'application/octet-stream',
+    fileSizeBytes: input.file.size,
+    notes:         input.notes,
+    userId:        input.userId,
+  })).select('id').single();
+  if (error) {
+    console.error('[db] uploadPatientDocument (documents):', error.message);
+    void supabase.storage.from(input.bucket).remove([path]);
+    return { id: null, storagePath: null, error: describeDocumentSaveError(error) };
+  }
+  return { id: (data as { id: string }).id, storagePath: path, error: null };
+}
+
+/** A `documents` row as read by the Documents tab (legacy column names tolerated). */
+export interface PatientDocumentRow {
+  id: string;
+  patient_id: string | null;
+  encounter_id: string | null;
+  document_type: string;
+  title: string | null;
+  file_name: string | null;
+  storage_path: string | null;
+  mime_type: string | null;
+  notes: string | null;
+  source: string | null;
+  created_at: string;
+  /** Older column names, in case an environment has them. */
+  original_filename?: string | null;
+  description?: string | null;
+}
+
+export async function loadPatientDocuments(patientId: string): Promise<{ rows: PatientDocumentRow[]; error: string | null }> {
+  if (!supabase) return { rows: [], error: notConfigured('loadPatientDocuments') };
+  const { data, error } = await supabase
+    .from('documents')
+    .select('*')
+    .eq('patient_id', patientId)
+    .order('created_at', { ascending: false });
+  if (error) {
+    console.error('[db] loadPatientDocuments:', error.message);
+    return { rows: [], error: `Documents could not be loaded (${error.message}).` };
+  }
+  return { rows: (data ?? []) as PatientDocumentRow[], error: null };
+}
+
+/**
+ * A short-lived link to a stored document. Documents tab files are in `patient-documents`;
+ * clinical attachments recorded in `documents` are in `clinical-attachments`, so that bucket is
+ * tried second.
+ */
+export async function documentDownloadLink(storagePath: string): Promise<string | null> {
+  if (!supabase) return null;
+  for (const bucket of ['patient-documents', 'clinical-attachments'] as const) {
+    const { data, error } = await supabase.storage.from(bucket).createSignedUrl(storagePath, 3600);
+    if (!error && data?.signedUrl) return data.signedUrl;
+  }
+  return null;
 }
 
 export interface ImportedLabResultRow {

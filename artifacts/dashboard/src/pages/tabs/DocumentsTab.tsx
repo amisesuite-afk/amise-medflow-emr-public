@@ -1,23 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/lib/supabase';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import DocumentCapture from '@/components/DocumentCapture';
 import ReportImportPanel from '@/components/report-import/ReportImportPanel';
-
-interface DocumentRow {
-  id: string;
-  patient_id: string;
-  encounter_id: string | null;
-  document_type: string;
-  original_filename: string;
-  storage_path: string;
-  mime_type: string;
-  uploaded_by: string;
-  description: string | null;
-  created_at: string;
-}
+import {
+  uploadPatientDocument, loadPatientDocuments, documentDownloadLink, type PatientDocumentRow,
+} from '@/lib/db';
+import { UPLOAD_DOCUMENT_TYPES, documentTypeLabel } from '@/lib/document-types';
 
 interface FileUploadState {
   file: File;
@@ -25,18 +15,10 @@ interface FileUploadState {
   error?: string;
 }
 
-const DOCUMENT_TYPES = [
-  'Referral Letter',
-  'Operative Note',
-  'Discharge Summary',
-  'Lab Report',
-  'Imaging Report',
-  'Pathology Report',
-  'Consent Form',
-  'Insurance Document',
-  'Clinic Letter',
-  'Other',
-];
+/** The file name to show and download as (current column, then the older one). */
+function rowFileName(doc: PatientDocumentRow): string {
+  return doc.file_name ?? doc.original_filename ?? doc.title ?? 'document';
+}
 
 export default function DocumentsTab() {
   const { documents, setDocuments, patientId, encounterId } = useAppContext();
@@ -44,32 +26,48 @@ export default function DocumentsTab() {
 
   const userId = session?.user?.id ?? profile?.id ?? null;
 
-  const [docList, setDocList] = useState<DocumentRow[]>([]);
+  const [docList, setDocList] = useState<PatientDocumentRow[]>([]);
   const [listLoading, setListLoading] = useState(false);
-  const [selectedType, setSelectedType] = useState(DOCUMENT_TYPES[0]);
+  const [listError, setListError] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [selectedType, setSelectedType] = useState(UPLOAD_DOCUMENT_TYPES[0].label);
   const [description, setDescription] = useState('');
   const [uploadStates, setUploadStates] = useState<FileUploadState[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // The patient whose list is wanted, so a slow load for the previous patient is dropped.
+  const listFor = useRef<string | null>(null);
+  listFor.current = patientId ?? null;
+
   async function fetchDocuments() {
-    if (!patientId || !supabase) return;
+    if (!patientId) return;
+    const forPatient = patientId;
     setListLoading(true);
-    const { data, error } = await supabase
-      .from('documents')
-      .select('*')
-      .eq('patient_id', patientId)
-      .order('created_at', { ascending: false });
+    const { rows, error } = await loadPatientDocuments(forPatient);
+    if (listFor.current !== forPatient) return;
     setListLoading(false);
-    if (!error && data) setDocList(data as DocumentRow[]);
+    setListError(error);
+    if (!error) setDocList(rows);
   }
 
   useEffect(() => {
+    setDocList([]);
+    setListError(null);
+    setUploadError(null);
     void fetchDocuments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId]);
 
   async function handleFiles(files: FileList) {
-    if (!patientId || !supabase || !userId) return;
+    if (!patientId) {
+      setUploadError('Open a patient record before uploading documents.');
+      return;
+    }
+    if (!userId) {
+      setUploadError('Your session has expired. Sign in again to upload documents.');
+      return;
+    }
+    setUploadError(null);
 
     const newStates: FileUploadState[] = Array.from(files).map(f => ({
       file: f,
@@ -77,51 +75,28 @@ export default function DocumentsTab() {
     }));
     setUploadStates(prev => [...prev, ...newStates]);
 
-    // Capture description at time of upload
+    // Capture type and description at time of upload
     const uploadDescription = description || null;
     const uploadType = selectedType;
 
     await Promise.all(
       newStates.map(async (state) => {
         const file = state.file;
-        const path = `${patientId}/${Date.now()}-${file.name}`;
-
-        const { error: uploadErr } = await supabase!.storage
-          .from('patient-documents')
-          .upload(path, file);
-
-        if (uploadErr) {
-          setUploadStates(prev =>
-            prev.map(s =>
-              s.file === file ? { ...s, status: 'error', error: uploadErr.message } : s
-            )
-          );
-          return;
-        }
-
-        const { error: insertErr } = await supabase!.from('documents').insert({
-          patient_id: patientId,
-          encounter_id: encounterId ?? null,
-          document_type: uploadType,
-          file_name: file.name,
-          storage_path: path,
-          mime_type: file.type,
-          source: 'uploaded',
-          created_by: userId,
-          notes: uploadDescription,
+        const { error } = await uploadPatientDocument({
+          bucket:      'patient-documents',
+          patientId,
+          encounterId: encounterId ?? null,
+          file,
+          type:        uploadType,
+          notes:       uploadDescription,
+          userId,
         });
-
-        if (insertErr) {
-          setUploadStates(prev =>
-            prev.map(s =>
-              s.file === file ? { ...s, status: 'error', error: insertErr.message } : s
-            )
-          );
-          return;
-        }
-
         setUploadStates(prev =>
-          prev.map(s => s.file === file ? { ...s, status: 'done' } : s)
+          prev.map(s =>
+            s.file !== file ? s
+              : error ? { ...s, status: 'error' as const, error }
+              : { ...s, status: 'done' as const }
+          )
         );
       })
     );
@@ -129,17 +104,14 @@ export default function DocumentsTab() {
     await fetchDocuments();
   }
 
-  async function handleDownload(storagePath: string, filename: string) {
-    if (!supabase) return;
-    const { data, error } = await supabase.storage
-      .from('patient-documents')
-      .createSignedUrl(storagePath, 3600);
-    if (error || !data?.signedUrl) {
+  async function handleDownload(storagePath: string | null, filename: string) {
+    const url = storagePath ? await documentDownloadLink(storagePath) : null;
+    if (!url) {
       alert('Could not generate download link.');
       return;
     }
     const a = document.createElement('a');
-    a.href = data.signedUrl;
+    a.href = url;
     a.download = filename;
     a.target = '_blank';
     a.rel = 'noopener noreferrer';
@@ -182,7 +154,7 @@ export default function DocumentsTab() {
             <div className="fld" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <label>Document type</label>
               <select value={selectedType} onChange={e => setSelectedType(e.target.value)}>
-                {DOCUMENT_TYPES.map(t => <option key={t}>{t}</option>)}
+                {UPLOAD_DOCUMENT_TYPES.map(t => <option key={t.label} value={t.label}>{t.label}</option>)}
               </select>
 
               <label>Description (optional)</label>
@@ -228,12 +200,19 @@ export default function DocumentsTab() {
               />
             </div>
 
+            {uploadError && (
+              <div role="alert" style={{ color: 'var(--color-danger, #ef4444)', fontSize: '0.88em' }}>
+                {uploadError}
+              </div>
+            )}
+
             {/* Per-file upload statuses */}
             {uploadStates.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                 {uploadStates.map((s, i) => (
                   <div
                     key={i}
+                    role={s.status === 'error' ? 'alert' : undefined}
                     style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88em' }}
                   >
                     {s.status === 'uploading' && (
@@ -244,28 +223,36 @@ export default function DocumentsTab() {
                     )}
                     {s.status === 'error' && (
                       <span style={{ color: 'var(--color-danger, #ef4444)' }}>
-                        Error: {s.error}
+                        {s.error}
                       </span>
                     )}
                     <span style={{ opacity: 0.8 }}>{s.file.name}</span>
                   </div>
                 ))}
-                {uploadStates.some(s => s.status === 'done') && (
+                {uploadStates.some(s => s.status !== 'uploading') && (
                   <button
                     className="btn-ghost"
                     style={{ alignSelf: 'flex-start', marginTop: '0.25rem', fontSize: '0.85em' }}
-                    onClick={() => setUploadStates(prev => prev.filter(s => s.status !== 'done'))}
+                    onClick={() => setUploadStates(prev => prev.filter(s => s.status === 'uploading'))}
                   >
-                    Clear completed
+                    Clear finished
                   </button>
                 )}
               </div>
             )}
 
             {/* Document list */}
+            {listError && (
+              <div role="alert" style={{ color: 'var(--color-danger, #ef4444)', fontSize: '0.88em' }}>
+                {listError}{' '}
+                <button className="btn-ghost" style={{ fontSize: '0.9em' }} onClick={() => void fetchDocuments()}>
+                  Retry
+                </button>
+              </div>
+            )}
             {listLoading ? (
               <div style={{ opacity: 0.6, fontSize: '0.9em' }}>Loading documents...</div>
-            ) : docList.length === 0 ? (
+            ) : listError ? null : docList.length === 0 ? (
               <div style={{ opacity: 0.6, fontSize: '0.9em' }}>No documents uploaded yet.</div>
             ) : (
               <div style={{ overflowX: 'auto' }}>
@@ -273,59 +260,64 @@ export default function DocumentsTab() {
                   <thead>
                     <tr style={{ borderBottom: '1px solid var(--color-border, #e5e7eb)', textAlign: 'left' }}>
                       <th style={{ padding: '0.4rem 0.5rem' }}>Type</th>
-                      <th style={{ padding: '0.4rem 0.5rem' }}>Filename</th>
+                      <th style={{ padding: '0.4rem 0.5rem' }}>Title</th>
                       <th style={{ padding: '0.4rem 0.5rem' }}>Description</th>
                       <th style={{ padding: '0.4rem 0.5rem' }}>Uploaded</th>
                       <th style={{ padding: '0.4rem 0.5rem' }}></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {docList.map(doc => (
-                      <tr
-                        key={doc.id}
-                        style={{ borderBottom: '1px solid var(--color-border, #e5e7eb)' }}
-                      >
-                        <td style={{ padding: '0.4rem 0.5rem', whiteSpace: 'nowrap' }}>
-                          {doc.document_type}
-                        </td>
-                        <td
-                          style={{
-                            padding: '0.4rem 0.5rem',
-                            maxWidth: '180px',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }}
-                          title={doc.original_filename}
+                    {docList.map(doc => {
+                      const fileName = rowFileName(doc);
+                      const note = doc.notes ?? doc.description ?? null;
+                      return (
+                        <tr
+                          key={doc.id}
+                          style={{ borderBottom: '1px solid var(--color-border, #e5e7eb)' }}
                         >
-                          {doc.original_filename}
-                        </td>
-                        <td
-                          style={{
-                            padding: '0.4rem 0.5rem',
-                            maxWidth: '200px',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }}
-                          title={doc.description ?? undefined}
-                        >
-                          {doc.description ?? '—'}
-                        </td>
-                        <td style={{ padding: '0.4rem 0.5rem', whiteSpace: 'nowrap' }}>
-                          {formatDate(doc.created_at)}
-                        </td>
-                        <td style={{ padding: '0.4rem 0.5rem' }}>
-                          <button
-                            className="btn-ghost"
-                            style={{ fontSize: '0.85em' }}
-                            onClick={() => void handleDownload(doc.storage_path, doc.original_filename)}
+                          <td style={{ padding: '0.4rem 0.5rem', whiteSpace: 'nowrap' }}>
+                            {documentTypeLabel(doc.document_type)}
+                          </td>
+                          <td
+                            style={{
+                              padding: '0.4rem 0.5rem',
+                              maxWidth: '180px',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                            title={fileName}
                           >
-                            Download
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                            {doc.title || fileName}
+                          </td>
+                          <td
+                            style={{
+                              padding: '0.4rem 0.5rem',
+                              maxWidth: '200px',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                            title={note ?? undefined}
+                          >
+                            {note ?? '—'}
+                          </td>
+                          <td style={{ padding: '0.4rem 0.5rem', whiteSpace: 'nowrap' }}>
+                            {formatDate(doc.created_at)}
+                          </td>
+                          <td style={{ padding: '0.4rem 0.5rem' }}>
+                            <button
+                              className="btn-ghost"
+                              style={{ fontSize: '0.85em' }}
+                              disabled={!doc.storage_path}
+                              onClick={() => void handleDownload(doc.storage_path, fileName)}
+                            >
+                              Download
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
+import { uploadPatientDocument } from '@/lib/db';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import type { ClinicalAttachment } from '@/context/AppContext';
 
@@ -20,7 +21,7 @@ function isPdf(mimeType: string): boolean {
 type UploadStatus = 'uploading' | 'saved' | 'local';
 
 export default function AttachmentsTab() {
-  const { attachments, setAttachments, patientId } = useAppContext();
+  const { attachments, setAttachments, patientId, encounterId } = useAppContext();
   const { session } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -43,46 +44,31 @@ export default function AttachmentsTab() {
       return;
     }
 
-    const path = `${patientId}/${crypto.randomUUID()}-${file.name}`;
     setUploadStatusMap(prev => ({ ...prev, [attachmentId]: 'uploading' }));
 
-    const { error: storageError } = await supabase.storage
-      .from('clinical-attachments')
-      .upload(path, file);
+    // Upload + `documents` record (lib/document-types.ts sets the CHECK-valid type and the
+    // required title). A failed record removes the uploaded file again, so a file is never
+    // "saved" where nobody can find it; the attachment stays in this session.
+    const { storagePath, error } = await uploadPatientDocument({
+      bucket:      'clinical-attachments',
+      patientId,
+      encounterId: encounterId ?? null,
+      file,
+      type:        file.type.startsWith('image/') ? 'clinical_photo' : 'other',
+      notes:       'Clinical attachment',
+      userId,
+    });
 
-    if (storageError) {
+    if (error || !storagePath) {
       setUploadStatusMap(prev => ({ ...prev, [attachmentId]: 'local' }));
       setUploadWarnings(prev => ({
         ...prev,
-        [attachmentId]: `Upload failed: ${storageError.message}`,
+        [attachmentId]: `${error ?? 'Not saved.'} Kept in this session only.`,
       }));
       return;
     }
 
-    // Storage upload succeeded — record the path
-    setStoragePathMap(prev => ({ ...prev, [attachmentId]: path }));
-
-    // Insert into documents table
-    const { error: dbError } = await supabase.from('documents').insert({
-      patient_id: patientId,
-      document_type: 'clinical_photo',
-      original_filename: file.name,
-      storage_path: path,
-      mime_type: file.type || 'application/octet-stream',
-      uploaded_by: userId,
-    });
-
-    if (dbError) {
-      // Storage succeeded but DB insert failed — still show saved for storage,
-      // but warn about the metadata record
-      setUploadStatusMap(prev => ({ ...prev, [attachmentId]: 'saved' }));
-      setUploadWarnings(prev => ({
-        ...prev,
-        [attachmentId]: `File saved to storage but metadata record failed: ${dbError.message}`,
-      }));
-      return;
-    }
-
+    setStoragePathMap(prev => ({ ...prev, [attachmentId]: storagePath }));
     setUploadStatusMap(prev => ({ ...prev, [attachmentId]: 'saved' }));
   }
 
