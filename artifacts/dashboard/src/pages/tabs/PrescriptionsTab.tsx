@@ -8,7 +8,9 @@ import AllergyMedAlert from '@/components/AllergyMedAlert';
 import DrugInteractionAlert from '@/components/DrugInteractionAlert';
 import AiInteractionCheck from '@/components/AiInteractionCheck';
 import { searchMedications } from '@workspace/triage-engine';
-import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
+import { adaptProtocolForPatient } from '@workspace/pane-engine';
+import { planProtocolFor } from '@/lib/plan-builder';
+import { usePlanPatientContext } from '@/hooks/usePlanPatientContext';
 import {
   wrapDoc, masthead, metaGrid, sec as docSec, kvTable, bulList, footer, signoff, escH, AMISE_LOGO_SVG,
 } from './lib/docTemplate';
@@ -268,13 +270,16 @@ export default function PrescriptionsTab() {
   // Only a CONFIRMED diagnosis (locked working diagnosis or a recorded ICD-10 code) suggests
   // protocol medications — never an unconfirmed PANE convergence (UX review C4).
   const { diseaseId: activeDiseaseId, icdCode: activeIcdCode } = confirmedPlanSource(ctx.workingDiagnosis, ctx.icdCodes);
-  const protocol = useMemo(
-    () => (activeDiseaseId ? getProtocol(activeDiseaseId) : null)
-      ?? (activeIcdCode ? getProtocolByIcd(activeIcdCode) : null),
-    [activeDiseaseId, activeIcdCode],
-  );
+  const planPatient = usePlanPatientContext();
+  // Adapted to the patient on record: allergy cross-check (class-aware), pregnancy filter and
+  // weight-based dosing under 16 — a withheld drug is never offered (pane-engine planSafety.ts).
+  const protocol = useMemo(() => {
+    const base = planProtocolFor(activeDiseaseId, activeIcdCode);
+    return base ? adaptProtocolForPatient(base, planPatient) : null;
+  }, [activeDiseaseId, activeIcdCode, planPatient]);
   // Discharge-phase drugs belong on the discharge summary, not the active Rx queue.
   const protocolMeds = (protocol?.medications ?? []).filter(m => m.phase !== 'discharge');
+  const withheldMeds = (protocol?.withheld ?? []).filter(w => w.from === 'medication');
 
   // Current prescription form
   const [currentItem, setCurrentItem] = useState<PrescriptionItem>(emptyItem());
@@ -626,6 +631,11 @@ export default function PrescriptionsTab() {
             <p style={{ fontSize: 11, color: '#6B7280', marginBottom: 8 }}>
               From the matched protocol. Tap to queue for review below — nothing is prescribed until you import it.
             </p>
+            {withheldMeds.length > 0 && (
+              <div style={{ fontSize: 11, color: '#991b1b', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 6, padding: '6px 8px', marginBottom: 8 }}>
+                Not offered for this patient: {withheldMeds.map(w => `${w.item} — ${w.reason}`).join('; ')}.
+              </div>
+            )}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {available.map((med, i) => (
                 <div key={i} style={{

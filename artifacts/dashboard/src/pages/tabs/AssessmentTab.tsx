@@ -6,6 +6,7 @@ import { managementPanelSource } from '@/lib/management-panel-source';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PaneDifferential from '@/components/PaneDifferential';
 import { ManagementPanel } from '@/components/ManagementPanel';
+import { usePlanPatientContext } from '@/hooks/usePlanPatientContext';
 import SmartTextarea from '@/components/SmartTextarea';
 import { ICD_CODES, type IcdCode } from '@/data/icd-db';
 import { getCdsSuggestions } from '@/lib/clinical-cds';
@@ -589,6 +590,7 @@ export default function AssessmentTab() {
     examAbdomen, examGeneral, examCardio, examResp, examExtremities, examWound,
     hpiNotes,
   } = useAppContext();
+  const planPatient = usePlanPatientContext();
 
   const ccMatrix = activeCcKey ? getMatrix(activeCcKey) : null;
   const ccContext = ccMatrix ? {
@@ -930,7 +932,7 @@ export default function AssessmentTab() {
       />
 
       {/* ── Management Panel (auto-populated on convergence or ICD selection) ── */}
-      <ManagementPanel diseaseId={activeDiseaseId} icdCode={activeIcdCode} />
+      <ManagementPanel diseaseId={activeDiseaseId} icdCode={activeIcdCode} patient={planPatient} />
 
       {/* ── Working Diagnosis ── */}
       <CollapsibleCard title="Working diagnosis">

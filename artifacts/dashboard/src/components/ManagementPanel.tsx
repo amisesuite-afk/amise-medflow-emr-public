@@ -1,11 +1,24 @@
 import React, { useState } from 'react';
-import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
-import type { ManagementProtocol, ManagementStep } from '@workspace/pane-engine';
+import { adaptProtocolForPatient } from '@workspace/pane-engine';
+import type { ManagementProtocol, ManagementStep, PlanPatientContext, SafetyNote } from '@workspace/pane-engine';
+import { planProtocolFor } from '@/lib/plan-builder';
 
 interface Props {
   diseaseId: string | null;
   icdCode: string | null;
+  /**
+   * The patient on record. When given, the protocol is adapted to it (allergy cross-check,
+   * pregnancy and under-16 filters, conditional branches) and the patient-specific safety lines
+   * are shown first. Omit it for reference views with no patient (Dictionary).
+   */
+  patient?: PlanPatientContext | null;
 }
+
+const SAFETY_STYLE: Record<SafetyNote['severity'], React.CSSProperties> = {
+  critical: { background: '#5c1a1a', color: '#fecaca', border: '1px solid #7f1d1d' },
+  warning:  { background: '#4a3410', color: '#fde68a', border: '1px solid #92400e' },
+  info:     { background: '#12263a', color: '#bfdbfe', border: '1px solid #1e3a5f' },
+};
 
 const PHASE_LABELS: Record<ManagementStep['phase'], string> = {
   immediate:    'Immediate',
@@ -26,14 +39,18 @@ const urgencyStyle: Record<'stat' | 'urgent' | 'routine', React.CSSProperties> =
   routine: { background: '#1e293b', color: '#94a3b8', border: '1px solid #374151' },
 };
 
-export function ManagementPanel({ diseaseId, icdCode }: Props) {
+export function ManagementPanel({ diseaseId, icdCode, patient }: Props) {
   const [open, setOpen] = useState(true);
 
-  const protocol: ManagementProtocol | null =
-    (diseaseId ? getProtocol(diseaseId) : null) ??
-    (icdCode   ? getProtocolByIcd(icdCode) : null);
+  // The recorded ICD code wins when it names a more specific protocol (pane-engine resolveProtocol).
+  const base: ManagementProtocol | null = planProtocolFor(diseaseId, icdCode);
+  const adapted = base && patient ? adaptProtocolForPatient(base, patient) : null;
+  const protocol: ManagementProtocol | null = adapted ?? base;
+  const safetyNotes: SafetyNote[] = adapted?.safetyNotes ?? [];
 
   if (!protocol) return null;
+  const safetyTexts = new Set(safetyNotes.map(n => n.text));
+  const redFlags = protocol.redFlags.filter(f => !safetyTexts.has(f));
 
   const stepsByPhase = PHASE_ORDER.reduce<Partial<Record<ManagementStep['phase'], string[]>>>(
     (acc, phase) => {
@@ -69,12 +86,26 @@ export function ManagementPanel({ diseaseId, icdCode }: Props) {
 
       {open && (
         <div style={{ padding: '12px 16px', background: '#0b1929', display: 'flex', flexDirection: 'column', gap: 16, fontSize: 13 }}>
+          {/* Patient-specific safety checks */}
+          {safetyNotes.length > 0 && (
+            <section>
+              <h4 style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: '#f59e0b', letterSpacing: '0.05em', marginBottom: 6, marginTop: 0 }}>For this patient — review before acting</h4>
+              <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {safetyNotes.map((n, i) => (
+                  <li key={i} style={{ padding: '4px 8px', borderRadius: 4, fontSize: 12, ...SAFETY_STYLE[n.severity] }}>
+                    {n.severity === 'critical' ? '⚠ ' : ''}{n.text}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
           {/* Red Flags */}
-          {protocol.redFlags.length > 0 && (
+          {redFlags.length > 0 && (
             <section>
               <h4 style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: '#ef4444', letterSpacing: '0.05em', marginBottom: 6, marginTop: 0 }}>Red Flags</h4>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                {protocol.redFlags.map((flag, i) => (
+                {redFlags.map((flag, i) => (
                   <span
                     key={i}
                     style={{ display: 'inline-block', padding: '3px 8px', borderRadius: 4, background: '#5c1a1a', color: '#fca5a5', border: '1px solid #7f1d1d', fontSize: 11 }}

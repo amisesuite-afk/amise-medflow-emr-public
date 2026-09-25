@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
-import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
 import { detectDxVariants } from '@/lib/dx-variants';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { errMsg } from '@/lib/err';
@@ -9,9 +8,11 @@ import { getApiOrigin } from '@/lib/api-origin';
 import NarrativeInput from '@/components/NarrativeInput';
 import { getMatrix } from '@/lib/cc-matrices';
 import { confirmedPlanSource, insertSuggestedPlan } from '@/lib/diagnosis-suggestion';
+import { buildPlanText, planProtocolFor } from '@/lib/plan-builder';
+import { usePlanPatientContext } from '@/hooks/usePlanPatientContext';
 
 const BMI_NOTES: Record<string, string> = {
-  'Obese class I':  'BMI 30–34.9 (Obese I): Increased DVT risk — prescribe LMWH (e.g. enoxaparin 40mg SC od) + TED stockings. Laparoscopic access may be technically difficult. Monitor wound site closely post-op.',
+  'Obese class I':  'BMI 30–34.9 (Obese I): Increased VTE risk — pharmacological prophylaxis per NICE NG89 (LMWH, weight- and renal-adjusted) + mechanical prophylaxis unless contraindicated. Laparoscopic access may be technically difficult. Monitor wound site closely post-op.',
   'Obese class II': 'BMI 35–39.9 (Obese II): High anaesthetic risk — senior anaesthetist review. Difficult airway management. Bariatric positioning required. Post-op HDU consideration.',
   'Obese class III':'BMI ≥ 40 (Obese III): Extreme surgical risk. Mandatory pre-op anaesthetic review, echocardiogram, and pulmonary function test. Bariatric hospital bed and equipment. ICU/HDU post-op plan.',
   'Overweight':     'BMI 25–29.9 (Overweight): Prescribe VTE prophylaxis if surgical duration > 60 min. Monitor wound site.',
@@ -38,13 +39,6 @@ const QUICK_TEMPLATES: Record<string, string> = {
   diabetic_foot: `1. Wound swab for MCS\n2. X-ray foot (osteomyelitis)\n3. FBC, CRP, HbA1c, glucose, renal function\n4. IV antibiotics if systemically unwell\n5. Vascular assessment (ABI, Doppler)\n6. Surgical debridement if Wagner 3+\n7. Podiatry and diabetic foot team referral\n8. Tight glycaemic control`,
 };
 
-const PHASE_LABELS: Record<string, string> = {
-  immediate:    'IMMEDIATE',
-  conservative: 'CONSERVATIVE MANAGEMENT',
-  surgical:     'SURGICAL MANAGEMENT',
-  followup:     'FOLLOW-UP',
-};
-
 // ── Review / follow-up scheduling ───────────────────────────────────────────
 
 const REVIEW_OPTIONS: { value: string; label: string; days: number | null }[] = [
@@ -68,67 +62,12 @@ function addDaysISO(isoDate: string, days: number): string {
   return dt.toISOString().split('T')[0];
 }
 
-function buildPlanText(
-  protocol: NonNullable<ReturnType<typeof getProtocol>>,
-  isInpatient: boolean,
-  surgeon: string,
-  allowedPhases?: string[],
-  planPrefix?: string,
-): string {
-  const lines: string[] = [];
-
-  if (planPrefix) {
-    lines.push(planPrefix, '');
-  }
-
-  if (isInpatient) {
-    lines.push(
-      'Admission orders',
-      `- Admit under ${surgeon} — General / Endoscopic Surgery`,
-      '- Monitoring: VS q4h, I&O charting, daily weights',
-      '- DVT prophylaxis: LMWH (if not contraindicated)',
-      '- VTE risk assessment documented',
-      '',
-    );
-  }
-
-  // Group management steps by phase, filtered by allowedPhases when set
-  const byPhase = new Map<string, string[]>();
-  for (const step of protocol.management) {
-    if (allowedPhases && !allowedPhases.includes(step.phase)) continue;
-    if (!byPhase.has(step.phase)) byPhase.set(step.phase, []);
-    byPhase.get(step.phase)!.push(step.step);
-  }
-
-  for (const [phase, steps] of byPhase) {
-    lines.push(`${protocol.label} — ${PHASE_LABELS[phase] ?? phase.toUpperCase()}`);
-    steps.forEach((s, i) => lines.push(`${i + 1}. ${s}`));
-    lines.push('');
-  }
-
-  if (protocol.investigations.length > 0) {
-    lines.push('Investigations');
-    for (const inv of protocol.investigations) {
-      lines.push(`- ${inv.label} (${inv.urgency})`);
-    }
-    lines.push('');
-  }
-
-  if (protocol.referral) {
-    lines.push('Referral');
-    lines.push(protocol.referral);
-    lines.push('');
-  }
-
-  return lines.join('\n').trimEnd();
-}
-
 function buildNursingOrders(isPreOp: boolean, isPostOp: boolean): string {
   const lines: string[] = ['Nursing Directives'];
 
   if (isPreOp) {
     lines.push(
-      '- NPO from midnight',
+      '- Fasting: food up to 6 h and clear fluids up to 2 h before anaesthesia unless the anaesthetist advises otherwise (AAGBI 2010; ESA 2011)',
       '- Obtain and file signed consent form',
       '- IV access (minimum 18G), pre-op bloods drawn',
       '- Surgical site marking by operating surgeon',
@@ -282,8 +221,12 @@ export default function PlanTab() {
   // match (UX review C4, CLAUDE.md → Central diagnosis radiation).
   const { diseaseId: activeDiseaseId, icdCode: activeIcdCode } = confirmedPlanSource(workingDiagnosis, icdCodes);
 
-  const protocol = (activeDiseaseId ? getProtocol(activeDiseaseId) : null)
-    ?? (activeIcdCode ? getProtocolByIcd(activeIcdCode) : null);
+  // The recorded ICD code wins over the working diagnosis's protocol when it names a more
+  // specific protocol (e.g. upper GI bleed + I85.11 → variceal bleed) — pane-engine resolveProtocol.
+  const protocol = planProtocolFor(activeDiseaseId, activeIcdCode);
+  // The patient on record (allergies, pregnancy, age, medicines, history) — the plan is adapted to
+  // it: allergy/pregnancy/paediatric filters and the peri-operative safety lines (plan-builder.ts).
+  const planPatient = usePlanPatientContext();
   const confirmedDxLabel = workingDiagnosis?.locked
     ? (workingDiagnosis.diseaseLabel || protocol?.label || workingDiagnosis.icdCode || '')
     : (icdCodes[0]?.split(' — ')[1]?.trim() || protocol?.label || '');
@@ -326,13 +269,12 @@ export default function PlanTab() {
 
   function handleGeneratePlan() {
     if (!protocol) return;
-    const generated = buildPlanText(
-      protocol,
+    const generated = buildPlanText(protocol, planPatient, {
       isInpatient,
-      admittingSurgeon,
-      selectedVariant?.allowedPhases,
-      selectedVariant?.planPrefix,
-    );
+      surgeon: admittingSurgeon,
+      allowedPhases: selectedVariant?.allowedPhases,
+      planPrefix: selectedVariant?.planPrefix,
+    });
     const next = insertSuggestedPlan(plan, generated, autoGeneratedPlanRef.current);
     autoGeneratedPlanRef.current = generated;
     setPlan(next);
@@ -351,7 +293,9 @@ export default function PlanTab() {
     // Only refresh a suggested plan the clinician already inserted and has not edited; an
     // empty plan stays empty until "Insert suggested plan" is tapped.
     if (!plan.trim() || plan !== autoGeneratedPlanRef.current) return;
-    const generated = buildPlanText(protocol, isInpatient, admittingSurgeon, v.allowedPhases, v.planPrefix);
+    const generated = buildPlanText(protocol, planPatient, {
+      isInpatient, surgeon: admittingSurgeon, allowedPhases: v.allowedPhases, planPrefix: v.planPrefix,
+    });
     autoGeneratedPlanRef.current = generated;
     setPlan(generated);
   }
