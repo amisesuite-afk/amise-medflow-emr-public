@@ -17,12 +17,10 @@ import { SYMPTOM_BRANCHES, type SymptomBranch } from '@/lib/symptom-branches';
 import type { EncounterSummary } from '@/lib/db';
 import {
   DISEASES, FEATURES, applyModifiers, initPaneState, updatePosterior,
-  topDiagnoses, getProtocol, nextBestQuestion,
+  nextBestQuestion,
 } from '@workspace/pane-engine';
 import type { Feature } from '@workspace/pane-engine';
 import { extractFeaturesFromSocrates } from '@/lib/socrates-to-features';
-import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
-import { filterNewInvestigations, splitEssentialSecondary } from '@/lib/investigation-merge';
 
 interface CCEntry { complaint: string; answers: Record<string, string> }
 
@@ -865,8 +863,6 @@ export default function HpiTab() {
     recentEncounters,
     comorbidities, allergies, medications, surgicalHistory,
     paneState, setPaneState,
-    orderedInvestigations, setOrderedInvestigations,
-    radiologyRequests, setRadiologyRequests,
   } = useAppContext();
 
   const entries = useMemo(
@@ -970,57 +966,9 @@ export default function HpiTab() {
     return state;
   }
 
-  // Seed ordered investigations from top-3 PANE differentials.
-  // Only called when an HpiBuilderCard entry has all fields answered.
-  function seedInvestigationsFromPane(state: ReturnType<typeof initPaneState>) {
-    const parsedAge = parseInt(age, 10) || null;
-    const diseases  = applyModifiers(DISEASES, parsedAge, sex);
-    const top = topDiagnoses(state, diseases, 3);
-    if (!top.length) return;
-    const urgencyRank: Record<string, number> = { stat: 0, urgent: 1, routine: 2 };
-    const byLabel = new Map<string, { label: string; urgency: 'stat' | 'urgent' | 'routine' }>();
-    for (const { disease } of top) {
-      const protocol = getProtocol(disease.id);
-      if (!protocol?.investigations.length) continue;
-      for (const inv of protocol.investigations) {
-        const k = inv.label.toLowerCase().trim();
-        const cur = byLabel.get(k);
-        if (!cur || (urgencyRank[inv.urgency] ?? 2) < (urgencyRank[cur.urgency] ?? 2)) {
-          byLabel.set(k, inv);
-        }
-      }
-    }
-    // Only auto-populate essential (stat/urgent) tests — routine ones would
-    // otherwise pile up as the differential shifts across an HPI build.
-    const { essential } = splitEssentialSecondary([...byLabel.values()]);
-    const sorted = essential.sort(
-      (a, b) => (urgencyRank[a.urgency] ?? 2) - (urgencyRank[b.urgency] ?? 2),
-    );
-
-    // Route: lab items → orderedInvestigations, imaging items → radiologyRequests
-    const labItems     = sorted.filter(inv => !isImagingInvestigation(inv.label));
-    const imagingItems = sorted.filter(inv => isImagingInvestigation(inv.label));
-
-    const toAdd = filterNewInvestigations(labItems.map(inv => inv.label), orderedInvestigations);
-    if (toAdd.length) setOrderedInvestigations([...toAdd, ...orderedInvestigations]);
-
-    const newImaging = imagingItems
-      .map(inv => parseImagingToRequest(inv.label, inv.urgency))
-      .filter(req => !imagingAlreadyRequested(
-        (radiologyRequests as { modality: string; anatomicalRegion: string; clinicalQuestion?: string }[]),
-        req,
-      ));
-    if (newImaging.length) setRadiologyRequests([...newImaging, ...radiologyRequests]);
-  }
-
-  // Returns SOCRATES fields for an entry filtered by patient sex/age — same as HpiBuilderCard.
-  function entryFields(entry: CCEntry): HpiField[] {
-    const parsedAge = parseInt(age, 10) || null;
-    return buildFields(entry.complaint).filter(f => {
-      if (f.key === 'lmp') return sex === 'female' && (parsedAge === null || parsedAge >= 10);
-      return true;
-    });
-  }
+  // Investigations are no longer seeded from the differential here: the leading differentials'
+  // protocol tests are SUGGESTIONS on the Labs / Imaging steps, ordered only when the clinician
+  // ticks them (SuggestedInvestigationsPanel, UX review C3).
 
   function updateAnswer(entryIdx: number, key: string, value: string) {
     const updated = entries.map((e, i) =>
@@ -1029,13 +977,7 @@ export default function HpiTab() {
     setProcedureData({ ...procedureData, cc: updated });
 
     // Real-time PANE re-seed: updates differential posteriors as chips are tapped
-    const newState = reseedPane(updated);
-
-    // Seed investigation list once the updated entry has all its sex/age-filtered fields filled
-    const updatedEntry = updated[entryIdx]!;
-    const fields = entryFields(updatedEntry);
-    const allFilled = fields.length > 0 && fields.every(f => updatedEntry.answers[f.key]?.trim());
-    if (allFilled) seedInvestigationsFromPane(newState);
+    reseedPane(updated);
   }
 
   // On mount — re-seed PANE and populate investigations from pre-existing SOCRATES answers.
@@ -1047,13 +989,7 @@ export default function HpiTab() {
     if (entries.length === 0) return;
     const hasAnswers = entries.some(e => Object.values(e.answers).some(v => v?.trim()));
     if (!hasAnswers) return;
-    const state = reseedPane(entries);
-    for (const entry of entries) {
-      const fields = entryFields(entry);
-      if (fields.length > 0 && fields.every(f => entry.answers[f.key]?.trim())) {
-        seedInvestigationsFromPane(state);
-      }
-    }
+    reseedPane(entries);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useAppContext, type Section } from '@/context/AppContext';
 import { getMatrix } from '@/lib/cc-matrices';
+import { computeSectionDone } from '@/lib/workflow-completion';
 
 const SECTION_LABELS: Partial<Record<Section, string>> = {
   triage: 'Triage', hpi: 'HPI', pmh: 'PMH', surgical: 'Surgical Hx',
@@ -24,52 +25,17 @@ const SECTION_ICONS: Partial<Record<Section, string>> = {
 };
 
 export default function ClinicalWorkflowBar() {
-  const {
-    activeCcKey, activeSection, setActiveSection,
-    symptoms, freeText, vitals,
-    hpiNotes, comorbidities,
-    surgicalHistory, surgicalNotes,
-    medications, medicationsText, allergies,
-    familyHistory, familyHistoryNotes,
-    toxicHabits, occupation, rosFindings,
-    examGeneral, examCardio, examResp, examAbdomen,
-    examNeuro, examExtremities, examBreast, examWound,
-    orderedInvestigations, radiologyRequests, attachments,
-    assessment, plan, progressNotes,
-  } = useAppContext();
+  const ctx = useAppContext();
+  const { activeCcKey, activeSection, setActiveSection } = ctx;
+
+  // ✓ only for content the clinician recorded — suggestions never count (lib/workflow-completion.ts).
+  // Computed before the early return so the hook order is stable.
+  const done = useMemo(() => computeSectionDone(ctx), [ctx]);
 
   const matrix = activeCcKey ? getMatrix(activeCcKey) : undefined;
   if (!matrix) return null;
 
   const steps = matrix.sections;
-
-  const done = useMemo<Partial<Record<Section, boolean>>>(() => {
-    const hasVitals = Object.values(vitals).some(v => v.trim());
-    const hasExam = !!(examGeneral || examCardio || examResp || examAbdomen || examNeuro || examExtremities || examBreast || examWound);
-    const hasRos = Object.values(rosFindings).some(f => f.status !== 'not-asked' || f.details.length > 0 || f.notes);
-    return {
-      triage:       symptoms.length > 0 || !!freeText.trim() || hasVitals,
-      hpi:          !!hpiNotes.trim(),
-      pmh:          comorbidities.length > 0,
-      surgical:     surgicalHistory.length > 0 || !!surgicalNotes.trim(),
-      medications:  medications.length > 0 || !!medicationsText.trim(),
-      allergies:    !!allergies.trim(),
-      family_hx:    familyHistory.length > 0 || !!familyHistoryNotes.trim(),
-      toxic:        toxicHabits.length > 0 || !!occupation.trim(),
-      ros:          hasRos,
-      examination:  hasExam,
-      investigations: orderedInvestigations.length > 0,
-      radiology:    radiologyRequests.length > 0,
-      attachments:  attachments.length > 0,
-      assessment:   !!assessment.trim(),
-      plan:         !!plan.trim(),
-      progress:     progressNotes.length > 0,
-    };
-  }, [symptoms, freeText, vitals, hpiNotes, comorbidities, surgicalHistory, surgicalNotes,
-    medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits,
-    occupation, rosFindings, examGeneral, examCardio, examResp, examAbdomen, examNeuro,
-    examExtremities, examBreast, examWound, orderedInvestigations, radiologyRequests,
-    attachments, assessment, plan, progressNotes]);
 
   const completedCount = steps.filter(s => done[s]).length;
   const totalCount = steps.length;

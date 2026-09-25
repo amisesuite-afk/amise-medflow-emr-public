@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import SuggestedInvestigationsPanel from '@/components/SuggestedInvestigationsPanel';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 
@@ -856,6 +857,8 @@ export default function RadiologyTab() {
 
   return (
     <div className="gap-y">
+      {/* Suggested (not ordered) tests for the chief complaint / differential — tick to order. */}
+      <SuggestedInvestigationsPanel kind="imaging" />
       <CollapsibleCard
         title="Radiology &amp; Imaging Requests"
         badge={badgeText}

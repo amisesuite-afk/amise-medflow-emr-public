@@ -3,9 +3,7 @@ import { useAppContext } from '@/context/AppContext';
 import { CC_TEMPLATES, CC_BY_CATEGORY, getMatrixByName, type CCCategory, type CCTemplate } from '@/lib/cc-matrices';
 import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
 import { extractFeaturesFromSocrates } from '@/lib/socrates-to-features';
-import { DISEASES, FEATURES, applyModifiers, initPaneState, updatePosterior, topDiagnoses, isConverged, getProtocol } from '@workspace/pane-engine';
-import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
-import { filterNewInvestigations, splitEssentialSecondary } from '@/lib/investigation-merge';
+import { DISEASES, FEATURES, applyModifiers, initPaneState, updatePosterior, isConverged } from '@workspace/pane-engine';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -166,8 +164,6 @@ export default function ChiefComplaintStrip() {
     symptoms, symptomDetails, procedureData, setProcedureData,
     setEncounterType, activeCcKey, setActiveCcKey, setActiveSection, freeText,
     age, sex, setPaneState,
-    orderedInvestigations, setOrderedInvestigations,
-    radiologyRequests, setRadiologyRequests,
   } = useAppContext();
 
   const [expanded, setExpanded]       = useState<number | null>(null);
@@ -179,32 +175,10 @@ export default function ChiefComplaintStrip() {
 
   const entries: CCEntry[] = (procedureData['cc'] as CCEntry[] | undefined) ?? [];
 
-  // Pre-fill investigations from a CC template's curated labs + imaging list.
-  function prefillFromMatrix(complaintName: string) {
-    const tpl = getMatrixByName(complaintName);
-
-    // Route labs → orderedInvestigations, imaging → radiologyRequests
-    const labItems = tpl.labs.map((s: string) => s.trim()).filter(Boolean);
-    const imagingItems = tpl.imaging.map((s: string) => s.trim()).filter(Boolean);
-
-    // Labs
-    if (labItems.length) {
-      const existing = new Set(orderedInvestigations.map((s: string) => s.toLowerCase().trim()));
-      const freshLabs = labItems.filter((l: string) => !existing.has(l.toLowerCase().trim()));
-      if (freshLabs.length) setOrderedInvestigations([...freshLabs, ...orderedInvestigations]);
-    }
-
-    // Imaging → RadiologyTab
-    if (imagingItems.length) {
-      const newRequests = imagingItems
-        .map(label => parseImagingToRequest(label, 'routine', complaintName))
-        .filter(req => !imagingAlreadyRequested(radiologyRequests as { modality: string; anatomicalRegion: string; clinicalQuestion?: string }[], req));
-      if (newRequests.length) setRadiologyRequests([...newRequests, ...radiologyRequests]);
-    }
-  }
-
   // Seed the PANE Bayesian engine from SOCRATES answers when HPI is complete.
-  // Augments the investigation list with protocol tests from top-3 differentials.
+  // It no longer writes investigations: the complaint's curated tests and the leading
+  // differentials' protocol tests are SUGGESTIONS on the Labs / Imaging steps
+  // (SuggestedInvestigationsPanel), ordered only when the clinician ticks them (UX review C3).
   function seedPane(complaint: string, answers: Record<string, string>) {
     const parsedAge = parseInt(age, 10) || null;
     const diseases  = applyModifiers(DISEASES, parsedAge, sex);
@@ -216,44 +190,6 @@ export default function ChiefComplaintStrip() {
       }
     }
     setPaneState(state);
-
-    // Augment with protocol investigations from the top-3 differentials
-    // (no probability threshold — with 136 diseases the normalized priors are small).
-    // When the same test appears in multiple protocols, highest urgency wins.
-    const top = topDiagnoses(state, diseases, 3);
-    if (top.length) {
-      const urgencyRank: Record<string, number> = { stat: 0, urgent: 1, routine: 2 };
-      const byLabel = new Map<string, { label: string; urgency: 'stat' | 'urgent' | 'routine' }>();
-      for (const { disease } of top) {
-        const protocol = getProtocol(disease.id);
-        if (!protocol?.investigations.length) continue;
-        for (const inv of protocol.investigations) {
-          const key = inv.label.toLowerCase().trim();
-          const cur = byLabel.get(key);
-          if (!cur || (urgencyRank[inv.urgency] ?? 2) < (urgencyRank[cur.urgency] ?? 2)) {
-            byLabel.set(key, inv);
-          }
-        }
-      }
-      // Only auto-populate essential (stat/urgent) tests — routine ones would
-      // otherwise pile up as the differential shifts through SOCRATES answers.
-      const { essential } = splitEssentialSecondary([...byLabel.values()]);
-      const sorted = essential.sort(
-        (a, b) => (urgencyRank[a.urgency] ?? 2) - (urgencyRank[b.urgency] ?? 2),
-      );
-
-      // Route: lab items → orderedInvestigations, imaging items → radiologyRequests
-      const labItems  = sorted.filter(inv => !isImagingInvestigation(inv.label));
-      const imagingItems = sorted.filter(inv => isImagingInvestigation(inv.label));
-
-      const toAdd = filterNewInvestigations(labItems.map(inv => inv.label), orderedInvestigations);
-      if (toAdd.length) setOrderedInvestigations([...toAdd, ...orderedInvestigations]);
-
-      const newImaging = imagingItems
-        .map(inv => parseImagingToRequest(inv.label, inv.urgency))
-        .filter(req => !imagingAlreadyRequested(radiologyRequests as { modality: string; anatomicalRegion: string; clinicalQuestion?: string }[], req));
-      if (newImaging.length) setRadiologyRequests([...newImaging, ...radiologyRequests]);
-    }
   }
 
   // Restore activeCcKey when entries already exist but key was cleared (e.g. patient reload)
@@ -309,7 +245,6 @@ export default function ChiefComplaintStrip() {
       const matrix = getMatrixByName(first.complaint);
       setActiveCcKey(matrix.id);
       setEncounterType(matrix.encounterType);
-      prefillFromMatrix(first.complaint);
     }
     setExpanded(0);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -343,7 +278,6 @@ export default function ChiefComplaintStrip() {
     if (!trimmed || entries.length >= 3 || entries.some(e => e.complaint === trimmed)) return;
     const next = [...entries, { complaint: trimmed, answers: {} }];
     setEntries(next);
-    prefillFromMatrix(trimmed);
     setExpanded(next.length - 1);
     setShowPicker(false);
     setCustomInput('');

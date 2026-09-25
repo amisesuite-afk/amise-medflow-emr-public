@@ -13,7 +13,6 @@ import NarrativeInput from '@/components/NarrativeInput';
 import { getMatrix } from '@/lib/cc-matrices';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
 import { getProtocol } from '@workspace/pane-engine';
-import { filterNewInvestigations, splitEssentialSecondary } from '@/lib/investigation-merge';
 
 // ── Differential prompts with common signs ────────────────────────────────────
 
@@ -587,7 +586,6 @@ export default function AssessmentTab() {
     workingDiagnosis, setWorkingDiagnosis,
     examAbdomen, examGeneral, examCardio, examResp, examExtremities, examWound,
     hpiNotes,
-    orderedInvestigations, setOrderedInvestigations,
   } = useAppContext();
 
   const ccMatrix = activeCcKey ? getMatrix(activeCcKey) : null;
@@ -607,40 +605,9 @@ export default function AssessmentTab() {
     : null;
   const activeIcdCode = icdCodes[0]?.split(' — ')[0]?.trim() ?? null;
 
-  // Auto-populate ordered investigations from all plausible differentials.
-  // ≥0.85 converged: single locked protocol. ≥0.10: merge top-3 to narrow Dx.
-  // When the same test appears in multiple protocols the highest urgency wins.
-  const invRef = useRef(orderedInvestigations);
-  useEffect(() => { invRef.current = orderedInvestigations; });
-
-  useEffect(() => {
-    // No probability floor — with 136 diseases the normalized priors can be <3%.
-    // Always pull from whatever the top-3 differentials are.
-    const relevant = paneTop.slice(0, 3);
-    if (!relevant.length) return;
-    const urgencyRank: Record<string, number> = { stat: 0, urgent: 1, routine: 2 };
-    const byLabel = new Map<string, { label: string; urgency: 'stat' | 'urgent' | 'routine' }>();
-    for (const { disease } of relevant) {
-      const protocol = getProtocol(disease.id);
-      if (!protocol?.investigations.length) continue;
-      for (const inv of protocol.investigations) {
-        const key = inv.label.toLowerCase().trim();
-        const cur = byLabel.get(key);
-        if (!cur || (urgencyRank[inv.urgency] ?? 2) < (urgencyRank[cur.urgency] ?? 2)) {
-          byLabel.set(key, inv);
-        }
-      }
-    }
-    // Only auto-populate essential (stat/urgent) tests — routine ones are
-    // surfaced as tap-to-add suggestions in InvestigationsTab instead, so the
-    // ordered list doesn't accumulate every tier from every differential in play.
-    const { essential } = splitEssentialSecondary([...byLabel.values()]);
-    essential.sort((a, b) => (urgencyRank[a.urgency] ?? 2) - (urgencyRank[b.urgency] ?? 2));
-    const current = invRef.current;
-    const toAdd = filterNewInvestigations(essential.map(inv => inv.label), current);
-    if (toAdd.length) setOrderedInvestigations([...toAdd, ...current]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paneTop.map(r => `${r.disease.id}:${r.probability.toFixed(2)}`).join(',')]);
+  // Investigations are not ordered from the differential here any more: the leading
+  // differentials' protocol tests are SUGGESTIONS on the Labs / Imaging steps, ordered only
+  // when the clinician ticks them (SuggestedInvestigationsPanel, UX review C3).
 
   const apptType = triageResult.appointmentType;
   const ddxOptions: DiffOption[] = DIFFERENTIAL_PROMPTS[apptType] ?? DIFFERENTIAL_PROMPTS['new_consult'];

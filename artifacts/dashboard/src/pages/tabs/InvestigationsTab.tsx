@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
+import SuggestedInvestigationsPanel from '@/components/SuggestedInvestigationsPanel';
 import { useAppContext } from '@/context/AppContext';
 import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
 import CollapsibleCard from '@/components/CollapsibleCard';
@@ -483,6 +484,8 @@ export default function InvestigationsTab() {
 
   return (
     <div className="gap-y">
+      {/* Suggested (not ordered) tests for the chief complaint / differential — tick to order. */}
+      <SuggestedInvestigationsPanel kind="lab" />
       {/* Protocol-specific suggested investigations — shown when working diagnosis is set */}
       {protocol && protocolInvestigations.length > 0 && (
         <div style={{
