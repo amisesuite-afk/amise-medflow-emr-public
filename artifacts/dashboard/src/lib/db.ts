@@ -938,36 +938,58 @@ export interface ClosedEncounterSnapshot {
   vitals: VitalSnapshot | null;
 }
 
+/**
+ * The patient's most recent closed encounter, for the Ambient view's "Prior visit" strip.
+ *
+ * Reads only tables and columns that exist in the base schema (supabase-schema.sql): the
+ * `encounters` row, then that encounter's `assessments.diagnosis`, management `plans.description`,
+ * medicine list (the rows syncMedicationList writes — the same loader VisitContinuityPanel uses),
+ * its latest `vitals` row, and the patient's active `allergies` and `surgical_history`. An earlier
+ * version selected `encounters.diagnosis` / `encounters.plan` and embedded
+ * `encounter_medications` / `encounter_allergens` / `encounter_surgical_history`, none of which
+ * exist, so every call failed and the strip never appeared.
+ *
+ * "Closed" is status = 'closed', the visit-continuity rule for a completed visit
+ * (visit-continuity-web.ts); in-progress and cancelled encounters are not a prior visit.
+ * `excludeEncounterId` leaves out the encounter being documented. A failed detail read is logged
+ * and left empty rather than hiding the whole summary; ACVPU / O₂ fall back while Migration 91 is
+ * not applied.
+ */
 export async function getLatestClosedEncounter(
   patient_id: string,
+  opts: { excludeEncounterId?: string | null } = {},
 ): Promise<{ data: ClosedEncounterSnapshot | null; error: string | null }> {
   if (!supabase) return { data: null, error: notConfigured('getLatestClosedEncounter') };
-
-  // vitals.avpu / on_supplemental_o2 need Migration 91; without it the select is repeated
-  // without them so the prior-visit summary still loads.
   const client = supabase;
-  const { data, error } = await selectVitalsWithNews2Fallback<unknown>(withNews2 => client
+
+  let encQuery = client
     .from('encounters')
-    .select(`
-      id, encounter_date, encounter_type, chief_complaint,
-      diagnosis, plan,
-      encounter_medications(name),
-      encounter_allergens(name),
-      encounter_surgical_history(procedure),
-      vitals(bp_systolic, bp_diastolic, heart_rate, temperature_c, oxygen_saturation, respiratory_rate, weight_kg, bmi${withNews2 ? ', avpu, on_supplemental_o2' : ''})
-    `)
+    .select('id, encounter_date, encounter_type, chief_complaint, created_at')
     .eq('patient_id', patient_id)
-    .neq('status', 'open')
+    .eq('status', 'closed');
+  if (opts.excludeEncounterId) encQuery = encQuery.neq('id', opts.excludeEncounterId);
+  const { data: encData, error: encErr } = await encQuery
     .order('encounter_date', { ascending: false })
+    .order('created_at', { ascending: false })
     .limit(1)
-    .maybeSingle());
+    .maybeSingle();
 
-  if (error) {
-    console.error('[db] getLatestClosedEncounter:', error);
-    return { data: null, error: error.message ?? 'Load failed' };
+  if (encErr) {
+    console.error('[db] getLatestClosedEncounter:', encErr);
+    return { data: null, error: encErr.message ?? 'Load failed' };
   }
+  const enc = encData as {
+    id: string; encounter_date: string | null; encounter_type: string | null;
+    chief_complaint: string | null; created_at: string | null;
+  } | null;
+  if (!enc) return { data: null, error: null };
 
-  if (!data) return { data: null, error: null };
+  // Never rejects: a network-level throw becomes { data: null, error }.
+  const sq = <T>(q: PromiseLike<{ data: T | null; error: unknown }>, label: string): Promise<T | null> =>
+    Promise.resolve(q).then(
+      r => { if (r.error) console.error(`[db] getLatestClosedEncounter ${label}:`, r.error); return r.error ? null : r.data; },
+      err => { console.error(`[db] getLatestClosedEncounter ${label} (rejected):`, err); return null; },
+    );
 
   type VitalRow = {
     bp_systolic: number | null; bp_diastolic: number | null;
@@ -976,45 +998,70 @@ export async function getLatestClosedEncounter(
     weight_kg: number | null; bmi: number | null;
     avpu?: string | null; on_supplemental_o2?: boolean | null;
   };
-  const row = data as {
-    id: string;
-    encounter_date: string;
-    encounter_type: string;
-    chief_complaint: string | null;
-    diagnosis: string | null;
-    plan: string | null;
-    encounter_medications: Array<{ name: string }> | null;
-    encounter_allergens: Array<{ name: string }> | null;
-    encounter_surgical_history: Array<{ procedure: string }> | null;
-    vitals: VitalRow[] | null;
-  };
+
+  const [assessRow, planRow, meds, allergyRows, surgical, vitalsRes] = await Promise.all([
+    sq(client.from('assessments')
+      .select('diagnosis')
+      .eq('encounter_id', enc.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle(), 'assessments'),
+    sq(client.from('plans')
+      .select('description')
+      .eq('encounter_id', enc.id)
+      .eq('plan_type', 'management')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle(), 'plans'),
+    loadEncounterMedicationList(patient_id, enc.id)
+      .catch(() => ({ chips: [] as string[], freeText: '', error: 'rejected' })),
+    sq(client.from('allergies')
+      .select('allergen')
+      .eq('patient_id', patient_id)
+      .eq('status', 'active'), 'allergies'),
+    loadSurgicalHistory(patient_id)
+      .catch(() => ({ procedures: [] as string[], notes: '', recentSurgeryDate: '' })),
+    // vitals.avpu / on_supplemental_o2 need Migration 91; without it the select is repeated
+    // without them so the prior-visit summary still loads.
+    selectVitalsWithNews2Fallback<unknown>(withNews2 => client
+      .from('vitals')
+      .select(`bp_systolic, bp_diastolic, heart_rate, temperature_c, oxygen_saturation, respiratory_rate, weight_kg, bmi${withNews2 ? ', avpu, on_supplemental_o2' : ''}`)
+      .eq('encounter_id', enc.id)
+      .order('recorded_at', { ascending: false })
+      .limit(1))
+      .catch(err => ({ data: null, error: { message: String(err) }, news2Available: false })),
+  ]);
+  if (vitalsRes.error) console.error('[db] getLatestClosedEncounter vitals:', vitalsRes.error);
+
+  const assessment = (assessRow as { diagnosis: string | null } | null)?.diagnosis?.trim() || null;
+  const plan = (planRow as { description: string | null } | null)?.description?.trim() || null;
+  const allergens = ((allergyRows ?? []) as Array<{ allergen: string | null }>)
+    .map(a => (a.allergen ?? '').trim()).filter(Boolean);
+  const vitalRows = (vitalsRes.error ? null : vitalsRes.data) as VitalRow[] | VitalRow | null;
+  const v = (Array.isArray(vitalRows) ? vitalRows[0] : vitalRows) ?? null;
 
   return {
     data: {
-      encounterId: row.id,
-      encounterDate: row.encounter_date,
-      encounterType: row.encounter_type,
-      chiefComplaint: row.chief_complaint,
-      assessment: row.diagnosis,
-      plan: row.plan,
-      medications: (row.encounter_medications ?? []).map(m => m.name),
-      allergies: (row.encounter_allergens ?? []).map(a => a.name).join(', '),
-      surgicalHistory: (row.encounter_surgical_history ?? []).map(s => s.procedure),
-      vitals: (() => {
-        const v = (row.vitals ?? []).at(-1);
-        if (!v) return null;
-        return {
-          sbp: v.bp_systolic,
-          dbp: v.bp_diastolic,
-          hr: v.heart_rate,
-          tempC: v.temperature_c,
-          spo2: v.oxygen_saturation,
-          rr: v.respiratory_rate,
-          weightKg: v.weight_kg,
-          bmi: v.bmi,
-          ...news2FieldsFromRow(v),
-        } satisfies VitalSnapshot;
-      })(),
+      encounterId: enc.id,
+      encounterDate: enc.encounter_date ?? enc.created_at ?? '',
+      encounterType: enc.encounter_type ?? 'outpatient',
+      chiefComplaint: enc.chief_complaint?.trim() || null,
+      assessment,
+      plan,
+      medications: [...meds.chips, meds.freeText].filter(Boolean),
+      allergies: allergens.join(', '),
+      surgicalHistory: surgical.procedures,
+      vitals: v ? {
+        sbp: v.bp_systolic,
+        dbp: v.bp_diastolic,
+        hr: v.heart_rate,
+        tempC: v.temperature_c,
+        spo2: v.oxygen_saturation,
+        rr: v.respiratory_rate,
+        weightKg: v.weight_kg,
+        bmi: v.bmi,
+        ...news2FieldsFromRow(v),
+      } satisfies VitalSnapshot : null,
     },
     error: null,
   };

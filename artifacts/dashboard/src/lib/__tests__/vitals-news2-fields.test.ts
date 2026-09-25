@@ -10,13 +10,15 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 type Resp = { data?: unknown; error: { code?: string; message?: string; details?: string } | null };
 const calls: Array<{ table: string; op: 'insert' | 'select'; payload: unknown }> = [];
 let responses: Resp[] = [];
-const next = (): Resp => responses.shift() ?? { data: null, error: null };
+// Per-table queues (checked first) for reads that query several tables in parallel.
+let tableResponses: Record<string, Resp[]> = {};
+const next = (table: string): Resp => tableResponses[table]?.shift() ?? responses.shift() ?? { data: null, error: null };
 
 function builder(table: string) {
   let result: Resp | null = null;
   const chain = {
-    insert(row: unknown) { calls.push({ table, op: 'insert', payload: row }); result = next(); return chain; },
-    select(cols: string) { calls.push({ table, op: 'select', payload: cols }); result = next(); return chain; },
+    insert(row: unknown) { calls.push({ table, op: 'insert', payload: row }); result = next(table); return chain; },
+    select(cols: string) { calls.push({ table, op: 'select', payload: cols }); result = next(table); return chain; },
     eq() { return chain; }, neq() { return chain; }, is() { return chain; },
     order() { return chain; }, limit() { return chain; }, maybeSingle() { return chain; },
     then<T>(onOk: (r: { data: unknown; error: Resp['error'] }) => T, onErr?: (e: unknown) => T) {
@@ -47,6 +49,7 @@ const PG42703 = { code: '42703', message: 'column vitals_1.avpu does not exist' 
 beforeEach(() => {
   calls.length = 0;
   responses = [];
+  tableResponses = {};
   vi.spyOn(console, 'warn').mockImplementation(() => {});
   vi.spyOn(console, 'error').mockImplementation(() => {});
 });
@@ -194,28 +197,34 @@ describe('saveVitals / saveVitalsRecord', () => {
 
 // ═════════════════════════════════════════════════════════════════════════════
 describe('reads', () => {
-  const encounterRow = (vital: Record<string, unknown>) => ({
-    id: 'enc-0', encounter_date: '2026-09-01', encounter_type: 'outpatient', chief_complaint: null,
-    diagnosis: null, plan: null, encounter_medications: [], encounter_allergens: [], encounter_surgical_history: [],
-    vitals: [{
-      bp_systolic: 120, bp_diastolic: 80, heart_rate: 72, temperature_c: 36.8, oxygen_saturation: 98,
-      respiratory_rate: 14, weight_kg: 70, bmi: 24, ...vital,
-    }],
-  });
+  // getLatestClosedEncounter reads the encounters row, then its vitals (and other tables) in
+  // parallel — responses are queued per table.
+  const encounterRow = { id: 'enc-0', encounter_date: '2026-09-01', encounter_type: 'outpatient', chief_complaint: null, created_at: '2026-09-01' };
+  const vitalRow = (vital: Record<string, unknown>) => ([{
+    bp_systolic: 120, bp_diastolic: 80, heart_rate: 72, temperature_c: 36.8, oxygen_saturation: 98,
+    respiratory_rate: 14, weight_kg: 70, bmi: 24, ...vital,
+  }]);
+  const vitalsSelects = () => calls.filter(c => c.table === 'vitals' && c.op === 'select');
 
   it('maps avpu / on_supplemental_o2 from the prior encounter vitals', async () => {
-    responses = [{ data: encounterRow({ avpu: 'A', on_supplemental_o2: true }), error: null }];
+    tableResponses = {
+      encounters: [{ data: encounterRow, error: null }],
+      vitals: [{ data: vitalRow({ avpu: 'A', on_supplemental_o2: true }), error: null }],
+    };
     const { data } = await getLatestClosedEncounter('pat-1');
-    expect(String(calls[0].payload)).toContain('avpu, on_supplemental_o2');
+    expect(String(vitalsSelects()[0].payload)).toContain('avpu, on_supplemental_o2');
     expect(data?.vitals).toMatchObject({ hr: 72, avpu: 'A', onSupplementalO2: true });
   });
 
   it('falls back to the old select when the columns are missing', async () => {
-    responses = [{ error: PG42703 }, { data: encounterRow({}), error: null }];
+    tableResponses = {
+      encounters: [{ data: encounterRow, error: null }],
+      vitals: [{ error: PG42703 }, { data: vitalRow({}), error: null }],
+    };
     const { data, error } = await getLatestClosedEncounter('pat-1');
     expect(error).toBeNull();
-    expect(calls).toHaveLength(2);
-    expect(String(calls[1].payload)).not.toContain('avpu');
+    expect(vitalsSelects()).toHaveLength(2);
+    expect(String(vitalsSelects()[1].payload)).not.toContain('avpu');
     expect(data?.vitals).toMatchObject({ hr: 72, avpu: null, onSupplementalO2: null });
   });
 
