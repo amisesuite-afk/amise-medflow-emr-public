@@ -1396,7 +1396,10 @@
       "reviewPriority": "P2",
       "nextReviewDue": "2026-12-31",
       "changeAuthority": "Any repository committer. Ships with an iOS app release.",
-      "notes": "SurgicalRiskEngine+RiskRules.swift has no citations."
+      "notes": "SurgicalRiskEngine+RiskRules.swift has no citations.",
+      "changelog": [
+        { "version": "unversioned", "date": "2026-09-25", "change": "Potassium > 6.0 mmol/L alert: calcium gluconate if ECG changes; nebulised salbutamol named only from 6.5 mmol/L (UKKA 2023 bands, web-last-gaps parity). docs/clinical-validation/changes/ios-parity-web-last-gaps.md." }
+      ]
     },
     {
       "id": "ios-procedure-templates",

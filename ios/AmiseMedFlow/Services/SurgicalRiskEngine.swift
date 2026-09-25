@@ -335,7 +335,8 @@ enum SurgicalRiskEngine {
                         "Severe hyperkalaemia (>6.0 mmol/L) — cardiac arrest risk under anaesthesia.",
                     action: k < 2.8 ?
                         "IV potassium replacement (max 10 mmol/h peripheral, 20 mmol/h central). Continuous ECG. Defer elective surgery until K+ >3.0 mmol/L." :
-                        "Calcium gluconate IV (cardiac membrane stabilisation). Insulin/dextrose. Salbutamol. Urgent nephrology/medical review. Defer elective surgery."))
+                        // UKKA 2023 bands (web-last-gaps parity): nebulised salbutamol is an adjunct from 6.5 mmol/L only.
+                        "Calcium gluconate IV if ECG changes (cardiac membrane stabilisation). Insulin/dextrose.\(k >= 6.5 ? " Salbutamol (adjunct, UKKA 2023)." : "") Urgent nephrology/medical review. Defer elective surgery."))
             } else if k < 3.2 || k > 5.5 {
                 out.append(SurgicalRiskAlert(
                     domain: .anaesthetic, band: .moderate,
