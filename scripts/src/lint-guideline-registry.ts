@@ -124,6 +124,7 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'artifacts/dashboard/src/lib/clinical-scores.ts',
   'artifacts/dashboard/src/lib/clinical-cds.ts',
   'artifacts/dashboard/src/lib/clinical-inference.ts',
+  'artifacts/dashboard/src/lib/symptom-inference.ts',
   'artifacts/dashboard/src/lib/clinical-pathways.ts',
   'artifacts/dashboard/src/lib/transcript-dx-mapper.ts',
   'artifacts/dashboard/src/lib/vitals-news2-fields.ts',

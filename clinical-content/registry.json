@@ -665,6 +665,28 @@
       "notes": "Dead content. Merge the cited values into specialties/* after review, or delete, so there is one source of truth."
     },
     {
+      "id": "web-symptom-inference",
+      "title": "Dashboard symptom-picker differential (adaptive Bayesian symptom inference)",
+      "platforms": ["web"],
+      "kind": "differential-weights",
+      "contentVersion": "unversioned",
+      "files": ["artifacts/dashboard/src/lib/symptom-inference.ts"],
+      "tests": ["artifacts/dashboard/src/lib/__tests__/symptom-inference-detail-keys.test.ts"],
+      "ciChecks": ["dashboard vitest", "clinval:web"],
+      "guidelines": [],
+      "citationStatus": "none",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewEvidence": "None.",
+      "reviewPriority": "P2",
+      "nextReviewDue": "2026-12-31",
+      "changeAuthority": "Any repository committer. Ships on dashboard deploy.",
+      "notes": "About 180 differential entries with hand-set basePrior (1-20), symptom and detail weights, investigations and urgency; ranks unasked symptoms by information gain for the symptom picker. Separate from pane-engine (the working-diagnosis engine). Childhood entries x0.05 from 16 (fix-web-differential). No per-entry citations.",
+      "changelog": [
+        { "version": "unversioned", "date": "2026-09-25", "change": "Registered (lint:guideline-registry only warned about it before). No content change." }
+      ]
+    },
+    {
       "id": "pane-engine-management-protocols",
       "title": "Management protocols: investigations, phased management steps, medications with doses, red flags",
       "platforms": ["web"],
