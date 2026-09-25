@@ -204,11 +204,7 @@
             "re:\\bpid\\b",
             "tubo-ovarian"
           ],
-          "k": 3,
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Ectopic Pregnancy | 2. Acute Appendicitis | 3. Sepsis | 4. Community-Acquired Pneumonia | 5. Liver Abscess (Pyogenic / Amoebic)"
+          "k": 3
         }
       ]
     },

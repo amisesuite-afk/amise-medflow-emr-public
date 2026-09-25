@@ -199,11 +199,7 @@
           ],
           "guidelineRefs": [
             "wses-2019"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Coronary Syndrome | 2. Stable Angina | 3. Community-Acquired Pneumonia | 4. Acute Pancreatitis | 5. Pulmonary Embolism"
+          ]
         }
       ]
     },

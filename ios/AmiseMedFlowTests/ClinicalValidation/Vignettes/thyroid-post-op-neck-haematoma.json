@@ -156,11 +156,7 @@
           "k": 3,
           "guidelineRefs": [
             "das-baets-haematoma-2022"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia | 2. Pulmonary Embolism | 3. Acute Coronary Syndrome | 4. Atrial Fibrillation | 5. Sepsis"
+          ]
         }
       ]
     },

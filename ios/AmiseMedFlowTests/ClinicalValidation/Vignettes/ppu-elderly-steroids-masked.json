@@ -238,11 +238,7 @@
           "k": 3,
           "guidelineRefs": [
             "wses-ppu-2020"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis | 2. Acute Kidney Injury | 3. Acute Coronary Syndrome | 4. Obturator Hernia | 5. Perforated Peptic Ulcer"
+          ]
         }
       ]
     },

@@ -206,11 +206,7 @@
           "k": 3,
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Small Bowel Obstruction | 2. Acute Gastroenteritis | 3. Acute Pancreatitis | 4. Acute Appendicitis | 5. Acute Kidney Injury"
+          ]
         }
       ],
       "mustNotMiss": [

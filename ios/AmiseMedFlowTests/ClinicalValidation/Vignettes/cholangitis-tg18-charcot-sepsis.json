@@ -128,9 +128,7 @@
           "severity": "quality",
           "match": ["cholangitis"],
           "unless": ["sclerosing"],
-          "k": 1,
-          "knownGap": ["ios"],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 1 of ios.bayes: 1. Choledocholithiasis | 2. Sepsis | 3. Ascending Cholangitis; also in ios.ccEarly#1, ios.pipeline#2"
+          "k": 1
         }
       ],
       "mustNotMiss": [

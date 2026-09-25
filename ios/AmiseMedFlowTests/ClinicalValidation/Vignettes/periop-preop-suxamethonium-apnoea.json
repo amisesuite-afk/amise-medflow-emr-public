@@ -182,7 +182,7 @@
         "knownGap": [
           "ios"
         ],
-        "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): ios.triage: routine (ClinicalAcuityEngine level=Routine; pathway=Undifferentiated Abdominal Pain — Further Assessment Required; because: keywords: Chief complaint: Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ u"
+        "knownGapNote": "ios-last-criticals (2026-09-25): expected to pass on the next iOS CI run (triage 1.1.0 keeps the acute clause of the diagnosis (not simulated; expected urgent)); flag kept until CI confirms. Before: iOS CI 2026-09-25 (run 36169134350, database mode): ios.triage: routine (ClinicalAcuityEngine level=Routine; pathway=Undifferentiated Abdominal Pain — Further Assessment Required; because: keywords: Chief complaint: Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ u"
       },
       "redFlags": [
         {

@@ -167,11 +167,7 @@
           ],
           "guidelineRefs": [
             "esc-acs-2023"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Kidney Injury | 2. Atrial Fibrillation | 3. COPD Exacerbation | 4. Diabetic Ketoacidosis | 5. Asthma (Acute Exacerbation)"
+          ]
         },
         {
           "id": "mnm-acs-symptom-inference",

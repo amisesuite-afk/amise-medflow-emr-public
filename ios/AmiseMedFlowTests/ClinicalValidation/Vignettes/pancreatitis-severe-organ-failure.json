@@ -244,11 +244,7 @@
           "k": 3,
           "guidelineRefs": [
             "atlanta-2012"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis | 2. Community-Acquired Pneumonia | 3. Acute Coronary Syndrome | 4. Acute Kidney Injury | 5. Pulmonary Embolism; also in ios.pipeline#2"
+          ]
         }
       ]
     },

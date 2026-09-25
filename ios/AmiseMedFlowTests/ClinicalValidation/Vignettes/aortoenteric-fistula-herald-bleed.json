@@ -208,11 +208,7 @@
           "guidelineRefs": [
             "esvs-graft-2020"
           ],
-          "note": "Any bleed after aortic graft surgery is an aorto-enteric fistula until proven otherwise.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Upper GI Bleeding (Peptic Ulcer) | 2. Acute Appendicitis | 3. Acute Pancreatitis | 4. Small Bowel Obstruction | 5. Acute Kidney Injury; also in ios.ccEarly#3"
+          "note": "Any bleed after aortic graft surgery is an aorto-enteric fistula until proven otherwise."
         }
       ]
     },

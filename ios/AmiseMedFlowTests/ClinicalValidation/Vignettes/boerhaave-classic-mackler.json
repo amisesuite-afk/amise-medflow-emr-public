@@ -216,11 +216,7 @@
           "k": 3,
           "guidelineRefs": [
             "wses-2019"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia | 2. Acute Coronary Syndrome | 3. Sepsis | 4. Acute Appendicitis | 5. Oesophageal Perforation (Boerhaave)"
+          ]
         }
       ],
       "mustNotMiss": [

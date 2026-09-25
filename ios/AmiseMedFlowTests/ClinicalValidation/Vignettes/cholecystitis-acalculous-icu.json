@@ -219,11 +219,7 @@
           "guidelineRefs": [
             "tg18-dx-cholecystitis"
           ],
-          "note": "A sedated patient cannot give SOCRATES; the diagnosis rests on fever, a palpable gallbladder and ultrasound.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis | 2. Community-Acquired Pneumonia | 3. Ascending Cholangitis | 4. Bacterial Meningitis / Meningococcal Sepsis | 5. Infective Endocarditis"
+          "note": "A sedated patient cannot give SOCRATES; the diagnosis rests on fever, a palpable gallbladder and ultrasound."
         }
       ]
     },

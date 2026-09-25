@@ -172,7 +172,7 @@
           "knownGap": [
             "ios"
           ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Gastro-oesophageal Reflux Disease | 2. Peptic ulcer disease | 3. Functional dyspepsia | 4. Acute Pancreatitis | 5. Diabetic Ketoacidosis; also in ios.pipeline#5"
+          "knownGapNote": "ios-last-criticals (2026-09-25): expected to pass on the next iOS CI run (simulated rank 4 of 5, margin 3 log units); flag kept until CI confirms. Before: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Gastro-oesophageal Reflux Disease | 2. Peptic ulcer disease | 3. Functional dyspepsia | 4. Acute Pancreatitis | 5. Diabetic Ketoacidosis; also in ios.pipeline#5"
         },
         {
           "id": "mnm-acs-symptom-inference",

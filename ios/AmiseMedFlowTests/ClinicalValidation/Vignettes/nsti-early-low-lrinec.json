@@ -179,11 +179,7 @@
             "wses-sis-ssti-2018",
             "fernando-2019"
           ],
-          "note": "A LRINEC of 0 must not remove NSTI from the list when the clinical picture fits.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Cellulitis | 2. Skin Abscess | 3. Femoral Hernia | 4. Acute Kidney Injury | 5. Diabetic Foot Infection / Osteomyelitis"
+          "note": "A LRINEC of 0 must not remove NSTI from the list when the clinical picture fits."
         }
       ]
     },

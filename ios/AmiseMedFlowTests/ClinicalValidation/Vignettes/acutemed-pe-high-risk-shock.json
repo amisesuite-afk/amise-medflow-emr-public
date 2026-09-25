@@ -163,11 +163,7 @@
           "k": 3,
           "guidelineRefs": [
             "esc-pe-2019"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Acute Coronary Syndrome | 2. Sepsis | 3. Acute Heart Failure / Pulmonary Oedema | 4. Community-Acquired Pneumonia | 5. Pulmonary Embolism; also in ios.pipeline#4"
+          ]
         }
       ]
     },
