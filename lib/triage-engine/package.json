@@ -9,7 +9,9 @@
     "./apcq.js": "./src/apcq.ts",
     "./apcq": "./src/apcq.ts",
     "./report-import": "./src/report-import/index.ts",
-    "./visit-continuity": "./src/visit-continuity.ts"
+    "./visit-continuity": "./src/visit-continuity.ts",
+    "./lifestyle-practices": "./src/lifestyle-practices.ts",
+    "./lifestyle-questions": "./src/lifestyle-questions.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",

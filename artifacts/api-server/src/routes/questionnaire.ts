@@ -15,6 +15,7 @@ import {
   detectSpecialty,
   QUESTION_BANK,
   SPECIALTY_QUEUES,
+  LIFESTYLE_QUESTION_KEYS,
 } from '@workspace/triage-engine/apcq.js';
 import { checkForbiddenContent, FORBIDDEN_PATTERNS } from '@workspace/triage-engine';
 import type {
@@ -431,6 +432,8 @@ const NON_SYMPTOM_QUESTION_KEYS = new Set([
   'alcohol_use', 'family_history_cancer', 'family_history_breast',
   'prior_surgery', 'colonoscopy_history', 'mammogram_history',
   'surgery_date', 'surgery_type', 'screening_reason',
+  // Religious fasting and complementary treatments (social history, lifestyle-questions.ts).
+  ...LIFESTYLE_QUESTION_KEYS,
 ]);
 
 /** Answers that indicate "no finding" — not worth drafting a symptom row for. */

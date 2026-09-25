@@ -1,3 +1,7 @@
+import { LIFESTYLE_QUESTIONS, placeLifestyleQuestions } from './lifestyle-questions';
+
+export { LIFESTYLE_QUESTION_KEYS } from './lifestyle-questions';
+
 export type QuestionMode = 'screening' | 'condition_specific';
 export type QuestionType = 'single_choice' | 'multi_choice' | 'text' | 'scale' | 'boolean' | 'date';
 export type Specialty = 'general_surgery' | 'endoscopy' | 'breast_surgery' | 'post_op' | 'general_medical';
@@ -1004,6 +1008,9 @@ export const QUESTION_BANK: Record<string, Question> = {
     text: 'Have you developed any new symptoms since your last visit?',
     type: 'boolean',
   },
+  // Religious / ritual fasting and complementary treatments (information only; always asked
+  // last, never in place of a clinical question) — lifestyle-questions.ts.
+  ...LIFESTYLE_QUESTIONS,
 };
 
 export const SPECIALTY_QUEUES: Record<string, string[]> = {
@@ -1490,7 +1497,7 @@ export function createSession(params: {
   patientSex?: 'male' | 'female' | 'other';
 }): SessionState {
   const baseQueue = SPECIALTY_QUEUES[params.templateKey] ?? SPECIALTY_QUEUES['general_screening']!;
-  const queuedKeys = [...baseQueue];
+  const queuedKeys = placeLifestyleQuestions(baseQueue, new Set<string>(), params.templateKey, MAX_QUESTIONS);
   const state: SessionState = {
     sessionId: params.sessionId,
     templateKey: params.templateKey,
@@ -1550,6 +1557,8 @@ export function processAnswer(
       newQueue = ['nipple_discharge_type', ...newQueue];
     }
   }
+
+  newQueue = placeLifestyleQuestions(newQueue, newAnsweredKeys, state.templateKey, MAX_QUESTIONS);
 
   const totalAnswered = newAnsweredKeys.size;
   const totalPlanned = totalAnswered + newQueue.length;
