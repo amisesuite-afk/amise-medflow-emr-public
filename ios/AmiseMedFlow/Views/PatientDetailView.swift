@@ -22,8 +22,10 @@ struct PatientDetailView: View {
     private var quickActionsStrip: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
+                // Opens at the pathway's first step. Scores, Vitals and Prescriptions are also in the
+                // consultation's Tools menu, so there is no need to leave it for them.
                 quickAction("Consultation", icon: "cross.case.fill", color: .teal,
-                            destination: AnyView(ConsultationView(patient: patient, startingTab: .hpi)))
+                            destination: AnyView(ConsultationView(patient: patient)))
                 quickAction("Assessment", icon: "brain.head.profile", color: .indigo,
                             destination: AnyView(AssessmentView(patient: patient)))
                 // Procedure-specific quick actions
@@ -67,17 +69,19 @@ struct PatientDetailView: View {
         NavigationLink { destination } label: {
             VStack(spacing: 6) {
                 Image(systemName: icon)
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(.title3.weight(.semibold))
                     .foregroundStyle(color)
-                    .frame(width: 44, height: 44)
+                    .frame(minWidth: 44, minHeight: 44)
                     .background(color.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
+                // Dynamic Type text style (was fixed 10 pt; UX review m2).
                 Text(label)
-                    .font(.system(size: 10, weight: .semibold))
+                    .font(.caption2.weight(.semibold))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
         }
         .buttonStyle(.plain)
+        .dynamicTypeSize(...DynamicTypeSize.accessibility2)
         .accessibilityIdentifier("patient.quick.\(label)")
     }
 
@@ -121,6 +125,14 @@ struct PatientDetailView: View {
                     .tag(PatientTab.demographics)
                     .tabItem { Label("Details", systemImage: "square.and.pencil") }
             }
+            // Safety strip under the name on every tab (UX review M3): NEWS2 with band colour and
+            // age, every allergy, the antithrombotic, at readable Dynamic Type sizes.
+            .safeAreaInset(edge: .top, spacing: 0) {
+                RecordSafetyStrip(patient: patient)
+                    .padding(.horizontal, 16).padding(.vertical, 6)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(.bar)
+            }
             .background(Color(.systemBackground))
             .navigationTitle(patient.fullName)
             .navigationBarTitleDisplayMode(.inline)
@@ -129,21 +141,27 @@ struct PatientDetailView: View {
                 AuditLog.record("view", "patient", patient: patient)
             }
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(role: .destructive) { showDeleteConfirm = true } label: {
-                        Image(systemName: "trash")
-                    }
-                }
+                // NEWS2 moved from under the name into the safety strip below the bar (with its
+                // age, the allergies and the antithrombotic; UX review M3).
                 ToolbarItem(placement: .principal) {
-                    VStack(spacing: 1) {
-                        Text(patient.fullName)
-                            .scaledFont(size: 15, weight: .semibold, relativeTo: .subheadline)
-                            .lineLimit(1)
-                        // NEWS2 at a readable Dynamic Type size (was fixed 9 pt), with the
-                        // incomplete marker (UX review M3). Capped so the nav bar keeps its height.
-                        RecordHeaderNEWS2(patient: patient)
+                    Text(patient.fullName)
+                        .scaledFont(size: 15, weight: .semibold, relativeTo: .subheadline)
+                        .lineLimit(1)
+                        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+                }
+                // Delete is no longer in the Close position (UX review m1): it is in the "More"
+                // menu, still behind the confirmation.
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Menu {
+                        Button(role: .destructive) { showDeleteConfirm = true } label: {
+                            Label("Delete patient…", systemImage: "trash")
+                        }
+                        .accessibilityIdentifier("patient.delete")
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .accessibilityLabel("More actions")
                     }
-                    .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+                    .accessibilityIdentifier("patient.more")
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }
