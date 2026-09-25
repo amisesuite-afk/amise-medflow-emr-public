@@ -13,6 +13,7 @@ import { saveBlobAsPDF } from './lib/pdfExport';
 import { allergyStatus, allergyNoteText } from '@/lib/allergy-status';
 import { examNoteLines } from '@/lib/exam-documentation';
 import { lifestyleSummary } from '@workspace/triage-engine/lifestyle-practices';
+import { supplementNoteLine } from '@/lib/supplement-catalogue';
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -554,6 +555,11 @@ ${ctx.medicationsText ? `<div>${escHtml(ctx.medicationsText)}</div>` : ''}
 ${!ctx.medications.length && !ctx.medicationsText ? '<div style="color:#94a3b8;font-size:12px;font-style:italic">None</div>' : ''}
 </div></div>
 
+<div class="section">
+<div class="sec-hdr">Herbs, teas, bush remedies &amp; supplements</div>
+<div class="sec-body">${escHtml(supplementNoteLine(ctx.supplementHistory))}</div>
+</div>
+
 ${ctx.symptoms.length ? `<div class="section">
 <div class="sec-hdr">Review of Systems</div>
 <div class="sec-body">
@@ -709,6 +715,11 @@ ${ctx.medications.length || ctx.medicationsText ? `<div class="section">
 <div class="sec-hdr">Current Medications</div>
 <div class="sec-body">${items(ctx.medications)}${ctx.medicationsText ? `<div>${escHtml(ctx.medicationsText)}</div>` : ''}</div>
 </div>` : ''}
+
+<div class="section">
+<div class="sec-hdr">Herbs, teas, bush remedies &amp; supplements</div>
+<div class="sec-body">${escHtml(supplementNoteLine(ctx.supplementHistory))}</div>
+</div>
 
 <div class="section">
 <div class="sec-hdr">Allergies</div>

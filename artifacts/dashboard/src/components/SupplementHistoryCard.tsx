@@ -5,7 +5,7 @@
  * Patient-level: shared with iOS through patients.pathway_data_json (lib/supplement-store.ts).
  * Nothing here stops or prescribes anything — stop times are shown to the clinician, who decides.
  */
-import { useMemo, useState, type CSSProperties } from 'react';
+import { useId, useMemo, useState, type CSSProperties } from 'react';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { useAppContext } from '@/context/AppContext';
 import {
@@ -24,6 +24,7 @@ function newId(): string {
 
 export default function SupplementHistoryCard({ showPerioperativeAlerts = false }: { showPerioperativeAlerts?: boolean }) {
   const { supplementHistory: h, setSupplementHistory } = useAppContext();
+  const uid = useId();
   const [query, setQuery] = useState('');
   const [details, setDetails] = useState('');
   const matches = useMemo(() => (query.trim() ? searchSupplements(query).slice(0, 6) : []), [query]);
@@ -93,13 +94,13 @@ export default function SupplementHistoryCard({ showPerioperativeAlerts = false 
       })}
 
       <div className="fld" style={{ marginTop: 8 }}>
-        <label htmlFor="supplement-search">Search or type (garlic, turmeric, cerasee tea…)</label>
-        <input id="supplement-search" type="text" value={query} onChange={e => setQuery(e.target.value)}
+        <label htmlFor={`${uid}-search`}>Search or type (garlic, turmeric, cerasee tea…)</label>
+        <input id={`${uid}-search`} type="text" value={query} onChange={e => setQuery(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); add(query, matchSupplements(query)[0]?.id ?? null); } }} />
       </div>
       <div className="fld">
-        <label htmlFor="supplement-details">Dose / how often (optional)</label>
-        <input id="supplement-details" type="text" value={details} onChange={e => setDetails(e.target.value)} />
+        <label htmlFor={`${uid}-details`}>Dose / how often (optional)</label>
+        <input id={`${uid}-details`} type="text" value={details} onChange={e => setDetails(e.target.value)} />
       </div>
       {query.trim() && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 8 }}>

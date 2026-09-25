@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { downloadAsWord } from '@/pages/tabs/lib/pdfExport';
+import { HERBAL_PREOP_PATIENT_TEXT } from '@/lib/supplement-catalogue';
 
 // ── Practice details ──────────────────────────────────────────────────────────
 
@@ -194,10 +195,13 @@ function colonMedInstructions(medications: string[]): { drug: string; instructio
     { pattern: /rivaroxaban|xarelto|apixaban|eliquis|dabigatran|pradaxa|edoxaban/i, instruction: 'STOP 48–72 hours before (or as directed by your surgeon).', colour: '#dc2626' },
     { pattern: /clopidogrel|plavix|ticagrelor|brilinta|prasugrel|effient/i, instruction: 'STOP 5 days before. If on a coronary stent, discuss with your surgeon first.', colour: '#dc2626' },
     { pattern: /aspirin/i,                    instruction: 'STOP 5 days before your procedure (blood thinner — increases polypectomy bleeding risk).', colour: '#dc2626' },
+    // Herbal remedies, bush teas and herbal supplements — surgeon decision 2026-09-25: 2 weeks
+    // before, with the reason and circumstances (HERBAL_PREOP_PATIENT_TEXT, printed below).
+    // Valerian is deliberately not matched: it must not be stopped suddenly (call the clinic).
+    { pattern: /turmeric|curcumin|ginger|garlic|ginkgo|ginseng|st\.? john|kava|echinacea|ashwagandha|ephedra|ma huang|cinnamon|bush tea|herbal/i, instruction: 'Herbal remedy: please stop it 2 weeks before your procedure — see "Herbal remedies, bush teas and supplements" below.', colour: '#b45309' },
     // Vitamins / supplements — stop 3 days before
     { pattern: /iron|ferrous|feramax/i,       instruction: 'STOP 3 days before — iron interferes with bowel preparation quality.', colour: '#b45309' },
     { pattern: /vitamin|supplement|multivit/i, instruction: 'STOP 3 days before your procedure.', colour: '#b45309' },
-    { pattern: /turmeric|ginger|cinnamon/i,   instruction: 'STOP 5 days before — natural blood-thinning effect.', colour: '#b45309' },
     // Diabetic agents
     { pattern: /metformin|glucophage/i,       instruction: 'HOLD on the day of preparation and day of procedure — restart once eating normally.', colour: '#b45309' },
     { pattern: /insulin/i,                    instruction: 'REDUCE dose while fasting — do not take usual insulin dose when not eating. Surgeon will advise.', colour: '#b45309' },
@@ -358,11 +362,17 @@ function buildPrepHtml(opts: {
     <ul style="margin:0 0 0 18px;padding:0;font-size:11.5px;line-height:1.9;color:#1e293b">
       <li><strong>Remove all metal items</strong> before your appointment — jewellery, piercings, watches, and accessories. Metal can interfere with electrocautery during the procedure.</li>
       <li><strong>Arrange a responsible adult to drive you home</strong> — you cannot drive after sedation. Please make these arrangements before your procedure day.</li>
-      <li><strong>Blood thinners:</strong> stop aspirin, warfarin, plavix, and supplements such as turmeric, ginger, and cinnamon <strong>5 days before</strong>.</li>
+      <li><strong>Blood thinners:</strong> stop aspirin, warfarin, plavix <strong>5 days before</strong>.</li>
       <li><strong>Vitamins and iron tablets / supplements:</strong> stop <strong>3 days before</strong> your procedure.</li>
       <li><strong>Blood pressure medication:</strong> if you are hypertensive, take your medication at <strong>7:00 am on the morning of your procedure</strong> with a small sip of water.</li>
     </ul>`;
   }
+
+  // Surgeon decision 2026-09-25 (docs/clinical-validation/SURGEON-DECISIONS.md): the same herbal
+  // text as the front-desk instructions and the api-server prep templates.
+  body += `
+    <h2 style="font-size:13px;color:#1e3a5f;border-bottom:1.5px solid #1e3a5f;padding-bottom:4px;margin:18px 0 8px">Herbal remedies, bush teas and supplements</h2>
+    <p style="font-size:11.5px;line-height:1.7;color:#1e293b;margin:0">${HERBAL_PREOP_PATIENT_TEXT.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</p>`;
 
   body += `
   <div style="margin-top:20px;padding:10px 12px;background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;font-size:11px;color:#991b1b">
@@ -384,7 +394,7 @@ function buildPrepHtml(opts: {
 type PrepMode = 'preop' | 'colonoscopy';
 
 export default function PatientPrepCard() {
-  const { patientName, dob, nhiNumber, allergies: allergyText, medications, plan, assessment } = useAppContext();
+  const { patientName, dob, nhiNumber, allergies: allergyText, medications, plan, assessment, supplementHistory } = useAppContext();
   const [mode, setMode] = useState<PrepMode>('colonoscopy');
   const [selectedPrepId, setSelectedPrepId] = useState(BOWEL_PREPS[0].id);
   const [appointmentDate, setAppointmentDate] = useState('');
@@ -402,7 +412,7 @@ export default function PatientPrepCard() {
   })();
 
   const selectedPrep = BOWEL_PREPS.find(p => p.id === selectedPrepId) ?? BOWEL_PREPS[0];
-  const medInstructions = colonMedInstructions(medications ?? []);
+  const medInstructions = colonMedInstructions([...(medications ?? []), ...supplementHistory.entries.map(e => e.name)]);
 
   function getOpts() {
     return {
