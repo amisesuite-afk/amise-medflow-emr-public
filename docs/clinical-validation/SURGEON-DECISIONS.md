@@ -161,6 +161,8 @@ approved. Reply with the file and item numbers you approve (for example "fix-web
 | [fix-web-differential](changes/fix-web-differential.md#needs-sign-off) | Web differential (PANE 1.0.0) | Every likelihood, prior tiers, pregnancy multiplier, age and sex ratios, Caribbean diabetes tier, ICD T31.20 (11 items) |
 | [fix-ios-triage-cards](changes/fix-ios-triage-cards.md#needs-sign-off) | iOS triage cards and safety checks | Burns fluids, redirect wording and hospitals, sepsis, BP and lab thresholds, paediatric bands, drug-allergy rules, doses written into cards (14 items) |
 | [fix-ios-differential](changes/fix-ios-differential.md#needs-sign-off) | iOS differential (DiagnosticDatabase 2.0.0) | Using the database at all; priors, weight caps, 121 curated candidates, every citation |
+| [fix-web-protocols](changes/fix-web-protocols.md#needs-sign-off) | Web plans and protocols, patient filter | SGLT2 withholding period, P2Y12 stop times and stent windows, burns fluids, `resolveProtocol`, protocols with uncertain sources, frailty trigger |
+| [ios-screening-parity](changes/ios-screening-parity.md#needs-sign-off) | iOS screening, NG12 suspected-cancer card, TIA scores | Web rule sets applied to iOS, PSA from 45 for African-Caribbean ancestry, BRCA surveillance ages, NG12 thresholds, removing ABCD² for TIA (13 items) |
 
 Decided so far:
 
