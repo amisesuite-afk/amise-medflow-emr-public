@@ -1,10 +1,10 @@
 # Clinical validation report — consultation engines vs guidelines
 
-Generated 2026-09-25T15:51:32.304Z.
+Generated 2026-09-25T15:59:05.860Z.
 
 - iOS: 243 vignette results from `docs/clinical-validation/results/ios-latest.jsonl` (generated 2026-09-25T15:32:05Z).
 - iOS differential engine mode: fallback (BayesianDiagnosisEngine could not decode DiagnosticDatabase.json and used its built-in lists).
-- Web: 357 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-25T15:51:29.734Z, clinval-web/1).
+- Web: 397 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-25T15:57:43.480Z, clinval-web/1).
 
 Status legend: PASS; FAIL — BLOCKING (critical, not flagged: fails the test run); FAIL (known gap) and
 FAIL (unverified) are reported only; "PASS (gap resolved)" means the flag can be removed from the vignette;
@@ -15,7 +15,7 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
 | ios | 243 | 1954 | 843 | 1022 | 89 | 595 | 0 | 61 | 961 | 734 |
-| web | 357 | 2822 | 1749 | 994 | 79 | 484 | 0 | 991 | 3 | 131 |
+| web | 397 | 3087 | 1882 | 1113 | 92 | 546 | 0 | 1109 | 4 | 131 |
 
 ## Blocking failures
 
@@ -845,6 +845,11 @@ None.
 - `groin-mimic-testicular-torsion` / **dx-torsion-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Appendicitis \| 3. Epididymo-orchitis; also in web.symptomInference#1, web.passive#1 [known gap: As above: torsion not in the PANE top 3; epididymo-orchitis ranks above it.]
 - `groin-mimic-testicular-torsion` / **mnm-torsion** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Appendicitis \| 3. Epididymo-orchitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3 = inguinal hernia, appendicitis, epididymo-orchitis: testicular_torsion (prior 0.01) is outranked although testicular_pain/scrotal_swelling are applied; vomiting and "sudden" onset are not mapped to features. The safety prompt and the ICD plan (N44.00 → testicular_torsion) are correct.]
 - `groin-mimic-testicular-torsion` / **mgmt-no-hernia-repair** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• consent: hernia repair - recurrence (1-2% tapp), chronic groin pain (5%), mesh infection (< 1%), testi..." (+1 more) [known gap: Assessment ManagementPanel follows the PANE top disease (≥0.20), which is the inguinal hernia because the only groin CC template is "Inguinal / groin hernia" and site "groin" maps to groin_swelling; the surgeon's confirmed diagnosis (ICD) is not used for the panel while PANE is ≥0.20. The PANE top (inguinal hernia 0.22) drives the ManagementPanel, so an elective mesh repair is shown next to the emergency exploration plan.]
+- `gyn-ovarian-torsion-dermoid` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web: computeClinicalPrompts fires the 'Appendicitis — emergency surgical indication' laparoscopic-appendicectomy operative plan (consent, theatre booking, post-operative orders, pip-tazo at induction). hasAppendicitisIndication fires on any affirmed 'guarding'/'rebound' in the abdominal exam ('voluntary guarding' from torsion) and ignores the confirmed diagnosis. The pelvic-free-fluid prompt also adds a 'Ruptured ectopic protocol' although the urine hCG is recorded negative.]
+- `gyn-ovarian-torsion-premenarchal-11` / **mgmt-no-adult-fixed-doses** (web, FAIL (known gap)): forbidden management item present in web.protocol.medications: "ondansetron 4 mg iv (intravenous) tds (three times daily) - antiemetic" (+6 more) [known gap: Web: adult fixed doses with no weight or age adjustment — the ovarian_torsion protocol medications (ondansetron 4 mg, paracetamol 1 g, ibuprofen 400 mg) and the appendicectomy prompt/template (pip-tazo 4.5 g, co-amoxiclav 1.2 g, morphine 5 mg) for a 38 kg child, plus 'IV fluid challenge 500ml'.]
+- `gyn-pid-tubo-ovarian-abscess-sepsis` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web: computeClinicalPrompts fires the 'Appendicitis — emergency surgical indication' laparoscopic-appendicectomy operative plan (consent, theatre booking, post-operative orders, pip-tazo at induction). hasAppendicitisIndication fires on any affirmed 'guarding'/'rebound' in the abdominal exam ('guarding and rebound' from pelvic peritonitis) and ignores the confirmed diagnosis. PlanTab has no protocol for N70.03 (the PID protocol's ICD prefixes do not include it), so the documented plan is empty; only the Assessment panel (confirmed-diagnosis PID protocol) shows PID management.]
+- `gyn-ruptured-haemorrhagic-cyst-apixaban` / **mgmt-anticoagulant-reversal** (web, FAIL (known gap)): no management item matched among 45 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No reversal agent is suggested. The only anticoagulant output is the elective 'Anticoagulation monitoring + peri-operative bridging plan' prompt: 'hold DOAC 48–72h pre-op (renal-adjusted); warfarin — bridge with LMWH' — written for planned surgery, not for active haemorrhage on apixaban.]
+- `gyn-ruptured-haemorrhagic-cyst-apixaban` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web: computeClinicalPrompts fires the 'Appendicitis — emergency surgical indication' laparoscopic-appendicectomy operative plan (consent, theatre booking, post-operative orders, pip-tazo at induction). hasAppendicitisIndication fires on any affirmed 'guarding'/'rebound' in the abdominal exam ('guarding' from haemoperitoneum) and ignores the confirmed diagnosis. The ovarian_cyst protocol also lists ibuprofen 400 mg TDS for a patient bleeding on apixaban.]
 - `h-pylori-penicillin-anaphylaxis` / **mgmt-no-amoxicillin** (web, FAIL (known gap)): forbidden management item present in web.plan: "[conservative] h. pylori eradication: triple therapy (ppi + amoxicillin + clarithromycin × 7 days); confirm eradication with breath test at 4 weeks." (+2 more) [known gap: Gastritis protocol plan line and medications list amoxicillin despite a recorded penicillin anaphylaxis (the allergy shows only in the header).]
 - `haematuria-anticoagulated-clot-retention` / **inv-cystoscopy** (web, FAIL (known gap)): no investigation matched among 25 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Web: R33.8 selects the urinary-retention protocol (catheter, tamsulosin, TWOC); the haematuria protocol (which has cystoscopy, CT urogram and a clot-retention irrigation red flag) is not used, so the haematuria is not investigated.]
 - `haematuria-visible-smoker-2ww` / **dx-haematuria-bladder-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#2 [known gap: Web: PANE top 3 inguinal hernia, cholecystitis, GORD: the haematuria chip is not mapped to a PANE feature without SOCRATES text. Symptom inference ranks bladder cancer #1.]
@@ -940,6 +945,58 @@ None.
 - `nsti-fournier-diabetic` / **mnm-fournier** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholangitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Inguinal/femoral hernia, Acute cholangitis, Acute cholecystitis. The 'Groin' site chip maps to groin_swelling (hernia) and PANE has no Fournier's disease. Symptom inference ranks Fournier's #1.]
 - `nsti-leg-diabetic-sepsis` / **dx-nsti-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholangitis \| 2. Acute Cholecystitis \| 3. Acute Appendicitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Acute cholangitis, Acute cholecystitis, Acute appendicitis — even with crepitus, erythema, instability and raised WBC answered in PANE. NSTI prior is 0.003; fever/rigors favour biliary diseases and socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up. Symptom inference ranks NSTI #1.]
 - `nsti-postop-abdominal-wall` / **dx-nsti-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Cholangitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3: Acute cholecystitis, Acute cholangitis, GORD. socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up; the wound CC template adds wound_erythema/wound_discharge but SSI is not in the top 3 either. Symptom inference ranks "post-operative complication" #1 and has no NSTI.]
+- `obs-abruption-concealed-partner-assault` / **mnm-abruption** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Blunt Abdominal Trauma \| 3. Splenic Laceration [known gap: PANE has no placental abruption node; top 3: acute cholecystitis, blunt abdominal trauma, splenic laceration (all < 0.20). O45.8X3 maps to no protocol.]
+- `obs-abruption-concealed-partner-assault` / **flag-domestic-abuse** (web, FAIL (known gap)): no red flag matched among 15 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No domestic-abuse or safeguarding output: neither triage rules nor prompts contain partner/assault/domestic terms.]
+- `obs-abruption-concealed-partner-assault` / **inv-fetal-monitoring** (web, FAIL (known gap)): no investigation matched among 26 (web.pane.seeded, web.clinicalPrompts) [known gap: No CTG/fetal monitoring: no trauma-in-pregnancy content exists; the blunt-trauma protocol is not reached (PANE top < 0.20, O45 unmapped).]
+- `obs-abruption-concealed-partner-assault` / **mgmt-obstetric-team** (web, FAIL (known gap)): no management item matched among 8 (web.clinicalPrompts) [known gap: No obstetric output (see inv-fetal-monitoring).]
+- `obs-abruption-concealed-partner-assault` / **mgmt-uterine-displacement** (web, FAIL (known gap)): no management item matched among 8 (web.clinicalPrompts) [known gap: No left lateral tilt / uterine displacement (see inv-fetal-monitoring).]
+- `obs-abruption-concealed-partner-assault` / **mgmt-domestic-abuse-safety** (web, FAIL (known gap)): no management item matched among 8 (web.clinicalPrompts) [known gap: No safety planning or referral (see flag-domestic-abuse).]
+- `obs-appendicitis-pregnancy-t3` / **mgmt-obstetric-fetal-monitoring** (web, FAIL (known gap)): no management item matched among 56 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts, web.scaleCalculator.alvarado) [known gap: No obstetric or fetal-monitoring output: the appendicitis protocol and dx variant have no pregnancy branch; the only pregnancy output is the urine β-HCG prompt (for a woman recorded at 32 weeks).]
+- `obs-appendicitis-pregnancy-t3` / **mgmt-no-nsaid-after-20-weeks** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "... convert to oral when tolerating po. • paracetamol 1g qds + ibuprofen 400mg tds (regular). • morphine 5mg prn if pain > 5/10. • regular diet as toler..." [known gap: Web: the appendicectomy operative-plan prompt prescribes 'paracetamol 1g QDS + ibuprofen 400mg TDS (regular)' at 32 weeks.]
+- `obs-appendicitis-pregnancy-t3` / **mgmt-no-assumed-negative-hcg** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "...ak (< 1%), hartmann's pouch if appendix not identifiable. • β-hcg confirmed negative (female of reproductive age). • group & screen available; cross-match if perfor..." [known gap: Web: the appendicectomy operative-plan prompt states '• β-HCG confirmed negative (female of reproductive age)' although she is recorded as 32 weeks pregnant.]
+- `obs-hellp-ruq-pain-34wk` / **mnm-preeclampsia-hellp** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. Acute Appendicitis [known gap: PANE has no pre-eclampsia/HELLP disease node (pane-engine has 130 diseases, none for pre-eclampsia/HELLP); top 3: acute cholecystitis (0.32), peptic ulcer, appendicitis. Symptom inference has no pre-eclampsia either (its #4 is hypertensive emergency). Nothing combines pregnancy + BP ≥ 160/110 + RUQ pain + low platelets; O14.23 maps to no protocol.]
+- `obs-hellp-ruq-pain-34wk` / **flag-severe-hypertension** (web, FAIL (known gap)): no red flag matched among 17 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No hypertension flag: adaptiveTriage has no high-BP vital red flag at all, and the hypertensive_urgency prompt starts at SBP ≥ 180, so BP 164–168/110–112 in pregnancy (severe range ≥ 160/110) raises nothing.]
+- `obs-hellp-ruq-pain-34wk` / **mgmt-magnesium** (web, FAIL (known gap)): no management item matched among 11 (web.clinicalPrompts) [known gap: No magnesium sulfate anywhere (see mnm-preeclampsia-hellp).]
+- `obs-hellp-ruq-pain-34wk` / **mgmt-antihypertensive** (web, FAIL (known gap)): no management item matched among 11 (web.clinicalPrompts) [known gap: No antihypertensive suggested: BP below the 180 prompt threshold; no pregnancy-specific agents (labetalol/nifedipine) anywhere.]
+- `obs-hellp-ruq-pain-34wk` / **mgmt-obstetric-delivery** (web, FAIL (known gap)): no management item matched among 11 (web.clinicalPrompts) [known gap: No obstetric output: O14.23 maps to no protocol, so the Assessment panel and Plan are empty; the prompts are biliary (MRCP, ERCP, 'HPB surgical review — Whipple') and gynaecological ('if ectopic suspected').]
+- `obs-hellp-ruq-pain-34wk` / **mgmt-no-cholecystectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• consent: laparoscopic cholecystectomy - bile duct injury (0.3%), haemorrhage, conversion to open, bile leak, retained..." (+1 more) [known gap: Web: the gallstone prompt ('Cholecystitis / gallstone disease — surgical indication') still fires from the ultrasound report although it says 'no gallstones', and adds 'Consent: laparoscopic cholecystectomy' and a full cholecystectomy operative plan; the dilated-CBD prompt fires on 'CBD 4 mm' (MRCP, ERCP, Whipple review).]
+- `obs-hellp-ruq-pain-34wk` / **mgmt-no-nsaid-after-20-weeks** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "... 2. post-operative orders: • paracetamol 1g qds (regular) + ibuprofen 400mg tds (if egfr normal). • morphine 2.5-5mg sc/iv prn for pain > 5/10. • fre..." [known gap: Web: the cholecystectomy operative-plan template prescribes 'paracetamol 1g QDS (regular) + ibuprofen 400mg TDS (if eGFR normal)' at 34 weeks with platelets 72.]
+- `obs-hyperemesis-gravidarum` / **mgmt-thiamine** (web, FAIL (known gap)): no management item matched among 10 (web.clinicalPrompts) [known gap: No thiamine anywhere; O21.1 maps to no protocol, so no management panel or plan exists.]
+- `obs-postpartum-preeclampsia-epigastric` / **mnm-preeclampsia** (web, FAIL (known gap)): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Peptic Ulcer Disease \| 3. Acute Cholecystitis [known gap: PANE has no pre-eclampsia disease node (pane-engine has 130 diseases, none for pre-eclampsia); top 3: GORD (0.22 — the relief answer "Antacids did not help" still sets antacid_relief), peptic ulcer, cholecystitis. Symptom inference ranks hypertensive emergency #1 (secondary view).]
+- `obs-postpartum-preeclampsia-epigastric` / **level-at-least-urgent** (web, FAIL (known gap)): web.triage: priority (acuity=review, action=priority_24_48h, score=20); expected ≥ urgent [known gap: Web triage: priority_24_48h (score 20). There is no BP vital red flag (162/106 raises nothing), 'headache'/'blurred vision' are not red-flag terms, and postpartum status is not an input.]
+- `obs-postpartum-preeclampsia-epigastric` / **mgmt-antihypertensive** (web, FAIL (known gap)): no management item matched among 5 (web.clinicalPrompts) [known gap: No antihypertensive: SBP 162 is below the 180 prompt threshold.]
+- `obs-postpartum-preeclampsia-epigastric` / **mgmt-obstetric** (web, FAIL (known gap)): no management item matched among 5 (web.clinicalPrompts) [known gap: No obstetric output: O14.15 maps to no protocol, so the Assessment panel and Plan are empty; the only prompts are the pregnancy test, acute-abdomen bloods and cervical screening.]
+- `paed-appendicitis-preschool-perforated` / **mgmt-no-adult-fixed-doses** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or cefuroxime 750 mg tds + metronidazole 500 mg tds." (+12 more) [known gap: Web: adult fixed doses with no weight or age adjustment — protocol 'co-amoxiclav 1.2 g TDS or cefuroxime 750 mg TDS + metronidazole 500 mg TDS', ondansetron 4 mg, paracetamol 1 g; prompts 'IV Piperacillin-tazobactam 4.5g TDS', 'Hartmann's 1L bolus', and the operative template's paracetamol 1 g + ibuprofen 400 mg + morphine 5 mg for a 16 kg child.]
+- `paed-dka-new-onset-abdominal-pain` / **mnm-dka** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no DKA disease node (pane-engine has 130 diseases, none for DKA); top 3: acute cholecystitis, appendicitis, peptic ulcer. The BGL 27 prompt does raise "DKA / HHS — exclude" and symptom inference ranks DKA #1 (secondary views).]
+- `paed-dka-new-onset-abdominal-pain` / **mgmt-cerebral-oedema** (web, FAIL (known gap)): no management item matched among 19 (web.clinicalPrompts) [known gap: No cerebral-oedema or neurological-observation output; the hyperglycaemia prompt is the adult pathway (VRIII wording, 'DKA fixed-rate 0.1 units/kg/h'), with no paediatric DKA protocol.]
+- `paed-dka-new-onset-abdominal-pain` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web: computeClinicalPrompts fires the 'Appendicitis — emergency surgical indication' laparoscopic-appendicectomy operative plan (consent, theatre booking, post-operative orders, pip-tazo at induction). hasAppendicitisIndication fires on any affirmed 'guarding'/'rebound' in the abdominal exam ('voluntary guarding' from DKA) and ignores the confirmed diagnosis.]
+- `paed-dka-new-onset-abdominal-pain` / **mgmt-no-adult-fixed-doses** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• iv pip-tazo 4.5g + metronidazole 500mg - antibiotic prophylaxis at induction." (+2 more) [known gap: Web: adult fixed doses with no weight or age adjustment — the appendicectomy template's pip-tazo 4.5 g, co-amoxiclav 1.2 g, paracetamol 1 g, ibuprofen 400 mg, morphine 5 mg and 'IV fluid challenge 500ml' for a 26 kg child.]
+- `paed-febrile-infant-7wk-hernia-clinic` / **mgmt-urgent-paediatric** (web, FAIL (known gap)): no management item matched among 11 (web.clinicalPrompts) [known gap: No paediatric referral: the output is the adult septic-shock bundle (meropenem, vasopressors 'if MAP < 65', urinary catheter, CT abdomen) — triggered by adult thresholds (SBP 78, HR 178 are labelled 'septic shock').]
+- `paed-febrile-infant-7wk-hernia-clinic` / **mgmt-no-adult-fixed-doses** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "...and/size]. swab count correct × 2. post-operative orders: • paracetamol 1g qds + ibuprofen 400mg tds (regular analgesia). • morphine 5mg prn if pain > 5/1..." [known gap: Web: adult fixed doses with no weight or age adjustment — the hernia operative template's 'paracetamol 1g QDS + ibuprofen 400mg TDS', 'morphine 5mg PRN' and co-amoxiclav 1.2 g for a 4.8 kg infant.]
+- `paed-febrile-infant-7wk-hernia-clinic` / **mgmt-no-emergency-hernia-repair** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• consent: hernia repair - recurrence (1-2% tapp), chronic groin pain (5%), mesh infection (< 1%), testicular ischaemia/vas inju..." (+1 more) [known gap: Web: the hernia prompt now takes the elective branch (the 'non-tender' negation is fixed) but still produces a 'LAPAROSCOPIC INGUINAL HERNIA REPAIR (TAPP) — OPERATIVE PLAN' and 'Consent: hernia repair — … (TAPP), mesh infection, testicular ischaemia/vas injury' for a febrile 7-week-old's small reducible umbilical hernia.]
+- `paed-hsp-abdominal-pain` / **mgmt-no-adult-fixed-doses** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: Web: adult fixed doses with no weight or age adjustment — the GI-bleed prompt's 'Hartmann's 500ml bolus, crossmatch 2 units pRBC' for a 21 kg child.]
+- `paed-intussusception-infant-classic` / **mnm-intussusception** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. Bowel Obstruction; also in web.symptomInference#2, web.passive#2 [known gap: PANE has no intussusception disease node (pane-engine has 130 diseases, none for intussusception); top 3: inguinal/femoral hernia, acute cholecystitis, bowel obstruction. K56.1 maps to the adult bowel_obstruction protocol. Symptom inference ranks intussusception #2 (secondary view).]
+- `paed-intussusception-infant-classic` / **mgmt-enema-reduction** (web, FAIL (known gap)): no management item matched among 29 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No enema reduction: K56.1 maps to the adult bowel_obstruction protocol ('drip and suck', water-soluble contrast at 24 h, adhesiolysis, colonic stenting, Hartmann's).]
+- `paed-intussusception-infant-classic` / **mgmt-paediatric-surgery** (web, FAIL (known gap)): no management item matched among 29 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No paediatric surgery referral anywhere in the plan or prompts; the redcurrant-jelly stool instead triggers the adult GI-bleed prompt ('Urgent OGD / colonoscopy', 'Reverse anticoagulation … 4-factor PCC').]
+- `paed-intussusception-infant-classic` / **mgmt-no-adult-fixed-doses** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." (+1 more) [known gap: Web: adult fixed doses with no weight or age adjustment — 'Hartmann's 500ml bolus' (GI-bleed prompt; ~54 mL/kg) and 'IV fluid challenge 500ml' for a 9.2 kg infant — the adult shock/tachycardia prompts fire because computeClinicalPrompts and adaptiveTriage use adult thresholds (SBP < 90, HR > 100/110/120, RR > 24), which are normal values for an infant.]
+- `paed-intussusception-lethargy-atypical` / **mnm-intussusception** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#2, web.passive#3 [known gap: PANE has no intussusception disease node (pane-engine has 130 diseases, none for intussusception); top 3: acute cholecystitis, appendicitis, peptic ulcer. Symptom inference ranks intussusception #2 behind pyloric stenosis (secondary view).]
+- `paed-intussusception-lethargy-atypical` / **mgmt-no-adult-fixed-doses** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min." (+1 more) [known gap: Web: adult fixed doses with no weight or age adjustment — 'Hartmann's 1L bolus' (shock protocol) and 'IV fluid challenge 500ml' for an 8 kg infant — the adult shock/tachycardia prompts fire because computeClinicalPrompts and adaptiveTriage use adult thresholds (SBP < 90, HR > 100/110/120, RR > 24), which are normal values for an infant (SBP 84 is labelled 'shock').]
+- `paed-malrotation-labelled-reflux` / **mnm-malrotation** (web, FAIL (known gap)): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no malrotation/midgut volvulus disease node (pane-engine has 130 diseases, none for malrotation/midgut volvulus); top 3: GORD (the relief answer "Gaviscon — no help" still sets antacid_relief), inguinal hernia, cholecystitis. Symptom inference ranks malrotation #1 (secondary view).]
+- `paed-malrotation-labelled-reflux` / **inv-upper-gi-contrast** (web, FAIL (known gap)): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No upper GI contrast study suggested.]
+- `paed-malrotation-labelled-reflux` / **mgmt-paediatric-surgery-now** (web, FAIL (known gap)): no management item matched among 9 (web.clinicalPrompts) [known gap: No paediatric surgical referral.]
+- `paed-malrotation-labelled-reflux` / **mgmt-no-adult-fixed-doses** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min." (+1 more) [known gap: Web: adult fixed doses with no weight or age adjustment — 'Hartmann's 1L bolus' and 'IV fluid challenge 500ml' for a 3.9 kg neonate — the adult shock/tachycardia prompts fire because computeClinicalPrompts and adaptiveTriage use adult thresholds (SBP < 90, HR > 100/110/120, RR > 24), which are normal values for an infant (SBP 75 is labelled 'shock' in a well-perfused baby).]
+- `paed-malrotation-volvulus-bilious-neonate` / **mnm-malrotation** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no malrotation/midgut volvulus disease node (pane-engine has 130 diseases, none for malrotation/midgut volvulus); top 3: acute cholecystitis, appendicitis, peptic ulcer. Q43.3 maps to no protocol. Symptom inference ranks malrotation #1 (secondary view). No rule treats bilious vomiting in an infant as an emergency.]
+- `paed-malrotation-volvulus-bilious-neonate` / **inv-upper-gi-contrast** (web, FAIL (known gap)): no investigation matched among 29 (web.pane.seeded, web.clinicalPrompts) [known gap: No upper GI contrast study suggested (see mnm-malrotation).]
+- `paed-malrotation-volvulus-bilious-neonate` / **mgmt-paediatric-surgery-now** (web, FAIL (known gap)): no management item matched among 14 (web.clinicalPrompts) [known gap: No paediatric surgical referral. The prompts give the adult bowel-obstruction pathway instead — 'CT abdomen/pelvis with IV contrast', 'IV Hartmann's 1–2L + IDC', colonic stenting, a bowel-obstruction operative plan — plus the adult shock protocol ('contact cardiology … emergency medicine').]
+- `paed-malrotation-volvulus-bilious-neonate` / **mgmt-no-adult-fixed-doses** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min." (+3 more) [known gap: Web: adult fixed doses with no weight or age adjustment — 'Hartmann's 1L bolus', 'IV Hartmann's 1–2L + IDC', the bowel-obstruction operative plan's pip-tazo 4.5 g and 'IV fluid challenge 500ml' for a 3.4 kg neonate — the adult shock/tachycardia prompts fire because computeClinicalPrompts and adaptiveTriage use adult thresholds (SBP < 90, HR > 100/110/120, RR > 24), which are normal values for an infant.]
+- `paed-nai-duodenal-haematoma` / **flag-safeguarding** (web, FAIL (known gap)): no red flag matched among 15 (web.triage.reasons, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No safeguarding/maltreatment output in triage, prompts or protocols; T74.12XA maps to no protocol.]
+- `paed-nai-duodenal-haematoma` / **mgmt-safeguarding-referral** (web, FAIL (known gap)): no management item matched among 8 (web.clinicalPrompts) [known gap: No child protection referral output.]
+- `paed-nai-duodenal-haematoma` / **mgmt-no-adult-fixed-doses** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• iv fluid challenge 500ml if hypovolaemia likely - reassess hr at 30 min." (+1 more) [known gap: Web: adult fixed doses with no weight or age adjustment — the pancreatitis prompt's 'paracetamol 1g QDS + morphine 5mg PRN' and 'IV fluid challenge 500ml' for a 14 kg child.]
+- `paed-pyloric-stenosis-alkalosis` / **mnm-pyloric-stenosis** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. Acute Appendicitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no pyloric stenosis disease node (pane-engine has 130 diseases, none for pyloric stenosis); top 3: inguinal/femoral hernia, acute cholecystitis, appendicitis. Q40.0 maps to no protocol. Symptom inference ranks hypertrophic pyloric stenosis #1 (secondary view, its investigations are not surfaced).]
+- `paed-pyloric-stenosis-alkalosis` / **inv-pyloric-ultrasound** (web, FAIL (known gap)): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No pyloric ultrasound suggested (see mnm-pyloric-stenosis).]
+- `paed-pyloric-stenosis-alkalosis` / **inv-electrolytes-gas** (web, FAIL (known gap)): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No blood gas, chloride or bicarbonate is requested; the only electrolyte test is 'FBC, U&E (pre-operative bloods)' seeded from the inguinal-hernia protocol (PANE top) and the adult acute-abdomen panel. The recorded pH 7.53 / Cl 86 / K 3.0 raises no prompt.]
+- `paed-pyloric-stenosis-alkalosis` / **mgmt-correct-before-surgery** (web, FAIL (known gap)): no management item matched among 9 (web.clinicalPrompts) [known gap: No fluid/electrolyte correction plan; the recorded alkalosis (pH 7.53, Cl 86, K 3.0) raises no prompt (hypokalaemia/alkalosis are not read).]
+- `paed-pyloric-stenosis-alkalosis` / **mgmt-no-adult-fixed-doses** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min." (+1 more) [known gap: Web: adult fixed doses with no weight or age adjustment — 'Hartmann's 1L bolus' (shock protocol) and 'IV fluid challenge 500ml' for a 3.6 kg infant — the adult shock/tachycardia prompts fire because computeClinicalPrompts and adaptiveTriage use adult thresholds (SBP < 90, HR > 100/110/120, RR > 24), which are normal values for an infant (SBP 80 is labelled 'shock').]
 - `pancreatitis-alcohol` / **mgmt-thiamine** (web, FAIL (known gap)): no management item matched among 46 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No thiamine anywhere for an alcohol-dependent, vomiting patient in early withdrawal.]
 - `pancreatitis-alcohol` / **mgmt-no-aggressive-fluids** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
 - `pancreatitis-alcohol` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "guarding".]
@@ -1030,6 +1087,11 @@ None.
 - `sbo-adhesive-base` / **level-at-least-urgent** (web, FAIL (known gap)): web.triage: priority (acuity=review, action=priority_24_48h, score=23); expected ≥ urgent [known gap: Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Possible malignancy, Systemic red flag symptom, Lower GI red flag). With negation-aware matching web triage gives acuity=review, action=priority_24_48h, score=23: no triage rule covers this presentation.]
 - `sbo-strangulated-femoral-hernia` / **dx-hernia-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Small Bowel Obstruction — Adhesions \| 3. Post-operative Ileus; also in web.triageSurgical#1 [known gap: Web: PANE top 3: bowel obstruction, adhesive SBO, post-operative ileus. The SOCRATES site text 'Right groin lump' maps to groin_swelling but the obstruction features dominate; hernia appears only in the triage surgical match list. The 'hernia' symptom-branch details are not read by PANE.]
 - `sbo-strangulation` / **mgmt-no-nom-trial-with-strangulation** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] ng tube insertion - "drip and suck" decompression." [known gap: Web: Documented plan = 'Small Bowel Obstruction — Non-Operative Trial (Drip and Suck)' and the Gastrografin step, for CT-proven strangulation with lactate 4.1.]
+- `screen-hypertension-accelerated-papilloedema` / **level-urgent** (web, FAIL (known gap)): web.triage: routine (acuity=routine, action=routine_booking, score=0); expected ≥ urgent [known gap: Web triage: routine_booking, score 0, for BP 208/126 with headache, blurred vision and papilloedema. adaptiveTriage has no high-BP vital red flag, and 'headache'/'blurred vision'/'papilloedema' are not red-flag terms. Before the negation fixes this passed only because the negated 'No chest pain' raised 'Possible cardiac event'.]
+- `screen-hypertension-accelerated-papilloedema` / **mgmt-same-day-admission** (web, FAIL (known gap)): no management item matched among 17 (web.clinicalPrompts) [known gap: Web: the hypertensive_urgency prompt (SBP ≥ 180) offers oral amlodipine and 'reduce SBP by 25% over 24–48 h'; the IV/hypertensive-emergency line appears only at SBP ≥ 220. Recorded papilloedema and retinal haemorrhages are not read, so there is no same-day admission/referral (NICE NG136).]
+- `screen-post-splenectomy-vaccination` / **mgmt-pneumococcal** (web, FAIL (known gap)): no management item output on web [known gap: No management output at all: Z90.81 (asplenia) maps to no protocol, so the Assessment panel and Plan are empty. Post-splenectomy vaccines exist only in the splenic_laceration protocol (S36 prefixes), which a follow-up coded as asplenia never reaches; no prompt reads 'splenectomy' in the surgical history.]
+- `screen-tetanus-prone-wound-unknown-status` / **mgmt-tetanus-vaccine** (web, FAIL (known gap)): no management item matched among 5 (web.clinicalPrompts) [known gap: No tetanus output: S51.812A maps to no protocol, PANE top 3 is inguinal hernia / cholecystitis / GORD, and computeClinicalPrompts has no wound or tetanus-prone rule. Tetanus toxoid/immunoglobulin exist only inside the major-trauma, burns and splenic protocols.]
+- `screen-tetanus-prone-wound-unknown-status` / **mgmt-tetanus-immunoglobulin** (web, FAIL (known gap)): no management item matched among 5 (web.clinicalPrompts) [known gap: See mgmt-tetanus-vaccine: no tetanus immunoglobulin output for a high-risk wound with unknown immunisation.]
 - `seizure-first-unprovoked-adult` / **mnm-seizure** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, appendicitis, GORD. Symptom inference ranks epilepsy/seizure #1.]
 - `seizure-first-unprovoked-adult` / **mgmt-ecg** (web, FAIL (known gap)): no management item matched among 2 (web.clinicalPrompts) [known gap: Web: No ECG (the pre-operative ECG prompt is age ≥40 only).]
 - `seizure-first-unprovoked-adult` / **mgmt-first-seizure-referral** (web, FAIL (known gap)): no management item matched among 2 (web.clinicalPrompts) [known gap: Web: No neurology / first-seizure referral; only two cervical-screening lines in management.]
@@ -6671,6 +6733,139 @@ Guidelines:
 
 - **eau-paed-2024** — EAU/ESPU Guidelines on Paediatric Urology — acute scrotum (2024), Testicular torsion: clinical diagnosis, Doppler ultrasound must not delay surgery, urgent scrotal exploration. Radmayr C, Bogaert G, Burgu B, et al. EAU Guidelines on Paediatric Urology. EAU Guidelines Office, Arnhem; 2024 edition. Section: Acute scrotum in children. *(statement wording/numbering not yet verified against the source)*
 
+### Ovarian torsion (appendicitis mimic)
+
+#### `gyn-ovarian-torsion-dermoid` — Adult with known dermoid cyst (base case)
+
+24-year-old woman, sudden right iliac fossa/pelvic pain for 5 h with repeated vomiting, known 6 cm right ovarian dermoid awaiting surgery; urine hCG negative; US: enlarged right ovary with reduced venous flow. Surgical emergency: laparoscopy and detorsion.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-torsion-top3 | mustRankTopK | critical | not run | PASS | ACOG Committee Opinion No. 783 2019 |  |
+| level-at-least-urgent | emergencyLevel | critical | not run | PASS | ACOG Committee Opinion No. 783 2019 |  |
+| mgmt-laparoscopy | managementInclude | critical | not run | PASS | ACOG Committee Opinion No. 783 2019 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | FAIL (known gap) | ACOG Committee Opinion No. 783 2019 | Gate the appendicectomy operative-plan prompt on an appendicitis working diagnosis (as the Alvarado block does with assessmentHasAppend); guarding from torsion, PID, haemoperitoneum or DKA is not an appendicectomy indication. |
+| mgmt-ovarian-conservation | managementInclude | quality | not run | PASS | ACOG Committee Opinion No. 783 2019 |  |
+| mgmt-gynaecology | managementInclude | quality | not run | PASS | ACOG Committee Opinion No. 783 2019 |  |
+
+Failure details:
+
+- **mgmt-no-appendicectomy** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web: computeClinicalPrompts fires the 'Appendicitis — emergency surgical indication' laparoscopic-appendicectomy operative plan (consent, theatre booking, post-operative orders, pip-tazo at induction). hasAppendicitisIndication fires on any affirmed 'guarding'/'rebound' in the abdominal exam ('voluntary guarding' from torsion) and ignores the confirmed diagnosis. The pelvic-free-fluid prompt also adds a 'Ruptured ectopic protocol' although the urine hCG is recorded negative.]
+
+Guidelines:
+
+- **acog-co783-2019** — ACOG Committee Opinion No. 783 — adnexal torsion in adolescents (2019), Torsion is a surgical emergency: prompt laparoscopy; preserve the ovary (detorsion) even when it looks non-viable, rather than oophorectomy; normal Doppler flow does not exclude torsion. American College of Obstetricians and Gynecologists. Adnexal torsion in adolescents: ACOG Committee Opinion No. 783. Obstet Gynecol. 2019;134:e56–e63. *(statement wording/numbering not yet verified against the source)*
+- **acog-pb174-2016** — ACOG Practice Bulletin No. 174 — evaluation and management of adnexal masses (2016), Pregnancy test in reproductive-age women with an adnexal mass and pain; transvaginal ultrasound; haemorrhagic corpus luteum cysts are usually managed conservatively unless haemodynamic compromise. American College of Obstetricians and Gynecologists. Evaluation and management of adnexal masses: Practice Bulletin No. 174. Obstet Gynecol. 2016;128:e210–e226. *(statement wording/numbering not yet verified against the source)*
+
+### Ovarian torsion in a premenarchal girl
+
+#### `gyn-ovarian-torsion-premenarchal-11` — Premenarchal 11-year-old, labelled gastroenteritis, Doppler flow present
+
+11-year-old premenarchal girl (38 kg), 18 h intermittent lower abdominal pain and vomiting labelled "gastroenteritis"; US: enlarged left ovary with peripheral follicles and a whirlpool sign, arterial flow still present. Doppler flow does not exclude torsion.
+
+Permutation of `gyn-ovarian-torsion-dermoid`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-torsion-top3 | mustRankTopK | critical | not run | PASS | ACOG Committee Opinion No. 783 2019 |  |
+| level-at-least-urgent | emergencyLevel | critical | not run | PASS | ACOG Committee Opinion No. 783 2019 |  |
+| mgmt-laparoscopy | managementInclude | critical | not run | PASS | ACOG Committee Opinion No. 783 2019 |  |
+| mgmt-no-adult-fixed-doses | managementExclude | critical | not run | FAIL (known gap) |  | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
+| mgmt-ovarian-conservation | managementInclude | quality | not run | PASS | ACOG Committee Opinion No. 783 2019 |  |
+| mgmt-no-default-oophorectomy | managementExclude | quality | not run | PASS | ACOG Committee Opinion No. 783 2019 |  |
+
+Failure details:
+
+- **mgmt-no-adult-fixed-doses** (web): forbidden management item present in web.protocol.medications: "ondansetron 4 mg iv (intravenous) tds (three times daily) - antiemetic" (+6 more) [known gap: Web: adult fixed doses with no weight or age adjustment — the ovarian_torsion protocol medications (ondansetron 4 mg, paracetamol 1 g, ibuprofen 400 mg) and the appendicectomy prompt/template (pip-tazo 4.5 g, co-amoxiclav 1.2 g, morphine 5 mg) for a 38 kg child, plus 'IV fluid challenge 500ml'.]
+
+Guidelines:
+
+- **acog-co783-2019** — ACOG Committee Opinion No. 783 — adnexal torsion in adolescents (2019), Torsion is a surgical emergency: prompt laparoscopy; preserve the ovary (detorsion) even when it looks non-viable, rather than oophorectomy; normal Doppler flow does not exclude torsion. American College of Obstetricians and Gynecologists. Adnexal torsion in adolescents: ACOG Committee Opinion No. 783. Obstet Gynecol. 2019;134:e56–e63. *(statement wording/numbering not yet verified against the source)*
+
+### Tubo-ovarian abscess with sepsis
+
+#### `gyn-pid-tubo-ovarian-abscess-sepsis` — Tubo-ovarian abscess, sepsis, copper IUD in situ
+
+34-year-old woman with a copper IUD, 5 days of lower abdominal pain, T 39.1, HR 118, BP 100/62, RR 22, lower peritonism, WBC 19, CRP 210, lactate 2.6; US: 6 cm complex left adnexal mass. Admit, IV antibiotics, drainage.
+
+Permutation of `gyn-pid-young-woman`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-pid-top3 | mustRankTopK | critical | not run | PASS | CDC sexually transmitted infections treatment guidelines 2021 |  |
+| level-emergency | emergencyLevel | critical | not run | PASS | CDC sexually transmitted infections treatment guidelines 2021 |  |
+| alarm-sepsis | mustAlarm | critical | not run | PASS | CDC sexually transmitted infections treatment guidelines 2021 |  |
+| mgmt-iv-antibiotics | managementInclude | critical | not run | PASS | CDC sexually transmitted infections treatment guidelines 2021; BASHH UK national guideline for the management of pelvic inflammatory disease 2019 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | FAIL (known gap) | CDC sexually transmitted infections treatment guidelines 2021 | Gate the appendicectomy operative-plan prompt on an appendicitis working diagnosis (as the Alvarado block does with assessmentHasAppend); guarding from torsion, PID, haemoperitoneum or DKA is not an appendicectomy indication. Add N70 to the PID protocol ICD prefixes. |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | not run | PASS | CDC sexually transmitted infections treatment guidelines 2021 |  |
+| inv-blood-cultures | investigationInclude | quality | not run | PASS | CDC sexually transmitted infections treatment guidelines 2021 |  |
+| mgmt-drainage | managementInclude | quality | not run | PASS | CDC sexually transmitted infections treatment guidelines 2021 |  |
+| mgmt-admit | managementInclude | quality | not run | PASS | CDC sexually transmitted infections treatment guidelines 2021 |  |
+
+Failure details:
+
+- **mgmt-no-appendicectomy** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web: computeClinicalPrompts fires the 'Appendicitis — emergency surgical indication' laparoscopic-appendicectomy operative plan (consent, theatre booking, post-operative orders, pip-tazo at induction). hasAppendicitisIndication fires on any affirmed 'guarding'/'rebound' in the abdominal exam ('guarding and rebound' from pelvic peritonitis) and ignores the confirmed diagnosis. PlanTab has no protocol for N70.03 (the PID protocol's ICD prefixes do not include it), so the documented plan is empty; only the Assessment panel (confirmed-diagnosis PID protocol) shows PID management.]
+
+Guidelines:
+
+- **cdc-sti-2021** — CDC sexually transmitted infections treatment guidelines — pelvic inflammatory disease (2021), Clinical diagnosis (pelvic/lower abdominal pain with cervical motion, uterine or adnexal tenderness); NAAT for N. gonorrhoeae and C. trachomatis; pregnancy test; HIV and syphilis testing; outpatient regimen ceftriaxone 500 mg IM once + doxycycline 100 mg BD 14 days + metronidazole 500 mg BD 14 days; hospitalise for tubo-ovarian abscess, severe illness or when a surgical emergency (e.g. appendicitis) cannot be excluded; parenteral regimen; partner management; IUD need not be removed. Workowski KA, Bachmann LH, Chan PA, et al. Sexually transmitted infections treatment guidelines, 2021. MMWR Recomm Rep. 2021;70(4):1–187. *(statement wording/numbering not yet verified against the source)*
+- **bashh-pid-2019** — BASHH UK national guideline for the management of pelvic inflammatory disease (2019), Low threshold for empirical treatment; test for gonorrhoea and chlamydia; exclude ectopic pregnancy; inpatient IV therapy for severe disease or tubo-ovarian abscess; partner notification. Ross J, Cole M, Evans C, et al. United Kingdom national guideline for the management of pelvic inflammatory disease (2019 interim update). British Association for Sexual Health and HIV; 2019. *(statement wording/numbering not yet verified against the source)*
+
+### Pelvic inflammatory disease (appendicitis mimic)
+
+#### `gyn-pid-young-woman` — Mild–moderate PID, outpatient-treatable (base case)
+
+21-year-old woman, 3 days of bilateral lower abdominal pain, deep dyspareunia and purulent discharge after a new partner, T 38.2, cervical motion and bilateral adnexal tenderness; hCG negative. CDC 2021: NAAT, ceftriaxone + doxycycline + metronidazole, partner management.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-pid-top3 | mustRankTopK | critical | not run | PASS | CDC sexually transmitted infections treatment guidelines 2021 |  |
+| mgmt-doxycycline | managementInclude | critical | not run | PASS | CDC sexually transmitted infections treatment guidelines 2021; BASHH UK national guideline for the management of pelvic inflammatory disease 2019 |  |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS | CDC sexually transmitted infections treatment guidelines 2021 |  |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | not run | PASS | CDC sexually transmitted infections treatment guidelines 2021 |  |
+| inv-naat | investigationInclude | quality | not run | PASS | CDC sexually transmitted infections treatment guidelines 2021; BASHH UK national guideline for the management of pelvic inflammatory disease 2019 |  |
+| inv-pregnancy-test | investigationInclude | quality | not run | PASS | CDC sexually transmitted infections treatment guidelines 2021 |  |
+| inv-hiv-syphilis | investigationInclude | quality | not run | PASS | CDC sexually transmitted infections treatment guidelines 2021 |  |
+| mgmt-ceftriaxone | managementInclude | quality | not run | PASS | CDC sexually transmitted infections treatment guidelines 2021 |  |
+| mgmt-partner | managementInclude | quality | not run | PASS | CDC sexually transmitted infections treatment guidelines 2021; BASHH UK national guideline for the management of pelvic inflammatory disease 2019 |  |
+
+Guidelines:
+
+- **cdc-sti-2021** — CDC sexually transmitted infections treatment guidelines — pelvic inflammatory disease (2021), Clinical diagnosis (pelvic/lower abdominal pain with cervical motion, uterine or adnexal tenderness); NAAT for N. gonorrhoeae and C. trachomatis; pregnancy test; HIV and syphilis testing; outpatient regimen ceftriaxone 500 mg IM once + doxycycline 100 mg BD 14 days + metronidazole 500 mg BD 14 days; hospitalise for tubo-ovarian abscess, severe illness or when a surgical emergency (e.g. appendicitis) cannot be excluded; parenteral regimen; partner management; IUD need not be removed. Workowski KA, Bachmann LH, Chan PA, et al. Sexually transmitted infections treatment guidelines, 2021. MMWR Recomm Rep. 2021;70(4):1–187. *(statement wording/numbering not yet verified against the source)*
+- **bashh-pid-2019** — BASHH UK national guideline for the management of pelvic inflammatory disease (2019), Low threshold for empirical treatment; test for gonorrhoea and chlamydia; exclude ectopic pregnancy; inpatient IV therapy for severe disease or tubo-ovarian abscess; partner notification. Ross J, Cole M, Evans C, et al. United Kingdom national guideline for the management of pelvic inflammatory disease (2019 interim update). British Association for Sexual Health and HIV; 2019. *(statement wording/numbering not yet verified against the source)*
+
+### Ruptured haemorrhagic corpus luteum cyst on a DOAC
+
+#### `gyn-ruptured-haemorrhagic-cyst-apixaban` — Haemoperitoneum from a corpus luteum cyst in a woman on apixaban
+
+38-year-old woman on apixaban for DVT, sudden right pelvic pain on day 22 of her cycle, light-headed, HR 118, BP 96/60, Hb 9.4 (13.1 last month); urine hCG negative; US: haemorrhagic right ovarian cyst with free fluid in the pelvis and Morison's pouch.
+
+Permutation of `gyn-ovarian-torsion-dermoid`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-at-least-urgent | emergencyLevel | critical | not run | PASS | 2020 ACC expert consensus decision pathway 2020 |  |
+| flag-anticoagulant | redFlags | critical | not run | PASS | 2020 ACC expert consensus decision pathway 2020 |  |
+| inv-crossmatch | investigationInclude | critical | not run | PASS | 2020 ACC expert consensus decision pathway 2020 |  |
+| mgmt-anticoagulant-reversal | managementInclude | critical | not run | FAIL (known gap) | 2020 ACC expert consensus decision pathway 2020 | When a DOAC/warfarin is recorded and there is bleeding, haemoperitoneum or shock: 'stop anticoagulant; reversal (andexanet alfa / 4F-PCC for factor Xa inhibitors; vitamin K + PCC for warfarin); haematology' instead of the bridging template (ACC 2020). |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | FAIL (known gap) | ACOG Practice Bulletin No. 174 2016 | Gate the appendicectomy operative-plan prompt on an appendicitis working diagnosis (as the Alvarado block does with assessmentHasAppend); guarding from torsion, PID, haemoperitoneum or DKA is not an appendicectomy indication. Add a haemorrhage-on-anticoagulant branch (stop, reverse, no NSAIDs) to the ovarian_cyst protocol. |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | not run | PASS | 2020 ACC expert consensus decision pathway 2020 |  |
+| dx-ovarian-cyst-top3 | mustRankTopK | quality | not run | FAIL (known gap) | ACOG Practice Bulletin No. 174 2016 | Give ovarian_cyst (haemorrhagic/ruptured) a haemoperitoneum/free-fluid and anticoagulant-use likelihood, and stop mapping shoulder-tip radiation to ruq_pain. |
+| mgmt-stop-apixaban | managementInclude | quality | not run | PASS | 2020 ACC expert consensus decision pathway 2020 |  |
+| mgmt-gynaecology | managementInclude | quality | not run | PASS | ACOG Practice Bulletin No. 174 2016 |  |
+
+Failure details:
+
+- **dx-ovarian-cyst-top3** (web): not in top 3 of web.pane: 1. Ovarian Torsion \| 2. Acute Cholecystitis \| 3. Ectopic Pregnancy; also in web.symptomInference#2, web.passive#2 [known gap: PANE top 3: ovarian torsion (0.195), acute cholecystitis (0.164 — 'shoulder tip' radiation maps to ruq_pain), ectopic pregnancy. The ovarian_cyst node has no haemoperitoneum/shock feature. Symptom inference ranks 'Ovarian torsion / ovarian cyst' #2.]
+- **mgmt-anticoagulant-reversal** (web): no management item matched among 45 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No reversal agent is suggested. The only anticoagulant output is the elective 'Anticoagulation monitoring + peri-operative bridging plan' prompt: 'hold DOAC 48–72h pre-op (renal-adjusted); warfarin — bridge with LMWH' — written for planned surgery, not for active haemorrhage on apixaban.]
+- **mgmt-no-appendicectomy** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web: computeClinicalPrompts fires the 'Appendicitis — emergency surgical indication' laparoscopic-appendicectomy operative plan (consent, theatre booking, post-operative orders, pip-tazo at induction). hasAppendicitisIndication fires on any affirmed 'guarding'/'rebound' in the abdominal exam ('guarding' from haemoperitoneum) and ignores the confirmed diagnosis. The ovarian_cyst protocol also lists ibuprofen 400 mg TDS for a patient bleeding on apixaban.]
+
+Guidelines:
+
+- **acog-pb174-2016** — ACOG Practice Bulletin No. 174 — evaluation and management of adnexal masses (2016), Pregnancy test in reproductive-age women with an adnexal mass and pain; transvaginal ultrasound; haemorrhagic corpus luteum cysts are usually managed conservatively unless haemodynamic compromise. American College of Obstetricians and Gynecologists. Evaluation and management of adnexal masses: Practice Bulletin No. 174. Obstet Gynecol. 2016;128:e210–e226. *(statement wording/numbering not yet verified against the source)*
+- **acc-bleeding-2020** — 2020 ACC expert consensus decision pathway — management of bleeding in patients on oral anticoagulants (2020), Major bleeding on a factor Xa inhibitor: stop the anticoagulant, supportive care and transfusion, consider reversal (andexanet alfa or 4-factor PCC); source control. Tomaselli GF, Mahaffey KW, Cuker A, et al. 2020 ACC expert consensus decision pathway on management of bleeding in patients on oral anticoagulants. J Am Coll Cardiol. 2020;76:594–622. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng126** — NICE NG126 — ectopic pregnancy and miscarriage: diagnosis and initial management (2019), Pregnancy test in every woman of reproductive age with abdominal/pelvic pain, even with contraception; transvaginal ultrasound; immediate referral to an early pregnancy assessment service / gynaecology when pregnancy test positive with pain; surgical management if ruptured. National Institute for Health and Care Excellence. Ectopic pregnancy and miscarriage: diagnosis and initial management. NICE guideline NG126, 2019 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+
 ### Helicobacter pylori infection (dyspepsia)
 
 #### `h-pylori-penicillin-anaphylaxis` — Penicillin anaphylaxis recorded
@@ -8887,6 +9082,509 @@ Guidelines:
 - **wses-sis-ssti-2018** — WSES/SIS-E consensus conference — management of skin and soft-tissue infections (2018), Necrotising soft-tissue infections: clinical diagnosis (pain out of proportion, rapid progression, systemic toxicity); LRINEC has limited sensitivity and must not be used to rule out NSTI; prompt surgical debridement; empirical broad-spectrum antibiotics including an agent with anti-toxin activity (clindamycin) for streptococcal/clostridial infection; Fournier's gangrene. Sartelli M, Coccolini F, Kluger Y, et al. WSES/SIS-E consensus conference: recommendations for the management of skin and soft-tissue infections. World J Emerg Surg. 2018;13:58. *(statement wording/numbering not yet verified against the source)*
 - **idsa-ssti-2014** — IDSA practice guideline — diagnosis and management of skin and soft tissue infections (2014 update) (2014), Purulent SSTI (abscess): incision and drainage; antibiotics active against MRSA when SIRS, immunocompromise or failed drainage; culture of abscess material. Non-purulent cellulitis: agent active against streptococci; severe: IV antibiotics and assess for necrotising infection. Necrotising infections: prompt surgical consultation, vancomycin plus piperacillin-tazobactam (or carbapenem), clindamycin for toxin suppression in streptococcal NF. Stevens DL, Bisno AL, Chambers HF, et al. Practice guidelines for the diagnosis and management of skin and soft tissue infections: 2014 update by the Infectious Diseases Society of America. Clin Infect Dis. 2014;59:e10–52. *(statement wording/numbering not yet verified against the source)*
 - **ssc-2021** — Surviving Sepsis Campaign guidelines 2021 (2021), Septic shock / high likelihood of sepsis: blood cultures before antimicrobials, antimicrobials within 1 h, lactate, source control as soon as practical. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+
+### Concealed placental abruption after assault in pregnancy
+
+#### `obs-abruption-concealed-partner-assault` — 33 weeks, pushed by partner, concealed abruption (no vaginal bleeding), fetal bradycardia
+
+26-year-old at 33 weeks, "pushed by my partner" against a kitchen counter 3 h ago: constant abdominal pain, hard tender uterus, no vaginal bleeding, fetal heart 100/min, HR 112, BP 104/68, fibrinogen 1.6. Concealed abruption with fetal compromise; intimate-partner violence.
+
+Permutation of `trauma-pregnancy-30wk-rtc`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-abruption | mustNotMiss | critical | not run | FAIL (known gap) | RCOG Green-top Guideline No. 63 2011; ATLS 10th edition 2018 | Add a trauma-in-pregnancy / abruption protocol triggered by pregnancy status + trauma mechanism (O45, O9A.2 prefixes). |
+| level-emergency | emergencyLevel | critical | not run | PASS | ATLS 10th edition 2018; RCOG Green-top Guideline No. 63 2011 |  |
+| flag-pregnancy | redFlags | critical | not run | PASS | ATLS 10th edition 2018 |  |
+| flag-domestic-abuse | redFlags | critical | not run | FAIL (known gap) | NICE PH50 2014; ATLS 10th edition 2018 | Add an intimate-partner-violence rule ('pushed/hit/kicked by partner', 'assault' with pregnancy or repeated injuries) → safeguarding flag and safety-planning actions (NICE PH50). |
+| inv-fetal-monitoring | investigationInclude | critical | not run | FAIL (known gap) | ATLS 10th edition 2018; RCOG Green-top Guideline No. 63 2011 | Trauma-in-pregnancy protocol. |
+| mgmt-obstetric-team | managementInclude | critical | not run | FAIL (known gap) | ATLS 10th edition 2018; RCOG Green-top Guideline No. 63 2011 | Trauma-in-pregnancy protocol. |
+| mgmt-uterine-displacement | managementInclude | critical | not run | FAIL (known gap) | ATLS 10th edition 2018 | Trauma-in-pregnancy protocol. |
+| mgmt-domestic-abuse-safety | managementInclude | critical | not run | FAIL (known gap) | NICE PH50 2014 | IPV rule (NICE PH50). |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | not run | PASS | ATLS 10th edition 2018 |  |
+| inv-coagulation | investigationInclude | quality | not run | PASS | RCOG Green-top Guideline No. 63 2011 |  |
+| inv-crossmatch | investigationInclude | quality | not run | PASS | RCOG Green-top Guideline No. 63 2011 |  |
+| pathway-trauma | pathway | quality | not run | n/a |  |  |
+
+Failure details:
+
+- **mnm-abruption** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Blunt Abdominal Trauma \| 3. Splenic Laceration [known gap: PANE has no placental abruption node; top 3: acute cholecystitis, blunt abdominal trauma, splenic laceration (all < 0.20). O45.8X3 maps to no protocol.]
+- **flag-domestic-abuse** (web): no red flag matched among 15 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No domestic-abuse or safeguarding output: neither triage rules nor prompts contain partner/assault/domestic terms.]
+- **inv-fetal-monitoring** (web): no investigation matched among 26 (web.pane.seeded, web.clinicalPrompts) [known gap: No CTG/fetal monitoring: no trauma-in-pregnancy content exists; the blunt-trauma protocol is not reached (PANE top < 0.20, O45 unmapped).]
+- **mgmt-obstetric-team** (web): no management item matched among 8 (web.clinicalPrompts) [known gap: No obstetric output (see inv-fetal-monitoring).]
+- **mgmt-uterine-displacement** (web): no management item matched among 8 (web.clinicalPrompts) [known gap: No left lateral tilt / uterine displacement (see inv-fetal-monitoring).]
+- **mgmt-domestic-abuse-safety** (web): no management item matched among 8 (web.clinicalPrompts) [known gap: No safety planning or referral (see flag-domestic-abuse).]
+
+Guidelines:
+
+- **atls-10-pregnancy** — ATLS 10th edition — trauma in pregnancy (2018), Chapter 12: resuscitate the mother first; manual uterine displacement / left lateral tilt after ~20 weeks; early obstetric consultation; cardiotocographic fetal monitoring after injury beyond viability; consider placental abruption (uterine tenderness, contractions, fetal distress, may be concealed); consider intimate partner violence. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 12. *(statement wording/numbering not yet verified against the source)*
+- **rcog-gtg63-2011** — RCOG Green-top Guideline No. 63 — antepartum haemorrhage (2011), Placental abruption may be concealed (pain, tense tender uterus, fetal compromise without visible bleeding); maternal resuscitation; FBC, coagulation screen, crossmatch; CTG; delivery decisions by the obstetric team. Royal College of Obstetricians and Gynaecologists. Antepartum haemorrhage. Green-top Guideline No. 63. London: RCOG; 2011. *(statement wording/numbering not yet verified against the source)*
+- **nice-ph50-2014** — NICE PH50 — domestic violence and abuse: multi-agency working (2014), Staff trained to ask about domestic violence and abuse in a safe, private setting and to respond with risk assessment, safety planning and referral to specialist services; pregnancy is a period of increased risk. National Institute for Health and Care Excellence. Domestic violence and abuse: multi-agency working. Public health guideline PH50, 2014. *(statement wording/numbering not yet verified against the source)*
+
+### Acute appendicitis in the third trimester
+
+#### `obs-appendicitis-pregnancy-t3` — 32 weeks, right upper quadrant/flank pain, MRI-confirmed
+
+31-year-old G3P2 at 32 weeks with 24 h of right upper quadrant/flank pain (displaced appendix), T 37.9, HR 108, WBC 16.2, CRP 88; US non-diagnostic, MRI: inflamed appendix. Laparoscopic appendicectomy with obstetric input and fetal monitoring; no NSAIDs.
+
+Permutation of `appendicitis-pregnant-t2`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-appendicitis-top3 | mustRankTopK | critical | not run | PASS | WSES Jerusalem guidelines 2020 |  |
+| level-at-least-urgent | emergencyLevel | critical | not run | PASS | WSES Jerusalem guidelines 2020 |  |
+| flag-pregnancy | redFlags | critical | not run | PASS | ACOG Committee Opinion No. 775 2019 |  |
+| mgmt-obstetric-fetal-monitoring | managementInclude | critical | not run | FAIL (known gap) | ACOG Committee Opinion No. 775 2019; SAGES guidelines for the use of laparoscopy during pregnancy 2017 | When pregnancy is recorded: strip NSAIDs from 20 weeks, replace 'β-HCG confirmed negative' with the gestation, add obstetric review and fetal monitoring to the operative templates. |
+| mgmt-no-nsaid-after-20-weeks | managementExclude | critical | not run | FAIL (known gap) | FDA drug safety communication 2020 | When pregnancy is recorded: strip NSAIDs from 20 weeks, replace 'β-HCG confirmed negative' with the gestation, add obstetric review and fetal monitoring to the operative templates. |
+| mgmt-no-assumed-negative-hcg | managementExclude | critical | not run | FAIL (known gap) | ACOG Committee Opinion No. 775 2019 | Replace the line with 'β-HCG result: [ ]' (or the recorded gestation) and block the template until a negative result is recorded. |
+| mgmt-lap-appendicectomy | managementInclude | quality | not run | PASS | SAGES guidelines for the use of laparoscopy during pregnancy 2017; WSES Jerusalem guidelines 2020 |  |
+| mgmt-left-lateral | managementInclude | quality | not run | PASS | SAGES guidelines for the use of laparoscopy during pregnancy 2017 |  |
+| variant-uncomplicated | dxVariant | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **mgmt-obstetric-fetal-monitoring** (web): no management item matched among 56 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts, web.scaleCalculator.alvarado) [known gap: No obstetric or fetal-monitoring output: the appendicitis protocol and dx variant have no pregnancy branch; the only pregnancy output is the urine β-HCG prompt (for a woman recorded at 32 weeks).]
+- **mgmt-no-nsaid-after-20-weeks** (web): forbidden management item present in web.clinicalPrompts: "... convert to oral when tolerating po. • paracetamol 1g qds + ibuprofen 400mg tds (regular). • morphine 5mg prn if pain > 5/10. • regular diet as toler..." [known gap: Web: the appendicectomy operative-plan prompt prescribes 'paracetamol 1g QDS + ibuprofen 400mg TDS (regular)' at 32 weeks.]
+- **mgmt-no-assumed-negative-hcg** (web): forbidden management item present in web.clinicalPrompts: "...ak (< 1%), hartmann's pouch if appendix not identifiable. • β-hcg confirmed negative (female of reproductive age). • group & screen available; cross-match if perfor..." [known gap: Web: the appendicectomy operative-plan prompt states '• β-HCG confirmed negative (female of reproductive age)' although she is recorded as 32 weeks pregnant.]
+
+Guidelines:
+
+- **wses-2020** — WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update) (2020), Pregnancy: ultrasound first, MRI if inconclusive; laparoscopic appendicectomy in pregnancy; children: ultrasound first, clinical scores (PAS), antibiotics and appendicectomy for complicated appendicitis. Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27. *(statement wording/numbering not yet verified against the source)*
+- **sages-2017** — SAGES guidelines for the use of laparoscopy during pregnancy (2017), Laparoscopic appendicectomy may be performed in any trimester; left lateral positioning to limit aortocaval compression; pre- and post-operative fetal heart monitoring; obstetric consultation. Pearl JP, Price RR, Tonkin AE, Richardson WS, Stefanidis D. SAGES guidelines for the use of laparoscopy during pregnancy. Surg Endosc. 2017;31:3767–3782. *(statement wording/numbering not yet verified against the source)*
+- **acog-co775-2019** — ACOG Committee Opinion No. 775 — nonobstetric surgery during pregnancy (2019), Obstetric consultation before non-obstetric surgery; with a viable fetus, at minimum electronic fetal heart rate and contraction monitoring before and after the procedure. American College of Obstetricians and Gynecologists. Nonobstetric surgery during pregnancy: ACOG Committee Opinion No. 775. Obstet Gynecol. 2019;133:e285–e286. *(statement wording/numbering not yet verified against the source)*
+- **fda-2020-nsaid** — FDA drug safety communication — NSAIDs at 20 weeks or later in pregnancy (2020), Avoid NSAIDs from 20 weeks of pregnancy (fetal renal dysfunction, oligohydramnios; ductal constriction later in pregnancy). US Food and Drug Administration. FDA recommends avoiding use of NSAIDs in pregnancy at 20 weeks or later because they can result in low amniotic fluid. Drug Safety Communication, 15 October 2020. *(statement wording/numbering not yet verified against the source)*
+
+### Ectopic pregnancy with an intrauterine system in situ
+
+#### `obs-ectopic-with-ius-stable` — Levonorgestrel IUS, "cannot be pregnant", left-sided pain, stable
+
+29-year-old woman with a levonorgestrel IUS for 2 years ("I can't be pregnant"), 3 days of left iliac fossa pain and irregular spotting, stable. Pregnancy test is mandatory despite contraception; a pregnancy with an IUS in situ is disproportionately ectopic.
+
+Permutation of `mimic-ectopic-pregnancy`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-ectopic-top3 | mustRankTopK | critical | not run | PASS | NICE NG126 2019; FSRH clinical guideline 2023 |  |
+| inv-pregnancy-test | investigationInclude | critical | not run | PASS | NICE NG126 2019; FSRH clinical guideline 2023 |  |
+| inv-transvaginal-us | investigationInclude | critical | not run | PASS | NICE NG126 2019 |  |
+| mgmt-gynaecology | managementInclude | critical | not run | PASS | NICE NG126 2019 |  |
+| mgmt-no-assumed-negative-hcg | managementExclude | critical | not run | PASS | NICE NG126 2019 |  |
+| level-at-least-priority | emergencyLevel | quality | not run | PASS | NICE NG126 2019 |  |
+| mgmt-no-diverticulitis-antibiotics | managementExclude | quality | not run | PASS | NICE NG126 2019 |  |
+
+Guidelines:
+
+- **nice-ng126** — NICE NG126 — ectopic pregnancy and miscarriage: diagnosis and initial management (2019), Pregnancy test in every woman of reproductive age with abdominal/pelvic pain, even with contraception; transvaginal ultrasound; immediate referral to an early pregnancy assessment service / gynaecology when pregnancy test positive with pain; surgical management if ruptured. National Institute for Health and Care Excellence. Ectopic pregnancy and miscarriage: diagnosis and initial management. NICE guideline NG126, 2019 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+- **fsrh-iuc-2023** — FSRH clinical guideline — intrauterine contraception (2023), Pregnancy with an IUD/IUS in situ is uncommon but a higher proportion of such pregnancies are ectopic: ectopic pregnancy must be excluded. Faculty of Sexual and Reproductive Healthcare. FSRH Clinical Guideline: Intrauterine Contraception. London: FSRH; 2023. *(statement wording/numbering not yet verified against the source)*
+
+### Severe pre-eclampsia / HELLP syndrome presenting as RUQ pain
+
+#### `obs-hellp-ruq-pain-34wk` — 34 weeks, epigastric/RUQ pain referred as "gallbladder" (base case)
+
+33-year-old primigravida at 34 weeks referred to the surgeons as "?biliary colic": 12 h epigastric/RUQ pain, vomiting, headache; BP 168/112, proteinuria 3+, platelets 72, ALT 312, LDH 820; gallbladder normal on US. HELLP syndrome: obstetric emergency (magnesium, antihypertensive, delivery).
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-preeclampsia-hellp | mustNotMiss | critical | not run | FAIL (known gap) | NICE NG133 2019; ACOG Practice Bulletin No. 222 2020 | Add a pre-eclampsia/HELLP rule for pregnancy ≥ 20 weeks or postpartum ≤ 6 weeks with BP ≥ 140/90 (≥ 160/110 severe) plus headache, visual disturbance, epigastric/RUQ pain, proteinuria, platelets < 100 or raised transaminases → obstetric emergency (NICE NG133 / ACOG PB 222). |
+| level-emergency | emergencyLevel | critical | not run | PASS | NICE NG133 2019; ACOG Practice Bulletin No. 222 2020 |  |
+| flag-pregnancy | redFlags | critical | not run | PASS | NICE NG133 2019 |  |
+| flag-severe-hypertension | redFlags | critical | not run | FAIL (known gap) | NICE NG133 2019; ACOG Practice Bulletin No. 222 2020 | Add a BP ≥ 160/110 in-pregnancy/postpartum red flag (treat within the hour) to adaptiveTriage and computeClinicalPrompts. |
+| mgmt-magnesium | managementInclude | critical | not run | FAIL (known gap) | NICE NG133 2019; ACOG Practice Bulletin No. 222 2020 | Part of the pre-eclampsia rule. |
+| mgmt-antihypertensive | managementInclude | critical | not run | FAIL (known gap) | NICE NG133 2019; ACOG Practice Bulletin No. 222 2020 | Part of the pre-eclampsia rule. |
+| mgmt-obstetric-delivery | managementInclude | critical | not run | FAIL (known gap) | NICE NG133 2019; ACOG Practice Bulletin No. 222 2020 | Part of the pre-eclampsia rule. |
+| mgmt-no-cholecystectomy | managementExclude | critical | not run | FAIL (known gap) | ACOG Practice Bulletin No. 222 2020 | Gate the cholecystectomy template on a biliary working diagnosis and on affirmed stones; parse the CBD diameter before the dilated-CBD prompt. |
+| mgmt-no-ace-inhibitor-antenatal | managementExclude | critical | not run | PASS | NICE NG133 2019 |  |
+| mgmt-no-nsaid-after-20-weeks | managementExclude | critical | not run | FAIL (known gap) | FDA drug safety communication 2020; NICE NG133 2019 | When pregnancy is recorded: strip NSAIDs from 20 weeks, replace 'β-HCG confirmed negative' with the gestation, add obstetric review and fetal monitoring to the operative templates. |
+| inv-urine-pcr | investigationInclude | quality | not run | FAIL (known gap) | NICE NG133 2019 | Part of the pre-eclampsia rule. |
+
+Failure details:
+
+- **mnm-preeclampsia-hellp** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. Acute Appendicitis [known gap: PANE has no pre-eclampsia/HELLP disease node (pane-engine has 130 diseases, none for pre-eclampsia/HELLP); top 3: acute cholecystitis (0.32), peptic ulcer, appendicitis. Symptom inference has no pre-eclampsia either (its #4 is hypertensive emergency). Nothing combines pregnancy + BP ≥ 160/110 + RUQ pain + low platelets; O14.23 maps to no protocol.]
+- **flag-severe-hypertension** (web): no red flag matched among 17 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No hypertension flag: adaptiveTriage has no high-BP vital red flag at all, and the hypertensive_urgency prompt starts at SBP ≥ 180, so BP 164–168/110–112 in pregnancy (severe range ≥ 160/110) raises nothing.]
+- **inv-urine-pcr** (web): no investigation matched among 31 (web.pane.seeded, web.clinicalPrompts) [known gap: No proteinuria quantification output (see mnm-preeclampsia-hellp).]
+- **mgmt-magnesium** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: No magnesium sulfate anywhere (see mnm-preeclampsia-hellp).]
+- **mgmt-antihypertensive** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: No antihypertensive suggested: BP below the 180 prompt threshold; no pregnancy-specific agents (labetalol/nifedipine) anywhere.]
+- **mgmt-obstetric-delivery** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: No obstetric output: O14.23 maps to no protocol, so the Assessment panel and Plan are empty; the prompts are biliary (MRCP, ERCP, 'HPB surgical review — Whipple') and gynaecological ('if ectopic suspected').]
+- **mgmt-no-cholecystectomy** (web): forbidden management item present in web.clinicalPrompts: "• consent: laparoscopic cholecystectomy - bile duct injury (0.3%), haemorrhage, conversion to open, bile leak, retained..." (+1 more) [known gap: Web: the gallstone prompt ('Cholecystitis / gallstone disease — surgical indication') still fires from the ultrasound report although it says 'no gallstones', and adds 'Consent: laparoscopic cholecystectomy' and a full cholecystectomy operative plan; the dilated-CBD prompt fires on 'CBD 4 mm' (MRCP, ERCP, Whipple review).]
+- **mgmt-no-nsaid-after-20-weeks** (web): forbidden management item present in web.clinicalPrompts: "... 2. post-operative orders: • paracetamol 1g qds (regular) + ibuprofen 400mg tds (if egfr normal). • morphine 2.5-5mg sc/iv prn for pain > 5/10. • fre..." [known gap: Web: the cholecystectomy operative-plan template prescribes 'paracetamol 1g QDS (regular) + ibuprofen 400mg TDS (if eGFR normal)' at 34 weeks with platelets 72.]
+
+Guidelines:
+
+- **nice-ng133** — NICE NG133 — hypertension in pregnancy: diagnosis and management (2019), Pre-eclampsia with severe hypertension or features (e.g. severe headache, visual disturbance, epigastric/RUQ pain, low platelets, raised transaminases, HELLP): admit under obstetric care; antihypertensives labetalol, nifedipine or methyldopa (ACE inhibitors and ARBs are not used in pregnancy); IV magnesium sulfate in severe pre-eclampsia when birth is planned or eclampsia is a concern; postnatal pre-eclampsia is managed with enalapril, nifedipine/amlodipine or labetalol. National Institute for Health and Care Excellence. Hypertension in pregnancy: diagnosis and management. NICE guideline NG133, 2019 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+- **acog-pb222-2020** — ACOG Practice Bulletin No. 222 — gestational hypertension and preeclampsia (2020), Severe features: SBP ≥ 160 or DBP ≥ 110, platelets < 100 × 10⁹/L, transaminases twice normal or severe persistent RUQ/epigastric pain, new cerebral or visual disturbance; HELLP syndrome; magnesium sulfate for seizure prophylaxis; acute-onset severe hypertension treated urgently (labetalol, hydralazine, nifedipine); delivery at ≥ 34 weeks with severe features or HELLP; postpartum preeclampsia may present up to 6 weeks after birth. American College of Obstetricians and Gynecologists. Gestational hypertension and preeclampsia: ACOG Practice Bulletin No. 222. Obstet Gynecol. 2020;135:e237–e260. *(statement wording/numbering not yet verified against the source)*
+- **fda-2020-nsaid** — FDA drug safety communication — NSAIDs at 20 weeks or later in pregnancy (2020), Avoid NSAIDs from 20 weeks of pregnancy (fetal renal dysfunction, oligohydramnios; ductal constriction later in pregnancy). US Food and Drug Administration. FDA recommends avoiding use of NSAIDs in pregnancy at 20 weeks or later because they can result in low amniotic fluid. Drug Safety Communication, 15 October 2020. *(statement wording/numbering not yet verified against the source)*
+
+### Hyperemesis gravidarum
+
+#### `obs-hyperemesis-gravidarum` — 10 weeks, dehydration, ketonuria, 7% weight loss (base case)
+
+24-year-old at 10 weeks with 2 weeks of intractable vomiting, unable to keep fluids down, 7% weight loss, ketones 3+, K 3.0, Na 131; mild epigastric discomfort; referred as "?gastric outlet obstruction". RCOG GTG 69: admit, IV saline with potassium, thiamine, antiemetics, LMWH, confirm intrauterine pregnancy.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-pregnancy | redFlags | critical | not run | PASS | RCOG Green-top Guideline No. 69 2016 |  |
+| mgmt-thiamine | managementInclude | critical | not run | FAIL (known gap) | RCOG Green-top Guideline No. 69 2016 | Hyperemesis rule (RCOG GTG 69): thiamine, IV saline with KCl, antiemetics, LMWH. |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | not run | PASS | RCOG Green-top Guideline No. 69 2016 |  |
+| mnm-hyperemesis | mustNotMiss | quality | not run | FAIL (known gap) | RCOG Green-top Guideline No. 69 2016 | Add hyperemesis gravidarum (O21) as a PANE node or a pregnancy + vomiting rule. |
+| level-at-least-urgent | emergencyLevel | quality | not run | PASS | RCOG Green-top Guideline No. 69 2016 |  |
+| inv-ultrasound-viability | investigationInclude | quality | not run | FAIL (known gap) | RCOG Green-top Guideline No. 69 2016 | Hyperemesis rule: dating/viability scan (exclude multiple and molar pregnancy). |
+| inv-electrolytes | investigationInclude | quality | not run | PASS | RCOG Green-top Guideline No. 69 2016 |  |
+| mgmt-iv-fluids-potassium | managementInclude | quality | not run | FAIL (known gap) | RCOG Green-top Guideline No. 69 2016 | Hyperemesis rule. |
+| mgmt-vte-prophylaxis | managementInclude | quality | not run | FAIL (known gap) | RCOG Green-top Guideline No. 69 2016 | Hyperemesis rule. |
+| mgmt-no-surgical-plan | managementExclude | quality | not run | PASS | RCOG Green-top Guideline No. 69 2016 |  |
+| mgmt-no-ct-in-early-pregnancy | managementExclude | quality | not run | FAIL (known gap) | ACOG Committee Opinion No. 723 2017; RCOG Green-top Guideline No. 69 2016 | Suppress the occult-malignancy CT when pregnancy is recorded (or require an explicit clinical question); prefer ultrasound/MRI (ACOG CO 723). |
+
+Failure details:
+
+- **mnm-hyperemesis** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. Acute Appendicitis [known gap: PANE has no hyperemesis gravidarum disease node (pane-engine has 130 diseases, none for hyperemesis gravidarum); top 3: acute cholecystitis, peptic ulcer, appendicitis. Symptom inference lists gastroenteritis, pyloric stenosis and gastric carcinoma.]
+- **inv-ultrasound-viability** (web): no investigation matched among 31 (web.pane.seeded, web.clinicalPrompts) [known gap: No pregnancy ultrasound suggested; the only pregnancy output is 'Urine Pregnancy Test (β-HCG) — mandatory' for a woman recorded at 10 weeks.]
+- **mgmt-thiamine** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: No thiamine anywhere; O21.1 maps to no protocol, so no management panel or plan exists.]
+- **mgmt-iv-fluids-potassium** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: No fluid/electrolyte plan beyond the adult tachycardia prompt's 'IV fluid challenge 500ml'.]
+- **mgmt-vte-prophylaxis** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: No thromboprophylaxis.]
+- **mgmt-no-ct-in-early-pregnancy** (web): forbidden management item present in web.clinicalPrompts: "• ct chest/abdomen/pelvis - occult malignancy screen (alarm symptoms)." [known gap: Web: the unintentional-weight-loss alarm prompt adds '• CT chest/abdomen/pelvis — occult malignancy screen (alarm symptoms)' (and an upper GI endoscopy line) for a woman recorded at 10 weeks whose weight loss is from vomiting.]
+
+Guidelines:
+
+- **rcog-gtg69-2016** — RCOG Green-top Guideline No. 69 — nausea and vomiting of pregnancy and hyperemesis gravidarum (2016), Hyperemesis: inpatient care when unable to keep down oral fluids or antiemetics, or with ketonuria and/or weight loss > 5%; IV normal saline with potassium chloride guided by U&E; thiamine supplementation for women admitted with prolonged vomiting (Wernicke encephalopathy); antiemetics safe in pregnancy; thromboprophylaxis with LMWH for admitted women; ultrasound to confirm a viable intrauterine pregnancy and exclude multiple or molar pregnancy (updated 2024). Royal College of Obstetricians and Gynaecologists. The management of nausea and vomiting of pregnancy and hyperemesis gravidarum. Green-top Guideline No. 69. London: RCOG; 2016 (updated 2024). *(statement wording/numbering not yet verified against the source)*
+- **acog-co723-2017** — ACOG Committee Opinion No. 723 — guidelines for diagnostic imaging during pregnancy and lactation (2017), Ultrasound and MRI are the imaging techniques of choice in pregnancy; CT with its radiation dose should be used when necessary for a specific clinical question, not as a screening test. American College of Obstetricians and Gynecologists. Guidelines for diagnostic imaging during pregnancy and lactation: ACOG Committee Opinion No. 723. Obstet Gynecol. 2017;130:e210–e216. *(statement wording/numbering not yet verified against the source)*
+
+### Postpartum pre-eclampsia presenting as epigastric pain
+
+#### `obs-postpartum-preeclampsia-epigastric` — Day 6 after delivery, normotensive in pregnancy
+
+29-year-old woman 6 days after an uncomplicated vaginal delivery with severe headache, blurred vision and epigastric pain; BP 166/108, proteinuria 2+, platelets 138, ALT 64. Postpartum pre-eclampsia with severe features.
+
+Permutation of `obs-hellp-ruq-pain-34wk`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-preeclampsia | mustNotMiss | critical | not run | FAIL (known gap) | NICE NG133 2019; ACOG Practice Bulletin No. 222 2020 | Pre-eclampsia rule including postpartum ≤ 6 weeks (see obs-hellp-ruq-pain-34wk); make the SOCRATES relief-answer parser negation-aware. |
+| level-at-least-urgent | emergencyLevel | critical | not run | FAIL (known gap) | NICE NG133 2019; ACOG Practice Bulletin No. 222 2020 | Add BP ≥ 160/110 (and ≥ 140/90 with headache/visual symptoms in pregnancy or ≤ 6 weeks postpartum) as an urgent red flag. |
+| mgmt-antihypertensive | managementInclude | critical | not run | FAIL (known gap) | NICE NG133 2019 | Pre-eclampsia rule. |
+| mgmt-obstetric | managementInclude | critical | not run | FAIL (known gap) | NICE NG133 2019; ACOG Practice Bulletin No. 222 2020 | Pre-eclampsia rule. |
+| mgmt-no-cholecystectomy | managementExclude | critical | not run | PASS | ACOG Practice Bulletin No. 222 2020 |  |
+| mgmt-magnesium | managementInclude | quality | not run | FAIL (known gap) | ACOG Practice Bulletin No. 222 2020 | Pre-eclampsia rule. |
+
+Failure details:
+
+- **mnm-preeclampsia** (web): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Peptic Ulcer Disease \| 3. Acute Cholecystitis [known gap: PANE has no pre-eclampsia disease node (pane-engine has 130 diseases, none for pre-eclampsia); top 3: GORD (0.22 — the relief answer "Antacids did not help" still sets antacid_relief), peptic ulcer, cholecystitis. Symptom inference ranks hypertensive emergency #1 (secondary view).]
+- **level-at-least-urgent** (web): web.triage: priority (acuity=review, action=priority_24_48h, score=20); expected ≥ urgent [known gap: Web triage: priority_24_48h (score 20). There is no BP vital red flag (162/106 raises nothing), 'headache'/'blurred vision' are not red-flag terms, and postpartum status is not an input.]
+- **mgmt-antihypertensive** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: No antihypertensive: SBP 162 is below the 180 prompt threshold.]
+- **mgmt-obstetric** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: No obstetric output: O14.15 maps to no protocol, so the Assessment panel and Plan are empty; the only prompts are the pregnancy test, acute-abdomen bloods and cervical screening.]
+- **mgmt-magnesium** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: No magnesium sulfate.]
+
+Guidelines:
+
+- **nice-ng133** — NICE NG133 — hypertension in pregnancy: diagnosis and management (2019), Pre-eclampsia with severe hypertension or features (e.g. severe headache, visual disturbance, epigastric/RUQ pain, low platelets, raised transaminases, HELLP): admit under obstetric care; antihypertensives labetalol, nifedipine or methyldopa (ACE inhibitors and ARBs are not used in pregnancy); IV magnesium sulfate in severe pre-eclampsia when birth is planned or eclampsia is a concern; postnatal pre-eclampsia is managed with enalapril, nifedipine/amlodipine or labetalol. National Institute for Health and Care Excellence. Hypertension in pregnancy: diagnosis and management. NICE guideline NG133, 2019 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+- **acog-pb222-2020** — ACOG Practice Bulletin No. 222 — gestational hypertension and preeclampsia (2020), Severe features: SBP ≥ 160 or DBP ≥ 110, platelets < 100 × 10⁹/L, transaminases twice normal or severe persistent RUQ/epigastric pain, new cerebral or visual disturbance; HELLP syndrome; magnesium sulfate for seizure prophylaxis; acute-onset severe hypertension treated urgently (labetalol, hydralazine, nifedipine); delivery at ≥ 34 weeks with severe features or HELLP; postpartum preeclampsia may present up to 6 weeks after birth. American College of Obstetricians and Gynecologists. Gestational hypertension and preeclampsia: ACOG Practice Bulletin No. 222. Obstet Gynecol. 2020;135:e237–e260. *(statement wording/numbering not yet verified against the source)*
+
+### Perforated appendicitis in a preschool child
+
+#### `paed-appendicitis-preschool-perforated` — 4-year-old, 3 days, labelled gastroenteritis, perforated with abscess
+
+4-year-old girl (16 kg), 3 days of abdominal pain, fever, vomiting and loose stools, twice told "gastroenteritis"; now T 39.0, HR 150, generalised guarding, WBC 21, CRP 180; US: RIF collection with appendicolith. Perforated appendicitis.
+
+Permutation of `appendicitis-paediatric-9y`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-appendicitis-top3 | mustRankTopK | critical | not run | PASS | WSES Jerusalem guidelines 2020 |  |
+| level-emergency | emergencyLevel | critical | not run | PASS | WSES Jerusalem guidelines 2020; NICE NG143 2019 |  |
+| mgmt-iv-antibiotics | managementInclude | critical | not run | PASS | WSES Jerusalem guidelines 2020 |  |
+| mgmt-no-adult-fixed-doses | managementExclude | critical | not run | FAIL (known gap) |  | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
+| score-rec-pas | scoreRecommended | quality | not run | FAIL (known gap) | Pediatric Appendicitis Score (PAS) 2002 | Add PAS to the scales and suggest it (instead of adult scores) when age < 16 with RLQ pain. |
+| mgmt-appendicectomy | managementInclude | quality | not run | PASS | WSES Jerusalem guidelines 2020 |  |
+| mgmt-no-gastroenteritis-discharge | managementExclude | quality | not run | PASS | WSES Jerusalem guidelines 2020 |  |
+| variant-abscess | dxVariant | quality | not run | FAIL (known gap) |  | Check complicated variants (generalised peritonitis → localised → abscess → phlegmon) before the uncomplicated one, and include 'abscess'/'perforated' keywords. |
+
+Failure details:
+
+- **score-rec-pas** (web): pas not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: getCdsSuggestions has no Paediatric Appendicitis Score; it suggests Alvarado, TG18 cholangitis, Ranson, qSOFA, NEWS2 for a 4-year-old.]
+- **mgmt-no-adult-fixed-doses** (web): forbidden management item present in web.plan: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or cefuroxime 750 mg tds + metronidazole 500 mg tds." (+12 more) [known gap: Web: adult fixed doses with no weight or age adjustment — protocol 'co-amoxiclav 1.2 g TDS or cefuroxime 750 mg TDS + metronidazole 500 mg TDS', ondansetron 4 mg, paracetamol 1 g; prompts 'IV Piperacillin-tazobactam 4.5g TDS', 'Hartmann's 1L bolus', and the operative template's paracetamol 1 g + ibuprofen 400 mg + morphine 5 mg for a 16 kg child.]
+- **variant-abscess** (web): detected appendicitis_uncomplicated in group Acute Appendicitis; expected appendicitis_abscess [known gap: detectDxVariants still picks appendicitis_uncomplicated for 'Perforated appendicitis with periappendiceal abscess … a 3 cm abscess'.]
+
+Guidelines:
+
+- **wses-2020** — WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update) (2020), Pregnancy: ultrasound first, MRI if inconclusive; laparoscopic appendicectomy in pregnancy; children: ultrasound first, clinical scores (PAS), antibiotics and appendicectomy for complicated appendicitis. Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27. *(statement wording/numbering not yet verified against the source)*
+- **pas-2002** — Pediatric Appendicitis Score (PAS) (2002), Items and weights for children. Samuel M. Pediatric appendicitis score. J Pediatr Surg. 2002;37:877–881. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng143** — NICE NG143 — fever in under 5s: assessment and initial management (2019), Age < 3 months with temperature ≥ 38 °C is a high-risk (red) feature; red features: refer for urgent paediatric assessment; infants < 3 months with fever: FBC, CRP, blood culture, urine testing, lumbar puncture in selected infants; parenteral antibiotics for infants 1–3 months with fever who appear unwell (and all < 1 month). National Institute for Health and Care Excellence. Fever in under 5s: assessment and initial management. NICE guideline NG143, 2019 (updated 2021). *(statement wording/numbering not yet verified against the source)*
+
+### New-onset type 1 diabetes in DKA presenting as abdominal pain
+
+#### `paed-dka-new-onset-abdominal-pain` — 9-year-old, undiagnosed diabetes, referred as "?appendicitis"
+
+9-year-old girl (26 kg), 2 weeks of thirst, polyuria and bed-wetting, then 24 h of vomiting and central abdominal pain; drowsy with deep sighing breathing, HR 138, capillary glucose 27, ketones 5.8, pH 7.08; referred as "?appendicitis". Severe paediatric DKA: cerebral oedema risk.
+
+Permutation of `mimic-dka-abdominal-pain`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-dka | mustNotMiss | critical | not run | FAIL (known gap) | BSPED guideline 2021; ISPAD clinical practice consensus guidelines 2022 2022 | Add a DKA rule/node: glucose > 11 with ketones ≥ 3 or pH < 7.3 → DKA as the leading diagnosis, suppressing surgical operative prompts. |
+| level-emergency | emergencyLevel | critical | not run | PASS | BSPED guideline 2021 |  |
+| alarm-dka | mustAlarm | critical | not run | PASS | BSPED guideline 2021 |  |
+| inv-ketones-gas | investigationInclude | critical | not run | PASS | BSPED guideline 2021 |  |
+| mgmt-insulin | managementInclude | critical | not run | PASS | BSPED guideline 2021; ISPAD clinical practice consensus guidelines 2022 2022 |  |
+| mgmt-cerebral-oedema | managementInclude | critical | not run | FAIL (known gap) | BSPED guideline 2021; ISPAD clinical practice consensus guidelines 2022 2022 | Paediatric DKA branch (age < 18): BSPED/ISPAD fluids by weight, insulin 0.05–0.1 units/kg/h after fluids, no bolus, hourly neuro observations for cerebral oedema. |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | FAIL (known gap) | BSPED guideline 2021 | Gate the appendicectomy operative-plan prompt on an appendicitis working diagnosis (as the Alvarado block does with assessmentHasAppend); guarding from torsion, PID, haemoperitoneum or DKA is not an appendicectomy indication. Also suppress when a DKA prompt is active. |
+| mgmt-no-laparotomy | managementExclude | critical | not run | PASS | ISPAD clinical practice consensus guidelines 2022 2022 |  |
+| mgmt-no-adult-fixed-doses | managementExclude | critical | not run | FAIL (known gap) |  | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | not run | PASS | BSPED guideline 2021 |  |
+| dx-dka-symptom-engine | mustRankTopK | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **mnm-dka** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no DKA disease node (pane-engine has 130 diseases, none for DKA); top 3: acute cholecystitis, appendicitis, peptic ulcer. The BGL 27 prompt does raise "DKA / HHS — exclude" and symptom inference ranks DKA #1 (secondary views).]
+- **mgmt-cerebral-oedema** (web): no management item matched among 19 (web.clinicalPrompts) [known gap: No cerebral-oedema or neurological-observation output; the hyperglycaemia prompt is the adult pathway (VRIII wording, 'DKA fixed-rate 0.1 units/kg/h'), with no paediatric DKA protocol.]
+- **mgmt-no-appendicectomy** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web: computeClinicalPrompts fires the 'Appendicitis — emergency surgical indication' laparoscopic-appendicectomy operative plan (consent, theatre booking, post-operative orders, pip-tazo at induction). hasAppendicitisIndication fires on any affirmed 'guarding'/'rebound' in the abdominal exam ('voluntary guarding' from DKA) and ignores the confirmed diagnosis.]
+- **mgmt-no-adult-fixed-doses** (web): forbidden management item present in web.clinicalPrompts: "• iv pip-tazo 4.5g + metronidazole 500mg - antibiotic prophylaxis at induction." (+2 more) [known gap: Web: adult fixed doses with no weight or age adjustment — the appendicectomy template's pip-tazo 4.5 g, co-amoxiclav 1.2 g, paracetamol 1 g, ibuprofen 400 mg, morphine 5 mg and 'IV fluid challenge 500ml' for a 26 kg child.]
+
+Guidelines:
+
+- **bsped-dka-2021** — BSPED guideline — diabetic ketoacidosis in children and young people (2021), DKA diagnosis (acidosis with ketonaemia); weight-based fluid calculation; insulin infusion (0.05–0.1 units/kg/h) started after IV fluids, no insulin bolus; potassium replacement; close neurological observation for cerebral oedema; abdominal pain is common in DKA. British Society for Paediatric Endocrinology and Diabetes. BSPED interim guideline for the management of children and young people under the age of 18 years with diabetic ketoacidosis. 2021. *(statement wording/numbering not yet verified against the source)*
+- **ispad-dka-2022** — ISPAD clinical practice consensus guidelines 2022 — diabetic ketoacidosis and hyperglycaemic hyperosmolar state (2022), Children with DKA: fluids, insulin infusion, potassium; monitor for cerebral injury (cerebral oedema); abdominal pain may mimic an acute abdomen. Glaser N, Fritsch M, Priyambada L, et al. ISPAD clinical practice consensus guidelines 2022: diabetic ketoacidosis and hyperglycemic hyperosmolar state. Pediatr Diabetes. 2022;23:835–856. *(statement wording/numbering not yet verified against the source)*
+
+### Febrile infant under 3 months (NICE red feature)
+
+#### `paed-febrile-infant-7wk-hernia-clinic` — 7-week-old at a hernia review with fever, poor feeding and drowsiness (base case)
+
+7-week-old girl (4.8 kg) attending the surgical clinic for review of a reducible umbilical hernia; fever 38.5 at home, feeding half the usual, sleepier; in clinic T 38.3, HR 178, RR 58, CRT 3 s. NICE NG143: age < 3 months with fever is a red feature — urgent paediatric assessment.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-at-least-urgent | emergencyLevel | critical | not run | PASS | NICE NG143 2019 |  |
+| inv-blood-culture | investigationInclude | critical | not run | PASS | NICE NG143 2019 |  |
+| mgmt-urgent-paediatric | managementInclude | critical | not run | FAIL (known gap) | NICE NG143 2019 | Febrile-infant rule → same-day urgent paediatric assessment; age-appropriate vital-sign ranges. |
+| mgmt-no-adult-fixed-doses | managementExclude | critical | not run | FAIL (known gap) |  | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
+| mgmt-no-emergency-hernia-repair | managementExclude | critical | not run | FAIL (known gap) | NICE NG143 2019 | Choose the hernia template by hernia type and age (no adult inguinal/mesh template for a paediatric umbilical hernia) and suppress operative templates while a sepsis/fever-in-infant prompt is active. |
+| mnm-serious-infection | mustNotMiss | quality | not run | FAIL (known gap) | NICE NG143 2019 | Add a febrile-infant rule (NICE NG143): age < 3 months with T ≥ 38 °C → red feature. |
+| inv-lumbar-puncture | investigationInclude | quality | not run | FAIL (known gap) | NICE NG143 2019 | Febrile-infant rule (FBC, CRP, blood culture, urine, LP). |
+| mgmt-urine-sample | managementInclude | quality | not run | PASS | NICE NG143 2019 |  |
+| mgmt-parenteral-antibiotics | managementInclude | quality | not run | FAIL (known gap) | NICE NG143 2019 | Febrile-infant rule (NICE NG143 antibiotics). |
+
+Failure details:
+
+- **mnm-serious-infection** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#4 [known gap: PANE top 3: acute cholecystitis, GORD, peptic ulcer; PANE has UTI but nothing links fever in a young infant to it. Symptom inference ranks paediatric UTI #1 (secondary view).]
+- **inv-lumbar-puncture** (web): no investigation matched among 21 (web.pane.seeded, web.clinicalPrompts) [known gap: No lumbar puncture suggested; the only infection output is the adult septic-shock bundle.]
+- **mgmt-urgent-paediatric** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: No paediatric referral: the output is the adult septic-shock bundle (meropenem, vasopressors 'if MAP < 65', urinary catheter, CT abdomen) — triggered by adult thresholds (SBP 78, HR 178 are labelled 'septic shock').]
+- **mgmt-parenteral-antibiotics** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: Only adult regimens (meropenem 1 g + vancomycin) are suggested; no cefotaxime/ceftriaxone ± amoxicillin for a young infant.]
+- **mgmt-no-adult-fixed-doses** (web): forbidden management item present in web.clinicalPrompts: "...and/size]. swab count correct × 2. post-operative orders: • paracetamol 1g qds + ibuprofen 400mg tds (regular analgesia). • morphine 5mg prn if pain > 5/1..." [known gap: Web: adult fixed doses with no weight or age adjustment — the hernia operative template's 'paracetamol 1g QDS + ibuprofen 400mg TDS', 'morphine 5mg PRN' and co-amoxiclav 1.2 g for a 4.8 kg infant.]
+- **mgmt-no-emergency-hernia-repair** (web): forbidden management item present in web.clinicalPrompts: "• consent: hernia repair - recurrence (1-2% tapp), chronic groin pain (5%), mesh infection (< 1%), testicular ischaemia/vas inju..." (+1 more) [known gap: Web: the hernia prompt now takes the elective branch (the 'non-tender' negation is fixed) but still produces a 'LAPAROSCOPIC INGUINAL HERNIA REPAIR (TAPP) — OPERATIVE PLAN' and 'Consent: hernia repair — … (TAPP), mesh infection, testicular ischaemia/vas injury' for a febrile 7-week-old's small reducible umbilical hernia.]
+
+Guidelines:
+
+- **nice-ng143** — NICE NG143 — fever in under 5s: assessment and initial management (2019), Age < 3 months with temperature ≥ 38 °C is a high-risk (red) feature; red features: refer for urgent paediatric assessment; infants < 3 months with fever: FBC, CRP, blood culture, urine testing, lumbar puncture in selected infants; parenteral antibiotics for infants 1–3 months with fever who appear unwell (and all < 1 month). National Institute for Health and Care Excellence. Fever in under 5s: assessment and initial management. NICE guideline NG143, 2019 (updated 2021). *(statement wording/numbering not yet verified against the source)*
+
+### IgA vasculitis (Henoch–Schönlein purpura) with abdominal pain
+
+#### `paed-hsp-abdominal-pain` — 6-year-old, purpura, arthralgia, colicky pain and nephritis (base case)
+
+6-year-old boy (21 kg) a week after a sore throat: palpable purpura on buttocks and legs, painful swollen ankles, 2 days of colicky periumbilical pain with one dark-blood stool; urine blood 2+, protein 1+. Risk of intussusception and nephritis; not an appendicectomy.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| inv-ultrasound-intussusception | investigationInclude | critical | not run | PASS | SHARE initiative 2019 |  |
+| mgmt-no-adult-fixed-doses | managementExclude | critical | not run | FAIL (known gap) |  | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
+| mgmt-no-appendicectomy | managementExclude | critical | not run | PASS | SHARE initiative 2019 |  |
+| mgmt-no-laparotomy | managementExclude | critical | not run | PASS | SHARE initiative 2019 |  |
+| dx-hsp-symptom-engine | mustRankTopK | quality | not run | PASS |  |  |
+| mnm-igav | mustNotMiss | quality | not run | FAIL (known gap) | EULAR/PRINTO/PRES classification criteria 2010 | Add IgA vasculitis (D69.0) as a PANE node/protocol: ultrasound for severe pain (intussusception), urinalysis/BP follow-up, no surgery. |
+| inv-urine-protein-bp | investigationInclude | quality | not run | PASS | SHARE initiative 2019 |  |
+
+Failure details:
+
+- **mnm-igav** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no IgA vasculitis (HSP) disease node (pane-engine has 130 diseases, none for IgA vasculitis (HSP)); top 3: appendicitis, inguinal hernia, cholecystitis. Symptom inference ranks Henoch-Schönlein purpura #1 (secondary view).]
+- **mgmt-no-adult-fixed-doses** (web): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: Web: adult fixed doses with no weight or age adjustment — the GI-bleed prompt's 'Hartmann's 500ml bolus, crossmatch 2 units pRBC' for a 21 kg child.]
+
+Guidelines:
+
+- **share-igav-2019** — SHARE initiative — European consensus recommendations for IgA vasculitis (Henoch–Schönlein purpura) (2019), Urinalysis and blood pressure at presentation and during follow-up (nephritis); abdominal ultrasound for severe abdominal pain to exclude intussusception; corticosteroids may be considered for severe abdominal pain. Ozen S, Marks SD, Brogan P, et al. European consensus-based recommendations for diagnosis and treatment of immunoglobulin A vasculitis — the SHARE initiative. Rheumatology (Oxford). 2019;58:1607–1616. *(statement wording/numbering not yet verified against the source)*
+- **eular-printo-2010** — EULAR/PRINTO/PRES classification criteria — Henoch–Schönlein purpura (2010), Purpura or petechiae (lower-limb predominance) plus ≥ 1 of: abdominal pain, histopathology with IgA deposition, arthritis/arthralgia, renal involvement. Ozen S, Pistorio A, Iusan SM, et al. EULAR/PRINTO/PRES criteria for Henoch–Schönlein purpura, childhood polyarteritis nodosa, childhood Wegener granulomatosis and childhood Takayasu arteritis. Ann Rheum Dis. 2010;69:798–806. *(statement wording/numbering not yet verified against the source)*
+
+### Ileocolic intussusception
+
+#### `paed-intussusception-infant-classic` — Classic presentation, 9-month-old (base case)
+
+9-month-old boy (9.2 kg), 14 h of episodic inconsolable screaming with drawing up of the legs and pallor, vomiting (latest bile-stained), one redcurrant-jelly stool, RUQ sausage-shaped mass; US: 3.2 cm ileocolic intussusception (target sign). Image-guided enema reduction with paediatric surgeons.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-intussusception | mustNotMiss | critical | not run | FAIL (known gap) | APSA Outcomes and Evidence-Based Practice Committee 2021 | Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral. |
+| level-at-least-urgent | emergencyLevel | critical | not run | PASS | APSA Outcomes and Evidence-Based Practice Committee 2021 |  |
+| mgmt-enema-reduction | managementInclude | critical | not run | FAIL (known gap) | APSA Outcomes and Evidence-Based Practice Committee 2021 | Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral. The intussusception protocol should have image-guided enema reduction first-line and surgery for failure/peritonitis. |
+| mgmt-paediatric-surgery | managementInclude | critical | not run | FAIL (known gap) | APSA Outcomes and Evidence-Based Practice Committee 2021 | Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral. |
+| mgmt-no-adult-fixed-doses | managementExclude | critical | not run | FAIL (known gap) |  | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
+| dx-intussusception-symptom-engine | mustRankTopK | quality | not run | PASS |  |  |
+| inv-ultrasound | investigationInclude | quality | not run | PASS | APSA Outcomes and Evidence-Based Practice Committee 2021 |  |
+| mgmt-fluid-resuscitation | managementInclude | quality | not run | FAIL (known gap) | APSA Outcomes and Evidence-Based Practice Committee 2021 | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
+| mgmt-no-first-line-laparotomy | managementExclude | quality | not run | PASS | APSA Outcomes and Evidence-Based Practice Committee 2021 |  |
+
+Failure details:
+
+- **mnm-intussusception** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. Bowel Obstruction; also in web.symptomInference#2, web.passive#2 [known gap: PANE has no intussusception disease node (pane-engine has 130 diseases, none for intussusception); top 3: inguinal/femoral hernia, acute cholecystitis, bowel obstruction. K56.1 maps to the adult bowel_obstruction protocol. Symptom inference ranks intussusception #2 (secondary view).]
+- **mgmt-enema-reduction** (web): no management item matched among 29 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No enema reduction: K56.1 maps to the adult bowel_obstruction protocol ('drip and suck', water-soluble contrast at 24 h, adhesiolysis, colonic stenting, Hartmann's).]
+- **mgmt-paediatric-surgery** (web): no management item matched among 29 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No paediatric surgery referral anywhere in the plan or prompts; the redcurrant-jelly stool instead triggers the adult GI-bleed prompt ('Urgent OGD / colonoscopy', 'Reverse anticoagulation … 4-factor PCC').]
+- **mgmt-fluid-resuscitation** (web): no management item matched among 29 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No mL/kg fluid output; fluids appear only as adult volumes ('Hartmann's 500ml bolus, crossmatch 2 units pRBC', 'IV fluid challenge 500ml').]
+- **mgmt-no-adult-fixed-doses** (web): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." (+1 more) [known gap: Web: adult fixed doses with no weight or age adjustment — 'Hartmann's 500ml bolus' (GI-bleed prompt; ~54 mL/kg) and 'IV fluid challenge 500ml' for a 9.2 kg infant — the adult shock/tachycardia prompts fire because computeClinicalPrompts and adaptiveTriage use adult thresholds (SBP < 90, HR > 100/110/120, RR > 24), which are normal values for an infant.]
+
+Guidelines:
+
+- **apsa-intussusception-2021** — APSA Outcomes and Evidence-Based Practice Committee — management of intussusception in children (systematic review) (2021), Point-of-care/radiology ultrasound for diagnosis; image-guided enema reduction (pneumatic or hydrostatic) first-line in the stable child without peritonitis, with the surgical team aware; operative reduction if enema fails or peritonitis/perforation; delayed repeat enema option. Kelley-Quon LI, Arthur LG, Williams RF, et al. Management of intussusception in children: a systematic review. J Pediatr Surg. 2021;56:587–596. *(statement wording/numbering not yet verified against the source)*
+- **applegate-2009** — Intussusception in children: evidence-based diagnosis and treatment (2009), Classic triad (colicky pain, vomiting, red-currant jelly stool) is present in a minority; lethargy/altered consciousness can be the presenting feature in infants; ultrasound is the diagnostic test of choice. Applegate KE. Intussusception in children: evidence-based diagnosis and treatment. Pediatr Radiol. 2009;39(Suppl 2):S140–S143. *(statement wording/numbering not yet verified against the source)*
+
+### Intussusception presenting with lethargy (atypical)
+
+#### `paed-intussusception-lethargy-atypical` — Lethargy and pallor only, no crying episodes, referred as "?sepsis"
+
+7-month-old girl (8 kg), 10 h of increasing lethargy, pallor and poor feeding with two vomits; no crying episodes, no blood per rectum; afebrile, HR 170, CRT 3 s; referred as "?sepsis ?meningitis". Lethargy can be the only sign of intussusception.
+
+Permutation of `paed-intussusception-infant-classic`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-intussusception | mustNotMiss | critical | not run | FAIL (known gap) | Intussusception in children: evidence-based diagnosis and treatment 2009; APSA Outcomes and Evidence-Based Practice Committee 2021 | Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral. |
+| level-at-least-urgent | emergencyLevel | critical | not run | PASS | NICE NG143 2019; Intussusception in children: evidence-based diagnosis and treatment 2009 |  |
+| inv-abdominal-ultrasound | investigationInclude | critical | not run | PASS | APSA Outcomes and Evidence-Based Practice Committee 2021; Intussusception in children: evidence-based diagnosis and treatment 2009 |  |
+| mgmt-no-adult-fixed-doses | managementExclude | critical | not run | FAIL (known gap) |  | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
+| dx-intussusception-symptom-engine | mustRankTopK | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **mnm-intussusception** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#2, web.passive#3 [known gap: PANE has no intussusception disease node (pane-engine has 130 diseases, none for intussusception); top 3: acute cholecystitis, appendicitis, peptic ulcer. Symptom inference ranks intussusception #2 behind pyloric stenosis (secondary view).]
+- **mgmt-no-adult-fixed-doses** (web): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min." (+1 more) [known gap: Web: adult fixed doses with no weight or age adjustment — 'Hartmann's 1L bolus' (shock protocol) and 'IV fluid challenge 500ml' for an 8 kg infant — the adult shock/tachycardia prompts fire because computeClinicalPrompts and adaptiveTriage use adult thresholds (SBP < 90, HR > 100/110/120, RR > 24), which are normal values for an infant (SBP 84 is labelled 'shock').]
+
+Guidelines:
+
+- **applegate-2009** — Intussusception in children: evidence-based diagnosis and treatment (2009), Classic triad (colicky pain, vomiting, red-currant jelly stool) is present in a minority; lethargy/altered consciousness can be the presenting feature in infants; ultrasound is the diagnostic test of choice. Applegate KE. Intussusception in children: evidence-based diagnosis and treatment. Pediatr Radiol. 2009;39(Suppl 2):S140–S143. *(statement wording/numbering not yet verified against the source)*
+- **apsa-intussusception-2021** — APSA Outcomes and Evidence-Based Practice Committee — management of intussusception in children (systematic review) (2021), Point-of-care/radiology ultrasound for diagnosis; image-guided enema reduction (pneumatic or hydrostatic) first-line in the stable child without peritonitis, with the surgical team aware; operative reduction if enema fails or peritonitis/perforation; delayed repeat enema option. Kelley-Quon LI, Arthur LG, Williams RF, et al. Management of intussusception in children: a systematic review. J Pediatr Surg. 2021;56:587–596. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng143** — NICE NG143 — fever in under 5s: assessment and initial management (2019), Age < 3 months with temperature ≥ 38 °C is a high-risk (red) feature; red features: refer for urgent paediatric assessment; infants < 3 months with fever: FBC, CRP, blood culture, urine testing, lumbar puncture in selected infants; parenteral antibiotics for infants 1–3 months with fever who appear unwell (and all < 1 month). National Institute for Health and Care Excellence. Fever in under 5s: assessment and initial management. NICE guideline NG143, 2019 (updated 2021). *(statement wording/numbering not yet verified against the source)*
+
+### Malrotation with volvulus mislabelled as reflux
+
+#### `paed-malrotation-labelled-reflux` — 3-week-old on Gaviscon for "reflux", green vomits today, well-looking
+
+3-week-old boy (3.9 kg) diagnosed with reflux last week and started on Gaviscon; today three green vomits (parents show a photo), irritable but well-perfused, abdomen soft. The "reflux" label and a benign examination must not delay the contrast study.
+
+Permutation of `paed-malrotation-volvulus-bilious-neonate`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-malrotation | mustNotMiss | critical | not run | FAIL (known gap) | Intestinal rotation abnormalities and midgut volvulus 2017 | Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral. Bilious-vomiting hard rule; negation-aware relief parsing. |
+| level-emergency | emergencyLevel | critical | not run | PASS | Intestinal rotation abnormalities and midgut volvulus 2017 |  |
+| inv-upper-gi-contrast | investigationInclude | critical | not run | FAIL (known gap) | ACR Appropriateness Criteria 2020 | Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral. |
+| mgmt-paediatric-surgery-now | managementInclude | critical | not run | FAIL (known gap) | Intestinal rotation abnormalities and midgut volvulus 2017 | Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral. |
+| mgmt-no-adult-fixed-doses | managementExclude | critical | not run | FAIL (known gap) |  | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | not run | PASS | Intestinal rotation abnormalities and midgut volvulus 2017 |  |
+| mgmt-no-reflux-treatment | managementExclude | quality | not run | PASS | Intestinal rotation abnormalities and midgut volvulus 2017 |  |
+
+Failure details:
+
+- **mnm-malrotation** (web): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no malrotation/midgut volvulus disease node (pane-engine has 130 diseases, none for malrotation/midgut volvulus); top 3: GORD (the relief answer "Gaviscon — no help" still sets antacid_relief), inguinal hernia, cholecystitis. Symptom inference ranks malrotation #1 (secondary view).]
+- **inv-upper-gi-contrast** (web): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No upper GI contrast study suggested.]
+- **mgmt-paediatric-surgery-now** (web): no management item matched among 9 (web.clinicalPrompts) [known gap: No paediatric surgical referral.]
+- **mgmt-no-adult-fixed-doses** (web): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min." (+1 more) [known gap: Web: adult fixed doses with no weight or age adjustment — 'Hartmann's 1L bolus' and 'IV fluid challenge 500ml' for a 3.9 kg neonate — the adult shock/tachycardia prompts fire because computeClinicalPrompts and adaptiveTriage use adult thresholds (SBP < 90, HR > 100/110/120, RR > 24), which are normal values for an infant (SBP 75 is labelled 'shock' in a well-perfused baby).]
+
+Guidelines:
+
+- **langer-malrotation-2017** — Intestinal rotation abnormalities and midgut volvulus (2017), Bilious vomiting in a neonate/infant is malrotation with midgut volvulus until proven otherwise: emergency upper GI contrast study and immediate paediatric surgical assessment (Ladd procedure); delay risks loss of the midgut. Langer JC. Intestinal rotation abnormalities and midgut volvulus. Surg Clin North Am. 2017;97:147–159. *(statement wording/numbering not yet verified against the source)*
+- **acr-vomiting-infants-2020** — ACR Appropriateness Criteria — vomiting in infants (2020), Non-bilious projectile vomiting (suspected hypertrophic pyloric stenosis): ultrasound of the pylorus; bilious vomiting in an infant: upper GI contrast series (malrotation/midgut volvulus) as a surgical emergency. Expert Panel on Pediatric Imaging; Alazraki AL, Rigsby CK, Iyer RS, et al. ACR Appropriateness Criteria® Vomiting in Infants. J Am Coll Radiol. 2020;17:S505–S515. *(statement wording/numbering not yet verified against the source)*
+
+### Malrotation with midgut volvulus
+
+#### `paed-malrotation-volvulus-bilious-neonate` — 12-day-old with sudden bilious vomiting (base case)
+
+12-day-old term girl (3.4 kg), previously feeding well, four bright-green vomits since this morning, mildly distended, HR 172, CRT 3 s; AXR paucity of distal gas. Bilious vomiting in a neonate is midgut volvulus until proven otherwise: emergency upper GI contrast and paediatric surgery.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-malrotation | mustNotMiss | critical | not run | FAIL (known gap) | Intestinal rotation abnormalities and midgut volvulus 2017 | Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral. Add a hard rule: bilious (green) vomiting in a child < 1 year → emergency, upper GI contrast, immediate paediatric surgery. |
+| level-emergency | emergencyLevel | critical | not run | PASS | Intestinal rotation abnormalities and midgut volvulus 2017; ACR Appropriateness Criteria 2020 |  |
+| inv-upper-gi-contrast | investigationInclude | critical | not run | FAIL (known gap) | ACR Appropriateness Criteria 2020; Intestinal rotation abnormalities and midgut volvulus 2017 | Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral. |
+| mgmt-paediatric-surgery-now | managementInclude | critical | not run | FAIL (known gap) | Intestinal rotation abnormalities and midgut volvulus 2017 | Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral. |
+| mgmt-no-adult-fixed-doses | managementExclude | critical | not run | FAIL (known gap) |  | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | not run | PASS | Intestinal rotation abnormalities and midgut volvulus 2017 |  |
+| dx-malrotation-symptom-engine | mustRankTopK | quality | not run | PASS |  |  |
+| mgmt-ng-decompression | managementInclude | quality | not run | PASS | Intestinal rotation abnormalities and midgut volvulus 2017 |  |
+| mgmt-no-reflux-treatment | managementExclude | quality | not run | PASS | Intestinal rotation abnormalities and midgut volvulus 2017 |  |
+
+Failure details:
+
+- **mnm-malrotation** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no malrotation/midgut volvulus disease node (pane-engine has 130 diseases, none for malrotation/midgut volvulus); top 3: acute cholecystitis, appendicitis, peptic ulcer. Q43.3 maps to no protocol. Symptom inference ranks malrotation #1 (secondary view). No rule treats bilious vomiting in an infant as an emergency.]
+- **inv-upper-gi-contrast** (web): no investigation matched among 29 (web.pane.seeded, web.clinicalPrompts) [known gap: No upper GI contrast study suggested (see mnm-malrotation).]
+- **mgmt-paediatric-surgery-now** (web): no management item matched among 14 (web.clinicalPrompts) [known gap: No paediatric surgical referral. The prompts give the adult bowel-obstruction pathway instead — 'CT abdomen/pelvis with IV contrast', 'IV Hartmann's 1–2L + IDC', colonic stenting, a bowel-obstruction operative plan — plus the adult shock protocol ('contact cardiology … emergency medicine').]
+- **mgmt-no-adult-fixed-doses** (web): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min." (+3 more) [known gap: Web: adult fixed doses with no weight or age adjustment — 'Hartmann's 1L bolus', 'IV Hartmann's 1–2L + IDC', the bowel-obstruction operative plan's pip-tazo 4.5 g and 'IV fluid challenge 500ml' for a 3.4 kg neonate — the adult shock/tachycardia prompts fire because computeClinicalPrompts and adaptiveTriage use adult thresholds (SBP < 90, HR > 100/110/120, RR > 24), which are normal values for an infant.]
+
+Guidelines:
+
+- **langer-malrotation-2017** — Intestinal rotation abnormalities and midgut volvulus (2017), Bilious vomiting in a neonate/infant is malrotation with midgut volvulus until proven otherwise: emergency upper GI contrast study and immediate paediatric surgical assessment (Ladd procedure); delay risks loss of the midgut. Langer JC. Intestinal rotation abnormalities and midgut volvulus. Surg Clin North Am. 2017;97:147–159. *(statement wording/numbering not yet verified against the source)*
+- **acr-vomiting-infants-2020** — ACR Appropriateness Criteria — vomiting in infants (2020), Non-bilious projectile vomiting (suspected hypertrophic pyloric stenosis): ultrasound of the pylorus; bilious vomiting in an infant: upper GI contrast series (malrotation/midgut volvulus) as a surgical emergency. Expert Panel on Pediatric Imaging; Alazraki AL, Rigsby CK, Iyer RS, et al. ACR Appropriateness Criteria® Vomiting in Infants. J Am Coll Radiol. 2020;17:S505–S515. *(statement wording/numbering not yet verified against the source)*
+
+### Non-accidental abdominal injury (duodenal haematoma)
+
+#### `paed-nai-duodenal-haematoma` — 3-year-old, "fell off the sofa", bilious vomiting 36 h later, duodenal haematoma
+
+3-year-old boy (14 kg) with bilious vomiting and abdominal pain 36 h after a reported fall from a sofa; bruises of different ages on the upper abdomen and back; amylase 480, ALT 210; CT: duodenal haematoma with partial obstruction and pancreatic head contusion. Inflicted visceral injury until proven otherwise.
+
+Permutation of `trauma-paediatric-nai-bruising`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-safeguarding | redFlags | critical | not run | FAIL (known gap) | NICE CG89 2009 | Suspected-maltreatment rule → safeguarding flag and child protection referral. |
+| mgmt-safeguarding-referral | managementInclude | critical | not run | FAIL (known gap) | NICE CG89 2009 | Suspected-maltreatment rule. |
+| mgmt-no-adult-fixed-doses | managementExclude | critical | not run | FAIL (known gap) |  | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | not run | PASS | NICE CG89 2009 |  |
+| mnm-nai | mustNotMiss | quality | not run | FAIL (known gap) | NICE CG89 2009 | Add a suspected-maltreatment rule (NICE CG89) for children: visceral injury without a confirmed accidental mechanism, patterned bruising, inconsistent history, delayed presentation. |
+| level-at-least-urgent | emergencyLevel | quality | not run | PASS | NICE CG89 2009 |  |
+| inv-skeletal-survey | investigationInclude | quality | not run | FAIL (known gap) | RCR/SoR 2017 | Suspected-maltreatment rule (RCR/SoR 2017 imaging). |
+| mgmt-non-operative-duodenal | managementInclude | quality | not run | FAIL (known gap) | RCR/SoR 2017 | Paediatric blunt-trauma branch for visceral injury: NG decompression, IV fluids by weight, parenteral nutrition if prolonged, non-operative management; do not route traumatic pancreatic injury to the gallstone-pancreatitis prompt. |
+| mgmt-no-first-line-laparotomy | managementExclude | quality | not run | PASS | NICE CG89 2009 |  |
+| pathway-trauma | pathway | quality | not run | n/a |  |  |
+
+Failure details:
+
+- **mnm-nai** (web): not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Blunt Abdominal Trauma \| 3. Peptic Ulcer Disease [known gap: PANE has no child-maltreatment node; top 3: acute pancreatitis, blunt abdominal trauma, peptic ulcer. Symptom inference lists malrotation and intussusception.]
+- **flag-safeguarding** (web): no red flag matched among 15 (web.triage.reasons, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No safeguarding/maltreatment output in triage, prompts or protocols; T74.12XA maps to no protocol.]
+- **inv-skeletal-survey** (web): no investigation matched among 26 (web.pane.seeded, web.clinicalPrompts) [known gap: No skeletal survey suggested.]
+- **mgmt-safeguarding-referral** (web): no management item matched among 8 (web.clinicalPrompts) [known gap: No child protection referral output.]
+- **mgmt-non-operative-duodenal** (web): no management item matched among 8 (web.clinicalPrompts) [known gap: No NG decompression or non-operative duodenal-haematoma plan: T74.12XA maps to no protocol. The only management is the adult pancreatitis prompt from amylase 480 (which also plans an 'interval laparoscopic cholecystectomy — gallstone pancreatitis' for a traumatic pancreatic contusion) and the adult tachycardia work-up (ECG, CTPA).]
+- **mgmt-no-adult-fixed-doses** (web): forbidden management item present in web.clinicalPrompts: "• iv fluid challenge 500ml if hypovolaemia likely - reassess hr at 30 min." (+1 more) [known gap: Web: adult fixed doses with no weight or age adjustment — the pancreatitis prompt's 'paracetamol 1g QDS + morphine 5mg PRN' and 'IV fluid challenge 500ml' for a 14 kg child.]
+
+Guidelines:
+
+- **nice-cg89** — NICE CG89 — child maltreatment: when to suspect maltreatment in under 18s (2009), Suspect maltreatment when a child has an intra-abdominal injury without a confirmed accidental cause or known medical explanation, bruising in unusual sites or patterns, or an explanation inconsistent with the injury or delayed presentation; follow local child protection procedures (updated 2017). National Institute for Health and Care Excellence. Child maltreatment: when to suspect maltreatment in under 18s. Clinical guideline CG89, 2009 (updated 2017). *(statement wording/numbering not yet verified against the source)*
+- **rcr-sor-2017** — RCR/SoR — the radiological investigation of suspected physical abuse in children (2017), Skeletal survey mandatory under 2 years and considered case by case in older children; CT of the abdomen with contrast when visceral injury is suspected. The Royal College of Radiologists and the Society and College of Radiographers. The radiological investigation of suspected physical abuse in children. London: RCR; 2017 (revised 2018). *(statement wording/numbering not yet verified against the source)*
+
+### Infantile hypertrophic pyloric stenosis
+
+#### `paed-pyloric-stenosis-alkalosis` — 5-week-old with hypochloraemic hypokalaemic alkalosis (base case)
+
+5-week-old first-born boy (3.6 kg), 6 days of projectile non-bilious vomiting after every feed, hungry afterwards, weight static; olive palpable; VBG pH 7.53, HCO3 36, Cl 86, K 3.0. Correct fluids and electrolytes first; pyloromyotomy is not an emergency.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-pyloric-stenosis | mustNotMiss | critical | not run | FAIL (known gap) | Pyloric stenosis in pediatric surgery 2012 | Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral. |
+| inv-pyloric-ultrasound | investigationInclude | critical | not run | FAIL (known gap) | ACR Appropriateness Criteria 2020 | Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral. |
+| inv-electrolytes-gas | investigationInclude | critical | not run | FAIL (known gap) | Pyloric stenosis in pediatric surgery 2012 | Pyloric stenosis protocol: capillary/venous gas with chloride and bicarbonate, U&E, glucose; add a metabolic-alkalosis/hypochloraemia lab prompt. |
+| mgmt-correct-before-surgery | managementInclude | critical | not run | FAIL (known gap) | Pyloric stenosis in pediatric surgery 2012 | Pyloric stenosis protocol: correct dehydration, chloride and potassium before pyloromyotomy; add hypokalaemia/hypochloraemic alkalosis lab prompts. |
+| mgmt-no-adult-fixed-doses | managementExclude | critical | not run | FAIL (known gap) |  | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | not run | PASS | Pyloric stenosis in pediatric surgery 2012 |  |
+| dx-pyloric-symptom-engine | mustRankTopK | quality | not run | PASS |  |  |
+| level-urgent-not-emergency | emergencyLevel | quality | not run | PASS | Pyloric stenosis in pediatric surgery 2012 |  |
+| mgmt-pyloromyotomy | managementInclude | quality | not run | FAIL (known gap) | Pyloric stenosis in pediatric surgery 2012 | Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral. |
+| mgmt-no-emergency-surgery | managementExclude | quality | not run | PASS | Pyloric stenosis in pediatric surgery 2012 |  |
+
+Failure details:
+
+- **mnm-pyloric-stenosis** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. Acute Appendicitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no pyloric stenosis disease node (pane-engine has 130 diseases, none for pyloric stenosis); top 3: inguinal/femoral hernia, acute cholecystitis, appendicitis. Q40.0 maps to no protocol. Symptom inference ranks hypertrophic pyloric stenosis #1 (secondary view, its investigations are not surfaced).]
+- **inv-pyloric-ultrasound** (web): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No pyloric ultrasound suggested (see mnm-pyloric-stenosis).]
+- **inv-electrolytes-gas** (web): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No blood gas, chloride or bicarbonate is requested; the only electrolyte test is 'FBC, U&E (pre-operative bloods)' seeded from the inguinal-hernia protocol (PANE top) and the adult acute-abdomen panel. The recorded pH 7.53 / Cl 86 / K 3.0 raises no prompt.]
+- **mgmt-correct-before-surgery** (web): no management item matched among 9 (web.clinicalPrompts) [known gap: No fluid/electrolyte correction plan; the recorded alkalosis (pH 7.53, Cl 86, K 3.0) raises no prompt (hypokalaemia/alkalosis are not read).]
+- **mgmt-pyloromyotomy** (web): no management item matched among 9 (web.clinicalPrompts) [known gap: No pyloromyotomy suggested.]
+- **mgmt-no-adult-fixed-doses** (web): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min." (+1 more) [known gap: Web: adult fixed doses with no weight or age adjustment — 'Hartmann's 1L bolus' (shock protocol) and 'IV fluid challenge 500ml' for a 3.6 kg infant — the adult shock/tachycardia prompts fire because computeClinicalPrompts and adaptiveTriage use adult thresholds (SBP < 90, HR > 100/110/120, RR > 24), which are normal values for an infant (SBP 80 is labelled 'shock').]
+
+Guidelines:
+
+- **pyloric-review-2012** — Pyloric stenosis in pediatric surgery — an evidence-based review (2012), Pyloromyotomy is not an emergency: correct dehydration and hypochloraemic hypokalaemic metabolic alkalosis before anaesthesia; ultrasound diagnosis; laparoscopic or open pyloromyotomy. Pandya S, Heiss K. Pyloric stenosis in pediatric surgery: an evidence-based review. Surg Clin North Am. 2012;92:527–539. *(statement wording/numbering not yet verified against the source)*
+- **acr-vomiting-infants-2020** — ACR Appropriateness Criteria — vomiting in infants (2020), Non-bilious projectile vomiting (suspected hypertrophic pyloric stenosis): ultrasound of the pylorus; bilious vomiting in an infant: upper GI contrast series (malrotation/midgut volvulus) as a surgical emergency. Expert Panel on Pediatric Imaging; Alazraki AL, Rigsby CK, Iyer RS, et al. ACR Appropriateness Criteria® Vomiting in Infants. J Am Coll Radiol. 2020;17:S505–S515. *(statement wording/numbering not yet verified against the source)*
 
 ### Pancreatic head carcinoma (malignant obstructive jaundice)
 
@@ -11579,6 +12277,491 @@ Failure details:
 Guidelines:
 
 - **wses-sbo-2018** — WSES Bologna guidelines — adhesive small bowel obstruction (2017 update) (2018), CT with IV contrast for strangulation signs; non-operative management (NGT, fluids) up to 72 h without strangulation; water-soluble contrast challenge (colon within 24 h predicts success); surgery for strangulation, peritonitis or failed NOM; virgin abdomen and hernia causes. ten Broek RPG, Krielen P, Di Saverio S, et al. Bologna guidelines for diagnosis and management of adhesive small bowel obstruction (ASBO): 2017 update of the evidence-based guidelines from the WSES ASBO working group. World J Emerg Surg. 2018;13:24. *(statement wording/numbering not yet verified against the source)*
+
+### AAA and lung cancer screening — man aged 65–75 who has smoked
+
+#### `screen-aaa-lung-ex-smoker-68` — Man aged 68, 30 pack-years, quit 10 years ago
+
+68-year-old ex-smoker (30 pack-years, quit 10 years ago) at a wellness visit, no symptoms. USPSTF 2019: one-time ultrasound for AAA; USPSTF 2021: annual low-dose CT chest.
+
+Permutation of `screen-crc-average-risk-46`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| no-emergency-banner | mustNotAlarm | quality | not run | PASS | USPSTF recommendation statement 2019 |  |
+| mgmt-aaa-ultrasound | managementInclude | quality | not run | FAIL (known gap) | USPSTF recommendation statement 2019 | Add an AAA-screen prompt: male 65–75 with any smoking history → one-time aortic ultrasound (USPSTF 2019). |
+| mgmt-ldct | managementInclude | quality | not run | PASS | USPSTF recommendation statement 2021 |  |
+| pathway-wellness | pathway | quality | not run | n/a |  |  |
+
+Failure details:
+
+- **mgmt-aaa-ultrasound** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: No prompt for AAA screening exists in computeClinicalPrompts (the iOS ScreeningEngine has one: men 65–75 who ever smoked).]
+
+Guidelines:
+
+- **uspstf-aaa-2019** — USPSTF recommendation statement — screening for abdominal aortic aneurysm (2019), Men 65–75 who have ever smoked: one-time ultrasound screening for AAA (grade B). US Preventive Services Task Force. Screening for abdominal aortic aneurysm: US Preventive Services Task Force recommendation statement. JAMA. 2019;322:2211–2218. *(statement wording/numbering not yet verified against the source)*
+- **uspstf-lung-2021** — USPSTF recommendation statement — screening for lung cancer (2021), Annual low-dose CT for adults 50–80 with a ≥ 20 pack-year history who currently smoke or quit within the past 15 years (grade B). US Preventive Services Task Force. Screening for lung cancer: US Preventive Services Task Force recommendation statement. JAMA. 2021;325:962–970. *(statement wording/numbering not yet verified against the source)*
+
+### Breast cancer screening — average risk, age 40–49
+
+#### `screen-breast-average-risk-42` — Woman aged 42, breast screening
+
+42-year-old asymptomatic woman at a wellness visit, never had a mammogram, no family history. USPSTF 2024: biennial mammography from 40 to 74.
+
+Permutation of `screen-crc-average-risk-46`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-routine | emergencyLevel | quality | not run | PASS | USPSTF recommendation statement 2024 |  |
+| no-emergency-banner | mustNotAlarm | quality | not run | PASS | USPSTF recommendation statement 2024 |  |
+| mgmt-mammogram | managementInclude | quality | not run | PASS | USPSTF recommendation statement 2024 |  |
+| mgmt-biennial-interval | managementInclude | quality | not run | FAIL (known gap) | USPSTF recommendation statement 2024 | Change the mammogram_check rationale/interval to biennial for 40–74. |
+| mgmt-no-biopsy-or-urgent-pathway | managementExclude | quality | not run | PASS | USPSTF recommendation statement 2024 |  |
+| pathway-wellness | pathway | quality | not run | n/a |  |  |
+
+Failure details:
+
+- **mgmt-biennial-interval** (web): no management item matched among 6 (web.clinicalPrompts) [known gap: Web: computeClinicalPrompts preventative prompts are fixed age/sex rules: mammogram_check says 'Annual mammogram recommended from age 40' and '> 1 year for 40–49' (USPSTF 2024: biennial 40–74).]
+
+Guidelines:
+
+- **uspstf-breast-2024** — USPSTF recommendation statement — screening for breast cancer (2024), Biennial screening mammography for women aged 40–74 (grade B). US Preventive Services Task Force. Screening for breast cancer: US Preventive Services Task Force recommendation statement. JAMA. 2024;331:1918–1930. *(statement wording/numbering not yet verified against the source)*
+
+### Known BRCA1 carrier — high-risk breast surveillance
+
+#### `screen-breast-brca1-carrier-33` — Confirmed BRCA1 carrier, age 33, asymptomatic
+
+33-year-old woman with a confirmed BRCA1 pathogenic variant (cascade testing after her mother's breast cancer), asymptomatic, never had imaging. NICE CG164: annual MRI 30–49, discuss risk-reducing surgery, specialist family-history service.
+
+Permutation of `breast-family-history-brca`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-not-urgent | emergencyLevel | quality | not run | FAIL (known gap) | NICE CG164 2013 | Treat topic words ('cancer screening', a relative's cancer) as context rather than a current malignancy red flag, and treat 'no change in bowel habit' as negated (the matcher currently handles 'no change' as a pseudo-negation). |
+| inv-annual-mri | investigationInclude | quality | not run | FAIL (known gap) | NICE CG164 2013 | Trigger the high-risk breast prompt from a recorded BRCA1/2 (or TP53/PALB2) carrier status and the 'BRCA mutation' chip; for known carriers replace 'BRCA testing if Manchester ≥ 17' with 'annual MRI 30–49 (+ mammography from 40), risk-reducing surgery discussion'. |
+| inv-no-biopsy | investigationExclude | quality | not run | PASS | NICE CG164 2013 |  |
+| mgmt-risk-reducing-surgery | managementInclude | quality | not run | FAIL (known gap) | NICE CG164 2013 | Add risk-reducing surgery counselling for confirmed carriers (NICE CG164). |
+| mgmt-high-risk-service | managementInclude | quality | not run | FAIL (known gap) | NICE CG164 2013 | Same as inv-annual-mri. |
+
+Failure details:
+
+- **level-not-urgent** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Over-triage: 'breast cancer' in the family-history comorbidity → 'Possible malignancy'; the comorbidity list counts as higher-risk → same_day_call.]
+- **inv-annual-mri** (web): no investigation matched among 11 (web.pane.seeded, web.clinicalPrompts) [known gap: No MRI surveillance output. brca_discussion (which suggests annual MRI from 30) is triggered only by a 'breast'/'ovarian' family-history chip; the recorded BRCA1 carrier status (comorbidity) and the 'BRCA mutation' chip do not trigger it (checked by calling computeClinicalPrompts directly).]
+- **mgmt-risk-reducing-surgery** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: No output mentions risk-reducing mastectomy or salpingo-oophorectomy; even brca_discussion (family-history route) has no such line.]
+- **mgmt-high-risk-service** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: No genetics / family-history-service output: brca_discussion is not triggered by carrier status (see inv-annual-mri).]
+
+Guidelines:
+
+- **nice-cg164** — NICE CG164 — familial breast cancer (2013), Carriers of BRCA1/BRCA2 pathogenic variants: annual MRI surveillance from 30 to 49, with mammography added from 40; discuss risk-reducing mastectomy and bilateral salpingo-oophorectomy; care through specialist genetic / family history services (updated 2019–2023). National Institute for Health and Care Excellence. Familial breast cancer: classification, care and managing breast cancer and related risks in people with a family history of breast cancer. Clinical guideline CG164, 2013 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+### Cervical screening overdue — HPV-based primary screening
+
+#### `screen-cervical-hpv-overdue-34` — Woman aged 34, last cytology 6 years ago
+
+34-year-old woman at a wellness visit, last cervical cytology 6 years ago (normal). WHO 2021: HPV DNA primary screening from 30, every 5–10 years; USPSTF 2018: at 30–65 hrHPV every 5 years, co-testing every 5 or cytology every 3.
+
+Permutation of `screen-crc-average-risk-46`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| no-emergency-banner | mustNotAlarm | quality | not run | PASS | USPSTF recommendation statement 2018 |  |
+| inv-hpv-test | investigationInclude | quality | not run | FAIL (known gap) | WHO guideline for screening and treatment of cervical pre-cancer lesions (2nd edition) 2021; USPSTF recommendation statement 2018 | From 30, offer primary HPV testing every 5 years (WHO 2021 / USPSTF 2018); cytology every 3 years at 21–29; screening can be done in the practice rather than by gynaecology referral. |
+| mgmt-screening-arranged | managementInclude | quality | not run | PASS | WHO guideline for screening and treatment of cervical pre-cancer lesions (2nd edition) 2021; USPSTF recommendation statement 2018 |  |
+| pathway-wellness | pathway | quality | not run | n/a |  |  |
+
+Failure details:
+
+- **inv-hpv-test** (web): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: computeClinicalPrompts preventative prompts are fixed age/sex rules: cervical_smear offers only 'Cervical smear — confirm up to date … every 3 years (21–65)' and 'Refer gynaecology — cervical smear overdue'; HPV testing is never mentioned.]
+
+Guidelines:
+
+- **who-cervical-2021** — WHO guideline for screening and treatment of cervical pre-cancer lesions (2nd edition) (2021), General population: HPV DNA detection as the primary screening test, starting at 30 years, every 5–10 years; women living with HIV from 25 years, every 3–5 years. World Health Organization. WHO guideline for screening and treatment of cervical pre-cancer lesions for cervical cancer prevention, 2nd ed. Geneva: WHO; 2021. *(statement wording/numbering not yet verified against the source)*
+- **uspstf-cervical-2018** — USPSTF recommendation statement — screening for cervical cancer (2018), 21–29: cytology every 3 years; 30–65: cytology every 3 years, high-risk HPV testing alone every 5 years, or co-testing every 5 years (grade A); recommend against screening after hysterectomy with removal of the cervix and no history of CIN 2+ or cancer (grade D). US Preventive Services Task Force. Screening for cervical cancer: US Preventive Services Task Force recommendation statement. JAMA. 2018;320:674–686. *(statement wording/numbering not yet verified against the source)*
+
+### Colorectal cancer screening — average risk, age 45–49
+
+#### `screen-crc-average-risk-46` — Average risk, age 46 (base case for the screening cluster)
+
+46-year-old asymptomatic woman at a wellness visit asks about bowel cancer screening; no family history, never screened. USPSTF 2021 starts average-risk screening at 45 (FIT yearly or colonoscopy 10-yearly).
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-routine | emergencyLevel | quality | not run | FAIL (known gap) | USPSTF recommendation statement 2021 | Treat topic words ('cancer screening', a relative's cancer) as context rather than a current malignancy red flag, and treat 'no change in bowel habit' as negated (the matcher currently handles 'no change' as a pseudo-negation). |
+| no-emergency-banner | mustNotAlarm | quality | not run | FAIL (known gap) | USPSTF recommendation statement 2021 | Treat topic words ('cancer screening', a relative's cancer) as context rather than a current malignancy red flag, and treat 'no change in bowel habit' as negated (the matcher currently handles 'no change' as a pseudo-negation). |
+| mgmt-crc-screening-offered | managementInclude | quality | not run | FAIL (known gap) | USPSTF recommendation statement 2021; ACG clinical guidelines 2021 | Lower the colorectal_screen threshold to 45 (USPSTF 2021 grade B), use 'FIT yearly' rather than 'FOBT every 2 years', and stop at 75 unless individualised. |
+| mgmt-no-cancer-staging-plan | managementExclude | quality | not run | PASS | USPSTF recommendation statement 2021 |  |
+| pathway-wellness | pathway | quality | not run | n/a |  |  |
+
+Failure details:
+
+- **level-routine** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=50); expected ≤ priority [known gap: Over-triage: the topic words 'bowel cancer screening' match 'Possible malignancy' and 'No change in bowel habit' still matches 'Lower GI red flag' ('no change' is treated as a pseudo-negation). Two priority flags (score 50) → emergency_now for a well 46-year-old. (The negated 'no rectal bleeding' no longer fires.)]
+- **no-emergency-banner** (web): forbidden alarm present in web.triage.emergency: "emergency now - do not auto-book. advise urgent emergency assessment / tapion contact and ale..." [known gap: Web triage raises 'Emergency now — do not auto-book … urgent emergency assessment' for a screening request (see level-routine).]
+- **mgmt-crc-screening-offered** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: Web: computeClinicalPrompts preventative prompts are fixed age/sex rules: the colorectal_screen prompt starts at age ≥ 50 ('FOBT every 2 years or colonoscopy every 10 years'); at 46 nothing about colorectal screening is suggested (USPSTF/ACG 2021 start at 45).]
+
+Guidelines:
+
+- **uspstf-crc-2021** — USPSTF recommendation statement — screening for colorectal cancer (2021), Screen adults 45–49 (grade B) and 50–75 (grade A); 76–85 selectively, considering overall health and prior screening (grade C); stool-based (e.g. annual FIT) or direct visualisation (e.g. colonoscopy every 10 years) strategies. US Preventive Services Task Force. Screening for colorectal cancer: US Preventive Services Task Force recommendation statement. JAMA. 2021;325:1965–1977. *(statement wording/numbering not yet verified against the source)*
+- **acg-crc-2021** — ACG clinical guidelines — colorectal cancer screening (2021), Average risk: start at 45; one first-degree relative with CRC or advanced adenoma diagnosed < 60, or two FDRs at any age: colonoscopy from 40 (or 10 years before the youngest affected relative) every 5 years. Shaukat A, Kahi CJ, Burke CA, et al. ACG clinical guidelines: colorectal cancer screening 2021. Am J Gastroenterol. 2021;116:458–479. *(statement wording/numbering not yet verified against the source)*
+
+### Colorectal cancer screening — family history with Lynch-syndrome features
+
+#### `screen-crc-fhx-sister-48-lynch-features` — Age 41, sister CRC at 48, mother endometrial cancer at 55
+
+41-year-old woman, sister diagnosed with colorectal cancer at 48 (tumour MMR status unknown), mother endometrial cancer at 55. Increased-risk screening (colonoscopy from 40, 5-yearly) and suspicion of Lynch syndrome (tumour MMR testing / genetics referral).
+
+Permutation of `screen-crc-average-risk-46`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-not-urgent | emergencyLevel | quality | not run | FAIL (known gap) | US Multi-Society Task Force on Colorectal Cancer 2017 | Treat topic words ('cancer screening', a relative's cancer) as context rather than a current malignancy red flag, and treat 'no change in bowel habit' as negated (the matcher currently handles 'no change' as a pseudo-negation). |
+| mgmt-colonoscopy | managementInclude | quality | not run | FAIL (unverified) | US Multi-Society Task Force on Colorectal Cancer 2017; ACG clinical guidelines 2021 |  |
+| mgmt-lynch-genetics | managementInclude | quality | not run | FAIL (known gap) | BSG/ACPGBI/UKCGG guidelines 2020; NICE DG27 2017 | Add a hereditary-CRC prompt: FDR with CRC < 50, or CRC plus a Lynch-spectrum cancer (endometrial, ovarian, upper tract urothelial) in the family → request the relative's tumour MMR/MSI result and refer to clinical genetics (BSG/ACPGBI/UKCGG 2020, NICE DG27). |
+| pathway-firstvisit | pathway | quality | not run | n/a |  |  |
+
+Failure details:
+
+- **level-not-urgent** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Over-triage: the family-history comorbidity text contains 'cancer', which scanRedFlags reads as 'Possible malignancy' (priority), and 'cancer' also counts as a higher-risk comorbidity → same_day_call for an asymptomatic screening consultation.]
+- **mgmt-colonoscopy** (web): no management item matched among 5 (web.clinicalPrompts)
+- **mgmt-lynch-genetics** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: No output mentions Lynch syndrome, genetics referral or tumour MMR/MSI testing. Even with the 'Colorectal cancer' family-history chip, the dashboard's early_colonoscopy prompt only adds 'Arrange colonoscopy' and CEA (checked by calling computeClinicalPrompts directly). The 'Lynch syndrome' chip exists but no prompt reads it.]
+
+Guidelines:
+
+- **mstf-fhx-2017** — US Multi-Society Task Force on Colorectal Cancer — screening recommendations (2017), Family history: FDR with CRC or advanced adenoma < 60 years, or two FDRs at any age — colonoscopy every 5 years beginning at 40 or 10 years before the youngest affected relative. Rex DK, Boland CR, Dominitz JA, et al. Colorectal cancer screening: recommendations for physicians and patients from the U.S. Multi-Society Task Force on Colorectal Cancer. Gastroenterology. 2017;153:307–323. *(statement wording/numbering not yet verified against the source)*
+- **acg-crc-2021** — ACG clinical guidelines — colorectal cancer screening (2021), Average risk: start at 45; one first-degree relative with CRC or advanced adenoma diagnosed < 60, or two FDRs at any age: colonoscopy from 40 (or 10 years before the youngest affected relative) every 5 years. Shaukat A, Kahi CJ, Burke CA, et al. ACG clinical guidelines: colorectal cancer screening 2021. Am J Gastroenterol. 2021;116:458–479. *(statement wording/numbering not yet verified against the source)*
+- **bsg-hereditary-2020** — BSG/ACPGBI/UKCGG guidelines — management of hereditary colorectal cancer (2020), Family-history assessment; Lynch syndrome suspected with CRC < 50 or Lynch-spectrum cancers (e.g. endometrial) in relatives — tumour MMR/MSI testing of the affected relative and clinical genetics referral. Monahan KJ, Bradshaw N, Dolwani S, et al. Guidelines for the management of hereditary colorectal cancer from the British Society of Gastroenterology (BSG)/Association of Coloproctology of Great Britain and Ireland (ACPGBI)/United Kingdom Cancer Genetics Group (UKCGG). Gut. 2020;69:411–444. *(statement wording/numbering not yet verified against the source)*
+- **nice-dg27-2017** — NICE DG27 — molecular testing strategies for Lynch syndrome in people with colorectal cancer (2017), Offer MMR immunohistochemistry or MSI testing to everyone with colorectal cancer when first diagnosed, to identify Lynch syndrome. National Institute for Health and Care Excellence. Molecular testing strategies for Lynch syndrome in people with colorectal cancer. Diagnostics guidance DG27, 2017. *(statement wording/numbering not yet verified against the source)*
+
+### Cardiovascular risk assessment and lipid screening
+
+#### `screen-cv-risk-lipids-smoker-52` — Man aged 52, current smoker, borderline BP
+
+52-year-old current smoker (25 pack-years) with BP 138/86 at a wellness visit; no lipid test on record. USPSTF 2022 / ACC-AHA 2019: lipids and 10-year risk estimate to guide statin; smoking cessation; USPSTF 2021 lung screening.
+
+Permutation of `screen-crc-average-risk-46`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| inv-lipids | investigationInclude | quality | not run | PASS | USPSTF recommendation statement 2022; 2019 ACC/AHA guideline on the primary prevention of cardiovascular disease 2019 |  |
+| mgmt-10-year-risk | managementInclude | quality | not run | FAIL (known gap) | USPSTF recommendation statement 2022; 2019 ACC/AHA guideline on the primary prevention of cardiovascular disease 2019 | Add a primary-prevention prompt at 40–75: lipid profile plus QRISK3/PCE 10-year risk and statin discussion (USPSTF 2022). |
+| mgmt-smoking-cessation | managementInclude | quality | not run | PASS | 2019 ACC/AHA guideline on the primary prevention of cardiovascular disease 2019 |  |
+| mgmt-ldct | managementInclude | quality | not run | PASS | USPSTF recommendation statement 2021 |  |
+| pathway-wellness | pathway | quality | not run | n/a |  |  |
+
+Failure details:
+
+- **mgmt-10-year-risk** (web): no management item matched among 8 (web.clinicalPrompts) [known gap: No formal 10-year risk estimate is suggested; the lipid profile comes from diabetes_screen and the only CV-risk text is 'Document BP, BMI, waist circumference — cardiovascular risk profiling'.]
+
+Guidelines:
+
+- **uspstf-statin-2022** — USPSTF recommendation statement — statin use for primary prevention of cardiovascular disease (2022), Adults 40–75 with ≥ 1 CVD risk factor (dyslipidaemia, diabetes, hypertension or smoking) and an estimated 10-year CVD risk ≥ 10%: prescribe a statin (grade B); requires lipid measurement and a 10-year risk estimate. US Preventive Services Task Force. Statin use for the primary prevention of cardiovascular disease in adults: US Preventive Services Task Force recommendation statement. JAMA. 2022;328:746–753. *(statement wording/numbering not yet verified against the source)*
+- **acc-aha-primary-2019** — 2019 ACC/AHA guideline on the primary prevention of cardiovascular disease (2019), Adults 40–75: estimate 10-year ASCVD risk (pooled cohort equations) to guide statin therapy; assess and treat tobacco use at every visit. Arnett DK, Blumenthal RS, Albert MA, et al. 2019 ACC/AHA guideline on the primary prevention of cardiovascular disease. Circulation. 2019;140:e596–e646. *(statement wording/numbering not yet verified against the source)*
+- **uspstf-lung-2021** — USPSTF recommendation statement — screening for lung cancer (2021), Annual low-dose CT for adults 50–80 with a ≥ 20 pack-year history who currently smoke or quit within the past 15 years (grade B). US Preventive Services Task Force. Screening for lung cancer: US Preventive Services Task Force recommendation statement. JAMA. 2021;325:962–970. *(statement wording/numbering not yet verified against the source)*
+
+### Type 2 diabetes screening — age 35–39 with risk factors
+
+#### `screen-diabetes-38-overweight-prior-gdm` — Woman aged 38, BMI 31, prior gestational diabetes, mother T2DM
+
+38-year-old woman, BMI 31, gestational diabetes in her last pregnancy, mother with type 2 diabetes; never tested since delivery. ADA 2024: screen now (age ≥ 35; overweight with risk factors; prior GDM needs lifelong testing).
+
+Permutation of `screen-crc-average-risk-46`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-routine | emergencyLevel | quality | not run | PASS | ADA Standards of Care in Diabetes 2024 |  |
+| inv-hba1c-or-fpg | investigationInclude | quality | not run | PASS | ADA Standards of Care in Diabetes 2024 |  |
+| mgmt-no-diabetic-label | managementExclude | quality | not run | FAIL (known gap) | ADA Standards of Care in Diabetes 2024 | Exclude 'gestational', 'family history' and 'pre-diabetes' from the diabetes comorbidity match; lower diabetes_screen to 35 and add overweight + risk factor at any age (ADA 2024). |
+
+Failure details:
+
+- **mgmt-no-diabetic-label** (web): forbidden management item present in web.clinicalPrompts: "• urine albumin:creatinine ratio - diabetic nephropathy screening." [known gap: Web: hasPmh(comorbidities, 'diabet') matches 'Previous gestational diabetes' and 'Family history: mother type 2 diabetes', so she is treated as a known diabetic: 'Diabetes mellitus: HbA1c + eGFR — diabetes monitoring' and 'Urine albumin:creatinine ratio — diabetic nephropathy screening'. (The HbA1c expectation passes for this wrong reason; the diabetes_screen prompt itself starts only at 40.)]
+
+Guidelines:
+
+- **ada-2024** — ADA Standards of Care in Diabetes — 2024, section 2 (diagnosis and classification) (2024), Screen all adults from 35 years; screen at any age adults with overweight/obesity and ≥ 1 risk factor (first-degree relative with diabetes, high-risk ethnicity, hypertension, dyslipidaemia, physical inactivity, PCOS); women with prior gestational diabetes: lifelong testing at least every 3 years; tests: HbA1c, fasting plasma glucose or 2-h OGTT. American Diabetes Association Professional Practice Committee. 2. Diagnosis and classification of diabetes: Standards of Care in Diabetes—2024. Diabetes Care. 2024;47(Suppl 1):S20–S42. *(statement wording/numbering not yet verified against the source)*
+
+### One-time hepatitis B, hepatitis C and HIV screening in adults
+
+#### `screen-hepatitis-b-c-hiv-once` — Man aged 36, never tested
+
+36-year-old man at a wellness visit, never tested for blood-borne viruses, tattoos, not vaccinated against hepatitis B. USPSTF 2020 (HCV 18–79 once), CDC 2023 (HBV triple panel once), USPSTF 2019 (HIV 15–65).
+
+Permutation of `screen-crc-average-risk-46`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| inv-hcv | investigationInclude | quality | not run | FAIL (known gap) | USPSTF recommendation statement 2020 | Add blood-borne-virus screening prompts: HCV antibody once 18–79, HBV triple panel once ≥ 18, HIV 15–65. |
+| inv-hbv | investigationInclude | quality | not run | FAIL (known gap) | CDC recommendations 2023 | See inv-hcv. |
+| inv-hiv | investigationInclude | quality | not run | FAIL (known gap) | USPSTF recommendation statement 2019 | See inv-hcv. |
+| pathway-wellness | pathway | quality | not run | n/a |  |  |
+
+Failure details:
+
+- **inv-hcv** (web): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: Hepatitis serology is suggested only inside the jaundice/liver/hepatic-lesion prompts; there is no universal once-in-adulthood HCV, HBV or HIV screening prompt (the iOS ScreeningEngine has HCV 18–79 and HIV 15–65).]
+- **inv-hbv** (web): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: See inv-hcv: no universal HBV screening prompt.]
+- **inv-hiv** (web): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: See inv-hcv: no HIV screening prompt.]
+
+Guidelines:
+
+- **uspstf-hcv-2020** — USPSTF recommendation statement — screening for hepatitis C virus infection in adolescents and adults (2020), Screen all adults aged 18–79 for HCV infection (grade B). US Preventive Services Task Force. Screening for hepatitis C virus infection in adolescents and adults: US Preventive Services Task Force recommendation statement. JAMA. 2020;323:970–975. *(statement wording/numbering not yet verified against the source)*
+- **cdc-hbv-2023** — CDC recommendations — screening and testing for hepatitis B virus infection (2023), Screen all adults ≥ 18 at least once in a lifetime using the triple panel (HBsAg, anti-HBs, total anti-HBc). Conners EE, Panagiotakopoulos L, Hofmeister MG, et al. Screening and testing for hepatitis B virus infection: CDC recommendations — United States, 2023. MMWR Recomm Rep. 2023;72(1):1–25. *(statement wording/numbering not yet verified against the source)*
+- **uspstf-hiv-2019** — USPSTF recommendation statement — screening for HIV infection (2019), Screen adolescents and adults aged 15–65 for HIV infection (grade A). US Preventive Services Task Force. Screening for HIV infection: US Preventive Services Task Force recommendation statement. JAMA. 2019;321:2326–2336. *(statement wording/numbering not yet verified against the source)*
+
+### H. pylori test-and-treat in a first-degree relative of a gastric cancer patient
+
+#### `screen-hpylori-fdr-gastric-cancer` — Asymptomatic man aged 44, father had gastric cancer
+
+44-year-old asymptomatic man whose father died of gastric cancer at 62. Maastricht VI: test first-degree relatives for H. pylori (urea breath test or stool antigen) and treat if positive.
+
+Permutation of `dyspepsia-young-no-alarm-test-and-treat`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-no-antithrombotic-plan | managementExclude | critical | not run | PASS | Management of Helicobacter pylori infection 2022 |  |
+| level-routine | emergencyLevel | quality | not run | FAIL (known gap) | Management of Helicobacter pylori infection 2022 | Treat topic words ('cancer screening', a relative's cancer) as context rather than a current malignancy red flag, and treat 'no change in bowel habit' as negated (the matcher currently handles 'no change' as a pseudo-negation). |
+| inv-hpylori-test | investigationInclude | quality | not run | FAIL (known gap) | Management of Helicobacter pylori infection 2022 | Add: first-degree relative with gastric cancer → non-invasive H. pylori test (UBT/stool antigen) and eradication (Maastricht VI). |
+
+Failure details:
+
+- **level-routine** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Over-triage: the chief complaint 'Father had stomach cancer' matches 'Possible malignancy' (priority) and the family-history comorbidity counts as higher-risk → same_day_call (score 37). (The negated alarm symptoms no longer fire.)]
+- **inv-hpylori-test** (web): no investigation matched among 16 (web.pane.seeded, web.clinicalPrompts) [known gap: No prompt reads a family history of gastric cancer (the 'Gastric cancer' family-history chip triggers nothing — checked by calling computeClinicalPrompts directly), and there is no H. pylori screening prompt.]
+
+Guidelines:
+
+- **maastricht-vi-2022** — Management of Helicobacter pylori infection — the Maastricht VI/Florence consensus report (2022), Test-and-treat for H. pylori in first-degree relatives of patients with gastric cancer; non-invasive testing (urea breath test or monoclonal stool antigen); confirm eradication after treatment. Malfertheiner P, Megraud F, Rokkas T, et al. Management of Helicobacter pylori infection: the Maastricht VI/Florence consensus report. Gut. 2022;71:1724–1762. *(statement wording/numbering not yet verified against the source)*
+
+### Accelerated (malignant) hypertension
+
+#### `screen-hypertension-accelerated-papilloedema` — BP 212/128 with headache, blurred vision and papilloedema
+
+44-year-old woman seen in the surgical clinic before a planned hernia repair: 3 days of headache and blurred vision, BP 212/128, bilateral flame haemorrhages and papilloedema. NICE NG136: same-day specialist referral.
+
+Permutation of `screen-hypertension-clinic-bp-confirm`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-urgent | emergencyLevel | critical | not run | FAIL (known gap) | NICE NG136 2019 | Add BP red flags to computeVitalRedFlags (e.g. SBP ≥ 180 or DBP ≥ 120 → urgent; with headache, visual disturbance, papilloedema, chest pain or confusion → emergency), and a pregnancy/postpartum ≥ 160/110 rule (NICE NG136, NG133). |
+| alarm-hypertensive-emergency | mustAlarm | critical | not run | PASS | NICE NG136 2019 |  |
+| mgmt-same-day-admission | managementInclude | critical | not run | FAIL (known gap) | NICE NG136 2019; 2017 ACC/AHA guideline 2017 | When SBP ≥ 180 or DBP ≥ 120 and the exam/HPI records papilloedema, retinal haemorrhage, encephalopathy, chest pain or AKI, output 'hypertensive emergency — same-day admission' regardless of the 220 threshold. |
+| inv-renal-urine | investigationInclude | quality | not run | PASS | NICE NG136 2019 |  |
+| mgmt-no-proceed-with-surgery | managementExclude | quality | not run | FAIL (known gap) | NICE NG136 2019 | Suppress operative-plan templates while a hypertensive emergency prompt is active, and pick the template by hernia type. |
+
+Failure details:
+
+- **level-urgent** (web): web.triage: routine (acuity=routine, action=routine_booking, score=0); expected ≥ urgent [known gap: Web triage: routine_booking, score 0, for BP 208/126 with headache, blurred vision and papilloedema. adaptiveTriage has no high-BP vital red flag, and 'headache'/'blurred vision'/'papilloedema' are not red-flag terms. Before the negation fixes this passed only because the negated 'No chest pain' raised 'Possible cardiac event'.]
+- **mgmt-same-day-admission** (web): no management item matched among 17 (web.clinicalPrompts) [known gap: Web: the hypertensive_urgency prompt (SBP ≥ 180) offers oral amlodipine and 'reduce SBP by 25% over 24–48 h'; the IV/hypertensive-emergency line appears only at SBP ≥ 220. Recorded papilloedema and retinal haemorrhages are not read, so there is no same-day admission/referral (NICE NG136).]
+- **mgmt-no-proceed-with-surgery** (web): forbidden management item present in web.clinicalPrompts: "• consent: hernia repair - recurrence (1-2% tapp), chronic groin pain (5%), mesh infection (< 1%), testi..." [known gap: Web: 'Elective surgery deferred' appears, but the hernia prompt still produces a laparoscopic inguinal hernia repair (TAPP) operative plan and consent for an umbilical hernia.]
+
+Guidelines:
+
+- **nice-ng136** — NICE NG136 — hypertension in adults: diagnosis and management (2019), Clinic BP 140/90–180/120: offer ambulatory (or home) BP monitoring to confirm the diagnosis; assess cardiovascular risk and target organ damage (urine albumin:creatinine ratio, haematuria, HbA1c, U&E/eGFR, lipids, fundoscopy, ECG); ≥ 180/120 with retinal haemorrhage or papilloedema (accelerated hypertension) or life-threatening symptoms: same-day specialist referral. National Institute for Health and Care Excellence. Hypertension in adults: diagnosis and management. NICE guideline NG136, 2019 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+- **acc-aha-2017** — 2017 ACC/AHA guideline — prevention, detection, evaluation and management of high blood pressure in adults (2017), Out-of-office BP measurement (ABPM/HBPM) to confirm the diagnosis; hypertensive emergency: admission to an intensive care unit, controlled reduction of BP. Whelton PK, Carey RM, Aronow WS, et al. 2017 ACC/AHA/AAPA/ABC/ACPM/AGS/APhA/ASH/ASPC/NMA/PCNA guideline for the prevention, detection, evaluation, and management of high blood pressure in adults. Hypertension. 2018;71:e13–e115. *(statement wording/numbering not yet verified against the source)*
+
+### Raised clinic blood pressure — confirm before diagnosing hypertension
+
+#### `screen-hypertension-clinic-bp-confirm` — Man aged 49, clinic BP 152/94 at a wellness visit
+
+49-year-old man at a wellness visit with clinic BP 152/94 and 148/92 on repeat, no symptoms, no known hypertension. NICE NG136: confirm with ABPM (or HBPM), assess cardiovascular risk and target-organ damage.
+
+Permutation of `screen-crc-average-risk-46`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-routine | emergencyLevel | quality | not run | PASS | NICE NG136 2019 |  |
+| no-emergency-banner | mustNotAlarm | quality | not run | PASS | NICE NG136 2019 |  |
+| mgmt-abpm-hbpm | managementInclude | quality | not run | FAIL (known gap) | NICE NG136 2019; 2017 ACC/AHA guideline 2017 | Add a raised-clinic-BP prompt (140/90–179/119): ABPM (or HBPM) to confirm, cardiovascular risk estimate and target-organ tests (NICE NG136). |
+| mgmt-urine-acr | managementInclude | quality | not run | FAIL (known gap) | NICE NG136 2019 | Same raised-clinic-BP prompt. |
+| mgmt-cv-risk | managementInclude | quality | not run | FAIL (known gap) | NICE NG136 2019 | Suggest QRISK3 (or the pooled cohort equations) with the lipid profile. |
+| pathway-wellness | pathway | quality | not run | n/a |  |  |
+
+Failure details:
+
+- **mgmt-abpm-hbpm** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: No output confirms the diagnosis out of office: there is no prompt for a clinic BP of 140–179 systolic (hypertensive_urgency starts at SBP ≥ 180; htn_metabolic needs a recorded hypertension comorbidity).]
+- **mgmt-urine-acr** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: Urine ACR is suggested only when 'hypertension' is already recorded as a comorbidity (htn_metabolic); a first raised reading gets nothing.]
+- **mgmt-cv-risk** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: No formal risk score is suggested; the only related text is the wellness panel's 'Document BP, BMI, waist circumference — cardiovascular risk profiling'.]
+
+Guidelines:
+
+- **nice-ng136** — NICE NG136 — hypertension in adults: diagnosis and management (2019), Clinic BP 140/90–180/120: offer ambulatory (or home) BP monitoring to confirm the diagnosis; assess cardiovascular risk and target organ damage (urine albumin:creatinine ratio, haematuria, HbA1c, U&E/eGFR, lipids, fundoscopy, ECG); ≥ 180/120 with retinal haemorrhage or papilloedema (accelerated hypertension) or life-threatening symptoms: same-day specialist referral. National Institute for Health and Care Excellence. Hypertension in adults: diagnosis and management. NICE guideline NG136, 2019 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+- **acc-aha-2017** — 2017 ACC/AHA guideline — prevention, detection, evaluation and management of high blood pressure in adults (2017), Out-of-office BP measurement (ABPM/HBPM) to confirm the diagnosis; hypertensive emergency: admission to an intensive care unit, controlled reduction of BP. Whelton PK, Carey RM, Aronow WS, et al. 2017 ACC/AHA/AAPA/ABC/ACPM/AGS/APhA/ASH/ASPC/NMA/PCNA guideline for the prevention, detection, evaluation, and management of high blood pressure in adults. Hypertension. 2018;71:e13–e115. *(statement wording/numbering not yet verified against the source)*
+
+### Screening in an 81-year-old man — avoid over-screening
+
+#### `screen-older-man-81-overscreening` — Age 81, fit, normal colonoscopy at 71; asks for PSA and bowel test
+
+81-year-old fit man, normal colonoscopy at 71, asks for a "full check-up with the prostate test and a bowel test". USPSTF: recommend against PSA screening ≥ 70 (D); CRC screening 76–85 is selective (C), guided by health and prior screening; no AAA screening after 75.
+
+Permutation of `screen-crc-average-risk-46`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-routine | emergencyLevel | quality | not run | PASS | USPSTF recommendation statement 2018 |  |
+| inv-no-psa-over-70 | investigationExclude | quality | not run | FAIL (known gap) | USPSTF recommendation statement 2018 | Limit psa_discussion to 55–69 (shared decision), and show 'PSA screening not recommended ≥ 70' above that age. |
+| mgmt-individualised-crc | managementInclude | quality | not run | FAIL (known gap) | USPSTF recommendation statement 2021 | Add an age ≥ 76 branch: 'individual decision — overall health, life expectancy and prior screening'; none after 85. |
+| mgmt-no-psa-discussion-over-70 | managementExclude | quality | not run | FAIL (known gap) | USPSTF recommendation statement 2018 | Limit psa_discussion to 55–69 (USPSTF 2018). |
+| mgmt-no-routine-10-yearly-colonoscopy | managementExclude | quality | not run | FAIL (known gap) | USPSTF recommendation statement 2021 | Stop the routine colorectal_screen prompt at 75; individualise 76–85. |
+| pathway-wellness | pathway | quality | not run | n/a |  |  |
+
+Failure details:
+
+- **inv-no-psa-over-70** (web): forbidden investigation present in web.clinicalPrompts: "psa (m)" [known gap: Web: computeClinicalPrompts preventative prompts are fixed age/sex rules: psa_discussion fires for every man ≥ 50 with no upper age limit and adds 'PSA (M)' to investigations at 81 (USPSTF 2018 grade D ≥ 70).]
+- **mgmt-individualised-crc** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: Web: colorectal_screen has no upper age limit and no individualisation text for 76–85 (USPSTF grade C).]
+- **mgmt-no-psa-discussion-over-70** (web): forbidden management item present in web.clinicalPrompts: "• psa discussion - document informed consent to proceed with test." [known gap: Web: '• PSA discussion — document informed consent to proceed with test.' at 81.]
+- **mgmt-no-routine-10-yearly-colonoscopy** (web): forbidden management item present in web.clinicalPrompts: "• colonoscopy - crc screening, age ≥ 50." [known gap: Web: '• Colonoscopy — CRC screening, age ≥ 50.' and 'Colonoscopy every 10 years' at 81 after a normal colonoscopy at 71.]
+
+Guidelines:
+
+- **uspstf-prostate-2018** — USPSTF recommendation statement — screening for prostate cancer (2018), 55–69: individual decision about PSA-based screening after discussion of potential benefits and harms (grade C); ≥ 70: recommend against PSA-based screening (grade D); Black men and men with a family history may benefit from the discussion. US Preventive Services Task Force. Screening for prostate cancer: US Preventive Services Task Force recommendation statement. JAMA. 2018;319:1901–1913. *(statement wording/numbering not yet verified against the source)*
+- **uspstf-crc-2021** — USPSTF recommendation statement — screening for colorectal cancer (2021), Screen adults 45–49 (grade B) and 50–75 (grade A); 76–85 selectively, considering overall health and prior screening (grade C); stool-based (e.g. annual FIT) or direct visualisation (e.g. colonoscopy every 10 years) strategies. US Preventive Services Task Force. Screening for colorectal cancer: US Preventive Services Task Force recommendation statement. JAMA. 2021;325:1965–1977. *(statement wording/numbering not yet verified against the source)*
+- **uspstf-aaa-2019** — USPSTF recommendation statement — screening for abdominal aortic aneurysm (2019), Men 65–75 who have ever smoked: one-time ultrasound screening for AAA (grade B). US Preventive Services Task Force. Screening for abdominal aortic aneurysm: US Preventive Services Task Force recommendation statement. JAMA. 2019;322:2211–2218. *(statement wording/numbering not yet verified against the source)*
+
+### Low-risk adenomas after polypectomy — no early surveillance
+
+#### `screen-polyp-low-risk-no-surveillance` — Two small tubular adenomas (low risk)
+
+58-year-old man after a complete, good-quality screening colonoscopy with removal of two tubular adenomas (5 and 7 mm, low-grade dysplasia). BSG 2020: no colonoscopic surveillance (return to screening); US MSTF 2020: repeat in 7–10 years.
+
+Permutation of `polyp-surveillance-high-risk-3y`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-low-risk-interval | managementInclude | quality | not run | FAIL (known gap) | BSG/ACPGBI/PHE post-polypectomy and post-colorectal cancer resection surveillance guidelines 2020; US Multi-Society Task Force 2020 | Add a post-polypectomy surveillance helper (BSG 2020 / MSTF 2020 tables) driven by number, size and histology of polyps, and suppress the routine screening prompt when a colonoscopy was done recently. |
+| mgmt-no-short-interval | managementExclude | quality | not run | PASS | BSG/ACPGBI/PHE post-polypectomy and post-colorectal cancer resection surveillance guidelines 2020; US Multi-Society Task Force 2020 |  |
+
+Failure details:
+
+- **mgmt-low-risk-interval** (web): no management item matched among 4 (web.clinicalPrompts) [known gap: No post-polypectomy surveillance logic exists on web: D12.6 maps to no protocol, and the only colorectal output is the generic age-≥50 prompt ('Colonoscopy — CRC screening', 'FOBT every 2 years'), which ignores the colonoscopy just done.]
+
+Guidelines:
+
+- **bsg-polyp-2020** — BSG/ACPGBI/PHE post-polypectomy and post-colorectal cancer resection surveillance guidelines (2020), Low-risk findings (no high-risk criteria): no colonoscopic surveillance — return to population screening when invited; high-risk findings: one-off surveillance at 3 years; large non-pedunculated polyp (≥ 20 mm) removed piecemeal: site-check colonoscopy at 2–6 months. Rutter MD, East J, Rees CJ, et al. British Society of Gastroenterology/Association of Coloproctology of Great Britain and Ireland/Public Health England post-polypectomy and post-colorectal cancer resection surveillance guidelines. Gut. 2020;69:201–223. *(statement wording/numbering not yet verified against the source)*
+- **mstf-polyp-2020** — US Multi-Society Task Force — recommendations for follow-up after colonoscopy and polypectomy (2020), 1–2 tubular adenomas < 10 mm completely removed: repeat colonoscopy in 7–10 years; adenoma ≥ 20 mm removed piecemeal: repeat colonoscopy (site check) at 6 months. Gupta S, Lieberman D, Anderson JC, et al. Recommendations for follow-up after colonoscopy and polypectomy: a consensus update by the US Multi-Society Task Force on Colorectal Cancer. Gastroenterology. 2020;158:1131–1153. *(statement wording/numbering not yet verified against the source)*
+
+### Large polyp removed piecemeal — early site-check colonoscopy
+
+#### `screen-polyp-piecemeal-emr-site-check` — 30 mm lesion removed piecemeal by EMR
+
+67-year-old woman after piecemeal EMR of a 30 mm laterally spreading tubulovillous adenoma in the ascending colon. MSTF 2020: site-check colonoscopy at 6 months; BSG 2020: site check at 2–6 months (not 3 years).
+
+Permutation of `polyp-surveillance-high-risk-3y`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-site-check | managementInclude | quality | not run | FAIL (known gap) | US Multi-Society Task Force 2020; BSG/ACPGBI/PHE post-polypectomy and post-colorectal cancer resection surveillance guidelines 2020 | Post-polypectomy surveillance helper with a piecemeal ≥ 20 mm branch: site-check colonoscopy at 6 months (MSTF) / 2–6 months (BSG). |
+| mgmt-no-3-year-first-interval | managementExclude | quality | not run | PASS | US Multi-Society Task Force 2020; BSG/ACPGBI/PHE post-polypectomy and post-colorectal cancer resection surveillance guidelines 2020 |  |
+
+Failure details:
+
+- **mgmt-site-check** (web): no management item matched among 9 (web.clinicalPrompts) [known gap: No output mentions a site check after piecemeal EMR; D12.2 maps to no protocol; the generic age-≥50 screening prompt still offers 'FOBT every 2 years' and 'Colonoscopy — CRC screening' 4 weeks after the EMR.]
+
+Guidelines:
+
+- **mstf-polyp-2020** — US Multi-Society Task Force — recommendations for follow-up after colonoscopy and polypectomy (2020), 1–2 tubular adenomas < 10 mm completely removed: repeat colonoscopy in 7–10 years; adenoma ≥ 20 mm removed piecemeal: repeat colonoscopy (site check) at 6 months. Gupta S, Lieberman D, Anderson JC, et al. Recommendations for follow-up after colonoscopy and polypectomy: a consensus update by the US Multi-Society Task Force on Colorectal Cancer. Gastroenterology. 2020;158:1131–1153. *(statement wording/numbering not yet verified against the source)*
+- **bsg-polyp-2020** — BSG/ACPGBI/PHE post-polypectomy and post-colorectal cancer resection surveillance guidelines (2020), Low-risk findings (no high-risk criteria): no colonoscopic surveillance — return to population screening when invited; high-risk findings: one-off surveillance at 3 years; large non-pedunculated polyp (≥ 20 mm) removed piecemeal: site-check colonoscopy at 2–6 months. Rutter MD, East J, Rees CJ, et al. British Society of Gastroenterology/Association of Coloproctology of Great Britain and Ireland/Public Health England post-polypectomy and post-colorectal cancer resection surveillance guidelines. Gut. 2020;69:201–223. *(statement wording/numbering not yet verified against the source)*
+
+### No cervical screening after total hysterectomy for benign disease
+
+#### `screen-post-hysterectomy-no-cervical-52` — Age 52, total hysterectomy (cervix removed) for fibroids
+
+52-year-old woman, total abdominal hysterectomy with removal of the cervix for fibroids 8 years ago, no history of CIN. USPSTF 2018 grade D: no cervical screening. She is due breast and colorectal screening.
+
+Permutation of `screen-cervical-hpv-overdue-34`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-no-antithrombotic-plan | managementExclude | critical | not run | PASS | USPSTF recommendation statement 2018 |  |
+| mgmt-mammogram-due | managementInclude | quality | not run | PASS | USPSTF recommendation statement 2024 |  |
+| mgmt-crc-screening-due | managementInclude | quality | not run | PASS | USPSTF recommendation statement 2021 |  |
+| mgmt-no-cervical-screening | managementExclude | quality | not run | FAIL (known gap) | USPSTF recommendation statement 2018 | Suppress cervical_smear when the surgical history records total hysterectomy (cervix removed) for benign disease without CIN 2+. |
+| pathway-wellness | pathway | quality | not run | n/a |  |  |
+
+Failure details:
+
+- **mgmt-no-cervical-screening** (web): forbidden management item present in web.clinicalPrompts: "• confirm cervical smear date - document last result." (+1 more) [known gap: Web: cervical_smear fires for every woman 21–65 regardless of surgical history: 'Confirm cervical smear date' and 'Refer gynaecology — cervical smear overdue' after a total hysterectomy for fibroids (USPSTF 2018 grade D).]
+
+Guidelines:
+
+- **uspstf-cervical-2018** — USPSTF recommendation statement — screening for cervical cancer (2018), 21–29: cytology every 3 years; 30–65: cytology every 3 years, high-risk HPV testing alone every 5 years, or co-testing every 5 years (grade A); recommend against screening after hysterectomy with removal of the cervix and no history of CIN 2+ or cancer (grade D). US Preventive Services Task Force. Screening for cervical cancer: US Preventive Services Task Force recommendation statement. JAMA. 2018;320:674–686. *(statement wording/numbering not yet verified against the source)*
+- **uspstf-breast-2024** — USPSTF recommendation statement — screening for breast cancer (2024), Biennial screening mammography for women aged 40–74 (grade B). US Preventive Services Task Force. Screening for breast cancer: US Preventive Services Task Force recommendation statement. JAMA. 2024;331:1918–1930. *(statement wording/numbering not yet verified against the source)*
+- **uspstf-crc-2021** — USPSTF recommendation statement — screening for colorectal cancer (2021), Screen adults 45–49 (grade B) and 50–75 (grade A); 76–85 selectively, considering overall health and prior screening (grade C); stool-based (e.g. annual FIT) or direct visualisation (e.g. colonoscopy every 10 years) strategies. US Preventive Services Task Force. Screening for colorectal cancer: US Preventive Services Task Force recommendation statement. JAMA. 2021;325:1965–1977. *(statement wording/numbering not yet verified against the source)*
+
+### Asplenia after emergency splenectomy — vaccination and prophylaxis
+
+#### `screen-post-splenectomy-vaccination` — Post-operative clinic, day 14 after trauma splenectomy, no vaccines given
+
+24-year-old man 14 days after emergency splenectomy for a grade IV splenic injury (motorcycle), seen in the post-operative clinic; no vaccines were given before discharge. BSH 2011: pneumococcal, Hib, meningococcal and annual influenza vaccination, antibiotic prophylaxis and alert card.
+
+Permutation of `trauma-splenic-injury-unstable`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-pneumococcal | managementInclude | critical | not run | FAIL (known gap) | BCSH (BSH) guideline 2011 | Add an asplenia prompt triggered by 'splenectomy' in the surgical history or D73.0/Z90.81: pneumococcal, Hib, MenACWY and MenB, annual influenza, antibiotic prophylaxis and standby course, alert card (BSH 2011 / Green Book ch. 7). |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | not run | PASS | BCSH (BSH) guideline 2011 |  |
+| mgmt-meningococcal | managementInclude | quality | not run | FAIL (known gap) | BCSH (BSH) guideline 2011 | See mgmt-pneumococcal. |
+| mgmt-hib | managementInclude | quality | not run | FAIL (known gap) | BCSH (BSH) guideline 2011 | See mgmt-pneumococcal. |
+| mgmt-influenza | managementInclude | quality | not run | FAIL (known gap) | BCSH (BSH) guideline 2011 | See mgmt-pneumococcal. |
+| mgmt-antibiotic-prophylaxis | managementInclude | quality | not run | FAIL (known gap) | BCSH (BSH) guideline 2011 | See mgmt-pneumococcal. |
+| mgmt-alert-card | managementInclude | quality | not run | FAIL (known gap) | BCSH (BSH) guideline 2011 | See mgmt-pneumococcal. |
+
+Failure details:
+
+- **mgmt-pneumococcal** (web): no management item output on web [known gap: No management output at all: Z90.81 (asplenia) maps to no protocol, so the Assessment panel and Plan are empty. Post-splenectomy vaccines exist only in the splenic_laceration protocol (S36 prefixes), which a follow-up coded as asplenia never reaches; no prompt reads 'splenectomy' in the surgical history.]
+- **mgmt-meningococcal** (web): no management item output on web [known gap: See mgmt-pneumococcal.]
+- **mgmt-hib** (web): no management item output on web [known gap: See mgmt-pneumococcal.]
+- **mgmt-influenza** (web): no management item output on web [known gap: See mgmt-pneumococcal.]
+- **mgmt-antibiotic-prophylaxis** (web): no management item output on web [known gap: See mgmt-pneumococcal.]
+- **mgmt-alert-card** (web): no management item output on web [known gap: See mgmt-pneumococcal.]
+
+Guidelines:
+
+- **bsh-spleen-2011** — BCSH (BSH) guideline — prevention and treatment of infection in patients with an absent or dysfunctional spleen (2011), Pneumococcal, Haemophilus influenzae type b and meningococcal immunisation and annual influenza vaccine; after emergency splenectomy immunise from 2 weeks post-operatively (or before discharge if follow-up is uncertain); lifelong antibiotic prophylaxis offered (at least in the first 2 years) and standby antibiotics; patient education and alert card. Davies JM, Lewis MPN, Wimperis J, et al. Review of guidelines for the prevention and treatment of infection in patients with an absent or dysfunctional spleen: prepared on behalf of the British Committee for Standards in Haematology. Br J Haematol. 2011;155:308–317. *(statement wording/numbering not yet verified against the source)*
+
+### Prostate cancer screening — shared decision-making
+
+#### `screen-prostate-58-shared-decision` — Age 58, African-Caribbean, asks about PSA
+
+58-year-old African-Caribbean man, no urinary symptoms, asks about "the prostate test". USPSTF 2018: at 55–69 an individual decision after discussing benefits and harms; Black men may particularly benefit from the discussion.
+
+Permutation of `screen-older-man-81-overscreening`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-routine | emergencyLevel | quality | not run | FAIL (known gap) | USPSTF recommendation statement 2018 | Treat topic words ('cancer screening', a relative's cancer) as context rather than a current malignancy red flag, and treat 'no change in bowel habit' as negated (the matcher currently handles 'no change' as a pseudo-negation). |
+| mgmt-shared-decision | managementInclude | quality | not run | PASS | USPSTF recommendation statement 2018 |  |
+| mgmt-no-prostate-biopsy | managementExclude | quality | not run | PASS | USPSTF recommendation statement 2018 |  |
+| pathway-wellness | pathway | quality | not run | n/a |  |  |
+
+Failure details:
+
+- **level-routine** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Over-triage: 'Two friends have had prostate cancer' → 'Possible malignancy' (priority) → same_day_call.]
+
+Guidelines:
+
+- **uspstf-prostate-2018** — USPSTF recommendation statement — screening for prostate cancer (2018), 55–69: individual decision about PSA-based screening after discussion of potential benefits and harms (grade C); ≥ 70: recommend against PSA-based screening (grade D); Black men and men with a family history may benefit from the discussion. US Preventive Services Task Force. Screening for prostate cancer: US Preventive Services Task Force recommendation statement. JAMA. 2018;319:1901–1913. *(statement wording/numbering not yet verified against the source)*
+
+### Tetanus-prone wound with unknown immunisation status
+
+#### `screen-tetanus-prone-wound-unknown-status` — Farm laceration, soil and manure contamination, immunisation unknown (base case)
+
+52-year-old pig farmer with an 8 cm forearm laceration from rusty barbed wire in a pig pen 8 hours ago, soil and manure in the wound; last tetanus vaccine "as a child", unsure. Needs debridement, tetanus-containing vaccine and tetanus immunoglobulin.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-tetanus-vaccine | managementInclude | critical | not run | FAIL (known gap) | ACIP 2018; UKHSA (PHE) guidance 2019 | Add a wound prompt (laceration/bite/puncture/burn, or S0–T1 injury codes): classify tetanus-prone vs clean, ask immunisation status, and output vaccine ± human tetanus immunoglobulin per ACIP/UKHSA tables; debridement/irrigation. |
+| mgmt-tetanus-immunoglobulin | managementInclude | critical | not run | FAIL (known gap) | ACIP 2018; UKHSA (PHE) guidance 2019 | See mgmt-tetanus-vaccine. |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | not run | PASS | UKHSA (PHE) guidance 2019 |  |
+| level-not-emergency | emergencyLevel | quality | not run | PASS | UKHSA (PHE) guidance 2019 |  |
+| mgmt-debridement | managementInclude | quality | not run | FAIL (known gap) | UKHSA (PHE) guidance 2019 | See mgmt-tetanus-vaccine. |
+
+Failure details:
+
+- **mgmt-tetanus-vaccine** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: No tetanus output: S51.812A maps to no protocol, PANE top 3 is inguinal hernia / cholecystitis / GORD, and computeClinicalPrompts has no wound or tetanus-prone rule. Tetanus toxoid/immunoglobulin exist only inside the major-trauma, burns and splenic protocols.]
+- **mgmt-tetanus-immunoglobulin** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: See mgmt-tetanus-vaccine: no tetanus immunoglobulin output for a high-risk wound with unknown immunisation.]
+- **mgmt-debridement** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: No wound-care output (see mgmt-tetanus-vaccine).]
+
+Guidelines:
+
+- **acip-tetanus-2018** — ACIP — prevention of pertussis, tetanus and diphtheria with vaccines (wound management) (2018), Wound management: for a contaminated (tetanus-prone) wound in a person with unknown or < 3 doses of tetanus toxoid — give Td/Tdap AND tetanus immune globulin (TIG). Liang JL, Tiwari T, Moro P, et al. Prevention of pertussis, tetanus, and diphtheria with vaccines in the United States: recommendations of the Advisory Committee on Immunization Practices (ACIP). MMWR Recomm Rep. 2018;67(2):1–44. *(statement wording/numbering not yet verified against the source)*
+- **ukhsa-tetanus-2019** — UKHSA (PHE) guidance — assessment and management of tetanus-prone wounds (2019), Tetanus-prone and high-risk tetanus-prone wounds (e.g. contamination with soil or manure, devitalised tissue): thorough cleaning/debridement; incomplete or unknown immunisation — tetanus-containing vaccine plus human tetanus immunoglobulin. Public Health England (now UKHSA). Guidance on the management of suspected tetanus cases and on the assessment and management of tetanus-prone wounds. London; 2019 (updated). *(statement wording/numbering not yet verified against the source)*
 
 ### First unprovoked seizure
 
@@ -14889,6 +16072,12 @@ Guidelines:
 | `groin-mimic-testicular-torsion` | dx-torsion-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Appendicitis \| 3. Epididymo-orchitis; also in web.symptomInference#1, web.passive#1 [known gap: As above: torsion not in the PANE top 3; epididymo-orchitis ranks above it.] |
 | `groin-mimic-testicular-torsion` | mnm-torsion | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Appendicitis \| 3. Epididymo-orchitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3 = inguinal hernia, appendicitis, epididymo-orchitis: testicular_t |
 | `groin-mimic-testicular-torsion` | mgmt-no-hernia-repair | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• consent: hernia repair - recurrence (1-2% tapp), chronic groin pain (5%), mesh infection (< 1%), testi..." (+1 more) [known gap: Assessment ManagementPanel follows the PANE top di |
+| `gyn-ovarian-torsion-dermoid` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web: computeClinicalPrompts fires the 'Appendicitis — eme |
+| `gyn-ovarian-torsion-premenarchal-11` | mgmt-no-adult-fixed-doses | web | critical | known gap | forbidden management item present in web.protocol.medications: "ondansetron 4 mg iv (intravenous) tds (three times daily) - antiemetic" (+6 more) [known gap: Web: adult fixed doses with no weight or age adjustment — the ovarian_torsion prot |
+| `gyn-pid-tubo-ovarian-abscess-sepsis` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web: computeClinicalPrompts fires the 'Appendicitis — eme |
+| `gyn-ruptured-haemorrhagic-cyst-apixaban` | dx-ovarian-cyst-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Ovarian Torsion \| 2. Acute Cholecystitis \| 3. Ectopic Pregnancy; also in web.symptomInference#2, web.passive#2 [known gap: PANE top 3: ovarian torsion (0.195), acute cholecystitis (0.164 — 'shoulder tip' radia |
+| `gyn-ruptured-haemorrhagic-cyst-apixaban` | mgmt-anticoagulant-reversal | web | critical | known gap | no management item matched among 45 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No reversal agent is suggested. The only anticoagulant output is the elective 'Ant |
+| `gyn-ruptured-haemorrhagic-cyst-apixaban` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web: computeClinicalPrompts fires the 'Appendicitis — eme |
 | `h-pylori-penicillin-anaphylaxis` | mgmt-bismuth-quadruple | web | quality | known gap | no management item matched among 25 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No penicillin-free regimen in any H. pylori protocol.] |
 | `h-pylori-penicillin-anaphylaxis` | mgmt-no-amoxicillin | web | critical | known gap | forbidden management item present in web.plan: "[conservative] h. pylori eradication: triple therapy (ppi + amoxicillin + clarithromycin × 7 days); confirm eradication with breath test at 4 weeks." (+2 more) [known gap: Gastritis protocol p |
 | `h-pylori-positive-eradication` | mgmt-14-day-or-bismuth | web | quality | known gap | no management item matched among 25 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Gastritis protocol: "triple therapy (PPI + amoxicillin + clarithromycin × 7 days)" |
@@ -15060,6 +16249,76 @@ Guidelines:
 | `nsti-leg-diabetic-sepsis` | score-rec-lrinec | web | quality | known gap | lrinec not recommended; recommended: wells-pe, wells-dvt, qsofa, web:wagner, news2, caprini, asa, rcri, stop-bang [known gap: getCdsSuggestions has no LRINEC scale (clinical-cds.ts); iOS has one.] |
 | `nsti-postop-abdominal-wall` | dx-nsti-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Cholangitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3: Acute cholecystitis, Acute cholangitis, GORD. socrates-to-features maps the 'Burning' character chip to the he |
 | `nsti-postop-abdominal-wall` | mnm-anastomotic-or-collection | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Cholangitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3 omits anastomotic leak and collections (see dx-nsti-top3).] |
+| `obs-abruption-concealed-partner-assault` | mnm-abruption | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Blunt Abdominal Trauma \| 3. Splenic Laceration [known gap: PANE has no placental abruption node; top 3: acute cholecystitis, blunt abdominal trauma, splenic laceration (all < 0.20). O4 |
+| `obs-abruption-concealed-partner-assault` | flag-domestic-abuse | web | critical | known gap | no red flag matched among 15 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No domestic-abuse or safeguarding output: neither triage rules nor prompt |
+| `obs-abruption-concealed-partner-assault` | inv-fetal-monitoring | web | critical | known gap | no investigation matched among 26 (web.pane.seeded, web.clinicalPrompts) [known gap: No CTG/fetal monitoring: no trauma-in-pregnancy content exists; the blunt-trauma protocol is not reached (PANE top < 0.20, O45 unmapped).] |
+| `obs-abruption-concealed-partner-assault` | mgmt-obstetric-team | web | critical | known gap | no management item matched among 8 (web.clinicalPrompts) [known gap: No obstetric output (see inv-fetal-monitoring).] |
+| `obs-abruption-concealed-partner-assault` | mgmt-uterine-displacement | web | critical | known gap | no management item matched among 8 (web.clinicalPrompts) [known gap: No left lateral tilt / uterine displacement (see inv-fetal-monitoring).] |
+| `obs-abruption-concealed-partner-assault` | mgmt-domestic-abuse-safety | web | critical | known gap | no management item matched among 8 (web.clinicalPrompts) [known gap: No safety planning or referral (see flag-domestic-abuse).] |
+| `obs-appendicitis-pregnancy-t3` | mgmt-obstetric-fetal-monitoring | web | critical | known gap | no management item matched among 56 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts, web.scaleCalculator.alvarado) [known gap: No obstetric or fetal-monitoring output: the appendi |
+| `obs-appendicitis-pregnancy-t3` | mgmt-no-nsaid-after-20-weeks | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "... convert to oral when tolerating po. • paracetamol 1g qds + ibuprofen 400mg tds (regular). • morphine 5mg prn if pain > 5/10. • regular diet as toler..." [known gap: Web: the app |
+| `obs-appendicitis-pregnancy-t3` | mgmt-no-assumed-negative-hcg | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "...ak (< 1%), hartmann's pouch if appendix not identifiable. • β-hcg confirmed negative (female of reproductive age). • group & screen available; cross-match if perfor..." [known ga |
+| `obs-hellp-ruq-pain-34wk` | mnm-preeclampsia-hellp | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. Acute Appendicitis [known gap: PANE has no pre-eclampsia/HELLP disease node (pane-engine has 130 diseases, none for pre-eclampsia/HELLP); top 3: acute cholecy |
+| `obs-hellp-ruq-pain-34wk` | flag-severe-hypertension | web | critical | known gap | no red flag matched among 17 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No hypertension flag: adaptiveTriage has no high-BP vital red flag at all, and the hypertensiv |
+| `obs-hellp-ruq-pain-34wk` | inv-urine-pcr | web | quality | known gap | no investigation matched among 31 (web.pane.seeded, web.clinicalPrompts) [known gap: No proteinuria quantification output (see mnm-preeclampsia-hellp).] |
+| `obs-hellp-ruq-pain-34wk` | mgmt-magnesium | web | critical | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: No magnesium sulfate anywhere (see mnm-preeclampsia-hellp).] |
+| `obs-hellp-ruq-pain-34wk` | mgmt-antihypertensive | web | critical | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: No antihypertensive suggested: BP below the 180 prompt threshold; no pregnancy-specific agents (labetalol/nifedipine) anywhere.] |
+| `obs-hellp-ruq-pain-34wk` | mgmt-obstetric-delivery | web | critical | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: No obstetric output: O14.23 maps to no protocol, so the Assessment panel and Plan are empty; the prompts are biliary (MRCP, ERCP, 'HPB surgical review — Whipple') and gyn |
+| `obs-hellp-ruq-pain-34wk` | mgmt-no-cholecystectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• consent: laparoscopic cholecystectomy - bile duct injury (0.3%), haemorrhage, conversion to open, bile leak, retained..." (+1 more) [known gap: Web: the gallstone prompt ('Cholecy |
+| `obs-hellp-ruq-pain-34wk` | mgmt-no-nsaid-after-20-weeks | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "... 2. post-operative orders: • paracetamol 1g qds (regular) + ibuprofen 400mg tds (if egfr normal). • morphine 2.5-5mg sc/iv prn for pain > 5/10. • fre..." [known gap: Web: the cho |
+| `obs-hyperemesis-gravidarum` | mnm-hyperemesis | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. Acute Appendicitis [known gap: PANE has no hyperemesis gravidarum disease node (pane-engine has 130 diseases, none for hyperemesis gravidarum); top 3: acute c |
+| `obs-hyperemesis-gravidarum` | inv-ultrasound-viability | web | quality | known gap | no investigation matched among 31 (web.pane.seeded, web.clinicalPrompts) [known gap: No pregnancy ultrasound suggested; the only pregnancy output is 'Urine Pregnancy Test (β-HCG) — mandatory' for a woman recorded at 10 weeks.] |
+| `obs-hyperemesis-gravidarum` | mgmt-thiamine | web | critical | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: No thiamine anywhere; O21.1 maps to no protocol, so no management panel or plan exists.] |
+| `obs-hyperemesis-gravidarum` | mgmt-iv-fluids-potassium | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: No fluid/electrolyte plan beyond the adult tachycardia prompt's 'IV fluid challenge 500ml'.] |
+| `obs-hyperemesis-gravidarum` | mgmt-vte-prophylaxis | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: No thromboprophylaxis.] |
+| `obs-hyperemesis-gravidarum` | mgmt-no-ct-in-early-pregnancy | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• ct chest/abdomen/pelvis - occult malignancy screen (alarm symptoms)." [known gap: Web: the unintentional-weight-loss alarm prompt adds '• CT chest/abdomen/pelvis — occult malignan |
+| `obs-postpartum-preeclampsia-epigastric` | mnm-preeclampsia | web | critical | known gap | not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Peptic Ulcer Disease \| 3. Acute Cholecystitis [known gap: PANE has no pre-eclampsia disease node (pane-engine has 130 diseases, none for pre-eclampsia); top 3: GORD (0.22 — the  |
+| `obs-postpartum-preeclampsia-epigastric` | level-at-least-urgent | web | critical | known gap | web.triage: priority (acuity=review, action=priority_24_48h, score=20); expected ≥ urgent [known gap: Web triage: priority_24_48h (score 20). There is no BP vital red flag (162/106 raises nothing), 'headache'/'blurred vision' are not red-fl |
+| `obs-postpartum-preeclampsia-epigastric` | mgmt-antihypertensive | web | critical | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: No antihypertensive: SBP 162 is below the 180 prompt threshold.] |
+| `obs-postpartum-preeclampsia-epigastric` | mgmt-obstetric | web | critical | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: No obstetric output: O14.15 maps to no protocol, so the Assessment panel and Plan are empty; the only prompts are the pregnancy test, acute-abdomen bloods and cervical scr |
+| `obs-postpartum-preeclampsia-epigastric` | mgmt-magnesium | web | quality | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: No magnesium sulfate.] |
+| `paed-appendicitis-preschool-perforated` | score-rec-pas | web | quality | known gap | pas not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: getCdsSuggestions has no Paediatric Appendicitis Score; it suggests Alvarado, TG18 cholangitis, Ranson, qSOFA, NEWS2 for a 4-year-old.] |
+| `paed-appendicitis-preschool-perforated` | mgmt-no-adult-fixed-doses | web | critical | known gap | forbidden management item present in web.plan: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or cefuroxime 750 mg tds + metronidazole 500 mg tds." (+12 more) [known gap: Web: adult fixed doses with no weight or age adjustment — protoc |
+| `paed-appendicitis-preschool-perforated` | variant-abscess | web | quality | known gap | detected appendicitis_uncomplicated in group Acute Appendicitis; expected appendicitis_abscess [known gap: detectDxVariants still picks appendicitis_uncomplicated for 'Perforated appendicitis with periappendiceal abscess … a 3 cm abscess'.] |
+| `paed-dka-new-onset-abdominal-pain` | mnm-dka | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no DKA disease node (pane-engine has 130 diseases, none for DKA); top 3 |
+| `paed-dka-new-onset-abdominal-pain` | mgmt-cerebral-oedema | web | critical | known gap | no management item matched among 19 (web.clinicalPrompts) [known gap: No cerebral-oedema or neurological-observation output; the hyperglycaemia prompt is the adult pathway (VRIII wording, 'DKA fixed-rate 0.1 units/kg/h'), with no paediatric |
+| `paed-dka-new-onset-abdominal-pain` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web: computeClinicalPrompts fires the 'Appendicitis — eme |
+| `paed-dka-new-onset-abdominal-pain` | mgmt-no-adult-fixed-doses | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• iv pip-tazo 4.5g + metronidazole 500mg - antibiotic prophylaxis at induction." (+2 more) [known gap: Web: adult fixed doses with no weight or age adjustment — the appendicectomy t |
+| `paed-febrile-infant-7wk-hernia-clinic` | mnm-serious-infection | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#4 [known gap: PANE top 3: acute cholecystitis, GORD, peptic ulcer; PANE has UTI but no |
+| `paed-febrile-infant-7wk-hernia-clinic` | inv-lumbar-puncture | web | quality | known gap | no investigation matched among 21 (web.pane.seeded, web.clinicalPrompts) [known gap: No lumbar puncture suggested; the only infection output is the adult septic-shock bundle.] |
+| `paed-febrile-infant-7wk-hernia-clinic` | mgmt-urgent-paediatric | web | critical | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: No paediatric referral: the output is the adult septic-shock bundle (meropenem, vasopressors 'if MAP < 65', urinary catheter, CT abdomen) — triggered by adult thresholds  |
+| `paed-febrile-infant-7wk-hernia-clinic` | mgmt-parenteral-antibiotics | web | quality | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: Only adult regimens (meropenem 1 g + vancomycin) are suggested; no cefotaxime/ceftriaxone ± amoxicillin for a young infant.] |
+| `paed-febrile-infant-7wk-hernia-clinic` | mgmt-no-adult-fixed-doses | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "...and/size]. swab count correct × 2. post-operative orders: • paracetamol 1g qds + ibuprofen 400mg tds (regular analgesia). • morphine 5mg prn if pain > 5/1..." [known gap: Web: ad |
+| `paed-febrile-infant-7wk-hernia-clinic` | mgmt-no-emergency-hernia-repair | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• consent: hernia repair - recurrence (1-2% tapp), chronic groin pain (5%), mesh infection (< 1%), testicular ischaemia/vas inju..." (+1 more) [known gap: Web: the hernia prompt now |
+| `paed-hsp-abdominal-pain` | mnm-igav | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no IgA vasculitis (HSP) disease node (pane-engine has 130 diseases |
+| `paed-hsp-abdominal-pain` | mgmt-no-adult-fixed-doses | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: Web: adult fixed doses with no weight or age adjustment — the GI-bleed prompt's 'Hartmann |
+| `paed-intussusception-infant-classic` | mnm-intussusception | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. Bowel Obstruction; also in web.symptomInference#2, web.passive#2 [known gap: PANE has no intussusception disease node (pane-engine has 130 diseases, none |
+| `paed-intussusception-infant-classic` | mgmt-enema-reduction | web | critical | known gap | no management item matched among 29 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No enema reduction: K56.1 maps to the adult bowel_obstruction protocol ('drip and suck', water-soluble contr |
+| `paed-intussusception-infant-classic` | mgmt-paediatric-surgery | web | critical | known gap | no management item matched among 29 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No paediatric surgery referral anywhere in the plan or prompts; the redcurrant-jelly stool instead triggers  |
+| `paed-intussusception-infant-classic` | mgmt-fluid-resuscitation | web | quality | known gap | no management item matched among 29 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No mL/kg fluid output; fluids appear only as adult volumes ('Hartmann's 500ml bolus, crossmatch 2 units pRBC |
+| `paed-intussusception-infant-classic` | mgmt-no-adult-fixed-doses | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." (+1 more) [known gap: Web: adult fixed doses with no weight or age adjustment — 'Hartmann's 500ml bol |
+| `paed-intussusception-lethargy-atypical` | mnm-intussusception | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#2, web.passive#3 [known gap: PANE has no intussusception disease node (pane-engine has 130 diseases, none for |
+| `paed-intussusception-lethargy-atypical` | mgmt-no-adult-fixed-doses | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min." (+1 more) [known gap: Web: adult fixed doses with no weight or age adjustment — 'Hartmann's 1L bol |
+| `paed-malrotation-labelled-reflux` | mnm-malrotation | web | critical | known gap | not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no malrotation/midgut volvulus disease node (pane-engine h |
+| `paed-malrotation-labelled-reflux` | inv-upper-gi-contrast | web | critical | known gap | no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No upper GI contrast study suggested.] |
+| `paed-malrotation-labelled-reflux` | mgmt-paediatric-surgery-now | web | critical | known gap | no management item matched among 9 (web.clinicalPrompts) [known gap: No paediatric surgical referral.] |
+| `paed-malrotation-labelled-reflux` | mgmt-no-adult-fixed-doses | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min." (+1 more) [known gap: Web: adult fixed doses with no weight or age adjustment — 'Hartmann's 1L bol |
+| `paed-malrotation-volvulus-bilious-neonate` | mnm-malrotation | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no malrotation/midgut volvulus disease node (pane-engine has 130 diseas |
+| `paed-malrotation-volvulus-bilious-neonate` | inv-upper-gi-contrast | web | critical | known gap | no investigation matched among 29 (web.pane.seeded, web.clinicalPrompts) [known gap: No upper GI contrast study suggested (see mnm-malrotation).] |
+| `paed-malrotation-volvulus-bilious-neonate` | mgmt-paediatric-surgery-now | web | critical | known gap | no management item matched among 14 (web.clinicalPrompts) [known gap: No paediatric surgical referral. The prompts give the adult bowel-obstruction pathway instead — 'CT abdomen/pelvis with IV contrast', 'IV Hartmann's 1–2L + IDC', colonic  |
+| `paed-malrotation-volvulus-bilious-neonate` | mgmt-no-adult-fixed-doses | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min." (+3 more) [known gap: Web: adult fixed doses with no weight or age adjustment — 'Hartmann's 1L bol |
+| `paed-nai-duodenal-haematoma` | mnm-nai | web | quality | known gap | not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Blunt Abdominal Trauma \| 3. Peptic Ulcer Disease [known gap: PANE has no child-maltreatment node; top 3: acute pancreatitis, blunt abdominal trauma, peptic ulcer. Symptom inference list |
+| `paed-nai-duodenal-haematoma` | flag-safeguarding | web | critical | known gap | no red flag matched among 15 (web.triage.reasons, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No safeguarding/maltreatment output in triage, prompts or protocols; T74.12XA maps to no protocol.] |
+| `paed-nai-duodenal-haematoma` | inv-skeletal-survey | web | quality | known gap | no investigation matched among 26 (web.pane.seeded, web.clinicalPrompts) [known gap: No skeletal survey suggested.] |
+| `paed-nai-duodenal-haematoma` | mgmt-safeguarding-referral | web | critical | known gap | no management item matched among 8 (web.clinicalPrompts) [known gap: No child protection referral output.] |
+| `paed-nai-duodenal-haematoma` | mgmt-non-operative-duodenal | web | quality | known gap | no management item matched among 8 (web.clinicalPrompts) [known gap: No NG decompression or non-operative duodenal-haematoma plan: T74.12XA maps to no protocol. The only management is the adult pancreatitis prompt from amylase 480 (which al |
+| `paed-nai-duodenal-haematoma` | mgmt-no-adult-fixed-doses | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• iv fluid challenge 500ml if hypovolaemia likely - reassess hr at 30 min." (+1 more) [known gap: Web: adult fixed doses with no weight or age adjustment — the pancreatitis prompt's |
+| `paed-pyloric-stenosis-alkalosis` | mnm-pyloric-stenosis | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. Acute Appendicitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no pyloric stenosis disease node (pane-engine has 130 diseases, no |
+| `paed-pyloric-stenosis-alkalosis` | inv-pyloric-ultrasound | web | critical | known gap | no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No pyloric ultrasound suggested (see mnm-pyloric-stenosis).] |
+| `paed-pyloric-stenosis-alkalosis` | inv-electrolytes-gas | web | critical | known gap | no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No blood gas, chloride or bicarbonate is requested; the only electrolyte test is 'FBC, U&E (pre-operative bloods)' seeded from the inguinal-hernia protocol |
+| `paed-pyloric-stenosis-alkalosis` | mgmt-correct-before-surgery | web | critical | known gap | no management item matched among 9 (web.clinicalPrompts) [known gap: No fluid/electrolyte correction plan; the recorded alkalosis (pH 7.53, Cl 86, K 3.0) raises no prompt (hypokalaemia/alkalosis are not read).] |
+| `paed-pyloric-stenosis-alkalosis` | mgmt-pyloromyotomy | web | quality | known gap | no management item matched among 9 (web.clinicalPrompts) [known gap: No pyloromyotomy suggested.] |
+| `paed-pyloric-stenosis-alkalosis` | mgmt-no-adult-fixed-doses | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min." (+1 more) [known gap: Web: adult fixed doses with no weight or age adjustment — 'Hartmann's 1L bol |
 | `painless-jaundice-elderly-metastatic` | flag-frailty | web | quality | known gap | no red flag matched among 28 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No frailty/perf |
 | `pancreatitis-alcohol` | mgmt-thiamine | web | critical | known gap | no management item matched among 46 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No thiamine anywhere for an alcohol-dependent, vomiting patient in early withdrawa |
 | `pancreatitis-alcohol` | mgmt-withdrawal | web | quality | known gap | no management item matched among 46 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No withdrawal assessment or management.] |
@@ -15273,6 +16532,49 @@ Guidelines:
 | `sbo-virgin-abdomen` | mnm-neoplasm | web | quality | known gap | not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Acute Cholecystitis \| 3. Acute Appendicitis [known gap: Web: PANE top 3: bowel obstruction, cholecystitis, appendicitis, although weight_loss was extracted; PANE has no small-bowel neopl |
 | `sbo-virgin-abdomen` | mnm-hernia | web | quality | known gap | not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Acute Cholecystitis \| 3. Acute Appendicitis [known gap: Web: PANE top 3 has no hernia (no groin feature because no lump was found).] |
 | `sbo-virgin-abdomen` | mgmt-no-adhesion-label-in-plan | web | quality | known gap | forbidden management item present in web.plan: "[conservative] adhesive sbo: conservative 48 h trial if no peritonism; water-soluble contrast study at 24 h..." [known gap: Web: Variant 'sbo_adhesional' is chosen from the words 'small bowel  |
+| `screen-aaa-lung-ex-smoker-68` | mgmt-aaa-ultrasound | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: No prompt for AAA screening exists in computeClinicalPrompts (the iOS ScreeningEngine has one: men 65–75 who ever smoked).] |
+| `screen-breast-average-risk-42` | mgmt-biennial-interval | web | quality | known gap | no management item matched among 6 (web.clinicalPrompts) [known gap: Web: computeClinicalPrompts preventative prompts are fixed age/sex rules: mammogram_check says 'Annual mammogram recommended from age 40' and '> 1 year for 40–49' (USPSTF  |
+| `screen-breast-brca1-carrier-33` | level-not-urgent | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Over-triage: 'breast cancer' in the family-history comorbidity → 'Possible malignancy'; the comorbidity list counts as higher-risk → same_ |
+| `screen-breast-brca1-carrier-33` | inv-annual-mri | web | quality | known gap | no investigation matched among 11 (web.pane.seeded, web.clinicalPrompts) [known gap: No MRI surveillance output. brca_discussion (which suggests annual MRI from 30) is triggered only by a 'breast'/'ovarian' family-history chip; the recorded |
+| `screen-breast-brca1-carrier-33` | mgmt-risk-reducing-surgery | web | quality | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: No output mentions risk-reducing mastectomy or salpingo-oophorectomy; even brca_discussion (family-history route) has no such line.] |
+| `screen-breast-brca1-carrier-33` | mgmt-high-risk-service | web | quality | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: No genetics / family-history-service output: brca_discussion is not triggered by carrier status (see inv-annual-mri).] |
+| `screen-cervical-hpv-overdue-34` | inv-hpv-test | web | quality | known gap | no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: computeClinicalPrompts preventative prompts are fixed age/sex rules: cervical_smear offers only 'Cervical smear — confirm up to date … every 3 years ( |
+| `screen-crc-average-risk-46` | level-routine | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=50); expected ≤ priority [known gap: Over-triage: the topic words 'bowel cancer screening' match 'Possible malignancy' and 'No change in bowel habit' still matches 'Lower GI  |
+| `screen-crc-average-risk-46` | no-emergency-banner | web | quality | known gap | forbidden alarm present in web.triage.emergency: "emergency now - do not auto-book. advise urgent emergency assessment / tapion contact and ale..." [known gap: Web triage raises 'Emergency now — do not auto-book … urgent emergency assessmen |
+| `screen-crc-average-risk-46` | mgmt-crc-screening-offered | web | quality | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: Web: computeClinicalPrompts preventative prompts are fixed age/sex rules: the colorectal_screen prompt starts at age ≥ 50 ('FOBT every 2 years or colonoscopy every 10 year |
+| `screen-crc-fhx-sister-48-lynch-features` | level-not-urgent | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Over-triage: the family-history comorbidity text contains 'cancer', which scanRedFlags reads as 'Possible malignancy' (priority), and 'can |
+| `screen-crc-fhx-sister-48-lynch-features` | mgmt-colonoscopy | web | quality | unverified | no management item matched among 5 (web.clinicalPrompts) |
+| `screen-crc-fhx-sister-48-lynch-features` | mgmt-lynch-genetics | web | quality | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: No output mentions Lynch syndrome, genetics referral or tumour MMR/MSI testing. Even with the 'Colorectal cancer' family-history chip, the dashboard's early_colonoscopy pr |
+| `screen-cv-risk-lipids-smoker-52` | mgmt-10-year-risk | web | quality | known gap | no management item matched among 8 (web.clinicalPrompts) [known gap: No formal 10-year risk estimate is suggested; the lipid profile comes from diabetes_screen and the only CV-risk text is 'Document BP, BMI, waist circumference — cardiovasc |
+| `screen-diabetes-38-overweight-prior-gdm` | mgmt-no-diabetic-label | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• urine albumin:creatinine ratio - diabetic nephropathy screening." [known gap: Web: hasPmh(comorbidities, 'diabet') matches 'Previous gestational diabetes' and 'Family history: mot |
+| `screen-hepatitis-b-c-hiv-once` | inv-hcv | web | quality | known gap | no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: Hepatitis serology is suggested only inside the jaundice/liver/hepatic-lesion prompts; there is no universal once-in-adulthood HCV, HBV or HIV screening pr |
+| `screen-hepatitis-b-c-hiv-once` | inv-hbv | web | quality | known gap | no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: See inv-hcv: no universal HBV screening prompt.] |
+| `screen-hepatitis-b-c-hiv-once` | inv-hiv | web | quality | known gap | no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: See inv-hcv: no HIV screening prompt.] |
+| `screen-hpylori-fdr-gastric-cancer` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Over-triage: the chief complaint 'Father had stomach cancer' matches 'Possible malignancy' (priority) and the family-history comorbidity c |
+| `screen-hpylori-fdr-gastric-cancer` | inv-hpylori-test | web | quality | known gap | no investigation matched among 16 (web.pane.seeded, web.clinicalPrompts) [known gap: No prompt reads a family history of gastric cancer (the 'Gastric cancer' family-history chip triggers nothing — checked by calling computeClinicalPrompts d |
+| `screen-hypertension-accelerated-papilloedema` | level-urgent | web | critical | known gap | web.triage: routine (acuity=routine, action=routine_booking, score=0); expected ≥ urgent [known gap: Web triage: routine_booking, score 0, for BP 208/126 with headache, blurred vision and papilloedema. adaptiveTriage has no high-BP vital re |
+| `screen-hypertension-accelerated-papilloedema` | mgmt-same-day-admission | web | critical | known gap | no management item matched among 17 (web.clinicalPrompts) [known gap: Web: the hypertensive_urgency prompt (SBP ≥ 180) offers oral amlodipine and 'reduce SBP by 25% over 24–48 h'; the IV/hypertensive-emergency line appears only at SBP ≥ 220 |
+| `screen-hypertension-accelerated-papilloedema` | mgmt-no-proceed-with-surgery | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• consent: hernia repair - recurrence (1-2% tapp), chronic groin pain (5%), mesh infection (< 1%), testi..." [known gap: Web: 'Elective surgery deferred' appears, but the hernia pro |
+| `screen-hypertension-clinic-bp-confirm` | mgmt-abpm-hbpm | web | quality | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: No output confirms the diagnosis out of office: there is no prompt for a clinic BP of 140–179 systolic (hypertensive_urgency starts at SBP ≥ 180; htn_metabolic needs a rec |
+| `screen-hypertension-clinic-bp-confirm` | mgmt-urine-acr | web | quality | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: Urine ACR is suggested only when 'hypertension' is already recorded as a comorbidity (htn_metabolic); a first raised reading gets nothing.] |
+| `screen-hypertension-clinic-bp-confirm` | mgmt-cv-risk | web | quality | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: No formal risk score is suggested; the only related text is the wellness panel's 'Document BP, BMI, waist circumference — cardiovascular risk profiling'.] |
+| `screen-older-man-81-overscreening` | inv-no-psa-over-70 | web | quality | known gap | forbidden investigation present in web.clinicalPrompts: "psa (m)" [known gap: Web: computeClinicalPrompts preventative prompts are fixed age/sex rules: psa_discussion fires for every man ≥ 50 with no upper age limit and adds 'PSA (M)' to in |
+| `screen-older-man-81-overscreening` | mgmt-individualised-crc | web | quality | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: Web: colorectal_screen has no upper age limit and no individualisation text for 76–85 (USPSTF grade C).] |
+| `screen-older-man-81-overscreening` | mgmt-no-psa-discussion-over-70 | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• psa discussion - document informed consent to proceed with test." [known gap: Web: '• PSA discussion — document informed consent to proceed with test.' at 81.] |
+| `screen-older-man-81-overscreening` | mgmt-no-routine-10-yearly-colonoscopy | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• colonoscopy - crc screening, age ≥ 50." [known gap: Web: '• Colonoscopy — CRC screening, age ≥ 50.' and 'Colonoscopy every 10 years' at 81 after a normal colonoscopy at 71.] |
+| `screen-polyp-low-risk-no-surveillance` | mgmt-low-risk-interval | web | quality | known gap | no management item matched among 4 (web.clinicalPrompts) [known gap: No post-polypectomy surveillance logic exists on web: D12.6 maps to no protocol, and the only colorectal output is the generic age-≥50 prompt ('Colonoscopy — CRC screening |
+| `screen-polyp-piecemeal-emr-site-check` | mgmt-site-check | web | quality | known gap | no management item matched among 9 (web.clinicalPrompts) [known gap: No output mentions a site check after piecemeal EMR; D12.2 maps to no protocol; the generic age-≥50 screening prompt still offers 'FOBT every 2 years' and 'Colonoscopy — C |
+| `screen-post-hysterectomy-no-cervical-52` | mgmt-no-cervical-screening | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• confirm cervical smear date - document last result." (+1 more) [known gap: Web: cervical_smear fires for every woman 21–65 regardless of surgical history: 'Confirm cervical smear  |
+| `screen-post-splenectomy-vaccination` | mgmt-pneumococcal | web | critical | known gap | no management item output on web [known gap: No management output at all: Z90.81 (asplenia) maps to no protocol, so the Assessment panel and Plan are empty. Post-splenectomy vaccines exist only in the splenic_laceration protocol (S36 prefix |
+| `screen-post-splenectomy-vaccination` | mgmt-meningococcal | web | quality | known gap | no management item output on web [known gap: See mgmt-pneumococcal.] |
+| `screen-post-splenectomy-vaccination` | mgmt-hib | web | quality | known gap | no management item output on web [known gap: See mgmt-pneumococcal.] |
+| `screen-post-splenectomy-vaccination` | mgmt-influenza | web | quality | known gap | no management item output on web [known gap: See mgmt-pneumococcal.] |
+| `screen-post-splenectomy-vaccination` | mgmt-antibiotic-prophylaxis | web | quality | known gap | no management item output on web [known gap: See mgmt-pneumococcal.] |
+| `screen-post-splenectomy-vaccination` | mgmt-alert-card | web | quality | known gap | no management item output on web [known gap: See mgmt-pneumococcal.] |
+| `screen-prostate-58-shared-decision` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Over-triage: 'Two friends have had prostate cancer' → 'Possible malignancy' (priority) → same_day_call.] |
+| `screen-tetanus-prone-wound-unknown-status` | mgmt-tetanus-vaccine | web | critical | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: No tetanus output: S51.812A maps to no protocol, PANE top 3 is inguinal hernia / cholecystitis / GORD, and computeClinicalPrompts has no wound or tetanus-prone rule. Tetan |
+| `screen-tetanus-prone-wound-unknown-status` | mgmt-tetanus-immunoglobulin | web | critical | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: See mgmt-tetanus-vaccine: no tetanus immunoglobulin output for a high-risk wound with unknown immunisation.] |
+| `screen-tetanus-prone-wound-unknown-status` | mgmt-debridement | web | quality | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: No wound-care output (see mgmt-tetanus-vaccine).] |
 | `seizure-first-unprovoked-adult` | mnm-seizure | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no node for this condition (surgical diseases only); top 3 c |
 | `seizure-first-unprovoked-adult` | mgmt-ecg | web | critical | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: Web: No ECG (the pre-operative ECG prompt is age ≥40 only).] |
 | `seizure-first-unprovoked-adult` | mgmt-first-seizure-referral | web | critical | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: Web: No neurology / first-seizure referral; only two cervical-screening lines in management.] |
