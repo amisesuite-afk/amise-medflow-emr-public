@@ -1,8 +1,8 @@
 import XCTest
 @testable import AmiseMedFlow
 
-/// DiagnosticDatabase.json 2.0.0 and the engine changes that came with it
-/// (docs/clinical-validation/changes/fix-ios-differential.md). The JSON side is also checked
+/// DiagnosticDatabase.json 2.x and the engine changes that came with it
+/// (docs/clinical-validation/changes/fix-ios-differential.md, ios-last-criticals.md). The JSON side is also checked
 /// without Xcode by scripts/src/diagnostic-database-schema.ts (lint:guideline-registry).
 final class BayesianDifferentialDatabaseTests: XCTestCase {
 
@@ -175,6 +175,68 @@ final class BayesianDifferentialDatabaseTests: XCTestCase {
         XCTAssertTrue(Engine.anyAlternativeDocumentedAbsent("neck stiff", in: text))
         XCTAssertFalse(Engine.anyAlternativeDocumentedAbsent("fever|neck stiff", in: text))
         XCTAssertFalse(Engine.anyAlternativeDocumentedAbsent("photophob", in: text))
+    }
+
+    // MARK: - Patient context (BayesianDiagnosisEngine+Context.swift)
+
+    func testPostOperativeDayIsReadFromTheRecord() {
+        XCTAssertEqual(Engine.postOperativeDay(["Day 5 after laparoscopic anterior resection for upper rectal cancer."]), 5)
+        XCTAssertEqual(Engine.postOperativeDay(["", "", "Open Hartmann's procedure (day 6)"]), 6)
+        XCTAssertEqual(Engine.postOperativeDay(["Total thyroidectomy for Graves' disease this morning, returned to the ward 3 hours ago."]), 0)
+        XCTAssertEqual(Engine.postOperativeDay(["POD 3 after a Whipple procedure"]), 3)
+        XCTAssertEqual(Engine.postOperativeDay(["Laparoscopic cholecystectomy yesterday."]), 1)
+        // The most recent operation wins.
+        XCTAssertEqual(Engine.postOperativeDay(["Hernia repair (day 12). Re-laparotomy (day 2)."]), 2)
+        // No operation in the sentence, or an earlier episode: nothing.
+        XCTAssertNil(Engine.postOperativeDay(["Worsening breathing on day 3 of admission."]))
+        XCTAssertNil(Engine.postOperativeDay(["Day 9 in ICU after a road traffic collision (pelvic fractures, splenectomy day 1)."]))
+        XCTAssertNil(Engine.postOperativeDay(["At a caesarean section in 2012 she stayed on a ventilator for 6 hours after the anaesthetic."]))
+        XCTAssertNil(Engine.postOperativeDay(["Appendicectomy as a child. Pain started today."]))
+        XCTAssertTrue(Engine.postOpDayMatches("0-1", day: 0))
+        XCTAssertTrue(Engine.postOpDayMatches("3-30", day: 5))
+        XCTAssertFalse(Engine.postOpDayMatches("3-30", day: 1))
+        XCTAssertFalse(Engine.postOpDayMatches("3-30", day: nil))
+        XCTAssertFalse(Engine.postOpDayMatches("3", day: 3))
+    }
+
+    func testMaskingContextsSilenceOnlyNegativeFeatures() {
+        let steroids = Engine.MaskingContext.active(
+            age: 81, sex: .female,
+            record: NegationMatcher.Source("Takes prednisolone 15 mg daily for polymyalgia rheumatica."))
+        XCTAssertEqual(steroids, [.elderly, .female, .immunosuppressed])
+        let none = Engine.MaskingContext.active(age: 40, sex: .male, record: NegationMatcher.Source("No diabetes. Not on steroids."))
+        XCTAssertTrue(none.isEmpty, "\(none)")
+        XCTAssertTrue(Engine.isMasked(["immunosuppressed", "elderly"], logLR: -5, active: steroids))
+        XCTAssertFalse(Engine.isMasked(["immunosuppressed"], logLR: 5, active: steroids), "positive evidence is never masked")
+        XCTAssertFalse(Engine.isMasked(["diabetes"], logLR: -5, active: steroids))
+        XCTAssertFalse(Engine.isMasked(nil, logLR: -5, active: steroids))
+        XCTAssertFalse(Engine.isMasked(["unknown-context"], logLR: -5, active: steroids))
+    }
+
+    func testAResultedReportAddsItsDiagnosisToTheList() {
+        // Complaint routes to breathlessness / urinary presentations; the CT names the diagnosis.
+        var ct = InvestigationEntry(name: "CT abdomen (contrast)", category: .imaging, status: .resulted)
+        ct.result = "Acute necrotising pancreatitis with approximately 40% non-enhancement and peripancreatic fluid."
+        let results = Engine.infer(chiefComplaint: "Worsening breathing and low urine output on day 3 of admission",
+                                   socratesSelections: [:], pmhNotes: nil, surgicalHistory: nil,
+                                   examAbdo: nil, examGeneral: nil, investigations: [ct],
+                                   ageYears: 64, sex: .male)
+        XCTAssertTrue(results.contains { $0.name == "Acute Pancreatitis" }, results.map(\.name).joined(separator: ", "))
+        // The history alone does not add it.
+        let historyOnly = Engine.infer(chiefComplaint: "Worsening breathing",
+                                       socratesSelections: [:], pmhNotes: "Pancreatitis 2019", surgicalHistory: nil,
+                                       examAbdo: nil, examGeneral: nil, investigations: [],
+                                       ageYears: 64, sex: .male)
+        XCTAssertFalse(historyOnly.contains { $0.name == "Acute Pancreatitis" }, historyOnly.map(\.name).joined(separator: ", "))
+    }
+
+    func testMeasuredGlucoseOfFourOrMoreIsAChip() {
+        var lab = LabPanel()
+        lab.glucose = FusedValue(value: 17.8, confidence: 0.85, source: .lab, timestamp: Date())
+        let chips = Engine.numericLabChips(lab)
+        XCTAssertTrue(chips.contains("glucose not low"))
+        XCTAssertTrue(chips.contains("elevated glucose"))
+        XCTAssertFalse(chips.contains("hypoglycaemia"))
     }
 
     // MARK: - Helpers

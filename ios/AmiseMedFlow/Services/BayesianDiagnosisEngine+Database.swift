@@ -32,6 +32,9 @@ extension BayesianDiagnosisEngine {
             let logLR: Int
             let evidenceLabel: String
             let citation: String?
+            /// Masking contexts (BayesianDiagnosisEngine.MaskingContext raw values) under which this
+            /// negative feature does not count (DiagnosticDatabase.json 2.1.0; optional).
+            let maskedBy: [String]?
         }
 
         func toCandidate() -> Candidate {
@@ -39,7 +42,8 @@ extension BayesianDiagnosisEngine {
                       urgency: urgency ?? 0,
                       features: features.map { f in
                           Candidate.Feature(key: f.key, value: f.value,
-                                            logLR: f.logLR, evidenceLabel: f.evidenceLabel)
+                                            logLR: f.logLR, evidenceLabel: f.evidenceLabel,
+                                            maskedBy: f.maskedBy)
                       },
                       applicability: applicability)
         }

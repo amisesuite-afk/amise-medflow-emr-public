@@ -76,6 +76,7 @@
         "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+Scoring.swift",
         "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+TopResults.swift",
         "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+Routing.swift",
+        "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+Context.swift",
         "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+FeatureDAG.swift",
         "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+Catalogue.swift",
         "ios/AmiseMedFlow/Services/BayesianDecisionEngine*.swift",
@@ -91,10 +92,11 @@
       "reviewPriority": "P1",
       "nextReviewDue": "2026-10-31",
       "changeAuthority": "Any repository committer. Ships with an iOS app release.",
-      "notes": "Hand-set constants: confirmed-diagnosis boost (+20), about 30 score-driven adjustments, confidence bands on logGap (25 / 15 / 7), pathognomonic threshold logLR ≥ 18, CPT discounting in BayesianFeatureNetwork, \"do not miss\" places (ranks 4-5 for urgency ≥ 2), candidate cap 60, age-banded vital-sign limits (APLS 7th edition) and numeric laboratory chip thresholds (BayesianDiagnosisEngine+Routing.swift). Routing reads the chief complaint only. BayesianDecisionEngine+Database/Scoring/... duplicate the BayesianDiagnosisEngine extensions.",
+      "notes": "Hand-set constants: confirmed-diagnosis boost (+20), about 30 score-driven adjustments (the NEWS2 one by urgency tier: news2FullShareUrgency), confidence bands on logGap (25 / 15 / 7), pathognomonic threshold logLR ≥ 18, CPT discounting in BayesianFeatureNetwork, \"do not miss\" places (ranks 4-5 for urgency ≥ 2), candidate cap 60, age-banded vital-sign limits (APLS 7th edition) and numeric laboratory chip thresholds (BayesianDiagnosisEngine+Routing.swift). Routing reads the chief complaint only. BayesianDecisionEngine+Database/Scoring/... duplicate the BayesianDiagnosisEngine extensions.",
       "changelog": [
         { "version": "unversioned", "date": "2026-09-25", "change": "Routing from the complaint only (negation-aware, word-start); topResults softmax divides by 5 (logs are round(ln × 5)); urgency × 8 boost removed in favour of two \"do not miss\" places; curated presentations first, applicability filter, age-banded vital chips, numeric lab chips, HPI and PSHx read by curated features, \"a&b\" terms within one sentence, inv keys need every significant token. See docs/clinical-validation/changes/fix-ios-differential.md." },
-        { "version": "unversioned", "date": "2026-09-25", "change": "Sepsis and qSOFA decisions: IV antibiotics \"if suspected infection\"; lactate fluid line goal-directed; the strangulated-hernia decision reads \"emergency surgical review\" (repair only if strangulation is confirmed). Decisions pass through PlanSafetyFilter in ClinicalPipelineOrchestrator." }
+        { "version": "unversioned", "date": "2026-09-25", "change": "Sepsis and qSOFA decisions: IV antibiotics \"if suspected infection\"; lactate fluid line goal-directed; the strangulated-hernia decision reads \"emergency surgical review\" (repair only if strangulation is confirmed). Decisions pass through PlanSafetyFilter in ClinicalPipelineOrchestrator." },
+        { "version": "unversioned", "date": "2026-09-25", "change": "NEWS2 adjustment follows the candidate's urgency tier (critical full, emergency half) instead of a fixed name list; curated \"postOpDay\" feature key (post-operative day read from the record) and \"maskedBy\" masking contexts (elderly, immunosuppressed, diabetes, female) for negative features (BayesianDiagnosisEngine+Context.swift); a curated diagnosis whose strong feature (logLR >= 12) is in a resulted report or evidence chip joins the list; \"glucose not low\" lab chip. See docs/clinical-validation/changes/ios-last-criticals.md." }
       ]
     },
     {

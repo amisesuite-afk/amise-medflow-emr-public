@@ -76,6 +76,10 @@ extension BayesianDecisionEngine {
         var evidence: [String]
         var evidenceSources: [String: [String]] = [:]
         var pathognomicFindings: [String] = []   // features with logLR ≥ 18 that fired
+        /// A "finding" / "inv" feature with logLR ≥ reportEvidenceMinLogLR matched a resulted
+        /// report or an evidence chip (not only the history): infer() adds such a curated
+        /// candidate even when the complaint's route did not bring it in.
+        var reportEvidence = false
     }
 
     static func score(
@@ -134,6 +138,16 @@ extension BayesianDecisionEngine {
         let complaintL = NegationMatcher.Source(complaint)
         let findingText = FeatureText([complaint, hpi, examAbdo, examGeneral, examCVS, examResp, examNeuro,
                                        examMSK, examSkin, examOther, pmh, pshx] + chipTexts + invResults)
+        /// Resulted reports and evidence chips only (no history): what can add a diagnosis to the
+        /// list by itself (ScoredCandidate.reportEvidence).
+        let reportText = FeatureText(invResults + chipTexts)
+        // Patient context (BayesianDiagnosisEngine+Context.swift): the post-operative day written in
+        // the record ("postOpDay" features) and the masking contexts of negative features.
+        let postOpDay = BayesianDiagnosisEngine.postOperativeDay([complaint, hpi, pshx, pmh])
+        let maskingContexts = BayesianDiagnosisEngine.MaskingContext.active(
+            age: age, sex: sex,
+            record: NegationMatcher.Source(NegationMatcher.joinClauses(
+                [complaint, hpi, examAbdo, examGeneral, examCVS, examResp, examNeuro, examMSK, examSkin, examOther, pmh, pshx])))
         /// Test for the words of one feature value, matched one by one. A value written as a
         /// negative ("absent pulse", "absent cremasteric reflex", "no transillumination") has the
         /// negation as its finding: its words are matched plainly, as before. Otherwise each word
@@ -150,6 +164,7 @@ extension BayesianDecisionEngine {
             var evidence: [String] = []
             var evidenceSources: [String: [String]] = [:]
             var pathognomicFindings: [String] = []
+            var reportEvidence = false
 
             // Pre-pass: collect DAG node IDs for features that have already fired,
             // so downstream correlated features receive CPT-based discounting.
@@ -678,6 +693,12 @@ extension BayesianDecisionEngine {
                     triggered = !Self.anyAlternative(f.value, in: findingText)
                     sourceKey = "other"
 
+                case "postOpDay":
+                    // "a-b": the post-operative day written in the record (complaint, HPI, PSHx,
+                    // PMH) is between a and b ("0-1": within a day of the operation).
+                    triggered = BayesianDiagnosisEngine.postOpDayMatches(f.value, day: postOpDay)
+                    sourceKey = "history"
+
                 default:
                     // Pass 1: SOCRATES dict lookup — specialist early-form chips may store
                     // any custom DB key (e.g. lucid_interval, ecg, triad_nph) into
@@ -728,6 +749,17 @@ extension BayesianDecisionEngine {
                     }
                 }
 
+                // Masking contexts: a missing or documented-absent cardinal feature is not counted
+                // against the diagnosis where it is often absent (peritonism on steroids or in the
+                // elderly, chest pain in ACS in women, older people and diabetes).
+                if triggered && BayesianDiagnosisEngine.isMasked(f.maskedBy, logLR: f.logLR, active: maskingContexts) {
+                    triggered = false
+                }
+                if triggered, f.logLR >= BayesianDiagnosisEngine.reportEvidenceMinLogLR,
+                   f.key == "inv" || (f.key == "finding" && Self.anyAlternative(f.value, in: reportText)) {
+                    reportEvidence = true
+                }
+
                 if triggered {
                     // Apply CPT-based discounting when a correlated parent feature has
                     // already been observed — avoids double-counting co-occurring findings.
@@ -760,7 +792,8 @@ extension BayesianDecisionEngine {
             }
 
             return ScoredCandidate(candidate: c, logPosterior: logP, evidence: evidence,
-                                   evidenceSources: evidenceSources, pathognomicFindings: pathognomicFindings)
+                                   evidenceSources: evidenceSources, pathognomicFindings: pathognomicFindings,
+                                   reportEvidence: reportEvidence)
         }
     }
 

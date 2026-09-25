@@ -2350,6 +2350,45 @@ enum BayesianDiagnosisEngine {
             hpi: hpi ?? ""
         )
 
+        // Evidence from resulted reports (DiagnosticDatabase.json 2.1.0): a curated diagnosis that
+        // the complaint's route did not bring in joins the list when one of its strong features
+        // (logLR ≥ reportEvidenceMinLogLR, a likelihood ratio of about 10) is in a resulted report
+        // or an evidence chip — "CT: acute necrotising pancreatitis" when the complaint is
+        // breathlessness on day 3 of the admission. The history alone never adds one: a past
+        // diagnosis in the PMH does not. The candidate cap does not apply to these.
+        let listedNames = Set(scored.map(\.candidate.name))
+        let unlisted = (externalDatabase?.pools[corePoolName]?.candidates ?? [])
+            .map { $0.toCandidate() }
+            .filter { c in
+                !listedNames.contains(c.name)
+                    && (c.applicability?.applies(ageYears: ageYears, sex: sex, pregnancy: pregnancy) ?? true)
+            }
+        if !unlisted.isEmpty {
+            let fromReports = score(
+                candidates: unlisted,
+                socrates: enrichedSocrates,
+                pmh: mergedPMH,
+                pshx: mergedPSHx,
+                examAbdo: examAbdo ?? "",
+                examGeneral: examGeneral ?? "",
+                examCVS: examCVS ?? "",
+                examResp: examResp ?? "",
+                examNeuro: examNeuro ?? "",
+                examMSK: examMSK ?? "",
+                examSkin: examSkin ?? "",
+                examOther: examOther ?? "",
+                investigations: mergedInvestigations,
+                age: ageYears,
+                sex: sex,
+                medications: medications,
+                socialText: socialHistoryText ?? "",
+                bmi: bmi,
+                complaint: baseCC,
+                hpi: hpi ?? ""
+            ).filter(\.reportEvidence)
+            scored.append(contentsOf: fromReports)
+        }
+
         // Urgency label. Urgency no longer adds to the log-posterior (it used to add
         // urgency × 8, up to +24 ≈ a likelihood ratio of 120, which ranked every critical
         // diagnosis above better-supported ones and made the list follow urgency rather than
@@ -2571,20 +2610,26 @@ enum BayesianDiagnosisEngine {
             }
         }
 
-        // NEWS2 → acuity-sensitive candidates (sepsis, PE, pneumonia, MI, cardiac failure, ARDS)
-        // Fires when NEWS2 ≥ 5 (medium risk) or ≥ 7 (high risk).
+        // NEWS2 → physiological derangement (the shock / sepsis context). Fires when NEWS2 ≥ 5
+        // (medium risk) or ≥ 7 (high risk). NEWS2 measures how ill the patient is, not the cause
+        // (RCP 2017; Smith GB et al. Resuscitation 2013;84:465-70: NEWS predicts cardiac arrest,
+        // unanticipated ICU admission and death within 24 h), so the adjustment follows the
+        // candidate's urgency tier rather than its name: critical diagnoses (urgency ≥
+        // news2FullShareUrgency) take all of it, emergency ones (one tier below) half, the rest
+        // none. Before DiagnosticDatabase 2.1.0 a fixed list (sepsis, PE, pneumonia, ACS, heart
+        // failure …) took all of it, so a shocked patient with a perforation, severe pancreatitis,
+        // an anastomotic leak or a neck haematoma was listed behind pneumonia and ACS (clinical
+        // validation, iOS run 36182660885).
         if let news2 = news2Score, news2 >= 5 {
             let (adj, label): (Int, String) = news2 >= 7
                 ? (12, "NEWS2 \(news2) — high risk, consider critical care escalation")
                 : (6,  "NEWS2 \(news2) — medium risk")
-            let news2Targets = ["sepsis", "pulmonary embol", "pneumonia", "myocardial infarct",
-                                "acute coronary", "cardiac failure", "heart failure", "bacteraemia",
-                                "ards", "respiratory distress", "septic shock", "cardiac tamponade",
-                                "aortic dissect"]
-            for i in scored.indices where news2Targets.contains(where: {
-                scored[i].candidate.name.lowercased().contains($0)
-            }) {
-                scored[i].logPosterior += adj
+            for i in scored.indices {
+                let urgency = scored[i].candidate.urgency
+                let share = urgency >= Self.news2FullShareUrgency ? adj
+                    : (urgency == Self.news2FullShareUrgency - 1 ? adj / 2 : 0)
+                guard share > 0 else { continue }
+                scored[i].logPosterior += share
                 scored[i].evidence.insert(label, at: 0)
                 scored[i].evidenceSources["score", default: []].insert(label, at: 0)
             }
@@ -4164,6 +4209,9 @@ enum BayesianDiagnosisEngine {
             let value: String        // chip label or keyword fragment
             let logLR: Int           // positive = increases probability, negative = decreases
             let evidenceLabel: String
+            /// Masking contexts under which a negative feature is not counted
+            /// (BayesianDiagnosisEngine+Context.swift); nil for the built-in lists.
+            var maskedBy: [String]? = nil
         }
     }
 }

@@ -78,8 +78,9 @@ extension BayesianDiagnosisEngine {
     /// and amylase >300 U/L (>3× upper limit, revised Atlanta 2012); hs-troponin >14 ng/L (99th
     /// centile, ESC 2023); D-dimer >500 µg/L; creatinine >130 µmol/L; potassium ≥6.0 mmol/L
     /// (UK Kidney Association 2023); sodium <130 mmol/L (European hyponatraemia guideline
-    /// 2014); adjusted calcium >2.6 mmol/L; glucose <4.0 (JBDS 2023), >11 and ≥30 mmol/L
-    /// (JBDS HHS 2022); haemoglobin <10 g/dL; INR >1.5; platelets <100 ×10⁹/L.
+    /// 2014); adjusted calcium >2.6 mmol/L; glucose <4.0 (JBDS 2023; "glucose not low" at 4.0 or
+    /// above, which the curated hypoglycaemia candidate reads), >11 and ≥30 mmol/L (JBDS HHS
+    /// 2022); haemoglobin <10 g/dL; INR >1.5; platelets <100 ×10⁹/L.
     static func numericLabChips(_ lab: LabPanel) -> Set<String> {
         var chips = Set<String>()
         if let v = lab.wbc?.value { if v > 11 { chips.insert("raised wbc") }; if v < 4 { chips.insert("leukopenia") } }
@@ -102,7 +103,7 @@ extension BayesianDiagnosisEngine {
         }
         if let v = lab.glucose?.value {
             let mmol = v < 100 ? v : v / 18
-            if mmol < 4.0 { chips.insert("hypoglycaemia") }
+            if mmol < 4.0 { chips.insert("hypoglycaemia") } else { chips.insert("glucose not low") }
             if mmol > 11 { chips.insert("elevated glucose") }
             if mmol >= 30 { chips.insert("severe hyperglycaemia") }
         }
